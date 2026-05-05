@@ -13,6 +13,11 @@ if ($health.status -ne "ok") {
   throw "API health check failed."
 }
 
+$ready = Invoke-RestMethod -Uri "$ApiUrl/api/v1/health/ready"
+if ($ready.status -ne "ready") {
+  throw "API readiness check failed."
+}
+
 $session = Invoke-RestMethod -Method Post -Uri "$ApiUrl/api/v1/auth/login" -ContentType "application/json" -Body (@{
   email = $Email
   password = $Password
@@ -40,6 +45,7 @@ if ($frontend.StatusCode -ne 200) {
 }
 
 Write-Host "OK API health: $($health.status)"
+Write-Host "OK Readiness: $($ready.status)"
 Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"

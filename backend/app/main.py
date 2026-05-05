@@ -1,13 +1,17 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import router
 from app.core.config import get_settings
+from app.core.observability import request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
 
 
 settings = get_settings()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
 app = FastAPI(
     title=settings.app_name,
@@ -22,6 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.middleware("http")(request_context_middleware)
 
 app.include_router(router)
 

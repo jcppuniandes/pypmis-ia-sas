@@ -2,7 +2,10 @@ import json
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from redis import Redis
+from redis.exceptions import RedisError
 from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_tenant_id, get_user_id
@@ -135,6 +138,28 @@ router = APIRouter(prefix="/api/v1")
 @router.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@router.get("/health/ready")
+def readiness(db: Session = Depends(get_db)) -> dict[str, object]:
+    checks: dict[str, str] = {"api": "ok"}
+    try:
+        db.execute(select(1)).scalar_one()
+        checks["database"] = "ok"
+    except SQLAlchemyError:
+        checks["database"] = "error"
+
+    try:
+        redis = Redis.from_url(get_settings().redis_url, socket_connect_timeout=1, socket_timeout=1)
+        redis.ping()
+        checks["redis"] = "ok"
+    except RedisError:
+        checks["redis"] = "error"
+
+    status = "ready" if all(value == "ok" for value in checks.values()) else "degraded"
+    if status != "ready":
+        raise HTTPException(status_code=503, detail={"status": status, "checks": checks})
+    return {"status": status, "checks": checks}
 
 
 @router.post("/auth/login", response_model=AuthSessionOut)

@@ -55,7 +55,17 @@ Con el stack levantado:
 powershell -ExecutionPolicy Bypass -File .\tools\smoke_check.ps1
 ```
 
-El script valida health de API, proyectos disponibles, dashboard principal y frontend.
+El script valida health de API, readiness DB/Redis, login JWT, proyectos disponibles, dashboard principal y frontend.
+
+## Pruebas
+
+Con el stack levantado:
+
+```powershell
+docker compose exec api pytest
+```
+
+La suite mínima cubre health, readiness, autenticacion, rechazo sin token, proyectos, dashboard y encolado del Control Core.
 
 ## Configuracion operativa
 
