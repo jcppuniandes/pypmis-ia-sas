@@ -64,7 +64,23 @@ Con el stack levantado:
 powershell -ExecutionPolicy Bypass -File .\tools\smoke_check.ps1
 ```
 
-El script valida health de API, readiness DB/Redis, login JWT, proyectos disponibles, dashboard principal y frontend.
+El script valida health de API, readiness DB/Redis, login JWT, proyectos disponibles, dashboard principal, readiness de piloto y frontend.
+
+## Readiness de piloto
+
+Para revisar si los proyectos estan listos para piloto:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\pilot_check.ps1
+```
+
+La API tambien expone:
+
+```text
+GET /api/v1/projects/{project_id}/pilot-readiness
+```
+
+El indicador cubre Fase 1 a Fase 6: Schedule Intake, BP Engine, Control Accounts, EVM/Forecast, Contracts/Claims y SaaS colaborativo.
 
 ## Pruebas
 
@@ -134,6 +150,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/cont
 - [Modelo de datos](docs/04-modelo-de-datos.md)
 - [Flujos de procesos](docs/05-flujos-de-procesos.md)
 - [Backlog por fases](docs/06-backlog-por-fases.md)
+- [Guia para desarrollar el piloto](docs/08-guia-piloto.md)
 
 ## Regla de entrada
 

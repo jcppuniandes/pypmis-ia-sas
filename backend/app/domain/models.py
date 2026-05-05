@@ -201,6 +201,8 @@ class ControlAccount(Base):
     name: Mapped[str] = mapped_column(String(220))
     responsible: Mapped[str] = mapped_column(String(160))
     discipline: Mapped[str] = mapped_column(String(80))
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     activities: Mapped[list["Activity"]] = relationship(back_populates="control_account")
     budgets: Mapped[list["Budget"]] = relationship(back_populates="control_account")
@@ -300,6 +302,8 @@ class WorkPackage(Base):
     planned_start: Mapped[date | None] = mapped_column(Date)
     planned_finish: Mapped[date | None] = mapped_column(Date)
     progress_percent: Mapped[float] = mapped_column(Float, default=0)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -317,6 +321,8 @@ class WorkPackageConstraint(Base):
     required_by: Mapped[date | None] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(40), default="open")
     blocking: Mapped[bool] = mapped_column(default=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class BusinessProcessInstance(Base):
@@ -336,6 +342,7 @@ class BusinessProcessInstance(Base):
     ball_in_court: Mapped[str] = mapped_column(String(160))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    version: Mapped[int] = mapped_column(Integer, default=1)
 
     steps: Mapped[list["WorkflowStepInstance"]] = relationship(back_populates="process_instance")
 
@@ -604,6 +611,8 @@ class ClaimEntitlementItem(Base):
     weight: Mapped[float] = mapped_column(Float, default=1)
     score: Mapped[float] = mapped_column(Float, default=0)
     sequence_no: Mapped[int] = mapped_column(Integer, default=0)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class ContractNotice(Base):
@@ -645,6 +654,8 @@ class ClaimImpactAnalysis(Base):
     confidence_score: Mapped[float] = mapped_column(Float, default=0)
     status: Mapped[str] = mapped_column(String(40), default="draft")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class Event(Base):

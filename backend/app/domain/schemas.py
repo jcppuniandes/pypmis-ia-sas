@@ -98,6 +98,8 @@ class ControlAccountOut(BaseModel):
     name: str
     responsible: str
     discipline: str
+    version: int
+    updated_at: datetime
 
 
 class ControlAccountCreate(BaseModel):
@@ -113,6 +115,7 @@ class ControlAccountUpdate(BaseModel):
     name: str | None = None
     responsible: str | None = None
     discipline: str | None = None
+    expected_version: int | None = None
 
 
 class WBSOut(BaseModel):
@@ -390,6 +393,7 @@ class BusinessProcessInstanceOut(BaseModel):
     trigger_entity_id: int
     created_at: datetime
     updated_at: datetime
+    version: int
 
 
 class WorkflowStepInstanceOut(BaseModel):
@@ -408,6 +412,7 @@ class WorkflowStepInstanceOut(BaseModel):
 class WorkflowActionIn(BaseModel):
     action: str
     actor: str = "Project Controls"
+    expected_version: int | None = None
 
 
 class ProcessStepTemplateOut(BaseModel):
@@ -549,6 +554,8 @@ class ClaimEntitlementItemOut(BaseModel):
     weight: float
     score: float
     sequence_no: int
+    version: int
+    updated_at: datetime
 
 
 class ClaimEntitlementItemCreate(BaseModel):
@@ -569,6 +576,7 @@ class ClaimEntitlementItemUpdate(BaseModel):
     evidence_ref: str | None = None
     status: str | None = None
     score: float | None = None
+    expected_version: int | None = None
 
 
 class ClaimEntitlementSummary(BaseModel):
@@ -629,6 +637,8 @@ class ClaimImpactAnalysisOut(BaseModel):
     confidence_score: float
     status: str
     created_at: datetime
+    version: int
+    updated_at: datetime
 
 
 class ClaimImpactAnalysisCreate(BaseModel):
@@ -655,6 +665,7 @@ class ClaimImpactAnalysisUpdate(BaseModel):
     evidence_ref: str | None = None
     confidence_score: float | None = None
     status: str | None = None
+    expected_version: int | None = None
 
 
 class ClaimsForensicSummary(BaseModel):
@@ -747,6 +758,8 @@ class WorkPackageOut(BaseModel):
     planned_start: date | None
     planned_finish: date | None
     progress_percent: float
+    version: int
+    updated_at: datetime
 
 
 class WorkPackageCreate(BaseModel):
@@ -768,6 +781,7 @@ class WorkPackageCreate(BaseModel):
 class WorkPackageReadinessUpdate(BaseModel):
     readiness_status: str | None = None
     progress_percent: float | None = None
+    expected_version: int | None = None
 
 
 class WorkPackageConstraintOut(BaseModel):
@@ -781,6 +795,8 @@ class WorkPackageConstraintOut(BaseModel):
     required_by: date | None
     status: str
     blocking: bool
+    version: int
+    updated_at: datetime
 
 
 class WorkPackageConstraintCreate(BaseModel):
@@ -795,6 +811,7 @@ class WorkPackageConstraintCreate(BaseModel):
 class WorkPackageConstraintUpdate(BaseModel):
     status: str | None = None
     blocking: bool | None = None
+    expected_version: int | None = None
 
 
 class AWPReadinessSummary(BaseModel):
@@ -806,6 +823,24 @@ class AWPReadinessSummary(BaseModel):
     open_constraints: int
     blocking_constraints: int
     readiness_score: float
+
+
+class PilotReadinessItem(BaseModel):
+    phase: str
+    area: str
+    status: str
+    score: float
+    finding: str
+    next_action: str
+
+
+class PilotReadinessOut(BaseModel):
+    project_id: int
+    project_code: str
+    status: str
+    score: float
+    blockers: list[str]
+    items: list[PilotReadinessItem]
 
 
 class TCMFlowStep(BaseModel):

@@ -39,6 +39,11 @@ if ($null -eq $dashboard.project_kpi) {
   throw "Dashboard did not return project KPI data."
 }
 
+$pilotReadiness = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/pilot-readiness" -Headers $headers
+if ($pilotReadiness.score -lt 60) {
+  throw "Pilot readiness score is too low: $($pilotReadiness.score)."
+}
+
 $frontend = Invoke-WebRequest -Uri $FrontendUrl -UseBasicParsing
 if ($frontend.StatusCode -ne 200) {
   throw "Frontend health check failed."
@@ -49,4 +54,5 @@ Write-Host "OK Readiness: $($ready.status)"
 Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"
+Write-Host "OK Pilot readiness: $($pilotReadiness.status) $($pilotReadiness.score)%"
 Write-Host "OK Frontend: HTTP $($frontend.StatusCode)"

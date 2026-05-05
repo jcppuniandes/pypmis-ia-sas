@@ -58,6 +58,7 @@ class WorkflowRoutingService:
             raise ValueError("Unsupported workflow action")
 
         process.updated_at = datetime.utcnow()
+        process.version = (process.version or 1) + 1
         self.db.add(
             AuditLog(
                 tenant_id=tenant_id,

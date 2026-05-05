@@ -6,11 +6,11 @@ Fecha de evaluacion: 2026-05-05
 
 La app esta en estado de demo funcional avanzada, no lista para produccion empresarial.
 
-- Madurez global roadmap: 56/100.
+- Madurez global roadmap: 68/100 para piloto controlado.
 - Conformidad TCM / Control Core: 7/10.
 - Experiencia Project Controls SaaS: 6.5/10.
 - Integracion AWP: 4/10.
-- Preparacion SaaS productiva: 3/10.
+- Preparacion SaaS productiva: 4/10.
 
 ## Evaluacion por fase
 
@@ -21,7 +21,7 @@ La app esta en estado de demo funcional avanzada, no lista para produccion empre
 | Fase 3 | Control accounts automaticos, WBS/CBS/Activity, cost loading | MVP automatico | 58% |
 | Fase 4 | EVM historico, curvas reales, productividad, forecast | MVP historico | 62% |
 | Fase 5 | Contract & claims, notices, causalidad, impacto, evidencia | MVP metodologico | 55% |
-| Fase 6 | SaaS empresarial, colaboracion multiusuario, auth, RBAC, tenants, auditoria, hardening | SaaS-ready tecnico | 34% |
+| Fase 6 | SaaS empresarial, colaboracion multiusuario, auth, RBAC, tenants, auditoria, hardening | Piloto colaborativo | 50% |
 
 ## Avance implementado
 
@@ -47,12 +47,12 @@ La app esta en estado de demo funcional avanzada, no lista para produccion empre
 - Fase 3: falta reglas avanzadas de agrupacion, revision masiva asistida, split de actividades entre cuentas de control, CBS contractual detallado y conciliacion con ERP.
 - Fase 4: falta curva de caja real, escenarios configurables por usuario, tendencia por disciplina, integracion forecast con lookahead y versionado de proyecciones.
 - Fase 5: falta modulo formal de notices, matriz contractual completa, analisis causa-efecto automatizado, measured mile/productividad avanzada y paquetes forenses.
-- Fase 6: autenticacion JWT local, base Alembic inicial, readiness DB/Redis, request id/logging, smoke tests backend y control de acceso por membresia de proyecto implementados; faltan OIDC/SSO, API tokens, concurrencia optimista, realtime, notificaciones, observabilidad avanzada, hardening completo y pruebas automatizadas amplias.
+- Fase 6: autenticacion JWT local, base Alembic inicial, readiness DB/Redis, request id/logging, smoke tests backend, CI inicial, control de acceso por membresia de proyecto, readiness de piloto y concurrencia optimista implementados; faltan OIDC/SSO, API tokens, realtime, notificaciones, observabilidad avanzada, hardening completo y pruebas automatizadas amplias.
 
 ## Siguiente paso recomendado
 
-Prioridad inmediata: Fase 6 colaborativa + Fase 1.
+Prioridad inmediata: ejecutar piloto controlado.
 
-1. Implementar columna `version`/`updated_at` y control de concurrencia optimista en registros colaborativos.
-2. Agregar canal realtime para workflows, alertas, equipo de proyecto y ball-in-court.
-3. Fortalecer ingestion de cronograma con validaciones DCMA/AACE y log de errores consumible por usuario.
+1. Seguir `docs/08-guia-piloto.md` con un proyecto real o dataset semilla validado.
+2. Medir readiness con `tools/pilot_check.ps1` antes y despues de cada ciclo.
+3. Registrar brechas para la siguiente ola: realtime, SSO/OIDC, integraciones ERP/P6 y parser XER industrial.

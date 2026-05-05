@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from redis import Redis
@@ -96,6 +96,8 @@ from app.domain.schemas import (
     AuthSessionOut,
     KPIOut,
     LoginRequest,
+    PilotReadinessItem,
+    PilotReadinessOut,
     ProcessStepTemplateOut,
     ProcessTemplateCreate,
     ProcessTemplateOut,
@@ -587,8 +589,10 @@ def update_control_account(
 ) -> ControlAccount:
     _require_membership(db, tenant_id, project_id, user_id)
     account = _require_control_account(db, tenant_id, project_id, account_id)
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    _require_current_version(account, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(account, field, value)
+    _touch_collaborative_record(account)
     _audit(db, tenant_id, project_id, "update_control_account", "ControlAccount", account.id, f'{{"code":"{account.code}"}}')
     db.commit()
     db.refresh(account)
@@ -1077,8 +1081,10 @@ def update_claim_entitlement_item(
     )
     if not item:
         raise HTTPException(status_code=404, detail="Claim entitlement item not found")
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    _require_current_version(item, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(item, field, value)
+    _touch_collaborative_record(item)
     _audit(db, tenant_id, project_id, "update_claim_entitlement_item", "ClaimEntitlementItem", item.id, f'{{"status":"{item.status}"}}', current_user.full_name)
     db.commit()
     db.refresh(item)
@@ -1173,8 +1179,10 @@ def update_claim_impact_analysis(
     )
     if not analysis:
         raise HTTPException(status_code=404, detail="Claim impact analysis not found")
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    _require_current_version(analysis, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(analysis, field, value)
+    _touch_collaborative_record(analysis)
     _audit(
         db,
         tenant_id,
@@ -1320,12 +1328,14 @@ def update_work_package_readiness(
     _require_membership(db, tenant_id, project_id, user_id)
     current_user = _require_user(db, tenant_id, user_id)
     package = _require_work_package(db, tenant_id, project_id, package_id)
+    _require_current_version(package, payload.expected_version)
     if payload.readiness_status is not None:
         package.readiness_status = payload.readiness_status
     if payload.progress_percent is not None:
         if payload.progress_percent < 0 or payload.progress_percent > 100:
             raise HTTPException(status_code=400, detail="Progress percent must be between 0 and 100")
         package.progress_percent = payload.progress_percent
+    _touch_collaborative_record(package)
     _audit(db, tenant_id, project_id, "update_awp_readiness", "WorkPackage", package.id, f'{{"code":"{package.code}"}}', current_user.full_name)
     db.commit()
     db.refresh(package)
@@ -1405,7 +1415,8 @@ def update_work_package_constraint(
     )
     if not constraint:
         raise HTTPException(status_code=404, detail="AWP constraint not found")
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    _require_current_version(constraint, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(constraint, field, value)
     open_blockers = db.scalar(
         select(func.count(WorkPackageConstraint.id)).where(
@@ -1418,6 +1429,8 @@ def update_work_package_constraint(
     )
     if not open_blockers and package.readiness_status == "blocked":
         package.readiness_status = "ready_to_release"
+        _touch_collaborative_record(package)
+    _touch_collaborative_record(constraint)
     _audit(db, tenant_id, project_id, "update_awp_constraint", "WorkPackageConstraint", constraint.id, f'{{"status":"{constraint.status}"}}', current_user.full_name)
     db.commit()
     db.refresh(constraint)
@@ -1600,6 +1613,18 @@ def list_forecast_scenarios(
     )
 
 
+@router.get("/projects/{project_id}/pilot-readiness", response_model=PilotReadinessOut)
+def get_pilot_readiness(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PilotReadinessOut:
+    _require_membership(db, tenant_id, project_id, user_id)
+    project = _require_project(db, tenant_id, project_id)
+    return _pilot_readiness(db, tenant_id, project)
+
+
 @router.post("/projects/{project_id}/workflow-instances/{process_id}/actions", response_model=BusinessProcessInstanceOut)
 def apply_workflow_action(
     project_id: int,
@@ -1619,6 +1644,16 @@ def apply_workflow_action(
     project = db.scalar(select(Project).where(Project.id == project_id, Project.tenant_id == tenant_id))
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    process = db.scalar(
+        select(BusinessProcessInstance).where(
+            BusinessProcessInstance.id == process_id,
+            BusinessProcessInstance.tenant_id == tenant_id,
+            BusinessProcessInstance.project_id == project_id,
+        )
+    )
+    if not process:
+        raise HTTPException(status_code=404, detail="Workflow process not found")
+    _require_current_version(process, payload.expected_version)
     try:
         return WorkflowRoutingService(db).apply_action(
             tenant_id=tenant_id,
@@ -1946,6 +1981,200 @@ def _latest_schedule_import(db: Session, tenant_id: int, project_id: int) -> Sch
         .where(ScheduleImport.project_id == project_id, ScheduleImport.tenant_id == tenant_id)
         .order_by(ScheduleImport.imported_at.desc())
     ).first()
+
+
+def _require_current_version(entity: object, expected_version: int | None) -> None:
+    if expected_version is None:
+        return
+    current_version = int(getattr(entity, "version", 1) or 1)
+    if current_version != expected_version:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Record was updated by another user. Refresh before retrying.",
+                "current_version": current_version,
+                "expected_version": expected_version,
+            },
+        )
+
+
+def _touch_collaborative_record(entity: object) -> None:
+    current_version = int(getattr(entity, "version", 1) or 1)
+    setattr(entity, "version", current_version + 1)
+    if hasattr(entity, "updated_at"):
+        setattr(entity, "updated_at", datetime.utcnow())
+
+
+def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotReadinessOut:
+    project_id = project.id
+    latest_import = _latest_schedule_import(db, tenant_id, project_id)
+    findings = _schedule_findings_for_import(db, tenant_id, project_id, latest_import.id) if latest_import else []
+    finding_errors = sum(item.item_count for item in findings if item.severity == "error")
+    finding_warnings = sum(item.item_count for item in findings if item.severity == "warning")
+
+    team = _project_team(db, tenant_id, project_id)
+    roles = {member.membership.role for member in team}
+    audit_count = db.scalar(
+        select(func.count(AuditLog.id)).where(AuditLog.tenant_id == tenant_id, AuditLog.project_id == project_id)
+    ) or 0
+    schedule_activity_count = _count(db, ScheduleActivityMap, tenant_id, project_id)
+    relationship_count = _count(db, ActivityRelationship, tenant_id, project_id)
+    control_account_count = _count(db, ControlAccount, tenant_id, project_id)
+    progress_count = _count(db, ProgressRecord, tenant_id, project_id)
+    cost_count = _count(db, CostRecord, tenant_id, project_id)
+    snapshot_count = _count(db, ControlSnapshot, tenant_id, project_id)
+    forecast_count = _count(db, ForecastScenario, tenant_id, project_id)
+    contract_count = _count(db, Contract, tenant_id, project_id)
+    notice_count = _count(db, ContractNotice, tenant_id, project_id)
+    claim_count = _count(db, Claim, tenant_id, project_id)
+    entitlement_count = _count(db, ClaimEntitlementItem, tenant_id, project_id)
+    impact_count = _count(db, ClaimImpactAnalysis, tenant_id, project_id)
+    document_count = _count(db, Document, tenant_id, project_id)
+    package_count = _count(db, WorkPackage, tenant_id, project_id)
+    constraint_count = _count(db, WorkPackageConstraint, tenant_id, project_id)
+    open_blocking_constraints = db.scalar(
+        select(func.count(WorkPackageConstraint.id)).where(
+            WorkPackageConstraint.tenant_id == tenant_id,
+            WorkPackageConstraint.project_id == project_id,
+            WorkPackageConstraint.blocking.is_(True),
+            WorkPackageConstraint.status == "open",
+        )
+    ) or 0
+    workflow_count = _count(db, BusinessProcessInstance, tenant_id, project_id)
+    template_count = db.scalar(
+        select(func.count(BusinessProcessTemplate.id)).where(BusinessProcessTemplate.tenant_id == tenant_id)
+    ) or 0
+    latest_baseline = db.scalars(
+        select(BaselineVersion)
+        .where(BaselineVersion.tenant_id == tenant_id, BaselineVersion.project_id == project_id)
+        .order_by(BaselineVersion.version_no.desc())
+    ).first()
+    latest_kpi = db.scalars(
+        select(KPI)
+        .where(KPI.tenant_id == tenant_id, KPI.project_id == project_id, KPI.control_account_id.is_(None))
+        .order_by(KPI.created_at.desc())
+    ).first()
+
+    mapping_score = 0.0
+    cost_loading_score = 0.0
+    if latest_import:
+        mappings = list(
+            db.scalars(
+                select(ControlAccountMapping).where(
+                    ControlAccountMapping.tenant_id == tenant_id,
+                    ControlAccountMapping.project_id == project_id,
+                    ControlAccountMapping.schedule_import_id == latest_import.id,
+                )
+            ).all()
+        )
+        mapping_summary = _control_account_mapping_summary(mappings, latest_baseline.status if latest_baseline else "missing")
+        mapping_score = mapping_summary.mapping_score
+        cost_loading_score = mapping_summary.cost_loading_score
+
+    items = [
+        _readiness_item(
+            "Fase 1",
+            "Schedule Intake / Data Quality",
+            100 if latest_import and latest_import.status == ImportStatus.validated and latest_import.quality_score >= 70 and finding_errors == 0 else max(latest_import.quality_score if latest_import else 0, 0),
+            f"{schedule_activity_count} actividades, {relationship_count} relaciones, {finding_errors} errores y {finding_warnings} advertencias.",
+            "Cargar cronograma fuente y cerrar errores DCMA/AACE antes del piloto.",
+        ),
+        _readiness_item(
+            "Fase 2",
+            "Business Process Engine",
+            100 if workflow_count and template_count else 45,
+            f"{workflow_count} instancias workflow y {template_count} plantillas configuradas.",
+            "Configurar plantillas del piloto y validar ball-in-court por rol.",
+        ),
+        _readiness_item(
+            "Fase 3",
+            "Control Accounts / Mapping",
+            min((mapping_score * 0.65) + (cost_loading_score * 0.35), 100),
+            f"{control_account_count} cuentas de control, mapeo {mapping_score:.1f}% y cost loading {cost_loading_score:.1f}%.",
+            "Completar mapping WBS/CBS/Activity y aprobar baseline de control.",
+        ),
+        _readiness_item(
+            "Fase 4",
+            "EVM / Forecast / Control Core",
+            100 if latest_kpi and snapshot_count and forecast_count and progress_count and cost_count else 55,
+            f"{progress_count} avances, {cost_count} costos, {snapshot_count} snapshots y {forecast_count} forecasts.",
+            "Ejecutar ciclo de control con datos de avance, costo real y escenarios EAC.",
+        ),
+        _readiness_item(
+            "Fase 5",
+            "Contracts / Claims / Evidence",
+            min((contract_count > 0) * 25 + (notice_count > 0) * 25 + (claim_count > 0) * 20 + (entitlement_count > 0) * 15 + (impact_count > 0) * 10 + (document_count > 0) * 5, 100),
+            f"{contract_count} contratos, {notice_count} notices, {claim_count} claims, {entitlement_count} entitlement items y {impact_count} analisis de impacto.",
+            "Seleccionar un caso contractual real y vincular evidencia/documentos.",
+        ),
+        _readiness_item(
+            "Fase 6",
+            "SaaS colaborativo / Operacion",
+            min((len(team) >= 5) * 30 + (len(roles) >= 5) * 25 + (audit_count > 0) * 20 + (package_count > 0) * 15 + (constraint_count >= 0) * 10, 100),
+            f"{len(team)} usuarios, {len(roles)} roles, {audit_count} eventos auditados, {package_count} work packages y {open_blocking_constraints} restricciones bloqueantes abiertas.",
+            "Cerrar usuarios/roles del piloto, probar concurrencia y acordar rutina semanal.",
+        ),
+    ]
+    score = round(sum(item.score for item in items) / len(items), 1)
+    blockers = [f"{item.phase}: {item.area}" for item in items if item.status == "blocked"]
+    if score >= 80 and not blockers:
+        status = "ready"
+    elif score >= 65:
+        status = "pilot_candidate"
+    else:
+        status = "needs_preparation"
+    return PilotReadinessOut(
+        project_id=project.id,
+        project_code=project.code,
+        status=status,
+        score=score,
+        blockers=blockers,
+        items=items,
+    )
+
+
+def _readiness_item(phase: str, area: str, score: float, finding: str, next_action: str) -> PilotReadinessItem:
+    rounded_score = round(float(score), 1)
+    if rounded_score >= 80:
+        status = "ready"
+    elif rounded_score >= 60:
+        status = "watch"
+    else:
+        status = "blocked"
+    return PilotReadinessItem(
+        phase=phase,
+        area=area,
+        status=status,
+        score=rounded_score,
+        finding=finding,
+        next_action=next_action,
+    )
+
+
+def _count(db: Session, model: type, tenant_id: int, project_id: int) -> int:
+    return db.scalar(
+        select(func.count(model.id)).where(
+            model.tenant_id == tenant_id,
+            model.project_id == project_id,
+        )
+    ) or 0
+
+
+def _schedule_findings_for_import(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    schedule_import_id: int,
+) -> list[ScheduleValidationFinding]:
+    return list(
+        db.scalars(
+            select(ScheduleValidationFinding).where(
+                ScheduleValidationFinding.tenant_id == tenant_id,
+                ScheduleValidationFinding.project_id == project_id,
+                ScheduleValidationFinding.schedule_import_id == schedule_import_id,
+            )
+        ).all()
+    )
 
 
 def _role_permissions(role: str) -> dict[str, bool]:

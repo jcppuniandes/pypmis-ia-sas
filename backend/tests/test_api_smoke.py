@@ -57,6 +57,20 @@ def test_projects_and_dashboard_accept_token() -> None:
     assert dashboard["project_kpi"]["bac"] >= 0
 
 
+def test_pilot_readiness_scores_project_phases() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        response = client.get(f"/api/v1/projects/{project_id}/pilot-readiness", headers=headers)
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["project_id"] == project_id
+    assert payload["status"] in {"ready", "pilot_candidate", "needs_preparation"}
+    assert payload["score"] >= 60
+    assert {item["phase"] for item in payload["items"]} == {"Fase 1", "Fase 2", "Fase 3", "Fase 4", "Fase 5", "Fase 6"}
+
+
 def test_project_routes_reject_authenticated_non_members() -> None:
     with TestClient(app) as client:
         control_manager_headers = _auth_headers(client)
@@ -67,6 +81,29 @@ def test_project_routes_reject_authenticated_non_members() -> None:
         response = client.get(f"/api/v1/projects/{secondary_project['id']}/wbs", headers=contract_manager_headers)
 
     assert response.status_code == 403
+
+
+def test_collaborative_updates_reject_stale_versions() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        accounts_response = client.get(f"/api/v1/projects/{project_id}/control-accounts", headers=headers)
+        account = accounts_response.json()[0]
+
+        update_response = client.patch(
+            f"/api/v1/projects/{project_id}/control-accounts/{account['id']}",
+            headers=headers,
+            json={"responsible": "Pilot Responsible", "expected_version": account["version"]},
+        )
+        stale_response = client.patch(
+            f"/api/v1/projects/{project_id}/control-accounts/{account['id']}",
+            headers=headers,
+            json={"responsible": "Stale Responsible", "expected_version": account["version"]},
+        )
+
+    assert update_response.status_code == 200
+    assert update_response.json()["version"] == account["version"] + 1
+    assert stale_response.status_code == 409
 
 
 def test_control_cycle_job_can_be_enqueued() -> None:
@@ -81,6 +118,14 @@ def test_control_cycle_job_can_be_enqueued() -> None:
     assert payload["status"] == "queued"
     assert payload["queue"] == "control-core"
     assert payload["task_id"]
+
+
+def _first_project_id(client: TestClient, headers: dict[str, str]) -> int:
+    response = client.get("/api/v1/projects", headers=headers)
+    assert response.status_code == 200
+    projects = response.json()
+    assert projects
+    return int(projects[0]["id"])
 
 
 def _login(client: TestClient):

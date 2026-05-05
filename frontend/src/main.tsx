@@ -194,6 +194,7 @@ type WorkflowInstance = {
   trigger_entity_id: number;
   created_at: string;
   updated_at: string;
+  version: number;
 };
 
 type WorkflowStep = {
@@ -264,6 +265,8 @@ type ControlAccount = {
   name: string;
   responsible: string;
   discipline: string;
+  version: number;
+  updated_at: string;
 };
 
 type ControlAccountMapping = {
@@ -361,6 +364,8 @@ type ClaimEntitlementItem = {
   weight: number;
   score: number;
   sequence_no: number;
+  version: number;
+  updated_at: string;
 };
 
 type ClaimEntitlementSummary = {
@@ -404,6 +409,8 @@ type ClaimImpactAnalysis = {
   confidence_score: number;
   status: string;
   created_at: string;
+  version: number;
+  updated_at: string;
 };
 
 type ClaimsForensicSummary = {
@@ -462,6 +469,8 @@ type WorkPackage = {
   planned_start: string | null;
   planned_finish: string | null;
   progress_percent: number;
+  version: number;
+  updated_at: string;
 };
 
 type WorkPackageConstraint = {
@@ -473,6 +482,8 @@ type WorkPackageConstraint = {
   required_by: string | null;
   status: string;
   blocking: boolean;
+  version: number;
+  updated_at: string;
 };
 
 type AWPReadinessSummary = {
@@ -484,6 +495,24 @@ type AWPReadinessSummary = {
   open_constraints: number;
   blocking_constraints: number;
   readiness_score: number;
+};
+
+type PilotReadinessItem = {
+  phase: string;
+  area: string;
+  status: string;
+  score: number;
+  finding: string;
+  next_action: string;
+};
+
+type PilotReadiness = {
+  project_id: number;
+  project_code: string;
+  status: string;
+  score: number;
+  blockers: string[];
+  items: PilotReadinessItem[];
 };
 
 type Dashboard = {
@@ -640,6 +669,7 @@ const defaultControlDate = new Date().toISOString().slice(0, 10);
 
 function App() {
   const [dashboard, setDashboard] = React.useState<Dashboard | null>(null);
+  const [pilotReadiness, setPilotReadiness] = React.useState<PilotReadiness | null>(null);
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
   const [roles, setRoles] = React.useState<RoleProfile[]>([]);
@@ -834,6 +864,7 @@ function App() {
     setProjects(availableProjects);
     if (!availableProjects.length) {
       setDashboard(null);
+      setPilotReadiness(null);
       setLoading(false);
       return;
     }
@@ -842,8 +873,12 @@ function App() {
     if (projectId !== selectedProjectId) {
       setSelectedProjectId(projectId);
     }
-    const dashboardResponse = await fetch(`${apiUrl}/api/v1/projects/${projectId}/dashboard`, { headers });
+    const [dashboardResponse, pilotReadinessResponse] = await Promise.all([
+      fetch(`${apiUrl}/api/v1/projects/${projectId}/dashboard`, { headers }),
+      fetch(`${apiUrl}/api/v1/projects/${projectId}/pilot-readiness`, { headers })
+    ]);
     setDashboard((await dashboardResponse.json()) as Dashboard);
+    setPilotReadiness((await pilotReadinessResponse.json()) as PilotReadiness);
     setLoading(false);
   }, [authToken, authUser, login, selectedProjectId, selectedUserId]);
 
@@ -958,7 +993,11 @@ function App() {
         {
           method: "POST",
           headers: apiHeaders(true),
-          body: JSON.stringify({ action, actor: dashboard.current_user.full_name })
+          body: JSON.stringify({
+            action,
+            actor: dashboard.current_user.full_name,
+            expected_version: dashboard.workflow_instance.version
+          })
         }
       );
       if (!response.ok) {
@@ -1488,7 +1527,7 @@ function App() {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraint.work_package_id}/constraints/${constraint.id}`, {
         method: "PATCH",
         headers: apiHeaders(true),
-        body: JSON.stringify({ status: "closed" })
+        body: JSON.stringify({ status: "closed", expected_version: constraint.version })
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1622,7 +1661,7 @@ function App() {
     { key: "claims", label: "Claims", count: dashboard.claims.length },
     { key: "contracts", label: "Contracts", count: dashboard.contracts.length },
     { key: "documents", label: "Documents", count: dashboard.documents.length },
-    { key: "roadmap", label: "Roadmap", count: "59%" },
+    { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
     { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
     { key: "admin", label: "Projects / Users / Roles", count: dashboard.project_team.length }
   ];
@@ -2122,8 +2161,8 @@ function App() {
         <div className="appAssessment">
           <article>
             <span>Calificacion actual</span>
-            <strong>{overallRoadmapScore}/100</strong>
-            <small>Demo funcional avanzada, todavia no produccion empresarial.</small>
+            <strong>{pilotReadiness ? `${pilotReadiness.score.toFixed(1)}/100` : `${overallRoadmapScore}/100`}</strong>
+            <small>{pilotReadiness ? statusLabel(pilotReadiness.status) : "Demo funcional avanzada, todavia no produccion empresarial."}</small>
           </article>
           <article>
             <span>TCM / Control Core</span>
@@ -2141,6 +2180,27 @@ function App() {
             <small>Faltan auth real, migraciones, hardening, observabilidad y pruebas amplias.</small>
           </article>
         </div>
+        {pilotReadiness && (
+          <div className="roadmapGrid">
+            {pilotReadiness.items.map((item) => (
+              <article className="roadmapPhase" key={`${item.phase}-${item.area}`}>
+                <div>
+                  <span>{item.phase}</span>
+                  <strong>{item.area}</strong>
+                </div>
+                <div className="scoreBar">
+                  <span style={{ width: `${item.score}%` }} />
+                </div>
+                <div className="phaseMeta">
+                  <strong>{item.score.toFixed(1)}%</strong>
+                  <span>{statusLabel(item.status)}</span>
+                </div>
+                <p>{item.finding}</p>
+                <small>{item.next_action}</small>
+              </article>
+            ))}
+          </div>
+        )}
         <div className="roadmapGrid">
           {roadmapStatus.map((item) => (
             <article className="roadmapPhase" key={item.phase}>
