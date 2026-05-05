@@ -37,6 +37,14 @@ type User = {
   status: string;
 };
 
+type AuthSession = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  tenant_id: number;
+  user: User;
+};
+
 type ProjectMembership = {
   id: number;
   project_id: number;
@@ -525,6 +533,16 @@ type Dashboard = {
 };
 
 const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const demoPassword = import.meta.env.VITE_DEMO_PASSWORD ?? "demo123";
+const defaultLoginEmail = import.meta.env.VITE_DEMO_EMAIL ?? "ana.control@demo.local";
+
+function authHeaders(token: string, includeJson = false) {
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+  if (includeJson) {
+    headers["Content-Type"] = "application/json";
+  }
+  return headers;
+}
 
 function currency(value: number, code: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: code, maximumFractionDigits: 0 }).format(value);
@@ -627,6 +645,8 @@ function App() {
   const [roles, setRoles] = React.useState<RoleProfile[]>([]);
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>("");
   const [selectedUserId, setSelectedUserId] = React.useState<string>("1");
+  const [authToken, setAuthToken] = React.useState<string>(() => window.localStorage.getItem("pypmis_access_token") ?? "");
+  const [authUser, setAuthUser] = React.useState<User | null>(null);
   const [activeView, setActiveView] = React.useState<WorkspaceView>("business-processes");
   const [selectedBpRecordNo, setSelectedBpRecordNo] = React.useState<string>("");
   const [loading, setLoading] = React.useState(true);
@@ -635,6 +655,7 @@ function App() {
   const [captureAction, setCaptureAction] = React.useState<string | null>(null);
   const [uploadMessage, setUploadMessage] = React.useState<string | null>(null);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
+  const [authError, setAuthError] = React.useState<string | null>(null);
   const [progressDraft, setProgressDraft] = React.useState({
     control_account_id: "",
     physical_percent: "",
@@ -756,15 +777,49 @@ function App() {
     blocking: true
   });
 
+  const login = React.useCallback(async (email = defaultLoginEmail) => {
+    const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password: demoPassword, tenant_slug: "demo-energy" })
+    });
+    if (!response.ok) {
+      throw new Error("Authentication failed");
+    }
+    const session = (await response.json()) as AuthSession;
+    window.localStorage.setItem("pypmis_access_token", session.access_token);
+    setAuthToken(session.access_token);
+    setAuthUser(session.user);
+    setSelectedUserId(String(session.user.id));
+    setAuthError(null);
+    return session;
+  }, []);
+
+  const apiHeaders = React.useCallback((includeJson = false, tokenOverride?: string) => {
+    return authHeaders(tokenOverride ?? authToken, includeJson);
+  }, [authToken]);
+
   const load = React.useCallback(async () => {
     setLoading(true);
-    const tenantHeaders = { "X-Tenant-Id": "1" };
-    const usersResponse = await fetch(`${apiUrl}/api/v1/users`, { headers: tenantHeaders });
+    let sessionToken = authToken;
+    if (!sessionToken) {
+      sessionToken = (await login()).access_token;
+    }
+
+    let usersResponse = await fetch(`${apiUrl}/api/v1/users`, { headers: authHeaders(sessionToken) });
+    if (usersResponse.status === 401) {
+      sessionToken = (await login()).access_token;
+      usersResponse = await fetch(`${apiUrl}/api/v1/users`, { headers: authHeaders(sessionToken) });
+    }
     const availableUsers = (await usersResponse.json()) as User[];
     const selectedUserIsAvailable = availableUsers.some((user) => String(user.id) === selectedUserId);
     const fallbackUserId = selectedUserId || "1";
     const userId = selectedUserIsAvailable ? selectedUserId : String(availableUsers[0]?.id ?? fallbackUserId);
-    const headers = { ...tenantHeaders, "X-User-Id": userId };
+    const selectedUser = availableUsers.find((user) => String(user.id) === userId);
+    if (selectedUser && authUser && authUser.id !== selectedUser.id) {
+      sessionToken = (await login(selectedUser.email)).access_token;
+    }
+    const headers = authHeaders(sessionToken);
     const [projectsResponse, rolesResponse] = await Promise.all([
       fetch(`${apiUrl}/api/v1/projects`, { headers }),
       fetch(`${apiUrl}/api/v1/roles`, { headers })
@@ -790,10 +845,13 @@ function App() {
     const dashboardResponse = await fetch(`${apiUrl}/api/v1/projects/${projectId}/dashboard`, { headers });
     setDashboard((await dashboardResponse.json()) as Dashboard);
     setLoading(false);
-  }, [selectedProjectId, selectedUserId]);
+  }, [authToken, authUser, login, selectedProjectId, selectedUserId]);
 
   React.useEffect(() => {
-    load().catch(() => setLoading(false));
+    load().catch((error) => {
+      setAuthError(error instanceof Error ? error.message : "Authentication failed");
+      setLoading(false);
+    });
   }, [load]);
 
   React.useEffect(() => {
@@ -865,7 +923,7 @@ function App() {
       formData.append("file", file);
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/schedule-imports`, {
         method: "POST",
-        headers: { "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(),
         body: formData
       });
 
@@ -899,7 +957,7 @@ function App() {
         `${apiUrl}/api/v1/projects/${dashboard.project.id}/workflow-instances/${dashboard.workflow_instance.id}/actions`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+          headers: apiHeaders(true),
           body: JSON.stringify({ action, actor: dashboard.current_user.full_name })
         }
       );
@@ -926,7 +984,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/progress-records`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           control_account_id: Number(progressDraft.control_account_id),
           physical_percent: Number(progressDraft.physical_percent),
@@ -961,7 +1019,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/cost-records`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           control_account_id: Number(costDraft.control_account_id),
           source: costDraft.source,
@@ -992,7 +1050,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           ...projectDraft,
           start_date: projectDraft.start_date || null,
@@ -1009,7 +1067,7 @@ function App() {
       setProjectDraft({ code: "", name: "", phase: "Planning", currency: "USD", start_date: "", finish_date: "" });
       setUploadMessage("Project shell created. Load the source schedule to trigger the control workflow.");
       const dashboardResponse = await fetch(`${apiUrl}/api/v1/projects/${created.id}/dashboard`, {
-        headers: { "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" }
+        headers: apiHeaders()
       });
       setDashboard((await dashboardResponse.json()) as Dashboard);
     } catch (error) {
@@ -1027,7 +1085,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify(userDraft)
       });
       if (!response.ok) {
@@ -1057,7 +1115,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/team`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({ user_id: Number(teamDraft.user_id), role: teamDraft.role })
       });
       if (!response.ok) {
@@ -1081,7 +1139,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/process-templates`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           code: processDraft.code,
           name: processDraft.name,
@@ -1123,7 +1181,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/control-account-mapping/approve`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" }
+        headers: apiHeaders(true)
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1149,7 +1207,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/changes`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           control_account_id: changeDraft.control_account_id ? Number(changeDraft.control_account_id) : null,
           title: changeDraft.title,
@@ -1183,7 +1241,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/contracts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({ ...contractDraft, value: Number(contractDraft.value || 0) })
       });
       if (!response.ok) {
@@ -1211,7 +1269,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/communications`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           ...communicationDraft,
           contract_id: communicationDraft.contract_id ? Number(communicationDraft.contract_id) : null
@@ -1242,7 +1300,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/contract-notices`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           ...noticeDraft,
           contract_id: noticeDraft.contract_id ? Number(noticeDraft.contract_id) : null,
@@ -1278,7 +1336,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/claims/${claimImpactDraft.claim_id}/impact-analyses`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           method: claimImpactDraft.method,
           impacted_activity: claimImpactDraft.impacted_activity,
@@ -1326,7 +1384,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/documents`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           ...documentDraft,
           linked_entity_id: Number(documentDraft.linked_entity_id || 0)
@@ -1357,7 +1415,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           ...awpDraft,
           control_account_id: awpDraft.control_account_id ? Number(awpDraft.control_account_id) : null,
@@ -1395,7 +1453,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraintDraft.work_package_id}/constraints`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({
           constraint_type: constraintDraft.constraint_type,
           description: constraintDraft.description,
@@ -1429,7 +1487,7 @@ function App() {
     try {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraint.work_package_id}/constraints/${constraint.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", "X-Tenant-Id": "1", "X-User-Id": selectedUserId || "1" },
+        headers: apiHeaders(true),
         body: JSON.stringify({ status: "closed" })
       });
       if (!response.ok) {
@@ -1450,7 +1508,7 @@ function App() {
   }
 
   if (!dashboard) {
-    return <main className="loading">API unavailable. Start Docker Compose to run the demo.</main>;
+    return <main className="loading">{authError ?? "API unavailable. Start Docker Compose to run the demo."}</main>;
   }
 
   const { project, project_kpi: kpi } = dashboard;
@@ -3846,3 +3904,4 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
+

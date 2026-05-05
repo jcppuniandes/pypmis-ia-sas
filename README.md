@@ -67,9 +67,27 @@ REDIS_URL=redis://redis:6379/0
 CORS_ORIGINS=http://localhost:5173
 AUTO_CREATE_SCHEMA=true
 SEED_DEMO_DATA=true
+AUTH_SECRET_KEY=replace-with-a-long-random-secret
+ACCESS_TOKEN_EXPIRE_MINUTES=480
+DEMO_USER_PASSWORD=demo123
 ```
 
-Para un entorno productivo, usar migraciones Alembic, configurar `AUTO_CREATE_SCHEMA=false` y `SEED_DEMO_DATA=false`, y reemplazar los encabezados demo `X-Tenant-Id` / `X-User-Id` por autenticacion JWT/OIDC.
+Para un entorno productivo, usar migraciones Alembic, configurar `AUTO_CREATE_SCHEMA=false`, `SEED_DEMO_DATA=false`, rotar `AUTH_SECRET_KEY` y conectar OIDC/SSO corporativo si aplica.
+
+## Autenticacion
+
+La API usa token Bearer JWT. En la demo, todos los usuarios semilla tienen la clave `demo123`.
+
+```powershell
+$session = Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/auth/login -ContentType "application/json" -Body (@{
+  email = "ana.control@demo.local"
+  password = "demo123"
+  tenant_slug = "demo-energy"
+} | ConvertTo-Json)
+
+$headers = @{ Authorization = "Bearer $($session.access_token)" }
+Invoke-RestMethod -Uri http://localhost:8000/api/v1/projects -Headers $headers
+```
 
 ## Migraciones
 
@@ -86,7 +104,7 @@ docker compose exec api alembic upgrade head
 El worker Celery escucha la cola `control-core`.
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/control-cycle/jobs -Headers @{ "X-Tenant-Id"="1"; "X-User-Id"="1" }
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/control-cycle/jobs -Headers $headers
 ```
 
 ## Documentacion

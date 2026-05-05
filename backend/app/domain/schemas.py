@@ -38,6 +38,22 @@ class UserCreate(BaseModel):
     email: str
     full_name: str
     title: str = ""
+    password: str | None = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    tenant_id: int | None = None
+    tenant_slug: str = "demo-energy"
+
+
+class AuthSessionOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    tenant_id: int
+    user: UserOut
 
 
 class RoleProfileOut(BaseModel):

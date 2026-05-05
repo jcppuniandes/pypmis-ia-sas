@@ -1,15 +1,19 @@
 import json
+from datetime import timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_tenant_id, get_user_id
+from app.core.config import get_settings
+from app.core.security import create_access_token, hash_password, verify_password
 from app.database.session import get_db
 from app.domain.models import (
     Activity,
     ActivityRelationship,
     Alert,
+    AuthCredential,
     AuditLog,
     BaselineVersion,
     BusinessProcessInstance,
@@ -39,6 +43,7 @@ from app.domain.models import (
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleValidationFinding,
+    Tenant,
     UserAccount,
     WorkPackage,
     WorkPackageConstraint,
@@ -85,7 +90,9 @@ from app.domain.schemas import (
     DocumentOut,
     DocumentCreate,
     ForecastScenarioOut,
+    AuthSessionOut,
     KPIOut,
+    LoginRequest,
     ProcessStepTemplateOut,
     ProcessTemplateCreate,
     ProcessTemplateOut,
@@ -128,6 +135,55 @@ router = APIRouter(prefix="/api/v1")
 @router.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@router.post("/auth/login", response_model=AuthSessionOut)
+def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOut:
+    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
+    tenant = db.scalar(select(Tenant).where(tenant_filter))
+    if not tenant:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    user = db.scalar(
+        select(UserAccount).where(
+            UserAccount.tenant_id == tenant.id,
+            UserAccount.email == payload.email.strip().lower(),
+            UserAccount.status == "active",
+        )
+    )
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    credential = db.scalar(
+        select(AuthCredential).where(
+            AuthCredential.tenant_id == tenant.id,
+            AuthCredential.user_id == user.id,
+            AuthCredential.provider == "local",
+            AuthCredential.is_active.is_(True),
+        )
+    )
+    if not credential or not verify_password(payload.password, credential.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    settings = get_settings()
+    token, expires_in = create_access_token(
+        claims={"sub": user.id, "tenant_id": tenant.id, "email": user.email},
+        secret_key=settings.auth_secret_key,
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
+    return AuthSessionOut(
+        access_token=token,
+        expires_in=expires_in,
+        tenant_id=tenant.id,
+        user=UserOut.model_validate(user),
+    )
+
+
+@router.get("/auth/me", response_model=UserOut)
+def current_user(
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> UserAccount:
+    return _require_user(db, tenant_id, user_id)
 
 
 @router.get("/projects", response_model=list[ProjectOut])
@@ -206,18 +262,28 @@ def create_user(
     user_id: int = Depends(get_user_id),
 ) -> UserAccount:
     current_user = _require_tenant_configurator(db, tenant_id, user_id)
-    existing = db.scalar(select(UserAccount).where(UserAccount.tenant_id == tenant_id, UserAccount.email == payload.email))
+    email = payload.email.strip().lower()
+    existing = db.scalar(select(UserAccount).where(UserAccount.tenant_id == tenant_id, UserAccount.email == email))
     if existing:
         raise HTTPException(status_code=409, detail="User email already exists")
     user = UserAccount(
         tenant_id=tenant_id,
-        email=payload.email,
+        email=email,
         full_name=payload.full_name,
         title=payload.title,
         status="active",
     )
     db.add(user)
     db.flush()
+    db.add(
+        AuthCredential(
+            tenant_id=tenant_id,
+            user_id=user.id,
+            provider="local",
+            password_hash=hash_password(payload.password or get_settings().demo_user_password),
+            is_active=True,
+        )
+    )
     _audit(db, tenant_id, None, "create_user", "UserAccount", user.id, f'{{"email":"{user.email}"}}', current_user.full_name)
     db.commit()
     db.refresh(user)

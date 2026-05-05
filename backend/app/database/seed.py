@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.domain.models import (
     Activity,
     ActivityRelationship,
+    AuthCredential,
     BaselineVersion,
     Budget,
     BusinessProcessInstance,
@@ -48,6 +49,8 @@ from app.domain.models import (
     WBS,
     WorkflowStepInstance,
 )
+from app.core.config import get_settings
+from app.core.security import hash_password
 from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.services.control_core import ControlCoreService
 from app.services.schedule_ingestion import ScheduleIngestionService
@@ -455,6 +458,7 @@ def neutral_schedule_text(value: str) -> str:
 
 
 def ensure_demo_users(db: Session, tenant_id: int) -> None:
+    demo_password = get_settings().demo_user_password
     users_seed = [
         ("ana.control@demo.local", "Ana Martinez", "Project Controls Manager"),
         ("pablo.planner@demo.local", "Pablo Rojas", "Lead Planner"),
@@ -471,6 +475,7 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
             user = UserAccount(tenant_id=tenant_id, email=email, full_name=full_name, title=title)
             db.add(user)
             db.flush()
+        ensure_local_credential(db, tenant_id, user.id, demo_password)
         users[email] = user
 
     projects = list(db.scalars(select(Project).where(Project.tenant_id == tenant_id)).all())
@@ -495,6 +500,28 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
         for email, role in project_roles:
             ensure_membership(db, tenant_id, project.id, users[email].id, role)
     db.commit()
+
+
+def ensure_local_credential(db: Session, tenant_id: int, user_id: int, password: str) -> None:
+    credential = db.scalar(
+        select(AuthCredential).where(
+            AuthCredential.tenant_id == tenant_id,
+            AuthCredential.user_id == user_id,
+            AuthCredential.provider == "local",
+        )
+    )
+    if credential:
+        credential.is_active = True
+        return
+    db.add(
+        AuthCredential(
+            tenant_id=tenant_id,
+            user_id=user_id,
+            provider="local",
+            password_hash=hash_password(password),
+            is_active=True,
+        )
+    )
 
 
 def ensure_membership(db: Session, tenant_id: int, project_id: int, user_id: int, role: str) -> None:

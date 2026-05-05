@@ -29,6 +29,8 @@ services:
       CORS_ORIGINS: http://localhost:5173
       AUTO_CREATE_SCHEMA: "true"
       SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: dev-local-change-before-production
+      DEMO_USER_PASSWORD: demo123
     ports:
       - "8000:8000"
     depends_on:
@@ -46,6 +48,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       AUTO_CREATE_SCHEMA: "false"
       SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: dev-local-change-before-production
     depends_on:
       db:
         condition: service_healthy

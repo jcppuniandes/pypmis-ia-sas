@@ -86,6 +86,21 @@ class UserAccount(Base):
     __table_args__ = (UniqueConstraint("tenant_id", "email"),)
 
 
+class AuthCredential(Base):
+    __tablename__ = "auth_credentials"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    provider: Mapped[str] = mapped_column(String(40), default="local")
+    password_hash: Mapped[str] = mapped_column(String(220))
+    is_active: Mapped[bool] = mapped_column(default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "user_id", "provider"),)
+
+
 class ProjectMembership(Base):
     __tablename__ = "project_memberships"
 

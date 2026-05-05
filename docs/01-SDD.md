@@ -55,7 +55,7 @@ Ningun modulo debe operar como isla. La entidad integradora principal es `Contro
 
 ## 5. Tenancy y seguridad
 
-La plataforma es SaaS-ready y multi-tenant desde el inicio. Cada entidad operacional incluye `tenant_id` y `project_id` cuando aplica. La API espera el encabezado `X-Tenant-Id`; en una fase posterior se reemplaza por claims de identidad en JWT/OIDC.
+La plataforma es SaaS-ready y multi-tenant desde el inicio. Cada entidad operacional incluye `tenant_id` y `project_id` cuando aplica. La API usa autenticacion Bearer JWT con claims de `tenant_id`, usuario y expiracion; en una fase posterior puede federarse con OIDC/SSO corporativo.
 
 ## 5.1 Conformidad TCM del dato de entrada
 
