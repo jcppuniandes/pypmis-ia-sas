@@ -57,6 +57,18 @@ def test_projects_and_dashboard_accept_token() -> None:
     assert dashboard["project_kpi"]["bac"] >= 0
 
 
+def test_project_routes_reject_authenticated_non_members() -> None:
+    with TestClient(app) as client:
+        control_manager_headers = _auth_headers(client)
+        projects = client.get("/api/v1/projects", headers=control_manager_headers).json()
+        secondary_project = next(project for project in projects if project["code"] == "REF-TURN-002")
+
+        contract_manager_headers = _auth_headers_for(client, "laura.contracts@demo.local")
+        response = client.get(f"/api/v1/projects/{secondary_project['id']}/wbs", headers=contract_manager_headers)
+
+    assert response.status_code == 403
+
+
 def test_control_cycle_job_can_be_enqueued() -> None:
     with TestClient(app) as client:
         headers = _auth_headers(client)
@@ -72,10 +84,14 @@ def test_control_cycle_job_can_be_enqueued() -> None:
 
 
 def _login(client: TestClient):
+    return _login_as(client, "ana.control@demo.local")
+
+
+def _login_as(client: TestClient, email: str):
     return client.post(
         "/api/v1/auth/login",
         json={
-            "email": "ana.control@demo.local",
+            "email": email,
             "password": "demo123",
             "tenant_slug": "demo-energy",
         },
@@ -83,6 +99,10 @@ def _login(client: TestClient):
 
 
 def _auth_headers(client: TestClient) -> dict[str, str]:
-    response = _login(client)
+    return _auth_headers_for(client, "ana.control@demo.local")
+
+
+def _auth_headers_for(client: TestClient, email: str) -> dict[str, str]:
+    response = _login_as(client, email)
     assert response.status_code == 200
     return {"Authorization": f"Bearer {response.json()['access_token']}"}

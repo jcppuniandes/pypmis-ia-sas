@@ -467,8 +467,9 @@ def list_wbs(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[WBS]:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(WBS)
@@ -483,8 +484,9 @@ def list_activities(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[Activity]:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(Activity)
@@ -500,7 +502,9 @@ def create_activity(
     payload: ActivityCreate,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> Activity:
+    _require_membership(db, tenant_id, project_id, user_id)
     _require_control_ready(db, tenant_id, project_id)
     account = _require_control_account(db, tenant_id, project_id, payload.control_account_id)
     activity = Activity(
@@ -529,8 +533,9 @@ def list_control_accounts(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[ControlAccount]:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(ControlAccount)
@@ -546,7 +551,9 @@ def create_control_account(
     payload: ControlAccountCreate,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> ControlAccount:
+    _require_membership(db, tenant_id, project_id, user_id)
     _require_control_ready(db, tenant_id, project_id)
     wbs_id = payload.wbs_id or _default_wbs(db, tenant_id, project_id).id
     wbs = db.scalar(select(WBS).where(WBS.id == wbs_id, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
@@ -576,8 +583,9 @@ def update_control_account(
     payload: ControlAccountUpdate,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> ControlAccount:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     account = _require_control_account(db, tenant_id, project_id, account_id)
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(account, field, value)
@@ -659,8 +667,9 @@ def list_progress_records(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[ProgressRecord]:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(ProgressRecord)
@@ -709,8 +718,9 @@ def list_cost_records(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[CostRecord]:
-    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(CostRecord)
@@ -1419,7 +1429,9 @@ def list_schedule_imports(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[ScheduleImport]:
+    _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
             select(ScheduleImport)
@@ -1434,7 +1446,9 @@ def list_schedule_activities(
     project_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
 ) -> list[ScheduleActivityMap]:
+    _require_membership(db, tenant_id, project_id, user_id)
     latest_import = _latest_schedule_import(db, tenant_id, project_id)
     if not latest_import:
         return []
@@ -1526,18 +1540,24 @@ async def import_schedule(
 
 
 @router.post("/projects/{project_id}/control-cycle", response_model=KPIOut)
-def run_control_cycle(project_id: int, db: Session = Depends(get_db), tenant_id: int = Depends(get_tenant_id)) -> KPI:
-    project = db.scalar(select(Project).where(Project.id == project_id, Project.tenant_id == tenant_id))
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+def run_control_cycle(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> KPI:
+    _require_membership(db, tenant_id, project_id, user_id)
     return ControlCoreService(db).run_project_cycle(tenant_id, project_id)
 
 
 @router.post("/projects/{project_id}/control-cycle/jobs")
-def enqueue_control_cycle(project_id: int, db: Session = Depends(get_db), tenant_id: int = Depends(get_tenant_id)) -> dict[str, str]:
-    project = db.scalar(select(Project).where(Project.id == project_id, Project.tenant_id == tenant_id))
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+def enqueue_control_cycle(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> dict[str, str]:
+    _require_membership(db, tenant_id, project_id, user_id)
     task = run_control_cycle_task.apply_async(args=[tenant_id, project_id])
     return {"task_id": task.id, "status": "queued", "queue": "control-core"}
 

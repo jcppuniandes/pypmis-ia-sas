@@ -1,6 +1,6 @@
 # P&Pmis Ai SaaS
 
-Plataforma web de Project Controls basada en AACE TCM para operar proyectos de Oil & Gas e infraestructura como un sistema integrado de control.
+Plataforma web colaborativa multiusuario de Project Controls basada en AACE TCM para operar proyectos de Oil & Gas e infraestructura como un sistema integrado de control.
 
 Entrada maestra obligatoria:
 
@@ -33,7 +33,16 @@ Cronograma validado -> Path of Construction -> CWA/CWP/EWP/PWP/IWP -> Constraint
 - DB: PostgreSQL
 - Async: Redis + Celery
 - Infra: Docker Compose
-- Arquitectura: API-first, multi-tenant, decision/execution separation
+- Arquitectura: API-first, multi-tenant, multiusuario, decision/execution separation
+
+## Colaboracion multiusuario
+
+La plataforma debe operar en linea para equipos de proyecto con usuarios concurrentes, roles por proyecto y trazabilidad de acciones.
+
+- El acceso a datos de proyecto se controla por `ProjectMembership`, no solo por tenant.
+- Los roles definen capacidades operativas: captura de avance, captura de costo, aprobacion de workflow, gestion contractual y configuracion.
+- Las acciones transaccionales relevantes generan `AuditLog` para trazabilidad colaborativa.
+- El siguiente bloque productivo debe sumar concurrencia optimista, notificaciones y actualizaciones en tiempo real para workflows, alertas y ball-in-court.
 
 ## Ejecutar
 

@@ -21,7 +21,7 @@ La app esta en estado de demo funcional avanzada, no lista para produccion empre
 | Fase 3 | Control accounts automaticos, WBS/CBS/Activity, cost loading | MVP automatico | 58% |
 | Fase 4 | EVM historico, curvas reales, productividad, forecast | MVP historico | 62% |
 | Fase 5 | Contract & claims, notices, causalidad, impacto, evidencia | MVP metodologico | 55% |
-| Fase 6 | SaaS empresarial, auth, RBAC, tenants, auditoria, hardening | SaaS-ready tecnico | 30% |
+| Fase 6 | SaaS empresarial, colaboracion multiusuario, auth, RBAC, tenants, auditoria, hardening | SaaS-ready tecnico | 34% |
 
 ## Avance implementado
 
@@ -47,12 +47,12 @@ La app esta en estado de demo funcional avanzada, no lista para produccion empre
 - Fase 3: falta reglas avanzadas de agrupacion, revision masiva asistida, split de actividades entre cuentas de control, CBS contractual detallado y conciliacion con ERP.
 - Fase 4: falta curva de caja real, escenarios configurables por usuario, tendencia por disciplina, integracion forecast con lookahead y versionado de proyecciones.
 - Fase 5: falta modulo formal de notices, matriz contractual completa, analisis causa-efecto automatizado, measured mile/productividad avanzada y paquetes forenses.
-- Fase 6: autenticacion JWT local, base Alembic inicial, readiness DB/Redis, request id/logging y smoke tests backend implementados; faltan OIDC/SSO, API tokens, observabilidad avanzada, hardening completo y pruebas automatizadas amplias.
+- Fase 6: autenticacion JWT local, base Alembic inicial, readiness DB/Redis, request id/logging, smoke tests backend y control de acceso por membresia de proyecto implementados; faltan OIDC/SSO, API tokens, concurrencia optimista, realtime, notificaciones, observabilidad avanzada, hardening completo y pruebas automatizadas amplias.
 
 ## Siguiente paso recomendado
 
-Prioridad inmediata: Fase 1 + Fase 2.
+Prioridad inmediata: Fase 6 colaborativa + Fase 1.
 
-1. Fortalecer ingestion de cronograma con validaciones DCMA/AACE y log de errores.
-2. Fortalecer Fase 1 con validaciones DCMA/AACE y log de errores de ingestion.
-3. Continuar hardening de Fase 6: OIDC/SSO, API tokens, metricas, backups, auditoria y cobertura automatizada ampliada.
+1. Implementar columna `version`/`updated_at` y control de concurrencia optimista en registros colaborativos.
+2. Agregar canal realtime para workflows, alertas, equipo de proyecto y ball-in-court.
+3. Fortalecer ingestion de cronograma con validaciones DCMA/AACE y log de errores consumible por usuario.
