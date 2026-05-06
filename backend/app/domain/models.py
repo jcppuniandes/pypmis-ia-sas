@@ -767,11 +767,105 @@ class Document(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    document_number: Mapped[str] = mapped_column(String(120), default="", index=True)
+    revision: Mapped[str] = mapped_column(String(40), default="A")
+    revision_date: Mapped[date | None] = mapped_column(Date)
     linked_entity_type: Mapped[str] = mapped_column(String(80))
     linked_entity_id: Mapped[int] = mapped_column(Integer)
     title: Mapped[str] = mapped_column(String(220))
     doc_type: Mapped[str] = mapped_column(String(80))
+    discipline: Mapped[str] = mapped_column(String(80), default="")
+    organization: Mapped[str] = mapped_column(String(120), default="")
+    status: Mapped[str] = mapped_column(String(40), default="current")
+    review_status: Mapped[str] = mapped_column(String(40), default="not_started")
+    confidentiality: Mapped[str] = mapped_column(String(40), default="project")
+    file_name: Mapped[str] = mapped_column(String(260), default="")
     uri: Mapped[str] = mapped_column(String(500))
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class DocumentTransmittal(Base):
+    __tablename__ = "document_transmittals"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    transmittal_no: Mapped[str] = mapped_column(String(120), index=True)
+    subject: Mapped[str] = mapped_column(String(260))
+    purpose: Mapped[str] = mapped_column(String(80), default="for_review")
+    recipient_org: Mapped[str] = mapped_column(String(160), default="")
+    recipient_contact: Mapped[str] = mapped_column(String(160), default="")
+    status: Mapped[str] = mapped_column(String(40), default="sent")
+    sent_on: Mapped[date | None] = mapped_column(Date)
+    due_date: Mapped[date | None] = mapped_column(Date)
+    created_by: Mapped[str] = mapped_column(String(160), default="system")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "transmittal_no"),)
+
+
+class DocumentTransmittalItem(Base):
+    __tablename__ = "document_transmittal_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    transmittal_id: Mapped[int] = mapped_column(ForeignKey("document_transmittals.id"), index=True)
+    document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"), index=True)
+    document_number: Mapped[str] = mapped_column(String(120), default="")
+    revision: Mapped[str] = mapped_column(String(40), default="")
+    action_required: Mapped[str] = mapped_column(String(80), default="review")
+    response_status: Mapped[str] = mapped_column(String(40), default="outstanding")
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "transmittal_id", "document_id"),)
+
+
+class DocumentReview(Base):
+    __tablename__ = "document_reviews"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"), index=True)
+    reviewer_role: Mapped[str] = mapped_column(String(120), default="Document Control")
+    review_status: Mapped[str] = mapped_column(String(40), default="outstanding")
+    comments: Mapped[str] = mapped_column(Text, default="")
+    due_date: Mapped[date | None] = mapped_column(Date)
+    closed_on: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class ProjectMail(Base):
+    __tablename__ = "project_mail"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    mail_no: Mapped[str] = mapped_column(String(120), index=True)
+    mail_type: Mapped[str] = mapped_column(String(80), default="letter")
+    subject: Mapped[str] = mapped_column(String(260))
+    from_role: Mapped[str] = mapped_column(String(120), default="")
+    to_role: Mapped[str] = mapped_column(String(120), default="")
+    status: Mapped[str] = mapped_column(String(40), default="outstanding")
+    response_required: Mapped[bool] = mapped_column(default=True)
+    sent_on: Mapped[date | None] = mapped_column(Date)
+    due_date: Mapped[date | None] = mapped_column(Date)
+    closed_on: Mapped[date | None] = mapped_column(Date)
+    body: Mapped[str] = mapped_column(Text, default="")
+    linked_entity_type: Mapped[str] = mapped_column(String(80), default="")
+    linked_entity_id: Mapped[int | None] = mapped_column(Integer)
+    document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id"), index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "mail_no"),)
 
 
 class AuditLog(Base):

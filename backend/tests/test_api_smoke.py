@@ -59,6 +59,7 @@ def test_projects_and_dashboard_accept_token() -> None:
     assert dashboard["project_kpi"]["bac"] >= 0
     assert dashboard["cost_manager_summary"]["total_bac"] >= 0
     assert len(dashboard["cost_sheet"]) >= 1
+    assert dashboard["document_control_summary"]["total_documents"] >= 1
 
 
 def test_pilot_readiness_scores_project_phases() -> None:
@@ -157,6 +158,83 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
     assert cash_flow_response.status_code == 200
     assert summary_response.status_code == 200
     assert summary_response.json()["total_funding"] >= funding_update_response.json()["amount"]
+
+
+def test_document_control_register_transmittal_mail_and_review() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        suffix = uuid4().hex[:8]
+
+        document_response = client.post(
+            f"/api/v1/projects/{project_id}/documents",
+            headers=headers,
+            json={
+                "document_number": f"DOC-TEST-{suffix}",
+                "revision": "A",
+                "linked_entity_type": "ControlAccount",
+                "linked_entity_id": 1,
+                "title": "Pilot controlled test document",
+                "doc_type": "Drawing",
+                "discipline": "Project Controls",
+                "organization": "Pilot Team",
+                "status": "current",
+                "review_status": "not_started",
+                "confidentiality": "project",
+                "file_name": f"DOC-TEST-{suffix}.pdf",
+                "uri": f"edms://pilot/{suffix}",
+            },
+        )
+        document = document_response.json()
+        update_response = client.patch(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}",
+            headers=headers,
+            json={"review_status": "in_review", "expected_version": document["version"]},
+        )
+        stale_response = client.patch(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}",
+            headers=headers,
+            json={"review_status": "approved", "expected_version": document["version"]},
+        )
+        review_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/reviews",
+            headers=headers,
+            json={"reviewer_role": "Project Controls", "review_status": "outstanding", "comments": "Pilot review"},
+        )
+        transmittal_response = client.post(
+            f"/api/v1/projects/{project_id}/document-transmittals",
+            headers=headers,
+            json={
+                "transmittal_no": f"TR-TEST-{suffix}",
+                "subject": "Pilot controlled document transmittal",
+                "purpose": "for_review",
+                "recipient_org": "Owner",
+                "recipient_contact": "Document Control",
+                "document_ids": [document["id"]],
+            },
+        )
+        mail_response = client.post(
+            f"/api/v1/projects/{project_id}/project-mail",
+            headers=headers,
+            json={
+                "mail_no": f"MAIL-TEST-{suffix}",
+                "mail_type": "review_comment",
+                "subject": "Please review pilot document",
+                "to_role": "Project Controls",
+                "document_id": document["id"],
+                "body": "Controlled review request.",
+            },
+        )
+        dashboard_response = client.get(f"/api/v1/projects/{project_id}/dashboard", headers=headers)
+
+    assert document_response.status_code == 200
+    assert update_response.status_code == 200
+    assert update_response.json()["version"] == document["version"] + 1
+    assert stale_response.status_code == 409
+    assert review_response.status_code == 200
+    assert transmittal_response.status_code == 200
+    assert mail_response.status_code == 200
+    assert dashboard_response.json()["document_control_summary"]["transmittals_sent"] >= 1
 
 
 def test_project_routes_reject_authenticated_non_members() -> None:

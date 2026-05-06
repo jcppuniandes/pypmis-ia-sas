@@ -857,19 +857,190 @@ class DocumentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    document_number: str
+    revision: str
+    revision_date: date | None
     linked_entity_type: str
     linked_entity_id: int
     title: str
     doc_type: str
+    discipline: str
+    organization: str
+    status: str
+    review_status: str
+    confidentiality: str
+    file_name: str
     uri: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
 
 
 class DocumentCreate(BaseModel):
+    document_number: str = ""
+    revision: str = "A"
+    revision_date: date | None = None
     linked_entity_type: str
     linked_entity_id: int
     title: str
     doc_type: str
+    discipline: str = ""
+    organization: str = ""
+    status: str = "current"
+    review_status: str = "not_started"
+    confidentiality: str = "project"
+    file_name: str = ""
     uri: str
+
+
+class DocumentUpdate(BaseModel):
+    document_number: str | None = None
+    revision: str | None = None
+    revision_date: date | None = None
+    title: str | None = None
+    doc_type: str | None = None
+    discipline: str | None = None
+    organization: str | None = None
+    status: str | None = None
+    review_status: str | None = None
+    confidentiality: str | None = None
+    file_name: str | None = None
+    uri: str | None = None
+    expected_version: int | None = None
+
+
+class DocumentTransmittalItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    transmittal_id: int
+    document_id: int
+    document_number: str
+    revision: str
+    action_required: str
+    response_status: str
+
+
+class DocumentTransmittalOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    transmittal_no: str
+    subject: str
+    purpose: str
+    recipient_org: str
+    recipient_contact: str
+    status: str
+    sent_on: date | None
+    due_date: date | None
+    created_by: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class DocumentTransmittalCreate(BaseModel):
+    transmittal_no: str = ""
+    subject: str
+    purpose: str = "for_review"
+    recipient_org: str = ""
+    recipient_contact: str = ""
+    status: str = "sent"
+    sent_on: date | None = None
+    due_date: date | None = None
+    document_ids: list[int] = Field(default_factory=list)
+    action_required: str = "review"
+
+
+class DocumentReviewOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    document_id: int
+    reviewer_role: str
+    review_status: str
+    comments: str
+    due_date: date | None
+    closed_on: date | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class DocumentReviewCreate(BaseModel):
+    reviewer_role: str = "Document Control"
+    review_status: str = "outstanding"
+    comments: str = ""
+    due_date: date | None = None
+
+
+class DocumentReviewUpdate(BaseModel):
+    reviewer_role: str | None = None
+    review_status: str | None = None
+    comments: str | None = None
+    due_date: date | None = None
+    closed_on: date | None = None
+    expected_version: int | None = None
+
+
+class ProjectMailOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    mail_no: str
+    mail_type: str
+    subject: str
+    from_role: str
+    to_role: str
+    status: str
+    response_required: bool
+    sent_on: date | None
+    due_date: date | None
+    closed_on: date | None
+    body: str
+    linked_entity_type: str
+    linked_entity_id: int | None
+    document_id: int | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ProjectMailCreate(BaseModel):
+    mail_no: str = ""
+    mail_type: str = "letter"
+    subject: str
+    from_role: str = ""
+    to_role: str = ""
+    status: str = "outstanding"
+    response_required: bool = True
+    sent_on: date | None = None
+    due_date: date | None = None
+    body: str = ""
+    linked_entity_type: str = ""
+    linked_entity_id: int | None = None
+    document_id: int | None = None
+
+
+class ProjectMailUpdate(BaseModel):
+    status: str | None = None
+    response_required: bool | None = None
+    due_date: date | None = None
+    closed_on: date | None = None
+    body: str | None = None
+    expected_version: int | None = None
+
+
+class DocumentControlSummary(BaseModel):
+    total_documents: int
+    current_documents: int
+    superseded_documents: int
+    outstanding_reviews: int
+    overdue_reviews: int
+    transmittals_sent: int
+    open_mail: int
+    overdue_mail: int
+    controlled_document_score: float
 
 
 class WorkPackageOut(BaseModel):
@@ -1030,6 +1201,11 @@ class DashboardOut(BaseModel):
     contracts: list[ContractOut]
     communications: list[ContractCommunicationOut]
     documents: list[DocumentOut]
+    document_transmittals: list[DocumentTransmittalOut]
+    document_transmittal_items: list[DocumentTransmittalItemOut]
+    document_reviews: list[DocumentReviewOut]
+    project_mail: list[ProjectMailOut]
+    document_control_summary: DocumentControlSummary
     work_packages: list[WorkPackageOut]
     work_package_constraints: list[WorkPackageConstraintOut]
     awp_summary: AWPReadinessSummary

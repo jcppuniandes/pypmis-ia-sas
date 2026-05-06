@@ -13,19 +13,20 @@ Resultado actual validado:
 - Smoke test: OK.
 - API, frontend, worker, PostgreSQL y Redis: arriba.
 - Cost Manager: OK.
+- Document Control tipo Aconex: registro documental, revisiones, transmittals y project mail.
 - Plataforma multiusuario colaborativa: funcional para piloto.
 
 Lectura honesta para produccion:
 
-- Preparacion para produccion empresarial: 46%.
-- Preparacion para beta controlada en staging: 62%.
+- Preparacion para produccion empresarial: 58%.
+- Preparacion para beta controlada en staging: 72%.
 - Preparacion para piloto operativo: 94.2%.
 
 La diferencia es intencional: una app puede estar lista para piloto y no estar lista para produccion empresarial. El piloto valida valor funcional, flujo, datos, roles y adopcion. Produccion exige seguridad, disponibilidad, backups, integraciones reales, observabilidad, pruebas amplias, hardening, soporte y gobierno operativo.
 
 ## Objetivo Del Piloto
 
-Validar que P&Pmis Ai SaaS puede operar como plataforma colaborativa en linea de Project Controls para un equipo real o semi-real, usando un proyecto representativo, con cronograma, cuentas de control, avance, costos, funding, cash flow, EVM, AWP, contratos, claims, documentos, workflows y auditoria.
+Validar que P&Pmis Ai SaaS puede operar como plataforma colaborativa en linea de Project Controls para un equipo real o semi-real, usando un proyecto representativo, con cronograma, cuentas de control, avance, costos, funding, cash flow, EVM, AWP, contratos, claims, control documental tipo Aconex, workflows y auditoria.
 
 El piloto debe responder estas preguntas:
 
@@ -58,6 +59,10 @@ El piloto debe responder estas preguntas:
 - AWP Workface Readiness.
 - Cambios.
 - Contratos, notices y claims.
+- Registro documental controlado.
+- Transmittals.
+- Project mail / correspondencia.
+- Revisiones documentales.
 - Documentos/evidencia.
 - Workflows y audit log.
 - Prueba de concurrencia multiusuario.
@@ -73,7 +78,7 @@ El piloto debe responder estas preguntas:
 - Parser XER industrial completo.
 - Observabilidad APM completa.
 - Notificaciones realtime.
-- Gobierno documental avanzado.
+- Gobierno documental completo enterprise fuera del piloto, pero el MVP ya opera registro, revisiones, transmittals y project mail.
 
 ## Equipo Minimo Del Piloto
 
@@ -198,6 +203,7 @@ Alinear alcance, usuarios, criterios de exito, duracion y reglas del piloto.
 - Se genera dashboard EVM.
 - Se registra al menos una decision por workflow.
 - Se valida un paquete AWP.
+- Se opera control documental tipo Aconex: documento, revision, transmittal, review y project mail.
 - Se vincula evidencia documental.
 - Readiness final mayor o igual a 75%.
 
@@ -693,28 +699,82 @@ Validar trazabilidad contractual y soporte forense.
 - Gaps de evidencia visibles.
 - Impactos cuantificados.
 
-## Fase 13. Vincular Evidencia Documental
+## Fase 13. Operar Control Documental Tipo Aconex
 
 ### Responsable
 
-Cada rol responsable de su evidencia.
+Document Controller con apoyo de Control Manager, Planner, Contract Manager y Project Controls.
 
 ### Objetivo
 
-Evitar que las decisiones queden sin soporte documental.
+Operar un flujo de control documental mas cercano a produccion: registro documental, revision, transmittal, project mail, trazabilidad de revision y evidencia vinculada.
 
-### Paso a paso
+### 13.1 Registrar documento controlado
 
 1. Ir a `BP Entry Forms`.
-2. Ubicar formulario `Documents`.
-3. Seleccionar entidad vinculada.
-4. Seleccionar registro.
-5. Registrar titulo.
-6. Registrar tipo documental.
-7. Registrar URI o referencia.
-8. Guardar.
-9. Ir a `Documents`.
-10. Confirmar documento visible.
+2. Ubicar formulario `Document Register`.
+3. Registrar Document No. o permitir autonumeracion.
+4. Registrar revision.
+5. Vincular entidad: ControlAccount, WorkPackage, ChangeRequest, Claim, ContractNotice o Contract.
+6. Registrar titulo.
+7. Seleccionar tipo documental.
+8. Registrar disciplina.
+9. Registrar organizacion emisora.
+10. Registrar estado: current, issued, superseded o void.
+11. Registrar review status.
+12. Registrar file name.
+13. Registrar URI o referencia EDMS.
+14. Guardar.
+
+### 13.2 Emitir transmittal
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Document Transmittal`.
+3. Seleccionar documento y revision.
+4. Registrar Transmittal No. o permitir autonumeracion.
+5. Seleccionar proposito: for_review, for_approval, for_information o for_construction.
+6. Registrar asunto.
+7. Registrar organizacion receptora.
+8. Registrar fecha limite de respuesta.
+9. Emitir transmittal.
+10. Confirmar que aparece en `Document Control`.
+
+### 13.3 Crear project mail
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Project Mail`.
+3. Registrar Mail No. o permitir autonumeracion.
+4. Seleccionar tipo: document_review, RFI, letter o site_instruction.
+5. Registrar asunto.
+6. Definir rol destinatario.
+7. Definir fecha limite.
+8. Vincular documento.
+9. Escribir cuerpo.
+10. Enviar project mail.
+
+### 13.4 Crear revision documental
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Document Review`.
+3. Seleccionar documento.
+4. Definir rol revisor.
+5. Definir estado: outstanding, in_review, approved o revise_and_resubmit.
+6. Definir fecha limite.
+7. Registrar comentarios.
+8. Crear paso de revision.
+
+### 13.5 Revisar modulo Document Control
+
+1. Ir a `Document Control`.
+2. Revisar Controlled Score.
+3. Revisar documentos current vs total.
+4. Revisar reviews outstanding y overdue.
+5. Revisar transmittals emitidos.
+6. Revisar project mail abierto.
+7. Revisar Document Register.
+8. Revisar transmittals.
+9. Revisar project mail.
+10. Revisar review steps.
 
 ### Entidades recomendadas
 
@@ -727,8 +787,12 @@ Evitar que las decisiones queden sin soporte documental.
 
 ### Resultado esperado
 
-- Evidencia vinculada.
-- Decision o claim con soporte.
+- Documento controlado con numero y revision.
+- Transmittal emitido.
+- Project mail trazado.
+- Revision documental creada.
+- Evidence package vinculado a decisiones, claims o contratos.
+- Document Control Score mayor a 80%.
 
 ## Fase 14. Reunion Semanal Del Piloto
 
@@ -831,7 +895,8 @@ Decidir si el producto pasa a siguiente ola, beta controlada o ajustes previos.
 - Dashboard revisado.
 - AWP revisado.
 - Contracts/claims revisados.
-- Documentos vinculados.
+- Document Control operado: register, transmittal, mail y reviews.
+- Documentos/evidencia vinculados.
 - Workflows usados.
 - Audit log revisado.
 
@@ -849,28 +914,28 @@ Decidir si el producto pasa a siguiente ola, beta controlada o ajustes previos.
 
 | Nivel | Porcentaje | Interpretacion |
 | --- | --- | --- |
-| Piloto operativo controlado | 94.2% | Listo para ejecutar piloto con proyecto demo o dataset controlado. |
-| Beta controlada en staging | 62% | Viable si se controla acceso, datos, soporte y expectativas. |
-| Produccion empresarial | 46% | Aun no debe operar como sistema productivo critico. |
+| Piloto operativo cercano a pre-produccion | 94.2% | Listo para ejecutar piloto con flujo multiusuario, Cost Manager y Document Control tipo Aconex. |
+| Beta controlada en staging | 72% | Viable con usuarios reales limitados, soporte cercano, backups basicos y ambiente staging. |
+| Produccion empresarial | 58% | Mas cerca de produccion, pero aun faltan hardening, SSO, observabilidad, CI/CD, HA e integraciones reales. |
 
-### Por que produccion es 46%
+### Por que produccion es 58%
 
 La plataforma ya tiene mucho valor funcional, pero produccion empresarial requiere capacidades no funcionales y de gobierno que todavia estan incompletas.
 
 | Dimension | Score | Estado |
 | --- | --- | --- |
-| Producto Project Controls funcional | 72% | Buen MVP avanzado para piloto. |
-| Multiusuario, roles y auditoria | 65% | Funcional, falta realtime y permisos mas finos. |
+| Producto Project Controls funcional | 76% | MVP avanzado con Schedule, EVM, Cost Manager, AWP, claims y Document Control. |
+| Multiusuario, roles y auditoria | 70% | Funcional, falta realtime y permisos mas finos. |
 | Seguridad e identidad | 42% | JWT local; faltan SSO/OIDC, MFA, rotacion de secretos y politicas enterprise. |
-| Datos, migraciones y modelo | 58% | Alembic y Postgres listos; falta estrategia completa de backups, retencion y gobierno de datos. |
+| Datos, migraciones y modelo | 65% | Alembic, Postgres y modelo mas completo; falta estrategia completa de backups, retencion y gobierno de datos. |
 | Operacion DevOps | 45% | Docker local listo; falta CI/CD productivo, ambientes, rollback y despliegue controlado. |
 | Observabilidad y soporte | 35% | Health/readiness y logs basicos; falta APM, alertas, trazas, SLO y runbooks de incidente. |
-| Integraciones | 25% | API-first; falta ERP, P6, SSO, documental y correo/notificaciones. |
+| Integraciones | 32% | API-first; falta ERP, P6, SSO, documental corporativo y correo/notificaciones reales. |
 | Calidad y pruebas | 45% | Smoke y tests base; falta cobertura amplia, pruebas E2E, carga, seguridad y regresion. |
 | Escalabilidad y disponibilidad | 30% | Arquitectura preparada; falta HA, balanceo, backups restaurables y pruebas de carga. |
-| Compliance y gestion documental | 42% | Auditoria y documentos MVP; falta versionado documental, retencion, transmittals y controles finos. |
+| Compliance y gestion documental | 70% | Registro documental, revisiones, transmittals y project mail implementados; faltan retencion legal, permisos finos y repositorio corporativo. |
 
-Promedio ponderado de produccion empresarial: 46%.
+Promedio ponderado de produccion empresarial: 58%.
 
 ### Lectura ejecutiva
 
@@ -905,7 +970,7 @@ Promedio ponderado de produccion empresarial: 46%.
 
 - ERP para costos reales y commitments.
 - Primavera P6 o MS Project industrial.
-- Sistema documental corporativo.
+- Sincronizacion con sistema documental corporativo si el cliente ya usa Aconex, SharePoint u otro EDMS.
 - Correo/notificaciones.
 - Directorio corporativo.
 
@@ -924,7 +989,7 @@ Promedio ponderado de produccion empresarial: 46%.
 - Parser XER/XML robusto.
 - Versionado de forecasts.
 - Versionado de cash flow.
-- Document Manager avanzado.
+- Document Manager avanzado: paquetes masivos, distribucion, retencion legal, permisos por carpeta y adjuntos reales.
 - Notificaciones realtime.
 - Mejoras de BP Designer.
 - Reportes ejecutivos exportables.
@@ -946,7 +1011,7 @@ Entregables:
 - Pruebas E2E minimas.
 - Correcciones de usabilidad.
 
-Meta: subir de 46% a 62%-68%.
+Meta: subir de 58% a 72%-78%.
 
 ### Ola 2. Hardening productivo
 

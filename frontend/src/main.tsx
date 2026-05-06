@@ -524,11 +524,95 @@ type ContractCommunication = {
 
 type DocumentItem = {
   id: number;
+  document_number: string;
+  revision: string;
+  revision_date: string | null;
   linked_entity_type: string;
   linked_entity_id: number;
   title: string;
   doc_type: string;
+  discipline: string;
+  organization: string;
+  status: string;
+  review_status: string;
+  confidentiality: string;
+  file_name: string;
   uri: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type DocumentTransmittal = {
+  id: number;
+  transmittal_no: string;
+  subject: string;
+  purpose: string;
+  recipient_org: string;
+  recipient_contact: string;
+  status: string;
+  sent_on: string | null;
+  due_date: string | null;
+  created_by: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type DocumentTransmittalItem = {
+  id: number;
+  transmittal_id: number;
+  document_id: number;
+  document_number: string;
+  revision: string;
+  action_required: string;
+  response_status: string;
+};
+
+type DocumentReview = {
+  id: number;
+  document_id: number;
+  reviewer_role: string;
+  review_status: string;
+  comments: string;
+  due_date: string | null;
+  closed_on: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type ProjectMail = {
+  id: number;
+  mail_no: string;
+  mail_type: string;
+  subject: string;
+  from_role: string;
+  to_role: string;
+  status: string;
+  response_required: boolean;
+  sent_on: string | null;
+  due_date: string | null;
+  closed_on: string | null;
+  body: string;
+  linked_entity_type: string;
+  linked_entity_id: number | null;
+  document_id: number | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type DocumentControlSummary = {
+  total_documents: number;
+  current_documents: number;
+  superseded_documents: number;
+  outstanding_reviews: number;
+  overdue_reviews: number;
+  transmittals_sent: number;
+  open_mail: number;
+  overdue_mail: number;
+  controlled_document_score: number;
 };
 
 type WorkPackage = {
@@ -637,6 +721,11 @@ type Dashboard = {
   contracts: Contract[];
   communications: ContractCommunication[];
   documents: DocumentItem[];
+  document_transmittals: DocumentTransmittal[];
+  document_transmittal_items: DocumentTransmittalItem[];
+  document_reviews: DocumentReview[];
+  project_mail: ProjectMail[];
+  document_control_summary: DocumentControlSummary;
   work_packages: WorkPackage[];
   work_package_constraints: WorkPackageConstraint[];
   awp_summary: AWPReadinessSummary;
@@ -872,11 +961,45 @@ function App() {
     status: "draft"
   });
   const [documentDraft, setDocumentDraft] = React.useState({
+    document_number: "",
+    revision: "A",
+    revision_date: defaultControlDate,
     linked_entity_type: "ControlAccount",
     linked_entity_id: "",
     title: "",
     doc_type: "Field Evidence",
+    discipline: "Project Controls",
+    organization: "Pilot Team",
+    status: "current",
+    review_status: "not_started",
+    confidentiality: "project",
+    file_name: "",
     uri: ""
+  });
+  const [transmittalDraft, setTransmittalDraft] = React.useState({
+    transmittal_no: "",
+    subject: "",
+    purpose: "for_review",
+    recipient_org: "Owner Project Controls",
+    recipient_contact: "Document Control",
+    due_date: defaultControlDate,
+    document_id: ""
+  });
+  const [mailDraft, setMailDraft] = React.useState({
+    mail_no: "",
+    mail_type: "document_review",
+    subject: "",
+    to_role: "Project Controls",
+    due_date: defaultControlDate,
+    document_id: "",
+    body: ""
+  });
+  const [reviewDraft, setReviewDraft] = React.useState({
+    document_id: "",
+    reviewer_role: "Project Controls",
+    review_status: "outstanding",
+    due_date: defaultControlDate,
+    comments: ""
   });
   const [awpDraft, setAwpDraft] = React.useState({
     control_account_id: "",
@@ -1026,6 +1149,11 @@ function App() {
       const linkedValueIsAvailable = current.linked_entity_type !== "ControlAccount" || accountIds.has(current.linked_entity_id);
       return linkedValueIsAvailable ? current : { ...current, linked_entity_type: "ControlAccount", linked_entity_id: firstAccountId };
     });
+    const documentIds = new Set(dashboard.documents.map((document) => String(document.id)));
+    const firstDocumentId = String(dashboard.documents[0]?.id ?? "");
+    setTransmittalDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
+    setMailDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
+    setReviewDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
   }, [dashboard]);
 
   React.useEffect(() => {
@@ -1658,18 +1786,126 @@ function App() {
         headers: apiHeaders(true),
         body: JSON.stringify({
           ...documentDraft,
-          linked_entity_id: Number(documentDraft.linked_entity_id || 0)
+          linked_entity_id: Number(documentDraft.linked_entity_id || 0),
+          revision_date: documentDraft.revision_date || null
         })
       });
       if (!response.ok) {
         const detail = await response.text();
-        throw new Error(detail || "Document link failed");
+        throw new Error(detail || "Document registration failed");
       }
-      setDocumentDraft((current) => ({ ...current, title: "", uri: "" }));
-      setUploadMessage("Document linked to the project control record.");
+      setDocumentDraft((current) => ({ ...current, document_number: "", title: "", file_name: "", uri: "" }));
+      setUploadMessage("Controlled document registered in the project document register.");
       await load();
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "Document link failed");
+      setUploadError(error instanceof Error ? error.message : "Document registration failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleTransmittalSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard || !transmittalDraft.document_id) {
+      return;
+    }
+    setCaptureAction("document-transmittal");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/document-transmittals`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          transmittal_no: transmittalDraft.transmittal_no,
+          subject: transmittalDraft.subject,
+          purpose: transmittalDraft.purpose,
+          recipient_org: transmittalDraft.recipient_org,
+          recipient_contact: transmittalDraft.recipient_contact,
+          due_date: transmittalDraft.due_date || null,
+          document_ids: [Number(transmittalDraft.document_id)],
+          action_required: "review"
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Transmittal failed");
+      }
+      setTransmittalDraft((current) => ({ ...current, transmittal_no: "", subject: "" }));
+      setUploadMessage("Document transmittal issued with controlled revision tracking.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Transmittal failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleProjectMailSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("project-mail");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/project-mail`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          mail_no: mailDraft.mail_no,
+          mail_type: mailDraft.mail_type,
+          subject: mailDraft.subject,
+          to_role: mailDraft.to_role,
+          due_date: mailDraft.due_date || null,
+          document_id: mailDraft.document_id ? Number(mailDraft.document_id) : null,
+          body: mailDraft.body,
+          response_required: true
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Project mail failed");
+      }
+      setMailDraft((current) => ({ ...current, mail_no: "", subject: "", body: "" }));
+      setUploadMessage("Project mail issued and tracked for response.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Project mail failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleDocumentReviewSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard || !reviewDraft.document_id) {
+      return;
+    }
+    setCaptureAction("document-review");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/documents/${reviewDraft.document_id}/reviews`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          reviewer_role: reviewDraft.reviewer_role,
+          review_status: reviewDraft.review_status,
+          due_date: reviewDraft.due_date || null,
+          comments: reviewDraft.comments
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Document review failed");
+      }
+      setReviewDraft((current) => ({ ...current, comments: "" }));
+      setUploadMessage("Document review step created.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Document review failed");
     } finally {
       setCaptureAction(null);
     }
@@ -1892,7 +2128,7 @@ function App() {
     { key: "changes", label: "Changes", count: dashboard.changes.length },
     { key: "claims", label: "Claims", count: dashboard.claims.length },
     { key: "contracts", label: "Contracts", count: dashboard.contracts.length },
-    { key: "documents", label: "Documents", count: dashboard.documents.length },
+    { key: "documents", label: "Document Control", count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%" },
     { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
     { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
     { key: "admin", label: "Projects / Users / Roles", count: dashboard.project_team.length }
@@ -1942,6 +2178,7 @@ function App() {
   const canConfigure = dashboard.current_membership.can_configure;
   const canManageContracts = dashboard.current_membership.can_manage_contract;
   const canManageClaims = canManageContracts || ["Control Manager", "Claims Analyst", "Project Controls"].includes(dashboard.current_membership.role);
+  const canManageDocuments = ["Control Manager", "Project Controls", "Document Controller", "Contract Manager", "Planner"].includes(dashboard.current_membership.role);
   const canCreateChange = dashboard.project_team.some((member) => member.user.id === dashboard.current_user.id);
   const canManageAwp = ["Control Manager", "Planner", "Project Controls", "Field Engineer", "Workface Planner"].includes(dashboard.current_membership.role);
   const linkedEntityOptions = [
@@ -3163,17 +3400,106 @@ function App() {
 
       <section className={activeView === "documents" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
         <div className="panelHeader">
-          <h2>Document Traceability</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Link document</button>
+          <h2>Aconex-style Document Control</h2>
+          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open document forms</button>
         </div>
-        <div className="documentGrid">
-          {dashboard.documents.map((document) => (
-            <article key={document.id}>
-              <strong>{document.title}</strong>
-              <span>{document.doc_type} / {document.linked_entity_type}</span>
-              <small>{document.uri}</small>
-            </article>
-          ))}
+        <div className="costManagerSummary">
+          <article>
+            <span>Controlled Score</span>
+            <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(1)}%</strong>
+            <small>{dashboard.document_control_summary.current_documents} current / {dashboard.document_control_summary.total_documents} total</small>
+          </article>
+          <article className={dashboard.document_control_summary.outstanding_reviews ? "risk" : ""}>
+            <span>Reviews</span>
+            <strong>{dashboard.document_control_summary.outstanding_reviews}</strong>
+            <small>{dashboard.document_control_summary.overdue_reviews} overdue reviews</small>
+          </article>
+          <article>
+            <span>Transmittals</span>
+            <strong>{dashboard.document_control_summary.transmittals_sent}</strong>
+            <small>{dashboard.document_transmittal_items.length} issued document revisions</small>
+          </article>
+          <article className={dashboard.document_control_summary.open_mail ? "risk" : ""}>
+            <span>Project Mail</span>
+            <strong>{dashboard.document_control_summary.open_mail}</strong>
+            <small>{dashboard.document_control_summary.overdue_mail} overdue responses</small>
+          </article>
+        </div>
+        <div className="viewSplit">
+          <div>
+            <div className="subHeader">
+              <strong>Document Register</strong>
+              <span>{dashboard.documents.length} records</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Rev</th>
+                  <th>Title</th>
+                  <th>Discipline</th>
+                  <th>Status</th>
+                  <th>Review</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.documents.map((document) => (
+                  <tr key={document.id}>
+                    <td>{document.document_number}</td>
+                    <td>{document.revision}</td>
+                    <td>{document.title}</td>
+                    <td>{document.discipline || document.doc_type}</td>
+                    <td>{statusLabel(document.status)}</td>
+                    <td>{statusLabel(document.review_status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="subHeader spaced">
+              <strong>Transmittals</strong>
+              <span>{dashboard.document_transmittals.length} records</span>
+            </div>
+            <div className="workList compactList">
+              {dashboard.document_transmittals.map((transmittal) => (
+                <article key={transmittal.id}>
+                  <strong>{transmittal.transmittal_no} / {statusLabel(transmittal.purpose)}</strong>
+                  <span>{transmittal.subject}</span>
+                  <small>{transmittal.recipient_org || "No recipient"} / Due {transmittal.due_date ?? "Open"} / {statusLabel(transmittal.status)}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="subHeader">
+              <strong>Project Mail</strong>
+              <span>{dashboard.project_mail.length} records</span>
+            </div>
+            <div className="workList compactList">
+              {dashboard.project_mail.map((mail) => (
+                <article className={mail.status === "outstanding" ? "blockedPackage" : ""} key={mail.id}>
+                  <strong>{mail.mail_no} / {statusLabel(mail.mail_type)}</strong>
+                  <span>{mail.subject}</span>
+                  <small>{mail.from_role || "Project"} to {mail.to_role || "Team"} / Due {mail.due_date ?? "Open"} / {statusLabel(mail.status)}</small>
+                </article>
+              ))}
+            </div>
+            <div className="subHeader spaced">
+              <strong>Review Steps</strong>
+              <span>{dashboard.document_reviews.length} records</span>
+            </div>
+            <div className="workList compactList">
+              {dashboard.document_reviews.map((review) => {
+                const document = dashboard.documents.find((item) => item.id === review.document_id);
+                return (
+                  <article className={review.review_status === "outstanding" ? "blockedPackage" : ""} key={review.id}>
+                    <strong>{document?.document_number ?? `Document ${review.document_id}`} / {review.reviewer_role}</strong>
+                    <span>{review.comments || "No comments"}</span>
+                    <small>Due {review.due_date ?? "Open"} / {statusLabel(review.review_status)}</small>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -3275,8 +3601,8 @@ function App() {
           </div>
           <div>
             <span>Required Attachments</span>
-            <strong>{dashboard.documents.length} linked</strong>
-            <p>Field reports, correspondence and supporting evidence remain tied to each BP record.</p>
+            <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(0)}% controlled</strong>
+            <p>Controlled revisions, transmittals, reviews and project mail remain tied to BP records.</p>
           </div>
           <div>
             <span>Ball in Court</span>
@@ -4121,13 +4447,33 @@ function App() {
 
         <form className="panel captureForm" onSubmit={handleDocumentSubmit}>
           <div className="panelHeader">
-            <h2><FilePlus2 size={18} /> Documents</h2>
-            <span>{dashboard.documents.length} linked</span>
+            <h2><FilePlus2 size={18} /> Document Register</h2>
+            <span>{dashboard.documents.length} controlled</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Document No.</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, document_number: event.target.value }))}
+                placeholder="Auto if blank"
+                value={documentDraft.document_number}
+              />
+            </label>
+            <label>
+              <span>Revision</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, revision: event.target.value }))}
+                required
+                value={documentDraft.revision}
+              />
+            </label>
           </div>
           <label>
             <span>Linked Record</span>
             <select
-              disabled={!linkedEntityOptions.length}
+              disabled={!canManageDocuments || !linkedEntityOptions.length}
               onChange={(event) => {
                 const [linkedType, linkedId] = event.target.value.split(":");
                 setDocumentDraft((current) => ({ ...current, linked_entity_type: linkedType, linked_entity_id: linkedId }));
@@ -4142,7 +4488,7 @@ function App() {
           <label>
             <span>Title</span>
             <input
-              disabled={!linkedEntityOptions.length}
+              disabled={!canManageDocuments || !linkedEntityOptions.length}
               onChange={(event) => setDocumentDraft((current) => ({ ...current, title: event.target.value }))}
               required
               value={documentDraft.title}
@@ -4151,17 +4497,91 @@ function App() {
           <div className="formColumns">
             <label>
               <span>Type</span>
-              <input
-                disabled={!linkedEntityOptions.length}
+              <select
+                disabled={!canManageDocuments || !linkedEntityOptions.length}
                 onChange={(event) => setDocumentDraft((current) => ({ ...current, doc_type: event.target.value }))}
                 required
                 value={documentDraft.doc_type}
+              >
+                <option value="Drawing">Drawing</option>
+                <option value="Specification">Specification</option>
+                <option value="Field Report">Field Report</option>
+                <option value="Contract Communication">Contract Communication</option>
+                <option value="Procedure">Procedure</option>
+                <option value="Register">Register</option>
+              </select>
+            </label>
+            <label>
+              <span>Discipline</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, discipline: event.target.value }))}
+                required
+                value={documentDraft.discipline}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Organization</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, organization: event.target.value }))}
+                value={documentDraft.organization}
+              />
+            </label>
+            <label>
+              <span>Revision Date</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, revision_date: event.target.value }))}
+                type="date"
+                value={documentDraft.revision_date}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Status</span>
+              <select
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, status: event.target.value }))}
+                value={documentDraft.status}
+              >
+                <option value="current">Current</option>
+                <option value="issued">Issued</option>
+                <option value="superseded">Superseded</option>
+                <option value="void">Void</option>
+              </select>
+            </label>
+            <label>
+              <span>Review</span>
+              <select
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, review_status: event.target.value }))}
+                value={documentDraft.review_status}
+              >
+                <option value="not_started">Not Started</option>
+                <option value="in_review">In Review</option>
+                <option value="approved">Approved</option>
+                <option value="revise_and_resubmit">Revise and Resubmit</option>
+              </select>
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>File Name</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setDocumentDraft((current) => ({ ...current, file_name: event.target.value }))}
+                placeholder="document.pdf"
+                value={documentDraft.file_name}
               />
             </label>
             <label>
               <span>URI</span>
               <input
-                disabled={!linkedEntityOptions.length}
+                disabled={!canManageDocuments || !linkedEntityOptions.length}
                 onChange={(event) => setDocumentDraft((current) => ({ ...current, uri: event.target.value }))}
                 placeholder="edms://..."
                 required
@@ -4169,8 +4589,226 @@ function App() {
               />
             </label>
           </div>
-          <button className="workflowAction primary" disabled={!linkedEntityOptions.length || captureAction !== null} type="submit">
-            {captureAction === "document" ? "Linking..." : "Link Document"}
+          <button className="workflowAction primary" disabled={!canManageDocuments || !linkedEntityOptions.length || captureAction !== null} type="submit">
+            {captureAction === "document" ? "Registering..." : "Register Document"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handleTransmittalSubmit}>
+          <div className="panelHeader">
+            <h2><Send size={18} /> Document Transmittal</h2>
+            <span>{dashboard.document_transmittals.length} sent</span>
+          </div>
+          <label>
+            <span>Document</span>
+            <select
+              disabled={!canManageDocuments || !dashboard.documents.length}
+              onChange={(event) => setTransmittalDraft((current) => ({ ...current, document_id: event.target.value }))}
+              value={transmittalDraft.document_id}
+            >
+              {dashboard.documents.map((document) => (
+                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
+              ))}
+            </select>
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Transmittal No.</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setTransmittalDraft((current) => ({ ...current, transmittal_no: event.target.value }))}
+                placeholder="Auto if blank"
+                value={transmittalDraft.transmittal_no}
+              />
+            </label>
+            <label>
+              <span>Purpose</span>
+              <select
+                disabled={!canManageDocuments}
+                onChange={(event) => setTransmittalDraft((current) => ({ ...current, purpose: event.target.value }))}
+                value={transmittalDraft.purpose}
+              >
+                <option value="for_review">For Review</option>
+                <option value="for_approval">For Approval</option>
+                <option value="for_information">For Information</option>
+                <option value="for_construction">For Construction</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Subject</span>
+            <input
+              disabled={!canManageDocuments}
+              onChange={(event) => setTransmittalDraft((current) => ({ ...current, subject: event.target.value }))}
+              required
+              value={transmittalDraft.subject}
+            />
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Recipient Org</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setTransmittalDraft((current) => ({ ...current, recipient_org: event.target.value }))}
+                value={transmittalDraft.recipient_org}
+              />
+            </label>
+            <label>
+              <span>Due Date</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setTransmittalDraft((current) => ({ ...current, due_date: event.target.value }))}
+                type="date"
+                value={transmittalDraft.due_date}
+              />
+            </label>
+          </div>
+          <button className="workflowAction primary" disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null} type="submit">
+            {captureAction === "document-transmittal" ? "Issuing..." : "Issue Transmittal"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handleProjectMailSubmit}>
+          <div className="panelHeader">
+            <h2><FileText size={18} /> Project Mail</h2>
+            <span>{dashboard.project_mail.length} records</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Mail No.</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setMailDraft((current) => ({ ...current, mail_no: event.target.value }))}
+                placeholder="Auto if blank"
+                value={mailDraft.mail_no}
+              />
+            </label>
+            <label>
+              <span>Type</span>
+              <select
+                disabled={!canManageDocuments}
+                onChange={(event) => setMailDraft((current) => ({ ...current, mail_type: event.target.value }))}
+                value={mailDraft.mail_type}
+              >
+                <option value="document_review">Document Review</option>
+                <option value="rfi">RFI</option>
+                <option value="letter">Letter</option>
+                <option value="site_instruction">Site Instruction</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Subject</span>
+            <input
+              disabled={!canManageDocuments}
+              onChange={(event) => setMailDraft((current) => ({ ...current, subject: event.target.value }))}
+              required
+              value={mailDraft.subject}
+            />
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>To Role</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setMailDraft((current) => ({ ...current, to_role: event.target.value }))}
+                value={mailDraft.to_role}
+              />
+            </label>
+            <label>
+              <span>Due Date</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setMailDraft((current) => ({ ...current, due_date: event.target.value }))}
+                type="date"
+                value={mailDraft.due_date}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Linked Document</span>
+            <select
+              disabled={!canManageDocuments || !dashboard.documents.length}
+              onChange={(event) => setMailDraft((current) => ({ ...current, document_id: event.target.value }))}
+              value={mailDraft.document_id}
+            >
+              {dashboard.documents.map((document) => (
+                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Body</span>
+            <textarea
+              disabled={!canManageDocuments}
+              onChange={(event) => setMailDraft((current) => ({ ...current, body: event.target.value }))}
+              value={mailDraft.body}
+            />
+          </label>
+          <button className="workflowAction primary" disabled={!canManageDocuments || captureAction !== null} type="submit">
+            {captureAction === "project-mail" ? "Sending..." : "Send Project Mail"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handleDocumentReviewSubmit}>
+          <div className="panelHeader">
+            <h2><ClipboardCheck size={18} /> Document Review</h2>
+            <span>{dashboard.document_reviews.length} steps</span>
+          </div>
+          <label>
+            <span>Document</span>
+            <select
+              disabled={!canManageDocuments || !dashboard.documents.length}
+              onChange={(event) => setReviewDraft((current) => ({ ...current, document_id: event.target.value }))}
+              value={reviewDraft.document_id}
+            >
+              {dashboard.documents.map((document) => (
+                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
+              ))}
+            </select>
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Reviewer Role</span>
+              <input
+                disabled={!canManageDocuments}
+                onChange={(event) => setReviewDraft((current) => ({ ...current, reviewer_role: event.target.value }))}
+                value={reviewDraft.reviewer_role}
+              />
+            </label>
+            <label>
+              <span>Status</span>
+              <select
+                disabled={!canManageDocuments}
+                onChange={(event) => setReviewDraft((current) => ({ ...current, review_status: event.target.value }))}
+                value={reviewDraft.review_status}
+              >
+                <option value="outstanding">Outstanding</option>
+                <option value="in_review">In Review</option>
+                <option value="approved">Approved</option>
+                <option value="revise_and_resubmit">Revise and Resubmit</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Due Date</span>
+            <input
+              disabled={!canManageDocuments}
+              onChange={(event) => setReviewDraft((current) => ({ ...current, due_date: event.target.value }))}
+              type="date"
+              value={reviewDraft.due_date}
+            />
+          </label>
+          <label>
+            <span>Comments</span>
+            <textarea
+              disabled={!canManageDocuments}
+              onChange={(event) => setReviewDraft((current) => ({ ...current, comments: event.target.value }))}
+              value={reviewDraft.comments}
+            />
+          </label>
+          <button className="workflowAction primary" disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null} type="submit">
+            {captureAction === "document-review" ? "Creating..." : "Create Review Step"}
           </button>
         </form>
       </section>
@@ -4474,15 +5112,15 @@ function App() {
 
         <div className="panel wide">
           <div className="panelHeader">
-            <h2>Document Traceability</h2>
-            <span>{dashboard.documents.length} linked records</span>
+            <h2>Document Control Register</h2>
+            <span>{dashboard.documents.length} controlled records</span>
           </div>
           <div className="documentGrid">
             {dashboard.documents.map((document) => (
               <article key={document.id}>
-                <strong>{document.title}</strong>
-                <span>{document.doc_type} / {document.linked_entity_type}</span>
-                <small>{document.uri}</small>
+                <strong>{document.document_number} Rev {document.revision}</strong>
+                <span>{document.title}</span>
+                <small>{statusLabel(document.review_status)} / {document.uri}</small>
               </article>
             ))}
           </div>

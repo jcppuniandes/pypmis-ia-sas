@@ -101,6 +101,29 @@ GET /api/v1/projects/{project_id}/cost-manager-summary
 
 Funding y cash flow usan `expected_version` en `PATCH` para proteger ediciones concurrentes.
 
+## Document Control tipo Aconex
+
+La app ahora incluye un Document Control MVP mas cercano a Aconex para piloto de pre-produccion: Document Register con numero/revision/estado, revisiones documentales, transmittals, project mail, score documental y trazabilidad con workflows/auditoria.
+
+Endpoints:
+
+```text
+GET /api/v1/projects/{project_id}/documents
+POST /api/v1/projects/{project_id}/documents
+PATCH /api/v1/projects/{project_id}/documents/{document_id}
+GET /api/v1/projects/{project_id}/document-transmittals
+POST /api/v1/projects/{project_id}/document-transmittals
+GET /api/v1/projects/{project_id}/document-transmittal-items
+GET /api/v1/projects/{project_id}/document-reviews
+POST /api/v1/projects/{project_id}/documents/{document_id}/reviews
+PATCH /api/v1/projects/{project_id}/document-reviews/{review_id}
+GET /api/v1/projects/{project_id}/project-mail
+POST /api/v1/projects/{project_id}/project-mail
+PATCH /api/v1/projects/{project_id}/project-mail/{mail_id}
+```
+
+Documents, reviews y project mail usan `expected_version` en updates para proteger trabajo concurrente.
+
 ## Plan de Control del Proyecto / PEP
 
 La app incluye un plan de control por proyecto para formalizar lo que aparece en el flujo de procesos: estrategia de ejecucion, estrategia de control, reglas de medicion de progreso, reglas de medicion de costo, cambios, riesgos, adquisiciones, control documental y cadencia de reportes.

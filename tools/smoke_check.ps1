@@ -41,6 +41,9 @@ if ($null -eq $dashboard.project_kpi) {
 if ($null -eq $dashboard.cost_manager_summary -or $dashboard.cost_sheet.Count -lt 1) {
   throw "Dashboard did not return Cost Manager data."
 }
+if ($null -eq $dashboard.document_control_summary -or $dashboard.document_control_summary.total_documents -lt 1) {
+  throw "Dashboard did not return Document Control data."
+}
 
 $costManager = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/cost-manager-summary" -Headers $headers
 if ($costManager.total_bac -lt 1) {
@@ -63,5 +66,6 @@ Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"
 Write-Host "OK Cost Manager: BAC $($costManager.total_bac) / Funding $($costManager.total_funding)"
+Write-Host "OK Document Control: $($dashboard.document_control_summary.controlled_document_score)% controlled"
 Write-Host "OK Pilot readiness: $($pilotReadiness.status) $($pilotReadiness.score)%"
 Write-Host "OK Frontend: HTTP $($frontend.StatusCode)"

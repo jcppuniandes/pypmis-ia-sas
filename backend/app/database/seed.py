@@ -2,7 +2,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy import inspect, select
 from sqlalchemy.orm import Session
 
 from app.domain.models import (
@@ -29,6 +29,9 @@ from app.domain.models import (
     CashFlowPeriod,
     ControlSnapshot,
     Document,
+    DocumentReview,
+    DocumentTransmittal,
+    DocumentTransmittalItem,
     ForecastScenario,
     FundingSource,
     Event,
@@ -36,6 +39,7 @@ from app.domain.models import (
     KPI,
     ProgressRecord,
     Project,
+    ProjectMail,
     ProjectControlPlan,
     ProjectMembership,
     RelationshipType,
@@ -73,6 +77,7 @@ def seed_demo(db: Session) -> None:
             ensure_awp_records(db, existing.id, project.id)
             ensure_claim_entitlement_records(db, existing.id, project.id)
             ensure_claim_notice_and_impact_records(db, existing.id, project.id)
+            ensure_document_control_records(db, existing.id, project.id)
             ControlCoreService(db).run_project_cycle(existing.id, project.id)
             ensure_control_history_records(db, existing.id, project.id)
             ensure_cost_manager_records(db, existing.id, project.id)
@@ -85,6 +90,7 @@ def seed_demo(db: Session) -> None:
             ensure_awp_records(db, existing.id, secondary.id)
             ensure_claim_entitlement_records(db, existing.id, secondary.id)
             ensure_claim_notice_and_impact_records(db, existing.id, secondary.id)
+            ensure_document_control_records(db, existing.id, secondary.id)
             ControlCoreService(db).run_project_cycle(existing.id, secondary.id)
             ensure_control_history_records(db, existing.id, secondary.id)
             ensure_cost_manager_records(db, existing.id, secondary.id)
@@ -242,6 +248,7 @@ def seed_demo(db: Session) -> None:
     ensure_awp_records(db, tenant.id, project.id)
     ensure_claim_entitlement_records(db, tenant.id, project.id)
     ensure_claim_notice_and_impact_records(db, tenant.id, project.id)
+    ensure_document_control_records(db, tenant.id, project.id)
     secondary = ensure_secondary_project(db, tenant.id)
     if secondary:
         ensure_project_control_plan(db, tenant.id, secondary.id)
@@ -250,6 +257,7 @@ def seed_demo(db: Session) -> None:
         ensure_awp_records(db, tenant.id, secondary.id)
         ensure_claim_entitlement_records(db, tenant.id, secondary.id)
         ensure_claim_notice_and_impact_records(db, tenant.id, secondary.id)
+        ensure_document_control_records(db, tenant.id, secondary.id)
         ControlCoreService(db).run_project_cycle(tenant.id, secondary.id)
         ensure_control_history_records(db, tenant.id, secondary.id)
         ensure_cost_manager_records(db, tenant.id, secondary.id)
@@ -595,6 +603,7 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
         ("laura.contracts@demo.local", "Laura Gomez", "Contract Manager"),
         ("mateo.field@demo.local", "Mateo Ruiz", "Field Engineer"),
         ("sofia.awp@demo.local", "Sofia Navarro", "Workface Planner"),
+        ("diana.docs@demo.local", "Diana Vega", "Document Controller"),
         ("direccion@demo.local", "Direccion Proyecto", "Executive Sponsor"),
     ]
     users: dict[str, UserAccount] = {}
@@ -613,6 +622,7 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
             ("ana.control@demo.local", "Control Manager"),
             ("direccion@demo.local", "Executive"),
             ("camila.cost@demo.local", "Cost Controller"),
+            ("diana.docs@demo.local", "Document Controller"),
         ]
         if project.code in {"CTRL-DEMO-001", "EPC-PIPE-001"}:
             project_roles += [
@@ -1285,6 +1295,177 @@ def ensure_claim_notice_and_impact_records(db: Session, tenant_id: int, project_
                     status="draft",
                 ),
             ]
+        )
+    db.commit()
+
+
+def ensure_document_control_records(db: Session, tenant_id: int, project_id: int) -> None:
+    inspector = inspect(db.get_bind())
+    table_names = set(inspector.get_table_names())
+    if "documents" not in table_names:
+        return
+    document_columns = {column["name"] for column in inspector.get_columns("documents")}
+    if "document_number" not in document_columns:
+        return
+
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+
+    documents = list(
+        db.scalars(
+            select(Document)
+            .where(Document.tenant_id == tenant_id, Document.project_id == project_id)
+            .order_by(Document.id)
+        ).all()
+    )
+    if not documents:
+        control_account = db.scalar(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        )
+        db.add(
+            Document(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                linked_entity_type="ControlAccount",
+                linked_entity_id=control_account.id if control_account else project_id,
+                title="Controlled document register seed",
+                doc_type="Document Register",
+                uri=f"edms://documents/{project.code}/register",
+            )
+        )
+        db.flush()
+        documents = list(
+            db.scalars(
+                select(Document)
+                .where(Document.tenant_id == tenant_id, Document.project_id == project_id)
+                .order_by(Document.id)
+            ).all()
+        )
+
+    for index, document in enumerate(documents, start=1):
+        if not document.document_number:
+            document.document_number = f"{project.code}-DOC-{index:04d}"
+        document.revision = document.revision or "A"
+        document.revision_date = document.revision_date or date(2026, 5, min(index + 1, 28))
+        document.discipline = document.discipline or ("Contracts" if document.linked_entity_type in {"Claim", "Contract"} else "Project Controls")
+        document.organization = document.organization or ("EPC Contractor" if project.code == "CTRL-DEMO-001" else "Turnaround Team")
+        document.status = document.status or "current"
+        document.review_status = document.review_status or ("approved" if index == 1 else "in_review")
+        document.confidentiality = document.confidentiality or "project"
+        document.file_name = document.file_name or f"{document.document_number}_REV_{document.revision}.pdf"
+
+    db.flush()
+    documents = list(
+        db.scalars(
+            select(Document)
+            .where(Document.tenant_id == tenant_id, Document.project_id == project_id)
+            .order_by(Document.id)
+        ).all()
+    )
+    if not documents:
+        db.commit()
+        return
+
+    transmittal = db.scalar(
+        select(DocumentTransmittal).where(
+            DocumentTransmittal.tenant_id == tenant_id,
+            DocumentTransmittal.project_id == project_id,
+            DocumentTransmittal.transmittal_no == f"{project.code}-TR-0001",
+        )
+    )
+    if not transmittal:
+        transmittal = DocumentTransmittal(
+            tenant_id=tenant_id,
+            project_id=project_id,
+            transmittal_no=f"{project.code}-TR-0001",
+            subject="Issue controlled pilot document package for review",
+            purpose="for_review",
+            recipient_org="Owner Project Controls" if project.code == "CTRL-DEMO-001" else "Operations Readiness",
+            recipient_contact="Document Control",
+            status="sent",
+            sent_on=date(2026, 5, 3),
+            due_date=date(2026, 5, 10),
+            created_by="System seed",
+        )
+        db.add(transmittal)
+        db.flush()
+    existing_item_ids = set(
+        db.scalars(
+            select(DocumentTransmittalItem.document_id).where(
+                DocumentTransmittalItem.tenant_id == tenant_id,
+                DocumentTransmittalItem.project_id == project_id,
+                DocumentTransmittalItem.transmittal_id == transmittal.id,
+            )
+        ).all()
+    )
+    for document in documents[:3]:
+        if document.id not in existing_item_ids:
+            db.add(
+                DocumentTransmittalItem(
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    transmittal_id=transmittal.id,
+                    document_id=document.id,
+                    document_number=document.document_number,
+                    revision=document.revision,
+                    action_required="review",
+                    response_status="outstanding" if document.review_status not in {"approved", "reviewed"} else "closed",
+                )
+            )
+
+    existing_review_ids = set(
+        db.scalars(
+            select(DocumentReview.document_id).where(
+                DocumentReview.tenant_id == tenant_id,
+                DocumentReview.project_id == project_id,
+            )
+        ).all()
+    )
+    for document in documents[:3]:
+        if document.id not in existing_review_ids:
+            status = "approved" if document.review_status in {"approved", "reviewed"} else "outstanding"
+            db.add(
+                DocumentReview(
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    document_id=document.id,
+                    reviewer_role="Project Controls" if document.discipline == "Project Controls" else "Contract Manager",
+                    review_status=status,
+                    comments="Pilot document control review seeded for Aconex-style workflow.",
+                    due_date=date(2026, 5, 10),
+                    closed_on=date(2026, 5, 6) if status == "approved" else None,
+                )
+            )
+
+    existing_mail = db.scalar(
+        select(ProjectMail).where(
+            ProjectMail.tenant_id == tenant_id,
+            ProjectMail.project_id == project_id,
+            ProjectMail.mail_no == f"{project.code}-MAIL-0001",
+        )
+    )
+    if not existing_mail:
+        db.add(
+            ProjectMail(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                mail_no=f"{project.code}-MAIL-0001",
+                mail_type="document_review",
+                subject="Please review controlled pilot document package",
+                from_role="Document Controller",
+                to_role="Project Controls",
+                status="outstanding",
+                response_required=True,
+                sent_on=date(2026, 5, 3),
+                due_date=date(2026, 5, 10),
+                body="Review the issued document package and return comments through the controlled review workflow.",
+                linked_entity_type="DocumentTransmittal",
+                linked_entity_id=transmittal.id,
+                document_id=documents[0].id,
+            )
         )
     db.commit()
 

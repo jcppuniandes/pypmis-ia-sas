@@ -39,11 +39,15 @@ from app.domain.models import (
     CostRecord,
     CostSource,
     Document,
+    DocumentReview,
+    DocumentTransmittal,
+    DocumentTransmittalItem,
     ForecastScenario,
     FundingSource,
     ImportStatus,
     KPI,
     ProgressRecord,
+    ProjectMail,
     Project,
     ProjectControlPlan,
     ProjectMembership,
@@ -101,6 +105,14 @@ from app.domain.schemas import (
     DashboardOut,
     DocumentOut,
     DocumentCreate,
+    DocumentControlSummary,
+    DocumentReviewCreate,
+    DocumentReviewOut,
+    DocumentReviewUpdate,
+    DocumentTransmittalCreate,
+    DocumentTransmittalItemOut,
+    DocumentTransmittalOut,
+    DocumentUpdate,
     ForecastScenarioOut,
     FundingSourceCreate,
     FundingSourceOut,
@@ -115,6 +127,9 @@ from app.domain.schemas import (
     ProcessTemplateOut,
     ProcessTransitionTemplateOut,
     ProjectCreate,
+    ProjectMailCreate,
+    ProjectMailOut,
+    ProjectMailUpdate,
     ProjectControlPlanOut,
     ProjectControlPlanUpdate,
     ProjectMembershipOut,
@@ -1466,6 +1481,17 @@ def update_claim_impact_analysis(
     return analysis
 
 
+@router.get("/projects/{project_id}/documents", response_model=list[DocumentOut])
+def list_documents(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[Document]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _documents(db, tenant_id, project_id)
+
+
 @router.post("/projects/{project_id}/documents", response_model=DocumentOut)
 def create_document(
     project_id: int,
@@ -1474,23 +1500,346 @@ def create_document(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> Document:
-    _require_membership(db, tenant_id, project_id, user_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    project = _require_project(db, tenant_id, project_id)
     current_user = _require_user(db, tenant_id, user_id)
+    document_number = payload.document_number.strip() or _next_document_number(db, tenant_id, project)
+    revision = payload.revision.strip() or "A"
+    _ensure_document_revision_available(db, tenant_id, project_id, document_number, revision)
     document = Document(
         tenant_id=tenant_id,
         project_id=project_id,
+        document_number=document_number,
+        revision=revision,
+        revision_date=payload.revision_date,
         linked_entity_type=payload.linked_entity_type,
         linked_entity_id=payload.linked_entity_id,
         title=payload.title,
         doc_type=payload.doc_type,
+        discipline=payload.discipline,
+        organization=payload.organization,
+        status=payload.status,
+        review_status=payload.review_status,
+        confidentiality=payload.confidentiality,
+        file_name=payload.file_name,
         uri=payload.uri,
     )
     db.add(document)
     db.flush()
-    _audit(db, tenant_id, project_id, "link_document", "Document", document.id, f'{{"title":"{document.title}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "register_document",
+        "Document",
+        document.id,
+        json.dumps({"document_number": document.document_number, "revision": document.revision, "title": document.title}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(document)
     return document
+
+
+@router.patch("/projects/{project_id}/documents/{document_id}", response_model=DocumentOut)
+def update_document(
+    project_id: int,
+    document_id: int,
+    payload: DocumentUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> Document:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    current_user = _require_user(db, tenant_id, user_id)
+    document = _require_document(db, tenant_id, project_id, document_id)
+    _require_current_version(document, payload.expected_version)
+    next_document_number = payload.document_number.strip() if payload.document_number is not None else document.document_number
+    next_revision = payload.revision.strip() if payload.revision is not None else document.revision
+    if next_document_number != document.document_number or next_revision != document.revision:
+        _ensure_document_revision_available(db, tenant_id, project_id, next_document_number, next_revision, exclude_id=document.id)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        if isinstance(value, str):
+            value = value.strip()
+        setattr(document, field, value)
+    if not document.document_number:
+        document.document_number = _next_document_number(db, tenant_id, _require_project(db, tenant_id, project_id))
+    if not document.revision:
+        document.revision = "A"
+    _touch_collaborative_record(document)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_document",
+        "Document",
+        document.id,
+        json.dumps({"document_number": document.document_number, "revision": document.revision, "status": document.status}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(document)
+    return document
+
+
+@router.get("/projects/{project_id}/document-transmittals", response_model=list[DocumentTransmittalOut])
+def list_document_transmittals(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentTransmittal]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _document_transmittals(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/document-transmittals", response_model=DocumentTransmittalOut)
+def create_document_transmittal(
+    project_id: int,
+    payload: DocumentTransmittalCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> DocumentTransmittal:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    project = _require_project(db, tenant_id, project_id)
+    current_user = _require_user(db, tenant_id, user_id)
+    if not payload.document_ids:
+        raise HTTPException(status_code=400, detail="At least one document is required for a transmittal")
+    transmittal_no = payload.transmittal_no.strip() or _next_transmittal_no(db, tenant_id, project)
+    existing = db.scalar(
+        select(DocumentTransmittal).where(
+            DocumentTransmittal.tenant_id == tenant_id,
+            DocumentTransmittal.project_id == project_id,
+            DocumentTransmittal.transmittal_no == transmittal_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Transmittal number already exists for this project")
+    documents = [_require_document(db, tenant_id, project_id, document_id) for document_id in payload.document_ids]
+    transmittal = DocumentTransmittal(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        transmittal_no=transmittal_no,
+        subject=payload.subject,
+        purpose=payload.purpose,
+        recipient_org=payload.recipient_org,
+        recipient_contact=payload.recipient_contact,
+        status=payload.status,
+        sent_on=payload.sent_on or datetime.utcnow().date(),
+        due_date=payload.due_date,
+        created_by=current_user.full_name,
+    )
+    db.add(transmittal)
+    db.flush()
+    for document in documents:
+        db.add(
+            DocumentTransmittalItem(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                transmittal_id=transmittal.id,
+                document_id=document.id,
+                document_number=document.document_number,
+                revision=document.revision,
+                action_required=payload.action_required,
+                response_status="outstanding" if payload.purpose in {"for_review", "for_approval"} else "issued",
+            )
+        )
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "issue_document_transmittal",
+        "DocumentTransmittal",
+        transmittal.id,
+        json.dumps({"transmittal_no": transmittal.transmittal_no, "documents": [document.id for document in documents]}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(transmittal)
+    return transmittal
+
+
+@router.get("/projects/{project_id}/document-transmittal-items", response_model=list[DocumentTransmittalItemOut])
+def list_document_transmittal_items(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentTransmittalItem]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _document_transmittal_items(db, tenant_id, project_id)
+
+
+@router.get("/projects/{project_id}/document-reviews", response_model=list[DocumentReviewOut])
+def list_document_reviews(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentReview]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _document_reviews(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/documents/{document_id}/reviews", response_model=DocumentReviewOut)
+def create_document_review(
+    project_id: int,
+    document_id: int,
+    payload: DocumentReviewCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> DocumentReview:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    current_user = _require_user(db, tenant_id, user_id)
+    document = _require_document(db, tenant_id, project_id, document_id)
+    review = DocumentReview(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        document_id=document.id,
+        reviewer_role=payload.reviewer_role,
+        review_status=payload.review_status,
+        comments=payload.comments,
+        due_date=payload.due_date,
+    )
+    document.review_status = payload.review_status
+    _touch_collaborative_record(document)
+    db.add(review)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_document_review", "DocumentReview", review.id, json.dumps({"document_id": document.id, "reviewer_role": review.reviewer_role}), current_user.full_name)
+    db.commit()
+    db.refresh(review)
+    return review
+
+
+@router.patch("/projects/{project_id}/document-reviews/{review_id}", response_model=DocumentReviewOut)
+def update_document_review(
+    project_id: int,
+    review_id: int,
+    payload: DocumentReviewUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> DocumentReview:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    current_user = _require_user(db, tenant_id, user_id)
+    review = db.scalar(
+        select(DocumentReview).where(
+            DocumentReview.tenant_id == tenant_id,
+            DocumentReview.project_id == project_id,
+            DocumentReview.id == review_id,
+        )
+    )
+    if not review:
+        raise HTTPException(status_code=404, detail="Document review not found")
+    _require_current_version(review, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        setattr(review, field, value.strip() if isinstance(value, str) else value)
+    _touch_collaborative_record(review)
+    document = _require_document(db, tenant_id, project_id, review.document_id)
+    document.review_status = review.review_status
+    _touch_collaborative_record(document)
+    _audit(db, tenant_id, project_id, "update_document_review", "DocumentReview", review.id, json.dumps({"review_status": review.review_status}), current_user.full_name)
+    db.commit()
+    db.refresh(review)
+    return review
+
+
+@router.get("/projects/{project_id}/project-mail", response_model=list[ProjectMailOut])
+def list_project_mail(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ProjectMail]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _project_mail(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/project-mail", response_model=ProjectMailOut)
+def create_project_mail(
+    project_id: int,
+    payload: ProjectMailCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectMail:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    project = _require_project(db, tenant_id, project_id)
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.document_id is not None:
+        _require_document(db, tenant_id, project_id, payload.document_id)
+    mail_no = payload.mail_no.strip() or _next_mail_no(db, tenant_id, project)
+    existing = db.scalar(
+        select(ProjectMail).where(
+            ProjectMail.tenant_id == tenant_id,
+            ProjectMail.project_id == project_id,
+            ProjectMail.mail_no == mail_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Mail number already exists for this project")
+    mail = ProjectMail(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        mail_no=mail_no,
+        mail_type=payload.mail_type,
+        subject=payload.subject,
+        from_role=payload.from_role or membership.role,
+        to_role=payload.to_role,
+        status=payload.status,
+        response_required=payload.response_required,
+        sent_on=payload.sent_on or datetime.utcnow().date(),
+        due_date=payload.due_date,
+        body=payload.body,
+        linked_entity_type=payload.linked_entity_type,
+        linked_entity_id=payload.linked_entity_id,
+        document_id=payload.document_id,
+    )
+    db.add(mail)
+    db.flush()
+    _audit(db, tenant_id, project_id, "send_project_mail", "ProjectMail", mail.id, json.dumps({"mail_no": mail.mail_no, "mail_type": mail.mail_type}), current_user.full_name)
+    db.commit()
+    db.refresh(mail)
+    return mail
+
+
+@router.patch("/projects/{project_id}/project-mail/{mail_id}", response_model=ProjectMailOut)
+def update_project_mail(
+    project_id: int,
+    mail_id: int,
+    payload: ProjectMailUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectMail:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    current_user = _require_user(db, tenant_id, user_id)
+    mail = db.scalar(
+        select(ProjectMail).where(
+            ProjectMail.tenant_id == tenant_id,
+            ProjectMail.project_id == project_id,
+            ProjectMail.id == mail_id,
+        )
+    )
+    if not mail:
+        raise HTTPException(status_code=404, detail="Project mail not found")
+    _require_current_version(mail, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        setattr(mail, field, value.strip() if isinstance(value, str) else value)
+    _touch_collaborative_record(mail)
+    _audit(db, tenant_id, project_id, "update_project_mail", "ProjectMail", mail.id, json.dumps({"status": mail.status}), current_user.full_name)
+    db.commit()
+    db.refresh(mail)
+    return mail
 
 
 @router.get("/projects/{project_id}/work-packages", response_model=list[WorkPackageOut])
@@ -2027,7 +2376,11 @@ def get_dashboard(
             .order_by(ContractCommunication.sent_on.desc(), ContractCommunication.id.desc())
         ).all()
     )
-    documents = list(db.scalars(select(Document).where(Document.project_id == project_id, Document.tenant_id == tenant_id)).all())
+    documents = _documents(db, tenant_id, project_id)
+    document_transmittals = _document_transmittals(db, tenant_id, project_id)
+    document_transmittal_items = _document_transmittal_items(db, tenant_id, project_id)
+    document_reviews = _document_reviews(db, tenant_id, project_id)
+    project_mail = _project_mail(db, tenant_id, project_id)
     work_packages = list(
         db.scalars(
             select(WorkPackage)
@@ -2245,6 +2598,11 @@ def get_dashboard(
         contracts=[ContractOut.model_validate(contract) for contract in contracts],
         communications=[ContractCommunicationOut.model_validate(communication) for communication in communications[:6]],
         documents=[DocumentOut.model_validate(document) for document in documents],
+        document_transmittals=[DocumentTransmittalOut.model_validate(transmittal) for transmittal in document_transmittals],
+        document_transmittal_items=[DocumentTransmittalItemOut.model_validate(item) for item in document_transmittal_items],
+        document_reviews=[DocumentReviewOut.model_validate(review) for review in document_reviews],
+        project_mail=[ProjectMailOut.model_validate(mail) for mail in project_mail],
+        document_control_summary=_document_control_summary(documents, document_transmittals, document_reviews, project_mail),
         work_packages=[WorkPackageOut.model_validate(package) for package in work_packages],
         work_package_constraints=[WorkPackageConstraintOut.model_validate(constraint) for constraint in work_package_constraints],
         awp_summary=_awp_summary(work_packages, work_package_constraints),
@@ -2409,6 +2767,147 @@ def _money(value: float) -> float:
     return round(float(value or 0), 2)
 
 
+def _documents(db: Session, tenant_id: int, project_id: int) -> list[Document]:
+    return list(
+        db.scalars(
+            select(Document)
+            .where(Document.tenant_id == tenant_id, Document.project_id == project_id)
+            .order_by(Document.document_number, Document.revision.desc(), Document.id)
+        ).all()
+    )
+
+
+def _document_transmittals(db: Session, tenant_id: int, project_id: int) -> list[DocumentTransmittal]:
+    return list(
+        db.scalars(
+            select(DocumentTransmittal)
+            .where(DocumentTransmittal.tenant_id == tenant_id, DocumentTransmittal.project_id == project_id)
+            .order_by(DocumentTransmittal.sent_on.desc(), DocumentTransmittal.id.desc())
+        ).all()
+    )
+
+
+def _document_transmittal_items(db: Session, tenant_id: int, project_id: int) -> list[DocumentTransmittalItem]:
+    return list(
+        db.scalars(
+            select(DocumentTransmittalItem)
+            .where(DocumentTransmittalItem.tenant_id == tenant_id, DocumentTransmittalItem.project_id == project_id)
+            .order_by(DocumentTransmittalItem.transmittal_id, DocumentTransmittalItem.id)
+        ).all()
+    )
+
+
+def _document_reviews(db: Session, tenant_id: int, project_id: int) -> list[DocumentReview]:
+    return list(
+        db.scalars(
+            select(DocumentReview)
+            .where(DocumentReview.tenant_id == tenant_id, DocumentReview.project_id == project_id)
+            .order_by(DocumentReview.review_status, DocumentReview.due_date, DocumentReview.id)
+        ).all()
+    )
+
+
+def _project_mail(db: Session, tenant_id: int, project_id: int) -> list[ProjectMail]:
+    return list(
+        db.scalars(
+            select(ProjectMail)
+            .where(ProjectMail.tenant_id == tenant_id, ProjectMail.project_id == project_id)
+            .order_by(ProjectMail.sent_on.desc(), ProjectMail.id.desc())
+        ).all()
+    )
+
+
+def _document_control_summary(
+    documents: list[Document],
+    transmittals: list[DocumentTransmittal],
+    reviews: list[DocumentReview],
+    mail: list[ProjectMail],
+) -> DocumentControlSummary:
+    today = datetime.utcnow().date()
+    current_documents = sum(1 for document in documents if document.status in {"current", "approved", "issued"})
+    superseded_documents = sum(1 for document in documents if document.status in {"superseded", "void"})
+    outstanding_reviews = sum(1 for review in reviews if review.review_status in {"outstanding", "in_review", "revise_and_resubmit"})
+    overdue_reviews = sum(
+        1
+        for review in reviews
+        if review.due_date and review.due_date < today and review.review_status in {"outstanding", "in_review", "revise_and_resubmit"}
+    )
+    open_mail = sum(1 for item in mail if item.status in {"outstanding", "open", "in_review"})
+    overdue_mail = sum(1 for item in mail if item.due_date and item.due_date < today and item.status in {"outstanding", "open", "in_review"})
+    total_documents = len(documents)
+    score = 0.0
+    if total_documents:
+        numbered = sum(1 for document in documents if document.document_number and document.revision)
+        reviewed = sum(1 for document in documents if document.review_status in {"approved", "reviewed", "closed"})
+        transmitted = len(transmittals)
+        score = min((numbered / total_documents) * 45 + (reviewed / total_documents) * 35 + (transmitted > 0) * 20, 100)
+        score = max(score - overdue_reviews * 5 - overdue_mail * 3, 0)
+    return DocumentControlSummary(
+        total_documents=total_documents,
+        current_documents=current_documents,
+        superseded_documents=superseded_documents,
+        outstanding_reviews=outstanding_reviews,
+        overdue_reviews=overdue_reviews,
+        transmittals_sent=len([item for item in transmittals if item.status in {"sent", "closed"}]),
+        open_mail=open_mail,
+        overdue_mail=overdue_mail,
+        controlled_document_score=round(score, 1),
+    )
+
+
+def _require_document(db: Session, tenant_id: int, project_id: int, document_id: int) -> Document:
+    document = db.scalar(
+        select(Document).where(
+            Document.tenant_id == tenant_id,
+            Document.project_id == project_id,
+            Document.id == document_id,
+        )
+    )
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return document
+
+
+def _require_document_control_role(membership: ProjectMembership) -> None:
+    if membership.role not in {"Control Manager", "Project Controls", "Document Controller", "Contract Manager", "Planner"}:
+        raise HTTPException(status_code=403, detail="Current role cannot manage document control")
+
+
+def _ensure_document_revision_available(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    document_number: str,
+    revision: str,
+    exclude_id: int | None = None,
+) -> None:
+    query = select(Document).where(
+        Document.tenant_id == tenant_id,
+        Document.project_id == project_id,
+        Document.document_number == document_number,
+        Document.revision == revision,
+    )
+    if exclude_id is not None:
+        query = query.where(Document.id != exclude_id)
+    if db.scalar(query):
+        raise HTTPException(status_code=409, detail="Document number and revision already exist for this project")
+
+
+def _next_document_number(db: Session, tenant_id: int, project: Project) -> str:
+    count = _count(db, Document, tenant_id, project.id) + 1
+    return f"{project.code}-DOC-{count:04d}"
+
+
+def _next_transmittal_no(db: Session, tenant_id: int, project: Project) -> str:
+    count = _count(db, DocumentTransmittal, tenant_id, project.id) + 1
+    return f"{project.code}-TR-{count:04d}"
+
+
+def _next_mail_no(db: Session, tenant_id: int, project: Project) -> str:
+    count = _count(db, ProjectMail, tenant_id, project.id) + 1
+    return f"{project.code}-MAIL-{count:04d}"
+
+
 def _latest_schedule_import(db: Session, tenant_id: int, project_id: int) -> ScheduleImport | None:
     return db.scalars(
         select(ScheduleImport)
@@ -2505,6 +3004,9 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
     entitlement_count = _count(db, ClaimEntitlementItem, tenant_id, project_id)
     impact_count = _count(db, ClaimImpactAnalysis, tenant_id, project_id)
     document_count = _count(db, Document, tenant_id, project_id)
+    transmittal_count = _count(db, DocumentTransmittal, tenant_id, project_id)
+    review_count = _count(db, DocumentReview, tenant_id, project_id)
+    project_mail_count = _count(db, ProjectMail, tenant_id, project_id)
     package_count = _count(db, WorkPackage, tenant_id, project_id)
     constraint_count = _count(db, WorkPackageConstraint, tenant_id, project_id)
     open_blocking_constraints = db.scalar(
@@ -2577,10 +3079,21 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         ),
         _readiness_item(
             "Fase 5",
-            "Contracts / Claims / Evidence",
-            min((contract_count > 0) * 25 + (notice_count > 0) * 25 + (claim_count > 0) * 20 + (entitlement_count > 0) * 15 + (impact_count > 0) * 10 + (document_count > 0) * 5, 100),
-            f"{contract_count} contratos, {notice_count} notices, {claim_count} claims, {entitlement_count} entitlement items y {impact_count} analisis de impacto.",
-            "Seleccionar un caso contractual real y vincular evidencia/documentos.",
+            "Contracts / Claims / Aconex-style Document Control",
+            min(
+                (contract_count > 0) * 18
+                + (notice_count > 0) * 15
+                + (claim_count > 0) * 15
+                + (entitlement_count > 0) * 12
+                + (impact_count > 0) * 10
+                + (document_count > 0) * 10
+                + (transmittal_count > 0) * 10
+                + (review_count > 0) * 5
+                + (project_mail_count > 0) * 5,
+                100,
+            ),
+            f"{contract_count} contratos, {notice_count} notices, {claim_count} claims, {document_count} documentos, {transmittal_count} transmittals, {review_count} revisiones y {project_mail_count} mails.",
+            "Operar el registro documental, transmittals, mail, revisiones y evidencia contractual.",
         ),
         _readiness_item(
             "Fase 6",
@@ -2738,6 +3251,15 @@ def _role_profiles() -> list[RoleProfileOut]:
             can_capture_cost=False,
             can_approve_workflow=False,
             can_manage_contract=True,
+            can_configure=False,
+        ),
+        RoleProfileOut(
+            role="Document Controller",
+            description="Manages the controlled document register, transmittals, project mail and review closeout.",
+            can_capture_progress=False,
+            can_capture_cost=False,
+            can_approve_workflow=False,
+            can_manage_contract=False,
             can_configure=False,
         ),
         RoleProfileOut(
