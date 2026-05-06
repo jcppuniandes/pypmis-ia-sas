@@ -4,7 +4,7 @@ Fecha base: 2026-05-06
 
 ## Resumen Ejecutivo
 
-P&Pmis Ai SaaS ya opera como una plataforma colaborativa en linea para Project Controls: multiusuario, multiproyecto, con roles por proyecto, auditoria, control de acceso, workflows, Plan de Control / PEP, ingestion de cronograma, cuentas de control, EVM, AWP, contratos, claims, documentos y readiness de piloto.
+P&Pmis Ai SaaS ya opera como una plataforma colaborativa en linea para Project Controls: multiusuario, multiproyecto, con roles por proyecto, auditoria, control de acceso, workflows, Plan de Control / PEP, ingestion de cronograma, cuentas de control, EVM, AWP, RFQ, contratos, ordenes de compra, actas de pago, entradas de almacen, claims, documentos y readiness de piloto.
 
 En esta fase se agrego un Cost Manager basico inspirado en Oracle Primavera Unifier:
 
@@ -56,7 +56,8 @@ Usuarios demo:
 - Cost Manager: Cost Sheet, fondos, cash flow y costos reales.
 - AWP Workface: paquetes CWA/CWP/EWP/PWP/IWP y restricciones.
 - Claims: entitlement, notices, impacto, causalidad y evidencia.
-- Contracts: contratos y comunicaciones.
+- RFQ / Bids: paquetes de licitacion, ofertas, score ponderado y recomendacion.
+- Contracts: contratos, ordenes de compra, actas de pago, entradas de almacen y comunicaciones.
 - Documents: evidencia y documentos vinculados.
 - Roadmap: madurez, readiness y Plan de Control / PEP.
 - Projects / Users / Roles: administracion colaborativa por proyecto.

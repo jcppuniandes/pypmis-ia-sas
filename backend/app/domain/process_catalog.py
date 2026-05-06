@@ -120,6 +120,28 @@ DEFAULT_PROCESS_TEMPLATES = [
         ],
     },
     {
+        "code": "RFQ-BID",
+        "name": "RFQ / Bid Evaluation",
+        "category": "Preconstruction / Procurement",
+        "description": "Controls RFQ package issue, bid receipt, commercial/technical leveling and award recommendation.",
+        "form_schema": ["RFQ package", "Scope", "Budget", "Bidder", "Bid amount", "Technical score", "Commercial score", "Schedule score", "Risk score"],
+        "status": "Active",
+        "version_no": 1,
+        "steps": [
+            {"name": "Package Setup", "detail": "Scope, budget, control account and due date are defined.", "owner_role": "Contract Manager", "status": "Active", "tone": "active"},
+            {"name": "Issue / Invite", "detail": "RFQ is issued and bidders are invited with document requirements.", "owner_role": "Contract Manager", "status": "Queued", "tone": "queued"},
+            {"name": "Bid Receipt", "detail": "Bid amount and bidder submission metadata are captured.", "owner_role": "Contract Manager", "status": "Queued", "tone": "queued"},
+            {"name": "Bid Leveling", "detail": "Technical, commercial, schedule and risk scores are reviewed.", "owner_role": "Project Controls", "status": "Queued", "tone": "queued"},
+            {"name": "Award Recommendation", "detail": "Recommended bidder is selected for contract or purchase order action.", "owner_role": "Control Manager", "status": "Queued", "tone": "queued"},
+        ],
+        "transitions": [
+            {"action": "issue_rfq", "label": "Issue RFQ", "from_step": "Package Setup", "to_step": "Issue / Invite", "process_status": "in_review", "ball_in_court": "Contract Manager", "permission_key": "can_manage_contract"},
+            {"action": "receive_bid", "label": "Receive Bid", "from_step": "Issue / Invite", "to_step": "Bid Receipt", "process_status": "in_review", "ball_in_court": "Contract Manager", "permission_key": "can_manage_contract"},
+            {"action": "level_bid", "label": "Level Bid", "from_step": "Bid Receipt", "to_step": "Bid Leveling", "process_status": "in_review", "ball_in_court": "Project Controls"},
+            {"action": "recommend_award", "label": "Recommend Award", "from_step": "Bid Leveling", "to_step": "Award Recommendation", "process_status": "approved", "ball_in_court": "Control Manager", "requires_approval": True, "permission_key": "can_approve_workflow"},
+        ],
+    },
+    {
         "code": "DOC-LINK",
         "name": "Document Link",
         "category": "Document Control",

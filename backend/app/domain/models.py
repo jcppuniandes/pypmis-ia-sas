@@ -791,6 +791,75 @@ class PaymentCertificate(Base):
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "certificate_no"),)
 
 
+class WarehouseReceipt(Base):
+    __tablename__ = "warehouse_receipts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    contract_id: Mapped[int | None] = mapped_column(ForeignKey("contracts.id"), index=True)
+    purchase_order_id: Mapped[int | None] = mapped_column(ForeignKey("purchase_orders.id"), index=True)
+    receipt_no: Mapped[str] = mapped_column(String(120), index=True)
+    description: Mapped[str] = mapped_column(String(260), default="")
+    received_quantity: Mapped[float] = mapped_column(Float, default=0)
+    unit_cost: Mapped[float] = mapped_column(Float, default=0)
+    received_value: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="accepted")
+    received_on: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "receipt_no"),)
+
+
+class RFQPackage(Base):
+    __tablename__ = "rfq_packages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    package_no: Mapped[str] = mapped_column(String(120), index=True)
+    title: Mapped[str] = mapped_column(String(220))
+    scope_summary: Mapped[str] = mapped_column(Text, default="")
+    procurement_method: Mapped[str] = mapped_column(String(80), default="RFQ")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    budget_amount: Mapped[float] = mapped_column(Float, default=0)
+    issue_date: Mapped[date | None] = mapped_column(Date)
+    due_date: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "package_no"),)
+
+
+class RFQBid(Base):
+    __tablename__ = "rfq_bids"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    rfq_package_id: Mapped[int] = mapped_column(ForeignKey("rfq_packages.id"), index=True)
+    bidder_name: Mapped[str] = mapped_column(String(180))
+    bid_amount: Mapped[float] = mapped_column(Float, default=0)
+    technical_score: Mapped[float] = mapped_column(Float, default=0)
+    commercial_score: Mapped[float] = mapped_column(Float, default=0)
+    schedule_score: Mapped[float] = mapped_column(Float, default=0)
+    risk_score: Mapped[float] = mapped_column(Float, default=0)
+    weighted_score: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="received")
+    submitted_on: Mapped[date | None] = mapped_column(Date)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "rfq_package_id", "bidder_name"),)
+
+
 class ContractCommunication(Base):
     __tablename__ = "contract_communications"
 

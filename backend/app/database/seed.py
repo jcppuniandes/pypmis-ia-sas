@@ -44,6 +44,8 @@ from app.domain.models import (
     ProjectControlPlan,
     ProjectMembership,
     PurchaseOrder,
+    RFQBid,
+    RFQPackage,
     RelationshipType,
     Resource,
     ControlPeriod,
@@ -53,6 +55,7 @@ from app.domain.models import (
     ScheduleValidationFinding,
     Tenant,
     UserAccount,
+    WarehouseReceipt,
     WorkPackage,
     WorkPackageConstraint,
     WBS,
@@ -78,6 +81,8 @@ def seed_demo(db: Session) -> None:
             ensure_contract_records(db, existing.id, project.id)
             ensure_purchase_order_records(db, existing.id, project.id)
             ensure_payment_certificate_records(db, existing.id, project.id)
+            ensure_warehouse_receipt_records(db, existing.id, project.id)
+            ensure_rfq_records(db, existing.id, project.id)
             ensure_awp_records(db, existing.id, project.id)
             ensure_claim_entitlement_records(db, existing.id, project.id)
             ensure_claim_notice_and_impact_records(db, existing.id, project.id)
@@ -93,6 +98,8 @@ def seed_demo(db: Session) -> None:
             ensure_contract_records(db, existing.id, secondary.id)
             ensure_purchase_order_records(db, existing.id, secondary.id)
             ensure_payment_certificate_records(db, existing.id, secondary.id)
+            ensure_warehouse_receipt_records(db, existing.id, secondary.id)
+            ensure_rfq_records(db, existing.id, secondary.id)
             ensure_awp_records(db, existing.id, secondary.id)
             ensure_claim_entitlement_records(db, existing.id, secondary.id)
             ensure_claim_notice_and_impact_records(db, existing.id, secondary.id)
@@ -253,6 +260,8 @@ def seed_demo(db: Session) -> None:
     ensure_contract_records(db, tenant.id, project.id)
     ensure_purchase_order_records(db, tenant.id, project.id)
     ensure_payment_certificate_records(db, tenant.id, project.id)
+    ensure_warehouse_receipt_records(db, tenant.id, project.id)
+    ensure_rfq_records(db, tenant.id, project.id)
     ControlCoreService(db).run_project_cycle(tenant.id, project.id)
     ensure_control_history_records(db, tenant.id, project.id)
     ensure_awp_records(db, tenant.id, project.id)
@@ -265,6 +274,8 @@ def seed_demo(db: Session) -> None:
         ensure_contract_records(db, tenant.id, secondary.id)
         ensure_purchase_order_records(db, tenant.id, secondary.id)
         ensure_payment_certificate_records(db, tenant.id, secondary.id)
+        ensure_warehouse_receipt_records(db, tenant.id, secondary.id)
+        ensure_rfq_records(db, tenant.id, secondary.id)
         ensure_control_account_mapping_records(db, tenant.id, secondary.id)
         ensure_awp_records(db, tenant.id, secondary.id)
         ensure_claim_entitlement_records(db, tenant.id, secondary.id)
@@ -419,10 +430,10 @@ def ensure_project_control_plan(db: Session, tenant_id: int, project_id: int) ->
         ),
         "control_strategy": "Use schedule intake, data quality gates, WBS/CBS/activity mapping, EVM, AWP readiness, claims exposure and workflow approvals.",
         "progress_measurement_rule": "Capture physical percent, quantities, labor hours and field evidence by control account each control period.",
-        "cost_measurement_rule": "Capture actual and committed costs by control account; reconcile BAC, PV, EV, AC, CPI, EAC and VAC before reporting.",
+        "cost_measurement_rule": "Committed cost comes from contracts and purchase orders; incurred cost comes from payment certificates and warehouse receipts by control account before BAC, PV, EV, AC, CPI, EAC and VAC reporting.",
         "change_management_rule": "Identify deviations, quantify cost/schedule impact, route approvals, update forecasts and preserve audit trail.",
         "risk_management_rule": "Review schedule quality, productivity, cost variance, open constraints, procurement slippage, notices and claim exposure.",
-        "procurement_strategy": "Track procurement and contracting constraints that can affect workface readiness, critical path or contractual notices.",
+        "procurement_strategy": "Track RFQ packages, bid evaluation, purchase orders, warehouse receipts and contracting constraints that can affect workface readiness, critical path or contractual notices.",
         "document_control_rule": "Link field reports, correspondence, notices, evidence, decisions and baseline artifacts to the controlled entity.",
         "reporting_cadence": "Weekly",
         "status": "active",
@@ -1012,6 +1023,187 @@ def ensure_payment_certificate_records(db: Session, tenant_id: int, project_id: 
                 retained_amount=retained_amount,
                 status="certified",
                 certified_on=date(2026, 5, 5),
+            )
+        )
+    db.commit()
+
+
+def ensure_warehouse_receipt_records(db: Session, tenant_id: int, project_id: int) -> None:
+    inspector = inspect(db.get_bind())
+    if "warehouse_receipts" not in set(inspector.get_table_names()):
+        return
+
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    accounts = list(
+        db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+    )
+    if not accounts:
+        return
+    purchase_orders = list(
+        db.scalars(
+            select(PurchaseOrder)
+            .where(PurchaseOrder.tenant_id == tenant_id, PurchaseOrder.project_id == project_id)
+            .order_by(PurchaseOrder.po_number)
+        ).all()
+    )
+    contracts = list(
+        db.scalars(
+            select(Contract)
+            .where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+            .order_by(Contract.code)
+        ).all()
+    )
+    po_by_account = {order.control_account_id: order for order in purchase_orders if order.control_account_id}
+    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    is_turnaround = project.code == "REF-TURN-002"
+    rows = (
+        [
+            ("GRN-CTRL-100-001", accounts[0], "Mechanical material receipt and warehouse acceptance", 12, 18_500, 222_000),
+            ("GRN-CTRL-210-001", accounts[1] if len(accounts) > 1 else accounts[0], "Valve and piping materials received in warehouse", 8, 42_500, 340_000),
+            ("GRN-CTRL-310-001", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical bulk materials warehouse receipt", 15, 9_200, 138_000),
+        ]
+        if not is_turnaround
+        else [
+            ("GRN-TA-120-001", accounts[0], "Shutdown mechanical spares received", 9, 22_000, 198_000),
+            ("GRN-TA-220-001", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation materials received", 6, 15_500, 93_000),
+        ]
+    )
+    existing_numbers = set(
+        db.scalars(
+            select(WarehouseReceipt.receipt_no).where(
+                WarehouseReceipt.tenant_id == tenant_id,
+                WarehouseReceipt.project_id == project_id,
+            )
+        ).all()
+    )
+    for receipt_no, account, description, quantity, unit_cost, received_value in rows:
+        if receipt_no in existing_numbers:
+            continue
+        db.add(
+            WarehouseReceipt(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                control_account_id=account.id,
+                contract_id=contract_by_account.get(account.id).id if account.id in contract_by_account else None,
+                purchase_order_id=po_by_account.get(account.id).id if account.id in po_by_account else None,
+                receipt_no=receipt_no,
+                description=description,
+                received_quantity=quantity,
+                unit_cost=unit_cost,
+                received_value=received_value,
+                status="accepted",
+                received_on=date(2026, 5, 6),
+            )
+        )
+    db.commit()
+
+
+def ensure_rfq_records(db: Session, tenant_id: int, project_id: int) -> None:
+    inspector = inspect(db.get_bind())
+    table_names = set(inspector.get_table_names())
+    if "rfq_packages" not in table_names or "rfq_bids" not in table_names:
+        return
+
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    accounts = list(
+        db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+    )
+    if not accounts:
+        return
+    is_turnaround = project.code == "REF-TURN-002"
+    package_rows = (
+        [
+            ("RFQ-CTRL-2101", accounts[1] if len(accounts) > 1 else accounts[0], "Valve supply and expediting RFQ", "Supply valves, expediting support, QA dossier and warehouse delivery requirements.", 1_050_000, "under_evaluation"),
+            ("RFQ-CTRL-3101", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical installation services RFQ", "Field electrical hook-up support, supervision, test packs and precommissioning labor.", 620_000, "issued"),
+        ]
+        if not is_turnaround
+        else [
+            ("RFQ-TA-2201", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation loop-check RFQ", "Loop checks, test packs, calibration records and turnaround shift support.", 330_000, "under_evaluation"),
+        ]
+    )
+    existing_packages = {
+        package.package_no: package
+        for package in db.scalars(
+            select(RFQPackage).where(RFQPackage.tenant_id == tenant_id, RFQPackage.project_id == project_id)
+        ).all()
+    }
+    for package_no, account, title, scope, budget, status in package_rows:
+        package = existing_packages.get(package_no)
+        if not package:
+            package = RFQPackage(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                control_account_id=account.id,
+                package_no=package_no,
+                title=title,
+                scope_summary=scope,
+                procurement_method="RFQ",
+                status=status,
+                budget_amount=budget,
+                issue_date=date(2026, 5, 1),
+                due_date=date(2026, 5, 18),
+            )
+            db.add(package)
+            db.flush()
+            existing_packages[package_no] = package
+
+    primary_package = existing_packages.get("RFQ-TA-2201" if is_turnaround else "RFQ-CTRL-2101")
+    if not primary_package:
+        db.commit()
+        return
+
+    existing_bidder_names = set(
+        db.scalars(
+            select(RFQBid.bidder_name).where(
+                RFQBid.tenant_id == tenant_id,
+                RFQBid.project_id == project_id,
+                RFQBid.rfq_package_id == primary_package.id,
+            )
+        ).all()
+    )
+    bid_rows = (
+        [
+            ("Andes Industrial Supply", 970_000, 84, 88, 78, 80, "Shortlisted; best commercial position with acceptable schedule."),
+            ("Global Valve Partners", 1_020_000, 91, 76, 86, 84, "Technically strong and lower execution risk."),
+            ("Rapid Pipe Logistics", 945_000, 74, 90, 72, 66, "Lowest price but higher delivery risk."),
+        ]
+        if not is_turnaround
+        else [
+            ("LoopCheck Services", 305_000, 86, 84, 82, 78, "Balanced technical and commercial offer."),
+            ("I&C Rapid Response", 322_000, 90, 78, 88, 84, "Higher score for schedule recovery capacity."),
+        ]
+    )
+    for bidder_name, amount, technical, commercial, schedule, risk, notes in bid_rows:
+        if bidder_name in existing_bidder_names:
+            continue
+        weighted_score = round(technical * 0.35 + commercial * 0.35 + schedule * 0.15 + risk * 0.15, 1)
+        db.add(
+            RFQBid(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                rfq_package_id=primary_package.id,
+                bidder_name=bidder_name,
+                bid_amount=amount,
+                technical_score=technical,
+                commercial_score=commercial,
+                schedule_score=schedule,
+                risk_score=risk,
+                weighted_score=weighted_score,
+                status="received",
+                submitted_on=date(2026, 5, 12),
+                notes=notes,
             )
         )
     db.commit()

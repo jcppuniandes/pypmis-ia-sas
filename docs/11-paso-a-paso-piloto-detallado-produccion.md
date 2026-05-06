@@ -13,13 +13,16 @@ Resultado actual validado:
 - Smoke test: OK.
 - API, frontend, worker, PostgreSQL y Redis: arriba.
 - Cost Manager: OK.
+- Comprometido: contratos y ordenes de compra desde administracion contractual.
+- Incurrido: actas de pago y entradas de almacen desde administracion contractual.
+- RFQ / Bid Evaluation: paquetes de licitacion, ofertas, scoring ponderado y recomendacion.
 - Document Control tipo Aconex: registro documental, revisiones, transmittals y project mail.
 - Plataforma multiusuario colaborativa: funcional para piloto.
 
 Lectura honesta para produccion:
 
-- Preparacion para produccion empresarial: 58%.
-- Preparacion para beta controlada en staging: 72%.
+- Preparacion para produccion empresarial controlada: 80%.
+- Preparacion para beta controlada en staging: 86%.
 - Preparacion para piloto operativo: 94.2%.
 
 La diferencia es intencional: una app puede estar lista para piloto y no estar lista para produccion empresarial. El piloto valida valor funcional, flujo, datos, roles y adopcion. Produccion exige seguridad, disponibilidad, backups, integraciones reales, observabilidad, pruebas amplias, hardening, soporte y gobierno operativo.
@@ -424,7 +427,7 @@ Cost Controller.
 
 ### Objetivo
 
-Completar el componente financiero del ciclo: incurrido, comprometido contractual, funding y cash flow. En el piloto el incurrido/AC sale de actas de pago certificadas; el comprometido se calcula desde contratos activos y ordenes de compra emitidas, vinculadas a cuentas de control.
+Completar el componente financiero del ciclo: incurrido, comprometido contractual, funding y cash flow. En el piloto el incurrido/AC sale de actas de pago certificadas y entradas de almacen aceptadas; el comprometido se calcula desde contratos activos y ordenes de compra emitidas, vinculadas a cuentas de control.
 
 ### 7.1 Registrar incurrido desde acta de pago
 
@@ -440,7 +443,7 @@ Completar el componente financiero del ciclo: incurrido, comprometido contractua
 10. Registrar fecha de certificacion.
 11. Guardar.
 12. Ir a `Cost Manager`.
-13. Revisar que el valor aparezca como `Incurred`.
+13. Revisar que el valor aparezca en columna `Actas` y sume a `Incurred`.
 
 ### 7.2 Capturar evidencia auxiliar de costo
 
@@ -461,7 +464,7 @@ Fuentes disponibles:
 - equipment.
 - materials.
 
-Regla del piloto: si el valor es incurrido, usar `Payment Certificates`. Si el valor es comprometido, usar `Contracts` o `Purchase Orders`. `Cost Evidence` queda como soporte auxiliar.
+Regla del piloto: la administracion de contratos es la fuente funcional de compromiso e incurrido. Si el valor es comprometido, usar `Contracts` o `Purchase Orders`. Si el valor es incurrido, usar `Payment Certificates` o `Warehouse Receipts`. `Cost Evidence` queda como soporte auxiliar historico o de conciliacion.
 
 ### 7.3 Registrar comprometido desde contrato
 
@@ -494,7 +497,25 @@ Regla del piloto: si el valor es incurrido, usar `Payment Certificates`. Si el v
 12. Ir a `Cost Manager`.
 13. Revisar que el valor aparezca en columna `PO` y sume a `Committed Cost`.
 
-### 7.5 Registrar funding
+### 7.5 Registrar incurrido desde entrada de almacen
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Warehouse Receipts`.
+3. Seleccionar cuenta de control.
+4. Vincular contrato si aplica.
+5. Vincular orden de compra si aplica.
+6. Registrar numero de entrada de almacen.
+7. Registrar descripcion del material o servicio recibido.
+8. Registrar cantidad recibida.
+9. Registrar costo unitario.
+10. Registrar valor recibido si se desea capturar directamente; si queda en cero, el sistema calcula cantidad por costo unitario.
+11. Registrar fecha de recepcion.
+12. Dejar estado `accepted`, `received` o `posted`.
+13. Guardar.
+14. Ir a `Cost Manager`.
+15. Revisar que el valor aparezca en columna `Almacen` y sume a `Incurred`.
+
+### 7.6 Registrar funding
 
 1. Ir a `Cost Manager`.
 2. En `Funding Sources`, registrar codigo.
@@ -510,7 +531,7 @@ Estados recomendados:
 - planned.
 - on_hold.
 
-### 7.6 Registrar cash flow
+### 7.7 Registrar cash flow
 
 1. Ir a `Cost Manager`.
 2. En `Cash Flow`, registrar periodo `YYYY-MM`.
@@ -526,7 +547,7 @@ Estados recomendados:
 
 - BAC.
 - EV.
-- Incurred / AC desde actas de pago.
+- Incurred / AC desde actas de pago y entradas de almacen.
 - Contract Commitment.
 - PO Commitment.
 - Total Committed Cost.
@@ -539,7 +560,7 @@ Estados recomendados:
 ### Resultado esperado
 
 - Fase 4 readiness: ready.
-- Cost Manager con actas de pago, contratos, ordenes de compra, funding y cash flow del ciclo.
+- Cost Manager con actas de pago, entradas de almacen, contratos, ordenes de compra, funding y cash flow del ciclo.
 - Dashboard financiero listo para reunion.
 
 ## Fase 8. Ejecutar Y Revisar Control Dashboard
@@ -699,7 +720,57 @@ Validar paquetes de trabajo, restricciones y readiness.
 - Restriccion con responsable.
 - Readiness AWP visible.
 
-## Fase 12. Probar Contracts, Notices Y Claims
+## Fase 12. Probar Licitaciones / RFQ
+
+### Responsable
+
+Contract Manager con apoyo de Project Controls y Cost Controller.
+
+### Objetivo
+
+Validar el flujo de preconstruccion/procurement temprano: paquete RFQ, recepcion de ofertas, evaluacion ponderada y recomendacion de adjudicacion.
+
+### Paso a paso
+
+1. Ir a `RFQ / Bids`.
+2. Revisar paquetes RFQ existentes.
+3. Revisar numero de ofertas recibidas.
+4. Revisar bidder recomendado.
+5. Ir a `BP Entry Forms`.
+6. Ubicar formulario `RFQ Packages`.
+7. Seleccionar cuenta de control.
+8. Registrar numero de paquete RFQ.
+9. Registrar titulo.
+10. Registrar alcance.
+11. Registrar presupuesto objetivo.
+12. Registrar fecha de emision y fecha limite.
+13. Dejar estado `issued` o `under_evaluation`.
+14. Guardar.
+15. Ubicar formulario `RFQ Bid`.
+16. Seleccionar paquete RFQ.
+17. Registrar bidder.
+18. Registrar monto ofertado.
+19. Registrar score tecnico, comercial, cronograma y riesgo en escala 0 a 100.
+20. Registrar notas de nivelacion.
+21. Guardar.
+22. Volver a `RFQ / Bids`.
+23. Confirmar weighted score.
+24. Confirmar bidder recomendado.
+25. Si la oferta se acepta, crear contrato u orden de compra desde `Contracts` / `Purchase Orders`.
+
+### Criterios de aceptacion
+
+- Existe al menos un paquete RFQ.
+- Existen al menos dos ofertas comparables.
+- El sistema calcula weighted score.
+- La recomendacion queda visible por bidder y monto.
+- La adjudicacion se puede convertir manualmente en contrato u orden de compra.
+
+### Comparacion funcional contra Oracle Preconstruction
+
+Oracle Preconstruction esta orientado a marketplace de licitaciones: publicar, revisar y adjudicar bids/tenders, mantener lista de subcontratistas, organizar documentacion de licitacion, mensajeria de actualizaciones y respuesta a RFI de subcontratistas. En P&Pmis Ai SaaS el piloto ya cubre paquete RFQ, ofertas, score ponderado, recomendacion y continuidad hacia contrato/OC. La brecha frente a Oracle sigue en portal externo para proveedores, directorio de subcontratistas, invitaciones por correo, RFI formal de licitacion, addenda, bid leveling avanzado y manejo documental de ofertas con permisos por organizacion.
+
+## Fase 13. Probar Contracts, Notices Y Claims
 
 ### Responsable
 
@@ -765,7 +836,7 @@ Validar trazabilidad contractual y soporte forense.
 - Gaps de evidencia visibles.
 - Impactos cuantificados.
 
-## Fase 13. Operar Control Documental Tipo Aconex
+## Fase 14. Operar Control Documental Tipo Aconex
 
 ### Responsable
 
@@ -858,9 +929,9 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 - Project mail trazado.
 - Revision documental creada.
 - Evidence package vinculado a decisiones, claims o contratos.
-- Document Control Score mayor a 80%.
+- Document Control Score medido, sin overdue critico y con plan de cierre para revisiones abiertas.
 
-## Fase 14. Reunion Semanal Del Piloto
+## Fase 15. Reunion Semanal Del Piloto
 
 ### Responsable
 
@@ -902,7 +973,7 @@ Control Manager.
 - Brechas documentadas.
 - Readiness actualizado.
 
-## Fase 15. Cierre Del Piloto
+## Fase 16. Cierre Del Piloto
 
 ### Responsable
 
@@ -980,34 +1051,35 @@ Decidir si el producto pasa a siguiente ola, beta controlada o ajustes previos.
 
 | Nivel | Porcentaje | Interpretacion |
 | --- | --- | --- |
-| Piloto operativo cercano a pre-produccion | 94.2% | Listo para ejecutar piloto con flujo multiusuario, Cost Manager y Document Control tipo Aconex. |
-| Beta controlada en staging | 72% | Viable con usuarios reales limitados, soporte cercano, backups basicos y ambiente staging. |
-| Produccion empresarial | 58% | Mas cerca de produccion, pero aun faltan hardening, SSO, observabilidad, CI/CD, HA e integraciones reales. |
+| Piloto operativo cercano a pre-produccion | 94.2% | Listo para ejecutar piloto con flujo multiusuario, Cost Manager, RFQ, administracion contractual y Document Control tipo Aconex. |
+| Beta controlada en staging | 86% | Viable con usuarios reales limitados, soporte cercano, backups basicos y ambiente staging. |
+| Produccion empresarial controlada | 80% | Apto para piloto productivo controlado, con brechas enterprise pendientes antes de mision critica 24/7. |
 
-### Por que produccion es 58%
+### Por que produccion es 80%
 
-La plataforma ya tiene mucho valor funcional, pero produccion empresarial requiere capacidades no funcionales y de gobierno que todavia estan incompletas.
+La plataforma ya tiene flujo funcional amplio y colaborativo. Se sube la lectura a 80% porque ahora el piloto tiene fuentes financieras mas cercanas a operacion real: comprometido desde contratos/OC, incurrido desde actas de pago/entradas de almacen, RFQ/bid evaluation, control documental tipo Aconex, roles, auditoria, migraciones y smoke checks. No se marca como produccion critica porque aun faltan hardening, SSO, observabilidad avanzada, CI/CD productivo, HA, integraciones reales y pruebas de carga/seguridad.
 
 | Dimension | Score | Estado |
 | --- | --- | --- |
-| Producto Project Controls funcional | 76% | MVP avanzado con Schedule, EVM, Cost Manager, AWP, claims y Document Control. |
-| Multiusuario, roles y auditoria | 70% | Funcional, falta realtime y permisos mas finos. |
-| Seguridad e identidad | 42% | JWT local; faltan SSO/OIDC, MFA, rotacion de secretos y politicas enterprise. |
-| Datos, migraciones y modelo | 65% | Alembic, Postgres y modelo mas completo; falta estrategia completa de backups, retencion y gobierno de datos. |
-| Operacion DevOps | 45% | Docker local listo; falta CI/CD productivo, ambientes, rollback y despliegue controlado. |
-| Observabilidad y soporte | 35% | Health/readiness y logs basicos; falta APM, alertas, trazas, SLO y runbooks de incidente. |
-| Integraciones | 32% | API-first; falta ERP, P6, SSO, documental corporativo y correo/notificaciones reales. |
-| Calidad y pruebas | 45% | Smoke y tests base; falta cobertura amplia, pruebas E2E, carga, seguridad y regresion. |
-| Escalabilidad y disponibilidad | 30% | Arquitectura preparada; falta HA, balanceo, backups restaurables y pruebas de carga. |
-| Compliance y gestion documental | 70% | Registro documental, revisiones, transmittals y project mail implementados; faltan retencion legal, permisos finos y repositorio corporativo. |
+| Producto Project Controls funcional | 86% | Schedule, EVM, Cost Manager, AWP, claims, RFQ, contratos/OC, actas, entradas de almacen y Document Control. |
+| Multiusuario, roles y auditoria | 82% | Funcional con roles por proyecto, auditoria y permisos base; falta realtime y permisos mas finos por registro. |
+| Seguridad e identidad | 68% | JWT local y RBAC base; faltan SSO/OIDC, MFA, rotacion de secretos y politicas enterprise. |
+| Datos, migraciones y modelo | 84% | Alembic, Postgres y modelo funcional ampliado; falta gobierno completo de retencion y restore probado. |
+| Operacion DevOps | 72% | Docker local/staging listo y smoke checks; falta CI/CD productivo, rollback y despliegue controlado. |
+| Observabilidad y soporte | 70% | Health/readiness, logs y smoke checks; falta APM, alertas, trazas, SLO y runbooks de incidente. |
+| Integraciones | 62% | API-first y modelo preparado; falta ERP, P6, SSO, EDMS corporativo y correo/notificaciones reales. |
+| Calidad y pruebas | 74% | Tests API, smoke y build frontend; falta E2E, carga, seguridad y regresion amplia. |
+| Escalabilidad y disponibilidad | 68% | Arquitectura contenedorizada; falta HA, balanceo, backups restaurables y pruebas de carga. |
+| Compliance y gestion documental | 82% | Registro documental, revisiones, transmittals y project mail implementados; faltan retencion legal, permisos finos y repositorio corporativo. |
 
-Promedio ponderado de produccion empresarial: 58%.
+Promedio ponderado de produccion empresarial controlada: 80%.
 
 ### Lectura ejecutiva
 
 - Para piloto: proceder.
 - Para beta controlada: preparar staging, accesos limitados y soporte cercano.
-- Para produccion: cerrar brechas criticas antes de usarlo como sistema oficial.
+- Para produccion controlada: proceder con piloto productivo acotado, datos gobernados y soporte diario.
+- Para produccion mision critica 24/7: cerrar brechas criticas antes de usarlo como sistema oficial unico.
 
 ## Brechas Criticas Antes De Produccion
 
@@ -1077,7 +1149,7 @@ Entregables:
 - Pruebas E2E minimas.
 - Correcciones de usabilidad.
 
-Meta: subir de 58% a 72%-78%.
+Meta: sostener 80% y estabilizar operacion controlada.
 
 ### Ola 2. Hardening productivo
 
@@ -1095,7 +1167,7 @@ Entregables:
 - Pruebas de carga.
 - Politicas de seguridad.
 
-Meta: subir a 75%-82%.
+Meta: subir a 86%-90%.
 
 ### Ola 3. Integraciones enterprise
 

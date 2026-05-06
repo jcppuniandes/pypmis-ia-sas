@@ -192,7 +192,49 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
                 "status": "certified",
             },
         )
+        warehouse_receipt_response = client.post(
+            f"/api/v1/projects/{project_id}/warehouse-receipts",
+            headers=headers,
+            json={
+                "control_account_id": control_account_id,
+                "contract_id": contract["id"],
+                "purchase_order_id": purchase_order_response.json()["id"],
+                "receipt_no": f"GRN-TEST-{suffix}",
+                "description": "Pilot warehouse receipt",
+                "received_quantity": 2,
+                "unit_cost": 875,
+                "received_value": 1750,
+                "status": "accepted",
+            },
+        )
+        rfq_response = client.post(
+            f"/api/v1/projects/{project_id}/rfq-packages",
+            headers=headers,
+            json={
+                "control_account_id": control_account_id,
+                "package_no": f"RFQ-TEST-{suffix}",
+                "title": "Pilot RFQ package",
+                "scope_summary": "Bid package for pilot validation.",
+                "procurement_method": "RFQ",
+                "status": "issued",
+                "budget_amount": 20000,
+            },
+        )
+        rfq_bid_response = client.post(
+            f"/api/v1/projects/{project_id}/rfq-packages/{rfq_response.json()['id']}/bids",
+            headers=headers,
+            json={
+                "bidder_name": f"Pilot Bidder {suffix}",
+                "bid_amount": 18500,
+                "technical_score": 86,
+                "commercial_score": 90,
+                "schedule_score": 78,
+                "risk_score": 82,
+                "status": "received",
+            },
+        )
         summary_response = client.get(f"/api/v1/projects/{project_id}/cost-manager-summary", headers=headers)
+        dashboard_response = client.get(f"/api/v1/projects/{project_id}/dashboard", headers=headers)
 
     assert funding_response.status_code == 200
     assert funding_update_response.status_code == 200
@@ -202,11 +244,17 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
     assert contract_response.status_code == 200
     assert purchase_order_response.status_code == 200
     assert payment_certificate_response.status_code == 200
+    assert warehouse_receipt_response.status_code == 200
+    assert rfq_response.status_code == 200
+    assert rfq_bid_response.status_code == 200
     assert summary_response.status_code == 200
+    assert dashboard_response.status_code == 200
     assert summary_response.json()["total_funding"] >= funding_update_response.json()["amount"]
     assert summary_response.json()["total_incurred_from_payment_certificates"] >= payment_certificate_response.json()["certified_amount"]
+    assert summary_response.json()["total_incurred_from_warehouse_receipts"] >= warehouse_receipt_response.json()["received_value"]
     assert summary_response.json()["total_contract_commitments"] >= contract_response.json()["value"]
     assert summary_response.json()["total_purchase_order_commitments"] >= purchase_order_response.json()["committed_amount"]
+    assert dashboard_response.json()["rfq_summary"]["bids_received"] >= 1
 
 
 def test_document_control_register_transmittal_mail_and_review() -> None:

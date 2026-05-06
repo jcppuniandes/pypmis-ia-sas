@@ -19,6 +19,12 @@
 - `ChangeRequest`: desviacion, analisis, aprobacion y seguimiento.
 - `Claim`: evento reclamable, causalidad, impacto y evidencia.
 - `ClaimEntitlementItem`: matriz de demostracion de entitlement para RP120R-21 y RP130R-23, con contrato, evento, aviso, causalidad, impacto, quantum, mitigacion, evidencia y cumulative impact.
+- `Contract`: contrato fuente del comprometido y base de comunicaciones/notices/claims.
+- `PurchaseOrder`: orden de compra fuente del comprometido.
+- `PaymentCertificate`: acta de pago fuente del incurrido certificado.
+- `WarehouseReceipt`: entrada de almacen fuente del incurrido recibido.
+- `RFQPackage`: paquete de licitacion/RFQ con alcance, presupuesto, fechas y estado.
+- `RFQBid`: oferta de bidder con monto y score tecnico/comercial/cronograma/riesgo.
 - `Event`: evento de campo, contractual o de riesgo.
 - `Document`: evidencia vinculable.
 - `WorkPackage`: CWA/CWP/EWP/PWP/IWP conectado a cuenta de control, secuencia, path of construction y estado de readiness.
@@ -39,6 +45,12 @@ WBS 1..n ControlAccount
 ControlAccount 1..n Activity
 ControlAccount 1..n Budget
 ControlAccount 1..n CostRecord
+ControlAccount 1..n Contract
+ControlAccount 1..n PurchaseOrder
+ControlAccount 1..n PaymentCertificate
+ControlAccount 1..n WarehouseReceipt
+ControlAccount 1..n RFQPackage
+RFQPackage 1..n RFQBid
 ControlAccount 1..n ProgressRecord
 ControlAccount 1..n KPI
 ControlAccount 1..n Alert

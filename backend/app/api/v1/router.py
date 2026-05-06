@@ -53,11 +53,14 @@ from app.domain.models import (
     ProjectControlPlan,
     ProjectMembership,
     PurchaseOrder,
+    RFQBid,
+    RFQPackage,
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleValidationFinding,
     Tenant,
     UserAccount,
+    WarehouseReceipt,
     WorkPackage,
     WorkPackageConstraint,
     WBS,
@@ -146,6 +149,13 @@ from app.domain.schemas import (
     PurchaseOrderCreate,
     PurchaseOrderOut,
     PurchaseOrderUpdate,
+    RFQBidCreate,
+    RFQBidOut,
+    RFQBidUpdate,
+    RFQPackageCreate,
+    RFQPackageOut,
+    RFQPackageUpdate,
+    RFQSummary,
     ProjectOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
@@ -155,6 +165,9 @@ from app.domain.schemas import (
     UserCreate,
     UserOut,
     AWPReadinessSummary,
+    WarehouseReceiptCreate,
+    WarehouseReceiptOut,
+    WarehouseReceiptUpdate,
     WBSOut,
     WorkPackageConstraintCreate,
     WorkPackageConstraintOut,
@@ -1240,7 +1253,7 @@ def create_payment_certificate(
     user_id: int = Depends(get_user_id),
 ) -> PaymentCertificate:
     membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_capture_cost", "Current role cannot certify incurred cost")
+    _require_contract_or_cost_role(membership, "Current role cannot certify incurred cost")
     current_user = _require_user(db, tenant_id, user_id)
     if payload.control_account_id is not None:
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
@@ -1296,7 +1309,7 @@ def update_payment_certificate(
     user_id: int = Depends(get_user_id),
 ) -> PaymentCertificate:
     membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_capture_cost", "Current role cannot update payment certificates")
+    _require_contract_or_cost_role(membership, "Current role cannot update payment certificates")
     current_user = _require_user(db, tenant_id, user_id)
     certificate = db.scalar(
         select(PaymentCertificate).where(
@@ -1328,6 +1341,308 @@ def update_payment_certificate(
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(certificate)
     return certificate
+
+
+@router.get("/projects/{project_id}/warehouse-receipts", response_model=list[WarehouseReceiptOut])
+def list_warehouse_receipts(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[WarehouseReceipt]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _warehouse_receipts(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/warehouse-receipts", response_model=WarehouseReceiptOut)
+def create_warehouse_receipt(
+    project_id: int,
+    payload: WarehouseReceiptCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> WarehouseReceipt:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_contract_or_cost_role(membership, "Current role cannot register warehouse receipts")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.purchase_order_id is not None:
+        _require_purchase_order(db, tenant_id, project_id, payload.purchase_order_id)
+    _validate_warehouse_receipt_values(payload.received_quantity, payload.unit_cost, payload.received_value)
+    receipt_no = payload.receipt_no.strip()
+    if not receipt_no:
+        raise HTTPException(status_code=400, detail="Warehouse receipt number is required")
+    existing = db.scalar(
+        select(WarehouseReceipt).where(
+            WarehouseReceipt.tenant_id == tenant_id,
+            WarehouseReceipt.project_id == project_id,
+            WarehouseReceipt.receipt_no == receipt_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Warehouse receipt number already exists in this project")
+    received_value = _warehouse_received_value(payload.received_quantity, payload.unit_cost, payload.received_value)
+    receipt = WarehouseReceipt(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=payload.control_account_id,
+        contract_id=payload.contract_id,
+        purchase_order_id=payload.purchase_order_id,
+        receipt_no=receipt_no,
+        description=payload.description.strip(),
+        received_quantity=payload.received_quantity,
+        unit_cost=payload.unit_cost,
+        received_value=received_value,
+        status=payload.status.strip() or "accepted",
+        received_on=payload.received_on or datetime.utcnow().date(),
+    )
+    db.add(receipt)
+    db.flush()
+    _audit(db, tenant_id, project_id, "register_warehouse_receipt", "WarehouseReceipt", receipt.id, json.dumps({"receipt_no": receipt.receipt_no, "received_value": receipt.received_value}), current_user.full_name)
+    db.commit()
+    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    db.refresh(receipt)
+    return receipt
+
+
+@router.patch("/projects/{project_id}/warehouse-receipts/{receipt_id}", response_model=WarehouseReceiptOut)
+def update_warehouse_receipt(
+    project_id: int,
+    receipt_id: int,
+    payload: WarehouseReceiptUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> WarehouseReceipt:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_contract_or_cost_role(membership, "Current role cannot update warehouse receipts")
+    current_user = _require_user(db, tenant_id, user_id)
+    receipt = db.scalar(
+        select(WarehouseReceipt).where(
+            WarehouseReceipt.tenant_id == tenant_id,
+            WarehouseReceipt.project_id == project_id,
+            WarehouseReceipt.id == receipt_id,
+        )
+    )
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Warehouse receipt not found")
+    _require_current_version(receipt, payload.expected_version)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.purchase_order_id is not None:
+        _require_purchase_order(db, tenant_id, project_id, payload.purchase_order_id)
+    received_quantity = payload.received_quantity if payload.received_quantity is not None else receipt.received_quantity
+    unit_cost = payload.unit_cost if payload.unit_cost is not None else receipt.unit_cost
+    received_value = payload.received_value if payload.received_value is not None else receipt.received_value
+    _validate_warehouse_receipt_values(received_quantity, unit_cost, received_value)
+    for field in ("control_account_id", "contract_id", "purchase_order_id", "description", "received_quantity", "unit_cost", "status", "received_on"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(receipt, field, value.strip() if isinstance(value, str) else value)
+    if payload.received_value is not None or payload.received_quantity is not None or payload.unit_cost is not None:
+        receipt.received_value = _warehouse_received_value(receipt.received_quantity, receipt.unit_cost, payload.received_value if payload.received_value is not None else 0)
+    _touch_collaborative_record(receipt)
+    _audit(db, tenant_id, project_id, "update_warehouse_receipt", "WarehouseReceipt", receipt.id, json.dumps({"status": receipt.status, "version": receipt.version}), current_user.full_name)
+    db.commit()
+    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    db.refresh(receipt)
+    return receipt
+
+
+@router.get("/projects/{project_id}/rfq-packages", response_model=list[RFQPackageOut])
+def list_rfq_packages(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[RFQPackage]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _rfq_packages(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/rfq-packages", response_model=RFQPackageOut)
+def create_rfq_package(
+    project_id: int,
+    payload: RFQPackageCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RFQPackage:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot create RFQ packages")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.budget_amount < 0:
+        raise HTTPException(status_code=400, detail="RFQ budget cannot be negative")
+    package_no = payload.package_no.strip()
+    if not package_no:
+        raise HTTPException(status_code=400, detail="RFQ package number is required")
+    existing = db.scalar(
+        select(RFQPackage).where(
+            RFQPackage.tenant_id == tenant_id,
+            RFQPackage.project_id == project_id,
+            RFQPackage.package_no == package_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="RFQ package number already exists in this project")
+    package = RFQPackage(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=payload.control_account_id,
+        package_no=package_no,
+        title=payload.title.strip(),
+        scope_summary=payload.scope_summary.strip(),
+        procurement_method=payload.procurement_method.strip() or "RFQ",
+        status=payload.status.strip() or "draft",
+        budget_amount=payload.budget_amount,
+        issue_date=payload.issue_date,
+        due_date=payload.due_date,
+    )
+    db.add(package)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_rfq_package", "RFQPackage", package.id, json.dumps({"package_no": package.package_no, "budget_amount": package.budget_amount}), current_user.full_name)
+    db.commit()
+    db.refresh(package)
+    return package
+
+
+@router.patch("/projects/{project_id}/rfq-packages/{rfq_package_id}", response_model=RFQPackageOut)
+def update_rfq_package(
+    project_id: int,
+    rfq_package_id: int,
+    payload: RFQPackageUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RFQPackage:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot update RFQ packages")
+    current_user = _require_user(db, tenant_id, user_id)
+    package = _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
+    _require_current_version(package, payload.expected_version)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.budget_amount is not None and payload.budget_amount < 0:
+        raise HTTPException(status_code=400, detail="RFQ budget cannot be negative")
+    for field in ("control_account_id", "title", "scope_summary", "procurement_method", "status", "budget_amount", "issue_date", "due_date"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(package, field, value.strip() if isinstance(value, str) else value)
+    _touch_collaborative_record(package)
+    _audit(db, tenant_id, project_id, "update_rfq_package", "RFQPackage", package.id, json.dumps({"status": package.status, "version": package.version}), current_user.full_name)
+    db.commit()
+    db.refresh(package)
+    return package
+
+
+@router.get("/projects/{project_id}/rfq-packages/{rfq_package_id}/bids", response_model=list[RFQBidOut])
+def list_rfq_bids(
+    project_id: int,
+    rfq_package_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[RFQBid]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
+    return _rfq_bids(db, tenant_id, project_id, rfq_package_id)
+
+
+@router.post("/projects/{project_id}/rfq-packages/{rfq_package_id}/bids", response_model=RFQBidOut)
+def create_rfq_bid(
+    project_id: int,
+    rfq_package_id: int,
+    payload: RFQBidCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RFQBid:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot create RFQ bids")
+    current_user = _require_user(db, tenant_id, user_id)
+    _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
+    _validate_rfq_bid_values(payload.bid_amount, payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score)
+    bidder_name = payload.bidder_name.strip()
+    if not bidder_name:
+        raise HTTPException(status_code=400, detail="Bidder name is required")
+    existing = db.scalar(
+        select(RFQBid).where(
+            RFQBid.tenant_id == tenant_id,
+            RFQBid.project_id == project_id,
+            RFQBid.rfq_package_id == rfq_package_id,
+            RFQBid.bidder_name == bidder_name,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Bidder already exists for this RFQ package")
+    bid = RFQBid(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        rfq_package_id=rfq_package_id,
+        bidder_name=bidder_name,
+        bid_amount=payload.bid_amount,
+        technical_score=payload.technical_score,
+        commercial_score=payload.commercial_score,
+        schedule_score=payload.schedule_score,
+        risk_score=payload.risk_score,
+        weighted_score=_rfq_weighted_score(payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score),
+        status=payload.status.strip() or "received",
+        submitted_on=payload.submitted_on or datetime.utcnow().date(),
+        notes=payload.notes.strip(),
+    )
+    db.add(bid)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_rfq_bid", "RFQBid", bid.id, json.dumps({"bidder_name": bid.bidder_name, "weighted_score": bid.weighted_score}), current_user.full_name)
+    db.commit()
+    db.refresh(bid)
+    return bid
+
+
+@router.patch("/projects/{project_id}/rfq-bids/{bid_id}", response_model=RFQBidOut)
+def update_rfq_bid(
+    project_id: int,
+    bid_id: int,
+    payload: RFQBidUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RFQBid:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot update RFQ bids")
+    current_user = _require_user(db, tenant_id, user_id)
+    bid = db.scalar(
+        select(RFQBid).where(
+            RFQBid.tenant_id == tenant_id,
+            RFQBid.project_id == project_id,
+            RFQBid.id == bid_id,
+        )
+    )
+    if not bid:
+        raise HTTPException(status_code=404, detail="RFQ bid not found")
+    _require_current_version(bid, payload.expected_version)
+    bid_amount = payload.bid_amount if payload.bid_amount is not None else bid.bid_amount
+    technical_score = payload.technical_score if payload.technical_score is not None else bid.technical_score
+    commercial_score = payload.commercial_score if payload.commercial_score is not None else bid.commercial_score
+    schedule_score = payload.schedule_score if payload.schedule_score is not None else bid.schedule_score
+    risk_score = payload.risk_score if payload.risk_score is not None else bid.risk_score
+    _validate_rfq_bid_values(bid_amount, technical_score, commercial_score, schedule_score, risk_score)
+    for field in ("bidder_name", "bid_amount", "technical_score", "commercial_score", "schedule_score", "risk_score", "status", "submitted_on", "notes"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(bid, field, value.strip() if isinstance(value, str) else value)
+    bid.weighted_score = _rfq_weighted_score(bid.technical_score, bid.commercial_score, bid.schedule_score, bid.risk_score)
+    _touch_collaborative_record(bid)
+    _audit(db, tenant_id, project_id, "update_rfq_bid", "RFQBid", bid.id, json.dumps({"status": bid.status, "weighted_score": bid.weighted_score}), current_user.full_name)
+    db.commit()
+    db.refresh(bid)
+    return bid
 
 
 @router.get("/projects/{project_id}/communications", response_model=list[ContractCommunicationOut])
@@ -2598,7 +2913,9 @@ def get_dashboard(
     contracts = list(db.scalars(select(Contract).where(Contract.project_id == project_id, Contract.tenant_id == tenant_id).order_by(Contract.code)).all())
     purchase_orders = _purchase_orders(db, tenant_id, project_id)
     payment_certificates = _payment_certificates(db, tenant_id, project_id)
-    payment_certificates = _payment_certificates(db, tenant_id, project_id)
+    warehouse_receipts = _warehouse_receipts(db, tenant_id, project_id)
+    rfq_packages = _rfq_packages(db, tenant_id, project_id)
+    rfq_bids = _rfq_bids(db, tenant_id, project_id)
     communications = list(
         db.scalars(
             select(ContractCommunication)
@@ -2828,6 +3145,10 @@ def get_dashboard(
         contracts=[ContractOut.model_validate(contract) for contract in contracts],
         purchase_orders=[PurchaseOrderOut.model_validate(order) for order in purchase_orders],
         payment_certificates=[PaymentCertificateOut.model_validate(certificate) for certificate in payment_certificates],
+        warehouse_receipts=[WarehouseReceiptOut.model_validate(receipt) for receipt in warehouse_receipts],
+        rfq_packages=[RFQPackageOut.model_validate(package) for package in rfq_packages],
+        rfq_bids=[RFQBidOut.model_validate(bid) for bid in rfq_bids],
+        rfq_summary=_rfq_summary(rfq_packages, rfq_bids),
         communications=[ContractCommunicationOut.model_validate(communication) for communication in communications[:6]],
         documents=[DocumentOut.model_validate(document) for document in documents],
         document_transmittals=[DocumentTransmittalOut.model_validate(transmittal) for transmittal in document_transmittals],
@@ -2869,6 +3190,7 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
     )
     purchase_orders = _purchase_orders(db, tenant_id, project_id)
     payment_certificates = _payment_certificates(db, tenant_id, project_id)
+    warehouse_receipts = _warehouse_receipts(db, tenant_id, project_id)
     latest_project_kpi = db.scalars(
         select(KPI)
         .where(KPI.tenant_id == tenant_id, KPI.project_id == project_id, KPI.control_account_id.is_(None))
@@ -2896,6 +3218,11 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
         if certificate.control_account_id and certificate.status not in {"cancelled", "rejected", "void", "draft"}:
             payment_certificates_by_account[certificate.control_account_id] = payment_certificates_by_account.get(certificate.control_account_id, 0) + certificate.certified_amount
 
+    warehouse_receipts_by_account: dict[int, float] = {}
+    for receipt in warehouse_receipts:
+        if receipt.control_account_id and receipt.status not in {"cancelled", "rejected", "void", "draft"}:
+            warehouse_receipts_by_account[receipt.control_account_id] = warehouse_receipts_by_account.get(receipt.control_account_id, 0) + receipt.received_value
+
     legacy_actual_by_account: dict[int, float] = {}
     for record in cost_records:
         if record.source != CostSource.commitment:
@@ -2920,7 +3247,9 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
         planned_value = kpi.pv if kpi else budget_pv
         earned_value = kpi.ev if kpi else 0
         incurred_payment_certificate_value = payment_certificates_by_account.get(account.id, 0)
-        actual_cost = incurred_payment_certificate_value or legacy_actual_by_account.get(account.id, 0)
+        incurred_warehouse_receipt_value = warehouse_receipts_by_account.get(account.id, 0)
+        source_actual_cost = incurred_payment_certificate_value + incurred_warehouse_receipt_value
+        actual_cost = source_actual_cost or legacy_actual_by_account.get(account.id, 0)
         committed_contract_value = contract_commitments_by_account.get(account.id, 0)
         committed_purchase_order_value = po_commitments_by_account.get(account.id, 0)
         committed_cost = committed_contract_value + committed_purchase_order_value
@@ -2937,6 +3266,7 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
                 planned_value=_money(planned_value),
                 actual_cost=_money(actual_cost),
                 incurred_payment_certificate_value=_money(incurred_payment_certificate_value),
+                incurred_warehouse_receipt_value=_money(incurred_warehouse_receipt_value),
                 committed_contract_value=_money(committed_contract_value),
                 committed_purchase_order_value=_money(committed_purchase_order_value),
                 committed_cost=_money(committed_cost),
@@ -3014,6 +3344,96 @@ def _require_purchase_order(db: Session, tenant_id: int, project_id: int, purcha
     return order
 
 
+def _warehouse_receipts(db: Session, tenant_id: int, project_id: int) -> list[WarehouseReceipt]:
+    return list(
+        db.scalars(
+            select(WarehouseReceipt)
+            .where(WarehouseReceipt.tenant_id == tenant_id, WarehouseReceipt.project_id == project_id)
+            .order_by(WarehouseReceipt.received_on.desc(), WarehouseReceipt.receipt_no)
+        ).all()
+    )
+
+
+def _require_contract_or_cost_role(membership: ProjectMembership, message: str) -> None:
+    if not (membership.can_manage_contract or membership.can_capture_cost):
+        raise HTTPException(status_code=403, detail=message)
+
+
+def _validate_warehouse_receipt_values(received_quantity: float, unit_cost: float, received_value: float) -> None:
+    if received_quantity < 0:
+        raise HTTPException(status_code=400, detail="Received quantity cannot be negative")
+    if unit_cost < 0:
+        raise HTTPException(status_code=400, detail="Unit cost cannot be negative")
+    if received_value < 0:
+        raise HTTPException(status_code=400, detail="Received value cannot be negative")
+    if received_value <= 0 and received_quantity * unit_cost <= 0:
+        raise HTTPException(status_code=400, detail="Warehouse receipt must have received value or quantity times unit cost")
+
+
+def _warehouse_received_value(received_quantity: float, unit_cost: float, received_value: float) -> float:
+    return _money(received_value if received_value > 0 else received_quantity * unit_cost)
+
+
+def _rfq_packages(db: Session, tenant_id: int, project_id: int) -> list[RFQPackage]:
+    return list(
+        db.scalars(
+            select(RFQPackage)
+            .where(RFQPackage.tenant_id == tenant_id, RFQPackage.project_id == project_id)
+            .order_by(RFQPackage.due_date, RFQPackage.package_no)
+        ).all()
+    )
+
+
+def _rfq_bids(db: Session, tenant_id: int, project_id: int, rfq_package_id: int | None = None) -> list[RFQBid]:
+    query = select(RFQBid).where(RFQBid.tenant_id == tenant_id, RFQBid.project_id == project_id)
+    if rfq_package_id is not None:
+        query = query.where(RFQBid.rfq_package_id == rfq_package_id)
+    return list(db.scalars(query.order_by(RFQBid.weighted_score.desc(), RFQBid.bid_amount, RFQBid.bidder_name)).all())
+
+
+def _require_rfq_package(db: Session, tenant_id: int, project_id: int, rfq_package_id: int) -> RFQPackage:
+    package = db.scalar(
+        select(RFQPackage).where(
+            RFQPackage.tenant_id == tenant_id,
+            RFQPackage.project_id == project_id,
+            RFQPackage.id == rfq_package_id,
+        )
+    )
+    if not package:
+        raise HTTPException(status_code=404, detail="RFQ package not found")
+    return package
+
+
+def _validate_rfq_bid_values(bid_amount: float, technical_score: float, commercial_score: float, schedule_score: float, risk_score: float) -> None:
+    if bid_amount <= 0:
+        raise HTTPException(status_code=400, detail="Bid amount must be greater than zero")
+    for field, value in {
+        "technical_score": technical_score,
+        "commercial_score": commercial_score,
+        "schedule_score": schedule_score,
+        "risk_score": risk_score,
+    }.items():
+        if value < 0 or value > 100:
+            raise HTTPException(status_code=400, detail=f"{field} must be between 0 and 100")
+
+
+def _rfq_weighted_score(technical_score: float, commercial_score: float, schedule_score: float, risk_score: float) -> float:
+    return round(technical_score * 0.35 + commercial_score * 0.35 + schedule_score * 0.15 + risk_score * 0.15, 1)
+
+
+def _rfq_summary(packages: list[RFQPackage], bids: list[RFQBid]) -> RFQSummary:
+    scored_bids = [bid for bid in bids if bid.status not in {"withdrawn", "disqualified", "void"}]
+    recommended = max(scored_bids, key=lambda bid: (bid.weighted_score, -bid.bid_amount), default=None)
+    return RFQSummary(
+        total_packages=len(packages),
+        issued_packages=sum(1 for package in packages if package.status in {"issued", "open", "under_evaluation", "awarded"}),
+        bids_received=len(scored_bids),
+        average_weighted_score=round(sum(bid.weighted_score for bid in scored_bids) / len(scored_bids), 1) if scored_bids else 0,
+        recommended_bidder=recommended.bidder_name if recommended else "",
+        recommended_bid_amount=_money(recommended.bid_amount) if recommended else 0,
+    )
+
+
 def _cost_manager_summary(db: Session, tenant_id: int, project_id: int) -> CostManagerSummaryOut:
     return _cost_manager_summary_from(
         _cost_sheet_lines(db, tenant_id, project_id),
@@ -3032,6 +3452,7 @@ def _cost_manager_summary_from(
     total_earned_value = sum(line.earned_value for line in cost_sheet)
     total_actual_cost = sum(line.actual_cost for line in cost_sheet)
     total_incurred_from_payment_certificates = sum(line.incurred_payment_certificate_value for line in cost_sheet)
+    total_incurred_from_warehouse_receipts = sum(line.incurred_warehouse_receipt_value for line in cost_sheet)
     total_contract_commitments = sum(line.committed_contract_value for line in cost_sheet)
     total_purchase_order_commitments = sum(line.committed_purchase_order_value for line in cost_sheet)
     total_committed_cost = sum(line.committed_cost for line in cost_sheet)
@@ -3049,6 +3470,7 @@ def _cost_manager_summary_from(
         total_earned_value=_money(total_earned_value),
         total_actual_cost=_money(total_actual_cost),
         total_incurred_from_payment_certificates=_money(total_incurred_from_payment_certificates),
+        total_incurred_from_warehouse_receipts=_money(total_incurred_from_warehouse_receipts),
         total_contract_commitments=_money(total_contract_commitments),
         total_purchase_order_commitments=_money(total_purchase_order_commitments),
         total_committed_cost=_money(total_committed_cost),
@@ -3303,12 +3725,15 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
     control_account_count = _count(db, ControlAccount, tenant_id, project_id)
     progress_count = _count(db, ProgressRecord, tenant_id, project_id)
     payment_certificate_count = _count(db, PaymentCertificate, tenant_id, project_id)
+    warehouse_receipt_count = _count(db, WarehouseReceipt, tenant_id, project_id)
     funding_count = _count(db, FundingSource, tenant_id, project_id)
     cash_flow_count = _count(db, CashFlowPeriod, tenant_id, project_id)
     snapshot_count = _count(db, ControlSnapshot, tenant_id, project_id)
     forecast_count = _count(db, ForecastScenario, tenant_id, project_id)
     contract_count = _count(db, Contract, tenant_id, project_id)
     purchase_order_count = _count(db, PurchaseOrder, tenant_id, project_id)
+    rfq_package_count = _count(db, RFQPackage, tenant_id, project_id)
+    rfq_bid_count = _count(db, RFQBid, tenant_id, project_id)
     notice_count = _count(db, ContractNotice, tenant_id, project_id)
     claim_count = _count(db, Claim, tenant_id, project_id)
     entitlement_count = _count(db, ClaimEntitlementItem, tenant_id, project_id)
@@ -3383,27 +3808,29 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         _readiness_item(
             "Fase 4",
             "EVM / Forecast / Cost Manager",
-            100 if latest_kpi and snapshot_count and forecast_count and progress_count and payment_certificate_count and purchase_order_count and funding_count and cash_flow_count else 55,
-            f"{progress_count} avances, {payment_certificate_count} actas de pago, {purchase_order_count} ordenes de compra, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
-            "Ejecutar ciclo de control con datos de avance, incurrido por actas de pago, comprometido contractual/OC, funding, cash flow y escenarios EAC.",
+            100 if latest_kpi and snapshot_count and forecast_count and progress_count and payment_certificate_count and warehouse_receipt_count and purchase_order_count and funding_count and cash_flow_count else 55,
+            f"{progress_count} avances, {payment_certificate_count} actas de pago, {warehouse_receipt_count} entradas de almacen, {purchase_order_count} ordenes de compra, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
+            "Ejecutar ciclo de control con datos de avance, incurrido por actas de pago y entradas de almacen, comprometido contractual/OC, funding, cash flow y escenarios EAC.",
         ),
         _readiness_item(
             "Fase 5",
-            "Contracts / Claims / Aconex-style Document Control",
+            "RFQ / Contracts / Claims / Aconex-style Document Control",
             min(
-                (contract_count > 0) * 18
-                + (notice_count > 0) * 15
-                + (claim_count > 0) * 15
-                + (entitlement_count > 0) * 12
-                + (impact_count > 0) * 10
+                (rfq_package_count > 0) * 8
+                + (rfq_bid_count > 0) * 7
+                + (contract_count > 0) * 16
+                + (notice_count > 0) * 13
+                + (claim_count > 0) * 13
+                + (entitlement_count > 0) * 11
+                + (impact_count > 0) * 9
                 + (document_count > 0) * 10
-                + (transmittal_count > 0) * 10
-                + (review_count > 0) * 5
-                + (project_mail_count > 0) * 5,
+                + (transmittal_count > 0) * 8
+                + (review_count > 0) * 3
+                + (project_mail_count > 0) * 2,
                 100,
             ),
-            f"{contract_count} contratos, {notice_count} notices, {claim_count} claims, {document_count} documentos, {transmittal_count} transmittals, {review_count} revisiones y {project_mail_count} mails.",
-            "Operar el registro documental, transmittals, mail, revisiones y evidencia contractual.",
+            f"{rfq_package_count} RFQ, {rfq_bid_count} ofertas, {contract_count} contratos, {notice_count} notices, {claim_count} claims, {document_count} documentos, {transmittal_count} transmittals, {review_count} revisiones y {project_mail_count} mails.",
+            "Operar RFQ, evaluacion de ofertas, registro documental, transmittals, mail, revisiones y evidencia contractual.",
         ),
         _readiness_item(
             "Fase 6",

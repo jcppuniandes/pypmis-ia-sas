@@ -18,7 +18,7 @@ Controlar quien entra, que proyecto puede ver y que acciones puede ejecutar.
 | Planner | Cronograma, baseline, mapping y calidad de schedule. | Cargar cronograma y capturar avance. |
 | Project Controls | Analisis EVM, tendencias, alertas y reportes. | Capturar avance/costo y analizar dashboard. |
 | Cost Controller | Actas de pago, evidencia de costo, funding y cash flow. | Capturar incurrido y Cost Manager. |
-| Contract Manager | Contratos, comunicaciones, notices y claims. | Gestion contractual. |
+| Contract Manager | RFQ, contratos, ordenes de compra, actas, entradas de almacen, comunicaciones, notices y claims. | Gestion contractual y procurement. |
 | Field Engineer | Avance fisico, cantidades, horas y evidencia. | Capturar progreso. |
 | Workface Planner | AWP, paquetes de trabajo y restricciones. | Gestionar readiness AWP. |
 | Claims Analyst | Causalidad, impactos y paquete forense. | Gestionar claims. |
@@ -289,12 +289,13 @@ Field Engineer, Planner o Project Controls.
 
 ### Objetivo
 
-Controlar costo, presupuesto, incurrido desde actas de pago, comprometido contractual, funding y cash flow del piloto.
+Controlar costo, presupuesto, incurrido desde actas de pago y entradas de almacen, comprometido contractual, funding y cash flow del piloto.
 
 ### Submodulos
 
 - Cost Sheet.
 - Payment Certificates.
+- Warehouse Receipts.
 - Cost Evidence Records.
 - Contract Commitments.
 - Purchase Order Commitments.
@@ -308,7 +309,7 @@ Uso:
 
 1. Ir a `Cost Manager`.
 2. Revisar cada cuenta de control.
-3. Comparar BAC, EV, incurrido por actas de pago, contratos y ordenes de compra comprometidas.
+3. Comparar BAC, EV, incurrido por actas de pago, entradas de almacen, contratos y ordenes de compra comprometidas.
 4. Identificar CPI menor a 1.0.
 5. Revisar variacion negativa.
 
@@ -318,7 +319,7 @@ Campos:
 - CBS.
 - BAC.
 - EV.
-- Incurred / AC desde actas de pago.
+- Incurred / AC desde actas de pago y entradas de almacen.
 - Contract Commitment.
 - PO Commitment.
 - Total Committed Cost.
@@ -345,7 +346,7 @@ Uso:
 
 Validacion:
 
-- El usuario necesita permiso `can_capture_cost`.
+- El usuario necesita permiso `can_capture_cost` o `can_manage_contract`.
 - El monto certificado debe ser mayor a cero.
 
 Salida esperada:
@@ -353,7 +354,33 @@ Salida esperada:
 - Incurrido / AC actualizado.
 - Control Core recalcula CPI, CV, EAC y VAC.
 
-### 9.3 Cost Evidence Records
+### 9.3 Warehouse Receipts / Entradas De Almacen
+
+Uso:
+
+1. Ir a `BP Entry Forms`.
+2. En `Warehouse Receipts`, seleccionar cuenta de control.
+3. Vincular contrato y orden de compra si aplica.
+4. Registrar numero de entrada de almacen.
+5. Registrar descripcion.
+6. Registrar cantidad recibida.
+7. Registrar costo unitario.
+8. Registrar valor recibido si aplica.
+9. Registrar fecha de recepcion.
+10. Guardar.
+
+Validacion:
+
+- El usuario necesita permiso `can_capture_cost` o `can_manage_contract`.
+- El valor recibido debe ser mayor a cero o debe poder calcularse como cantidad por costo unitario.
+- Estados `draft`, `rejected`, `void` o `cancelled` no suman al incurrido.
+
+Salida esperada:
+
+- Incurrido / AC actualizado desde almacen o recibo de bienes/servicios.
+- Cost Sheet muestra columna `Almacen`.
+
+### 9.4 Cost Evidence Records
 
 Uso:
 
@@ -368,9 +395,9 @@ Uso:
 Regla:
 
 - Este registro es evidencia auxiliar.
-- El incurrido financiero se calcula desde actas de pago, no desde este formulario.
+- El incurrido financiero se calcula desde actas de pago y entradas de almacen, no desde este formulario.
 
-### 9.4 Comprometido Contractual
+### 9.5 Comprometido Contractual
 
 Uso:
 
@@ -393,7 +420,7 @@ Salida esperada:
 
 - `Contract Commitment`, `PO Commitment` y `Total Committed Cost` visibles por cuenta de control.
 
-### 9.5 Funding Sources
+### 9.6 Funding Sources
 
 Uso:
 
@@ -415,7 +442,7 @@ Control colaborativo:
 - `PATCH` usa `expected_version`.
 - Si otro usuario edita antes, el sistema devuelve conflicto `409`.
 
-### 9.6 Cash Flow
+### 9.7 Cash Flow
 
 Uso:
 
@@ -548,7 +575,67 @@ Registrar desviaciones, impactos y decisiones de cambio.
 - Impacto listo para decision.
 - Auditoria actualizada.
 
-## 13. Modulo Contracts
+## 13. Modulo Licitaciones / RFQ
+
+### Objetivo
+
+Gestionar paquetes de licitacion/RFQ, recibir ofertas, evaluar bidders y dejar recomendacion para contrato u orden de compra.
+
+### Elementos
+
+- RFQ Packages.
+- RFQ Bid.
+- Bid Leveling.
+- Weighted score.
+- Recommended bidder.
+
+### Crear paquete RFQ
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `RFQ Packages`.
+3. Seleccionar cuenta de control.
+4. Registrar package no.
+5. Registrar titulo.
+6. Registrar alcance.
+7. Registrar presupuesto.
+8. Registrar fecha de emision.
+9. Registrar fecha limite.
+10. Guardar.
+
+### Registrar oferta
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `RFQ Bid`.
+3. Seleccionar paquete RFQ.
+4. Registrar bidder.
+5. Registrar monto ofertado.
+6. Registrar score tecnico.
+7. Registrar score comercial.
+8. Registrar score de cronograma.
+9. Registrar score de riesgo.
+10. Registrar notas.
+11. Guardar.
+
+### Revisar evaluacion
+
+1. Ir a `RFQ / Bids`.
+2. Revisar total de paquetes.
+3. Revisar ofertas recibidas.
+4. Revisar average weighted score.
+5. Revisar recommended bidder.
+6. Convertir adjudicacion en contrato u orden de compra si procede.
+
+### Salida esperada
+
+- Oferta comparable por score.
+- Recomendacion visible.
+- Trazabilidad desde RFQ hacia contrato/OC.
+
+### Comparacion Contra Oracle Preconstruction
+
+Oracle Preconstruction cubre marketplace, directorio de subcontratistas, invitaciones, documentacion, mensajeria, RFIs y adjudicacion de bids/tenders. Este piloto cubre el nucleo interno: paquete RFQ, bids, score ponderado y recomendacion. Para igualar Oracle faltan portal externo para proveedores, invitaciones por correo, directorio de subcontratistas, RFI/addenda de licitacion, permisos por organizacion y bid leveling avanzado.
+
+## 14. Modulo Contracts
 
 ### Objetivo
 
@@ -560,6 +647,30 @@ Gestionar contratos, comunicaciones y soporte contractual del piloto.
 2. Crear contrato.
 3. Registrar codigo, titulo, contraparte, tipo, valor y estado.
 4. Guardar.
+
+### Ordenes de compra
+
+1. Ir a `BP Entry Forms`.
+2. Crear orden de compra.
+3. Vincular contrato si aplica.
+4. Registrar numero, descripcion, proveedor, monto comprometido y fecha.
+5. Guardar.
+
+### Actas de pago
+
+1. Ir a `BP Entry Forms`.
+2. Crear Payment Certificate.
+3. Vincular contrato y orden de compra si aplica.
+4. Registrar monto certificado y retencion.
+5. Guardar.
+
+### Entradas de almacen
+
+1. Ir a `BP Entry Forms`.
+2. Crear Warehouse Receipt.
+3. Vincular contrato y orden de compra si aplica.
+4. Registrar cantidad, costo unitario o valor recibido.
+5. Guardar.
 
 ### Comunicaciones
 
@@ -575,8 +686,10 @@ Gestionar contratos, comunicaciones y soporte contractual del piloto.
 - Contrato visible.
 - Comunicaciones trazadas.
 - Base contractual disponible para notices y claims.
+- Comprometido desde contratos y OC.
+- Incurrido desde actas y entradas de almacen.
 
-## 14. Modulo Claims / Forensic Entitlement
+## 15. Modulo Claims / Forensic Entitlement
 
 ### Objetivo
 
@@ -620,7 +733,7 @@ Evaluar reclamos con enfoque forense: notice, causalidad, impacto, quantum y evi
 - Evidencia visible.
 - Brechas de entitlement identificadas.
 
-## 15. Modulo Documents
+## 16. Modulo Documents
 
 ### Objetivo
 
@@ -655,7 +768,7 @@ Vincular evidencia documental a entidades de control.
 
 El modulo es MVP. Falta versionado documental formal, revisiones, transmittals, permisos por carpeta y aprobaciones documentales.
 
-## 16. Modulo Pilot Readiness
+## 17. Modulo Pilot Readiness
 
 ### Objetivo
 
@@ -689,7 +802,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\pilot_check.ps1
 - `pilot_candidate`: puede pilotear con brechas controladas.
 - `needs_preparation`: debe prepararse antes de pilotear.
 
-## 17. Modulo Audit Log
+## 18. Modulo Audit Log
 
 ### Objetivo
 

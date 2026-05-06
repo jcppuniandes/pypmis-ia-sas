@@ -13,6 +13,7 @@ type WorkspaceView =
   | "awp"
   | "changes"
   | "claims"
+  | "rfq"
   | "contracts"
   | "documents"
   | "roadmap"
@@ -353,6 +354,7 @@ type CostSheetLine = {
   planned_value: number;
   actual_cost: number;
   incurred_payment_certificate_value: number;
+  incurred_warehouse_receipt_value: number;
   committed_contract_value: number;
   committed_purchase_order_value: number;
   committed_cost: number;
@@ -394,6 +396,7 @@ type CostManagerSummary = {
   total_earned_value: number;
   total_actual_cost: number;
   total_incurred_from_payment_certificates: number;
+  total_incurred_from_warehouse_receipts: number;
   total_contract_commitments: number;
   total_purchase_order_commitments: number;
   total_committed_cost: number;
@@ -548,6 +551,66 @@ type PaymentCertificate = {
   version: number;
   created_at: string;
   updated_at: string;
+};
+
+type WarehouseReceipt = {
+  id: number;
+  control_account_id: number | null;
+  contract_id: number | null;
+  purchase_order_id: number | null;
+  receipt_no: string;
+  description: string;
+  received_quantity: number;
+  unit_cost: number;
+  received_value: number;
+  status: string;
+  received_on: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type RFQPackage = {
+  id: number;
+  control_account_id: number | null;
+  package_no: string;
+  title: string;
+  scope_summary: string;
+  procurement_method: string;
+  status: string;
+  budget_amount: number;
+  issue_date: string | null;
+  due_date: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type RFQBid = {
+  id: number;
+  rfq_package_id: number;
+  bidder_name: string;
+  bid_amount: number;
+  technical_score: number;
+  commercial_score: number;
+  schedule_score: number;
+  risk_score: number;
+  weighted_score: number;
+  status: string;
+  submitted_on: string | null;
+  notes: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type RFQSummary = {
+  total_packages: number;
+  issued_packages: number;
+  bids_received: number;
+  average_weighted_score: number;
+  recommended_bidder: string;
+  recommended_bid_amount: number;
 };
 
 type ContractCommunication = {
@@ -759,6 +822,10 @@ type Dashboard = {
   contracts: Contract[];
   purchase_orders: PurchaseOrder[];
   payment_certificates: PaymentCertificate[];
+  warehouse_receipts: WarehouseReceipt[];
+  rfq_packages: RFQPackage[];
+  rfq_bids: RFQBid[];
+  rfq_summary: RFQSummary;
   communications: ContractCommunication[];
   documents: DocumentItem[];
   document_transmittals: DocumentTransmittal[];
@@ -989,6 +1056,41 @@ function App() {
     status: "certified",
     certified_on: defaultControlDate
   });
+  const [warehouseReceiptDraft, setWarehouseReceiptDraft] = React.useState({
+    control_account_id: "",
+    contract_id: "",
+    purchase_order_id: "",
+    receipt_no: "",
+    description: "",
+    received_quantity: "",
+    unit_cost: "",
+    received_value: "",
+    status: "accepted",
+    received_on: defaultControlDate
+  });
+  const [rfqDraft, setRfqDraft] = React.useState({
+    control_account_id: "",
+    package_no: "",
+    title: "",
+    scope_summary: "",
+    procurement_method: "RFQ",
+    status: "issued",
+    budget_amount: "",
+    issue_date: defaultControlDate,
+    due_date: defaultControlDate
+  });
+  const [rfqBidDraft, setRfqBidDraft] = React.useState({
+    rfq_package_id: "",
+    bidder_name: "",
+    bid_amount: "",
+    technical_score: "80",
+    commercial_score: "80",
+    schedule_score: "80",
+    risk_score: "80",
+    status: "received",
+    submitted_on: defaultControlDate,
+    notes: ""
+  });
   const [communicationDraft, setCommunicationDraft] = React.useState({
     contract_id: "",
     communication_type: "notice",
@@ -1211,6 +1313,31 @@ function App() {
         contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
         purchase_order_id: !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
         certified_on: current.certified_on || controlDate
+      };
+    });
+    setWarehouseReceiptDraft((current) => {
+      const contractIds = new Set(dashboard.contracts.map((contract) => String(contract.id)));
+      const orderIds = new Set(dashboard.purchase_orders.map((order) => String(order.id)));
+      return {
+        ...current,
+        control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
+        contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
+        purchase_order_id: !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
+        received_on: current.received_on || controlDate
+      };
+    });
+    setRfqDraft((current) => ({
+      ...current,
+      control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
+      issue_date: current.issue_date || controlDate,
+      due_date: current.due_date || controlDate
+    }));
+    setRfqBidDraft((current) => {
+      const rfqIds = new Set(dashboard.rfq_packages.map((item) => String(item.id)));
+      return {
+        ...current,
+        rfq_package_id: rfqIds.has(current.rfq_package_id) ? current.rfq_package_id : String(dashboard.rfq_packages[0]?.id ?? ""),
+        submitted_on: current.submitted_on || controlDate
       };
     });
     setAwpDraft((current) => {
@@ -1819,6 +1946,121 @@ function App() {
     }
   }
 
+  async function handleWarehouseReceiptSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("warehouse-receipt");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/warehouse-receipts`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          control_account_id: warehouseReceiptDraft.control_account_id ? Number(warehouseReceiptDraft.control_account_id) : null,
+          contract_id: warehouseReceiptDraft.contract_id ? Number(warehouseReceiptDraft.contract_id) : null,
+          purchase_order_id: warehouseReceiptDraft.purchase_order_id ? Number(warehouseReceiptDraft.purchase_order_id) : null,
+          receipt_no: warehouseReceiptDraft.receipt_no,
+          description: warehouseReceiptDraft.description,
+          received_quantity: Number(warehouseReceiptDraft.received_quantity || 0),
+          unit_cost: Number(warehouseReceiptDraft.unit_cost || 0),
+          received_value: Number(warehouseReceiptDraft.received_value || 0),
+          status: warehouseReceiptDraft.status,
+          received_on: warehouseReceiptDraft.received_on || null
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Warehouse receipt creation failed");
+      }
+      setWarehouseReceiptDraft((current) => ({ ...current, receipt_no: "", description: "", received_quantity: "", unit_cost: "", received_value: "" }));
+      setUploadMessage("Warehouse receipt registered as incurred cost from contract administration.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Warehouse receipt creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleRfqSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("rfq-package");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/rfq-packages`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          control_account_id: rfqDraft.control_account_id ? Number(rfqDraft.control_account_id) : null,
+          package_no: rfqDraft.package_no,
+          title: rfqDraft.title,
+          scope_summary: rfqDraft.scope_summary,
+          procurement_method: rfqDraft.procurement_method,
+          status: rfqDraft.status,
+          budget_amount: Number(rfqDraft.budget_amount || 0),
+          issue_date: rfqDraft.issue_date || null,
+          due_date: rfqDraft.due_date || null
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "RFQ package creation failed");
+      }
+      setRfqDraft((current) => ({ ...current, package_no: "", title: "", scope_summary: "", budget_amount: "" }));
+      setUploadMessage("RFQ package created for bid evaluation.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "RFQ package creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleRfqBidSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("rfq-bid");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/rfq-packages/${rfqBidDraft.rfq_package_id}/bids`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          bidder_name: rfqBidDraft.bidder_name,
+          bid_amount: Number(rfqBidDraft.bid_amount || 0),
+          technical_score: Number(rfqBidDraft.technical_score || 0),
+          commercial_score: Number(rfqBidDraft.commercial_score || 0),
+          schedule_score: Number(rfqBidDraft.schedule_score || 0),
+          risk_score: Number(rfqBidDraft.risk_score || 0),
+          status: rfqBidDraft.status,
+          submitted_on: rfqBidDraft.submitted_on || null,
+          notes: rfqBidDraft.notes
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "RFQ bid creation failed");
+      }
+      setRfqBidDraft((current) => ({ ...current, bidder_name: "", bid_amount: "", notes: "" }));
+      setUploadMessage("Bid received and scored for RFQ evaluation.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "RFQ bid creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
   async function handleCommunicationSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!dashboard) {
@@ -2260,6 +2502,15 @@ function App() {
       status: claim.status,
       tone: "active"
     })),
+    ...dashboard.rfq_packages.map((rfqPackage) => ({
+      record: `RFQ-${rfqPackage.id}`,
+      process: "RFQ / Bid Evaluation",
+      title: rfqPackage.title,
+      step: rfqPackage.status === "under_evaluation" ? "Bid Leveling" : "Package Setup",
+      ballInCourt: "Contract Manager",
+      status: rfqPackage.status,
+      tone: rfqPackage.status === "awarded" ? "complete" : "active"
+    })),
     ...dashboard.contract_notices.map((notice) => ({
       record: `NT-${notice.id}`,
       process: "Contract Notice",
@@ -2289,7 +2540,8 @@ function App() {
     { key: "awp", label: "AWP Workface", count: dashboard.awp_summary.total_packages },
     { key: "changes", label: "Changes", count: dashboard.changes.length },
     { key: "claims", label: "Claims", count: dashboard.claims.length },
-    { key: "contracts", label: "Contracts", count: dashboard.contracts.length + dashboard.purchase_orders.length },
+    { key: "rfq", label: "RFQ / Bids", count: dashboard.rfq_summary.bids_received },
+    { key: "contracts", label: "Contracts", count: dashboard.contracts.length + dashboard.purchase_orders.length + dashboard.warehouse_receipts.length },
     { key: "documents", label: "Document Control", count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%" },
     { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
     { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
@@ -2313,6 +2565,14 @@ function App() {
     const item = dashboard.work_packages.find((workPackage) => workPackage.id === packageId);
     return item ? `${item.code} / ${item.title}` : `Work Package ${packageId}`;
   };
+  const rfqPackageLabel = (packageId: number) => {
+    const item = dashboard.rfq_packages.find((rfqPackage) => rfqPackage.id === packageId);
+    return item ? `${item.package_no} / ${item.title}` : `RFQ ${packageId}`;
+  };
+  const bidsByRfq = dashboard.rfq_bids.reduce<Record<number, RFQBid[]>>((acc, bid) => {
+    acc[bid.rfq_package_id] = [...(acc[bid.rfq_package_id] ?? []), bid];
+    return acc;
+  }, {});
   const constraintsByPackage = dashboard.work_package_constraints.reduce<Record<number, WorkPackageConstraint[]>>((acc, constraint) => {
     acc[constraint.work_package_id] = [...(acc[constraint.work_package_id] ?? []), constraint];
     return acc;
@@ -2339,6 +2599,8 @@ function App() {
   const canUploadSchedule = ["Planner", "Control Manager"].includes(dashboard.current_membership.role);
   const canConfigure = dashboard.current_membership.can_configure;
   const canManageContracts = dashboard.current_membership.can_manage_contract;
+  const contractCostDisabled = controlGateBlocked || !(dashboard.current_membership.can_capture_cost || canManageContracts);
+  const warehouseDisabled = contractCostDisabled;
   const canManageClaims = canManageContracts || ["Control Manager", "Claims Analyst", "Project Controls"].includes(dashboard.current_membership.role);
   const canManageDocuments = ["Control Manager", "Project Controls", "Document Controller", "Contract Manager", "Planner"].includes(dashboard.current_membership.role);
   const canCreateChange = dashboard.project_team.some((member) => member.user.id === dashboard.current_user.id);
@@ -3107,7 +3369,7 @@ function App() {
           <article className={costManager.cost_variance < 0 ? "risk" : ""}>
             <span>Cost Variance</span>
             <strong>{currency(costManager.cost_variance, project.currency)}</strong>
-            <small>EV {currency(costManager.total_earned_value, project.currency)} / incurred {currency(costManager.total_incurred_from_payment_certificates, project.currency)}</small>
+            <small>EV {currency(costManager.total_earned_value, project.currency)} / actas {currency(costManager.total_incurred_from_payment_certificates, project.currency)} / almacen {currency(costManager.total_incurred_from_warehouse_receipts, project.currency)}</small>
           </article>
           <article>
             <span>Funding Coverage</span>
@@ -3143,6 +3405,8 @@ function App() {
                   <th>CBS</th>
                   <th>BAC</th>
                   <th>EV</th>
+                  <th>Actas</th>
+                  <th>Almacen</th>
                   <th>Incurred</th>
                   <th>Contract</th>
                   <th>PO</th>
@@ -3157,6 +3421,8 @@ function App() {
                     <td>{line.cbs_code || "Pending"}</td>
                     <td>{currency(line.bac, project.currency)}</td>
                     <td>{currency(line.earned_value, project.currency)}</td>
+                    <td>{currency(line.incurred_payment_certificate_value, project.currency)}</td>
+                    <td>{currency(line.incurred_warehouse_receipt_value, project.currency)}</td>
                     <td>{currency(line.actual_cost, project.currency)}</td>
                     <td>{currency(line.committed_contract_value, project.currency)}</td>
                     <td>{currency(line.committed_purchase_order_value, project.currency)}</td>
@@ -3186,6 +3452,30 @@ function App() {
                     <td>{certificate.certificate_no}</td>
                     <td>{currency(certificate.certified_amount, project.currency)}</td>
                     <td>{certificate.certified_on ?? "Open"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="subHeader spaced">
+              <strong>Warehouse Receipts</strong>
+              <span>{dashboard.warehouse_receipts.length} entradas</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Control Account</th>
+                  <th>Receipt</th>
+                  <th>Value</th>
+                  <th>Received On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.warehouse_receipts.map((receipt) => (
+                  <tr key={receipt.id}>
+                    <td>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No account"}</td>
+                    <td>{receipt.receipt_no}</td>
+                    <td>{currency(receipt.received_value, project.currency)}</td>
+                    <td>{receipt.received_on ?? "Open"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -3560,6 +3850,75 @@ function App() {
         </div>
       </section>
 
+      <section className={activeView === "rfq" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
+        <div className="panelHeader">
+          <h2>RFQ / Bid Evaluation</h2>
+          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open RFQ forms</button>
+        </div>
+        <div className="costManagerSummary">
+          <article>
+            <span>RFQ Packages</span>
+            <strong>{dashboard.rfq_summary.total_packages}</strong>
+            <small>{dashboard.rfq_summary.issued_packages} issued or under evaluation</small>
+          </article>
+          <article>
+            <span>Bids Received</span>
+            <strong>{dashboard.rfq_summary.bids_received}</strong>
+            <small>Average score {dashboard.rfq_summary.average_weighted_score.toFixed(1)}</small>
+          </article>
+          <article>
+            <span>Recommended Bidder</span>
+            <strong>{dashboard.rfq_summary.recommended_bidder || "Pending"}</strong>
+            <small>{currency(dashboard.rfq_summary.recommended_bid_amount, project.currency)}</small>
+          </article>
+        </div>
+        <div className="viewSplit">
+          <div>
+            <div className="subHeader">
+              <strong>RFQ Packages</strong>
+              <span>{dashboard.rfq_packages.length} packages</span>
+            </div>
+            <div className="workList">
+              {dashboard.rfq_packages.map((rfqPackage) => (
+                <article key={rfqPackage.id}>
+                  <strong>{rfqPackage.package_no} / {currency(rfqPackage.budget_amount, project.currency)}</strong>
+                  <span>{rfqPackage.title}</span>
+                  <small>{rfqPackage.control_account_id ? accountLabel(rfqPackage.control_account_id) : "No control account"} / {statusLabel(rfqPackage.status)} / {bidsByRfq[rfqPackage.id]?.length ?? 0} bids / due {rfqPackage.due_date ?? "Open"}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="subHeader">
+              <strong>Bid Leveling</strong>
+              <span>{dashboard.rfq_bids.length} bids</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Bidder</th>
+                  <th>RFQ</th>
+                  <th>Amount</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.rfq_bids.map((bid) => (
+                  <tr key={bid.id}>
+                    <td>{bid.bidder_name}</td>
+                    <td>{rfqPackageLabel(bid.rfq_package_id)}</td>
+                    <td>{currency(bid.bid_amount, project.currency)}</td>
+                    <td>{bid.weighted_score.toFixed(1)}</td>
+                    <td>{statusLabel(bid.status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <section className={activeView === "contracts" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
         <div className="panelHeader">
           <h2>Contract Administration</h2>
@@ -3598,6 +3957,18 @@ function App() {
                   <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
                   <span>{certificate.period_label || "No period"}</span>
                   <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <strong>Warehouse Receipts</strong>
+            <div className="workList">
+              {dashboard.warehouse_receipts.map((receipt) => (
+                <article key={receipt.id}>
+                  <strong>{receipt.receipt_no} / {currency(receipt.received_value, project.currency)}</strong>
+                  <span>{receipt.description || "Warehouse receipt"}</span>
+                  <small>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} / {statusLabel(receipt.status)}</small>
                 </article>
               ))}
             </div>
@@ -4318,6 +4689,178 @@ function App() {
           </button>
         </form>
 
+        <form className="panel captureForm" onSubmit={handleRfqSubmit}>
+          <div className="panelHeader">
+            <h2><BriefcaseBusiness size={18} /> RFQ Packages</h2>
+            <span>{dashboard.rfq_packages.length} packages</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Control Account</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setRfqDraft((current) => ({ ...current, control_account_id: event.target.value }))}
+                required
+                value={rfqDraft.control_account_id}
+              >
+                {dashboard.control_accounts.map((account) => (
+                  <option key={account.id} value={account.id}>{account.code}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Package No.</span>
+              <input
+                disabled={!canManageContracts}
+                onChange={(event) => setRfqDraft((current) => ({ ...current, package_no: event.target.value }))}
+                required
+                value={rfqDraft.package_no}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Title</span>
+            <input
+              disabled={!canManageContracts}
+              onChange={(event) => setRfqDraft((current) => ({ ...current, title: event.target.value }))}
+              required
+              value={rfqDraft.title}
+            />
+          </label>
+          <label>
+            <span>Scope</span>
+            <textarea
+              disabled={!canManageContracts}
+              onChange={(event) => setRfqDraft((current) => ({ ...current, scope_summary: event.target.value }))}
+              required
+              value={rfqDraft.scope_summary}
+            />
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Budget</span>
+              <input
+                disabled={!canManageContracts}
+                min="0"
+                onChange={(event) => setRfqDraft((current) => ({ ...current, budget_amount: event.target.value }))}
+                step="0.01"
+                type="number"
+                value={rfqDraft.budget_amount}
+              />
+            </label>
+            <label>
+              <span>Status</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setRfqDraft((current) => ({ ...current, status: event.target.value }))}
+                value={rfqDraft.status}
+              >
+                <option value="draft">Draft</option>
+                <option value="issued">Issued</option>
+                <option value="under_evaluation">Under Evaluation</option>
+                <option value="awarded">Awarded</option>
+              </select>
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Issue Date</span>
+              <input
+                disabled={!canManageContracts}
+                onChange={(event) => setRfqDraft((current) => ({ ...current, issue_date: event.target.value }))}
+                type="date"
+                value={rfqDraft.issue_date}
+              />
+            </label>
+            <label>
+              <span>Due Date</span>
+              <input
+                disabled={!canManageContracts}
+                onChange={(event) => setRfqDraft((current) => ({ ...current, due_date: event.target.value }))}
+                type="date"
+                value={rfqDraft.due_date}
+              />
+            </label>
+          </div>
+          <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
+            {captureAction === "rfq-package" ? "Creating..." : "Create RFQ Package"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handleRfqBidSubmit}>
+          <div className="panelHeader">
+            <h2><BriefcaseBusiness size={18} /> RFQ Bid</h2>
+            <span>{dashboard.rfq_bids.length} bids</span>
+          </div>
+          <label>
+            <span>RFQ Package</span>
+            <select
+              disabled={!canManageContracts || !dashboard.rfq_packages.length}
+              onChange={(event) => setRfqBidDraft((current) => ({ ...current, rfq_package_id: event.target.value }))}
+              required
+              value={rfqBidDraft.rfq_package_id}
+            >
+              {dashboard.rfq_packages.map((rfqPackage) => (
+                <option key={rfqPackage.id} value={rfqPackage.id}>{rfqPackage.package_no}</option>
+              ))}
+            </select>
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Bidder</span>
+              <input
+                disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                onChange={(event) => setRfqBidDraft((current) => ({ ...current, bidder_name: event.target.value }))}
+                required
+                value={rfqBidDraft.bidder_name}
+              />
+            </label>
+            <label>
+              <span>Bid Amount</span>
+              <input
+                disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                min="0"
+                onChange={(event) => setRfqBidDraft((current) => ({ ...current, bid_amount: event.target.value }))}
+                required
+                step="0.01"
+                type="number"
+                value={rfqBidDraft.bid_amount}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Technical</span>
+              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, technical_score: event.target.value }))} type="number" value={rfqBidDraft.technical_score} />
+            </label>
+            <label>
+              <span>Commercial</span>
+              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, commercial_score: event.target.value }))} type="number" value={rfqBidDraft.commercial_score} />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Schedule</span>
+              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, schedule_score: event.target.value }))} type="number" value={rfqBidDraft.schedule_score} />
+            </label>
+            <label>
+              <span>Risk</span>
+              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, risk_score: event.target.value }))} type="number" value={rfqBidDraft.risk_score} />
+            </label>
+          </div>
+          <label>
+            <span>Notes</span>
+            <textarea
+              disabled={!canManageContracts || !dashboard.rfq_packages.length}
+              onChange={(event) => setRfqBidDraft((current) => ({ ...current, notes: event.target.value }))}
+              value={rfqBidDraft.notes}
+            />
+          </label>
+          <button className="workflowAction primary" disabled={!canManageContracts || !dashboard.rfq_packages.length || captureAction !== null} type="submit">
+            {captureAction === "rfq-bid" ? "Scoring..." : "Register Bid"}
+          </button>
+        </form>
+
         <form className="panel captureForm" onSubmit={handleContractSubmit}>
           <div className="panelHeader">
             <h2><BriefcaseBusiness size={18} /> Contracts</h2>
@@ -4506,7 +5049,7 @@ function App() {
             <label>
               <span>Control Account</span>
               <select
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, control_account_id: event.target.value }))}
                 required
                 value={paymentCertificateDraft.control_account_id}
@@ -4519,7 +5062,7 @@ function App() {
             <label>
               <span>Contract</span>
               <select
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, contract_id: event.target.value }))}
                 value={paymentCertificateDraft.contract_id}
               >
@@ -4534,7 +5077,7 @@ function App() {
             <label>
               <span>Purchase Order</span>
               <select
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, purchase_order_id: event.target.value }))}
                 value={paymentCertificateDraft.purchase_order_id}
               >
@@ -4547,7 +5090,7 @@ function App() {
             <label>
               <span>Period</span>
               <input
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, period_label: event.target.value }))}
                 placeholder="YYYY-MM"
                 value={paymentCertificateDraft.period_label}
@@ -4558,7 +5101,7 @@ function App() {
             <label>
               <span>Certificate No.</span>
               <input
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certificate_no: event.target.value }))}
                 required
                 value={paymentCertificateDraft.certificate_no}
@@ -4567,7 +5110,7 @@ function App() {
             <label>
               <span>Certified On</span>
               <input
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_on: event.target.value }))}
                 type="date"
                 value={paymentCertificateDraft.certified_on}
@@ -4578,7 +5121,7 @@ function App() {
             <label>
               <span>Certified Amount</span>
               <input
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 min="0"
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_amount: event.target.value }))}
                 required
@@ -4590,7 +5133,7 @@ function App() {
             <label>
               <span>Retention</span>
               <input
-                disabled={costDisabled}
+                disabled={contractCostDisabled}
                 min="0"
                 onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, retained_amount: event.target.value }))}
                 step="0.01"
@@ -4602,7 +5145,7 @@ function App() {
           <label>
             <span>Status</span>
             <select
-              disabled={costDisabled}
+              disabled={contractCostDisabled}
               onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, status: event.target.value }))}
               value={paymentCertificateDraft.status}
             >
@@ -4613,8 +5156,139 @@ function App() {
               <option value="rejected">Rejected</option>
             </select>
           </label>
-          <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
+          <button className="workflowAction primary" disabled={contractCostDisabled || captureAction !== null} type="submit">
             {captureAction === "payment-certificate" ? "Certifying..." : "Register Payment Certificate"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handleWarehouseReceiptSubmit}>
+          <div className="panelHeader">
+            <h2>Warehouse Receipts</h2>
+            <span>{dashboard.warehouse_receipts.length} incurred</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Control Account</span>
+              <select
+                disabled={warehouseDisabled}
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, control_account_id: event.target.value }))}
+                required
+                value={warehouseReceiptDraft.control_account_id}
+              >
+                {dashboard.control_accounts.map((account) => (
+                  <option key={account.id} value={account.id}>{account.code}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Contract</span>
+              <select
+                disabled={warehouseDisabled}
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, contract_id: event.target.value }))}
+                value={warehouseReceiptDraft.contract_id}
+              >
+                <option value="">No contract link</option>
+                {dashboard.contracts.map((contract) => (
+                  <option key={contract.id} value={contract.id}>{contract.code}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Purchase Order</span>
+              <select
+                disabled={warehouseDisabled}
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, purchase_order_id: event.target.value }))}
+                value={warehouseReceiptDraft.purchase_order_id}
+              >
+                <option value="">No PO link</option>
+                {dashboard.purchase_orders.map((order) => (
+                  <option key={order.id} value={order.id}>{order.po_number}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Receipt No.</span>
+              <input
+                disabled={warehouseDisabled}
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, receipt_no: event.target.value }))}
+                required
+                value={warehouseReceiptDraft.receipt_no}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Description</span>
+            <input
+              disabled={warehouseDisabled}
+              onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, description: event.target.value }))}
+              required
+              value={warehouseReceiptDraft.description}
+            />
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Quantity</span>
+              <input
+                disabled={warehouseDisabled}
+                min="0"
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_quantity: event.target.value }))}
+                step="0.01"
+                type="number"
+                value={warehouseReceiptDraft.received_quantity}
+              />
+            </label>
+            <label>
+              <span>Unit Cost</span>
+              <input
+                disabled={warehouseDisabled}
+                min="0"
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, unit_cost: event.target.value }))}
+                step="0.01"
+                type="number"
+                value={warehouseReceiptDraft.unit_cost}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Received Value</span>
+              <input
+                disabled={warehouseDisabled}
+                min="0"
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_value: event.target.value }))}
+                step="0.01"
+                type="number"
+                value={warehouseReceiptDraft.received_value}
+              />
+            </label>
+            <label>
+              <span>Received On</span>
+              <input
+                disabled={warehouseDisabled}
+                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_on: event.target.value }))}
+                type="date"
+                value={warehouseReceiptDraft.received_on}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Status</span>
+            <select
+              disabled={warehouseDisabled}
+              onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, status: event.target.value }))}
+              value={warehouseReceiptDraft.status}
+            >
+              <option value="received">Received</option>
+              <option value="accepted">Accepted</option>
+              <option value="posted">Posted</option>
+              <option value="draft">Draft</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+          <button className="workflowAction primary" disabled={warehouseDisabled || captureAction !== null} type="submit">
+            {captureAction === "warehouse-receipt" ? "Registering..." : "Register Warehouse Receipt"}
           </button>
         </form>
 
@@ -5535,7 +6209,7 @@ function App() {
         <div className="panel wide">
           <div className="panelHeader">
             <h2>Contract Administration</h2>
-            <span>{dashboard.contracts.length} contracts / {dashboard.purchase_orders.length} POs / {dashboard.payment_certificates.length} actas</span>
+            <span>{dashboard.contracts.length} contracts / {dashboard.purchase_orders.length} POs / {dashboard.payment_certificates.length} actas / {dashboard.warehouse_receipts.length} almacen</span>
           </div>
           <div className="contractGrid">
             <div>
@@ -5570,6 +6244,18 @@ function App() {
                     <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
                     <span>{certificate.period_label || "No period"}</span>
                     <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div>
+              <strong>Warehouse Receipts</strong>
+              <div className="workList">
+                {dashboard.warehouse_receipts.map((receipt) => (
+                  <article key={receipt.id}>
+                    <strong>{receipt.receipt_no} / {currency(receipt.received_value, project.currency)}</strong>
+                    <span>{receipt.description || "Warehouse receipt"}</span>
+                    <small>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} / {statusLabel(receipt.status)}</small>
                   </article>
                 ))}
               </div>

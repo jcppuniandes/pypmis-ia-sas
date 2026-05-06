@@ -281,6 +281,7 @@ class CostSheetLineOut(BaseModel):
     planned_value: float
     actual_cost: float
     incurred_payment_certificate_value: float
+    incurred_warehouse_receipt_value: float
     committed_contract_value: float
     committed_purchase_order_value: float
     committed_cost: float
@@ -295,6 +296,7 @@ class CostManagerSummaryOut(BaseModel):
     total_earned_value: float
     total_actual_cost: float
     total_incurred_from_payment_certificates: float
+    total_incurred_from_warehouse_receipts: float
     total_contract_commitments: float
     total_purchase_order_commitments: float
     total_committed_cost: float
@@ -921,6 +923,147 @@ class PaymentCertificateUpdate(BaseModel):
     expected_version: int | None = None
 
 
+class WarehouseReceiptOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    control_account_id: int | None
+    contract_id: int | None
+    purchase_order_id: int | None
+    receipt_no: str
+    description: str
+    received_quantity: float
+    unit_cost: float
+    received_value: float
+    status: str
+    received_on: date | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class WarehouseReceiptCreate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    purchase_order_id: int | None = None
+    receipt_no: str
+    description: str = ""
+    received_quantity: float = 0
+    unit_cost: float = 0
+    received_value: float = 0
+    status: str = "accepted"
+    received_on: date | None = None
+
+
+class WarehouseReceiptUpdate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    purchase_order_id: int | None = None
+    description: str | None = None
+    received_quantity: float | None = None
+    unit_cost: float | None = None
+    received_value: float | None = None
+    status: str | None = None
+    received_on: date | None = None
+    expected_version: int | None = None
+
+
+class RFQPackageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    control_account_id: int | None
+    package_no: str
+    title: str
+    scope_summary: str
+    procurement_method: str
+    status: str
+    budget_amount: float
+    issue_date: date | None
+    due_date: date | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class RFQPackageCreate(BaseModel):
+    control_account_id: int | None = None
+    package_no: str
+    title: str
+    scope_summary: str = ""
+    procurement_method: str = "RFQ"
+    status: str = "draft"
+    budget_amount: float = 0
+    issue_date: date | None = None
+    due_date: date | None = None
+
+
+class RFQPackageUpdate(BaseModel):
+    control_account_id: int | None = None
+    title: str | None = None
+    scope_summary: str | None = None
+    procurement_method: str | None = None
+    status: str | None = None
+    budget_amount: float | None = None
+    issue_date: date | None = None
+    due_date: date | None = None
+    expected_version: int | None = None
+
+
+class RFQBidOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    rfq_package_id: int
+    bidder_name: str
+    bid_amount: float
+    technical_score: float
+    commercial_score: float
+    schedule_score: float
+    risk_score: float
+    weighted_score: float
+    status: str
+    submitted_on: date | None
+    notes: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class RFQBidCreate(BaseModel):
+    bidder_name: str
+    bid_amount: float
+    technical_score: float = 0
+    commercial_score: float = 0
+    schedule_score: float = 0
+    risk_score: float = 0
+    status: str = "received"
+    submitted_on: date | None = None
+    notes: str = ""
+
+
+class RFQBidUpdate(BaseModel):
+    bidder_name: str | None = None
+    bid_amount: float | None = None
+    technical_score: float | None = None
+    commercial_score: float | None = None
+    schedule_score: float | None = None
+    risk_score: float | None = None
+    status: str | None = None
+    submitted_on: date | None = None
+    notes: str | None = None
+    expected_version: int | None = None
+
+
+class RFQSummary(BaseModel):
+    total_packages: int
+    issued_packages: int
+    bids_received: int
+    average_weighted_score: float
+    recommended_bidder: str
+    recommended_bid_amount: float
+
+
 class ContractCommunicationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -1290,6 +1433,10 @@ class DashboardOut(BaseModel):
     contracts: list[ContractOut]
     purchase_orders: list[PurchaseOrderOut]
     payment_certificates: list[PaymentCertificateOut]
+    warehouse_receipts: list[WarehouseReceiptOut]
+    rfq_packages: list[RFQPackageOut]
+    rfq_bids: list[RFQBidOut]
+    rfq_summary: RFQSummary
     communications: list[ContractCommunicationOut]
     documents: list[DocumentOut]
     document_transmittals: list[DocumentTransmittalOut]
