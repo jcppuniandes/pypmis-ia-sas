@@ -207,6 +207,103 @@ class CostRecordCreate(BaseModel):
     description: str
 
 
+class FundingSourceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    code: str
+    name: str
+    amount: float
+    currency: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class FundingSourceCreate(BaseModel):
+    code: str
+    name: str
+    amount: float
+    currency: str = "USD"
+    status: str = "approved"
+
+
+class FundingSourceUpdate(BaseModel):
+    name: str | None = None
+    amount: float | None = None
+    currency: str | None = None
+    status: str | None = None
+    expected_version: int | None = None
+
+
+class CashFlowPeriodOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    period_label: str
+    planned_inflow: float
+    planned_outflow: float
+    actual_inflow: float
+    actual_outflow: float
+    forecast_outflow: float
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class CashFlowPeriodCreate(BaseModel):
+    period_label: str
+    planned_inflow: float = 0
+    planned_outflow: float = 0
+    actual_inflow: float = 0
+    actual_outflow: float = 0
+    forecast_outflow: float = 0
+
+
+class CashFlowPeriodUpdate(BaseModel):
+    planned_inflow: float | None = None
+    planned_outflow: float | None = None
+    actual_inflow: float | None = None
+    actual_outflow: float | None = None
+    forecast_outflow: float | None = None
+    expected_version: int | None = None
+
+
+class CostSheetLineOut(BaseModel):
+    control_account_id: int
+    control_account_code: str
+    control_account_name: str
+    cbs_code: str
+    bac: float
+    planned_value: float
+    actual_cost: float
+    committed_cost: float
+    earned_value: float
+    variance: float
+    cpi: float
+
+
+class CostManagerSummaryOut(BaseModel):
+    total_bac: float
+    total_planned_value: float
+    total_earned_value: float
+    total_actual_cost: float
+    total_committed_cost: float
+    total_funding: float
+    planned_inflow: float
+    actual_inflow: float
+    planned_outflow: float
+    actual_outflow: float
+    forecast_outflow: float
+    cost_variance: float
+    funding_variance: float
+    funding_coverage_percent: float
+    cash_flow_variance: float
+
+
 class ProgressRecordOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -913,6 +1010,10 @@ class DashboardOut(BaseModel):
     control_account_mapping_summary: ControlAccountMappingSummary
     latest_progress_records: list[ProgressRecordOut]
     latest_cost_records: list[CostRecordOut]
+    cost_sheet: list[CostSheetLineOut]
+    funding_sources: list[FundingSourceOut]
+    cash_flow: list[CashFlowPeriodOut]
+    cost_manager_summary: CostManagerSummaryOut
     project_kpi: KPIOut
     account_kpis: list[KPIOut]
     control_snapshots: list[ControlSnapshotOut]

@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -55,6 +57,8 @@ def test_projects_and_dashboard_accept_token() -> None:
     dashboard = dashboard_response.json()
     assert dashboard["project"]["id"] == projects[0]["id"]
     assert dashboard["project_kpi"]["bac"] >= 0
+    assert dashboard["cost_manager_summary"]["total_bac"] >= 0
+    assert len(dashboard["cost_sheet"]) >= 1
 
 
 def test_pilot_readiness_scores_project_phases() -> None:
@@ -101,6 +105,58 @@ def test_project_control_plan_can_be_updated_with_version() -> None:
     assert update_response.status_code == 200
     assert update_response.json()["version"] == plan["version"] + 1
     assert stale_response.status_code == 409
+
+
+def test_cost_manager_records_can_be_created_and_versioned() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        suffix = uuid4().hex[:8]
+
+        funding_response = client.post(
+            f"/api/v1/projects/{project_id}/funding-sources",
+            headers=headers,
+            json={
+                "code": f"TEST-FUND-{suffix}",
+                "name": "Pilot test funding",
+                "amount": 12345,
+                "currency": "USD",
+                "status": "approved",
+            },
+        )
+        funding = funding_response.json()
+        funding_update_response = client.patch(
+            f"/api/v1/projects/{project_id}/funding-sources/{funding['id']}",
+            headers=headers,
+            json={"amount": 14000, "expected_version": funding["version"]},
+        )
+        funding_stale_response = client.patch(
+            f"/api/v1/projects/{project_id}/funding-sources/{funding['id']}",
+            headers=headers,
+            json={"amount": 15000, "expected_version": funding["version"]},
+        )
+
+        cash_flow_response = client.post(
+            f"/api/v1/projects/{project_id}/cash-flow",
+            headers=headers,
+            json={
+                "period_label": f"2099-{suffix[:2]}",
+                "planned_inflow": 1000,
+                "planned_outflow": 700,
+                "actual_inflow": 900,
+                "actual_outflow": 750,
+                "forecast_outflow": 800,
+            },
+        )
+        summary_response = client.get(f"/api/v1/projects/{project_id}/cost-manager-summary", headers=headers)
+
+    assert funding_response.status_code == 200
+    assert funding_update_response.status_code == 200
+    assert funding_update_response.json()["version"] == funding["version"] + 1
+    assert funding_stale_response.status_code == 409
+    assert cash_flow_response.status_code == 200
+    assert summary_response.status_code == 200
+    assert summary_response.json()["total_funding"] >= funding_update_response.json()["amount"]
 
 
 def test_project_routes_reject_authenticated_non_members() -> None:

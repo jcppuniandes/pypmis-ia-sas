@@ -1509,7 +1509,24 @@ td span {
   margin-bottom: 16px;
 }
 
+.costManagerSummary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
 .awpSummary article {
+  background: #fbfcfd;
+  border: 1px solid #dfe6eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-height: 92px;
+  padding: 12px;
+}
+
+.costManagerSummary article {
   background: #fbfcfd;
   border: 1px solid #dfe6eb;
   border-radius: 8px;
@@ -1524,7 +1541,13 @@ td span {
   border-color: #ffc3b4;
 }
 
+.costManagerSummary article.risk {
+  background: #fff4f0;
+  border-color: #ffc3b4;
+}
+
 .awpSummary span,
+.costManagerSummary span,
 .subHeader span,
 .packageFacts span {
   color: #667481;
@@ -1532,13 +1555,15 @@ td span {
   font-weight: 700;
 }
 
-.awpSummary strong {
+.awpSummary strong,
+.costManagerSummary strong {
   color: #17212b;
   font-size: 24px;
   line-height: 1;
 }
 
-.awpSummary small {
+.awpSummary small,
+.costManagerSummary small {
   color: #667481;
   font-size: 12px;
 }
@@ -1548,6 +1573,49 @@ td span {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.subHeader.spaced {
+  margin-top: 16px;
+}
+
+.compactList {
+  gap: 8px;
+}
+
+.inlineCostForm {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 12px 0 16px;
+}
+
+.inlineCostForm input,
+.inlineCostForm select {
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  color: #17212b;
+  font: inherit;
+  min-height: 38px;
+  min-width: 0;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.inlineCostForm input:disabled,
+.inlineCostForm select:disabled {
+  background: #f1f4f6;
+  color: #8a98a5;
+}
+
+.inlineCostForm button,
+.cashFlowForm button {
+  grid-column: 1 / -1;
+}
+
+.cashFlowForm {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .blockedPackage {
@@ -1892,6 +1960,7 @@ td span {
   .viewSplit,
   .detailFacts,
   .awpSummary,
+  .costManagerSummary,
   .appAssessment,
   .roadmapGrid,
   .claimSummary,
@@ -1904,7 +1973,9 @@ td span {
   .templateGrid,
   .contractGrid,
   .scenarioGrid,
-  .designerSummary {
+  .designerSummary,
+  .inlineCostForm,
+  .cashFlowForm {
     grid-template-columns: 1fr;
   }
 

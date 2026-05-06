@@ -344,6 +344,65 @@ type CostRecord = {
   description: string;
 };
 
+type CostSheetLine = {
+  control_account_id: number;
+  control_account_code: string;
+  control_account_name: string;
+  cbs_code: string;
+  bac: number;
+  planned_value: number;
+  actual_cost: number;
+  committed_cost: number;
+  earned_value: number;
+  variance: number;
+  cpi: number;
+};
+
+type FundingSource = {
+  id: number;
+  project_id: number;
+  code: string;
+  name: string;
+  amount: number;
+  currency: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type CashFlowPeriod = {
+  id: number;
+  project_id: number;
+  period_label: string;
+  planned_inflow: number;
+  planned_outflow: number;
+  actual_inflow: number;
+  actual_outflow: number;
+  forecast_outflow: number;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type CostManagerSummary = {
+  total_bac: number;
+  total_planned_value: number;
+  total_earned_value: number;
+  total_actual_cost: number;
+  total_committed_cost: number;
+  total_funding: number;
+  planned_inflow: number;
+  actual_inflow: number;
+  planned_outflow: number;
+  actual_outflow: number;
+  forecast_outflow: number;
+  cost_variance: number;
+  funding_variance: number;
+  funding_coverage_percent: number;
+  cash_flow_variance: number;
+};
+
 type FlowStep = {
   name: string;
   purpose: string;
@@ -558,6 +617,10 @@ type Dashboard = {
   control_account_mapping_summary: ControlAccountMappingSummary;
   latest_progress_records: ProgressRecord[];
   latest_cost_records: CostRecord[];
+  cost_sheet: CostSheetLine[];
+  funding_sources: FundingSource[];
+  cash_flow: CashFlowPeriod[];
+  cost_manager_summary: CostManagerSummary;
   project_kpi: KPI;
   account_kpis: KPI[];
   control_snapshots: ControlSnapshot[];
@@ -719,6 +782,20 @@ function App() {
     amount: "",
     incurred_on: defaultControlDate,
     description: ""
+  });
+  const [fundingDraft, setFundingDraft] = React.useState({
+    code: "",
+    name: "",
+    amount: "",
+    status: "approved"
+  });
+  const [cashFlowDraft, setCashFlowDraft] = React.useState({
+    period_label: "",
+    planned_inflow: "",
+    planned_outflow: "",
+    actual_inflow: "",
+    actual_outflow: "",
+    forecast_outflow: ""
   });
   const [projectDraft, setProjectDraft] = React.useState({
     code: "",
@@ -1125,6 +1202,82 @@ function App() {
       await load();
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Actual cost capture failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleFundingSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("funding");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/funding-sources`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          code: fundingDraft.code,
+          name: fundingDraft.name,
+          amount: Number(fundingDraft.amount || 0),
+          currency: dashboard.project.currency,
+          status: fundingDraft.status
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Funding source creation failed");
+      }
+      setFundingDraft({ code: "", name: "", amount: "", status: "approved" });
+      setUploadMessage("Funding source registered for Cost Manager.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Funding source creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleCashFlowSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("cash-flow");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/cash-flow`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          period_label: cashFlowDraft.period_label,
+          planned_inflow: Number(cashFlowDraft.planned_inflow || 0),
+          planned_outflow: Number(cashFlowDraft.planned_outflow || 0),
+          actual_inflow: Number(cashFlowDraft.actual_inflow || 0),
+          actual_outflow: Number(cashFlowDraft.actual_outflow || 0),
+          forecast_outflow: Number(cashFlowDraft.forecast_outflow || 0)
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Cash flow period creation failed");
+      }
+      setCashFlowDraft({
+        period_label: "",
+        planned_inflow: "",
+        planned_outflow: "",
+        actual_inflow: "",
+        actual_outflow: "",
+        forecast_outflow: ""
+      });
+      setUploadMessage("Cash flow period registered for Cost Manager.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Cash flow period creation failed");
     } finally {
       setCaptureAction(null);
     }
@@ -1734,7 +1887,7 @@ function App() {
     { key: "control-dashboard", label: "Control Dashboard", count: redAlerts },
     { key: "schedule", label: "Schedule", count: dashboard.schedule_activity_count },
     { key: "progress", label: "Progress", count: dashboard.latest_progress_records.length },
-    { key: "cost", label: "Cost", count: dashboard.latest_cost_records.length },
+    { key: "cost", label: "Cost Manager", count: dashboard.cost_sheet.length },
     { key: "awp", label: "AWP Workface", count: dashboard.awp_summary.total_packages },
     { key: "changes", label: "Changes", count: dashboard.changes.length },
     { key: "claims", label: "Claims", count: dashboard.claims.length },
@@ -1781,6 +1934,7 @@ function App() {
     return acc;
   }, {});
   const mappingSummary = dashboard.control_account_mapping_summary;
+  const costManager = dashboard.cost_manager_summary;
   const controlGateBlocked = !dashboard.schedule_import || dashboard.schedule_import.quality_score < 70 || !dashboard.control_accounts.length;
   const progressDisabled = controlGateBlocked || !dashboard.current_membership.can_capture_progress;
   const costDisabled = controlGateBlocked || !dashboard.current_membership.can_capture_cost;
@@ -2547,31 +2701,217 @@ function App() {
 
       <section className={activeView === "cost" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
         <div className="panelHeader">
-          <h2>Actual Cost Records</h2>
+          <h2>Cost Manager</h2>
           <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open capture form</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Control Account</th>
-              <th>Source</th>
-              <th>Amount</th>
-              <th>Incurred On</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dashboard.latest_cost_records.map((record) => (
-              <tr key={record.id}>
-                <td>{accountLabel(record.control_account_id)}</td>
-                <td>{statusLabel(record.source)}</td>
-                <td>{currency(record.amount, project.currency)}</td>
-                <td>{record.incurred_on}</td>
-                <td>{record.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="costManagerSummary">
+          <article className={costManager.cost_variance < 0 ? "risk" : ""}>
+            <span>Cost Variance</span>
+            <strong>{currency(costManager.cost_variance, project.currency)}</strong>
+            <small>EV {currency(costManager.total_earned_value, project.currency)} / AC {currency(costManager.total_actual_cost, project.currency)}</small>
+          </article>
+          <article>
+            <span>Funding Coverage</span>
+            <strong>{costManager.funding_coverage_percent.toFixed(1)}%</strong>
+            <small>{currency(costManager.total_funding, project.currency)} funding / {currency(costManager.total_bac, project.currency)} BAC</small>
+          </article>
+          <article className={costManager.cash_flow_variance < 0 ? "risk" : ""}>
+            <span>Cash Flow Variance</span>
+            <strong>{currency(costManager.cash_flow_variance, project.currency)}</strong>
+            <small>Actual net vs planned net</small>
+          </article>
+          <article>
+            <span>Forecast Outflow</span>
+            <strong>{currency(costManager.forecast_outflow, project.currency)}</strong>
+            <small>{dashboard.cash_flow.length} periods / {dashboard.funding_sources.length} funds</small>
+          </article>
+        </div>
+        <div className="viewSplit">
+          <div>
+            <div className="subHeader">
+              <strong>Cost Sheet</strong>
+              <span>{dashboard.cost_sheet.length} control accounts</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Control Account</th>
+                  <th>CBS</th>
+                  <th>BAC</th>
+                  <th>EV</th>
+                  <th>AC</th>
+                  <th>Commitment</th>
+                  <th>CPI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.cost_sheet.map((line) => (
+                  <tr key={line.control_account_id}>
+                    <td>{line.control_account_code}</td>
+                    <td>{line.cbs_code || "Pending"}</td>
+                    <td>{currency(line.bac, project.currency)}</td>
+                    <td>{currency(line.earned_value, project.currency)}</td>
+                    <td>{currency(line.actual_cost, project.currency)}</td>
+                    <td>{currency(line.committed_cost, project.currency)}</td>
+                    <td>{line.cpi.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="subHeader spaced">
+              <strong>Actual Cost Records</strong>
+              <span>{dashboard.latest_cost_records.length} recent</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Control Account</th>
+                  <th>Source</th>
+                  <th>Amount</th>
+                  <th>Incurred On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.latest_cost_records.map((record) => (
+                  <tr key={record.id}>
+                    <td>{accountLabel(record.control_account_id)}</td>
+                    <td>{statusLabel(record.source)}</td>
+                    <td>{currency(record.amount, project.currency)}</td>
+                    <td>{record.incurred_on}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div className="subHeader">
+              <strong>Funding Sources</strong>
+              <span>{currency(costManager.total_funding, project.currency)}</span>
+            </div>
+            <div className="workList compactList">
+              {dashboard.funding_sources.map((funding) => (
+                <article key={funding.id}>
+                  <strong>{funding.code} / {currency(funding.amount, funding.currency)}</strong>
+                  <span>{funding.name}</span>
+                  <small>{statusLabel(funding.status)} / v{funding.version}</small>
+                </article>
+              ))}
+            </div>
+            <form className="inlineCostForm" onSubmit={handleFundingSubmit}>
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setFundingDraft((current) => ({ ...current, code: event.target.value }))}
+                placeholder="Code"
+                required
+                value={fundingDraft.code}
+              />
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setFundingDraft((current) => ({ ...current, name: event.target.value }))}
+                placeholder="Name"
+                required
+                value={fundingDraft.name}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setFundingDraft((current) => ({ ...current, amount: event.target.value }))}
+                placeholder="Amount"
+                required
+                type="number"
+                value={fundingDraft.amount}
+              />
+              <select
+                disabled={costDisabled}
+                onChange={(event) => setFundingDraft((current) => ({ ...current, status: event.target.value }))}
+                value={fundingDraft.status}
+              >
+                <option value="approved">Approved</option>
+                <option value="planned">Planned</option>
+                <option value="on_hold">On Hold</option>
+              </select>
+              <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
+                {captureAction === "funding" ? "Saving..." : "Add Funding"}
+              </button>
+            </form>
+            <div className="subHeader spaced">
+              <strong>Cash Flow</strong>
+              <span>{dashboard.cash_flow.length} periods</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <th>Planned Out</th>
+                  <th>Actual Out</th>
+                  <th>Forecast Out</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.cash_flow.map((period) => (
+                  <tr key={period.id}>
+                    <td>{period.period_label}</td>
+                    <td>{currency(period.planned_outflow, project.currency)}</td>
+                    <td>{currency(period.actual_outflow, project.currency)}</td>
+                    <td>{currency(period.forecast_outflow, project.currency)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <form className="inlineCostForm cashFlowForm" onSubmit={handleCashFlowSubmit}>
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, period_label: event.target.value }))}
+                placeholder="YYYY-MM"
+                required
+                value={cashFlowDraft.period_label}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_inflow: event.target.value }))}
+                placeholder="Planned in"
+                type="number"
+                value={cashFlowDraft.planned_inflow}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_outflow: event.target.value }))}
+                placeholder="Planned out"
+                type="number"
+                value={cashFlowDraft.planned_outflow}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_inflow: event.target.value }))}
+                placeholder="Actual in"
+                type="number"
+                value={cashFlowDraft.actual_inflow}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_outflow: event.target.value }))}
+                placeholder="Actual out"
+                type="number"
+                value={cashFlowDraft.actual_outflow}
+              />
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setCashFlowDraft((current) => ({ ...current, forecast_outflow: event.target.value }))}
+                placeholder="Forecast out"
+                type="number"
+                value={cashFlowDraft.forecast_outflow}
+              />
+              <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
+                {captureAction === "cash-flow" ? "Saving..." : "Add Period"}
+              </button>
+            </form>
+          </div>
+        </div>
       </section>
 
       <section className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>

@@ -489,6 +489,43 @@ class CostRecord(Base):
     control_account: Mapped[ControlAccount] = relationship(back_populates="costs")
 
 
+class FundingSource(Base):
+    __tablename__ = "funding_sources"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    name: Mapped[str] = mapped_column(String(180))
+    amount: Mapped[float] = mapped_column(Float, default=0)
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    status: Mapped[str] = mapped_column(String(40), default="approved")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
+
+
+class CashFlowPeriod(Base):
+    __tablename__ = "cash_flow_periods"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    period_label: Mapped[str] = mapped_column(String(40), index=True)
+    planned_inflow: Mapped[float] = mapped_column(Float, default=0)
+    planned_outflow: Mapped[float] = mapped_column(Float, default=0)
+    actual_inflow: Mapped[float] = mapped_column(Float, default=0)
+    actual_outflow: Mapped[float] = mapped_column(Float, default=0)
+    forecast_outflow: Mapped[float] = mapped_column(Float, default=0)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "period_label"),)
+
+
 class ProgressRecord(Base):
     __tablename__ = "progress_records"
 

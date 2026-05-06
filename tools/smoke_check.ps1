@@ -38,6 +38,14 @@ $dashboard = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/dashboar
 if ($null -eq $dashboard.project_kpi) {
   throw "Dashboard did not return project KPI data."
 }
+if ($null -eq $dashboard.cost_manager_summary -or $dashboard.cost_sheet.Count -lt 1) {
+  throw "Dashboard did not return Cost Manager data."
+}
+
+$costManager = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/cost-manager-summary" -Headers $headers
+if ($costManager.total_bac -lt 1) {
+  throw "Cost Manager summary did not return BAC."
+}
 
 $pilotReadiness = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/pilot-readiness" -Headers $headers
 if ($pilotReadiness.score -lt 60) {
@@ -54,5 +62,6 @@ Write-Host "OK Readiness: $($ready.status)"
 Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"
+Write-Host "OK Cost Manager: BAC $($costManager.total_bac) / Funding $($costManager.total_funding)"
 Write-Host "OK Pilot readiness: $($pilotReadiness.status) $($pilotReadiness.score)%"
 Write-Host "OK Frontend: HTTP $($frontend.StatusCode)"

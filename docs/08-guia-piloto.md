@@ -1,6 +1,6 @@
 # Guia Para Desarrollar El Piloto
 
-Fecha base: 2026-05-05
+Fecha base: 2026-05-06
 
 ## Objetivo
 
@@ -19,6 +19,7 @@ Antes de iniciar:
 - Usuario Control Manager disponible.
 - Al menos cinco roles cargados en el equipo del proyecto.
 - Cronograma fuente disponible en XML/XER o dataset semilla aceptado para demo controlada.
+- Cost Manager con al menos una fuente de funding y un periodo de cash flow.
 
 ## Paso A Paso
 
@@ -124,6 +125,8 @@ Capturar datos de una semana:
 - Cantidades instaladas.
 - Horas.
 - Costos reales.
+- Funding aprobado o planeado.
+- Cash flow del periodo.
 - Evidencia.
 
 Ejecutar Control Core.
@@ -136,6 +139,7 @@ Validar:
 - Alertas.
 - Forecast scenarios.
 - Control snapshots.
+- Cost Sheet, Funding Coverage y Cash Flow Variance.
 
 Salida esperada:
 
@@ -164,6 +168,8 @@ Registros cubiertos:
 - ClaimImpactAnalysis.
 - Workflow action.
 - ProjectControlPlan.
+- FundingSource.
+- CashFlowPeriod.
 
 ### 8. Probar AWP
 
@@ -212,7 +218,7 @@ Revisar:
 - Fase 1: Schedule Intake / Data Quality.
 - Fase 2: Business Process Engine.
 - Fase 3: Control Accounts / Mapping.
-- Fase 4: EVM / Forecast / Control Core.
+- Fase 4: EVM / Forecast / Cost Manager.
 - Fase 5: Contracts / Claims / Evidence.
 - Fase 6: SaaS colaborativo / Operacion.
 
@@ -226,12 +232,13 @@ Salida esperada:
 Agenda semanal recomendada:
 
 1. Estado del cronograma y data quality.
-2. Variaciones SPI/CPI/VAC.
+2. Variaciones SPI/CPI/VAC y Cost Sheet.
 3. Alertas rojas y amarillas.
-4. AWP readiness y constraints.
-5. Cambios, notices y claims.
-6. Decisiones y responsables.
-7. Acciones para el siguiente ciclo.
+4. Funding Coverage y Cash Flow Variance.
+5. AWP readiness y constraints.
+6. Cambios, notices y claims.
+7. Decisiones y responsables.
+8. Acciones para el siguiente ciclo.
 
 Salida esperada:
 
@@ -258,6 +265,7 @@ El piloto se considera exitoso si:
 - Se completo un ciclo de control semanal.
 - Se aprobo o activo el Plan de Control / PEP del proyecto.
 - Se cargaron avance y costos.
+- Se cargaron funding y cash flow del ciclo.
 - Se genero un dashboard con KPI y alertas.
 - Se registro al menos una decision por workflow.
 - Se valido un paquete AWP.

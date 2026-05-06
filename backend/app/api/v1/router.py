@@ -19,6 +19,7 @@ from app.domain.models import (
     AuthCredential,
     AuditLog,
     BaselineVersion,
+    Budget,
     BusinessProcessInstance,
     BusinessProcessStepTemplate,
     BusinessProcessTemplate,
@@ -34,10 +35,12 @@ from app.domain.models import (
     ControlAccountMapping,
     ControlPeriod,
     ControlSnapshot,
+    CashFlowPeriod,
     CostRecord,
     CostSource,
     Document,
     ForecastScenario,
+    FundingSource,
     ImportStatus,
     KPI,
     ProgressRecord,
@@ -62,6 +65,9 @@ from app.domain.schemas import (
     AuditLogOut,
     BaselineVersionOut,
     BusinessProcessInstanceOut,
+    CashFlowPeriodCreate,
+    CashFlowPeriodOut,
+    CashFlowPeriodUpdate,
     ChangeRequestCreate,
     ChangeRequestOut,
     ClaimOut,
@@ -89,11 +95,16 @@ from app.domain.schemas import (
     ControlSnapshotOut,
     CostRecordCreate,
     CostRecordOut,
+    CostManagerSummaryOut,
+    CostSheetLineOut,
     DataQualityGateOut,
     DashboardOut,
     DocumentOut,
     DocumentCreate,
     ForecastScenarioOut,
+    FundingSourceCreate,
+    FundingSourceOut,
+    FundingSourceUpdate,
     AuthSessionOut,
     KPIOut,
     LoginRequest,
@@ -821,6 +832,211 @@ def create_cost_record(
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(record)
     return record
+
+
+@router.get("/projects/{project_id}/cost-sheet", response_model=list[CostSheetLineOut])
+def get_cost_sheet(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[CostSheetLineOut]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _cost_sheet_lines(db, tenant_id, project_id)
+
+
+@router.get("/projects/{project_id}/funding-sources", response_model=list[FundingSourceOut])
+def list_funding_sources(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[FundingSource]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _funding_sources(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/funding-sources", response_model=FundingSourceOut)
+def create_funding_source(
+    project_id: int,
+    payload: FundingSourceCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> FundingSource:
+    project = _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot manage project funding")
+    current_user = _require_user(db, tenant_id, user_id)
+    if not payload.code.strip() or not payload.name.strip():
+        raise HTTPException(status_code=400, detail="Funding code and name are required")
+    if payload.amount < 0:
+        raise HTTPException(status_code=400, detail="Funding amount cannot be negative")
+    existing = db.scalar(
+        select(FundingSource).where(
+            FundingSource.tenant_id == tenant_id,
+            FundingSource.project_id == project_id,
+            FundingSource.code == payload.code.strip(),
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Funding source code already exists for this project")
+    funding = FundingSource(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        code=payload.code.strip(),
+        name=payload.name.strip(),
+        amount=payload.amount,
+        currency=(payload.currency or project.currency).upper(),
+        status=payload.status.strip() or "approved",
+    )
+    db.add(funding)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_funding_source", "FundingSource", funding.id, f'{{"code":"{funding.code}","amount":{funding.amount}}}', current_user.full_name)
+    db.commit()
+    db.refresh(funding)
+    return funding
+
+
+@router.patch("/projects/{project_id}/funding-sources/{funding_id}", response_model=FundingSourceOut)
+def update_funding_source(
+    project_id: int,
+    funding_id: int,
+    payload: FundingSourceUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> FundingSource:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot manage project funding")
+    current_user = _require_user(db, tenant_id, user_id)
+    funding = db.scalar(
+        select(FundingSource).where(
+            FundingSource.tenant_id == tenant_id,
+            FundingSource.project_id == project_id,
+            FundingSource.id == funding_id,
+        )
+    )
+    if not funding:
+        raise HTTPException(status_code=404, detail="Funding source not found")
+    _require_current_version(funding, payload.expected_version)
+    if payload.amount is not None and payload.amount < 0:
+        raise HTTPException(status_code=400, detail="Funding amount cannot be negative")
+    for field in ("name", "amount", "currency", "status"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(funding, field, value.strip() if isinstance(value, str) else value)
+    if funding.currency:
+        funding.currency = funding.currency.upper()
+    _touch_collaborative_record(funding)
+    _audit(db, tenant_id, project_id, "update_funding_source", "FundingSource", funding.id, f'{{"version":{funding.version}}}', current_user.full_name)
+    db.commit()
+    db.refresh(funding)
+    return funding
+
+
+@router.get("/projects/{project_id}/cash-flow", response_model=list[CashFlowPeriodOut])
+def list_cash_flow(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[CashFlowPeriod]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _cash_flow_periods(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/cash-flow", response_model=CashFlowPeriodOut)
+def create_cash_flow_period(
+    project_id: int,
+    payload: CashFlowPeriodCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CashFlowPeriod:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot manage cash flow")
+    current_user = _require_user(db, tenant_id, user_id)
+    _validate_cash_flow_values(payload)
+    if not payload.period_label.strip():
+        raise HTTPException(status_code=400, detail="Cash flow period label is required")
+    existing = db.scalar(
+        select(CashFlowPeriod).where(
+            CashFlowPeriod.tenant_id == tenant_id,
+            CashFlowPeriod.project_id == project_id,
+            CashFlowPeriod.period_label == payload.period_label.strip(),
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Cash flow period already exists for this project")
+    period = CashFlowPeriod(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        period_label=payload.period_label.strip(),
+        planned_inflow=payload.planned_inflow,
+        planned_outflow=payload.planned_outflow,
+        actual_inflow=payload.actual_inflow,
+        actual_outflow=payload.actual_outflow,
+        forecast_outflow=payload.forecast_outflow,
+    )
+    db.add(period)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_cash_flow_period", "CashFlowPeriod", period.id, f'{{"period_label":"{period.period_label}"}}', current_user.full_name)
+    db.commit()
+    db.refresh(period)
+    return period
+
+
+@router.patch("/projects/{project_id}/cash-flow/{period_id}", response_model=CashFlowPeriodOut)
+def update_cash_flow_period(
+    project_id: int,
+    period_id: int,
+    payload: CashFlowPeriodUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CashFlowPeriod:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot manage cash flow")
+    current_user = _require_user(db, tenant_id, user_id)
+    _validate_cash_flow_values(payload)
+    period = db.scalar(
+        select(CashFlowPeriod).where(
+            CashFlowPeriod.tenant_id == tenant_id,
+            CashFlowPeriod.project_id == project_id,
+            CashFlowPeriod.id == period_id,
+        )
+    )
+    if not period:
+        raise HTTPException(status_code=404, detail="Cash flow period not found")
+    _require_current_version(period, payload.expected_version)
+    for field in ("planned_inflow", "planned_outflow", "actual_inflow", "actual_outflow", "forecast_outflow"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(period, field, value)
+    _touch_collaborative_record(period)
+    _audit(db, tenant_id, project_id, "update_cash_flow_period", "CashFlowPeriod", period.id, f'{{"version":{period.version}}}', current_user.full_name)
+    db.commit()
+    db.refresh(period)
+    return period
+
+
+@router.get("/projects/{project_id}/cost-manager-summary", response_model=CostManagerSummaryOut)
+def get_cost_manager_summary(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CostManagerSummaryOut:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _cost_manager_summary(db, tenant_id, project_id)
 
 
 @router.get("/projects/{project_id}/contracts", response_model=list[ContractOut])
@@ -1962,6 +2178,9 @@ def get_dashboard(
             .order_by(ForecastScenario.name)
         ).all()
     )
+    cost_sheet = _cost_sheet_lines(db, tenant_id, project_id)
+    funding_sources = _funding_sources(db, tenant_id, project_id)
+    cash_flow = _cash_flow_periods(db, tenant_id, project_id)
 
     flow = [
         TCMFlowStep(name="Planeacion", purpose="WBS, baseline, logic, critical path and lookahead.", state="baselined"),
@@ -2006,6 +2225,10 @@ def get_dashboard(
         control_account_mapping_summary=_control_account_mapping_summary(control_account_mappings, baseline_versions[0].status if baseline_versions else "pending"),
         latest_progress_records=[ProgressRecordOut.model_validate(record) for record in latest_progress_records[:6]],
         latest_cost_records=[CostRecordOut.model_validate(record) for record in latest_cost_records[:6]],
+        cost_sheet=cost_sheet,
+        funding_sources=[FundingSourceOut.model_validate(source) for source in funding_sources],
+        cash_flow=[CashFlowPeriodOut.model_validate(period) for period in cash_flow],
+        cost_manager_summary=_cost_manager_summary_from(cost_sheet, funding_sources, cash_flow),
         project_kpi=KPIOut.model_validate(project_kpi),
         account_kpis=[KPIOut.model_validate(kpi) for kpi in account_kpis],
         control_snapshots=[ControlSnapshotOut.model_validate(snapshot) for snapshot in control_snapshots[-12:]],
@@ -2027,6 +2250,163 @@ def get_dashboard(
         awp_summary=_awp_summary(work_packages, work_package_constraints),
         ai_brief=AIInsightService().explain_project_variance(project_kpi, alerts),
     )
+
+
+def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[CostSheetLineOut]:
+    accounts = list(
+        db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+    )
+    budgets = list(
+        db.scalars(
+            select(Budget)
+            .where(Budget.tenant_id == tenant_id, Budget.project_id == project_id)
+            .order_by(Budget.cbs_code)
+        ).all()
+    )
+    cost_records = list(
+        db.scalars(
+            select(CostRecord).where(CostRecord.tenant_id == tenant_id, CostRecord.project_id == project_id)
+        ).all()
+    )
+    latest_project_kpi = db.scalars(
+        select(KPI)
+        .where(KPI.tenant_id == tenant_id, KPI.project_id == project_id, KPI.control_account_id.is_(None))
+        .order_by(KPI.created_at.desc())
+    ).first()
+    active_period = latest_project_kpi.period if latest_project_kpi else "current"
+    kpis_by_account = {
+        kpi.control_account_id: kpi
+        for kpi in db.scalars(
+            select(KPI).where(
+                KPI.tenant_id == tenant_id,
+                KPI.project_id == project_id,
+                KPI.control_account_id.is_not(None),
+                KPI.period == active_period,
+            )
+        ).all()
+    }
+
+    budgets_by_account: dict[int, list[Budget]] = {}
+    for budget in budgets:
+        budgets_by_account.setdefault(budget.control_account_id, []).append(budget)
+
+    actual_by_account: dict[int, float] = {}
+    committed_by_account: dict[int, float] = {}
+    for record in cost_records:
+        if record.source == CostSource.commitment:
+            committed_by_account[record.control_account_id] = committed_by_account.get(record.control_account_id, 0) + record.amount
+        else:
+            actual_by_account[record.control_account_id] = actual_by_account.get(record.control_account_id, 0) + record.amount
+
+    lines: list[CostSheetLineOut] = []
+    for account in accounts:
+        account_budgets = budgets_by_account.get(account.id, [])
+        bac = sum(budget.bac for budget in account_budgets)
+        budget_pv = sum(budget.cost_loaded_pv for budget in account_budgets)
+        kpi = kpis_by_account.get(account.id)
+        planned_value = kpi.pv if kpi else budget_pv
+        earned_value = kpi.ev if kpi else 0
+        actual_cost = actual_by_account.get(account.id, 0)
+        committed_cost = committed_by_account.get(account.id, 0)
+        variance = earned_value - actual_cost
+        cpi = earned_value / actual_cost if actual_cost else 0
+        cbs_codes = ", ".join(sorted({budget.cbs_code for budget in account_budgets if budget.cbs_code}))
+        lines.append(
+            CostSheetLineOut(
+                control_account_id=account.id,
+                control_account_code=account.code,
+                control_account_name=account.name,
+                cbs_code=cbs_codes,
+                bac=_money(bac),
+                planned_value=_money(planned_value),
+                actual_cost=_money(actual_cost),
+                committed_cost=_money(committed_cost),
+                earned_value=_money(earned_value),
+                variance=_money(variance),
+                cpi=round(cpi, 3),
+            )
+        )
+    return lines
+
+
+def _funding_sources(db: Session, tenant_id: int, project_id: int) -> list[FundingSource]:
+    return list(
+        db.scalars(
+            select(FundingSource)
+            .where(FundingSource.tenant_id == tenant_id, FundingSource.project_id == project_id)
+            .order_by(FundingSource.code)
+        ).all()
+    )
+
+
+def _cash_flow_periods(db: Session, tenant_id: int, project_id: int) -> list[CashFlowPeriod]:
+    return list(
+        db.scalars(
+            select(CashFlowPeriod)
+            .where(CashFlowPeriod.tenant_id == tenant_id, CashFlowPeriod.project_id == project_id)
+            .order_by(CashFlowPeriod.period_label)
+        ).all()
+    )
+
+
+def _cost_manager_summary(db: Session, tenant_id: int, project_id: int) -> CostManagerSummaryOut:
+    return _cost_manager_summary_from(
+        _cost_sheet_lines(db, tenant_id, project_id),
+        _funding_sources(db, tenant_id, project_id),
+        _cash_flow_periods(db, tenant_id, project_id),
+    )
+
+
+def _cost_manager_summary_from(
+    cost_sheet: list[CostSheetLineOut],
+    funding_sources: list[FundingSource],
+    cash_flow: list[CashFlowPeriod],
+) -> CostManagerSummaryOut:
+    total_bac = sum(line.bac for line in cost_sheet)
+    total_planned_value = sum(line.planned_value for line in cost_sheet)
+    total_earned_value = sum(line.earned_value for line in cost_sheet)
+    total_actual_cost = sum(line.actual_cost for line in cost_sheet)
+    total_committed_cost = sum(line.committed_cost for line in cost_sheet)
+    total_funding = sum(source.amount for source in funding_sources if source.status not in {"cancelled", "rejected"})
+    planned_inflow = sum(period.planned_inflow for period in cash_flow)
+    actual_inflow = sum(period.actual_inflow for period in cash_flow)
+    planned_outflow = sum(period.planned_outflow for period in cash_flow)
+    actual_outflow = sum(period.actual_outflow for period in cash_flow)
+    forecast_outflow = sum(period.forecast_outflow for period in cash_flow)
+    planned_net = planned_inflow - planned_outflow
+    actual_net = actual_inflow - actual_outflow
+    return CostManagerSummaryOut(
+        total_bac=_money(total_bac),
+        total_planned_value=_money(total_planned_value),
+        total_earned_value=_money(total_earned_value),
+        total_actual_cost=_money(total_actual_cost),
+        total_committed_cost=_money(total_committed_cost),
+        total_funding=_money(total_funding),
+        planned_inflow=_money(planned_inflow),
+        actual_inflow=_money(actual_inflow),
+        planned_outflow=_money(planned_outflow),
+        actual_outflow=_money(actual_outflow),
+        forecast_outflow=_money(forecast_outflow),
+        cost_variance=_money(total_earned_value - total_actual_cost),
+        funding_variance=_money(total_funding - total_bac),
+        funding_coverage_percent=round((total_funding / total_bac) * 100, 1) if total_bac else 0,
+        cash_flow_variance=_money(actual_net - planned_net),
+    )
+
+
+def _validate_cash_flow_values(payload: CashFlowPeriodCreate | CashFlowPeriodUpdate) -> None:
+    for field in ("planned_inflow", "planned_outflow", "actual_inflow", "actual_outflow", "forecast_outflow"):
+        value = getattr(payload, field)
+        if value is not None and value < 0:
+            raise HTTPException(status_code=400, detail=f"{field} cannot be negative")
+
+
+def _money(value: float) -> float:
+    return round(float(value or 0), 2)
 
 
 def _latest_schedule_import(db: Session, tenant_id: int, project_id: int) -> ScheduleImport | None:
@@ -2115,6 +2495,8 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
     control_account_count = _count(db, ControlAccount, tenant_id, project_id)
     progress_count = _count(db, ProgressRecord, tenant_id, project_id)
     cost_count = _count(db, CostRecord, tenant_id, project_id)
+    funding_count = _count(db, FundingSource, tenant_id, project_id)
+    cash_flow_count = _count(db, CashFlowPeriod, tenant_id, project_id)
     snapshot_count = _count(db, ControlSnapshot, tenant_id, project_id)
     forecast_count = _count(db, ForecastScenario, tenant_id, project_id)
     contract_count = _count(db, Contract, tenant_id, project_id)
@@ -2188,10 +2570,10 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         ),
         _readiness_item(
             "Fase 4",
-            "EVM / Forecast / Control Core",
-            100 if latest_kpi and snapshot_count and forecast_count and progress_count and cost_count else 55,
-            f"{progress_count} avances, {cost_count} costos, {snapshot_count} snapshots y {forecast_count} forecasts.",
-            "Ejecutar ciclo de control con datos de avance, costo real y escenarios EAC.",
+            "EVM / Forecast / Cost Manager",
+            100 if latest_kpi and snapshot_count and forecast_count and progress_count and cost_count and funding_count and cash_flow_count else 55,
+            f"{progress_count} avances, {cost_count} costos, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
+            "Ejecutar ciclo de control con datos de avance, costo real, funding, cash flow y escenarios EAC.",
         ),
         _readiness_item(
             "Fase 5",

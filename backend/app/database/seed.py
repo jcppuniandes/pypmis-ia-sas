@@ -26,9 +26,11 @@ from app.domain.models import (
     ControlAccountMapping,
     CostRecord,
     CostSource,
+    CashFlowPeriod,
     ControlSnapshot,
     Document,
     ForecastScenario,
+    FundingSource,
     Event,
     ImportStatus,
     KPI,
@@ -73,6 +75,7 @@ def seed_demo(db: Session) -> None:
             ensure_claim_notice_and_impact_records(db, existing.id, project.id)
             ControlCoreService(db).run_project_cycle(existing.id, project.id)
             ensure_control_history_records(db, existing.id, project.id)
+            ensure_cost_manager_records(db, existing.id, project.id)
         secondary = ensure_secondary_project(db, existing.id)
         if secondary:
             ensure_project_control_plan(db, existing.id, secondary.id)
@@ -84,6 +87,7 @@ def seed_demo(db: Session) -> None:
             ensure_claim_notice_and_impact_records(db, existing.id, secondary.id)
             ControlCoreService(db).run_project_cycle(existing.id, secondary.id)
             ensure_control_history_records(db, existing.id, secondary.id)
+            ensure_cost_manager_records(db, existing.id, secondary.id)
         ensure_demo_users(db, existing.id)
         return
 
@@ -233,6 +237,7 @@ def seed_demo(db: Session) -> None:
 
     ControlCoreService(db).run_project_cycle(tenant.id, project.id)
     ensure_control_history_records(db, tenant.id, project.id)
+    ensure_cost_manager_records(db, tenant.id, project.id)
     ensure_contract_records(db, tenant.id, project.id)
     ensure_awp_records(db, tenant.id, project.id)
     ensure_claim_entitlement_records(db, tenant.id, project.id)
@@ -247,6 +252,7 @@ def seed_demo(db: Session) -> None:
         ensure_claim_notice_and_impact_records(db, tenant.id, secondary.id)
         ControlCoreService(db).run_project_cycle(tenant.id, secondary.id)
         ensure_control_history_records(db, tenant.id, secondary.id)
+        ensure_cost_manager_records(db, tenant.id, secondary.id)
     ensure_demo_users(db, tenant.id)
 
 
@@ -411,6 +417,85 @@ def ensure_project_control_plan(db: Session, tenant_id: int, project_id: int) ->
     if plan.status == "draft":
         plan.status = "active"
     db.flush()
+
+
+def ensure_cost_manager_records(db: Session, tenant_id: int, project_id: int) -> None:
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+
+    existing_funding_codes = set(
+        db.scalars(
+            select(FundingSource.code).where(
+                FundingSource.tenant_id == tenant_id,
+                FundingSource.project_id == project_id,
+            )
+        ).all()
+    )
+    funding_rows = (
+        [
+            ("CAPEX-2026", "Approved 2026 capital allocation", 5_500_000, "approved"),
+            ("CONT-RESERVE", "Management reserve for pilot controls", 1_250_000, "approved"),
+            ("CHANGE-FUND", "Owner change contingency", 950_000, "planned"),
+        ]
+        if project.code == "CTRL-DEMO-001"
+        else [
+            ("TURN-CAPEX", "Turnaround approved budget envelope", 2_100_000, "approved"),
+            ("OPS-RESERVE", "Operations contingency reserve", 450_000, "planned"),
+        ]
+    )
+    for code, name, amount, status in funding_rows:
+        if code not in existing_funding_codes:
+            db.add(
+                FundingSource(
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    code=code,
+                    name=name,
+                    amount=amount,
+                    currency=project.currency,
+                    status=status,
+                )
+            )
+
+    existing_periods = set(
+        db.scalars(
+            select(CashFlowPeriod.period_label).where(
+                CashFlowPeriod.tenant_id == tenant_id,
+                CashFlowPeriod.project_id == project_id,
+            )
+        ).all()
+    )
+    cash_flow_rows = (
+        [
+            ("2026-01", 1_400_000, 880_000, 1_400_000, 860_000, 920_000),
+            ("2026-02", 1_200_000, 1_120_000, 1_200_000, 1_180_000, 1_250_000),
+            ("2026-03", 1_450_000, 1_420_000, 1_410_000, 1_520_000, 1_630_000),
+            ("2026-04", 1_100_000, 1_560_000, 1_050_000, 1_610_000, 1_720_000),
+            ("2026-05", 1_250_000, 1_770_000, 1_190_000, 1_720_000, 1_840_000),
+        ]
+        if project.code == "CTRL-DEMO-001"
+        else [
+            ("2026-03", 750_000, 420_000, 740_000, 390_000, 470_000),
+            ("2026-04", 680_000, 580_000, 650_000, 610_000, 690_000),
+            ("2026-05", 650_000, 760_000, 610_000, 720_000, 820_000),
+        ]
+    )
+    for period_label, planned_inflow, planned_outflow, actual_inflow, actual_outflow, forecast_outflow in cash_flow_rows:
+        if period_label not in existing_periods:
+            db.add(
+                CashFlowPeriod(
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    period_label=period_label,
+                    planned_inflow=planned_inflow,
+                    planned_outflow=planned_outflow,
+                    actual_inflow=actual_inflow,
+                    actual_outflow=actual_outflow,
+                    forecast_outflow=forecast_outflow,
+                )
+            )
+    db.commit()
 
 
 def neutralize_schedule_labels(db: Session, tenant_id: int, project_id: int) -> None:

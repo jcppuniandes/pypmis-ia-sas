@@ -82,6 +82,25 @@ GET /api/v1/projects/{project_id}/pilot-readiness
 
 El indicador cubre Fase 1 a Fase 6: Schedule Intake, BP Engine, Control Accounts, EVM/Forecast, Contracts/Claims y SaaS colaborativo.
 
+## Cost Manager
+
+La app incluye un Cost Manager basico para piloto: Cost Sheet por cuenta de control, funding sources, cash flow periodico y resumen financiero en dashboard.
+
+Endpoints:
+
+```text
+GET /api/v1/projects/{project_id}/cost-sheet
+GET /api/v1/projects/{project_id}/funding-sources
+POST /api/v1/projects/{project_id}/funding-sources
+PATCH /api/v1/projects/{project_id}/funding-sources/{funding_id}
+GET /api/v1/projects/{project_id}/cash-flow
+POST /api/v1/projects/{project_id}/cash-flow
+PATCH /api/v1/projects/{project_id}/cash-flow/{period_id}
+GET /api/v1/projects/{project_id}/cost-manager-summary
+```
+
+Funding y cash flow usan `expected_version` en `PATCH` para proteger ediciones concurrentes.
+
 ## Plan de Control del Proyecto / PEP
 
 La app incluye un plan de control por proyecto para formalizar lo que aparece en el flujo de procesos: estrategia de ejecucion, estrategia de control, reglas de medicion de progreso, reglas de medicion de costo, cambios, riesgos, adquisiciones, control documental y cadencia de reportes.
@@ -103,7 +122,7 @@ Con el stack levantado:
 docker compose exec api pytest
 ```
 
-La suite mínima cubre health, readiness, autenticacion, rechazo sin token, proyectos, dashboard y encolado del Control Core.
+La suite minima cubre health, readiness, autenticacion, rechazo sin token, proyectos, dashboard, Cost Manager, concurrencia optimista y encolado del Control Core.
 
 ## Configuracion operativa
 
@@ -164,6 +183,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/cont
 - [Flujos de procesos](docs/05-flujos-de-procesos.md)
 - [Backlog por fases](docs/06-backlog-por-fases.md)
 - [Guia para desarrollar el piloto](docs/08-guia-piloto.md)
+- [Resumen, analisis, manual de uso y paso a paso del piloto](docs/09-resumen-analisis-manual-piloto.md)
 
 ## Regla de entrada
 
