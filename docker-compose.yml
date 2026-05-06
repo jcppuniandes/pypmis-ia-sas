@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: pypmis
       POSTGRES_USER: pypmis
@@ -17,53 +18,79 @@ services:
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
       context: ./backend
+    restart: unless-stopped
     environment:
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-local}
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+      COMMIT_SHA: ${COMMIT_SHA:-dev}
       DATABASE_URL: postgresql+psycopg://pypmis:pypmis@db:5432/pypmis
       REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: http://localhost:5173
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-*}"
       AUTO_CREATE_SCHEMA: "true"
       SEED_DEMO_DATA: "true"
       AUTH_SECRET_KEY: dev-local-change-before-production
       DEMO_USER_PASSWORD: demo123
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-plain}
+      METRICS_ENABLED: "true"
+      MAX_REQUEST_BODY_MB: "25"
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2).read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
   worker:
     build:
       context: ./backend
     command: celery -A app.workers.celery_app worker --loglevel=INFO -Q control-core
+    restart: unless-stopped
     environment:
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-local}
       DATABASE_URL: postgresql+psycopg://pypmis:pypmis@db:5432/pypmis
       REDIS_URL: redis://redis:6379/0
       AUTO_CREATE_SCHEMA: "false"
       SEED_DEMO_DATA: "false"
       AUTH_SECRET_KEY: dev-local-change-before-production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-plain}
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
   frontend:
     build:
       context: ./frontend
+    restart: unless-stopped
     environment:
       VITE_API_URL: http://localhost:8000
     ports:
       - "5173:5173"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 volumes:
   postgres_data:

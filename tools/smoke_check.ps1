@@ -3,19 +3,41 @@ param(
   [string]$FrontendUrl = "http://localhost:5173",
   [int]$TenantId = 1,
   [string]$Email = "ana.control@demo.local",
-  [string]$Password = "demo123"
+  [string]$Password = "demo123",
+  [string]$MetricsToken = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-$health = Invoke-RestMethod -Uri "$ApiUrl/api/v1/health"
+$healthResponse = Invoke-WebRequest -Uri "$ApiUrl/api/v1/health" -UseBasicParsing
+$health = $healthResponse.Content | ConvertFrom-Json
 if ($health.status -ne "ok") {
   throw "API health check failed."
+}
+if ([string]$healthResponse.Headers["X-Content-Type-Options"] -ne "nosniff") {
+  throw "Security header X-Content-Type-Options is missing."
+}
+if ([string]$healthResponse.Headers["X-Frame-Options"] -ne "DENY") {
+  throw "Security header X-Frame-Options is missing."
+}
+
+$live = Invoke-RestMethod -Uri "$ApiUrl/api/v1/health/live"
+if ($live.status -ne "live") {
+  throw "API liveness check failed."
 }
 
 $ready = Invoke-RestMethod -Uri "$ApiUrl/api/v1/health/ready"
 if ($ready.status -ne "ready") {
   throw "API readiness check failed."
+}
+
+$metricsHeaders = @{}
+if ($MetricsToken) {
+  $metricsHeaders["X-Metrics-Token"] = $MetricsToken
+}
+$metrics = Invoke-WebRequest -Uri "$ApiUrl/api/v1/ops/metrics" -Headers $metricsHeaders -UseBasicParsing
+if ($metrics.Content -notmatch "pypmis_http_requests_total") {
+  throw "Metrics endpoint did not return the expected Prometheus counters."
 }
 
 $session = Invoke-RestMethod -Method Post -Uri "$ApiUrl/api/v1/auth/login" -ContentType "application/json" -Body (@{
@@ -70,7 +92,10 @@ if ($frontend.StatusCode -ne 200) {
 }
 
 Write-Host "OK API health: $($health.status)"
+Write-Host "OK API liveness: $($live.status) / uptime $($live.uptime_seconds)s"
 Write-Host "OK Readiness: $($ready.status)"
+Write-Host "OK Observability: Prometheus metrics exposed"
+Write-Host "OK Security headers: nosniff / DENY"
 Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"

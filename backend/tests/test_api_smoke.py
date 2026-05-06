@@ -1,7 +1,9 @@
 from uuid import uuid4
 
+import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import Settings
 from app.main import app
 
 
@@ -12,6 +14,45 @@ def test_health_returns_ok() -> None:
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
     assert response.headers["X-Request-Id"]
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "DENY"
+
+
+def test_liveness_and_metrics_are_available() -> None:
+    with TestClient(app) as client:
+        live_response = client.get("/api/v1/health/live")
+        metrics_response = client.get("/api/v1/ops/metrics")
+
+    assert live_response.status_code == 200
+    assert live_response.json()["status"] == "live"
+    assert metrics_response.status_code == 200
+    assert "pypmis_http_requests_total" in metrics_response.text
+
+
+def test_production_settings_reject_insecure_defaults() -> None:
+    settings = Settings(
+        app_environment="production",
+        auth_secret_key="change-me-before-production",
+        allowed_hosts="pypmis.example.com,localhost,127.0.0.1",
+        cors_origins="https://pypmis.example.com",
+        docs_enabled=False,
+    )
+
+    with pytest.raises(RuntimeError, match="AUTH_SECRET_KEY"):
+        settings.validate_for_runtime()
+
+
+def test_production_settings_require_explicit_hosts_and_closed_docs() -> None:
+    settings = Settings(
+        app_environment="production",
+        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        allowed_hosts="*",
+        cors_origins="https://pypmis.example.com",
+        docs_enabled=True,
+    )
+
+    with pytest.raises(RuntimeError, match="ALLOWED_HOSTS"):
+        settings.validate_for_runtime()
 
 
 def test_readiness_checks_dependencies() -> None:
