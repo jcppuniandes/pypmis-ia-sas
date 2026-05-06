@@ -184,6 +184,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/cont
 - [Backlog por fases](docs/06-backlog-por-fases.md)
 - [Guia para desarrollar el piloto](docs/08-guia-piloto.md)
 - [Resumen, analisis, manual de uso y paso a paso del piloto](docs/09-resumen-analisis-manual-piloto.md)
+- [Manual de uso detallado modulo por modulo](docs/10-manual-uso-detallado-modulos.md)
 
 ## Regla de entrada
 
