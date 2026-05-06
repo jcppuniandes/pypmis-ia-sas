@@ -24,6 +24,12 @@ DOCUMENTS = [
         "title": "Manual De Uso Detallado",
         "subtitle": "Modulo por modulo para piloto colaborativo",
     },
+    {
+        "source": ROOT / "docs" / "11-paso-a-paso-piloto-detallado-produccion.md",
+        "output": ROOT / "docs" / "Paso_A_Paso_Piloto_Detallado_Produccion_Pypmis_Ai_SaaS.pdf",
+        "title": "Paso A Paso Detallado Del Piloto",
+        "subtitle": "Runbook operativo y readiness para produccion",
+    },
 ]
 
 W, H = A4
@@ -301,6 +307,11 @@ def render_markdown(source: Path, output: Path, title: str, subtitle: str) -> in
 
 def main() -> None:
     for item in DOCUMENTS:
+        source = item["source"]
+        output = item["output"]
+        if output.exists() and output.stat().st_mtime >= source.stat().st_mtime:
+            print(f"{output.relative_to(ROOT)} - vigente")
+            continue
         pages = render_markdown(item["source"], item["output"], item["title"], item["subtitle"])
         print(f"{item['output'].relative_to(ROOT)} - {pages} paginas")
 

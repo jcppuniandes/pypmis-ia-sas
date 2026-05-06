@@ -187,6 +187,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/projects/1/cont
 - [Manual de uso detallado modulo por modulo](docs/10-manual-uso-detallado-modulos.md)
 - [PDF analisis y resumen del piloto](docs/Analisis_Resumen_Piloto_Pypmis_Ai_SaaS.pdf)
 - [PDF manual de uso detallado modulo por modulo](docs/Manual_Uso_Detallado_Modulos_Pypmis_Ai_SaaS.pdf)
+- [PDF paso a paso detallado del piloto y readiness produccion](docs/Paso_A_Paso_Piloto_Detallado_Produccion_Pypmis_Ai_SaaS.pdf)
 
 ## Regla de entrada
 
