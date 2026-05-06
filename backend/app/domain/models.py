@@ -737,6 +737,7 @@ class Contract(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
     code: Mapped[str] = mapped_column(String(80), index=True)
     title: Mapped[str] = mapped_column(String(220))
     counterparty: Mapped[str] = mapped_column(String(180))
@@ -745,6 +746,49 @@ class Contract(Base):
     status: Mapped[str] = mapped_column(String(40), default="active")
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
+
+
+class PurchaseOrder(Base):
+    __tablename__ = "purchase_orders"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    contract_id: Mapped[int | None] = mapped_column(ForeignKey("contracts.id"), index=True)
+    po_number: Mapped[str] = mapped_column(String(120), index=True)
+    description: Mapped[str] = mapped_column(String(260), default="")
+    vendor: Mapped[str] = mapped_column(String(180), default="")
+    committed_amount: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="issued")
+    issued_on: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "po_number"),)
+
+
+class PaymentCertificate(Base):
+    __tablename__ = "payment_certificates"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    contract_id: Mapped[int | None] = mapped_column(ForeignKey("contracts.id"), index=True)
+    purchase_order_id: Mapped[int | None] = mapped_column(ForeignKey("purchase_orders.id"), index=True)
+    certificate_no: Mapped[str] = mapped_column(String(120), index=True)
+    period_label: Mapped[str] = mapped_column(String(40), default="")
+    certified_amount: Mapped[float] = mapped_column(Float, default=0)
+    retained_amount: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="certified")
+    certified_on: Mapped[date | None] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "certificate_no"),)
 
 
 class ContractCommunication(Base):

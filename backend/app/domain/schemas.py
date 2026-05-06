@@ -280,6 +280,9 @@ class CostSheetLineOut(BaseModel):
     bac: float
     planned_value: float
     actual_cost: float
+    incurred_payment_certificate_value: float
+    committed_contract_value: float
+    committed_purchase_order_value: float
     committed_cost: float
     earned_value: float
     variance: float
@@ -291,6 +294,9 @@ class CostManagerSummaryOut(BaseModel):
     total_planned_value: float
     total_earned_value: float
     total_actual_cost: float
+    total_incurred_from_payment_certificates: float
+    total_contract_commitments: float
+    total_purchase_order_commitments: float
     total_committed_cost: float
     total_funding: float
     planned_inflow: float
@@ -815,6 +821,7 @@ class ContractOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    control_account_id: int | None
     code: str
     title: str
     counterparty: str
@@ -824,12 +831,94 @@ class ContractOut(BaseModel):
 
 
 class ContractCreate(BaseModel):
+    control_account_id: int | None = None
     code: str
     title: str
     counterparty: str
     contract_type: str = "EPC"
     value: float = 0
     status: str = "active"
+
+
+class PurchaseOrderOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    control_account_id: int | None
+    contract_id: int | None
+    po_number: str
+    description: str
+    vendor: str
+    committed_amount: float
+    status: str
+    issued_on: date | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class PurchaseOrderCreate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    po_number: str
+    description: str = ""
+    vendor: str = ""
+    committed_amount: float
+    status: str = "issued"
+    issued_on: date | None = None
+
+
+class PurchaseOrderUpdate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    description: str | None = None
+    vendor: str | None = None
+    committed_amount: float | None = None
+    status: str | None = None
+    issued_on: date | None = None
+    expected_version: int | None = None
+
+
+class PaymentCertificateOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    control_account_id: int | None
+    contract_id: int | None
+    purchase_order_id: int | None
+    certificate_no: str
+    period_label: str
+    certified_amount: float
+    retained_amount: float
+    status: str
+    certified_on: date | None
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class PaymentCertificateCreate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    purchase_order_id: int | None = None
+    certificate_no: str
+    period_label: str = ""
+    certified_amount: float
+    retained_amount: float = 0
+    status: str = "certified"
+    certified_on: date | None = None
+
+
+class PaymentCertificateUpdate(BaseModel):
+    control_account_id: int | None = None
+    contract_id: int | None = None
+    purchase_order_id: int | None = None
+    period_label: str | None = None
+    certified_amount: float | None = None
+    retained_amount: float | None = None
+    status: str | None = None
+    certified_on: date | None = None
+    expected_version: int | None = None
 
 
 class ContractCommunicationOut(BaseModel):
@@ -1199,6 +1288,8 @@ class DashboardOut(BaseModel):
     claim_impact_analyses: list[ClaimImpactAnalysisOut]
     claims_forensic_summary: ClaimsForensicSummary
     contracts: list[ContractOut]
+    purchase_orders: list[PurchaseOrderOut]
+    payment_certificates: list[PaymentCertificateOut]
     communications: list[ContractCommunicationOut]
     documents: list[DocumentOut]
     document_transmittals: list[DocumentTransmittalOut]

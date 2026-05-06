@@ -37,11 +37,13 @@ from app.domain.models import (
     Event,
     ImportStatus,
     KPI,
+    PaymentCertificate,
     ProgressRecord,
     Project,
     ProjectMail,
     ProjectControlPlan,
     ProjectMembership,
+    PurchaseOrder,
     RelationshipType,
     Resource,
     ControlPeriod,
@@ -74,6 +76,8 @@ def seed_demo(db: Session) -> None:
             ensure_demo_schedule(db, existing.id, project.id)
             ensure_control_account_mapping_records(db, existing.id, project.id)
             ensure_contract_records(db, existing.id, project.id)
+            ensure_purchase_order_records(db, existing.id, project.id)
+            ensure_payment_certificate_records(db, existing.id, project.id)
             ensure_awp_records(db, existing.id, project.id)
             ensure_claim_entitlement_records(db, existing.id, project.id)
             ensure_claim_notice_and_impact_records(db, existing.id, project.id)
@@ -87,6 +91,8 @@ def seed_demo(db: Session) -> None:
             neutralize_schedule_labels(db, existing.id, secondary.id)
             ensure_control_account_mapping_records(db, existing.id, secondary.id)
             ensure_contract_records(db, existing.id, secondary.id)
+            ensure_purchase_order_records(db, existing.id, secondary.id)
+            ensure_payment_certificate_records(db, existing.id, secondary.id)
             ensure_awp_records(db, existing.id, secondary.id)
             ensure_claim_entitlement_records(db, existing.id, secondary.id)
             ensure_claim_notice_and_impact_records(db, existing.id, secondary.id)
@@ -245,6 +251,10 @@ def seed_demo(db: Session) -> None:
     ensure_control_history_records(db, tenant.id, project.id)
     ensure_cost_manager_records(db, tenant.id, project.id)
     ensure_contract_records(db, tenant.id, project.id)
+    ensure_purchase_order_records(db, tenant.id, project.id)
+    ensure_payment_certificate_records(db, tenant.id, project.id)
+    ControlCoreService(db).run_project_cycle(tenant.id, project.id)
+    ensure_control_history_records(db, tenant.id, project.id)
     ensure_awp_records(db, tenant.id, project.id)
     ensure_claim_entitlement_records(db, tenant.id, project.id)
     ensure_claim_notice_and_impact_records(db, tenant.id, project.id)
@@ -253,6 +263,8 @@ def seed_demo(db: Session) -> None:
     if secondary:
         ensure_project_control_plan(db, tenant.id, secondary.id)
         ensure_contract_records(db, tenant.id, secondary.id)
+        ensure_purchase_order_records(db, tenant.id, secondary.id)
+        ensure_payment_certificate_records(db, tenant.id, secondary.id)
         ensure_control_account_mapping_records(db, tenant.id, secondary.id)
         ensure_awp_records(db, tenant.id, secondary.id)
         ensure_claim_entitlement_records(db, tenant.id, secondary.id)
@@ -753,10 +765,10 @@ def ensure_secondary_project(db: Session, tenant_id: int) -> Project | None:
                 tenant_id=tenant_id,
                 project_id=project.id,
                 control_account_id=account.id,
-                source=CostSource.commitment,
+                source=CostSource.invoice,
                 amount=ac,
                 incurred_on=date(2026, 5, 1),
-                description="Committed cost imported from turnaround cost ledger.",
+                description="Actual cost imported from turnaround cost ledger.",
             )
         )
         db.add(
@@ -801,19 +813,35 @@ def ensure_secondary_project(db: Session, tenant_id: int) -> Project | None:
 
 
 def ensure_contract_records(db: Session, tenant_id: int, project_id: int) -> None:
-    existing = db.scalars(
-        select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
-    ).first()
-    if existing:
-        return
+    inspector = inspect(db.get_bind())
+    table_names = set(inspector.get_table_names())
+    if "contracts" in table_names:
+        contract_columns = {column["name"] for column in inspector.get_columns("contracts")}
+        if "control_account_id" not in contract_columns:
+            return
 
     project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
     if not project:
         return
+    account = db.scalar(
+        select(ControlAccount)
+        .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+        .order_by(ControlAccount.code)
+    )
+    existing = db.scalars(
+        select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+    ).first()
+    if existing:
+        if account and not existing.control_account_id:
+            existing.control_account_id = account.id
+            db.flush()
+        return
+
     is_turnaround = project.code == "REF-TURN-002"
     contract = Contract(
         tenant_id=tenant_id,
         project_id=project_id,
+        control_account_id=account.id if account else None,
         code="CON-TA-001" if is_turnaround else "CON-CTRL-001",
         title="Turnaround mechanical and instrumentation services" if is_turnaround else "Integrated project controls and construction support",
         counterparty="Industrial Services Contractor" if is_turnaround else "Owner / EPC Contractor",
@@ -846,6 +874,147 @@ def ensure_contract_records(db: Session, tenant_id: int, project_id: int) -> Non
             uri=f"edms://contracts/{contract.code}/register",
         )
     )
+
+
+def ensure_purchase_order_records(db: Session, tenant_id: int, project_id: int) -> None:
+    inspector = inspect(db.get_bind())
+    if "purchase_orders" not in set(inspector.get_table_names()):
+        return
+
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    accounts = list(
+        db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+    )
+    if not accounts:
+        return
+    contracts = list(
+        db.scalars(
+            select(Contract)
+            .where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+            .order_by(Contract.code)
+        ).all()
+    )
+    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    is_turnaround = project.code == "REF-TURN-002"
+    rows = (
+        [
+            ("PO-CTRL-1001", accounts[0], "Mechanical installation purchase order", "Industrial Services Contractor", 1_250_000),
+            ("PO-CTRL-2101", accounts[1] if len(accounts) > 1 else accounts[0], "Valve and piping material purchase order", "Valve Supplier", 980_000),
+            ("PO-CTRL-3101", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical hook-up supply order", "Electrical Vendor", 420_000),
+        ]
+        if not is_turnaround
+        else [
+            ("PO-TA-1201", accounts[0], "Steam and condensate tie-in purchase order", "Industrial Services Contractor", 760_000),
+            ("PO-TA-2201", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation loop check order", "I&C Services Vendor", 290_000),
+        ]
+    )
+    existing_numbers = set(
+        db.scalars(
+            select(PurchaseOrder.po_number).where(
+                PurchaseOrder.tenant_id == tenant_id,
+                PurchaseOrder.project_id == project_id,
+            )
+        ).all()
+    )
+    for po_number, account, description, vendor, amount in rows:
+        if po_number in existing_numbers:
+            continue
+        db.add(
+            PurchaseOrder(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                control_account_id=account.id,
+                contract_id=contract_by_account.get(account.id).id if account.id in contract_by_account else None,
+                po_number=po_number,
+                description=description,
+                vendor=vendor,
+                committed_amount=amount,
+                status="issued",
+                issued_on=date(2026, 5, 2),
+            )
+        )
+    db.commit()
+
+
+def ensure_payment_certificate_records(db: Session, tenant_id: int, project_id: int) -> None:
+    inspector = inspect(db.get_bind())
+    if "payment_certificates" not in set(inspector.get_table_names()):
+        return
+
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    accounts = list(
+        db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+    )
+    if not accounts:
+        return
+    purchase_orders = list(
+        db.scalars(
+            select(PurchaseOrder)
+            .where(PurchaseOrder.tenant_id == tenant_id, PurchaseOrder.project_id == project_id)
+            .order_by(PurchaseOrder.po_number)
+        ).all()
+    )
+    contracts = list(
+        db.scalars(
+            select(Contract)
+            .where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+            .order_by(Contract.code)
+        ).all()
+    )
+    po_by_account = {order.control_account_id: order for order in purchase_orders if order.control_account_id}
+    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    is_turnaround = project.code == "REF-TURN-002"
+    rows = (
+        [
+            ("AP-CTRL-100-001", accounts[0], "2026-05", 1_820_000, 91_000),
+            ("AP-CTRL-210-001", accounts[1] if len(accounts) > 1 else accounts[0], "2026-05", 2_620_000, 131_000),
+            ("AP-CTRL-310-001", accounts[2] if len(accounts) > 2 else accounts[-1], "2026-05", 730_000, 36_500),
+        ]
+        if not is_turnaround
+        else [
+            ("AP-TA-120-001", accounts[0], "2026-05", 910_000, 45_500),
+            ("AP-TA-220-001", accounts[1] if len(accounts) > 1 else accounts[0], "2026-05", 310_000, 15_500),
+        ]
+    )
+    existing_numbers = set(
+        db.scalars(
+            select(PaymentCertificate.certificate_no).where(
+                PaymentCertificate.tenant_id == tenant_id,
+                PaymentCertificate.project_id == project_id,
+            )
+        ).all()
+    )
+    for certificate_no, account, period_label, certified_amount, retained_amount in rows:
+        if certificate_no in existing_numbers:
+            continue
+        db.add(
+            PaymentCertificate(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                control_account_id=account.id,
+                contract_id=contract_by_account.get(account.id).id if account.id in contract_by_account else None,
+                purchase_order_id=po_by_account.get(account.id).id if account.id in po_by_account else None,
+                certificate_no=certificate_no,
+                period_label=period_label,
+                certified_amount=certified_amount,
+                retained_amount=retained_amount,
+                status="certified",
+                certified_on=date(2026, 5, 5),
+            )
+        )
+    db.commit()
 
 
 def ensure_awp_records(db: Session, tenant_id: int, project_id: int) -> None:

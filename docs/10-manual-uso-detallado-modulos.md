@@ -17,7 +17,7 @@ Controlar quien entra, que proyecto puede ver y que acciones puede ejecutar.
 | Control Manager | Gobierno del piloto, aprobaciones y decisiones. | Configurar, aprobar workflow, capturar avance/costo. |
 | Planner | Cronograma, baseline, mapping y calidad de schedule. | Cargar cronograma y capturar avance. |
 | Project Controls | Analisis EVM, tendencias, alertas y reportes. | Capturar avance/costo y analizar dashboard. |
-| Cost Controller | Costos reales, commitments, funding y cash flow. | Capturar costo y Cost Manager. |
+| Cost Controller | Actas de pago, evidencia de costo, funding y cash flow. | Capturar incurrido y Cost Manager. |
 | Contract Manager | Contratos, comunicaciones, notices y claims. | Gestion contractual. |
 | Field Engineer | Avance fisico, cantidades, horas y evidencia. | Capturar progreso. |
 | Workface Planner | AWP, paquetes de trabajo y restricciones. | Gestionar readiness AWP. |
@@ -289,12 +289,15 @@ Field Engineer, Planner o Project Controls.
 
 ### Objetivo
 
-Controlar costo, presupuesto, commitments, funding y cash flow del piloto.
+Controlar costo, presupuesto, incurrido desde actas de pago, comprometido contractual, funding y cash flow del piloto.
 
 ### Submodulos
 
 - Cost Sheet.
-- Actual Cost Records.
+- Payment Certificates.
+- Cost Evidence Records.
+- Contract Commitments.
+- Purchase Order Commitments.
 - Funding Sources.
 - Cash Flow.
 - Cost Manager Summary.
@@ -305,7 +308,7 @@ Uso:
 
 1. Ir a `Cost Manager`.
 2. Revisar cada cuenta de control.
-3. Comparar BAC, EV, AC y commitments.
+3. Comparar BAC, EV, incurrido por actas de pago, contratos y ordenes de compra comprometidas.
 4. Identificar CPI menor a 1.0.
 5. Revisar variacion negativa.
 
@@ -315,8 +318,10 @@ Campos:
 - CBS.
 - BAC.
 - EV.
-- AC.
-- Commitment.
+- Incurred / AC desde actas de pago.
+- Contract Commitment.
+- PO Commitment.
+- Total Committed Cost.
 - CPI.
 
 Salida esperada:
@@ -324,29 +329,71 @@ Salida esperada:
 - Cuentas con sobrecosto identificadas.
 - Base financiera lista para reunion semanal.
 
-### 9.2 Actual Cost Records
+### 9.2 Payment Certificates / Actas de Pago
 
 Uso:
 
 1. Ir a `BP Entry Forms`.
-2. En `Cost`, seleccionar cuenta de control.
-3. Seleccionar fuente: invoice, payroll, equipment, materials o commitment.
+2. En `Payment Certificates`, seleccionar cuenta de control.
+3. Vincular contrato y orden de compra si aplica.
+4. Registrar numero de acta/certificado.
+5. Registrar periodo.
+6. Registrar monto certificado.
+7. Registrar retencion si aplica.
+8. Registrar fecha de certificacion.
+9. Guardar.
+
+Validacion:
+
+- El usuario necesita permiso `can_capture_cost`.
+- El monto certificado debe ser mayor a cero.
+
+Salida esperada:
+
+- Incurrido / AC actualizado.
+- Control Core recalcula CPI, CV, EAC y VAC.
+
+### 9.3 Cost Evidence Records
+
+Uso:
+
+1. Ir a `BP Entry Forms`.
+2. En `Cost Evidence`, seleccionar cuenta de control.
+3. Seleccionar fuente: invoice, payroll, equipment o materials.
 4. Registrar monto.
 5. Registrar fecha.
 6. Agregar descripcion.
 7. Guardar.
 
-Validacion:
+Regla:
 
-- El usuario necesita permiso `can_capture_cost`.
-- El monto debe ser mayor a cero.
+- Este registro es evidencia auxiliar.
+- El incurrido financiero se calcula desde actas de pago, no desde este formulario.
+
+### 9.4 Comprometido Contractual
+
+Uso:
+
+1. Ir a `BP Entry Forms`.
+2. En `Contracts`, seleccionar cuenta de control.
+3. Registrar contrato, contraparte, tipo, valor y estado.
+4. Guardar.
+5. En `Purchase Orders`, seleccionar cuenta de control.
+6. Vincular contrato si aplica.
+7. Registrar orden de compra, proveedor y monto comprometido.
+8. Guardar.
+9. Volver a `Cost Manager`.
+
+Regla:
+
+- El comprometido no se registra como costo real.
+- El comprometido se calcula desde contratos activos/aprobados y ordenes de compra emitidas/aprobadas.
 
 Salida esperada:
 
-- AC o commitment actualizado.
-- Control Core recalcula CPI, CV, EAC y VAC.
+- `Contract Commitment`, `PO Commitment` y `Total Committed Cost` visibles por cuenta de control.
 
-### 9.3 Funding Sources
+### 9.5 Funding Sources
 
 Uso:
 
@@ -368,7 +415,7 @@ Control colaborativo:
 - `PATCH` usa `expected_version`.
 - Si otro usuario edita antes, el sistema devuelve conflicto `409`.
 
-### 9.4 Cash Flow
+### 9.6 Cash Flow
 
 Uso:
 
@@ -393,6 +440,8 @@ Salida esperada:
 - Funding Coverage: Funding total sobre BAC.
 - Cash Flow Variance: neto actual contra neto planeado.
 - Forecast Outflow: salidas proyectadas acumuladas.
+- Incurred Cost: actas de pago certificadas por cuenta de control.
+- Committed Cost: contratos mas ordenes de compra vigentes por cuenta de control.
 
 ## 10. Modulo Control Dashboard
 
@@ -744,7 +793,7 @@ La app se esta usando correctamente si:
 
 - SSO/OIDC.
 - Realtime para ball-in-court y notificaciones.
-- Integracion ERP para costos reales y commitments.
+- Integracion ERP para costos reales, contratos y ordenes de compra.
 - Integracion industrial Primavera P6 / MS Project.
 - Versionado formal de cash flow y forecasts.
 - Document Manager avanzado.

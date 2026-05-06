@@ -49,6 +49,12 @@ $costManager = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/cost-m
 if ($costManager.total_bac -lt 1) {
   throw "Cost Manager summary did not return BAC."
 }
+if ($costManager.total_committed_cost -lt 1 -or $costManager.total_purchase_order_commitments -lt 1) {
+  throw "Cost Manager summary did not return contract or purchase order commitments."
+}
+if ($costManager.total_incurred_from_payment_certificates -lt 1) {
+  throw "Cost Manager summary did not return incurred cost from payment certificates."
+}
 
 $pilotReadiness = Invoke-RestMethod -Uri "$ApiUrl/api/v1/projects/$projectId/pilot-readiness" -Headers $headers
 if ($pilotReadiness.score -lt 60) {
@@ -65,7 +71,7 @@ Write-Host "OK Readiness: $($ready.status)"
 Write-Host "OK Authenticated user: $($session.user.email)"
 Write-Host "OK Projects: $($projects.Count)"
 Write-Host "OK Dashboard: $($dashboard.project.code)"
-Write-Host "OK Cost Manager: BAC $($costManager.total_bac) / Funding $($costManager.total_funding)"
+Write-Host "OK Cost Manager: BAC $($costManager.total_bac) / Incurred $($costManager.total_incurred_from_payment_certificates) / Committed $($costManager.total_committed_cost) / Funding $($costManager.total_funding)"
 Write-Host "OK Document Control: $($dashboard.document_control_summary.controlled_document_score)% controlled"
 Write-Host "OK Pilot readiness: $($pilotReadiness.status) $($pilotReadiness.score)%"
 Write-Host "OK Frontend: HTTP $($frontend.StatusCode)"

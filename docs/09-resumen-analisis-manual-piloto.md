@@ -8,7 +8,7 @@ P&Pmis Ai SaaS ya opera como una plataforma colaborativa en linea para Project C
 
 En esta fase se agrego un Cost Manager basico inspirado en Oracle Primavera Unifier:
 
-- Cost Sheet por cuenta de control: BAC, PV, EV, AC, commitments, variacion y CPI.
+- Cost Sheet por cuenta de control: BAC, PV, EV, incurrido desde actas de pago, comprometido desde contratos/ordenes de compra, variacion y CPI.
 - Funding Sources: fondos aprobados o planeados por proyecto.
 - Cash Flow: periodos con entradas, salidas, reales y forecast.
 - Cost Manager Summary en dashboard, API y smoke test.
@@ -77,7 +77,7 @@ Usuarios demo:
 En la vista Cost Manager:
 
 - Revisar Cost Sheet por cuenta de control.
-- Confirmar BAC, EV, AC, commitments, variacion y CPI.
+- Confirmar BAC, EV, actas de pago, contratos, ordenes de compra, comprometido total, variacion y CPI.
 - Registrar Funding Sources con codigo, nombre, monto y estado.
 - Registrar Cash Flow por periodo con inflow/outflow plan, real y forecast.
 - Revisar Funding Coverage, Cash Flow Variance y Forecast Outflow.
@@ -214,7 +214,7 @@ El piloto se considera exitoso si:
 
 ### 10. Siguiente Ola Despues Del Piloto
 
-- Integrar ERP para costos reales y commitments.
+- Integrar ERP para actas de pago, costos reales auxiliares, contratos y ordenes de compra.
 - Integrar P6/MS Project de forma industrial.
 - Agregar SSO/OIDC.
 - Agregar realtime para workflows y ball-in-court.

@@ -1,7 +1,7 @@
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, inspect, select
 from sqlalchemy.orm import Session
 
-from app.domain.models import Alert, Budget, ControlAccount, ControlPeriod, ControlSnapshot, CostRecord, ForecastScenario, KPI, ProgressRecord
+from app.domain.models import Alert, Budget, ControlAccount, ControlPeriod, ControlSnapshot, CostRecord, ForecastScenario, KPI, PaymentCertificate, ProgressRecord
 from app.services.early_warning import EarlyWarningService
 from app.services.evm import EVMEngine, EVMInput
 
@@ -94,12 +94,24 @@ class ControlCoreService:
         ).one()
         bac = float(budget_row[0])
         pv = float(budget_row[1])
-        ac = float(
+        certified_ac = 0.0
+        if "payment_certificates" in set(inspect(self.db.get_bind()).get_table_names()):
+            certified_ac = float(
+                self.db.scalar(
+                    select(func.coalesce(func.sum(PaymentCertificate.certified_amount), 0)).where(
+                        PaymentCertificate.control_account_id == account.id,
+                        ~PaymentCertificate.status.in_(["cancelled", "rejected", "void", "draft"]),
+                    )
+                )
+                or 0
+            )
+        legacy_ac = float(
             self.db.scalar(
                 select(func.coalesce(func.sum(CostRecord.amount), 0)).where(CostRecord.control_account_id == account.id)
             )
             or 0
         )
+        ac = certified_ac or legacy_ac
         progress = self.db.scalars(
             select(ProgressRecord)
             .where(ProgressRecord.control_account_id == account.id)

@@ -46,11 +46,13 @@ from app.domain.models import (
     FundingSource,
     ImportStatus,
     KPI,
+    PaymentCertificate,
     ProgressRecord,
     ProjectMail,
     Project,
     ProjectControlPlan,
     ProjectMembership,
+    PurchaseOrder,
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleValidationFinding,
@@ -120,6 +122,9 @@ from app.domain.schemas import (
     AuthSessionOut,
     KPIOut,
     LoginRequest,
+    PaymentCertificateCreate,
+    PaymentCertificateOut,
+    PaymentCertificateUpdate,
     PilotReadinessItem,
     PilotReadinessOut,
     ProcessStepTemplateOut,
@@ -138,6 +143,9 @@ from app.domain.schemas import (
     ProgressRecordCreate,
     ProgressRecordOut,
     ProductivitySummary,
+    PurchaseOrderCreate,
+    PurchaseOrderOut,
+    PurchaseOrderUpdate,
     ProjectOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
@@ -829,6 +837,8 @@ def create_cost_record(
         source = CostSource(payload.source)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail="Invalid cost source") from exc
+    if source == CostSource.commitment:
+        raise HTTPException(status_code=400, detail="Commitments are created from contracts or purchase orders, not from actual cost records")
     if payload.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be greater than zero")
     record = CostRecord(
@@ -1082,18 +1092,26 @@ def create_contract(
     membership = _require_membership(db, tenant_id, project_id, user_id)
     _require_permission(membership, "can_manage_contract", "Current role cannot create or update contracts")
     current_user = _require_user(db, tenant_id, user_id)
-    existing = db.scalar(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id, Contract.code == payload.code))
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.value < 0:
+        raise HTTPException(status_code=400, detail="Contract value cannot be negative")
+    contract_code = payload.code.strip()
+    if not contract_code:
+        raise HTTPException(status_code=400, detail="Contract code is required")
+    existing = db.scalar(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id, Contract.code == contract_code))
     if existing:
         raise HTTPException(status_code=409, detail="Contract code already exists in this project")
     contract = Contract(
         tenant_id=tenant_id,
         project_id=project_id,
-        code=payload.code,
-        title=payload.title,
-        counterparty=payload.counterparty,
-        contract_type=payload.contract_type,
+        control_account_id=payload.control_account_id,
+        code=contract_code,
+        title=payload.title.strip(),
+        counterparty=payload.counterparty.strip(),
+        contract_type=payload.contract_type.strip() or "EPC",
         value=payload.value,
-        status=payload.status,
+        status=payload.status.strip() or "active",
     )
     db.add(contract)
     db.flush()
@@ -1101,6 +1119,215 @@ def create_contract(
     db.commit()
     db.refresh(contract)
     return contract
+
+
+@router.get("/projects/{project_id}/purchase-orders", response_model=list[PurchaseOrderOut])
+def list_purchase_orders(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[PurchaseOrder]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _purchase_orders(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/purchase-orders", response_model=PurchaseOrderOut)
+def create_purchase_order(
+    project_id: int,
+    payload: PurchaseOrderCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PurchaseOrder:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot create purchase orders")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.committed_amount <= 0:
+        raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
+    po_number = payload.po_number.strip()
+    if not po_number:
+        raise HTTPException(status_code=400, detail="Purchase order number is required")
+    existing = db.scalar(
+        select(PurchaseOrder).where(
+            PurchaseOrder.tenant_id == tenant_id,
+            PurchaseOrder.project_id == project_id,
+            PurchaseOrder.po_number == po_number,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Purchase order number already exists in this project")
+    order = PurchaseOrder(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=payload.control_account_id,
+        contract_id=payload.contract_id,
+        po_number=po_number,
+        description=payload.description.strip(),
+        vendor=payload.vendor.strip(),
+        committed_amount=payload.committed_amount,
+        status=payload.status.strip() or "issued",
+        issued_on=payload.issued_on or datetime.utcnow().date(),
+    )
+    db.add(order)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_purchase_order", "PurchaseOrder", order.id, json.dumps({"po_number": order.po_number, "committed_amount": order.committed_amount}), current_user.full_name)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+@router.patch("/projects/{project_id}/purchase-orders/{purchase_order_id}", response_model=PurchaseOrderOut)
+def update_purchase_order(
+    project_id: int,
+    purchase_order_id: int,
+    payload: PurchaseOrderUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PurchaseOrder:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot update purchase orders")
+    current_user = _require_user(db, tenant_id, user_id)
+    order = db.scalar(
+        select(PurchaseOrder).where(
+            PurchaseOrder.tenant_id == tenant_id,
+            PurchaseOrder.project_id == project_id,
+            PurchaseOrder.id == purchase_order_id,
+        )
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Purchase order not found")
+    _require_current_version(order, payload.expected_version)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.committed_amount is not None and payload.committed_amount <= 0:
+        raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
+    for field in ("control_account_id", "contract_id", "description", "vendor", "committed_amount", "status", "issued_on"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(order, field, value.strip() if isinstance(value, str) else value)
+    _touch_collaborative_record(order)
+    _audit(db, tenant_id, project_id, "update_purchase_order", "PurchaseOrder", order.id, json.dumps({"status": order.status, "version": order.version}), current_user.full_name)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+@router.get("/projects/{project_id}/payment-certificates", response_model=list[PaymentCertificateOut])
+def list_payment_certificates(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[PaymentCertificate]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return _payment_certificates(db, tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/payment-certificates", response_model=PaymentCertificateOut)
+def create_payment_certificate(
+    project_id: int,
+    payload: PaymentCertificateCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PaymentCertificate:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot certify incurred cost")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.purchase_order_id is not None:
+        _require_purchase_order(db, tenant_id, project_id, payload.purchase_order_id)
+    if payload.certified_amount <= 0:
+        raise HTTPException(status_code=400, detail="Certified amount must be greater than zero")
+    if payload.retained_amount < 0:
+        raise HTTPException(status_code=400, detail="Retained amount cannot be negative")
+    certificate_no = payload.certificate_no.strip()
+    if not certificate_no:
+        raise HTTPException(status_code=400, detail="Payment certificate number is required")
+    existing = db.scalar(
+        select(PaymentCertificate).where(
+            PaymentCertificate.tenant_id == tenant_id,
+            PaymentCertificate.project_id == project_id,
+            PaymentCertificate.certificate_no == certificate_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Payment certificate number already exists in this project")
+    certificate = PaymentCertificate(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=payload.control_account_id,
+        contract_id=payload.contract_id,
+        purchase_order_id=payload.purchase_order_id,
+        certificate_no=certificate_no,
+        period_label=payload.period_label.strip(),
+        certified_amount=payload.certified_amount,
+        retained_amount=payload.retained_amount,
+        status=payload.status.strip() or "certified",
+        certified_on=payload.certified_on or datetime.utcnow().date(),
+    )
+    db.add(certificate)
+    db.flush()
+    _audit(db, tenant_id, project_id, "certify_incurred_cost", "PaymentCertificate", certificate.id, json.dumps({"certificate_no": certificate.certificate_no, "certified_amount": certificate.certified_amount}), current_user.full_name)
+    db.commit()
+    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    db.refresh(certificate)
+    return certificate
+
+
+@router.patch("/projects/{project_id}/payment-certificates/{certificate_id}", response_model=PaymentCertificateOut)
+def update_payment_certificate(
+    project_id: int,
+    certificate_id: int,
+    payload: PaymentCertificateUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PaymentCertificate:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot update payment certificates")
+    current_user = _require_user(db, tenant_id, user_id)
+    certificate = db.scalar(
+        select(PaymentCertificate).where(
+            PaymentCertificate.tenant_id == tenant_id,
+            PaymentCertificate.project_id == project_id,
+            PaymentCertificate.id == certificate_id,
+        )
+    )
+    if not certificate:
+        raise HTTPException(status_code=404, detail="Payment certificate not found")
+    _require_current_version(certificate, payload.expected_version)
+    if payload.control_account_id is not None:
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    if payload.contract_id is not None:
+        _require_contract(db, tenant_id, project_id, payload.contract_id)
+    if payload.purchase_order_id is not None:
+        _require_purchase_order(db, tenant_id, project_id, payload.purchase_order_id)
+    if payload.certified_amount is not None and payload.certified_amount <= 0:
+        raise HTTPException(status_code=400, detail="Certified amount must be greater than zero")
+    if payload.retained_amount is not None and payload.retained_amount < 0:
+        raise HTTPException(status_code=400, detail="Retained amount cannot be negative")
+    for field in ("control_account_id", "contract_id", "purchase_order_id", "period_label", "certified_amount", "retained_amount", "status", "certified_on"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(certificate, field, value.strip() if isinstance(value, str) else value)
+    _touch_collaborative_record(certificate)
+    _audit(db, tenant_id, project_id, "update_payment_certificate", "PaymentCertificate", certificate.id, json.dumps({"status": certificate.status, "version": certificate.version}), current_user.full_name)
+    db.commit()
+    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    db.refresh(certificate)
+    return certificate
 
 
 @router.get("/projects/{project_id}/communications", response_model=list[ContractCommunicationOut])
@@ -2369,6 +2596,9 @@ def get_dashboard(
         ).all()
     )
     contracts = list(db.scalars(select(Contract).where(Contract.project_id == project_id, Contract.tenant_id == tenant_id).order_by(Contract.code)).all())
+    purchase_orders = _purchase_orders(db, tenant_id, project_id)
+    payment_certificates = _payment_certificates(db, tenant_id, project_id)
+    payment_certificates = _payment_certificates(db, tenant_id, project_id)
     communications = list(
         db.scalars(
             select(ContractCommunication)
@@ -2596,6 +2826,8 @@ def get_dashboard(
         claim_impact_analyses=[ClaimImpactAnalysisOut.model_validate(analysis) for analysis in claim_impact_analyses],
         claims_forensic_summary=_claims_forensic_summary(claims, contract_notices, claim_impact_analyses, claim_entitlement_items),
         contracts=[ContractOut.model_validate(contract) for contract in contracts],
+        purchase_orders=[PurchaseOrderOut.model_validate(order) for order in purchase_orders],
+        payment_certificates=[PaymentCertificateOut.model_validate(certificate) for certificate in payment_certificates],
         communications=[ContractCommunicationOut.model_validate(communication) for communication in communications[:6]],
         documents=[DocumentOut.model_validate(document) for document in documents],
         document_transmittals=[DocumentTransmittalOut.model_validate(transmittal) for transmittal in document_transmittals],
@@ -2630,6 +2862,13 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
             select(CostRecord).where(CostRecord.tenant_id == tenant_id, CostRecord.project_id == project_id)
         ).all()
     )
+    contracts = list(
+        db.scalars(
+            select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+        ).all()
+    )
+    purchase_orders = _purchase_orders(db, tenant_id, project_id)
+    payment_certificates = _payment_certificates(db, tenant_id, project_id)
     latest_project_kpi = db.scalars(
         select(KPI)
         .where(KPI.tenant_id == tenant_id, KPI.project_id == project_id, KPI.control_account_id.is_(None))
@@ -2652,13 +2891,25 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
     for budget in budgets:
         budgets_by_account.setdefault(budget.control_account_id, []).append(budget)
 
-    actual_by_account: dict[int, float] = {}
-    committed_by_account: dict[int, float] = {}
+    payment_certificates_by_account: dict[int, float] = {}
+    for certificate in payment_certificates:
+        if certificate.control_account_id and certificate.status not in {"cancelled", "rejected", "void", "draft"}:
+            payment_certificates_by_account[certificate.control_account_id] = payment_certificates_by_account.get(certificate.control_account_id, 0) + certificate.certified_amount
+
+    legacy_actual_by_account: dict[int, float] = {}
     for record in cost_records:
-        if record.source == CostSource.commitment:
-            committed_by_account[record.control_account_id] = committed_by_account.get(record.control_account_id, 0) + record.amount
-        else:
-            actual_by_account[record.control_account_id] = actual_by_account.get(record.control_account_id, 0) + record.amount
+        if record.source != CostSource.commitment:
+            legacy_actual_by_account[record.control_account_id] = legacy_actual_by_account.get(record.control_account_id, 0) + record.amount
+
+    contract_commitments_by_account: dict[int, float] = {}
+    for contract in contracts:
+        if contract.control_account_id and contract.status not in {"cancelled", "rejected", "void", "draft"}:
+            contract_commitments_by_account[contract.control_account_id] = contract_commitments_by_account.get(contract.control_account_id, 0) + contract.value
+
+    po_commitments_by_account: dict[int, float] = {}
+    for order in purchase_orders:
+        if order.control_account_id and order.status not in {"cancelled", "rejected", "void", "draft"}:
+            po_commitments_by_account[order.control_account_id] = po_commitments_by_account.get(order.control_account_id, 0) + order.committed_amount
 
     lines: list[CostSheetLineOut] = []
     for account in accounts:
@@ -2668,8 +2919,11 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
         kpi = kpis_by_account.get(account.id)
         planned_value = kpi.pv if kpi else budget_pv
         earned_value = kpi.ev if kpi else 0
-        actual_cost = actual_by_account.get(account.id, 0)
-        committed_cost = committed_by_account.get(account.id, 0)
+        incurred_payment_certificate_value = payment_certificates_by_account.get(account.id, 0)
+        actual_cost = incurred_payment_certificate_value or legacy_actual_by_account.get(account.id, 0)
+        committed_contract_value = contract_commitments_by_account.get(account.id, 0)
+        committed_purchase_order_value = po_commitments_by_account.get(account.id, 0)
+        committed_cost = committed_contract_value + committed_purchase_order_value
         variance = earned_value - actual_cost
         cpi = earned_value / actual_cost if actual_cost else 0
         cbs_codes = ", ".join(sorted({budget.cbs_code for budget in account_budgets if budget.cbs_code}))
@@ -2682,6 +2936,9 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
                 bac=_money(bac),
                 planned_value=_money(planned_value),
                 actual_cost=_money(actual_cost),
+                incurred_payment_certificate_value=_money(incurred_payment_certificate_value),
+                committed_contract_value=_money(committed_contract_value),
+                committed_purchase_order_value=_money(committed_purchase_order_value),
                 committed_cost=_money(committed_cost),
                 earned_value=_money(earned_value),
                 variance=_money(variance),
@@ -2711,6 +2968,52 @@ def _cash_flow_periods(db: Session, tenant_id: int, project_id: int) -> list[Cas
     )
 
 
+def _purchase_orders(db: Session, tenant_id: int, project_id: int) -> list[PurchaseOrder]:
+    return list(
+        db.scalars(
+            select(PurchaseOrder)
+            .where(PurchaseOrder.tenant_id == tenant_id, PurchaseOrder.project_id == project_id)
+            .order_by(PurchaseOrder.issued_on.desc(), PurchaseOrder.po_number)
+        ).all()
+    )
+
+
+def _require_contract(db: Session, tenant_id: int, project_id: int, contract_id: int) -> Contract:
+    contract = db.scalar(
+        select(Contract).where(
+            Contract.tenant_id == tenant_id,
+            Contract.project_id == project_id,
+            Contract.id == contract_id,
+        )
+    )
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    return contract
+
+
+def _payment_certificates(db: Session, tenant_id: int, project_id: int) -> list[PaymentCertificate]:
+    return list(
+        db.scalars(
+            select(PaymentCertificate)
+            .where(PaymentCertificate.tenant_id == tenant_id, PaymentCertificate.project_id == project_id)
+            .order_by(PaymentCertificate.certified_on.desc(), PaymentCertificate.certificate_no)
+        ).all()
+    )
+
+
+def _require_purchase_order(db: Session, tenant_id: int, project_id: int, purchase_order_id: int) -> PurchaseOrder:
+    order = db.scalar(
+        select(PurchaseOrder).where(
+            PurchaseOrder.tenant_id == tenant_id,
+            PurchaseOrder.project_id == project_id,
+            PurchaseOrder.id == purchase_order_id,
+        )
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Purchase order not found")
+    return order
+
+
 def _cost_manager_summary(db: Session, tenant_id: int, project_id: int) -> CostManagerSummaryOut:
     return _cost_manager_summary_from(
         _cost_sheet_lines(db, tenant_id, project_id),
@@ -2728,6 +3031,9 @@ def _cost_manager_summary_from(
     total_planned_value = sum(line.planned_value for line in cost_sheet)
     total_earned_value = sum(line.earned_value for line in cost_sheet)
     total_actual_cost = sum(line.actual_cost for line in cost_sheet)
+    total_incurred_from_payment_certificates = sum(line.incurred_payment_certificate_value for line in cost_sheet)
+    total_contract_commitments = sum(line.committed_contract_value for line in cost_sheet)
+    total_purchase_order_commitments = sum(line.committed_purchase_order_value for line in cost_sheet)
     total_committed_cost = sum(line.committed_cost for line in cost_sheet)
     total_funding = sum(source.amount for source in funding_sources if source.status not in {"cancelled", "rejected"})
     planned_inflow = sum(period.planned_inflow for period in cash_flow)
@@ -2742,6 +3048,9 @@ def _cost_manager_summary_from(
         total_planned_value=_money(total_planned_value),
         total_earned_value=_money(total_earned_value),
         total_actual_cost=_money(total_actual_cost),
+        total_incurred_from_payment_certificates=_money(total_incurred_from_payment_certificates),
+        total_contract_commitments=_money(total_contract_commitments),
+        total_purchase_order_commitments=_money(total_purchase_order_commitments),
         total_committed_cost=_money(total_committed_cost),
         total_funding=_money(total_funding),
         planned_inflow=_money(planned_inflow),
@@ -2993,12 +3302,13 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
     relationship_count = _count(db, ActivityRelationship, tenant_id, project_id)
     control_account_count = _count(db, ControlAccount, tenant_id, project_id)
     progress_count = _count(db, ProgressRecord, tenant_id, project_id)
-    cost_count = _count(db, CostRecord, tenant_id, project_id)
+    payment_certificate_count = _count(db, PaymentCertificate, tenant_id, project_id)
     funding_count = _count(db, FundingSource, tenant_id, project_id)
     cash_flow_count = _count(db, CashFlowPeriod, tenant_id, project_id)
     snapshot_count = _count(db, ControlSnapshot, tenant_id, project_id)
     forecast_count = _count(db, ForecastScenario, tenant_id, project_id)
     contract_count = _count(db, Contract, tenant_id, project_id)
+    purchase_order_count = _count(db, PurchaseOrder, tenant_id, project_id)
     notice_count = _count(db, ContractNotice, tenant_id, project_id)
     claim_count = _count(db, Claim, tenant_id, project_id)
     entitlement_count = _count(db, ClaimEntitlementItem, tenant_id, project_id)
@@ -3073,9 +3383,9 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         _readiness_item(
             "Fase 4",
             "EVM / Forecast / Cost Manager",
-            100 if latest_kpi and snapshot_count and forecast_count and progress_count and cost_count and funding_count and cash_flow_count else 55,
-            f"{progress_count} avances, {cost_count} costos, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
-            "Ejecutar ciclo de control con datos de avance, costo real, funding, cash flow y escenarios EAC.",
+            100 if latest_kpi and snapshot_count and forecast_count and progress_count and payment_certificate_count and purchase_order_count and funding_count and cash_flow_count else 55,
+            f"{progress_count} avances, {payment_certificate_count} actas de pago, {purchase_order_count} ordenes de compra, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
+            "Ejecutar ciclo de control con datos de avance, incurrido por actas de pago, comprometido contractual/OC, funding, cash flow y escenarios EAC.",
         ),
         _readiness_item(
             "Fase 5",

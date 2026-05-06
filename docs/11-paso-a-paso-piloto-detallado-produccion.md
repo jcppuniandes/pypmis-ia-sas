@@ -52,7 +52,7 @@ El piloto debe responder estas preguntas:
 - WBS/CBS/Activity mapping.
 - Cuentas de control.
 - Captura de avance.
-- Captura de costos reales o commitments.
+- Captura de costos reales; el comprometido nace de contratos u ordenes de compra.
 - Funding sources.
 - Cash flow por periodo.
 - Control Dashboard con EVM.
@@ -87,10 +87,10 @@ El piloto debe responder estas preguntas:
 | Sponsor | Gerente del area | Aprueba alcance, criterios de exito y decision final. |
 | Control Manager | Lider Project Controls | Gobierna piloto, aprueba Plan de Control y baseline. |
 | Planner | Planificador | Carga cronograma, revisa calidad y mapping. |
-| Cost Controller | Control de costos | Carga costo real, commitments, funding y cash flow. |
+| Cost Controller | Control de costos | Carga actas de pago, evidencia de costo, funding y cash flow. |
 | Field Engineer | Responsable campo | Captura avance fisico, cantidades, horas y evidencia. |
 | Workface Planner | Planeacion AWP | Valida paquetes, restricciones y readiness. |
-| Contract Manager | Administracion contractual | Gestiona contratos, comunicaciones, notices y claims. |
+| Contract Manager | Administracion contractual y procurement | Gestiona contratos, ordenes de compra, comunicaciones, notices y claims. |
 | Claims Analyst | Claims/forensic | Revisa causalidad, impactos y evidencia. |
 | Executive | Usuario ejecutivo | Lee tablero y valida utilidad gerencial. |
 
@@ -197,7 +197,8 @@ Alinear alcance, usuarios, criterios de exito, duracion y reglas del piloto.
 - Se valida cronograma o dataset semilla.
 - Se aprueba baseline de control o queda brecha clara.
 - Se captura avance.
-- Se captura costo real o commitment.
+- Se registra incurrido desde acta de pago.
+- Se registra comprometido desde contrato u orden de compra.
 - Se carga funding.
 - Se carga cash flow.
 - Se genera dashboard EVM.
@@ -423,20 +424,35 @@ Cost Controller.
 
 ### Objetivo
 
-Completar el componente financiero del ciclo: AC, commitments, funding y cash flow.
+Completar el componente financiero del ciclo: incurrido, comprometido contractual, funding y cash flow. En el piloto el incurrido/AC sale de actas de pago certificadas; el comprometido se calcula desde contratos activos y ordenes de compra emitidas, vinculadas a cuentas de control.
 
-### 7.1 Capturar costo real o commitment
+### 7.1 Registrar incurrido desde acta de pago
 
 1. Ir a `BP Entry Forms`.
-2. Ubicar formulario `Cost`.
+2. Ubicar formulario `Payment Certificates`.
 3. Seleccionar cuenta de control.
-4. Seleccionar fuente.
+4. Vincular contrato si aplica.
+5. Vincular orden de compra si aplica.
+6. Registrar numero de acta/certificado.
+7. Registrar periodo.
+8. Registrar monto certificado.
+9. Registrar retencion si aplica.
+10. Registrar fecha de certificacion.
+11. Guardar.
+12. Ir a `Cost Manager`.
+13. Revisar que el valor aparezca como `Incurred`.
+
+### 7.2 Capturar evidencia auxiliar de costo
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Cost Evidence`.
+3. Seleccionar cuenta de control.
+4. Seleccionar fuente de evidencia.
 5. Registrar monto.
 6. Registrar fecha.
 7. Registrar descripcion.
 8. Guardar.
-9. Ir a `Cost Manager`.
-10. Revisar Actual Cost Records.
+9. Revisar `Cost Evidence Records`.
 
 Fuentes disponibles:
 
@@ -444,9 +460,41 @@ Fuentes disponibles:
 - payroll.
 - equipment.
 - materials.
-- commitment.
 
-### 7.2 Registrar funding
+Regla del piloto: si el valor es incurrido, usar `Payment Certificates`. Si el valor es comprometido, usar `Contracts` o `Purchase Orders`. `Cost Evidence` queda como soporte auxiliar.
+
+### 7.3 Registrar comprometido desde contrato
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Contracts`.
+3. Seleccionar cuenta de control.
+4. Registrar codigo de contrato.
+5. Registrar tipo.
+6. Registrar titulo.
+7. Registrar contraparte.
+8. Registrar valor contractual.
+9. Dejar estado `active` o `approved`.
+10. Guardar.
+11. Ir a `Cost Manager`.
+12. Revisar que el valor aparezca en columna `Contract` y sume a `Committed Cost`.
+
+### 7.4 Registrar comprometido desde orden de compra
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Purchase Orders`.
+3. Seleccionar cuenta de control.
+4. Vincular contrato si aplica.
+5. Registrar numero de orden de compra.
+6. Registrar descripcion.
+7. Registrar proveedor.
+8. Registrar monto comprometido.
+9. Registrar fecha de emision.
+10. Dejar estado `issued` o `approved`.
+11. Guardar.
+12. Ir a `Cost Manager`.
+13. Revisar que el valor aparezca en columna `PO` y sume a `Committed Cost`.
+
+### 7.5 Registrar funding
 
 1. Ir a `Cost Manager`.
 2. En `Funding Sources`, registrar codigo.
@@ -462,7 +510,7 @@ Estados recomendados:
 - planned.
 - on_hold.
 
-### 7.3 Registrar cash flow
+### 7.6 Registrar cash flow
 
 1. Ir a `Cost Manager`.
 2. En `Cash Flow`, registrar periodo `YYYY-MM`.
@@ -478,8 +526,10 @@ Estados recomendados:
 
 - BAC.
 - EV.
-- AC.
-- Commitment.
+- Incurred / AC desde actas de pago.
+- Contract Commitment.
+- PO Commitment.
+- Total Committed Cost.
 - CPI.
 - Cost Variance.
 - Funding Coverage.
@@ -489,7 +539,7 @@ Estados recomendados:
 ### Resultado esperado
 
 - Fase 4 readiness: ready.
-- Cost Manager con datos completos del ciclo.
+- Cost Manager con actas de pago, contratos, ordenes de compra, funding y cash flow del ciclo.
 - Dashboard financiero listo para reunion.
 
 ## Fase 8. Ejecutar Y Revisar Control Dashboard
@@ -663,12 +713,27 @@ Validar trazabilidad contractual y soporte forense.
 
 1. Ir a `BP Entry Forms`.
 2. Crear contrato.
-3. Registrar codigo.
-4. Registrar titulo.
-5. Registrar contraparte.
-6. Registrar tipo.
-7. Registrar valor.
-8. Guardar.
+3. Seleccionar cuenta de control.
+4. Registrar codigo.
+5. Registrar titulo.
+6. Registrar contraparte.
+7. Registrar tipo.
+8. Registrar valor.
+9. Guardar.
+10. Confirmar que el valor contractual sume al comprometido del Cost Manager.
+
+### Paso a paso ordenes de compra
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Purchase Orders`.
+3. Seleccionar cuenta de control.
+4. Vincular contrato si la orden depende de un contrato marco.
+5. Registrar numero de orden de compra.
+6. Registrar proveedor.
+7. Registrar descripcion.
+8. Registrar monto comprometido.
+9. Guardar.
+10. Confirmar que la orden sume al comprometido del Cost Manager.
 
 ### Paso a paso comunicaciones
 
@@ -696,6 +761,7 @@ Validar trazabilidad contractual y soporte forense.
 ### Resultado esperado
 
 - Forensic readiness calculado.
+- Comprometido contractual visible desde contratos y ordenes de compra.
 - Gaps de evidencia visibles.
 - Impactos cuantificados.
 
@@ -968,7 +1034,7 @@ Promedio ponderado de produccion empresarial: 58%.
 
 ### Integraciones
 
-- ERP para costos reales y commitments.
+- ERP para costos reales, contratos y ordenes de compra.
 - Primavera P6 o MS Project industrial.
 - Sincronizacion con sistema documental corporativo si el cliente ya usa Aconex, SharePoint u otro EDMS.
 - Correo/notificaciones.

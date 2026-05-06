@@ -84,7 +84,7 @@ El indicador cubre Fase 1 a Fase 6: Schedule Intake, BP Engine, Control Accounts
 
 ## Cost Manager
 
-La app incluye un Cost Manager basico para piloto: Cost Sheet por cuenta de control, funding sources, cash flow periodico y resumen financiero en dashboard.
+La app incluye un Cost Manager basico para piloto: Cost Sheet por cuenta de control, incurrido desde actas de pago, comprometido desde contratos/ordenes de compra, funding sources, cash flow periodico y resumen financiero en dashboard.
 
 Endpoints:
 
@@ -96,10 +96,16 @@ PATCH /api/v1/projects/{project_id}/funding-sources/{funding_id}
 GET /api/v1/projects/{project_id}/cash-flow
 POST /api/v1/projects/{project_id}/cash-flow
 PATCH /api/v1/projects/{project_id}/cash-flow/{period_id}
+GET /api/v1/projects/{project_id}/purchase-orders
+POST /api/v1/projects/{project_id}/purchase-orders
+PATCH /api/v1/projects/{project_id}/purchase-orders/{purchase_order_id}
+GET /api/v1/projects/{project_id}/payment-certificates
+POST /api/v1/projects/{project_id}/payment-certificates
+PATCH /api/v1/projects/{project_id}/payment-certificates/{certificate_id}
 GET /api/v1/projects/{project_id}/cost-manager-summary
 ```
 
-Funding y cash flow usan `expected_version` en `PATCH` para proteger ediciones concurrentes.
+Regla financiera: el incurrido/AC se calcula desde actas de pago certificadas (`PaymentCertificate`). El comprometido se calcula desde contratos activos/aprobados y ordenes de compra emitidas/aprobadas vinculadas a cuentas de control. `CostRecord` queda como evidencia auxiliar de costos (`invoice`, `payroll`, `equipment`, `materials`). Funding, cash flow, ordenes de compra y actas de pago usan `expected_version` en `PATCH` para proteger ediciones concurrentes.
 
 ## Document Control tipo Aconex
 

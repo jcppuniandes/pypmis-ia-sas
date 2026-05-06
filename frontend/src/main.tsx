@@ -352,6 +352,9 @@ type CostSheetLine = {
   bac: number;
   planned_value: number;
   actual_cost: number;
+  incurred_payment_certificate_value: number;
+  committed_contract_value: number;
+  committed_purchase_order_value: number;
   committed_cost: number;
   earned_value: number;
   variance: number;
@@ -390,6 +393,9 @@ type CostManagerSummary = {
   total_planned_value: number;
   total_earned_value: number;
   total_actual_cost: number;
+  total_incurred_from_payment_certificates: number;
+  total_contract_commitments: number;
+  total_purchase_order_commitments: number;
   total_committed_cost: number;
   total_funding: number;
   planned_inflow: number;
@@ -504,12 +510,44 @@ type ClaimsForensicSummary = {
 
 type Contract = {
   id: number;
+  control_account_id: number | null;
   code: string;
   title: string;
   counterparty: string;
   contract_type: string;
   value: number;
   status: string;
+};
+
+type PurchaseOrder = {
+  id: number;
+  control_account_id: number | null;
+  contract_id: number | null;
+  po_number: string;
+  description: string;
+  vendor: string;
+  committed_amount: number;
+  status: string;
+  issued_on: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type PaymentCertificate = {
+  id: number;
+  control_account_id: number | null;
+  contract_id: number | null;
+  purchase_order_id: number | null;
+  certificate_no: string;
+  period_label: string;
+  certified_amount: number;
+  retained_amount: number;
+  status: string;
+  certified_on: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type ContractCommunication = {
@@ -719,6 +757,8 @@ type Dashboard = {
   claim_impact_analyses: ClaimImpactAnalysis[];
   claims_forensic_summary: ClaimsForensicSummary;
   contracts: Contract[];
+  purchase_orders: PurchaseOrder[];
+  payment_certificates: PaymentCertificate[];
   communications: ContractCommunication[];
   documents: DocumentItem[];
   document_transmittals: DocumentTransmittal[];
@@ -920,12 +960,34 @@ function App() {
     schedule_impact_days: ""
   });
   const [contractDraft, setContractDraft] = React.useState({
+    control_account_id: "",
     code: "",
     title: "",
     counterparty: "",
     contract_type: "Services",
     value: "",
     status: "active"
+  });
+  const [purchaseOrderDraft, setPurchaseOrderDraft] = React.useState({
+    control_account_id: "",
+    contract_id: "",
+    po_number: "",
+    description: "",
+    vendor: "",
+    committed_amount: "",
+    status: "issued",
+    issued_on: defaultControlDate
+  });
+  const [paymentCertificateDraft, setPaymentCertificateDraft] = React.useState({
+    control_account_id: "",
+    contract_id: "",
+    purchase_order_id: "",
+    certificate_no: "",
+    period_label: "2026-05",
+    certified_amount: "",
+    retained_amount: "",
+    status: "certified",
+    certified_on: defaultControlDate
   });
   const [communicationDraft, setCommunicationDraft] = React.useState({
     contract_id: "",
@@ -1130,6 +1192,27 @@ function App() {
     setProgressDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId, reported_on: controlDate });
     setCostDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId, incurred_on: controlDate });
     setChangeDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId });
+    setContractDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId });
+    setPurchaseOrderDraft((current) => {
+      const contractIds = new Set(dashboard.contracts.map((contract) => String(contract.id)));
+      return {
+        ...current,
+        control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
+        contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
+        issued_on: current.issued_on || controlDate
+      };
+    });
+    setPaymentCertificateDraft((current) => {
+      const contractIds = new Set(dashboard.contracts.map((contract) => String(contract.id)));
+      const orderIds = new Set(dashboard.purchase_orders.map((order) => String(order.id)));
+      return {
+        ...current,
+        control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
+        contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
+        purchase_order_id: !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
+        certified_on: current.certified_on || controlDate
+      };
+    });
     setAwpDraft((current) => {
       const packageIds = new Set(dashboard.work_packages.map((item) => String(item.id)));
       return {
@@ -1641,17 +1724,96 @@ function App() {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/contracts`, {
         method: "POST",
         headers: apiHeaders(true),
-        body: JSON.stringify({ ...contractDraft, value: Number(contractDraft.value || 0) })
+        body: JSON.stringify({
+          ...contractDraft,
+          control_account_id: contractDraft.control_account_id ? Number(contractDraft.control_account_id) : null,
+          value: Number(contractDraft.value || 0)
+        })
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Contract creation failed");
       }
-      setContractDraft({ code: "", title: "", counterparty: "", contract_type: "Services", value: "", status: "active" });
-      setUploadMessage("Contract registered for contractual administration.");
+      setContractDraft({ control_account_id: contractDraft.control_account_id, code: "", title: "", counterparty: "", contract_type: "Services", value: "", status: "active" });
+      setUploadMessage("Contract registered and available as committed cost source.");
       await load();
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Contract creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handlePurchaseOrderSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("purchase-order");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/purchase-orders`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          control_account_id: purchaseOrderDraft.control_account_id ? Number(purchaseOrderDraft.control_account_id) : null,
+          contract_id: purchaseOrderDraft.contract_id ? Number(purchaseOrderDraft.contract_id) : null,
+          po_number: purchaseOrderDraft.po_number,
+          description: purchaseOrderDraft.description,
+          vendor: purchaseOrderDraft.vendor,
+          committed_amount: Number(purchaseOrderDraft.committed_amount || 0),
+          status: purchaseOrderDraft.status,
+          issued_on: purchaseOrderDraft.issued_on || null
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Purchase order creation failed");
+      }
+      setPurchaseOrderDraft((current) => ({ ...current, po_number: "", description: "", vendor: "", committed_amount: "" }));
+      setUploadMessage("Purchase order registered as committed cost.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Purchase order creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handlePaymentCertificateSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard) {
+      return;
+    }
+    setCaptureAction("payment-certificate");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/payment-certificates`, {
+        method: "POST",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          control_account_id: paymentCertificateDraft.control_account_id ? Number(paymentCertificateDraft.control_account_id) : null,
+          contract_id: paymentCertificateDraft.contract_id ? Number(paymentCertificateDraft.contract_id) : null,
+          purchase_order_id: paymentCertificateDraft.purchase_order_id ? Number(paymentCertificateDraft.purchase_order_id) : null,
+          certificate_no: paymentCertificateDraft.certificate_no,
+          period_label: paymentCertificateDraft.period_label,
+          certified_amount: Number(paymentCertificateDraft.certified_amount || 0),
+          retained_amount: Number(paymentCertificateDraft.retained_amount || 0),
+          status: paymentCertificateDraft.status,
+          certified_on: paymentCertificateDraft.certified_on || null
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Payment certificate creation failed");
+      }
+      setPaymentCertificateDraft((current) => ({ ...current, certificate_no: "", certified_amount: "", retained_amount: "" }));
+      setUploadMessage("Payment certificate registered as incurred cost.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Payment certificate creation failed");
     } finally {
       setCaptureAction(null);
     }
@@ -2127,7 +2289,7 @@ function App() {
     { key: "awp", label: "AWP Workface", count: dashboard.awp_summary.total_packages },
     { key: "changes", label: "Changes", count: dashboard.changes.length },
     { key: "claims", label: "Claims", count: dashboard.claims.length },
-    { key: "contracts", label: "Contracts", count: dashboard.contracts.length },
+    { key: "contracts", label: "Contracts", count: dashboard.contracts.length + dashboard.purchase_orders.length },
     { key: "documents", label: "Document Control", count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%" },
     { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
     { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
@@ -2945,7 +3107,7 @@ function App() {
           <article className={costManager.cost_variance < 0 ? "risk" : ""}>
             <span>Cost Variance</span>
             <strong>{currency(costManager.cost_variance, project.currency)}</strong>
-            <small>EV {currency(costManager.total_earned_value, project.currency)} / AC {currency(costManager.total_actual_cost, project.currency)}</small>
+            <small>EV {currency(costManager.total_earned_value, project.currency)} / incurred {currency(costManager.total_incurred_from_payment_certificates, project.currency)}</small>
           </article>
           <article>
             <span>Funding Coverage</span>
@@ -2956,6 +3118,11 @@ function App() {
             <span>Cash Flow Variance</span>
             <strong>{currency(costManager.cash_flow_variance, project.currency)}</strong>
             <small>Actual net vs planned net</small>
+          </article>
+          <article>
+            <span>Committed Cost</span>
+            <strong>{currency(costManager.total_committed_cost, project.currency)}</strong>
+            <small>Contracts {currency(costManager.total_contract_commitments, project.currency)} / PO {currency(costManager.total_purchase_order_commitments, project.currency)}</small>
           </article>
           <article>
             <span>Forecast Outflow</span>
@@ -2976,8 +3143,10 @@ function App() {
                   <th>CBS</th>
                   <th>BAC</th>
                   <th>EV</th>
-                  <th>AC</th>
-                  <th>Commitment</th>
+                  <th>Incurred</th>
+                  <th>Contract</th>
+                  <th>PO</th>
+                  <th>Committed</th>
                   <th>CPI</th>
                 </tr>
               </thead>
@@ -2989,6 +3158,8 @@ function App() {
                     <td>{currency(line.bac, project.currency)}</td>
                     <td>{currency(line.earned_value, project.currency)}</td>
                     <td>{currency(line.actual_cost, project.currency)}</td>
+                    <td>{currency(line.committed_contract_value, project.currency)}</td>
+                    <td>{currency(line.committed_purchase_order_value, project.currency)}</td>
                     <td>{currency(line.committed_cost, project.currency)}</td>
                     <td>{line.cpi.toFixed(2)}</td>
                   </tr>
@@ -2996,7 +3167,31 @@ function App() {
               </tbody>
             </table>
             <div className="subHeader spaced">
-              <strong>Actual Cost Records</strong>
+              <strong>Payment Certificates</strong>
+              <span>{dashboard.payment_certificates.length} actas</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Control Account</th>
+                  <th>Certificate</th>
+                  <th>Amount</th>
+                  <th>Certified On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard.payment_certificates.map((certificate) => (
+                  <tr key={certificate.id}>
+                    <td>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No account"}</td>
+                    <td>{certificate.certificate_no}</td>
+                    <td>{currency(certificate.certified_amount, project.currency)}</td>
+                    <td>{certificate.certified_on ?? "Open"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="subHeader spaced">
+              <strong>Cost Evidence Records</strong>
               <span>{dashboard.latest_cost_records.length} recent</span>
             </div>
             <table>
@@ -3378,7 +3573,31 @@ function App() {
                 <article key={contract.id}>
                   <strong>{contract.code} / {contract.counterparty}</strong>
                   <span>{contract.title}</span>
-                  <small>{currency(contract.value, project.currency)} / {statusLabel(contract.status)}</small>
+                  <small>{currency(contract.value, project.currency)} / {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} / {statusLabel(contract.status)}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <strong>Purchase Orders</strong>
+            <div className="workList">
+              {dashboard.purchase_orders.map((order) => (
+                <article key={order.id}>
+                  <strong>{order.po_number} / {currency(order.committed_amount, project.currency)}</strong>
+                  <span>{order.description}</span>
+                  <small>{order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} / {order.vendor || "No vendor"} / {statusLabel(order.status)}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <strong>Payment Certificates</strong>
+            <div className="workList">
+              {dashboard.payment_certificates.map((certificate) => (
+                <article key={certificate.id}>
+                  <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
+                  <span>{certificate.period_label || "No period"}</span>
+                  <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
                 </article>
               ))}
             </div>
@@ -3772,7 +3991,7 @@ function App() {
 
         <form className="panel captureForm" onSubmit={handleCostSubmit}>
           <div className="panelHeader">
-            <h2>Actual Cost Capture</h2>
+            <h2>Cost Evidence</h2>
             <span>{(dashboard.latest_cost_records ?? []).length} recent</span>
           </div>
           <label>
@@ -3801,7 +4020,6 @@ function App() {
                 <option value="payroll">Payroll</option>
                 <option value="equipment">Equipment</option>
                 <option value="materials">Materials</option>
-                <option value="commitment">Commitment</option>
               </select>
             </label>
             <label>
@@ -3837,7 +4055,7 @@ function App() {
             />
           </label>
           <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
-            {captureAction === "cost" ? "Capturing..." : "Capture Actual Cost"}
+            {captureAction === "cost" ? "Capturing..." : "Capture Cost Evidence"}
           </button>
           <div className="recentList">
             {(dashboard.latest_cost_records ?? []).slice(0, 2).map((record) => (
@@ -4107,6 +4325,19 @@ function App() {
           </div>
           <div className="formColumns">
             <label>
+              <span>Control Account</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setContractDraft((current) => ({ ...current, control_account_id: event.target.value }))}
+                required
+                value={contractDraft.control_account_id}
+              >
+                {dashboard.control_accounts.map((account) => (
+                  <option key={account.id} value={account.id}>{account.code}</option>
+                ))}
+              </select>
+            </label>
+            <label>
               <span>Code</span>
               <input
                 disabled={!canManageContracts}
@@ -4160,6 +4391,230 @@ function App() {
           </label>
           <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
             {captureAction === "contract" ? "Registering..." : "Register Contract"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handlePurchaseOrderSubmit}>
+          <div className="panelHeader">
+            <h2><BriefcaseBusiness size={18} /> Purchase Orders</h2>
+            <span>{dashboard.purchase_orders.length} committed</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Control Account</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, control_account_id: event.target.value }))}
+                required
+                value={purchaseOrderDraft.control_account_id}
+              >
+                {dashboard.control_accounts.map((account) => (
+                  <option key={account.id} value={account.id}>{account.code}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Contract</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, contract_id: event.target.value }))}
+                value={purchaseOrderDraft.contract_id}
+              >
+                <option value="">No contract link</option>
+                {dashboard.contracts.map((contract) => (
+                  <option key={contract.id} value={contract.id}>{contract.code}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>PO Number</span>
+              <input
+                disabled={!canManageContracts}
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, po_number: event.target.value }))}
+                required
+                value={purchaseOrderDraft.po_number}
+              />
+            </label>
+            <label>
+              <span>Issued On</span>
+              <input
+                disabled={!canManageContracts}
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, issued_on: event.target.value }))}
+                type="date"
+                value={purchaseOrderDraft.issued_on}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Description</span>
+            <input
+              disabled={!canManageContracts}
+              onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, description: event.target.value }))}
+              required
+              value={purchaseOrderDraft.description}
+            />
+          </label>
+          <label>
+            <span>Vendor</span>
+            <input
+              disabled={!canManageContracts}
+              onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, vendor: event.target.value }))}
+              required
+              value={purchaseOrderDraft.vendor}
+            />
+          </label>
+          <div className="formColumns">
+            <label>
+              <span>Committed Amount</span>
+              <input
+                disabled={!canManageContracts}
+                min="0"
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, committed_amount: event.target.value }))}
+                required
+                step="0.01"
+                type="number"
+                value={purchaseOrderDraft.committed_amount}
+              />
+            </label>
+            <label>
+              <span>Status</span>
+              <select
+                disabled={!canManageContracts}
+                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, status: event.target.value }))}
+                value={purchaseOrderDraft.status}
+              >
+                <option value="issued">Issued</option>
+                <option value="approved">Approved</option>
+                <option value="closed">Closed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </label>
+          </div>
+          <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
+            {captureAction === "purchase-order" ? "Registering..." : "Register PO Commitment"}
+          </button>
+        </form>
+
+        <form className="panel captureForm" onSubmit={handlePaymentCertificateSubmit}>
+          <div className="panelHeader">
+            <h2>Payment Certificates</h2>
+            <span>{dashboard.payment_certificates.length} incurred</span>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Control Account</span>
+              <select
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, control_account_id: event.target.value }))}
+                required
+                value={paymentCertificateDraft.control_account_id}
+              >
+                {dashboard.control_accounts.map((account) => (
+                  <option key={account.id} value={account.id}>{account.code}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Contract</span>
+              <select
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, contract_id: event.target.value }))}
+                value={paymentCertificateDraft.contract_id}
+              >
+                <option value="">No contract link</option>
+                {dashboard.contracts.map((contract) => (
+                  <option key={contract.id} value={contract.id}>{contract.code}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Purchase Order</span>
+              <select
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, purchase_order_id: event.target.value }))}
+                value={paymentCertificateDraft.purchase_order_id}
+              >
+                <option value="">No PO link</option>
+                {dashboard.purchase_orders.map((order) => (
+                  <option key={order.id} value={order.id}>{order.po_number}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Period</span>
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, period_label: event.target.value }))}
+                placeholder="YYYY-MM"
+                value={paymentCertificateDraft.period_label}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Certificate No.</span>
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certificate_no: event.target.value }))}
+                required
+                value={paymentCertificateDraft.certificate_no}
+              />
+            </label>
+            <label>
+              <span>Certified On</span>
+              <input
+                disabled={costDisabled}
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_on: event.target.value }))}
+                type="date"
+                value={paymentCertificateDraft.certified_on}
+              />
+            </label>
+          </div>
+          <div className="formColumns">
+            <label>
+              <span>Certified Amount</span>
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_amount: event.target.value }))}
+                required
+                step="0.01"
+                type="number"
+                value={paymentCertificateDraft.certified_amount}
+              />
+            </label>
+            <label>
+              <span>Retention</span>
+              <input
+                disabled={costDisabled}
+                min="0"
+                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, retained_amount: event.target.value }))}
+                step="0.01"
+                type="number"
+                value={paymentCertificateDraft.retained_amount}
+              />
+            </label>
+          </div>
+          <label>
+            <span>Status</span>
+            <select
+              disabled={costDisabled}
+              onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, status: event.target.value }))}
+              value={paymentCertificateDraft.status}
+            >
+              <option value="certified">Certified</option>
+              <option value="approved">Approved</option>
+              <option value="paid">Paid</option>
+              <option value="draft">Draft</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+          <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
+            {captureAction === "payment-certificate" ? "Certifying..." : "Register Payment Certificate"}
           </button>
         </form>
 
@@ -5080,7 +5535,7 @@ function App() {
         <div className="panel wide">
           <div className="panelHeader">
             <h2>Contract Administration</h2>
-            <span>{dashboard.contracts.length} contracts / {dashboard.communications.length} communications</span>
+            <span>{dashboard.contracts.length} contracts / {dashboard.purchase_orders.length} POs / {dashboard.payment_certificates.length} actas</span>
           </div>
           <div className="contractGrid">
             <div>
@@ -5090,7 +5545,31 @@ function App() {
                   <article key={contract.id}>
                     <strong>{contract.code} / {contract.counterparty}</strong>
                     <span>{contract.title}</span>
-                    <small>{currency(contract.value, project.currency)} / {statusLabel(contract.status)}</small>
+                    <small>{currency(contract.value, project.currency)} / {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} / {statusLabel(contract.status)}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div>
+              <strong>Purchase Orders</strong>
+              <div className="workList">
+                {dashboard.purchase_orders.map((order) => (
+                  <article key={order.id}>
+                    <strong>{order.po_number} / {currency(order.committed_amount, project.currency)}</strong>
+                    <span>{order.description}</span>
+                    <small>{order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} / {statusLabel(order.status)}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div>
+              <strong>Payment Certificates</strong>
+              <div className="workList">
+                {dashboard.payment_certificates.map((certificate) => (
+                  <article key={certificate.id}>
+                    <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
+                    <span>{certificate.period_label || "No period"}</span>
+                    <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
                   </article>
                 ))}
               </div>

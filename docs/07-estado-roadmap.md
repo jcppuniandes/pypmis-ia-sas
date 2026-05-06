@@ -33,7 +33,7 @@ La app esta en estado de demo funcional avanzada, no lista para produccion empre
 - BP Designer frontend para crear nuevas plantillas de proceso sin tocar codigo.
 - Fase 3 MVP: mapeo WBS/CBS/Activity desde el cronograma, trazabilidad por actividad, cost loading ponderado, resumen de cobertura y aprobacion formal del baseline.
 - Fase 4 MVP: snapshots EVM por periodo, curva historica PV/EV/AC, resumen de productividad y escenarios EAC Current/Recovery/Pessimistic.
-- Cost Manager MVP: Cost Sheet por cuenta de control, funding sources, cash flow periodico, resumen de cobertura de fondos y variacion de caja.
+- Cost Manager MVP: Cost Sheet por cuenta de control, incurrido desde actas de pago, comprometido desde contratos/ordenes de compra, funding sources, cash flow periodico, resumen de cobertura de fondos y variacion de caja.
 - Document Control tipo Aconex MVP: registro documental con numero/revision/estado, transmittals, project mail, revisiones, score documental y trazabilidad con BP/auditoria.
 - EVM actual con PV, EV, AC, SPI, CPI, SV, CV, EAC, ETC y VAC.
 - Cambios, reclamos, contratos, comunicaciones y documentos vinculados.

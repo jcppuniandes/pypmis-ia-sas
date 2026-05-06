@@ -113,6 +113,8 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
         headers = _auth_headers(client)
         project_id = _first_project_id(client, headers)
         suffix = uuid4().hex[:8]
+        accounts_response = client.get(f"/api/v1/projects/{project_id}/control-accounts", headers=headers)
+        control_account_id = accounts_response.json()[0]["id"]
 
         funding_response = client.post(
             f"/api/v1/projects/{project_id}/funding-sources",
@@ -149,6 +151,47 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
                 "forecast_outflow": 800,
             },
         )
+        contract_response = client.post(
+            f"/api/v1/projects/{project_id}/contracts",
+            headers=headers,
+            json={
+                "control_account_id": control_account_id,
+                "code": f"CON-TEST-{suffix}",
+                "title": "Pilot commitment contract",
+                "counterparty": "Test Contractor",
+                "contract_type": "Services",
+                "value": 23000,
+                "status": "active",
+            },
+        )
+        contract = contract_response.json()
+        purchase_order_response = client.post(
+            f"/api/v1/projects/{project_id}/purchase-orders",
+            headers=headers,
+            json={
+                "control_account_id": control_account_id,
+                "contract_id": contract["id"],
+                "po_number": f"PO-TEST-{suffix}",
+                "description": "Pilot purchase order commitment",
+                "vendor": "Test Vendor",
+                "committed_amount": 7000,
+                "status": "issued",
+            },
+        )
+        payment_certificate_response = client.post(
+            f"/api/v1/projects/{project_id}/payment-certificates",
+            headers=headers,
+            json={
+                "control_account_id": control_account_id,
+                "contract_id": contract["id"],
+                "purchase_order_id": purchase_order_response.json()["id"],
+                "certificate_no": f"AP-TEST-{suffix}",
+                "period_label": "2099-01",
+                "certified_amount": 5000,
+                "retained_amount": 250,
+                "status": "certified",
+            },
+        )
         summary_response = client.get(f"/api/v1/projects/{project_id}/cost-manager-summary", headers=headers)
 
     assert funding_response.status_code == 200
@@ -156,8 +199,14 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
     assert funding_update_response.json()["version"] == funding["version"] + 1
     assert funding_stale_response.status_code == 409
     assert cash_flow_response.status_code == 200
+    assert contract_response.status_code == 200
+    assert purchase_order_response.status_code == 200
+    assert payment_certificate_response.status_code == 200
     assert summary_response.status_code == 200
     assert summary_response.json()["total_funding"] >= funding_update_response.json()["amount"]
+    assert summary_response.json()["total_incurred_from_payment_certificates"] >= payment_certificate_response.json()["certified_amount"]
+    assert summary_response.json()["total_contract_commitments"] >= contract_response.json()["value"]
+    assert summary_response.json()["total_purchase_order_commitments"] >= purchase_order_response.json()["committed_amount"]
 
 
 def test_document_control_register_transmittal_mail_and_review() -> None:
