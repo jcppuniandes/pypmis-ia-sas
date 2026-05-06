@@ -62,7 +62,28 @@ Salida esperada:
 - Cada usuario ve solo los proyectos donde tiene membresia.
 - Las acciones no permitidas retornan 403.
 
-### 3. Cargar cronograma
+### 3. Aprobar el Plan de Control / PEP
+
+El Control Manager revisa el Project Control Plan en la vista Roadmap.
+
+Validar:
+
+- Estrategia de ejecucion.
+- Estrategia de control.
+- Regla de medicion de progreso.
+- Regla de medicion de costo.
+- Reglas de cambio y riesgo.
+- Estrategia de compras/adquisiciones.
+- Control documental.
+- Cadencia de reportes.
+
+Salida esperada:
+
+- Plan en estado `active` o `approved`.
+- Cadencia semanal confirmada.
+- Equipo alineado sobre como se medira y reportara el piloto.
+
+### 4. Cargar cronograma
 
 El Planner carga el cronograma fuente desde Schedule Control.
 
@@ -79,7 +100,7 @@ Salida esperada:
 - Schedule Intake en estado Pass o Review controlado.
 - Errores criticos cerrados o documentados.
 
-### 4. Aprobar baseline de control
+### 5. Aprobar baseline de control
 
 El equipo valida:
 
@@ -95,7 +116,7 @@ Salida esperada:
 - Baseline approved.
 - Control capture desbloqueado.
 
-### 5. Ejecutar ciclo Control Core
+### 6. Ejecutar ciclo Control Core
 
 Capturar datos de una semana:
 
@@ -122,7 +143,7 @@ Salida esperada:
 - Alertas con recomendacion.
 - Decision registrada.
 
-### 6. Probar colaboracion multiusuario
+### 7. Probar colaboracion multiusuario
 
 Prueba minima:
 
@@ -142,8 +163,9 @@ Registros cubiertos:
 - ClaimEntitlementItem.
 - ClaimImpactAnalysis.
 - Workflow action.
+- ProjectControlPlan.
 
-### 7. Probar AWP
+### 8. Probar AWP
 
 Crear o validar:
 
@@ -159,7 +181,7 @@ Salida esperada:
 
 - Paquete liberable o bloqueo claramente trazado.
 
-### 8. Probar contrato y claim
+### 9. Probar contrato y claim
 
 Crear o validar:
 
@@ -177,7 +199,7 @@ Salida esperada:
 - Gaps de evidencia visibles.
 - Acciones contractuales trazadas.
 
-### 9. Medir readiness
+### 10. Medir readiness
 
 Ejecutar:
 
@@ -199,7 +221,7 @@ Salida esperada:
 - Estado `pilot_candidate` o `ready`.
 - Acciones siguientes claras para cada fase.
 
-### 10. Correr reunion de piloto
+### 11. Correr reunion de piloto
 
 Agenda semanal recomendada:
 
@@ -217,7 +239,7 @@ Salida esperada:
 - Audit log actualizado.
 - Ball-in-court claro.
 
-### 11. Cerrar piloto
+### 12. Cerrar piloto
 
 Preparar un informe corto:
 
@@ -234,6 +256,7 @@ El piloto se considera exitoso si:
 
 - Al menos cinco roles participaron.
 - Se completo un ciclo de control semanal.
+- Se aprobo o activo el Plan de Control / PEP del proyecto.
 - Se cargaron avance y costos.
 - Se genero un dashboard con KPI y alertas.
 - Se registro al menos una decision por workflow.

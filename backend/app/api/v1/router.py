@@ -42,6 +42,7 @@ from app.domain.models import (
     KPI,
     ProgressRecord,
     Project,
+    ProjectControlPlan,
     ProjectMembership,
     ScheduleActivityMap,
     ScheduleImport,
@@ -103,6 +104,8 @@ from app.domain.schemas import (
     ProcessTemplateOut,
     ProcessTransitionTemplateOut,
     ProjectCreate,
+    ProjectControlPlanOut,
+    ProjectControlPlanUpdate,
     ProjectMembershipOut,
     ProjectMembershipCreate,
     ProjectTeamMemberOut,
@@ -256,6 +259,7 @@ def create_project(
     db.add(project)
     db.flush()
     db.add(WBS(tenant_id=tenant_id, project_id=project.id, parent_id=None, code="1.0", name="Project Control Baseline"))
+    db.add(_default_project_control_plan(tenant_id, project.id))
     creator_membership = ProjectMembership(
         tenant_id=tenant_id,
         project_id=project.id,
@@ -462,6 +466,54 @@ def assign_project_member(
         user=UserOut.model_validate(target_user),
         membership=ProjectMembershipOut.model_validate(target_membership),
     )
+
+
+@router.get("/projects/{project_id}/control-plan", response_model=ProjectControlPlanOut)
+def get_project_control_plan(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectControlPlan:
+    _require_membership(db, tenant_id, project_id, user_id)
+    plan = _ensure_project_control_plan(db, tenant_id, project_id)
+    db.commit()
+    db.refresh(plan)
+    return plan
+
+
+@router.put("/projects/{project_id}/control-plan", response_model=ProjectControlPlanOut)
+def update_project_control_plan(
+    project_id: int,
+    payload: ProjectControlPlanUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectControlPlan:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot update the project control plan")
+    current_user = _require_user(db, tenant_id, user_id)
+    plan = _ensure_project_control_plan(db, tenant_id, project_id)
+    _require_current_version(plan, payload.expected_version)
+    for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        if value is not None:
+            setattr(plan, field, value.strip() if isinstance(value, str) else value)
+    if plan.status not in {"draft", "in_review", "approved", "active"}:
+        raise HTTPException(status_code=400, detail="Unsupported project control plan status")
+    _touch_collaborative_record(plan)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_project_control_plan",
+        "ProjectControlPlan",
+        plan.id,
+        json.dumps({"status": plan.status, "reporting_cadence": plan.reporting_cadence}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(plan)
+    return plan
 
 
 @router.get("/projects/{project_id}/wbs", response_model=list[WBSOut])
@@ -1676,6 +1728,7 @@ def get_dashboard(
     project = _require_project(db, tenant_id, project_id)
     current_user = _require_user(db, tenant_id, user_id)
     current_membership = _require_membership(db, tenant_id, project_id, user_id)
+    control_plan = _ensure_project_control_plan(db, tenant_id, project_id)
 
     project_kpi = db.scalars(
         select(KPI)
@@ -1930,6 +1983,7 @@ def get_dashboard(
 
     return DashboardOut(
         project=ProjectOut.model_validate(project),
+        control_plan=ProjectControlPlanOut.model_validate(control_plan),
         current_user=UserOut.model_validate(current_user),
         current_membership=ProjectMembershipOut.model_validate(current_membership),
         project_team=_project_team(db, tenant_id, project_id),
@@ -1983,6 +2037,39 @@ def _latest_schedule_import(db: Session, tenant_id: int, project_id: int) -> Sch
     ).first()
 
 
+def _ensure_project_control_plan(db: Session, tenant_id: int, project_id: int) -> ProjectControlPlan:
+    _require_project(db, tenant_id, project_id)
+    plan = db.scalar(
+        select(ProjectControlPlan).where(
+            ProjectControlPlan.tenant_id == tenant_id,
+            ProjectControlPlan.project_id == project_id,
+        )
+    )
+    if plan:
+        return plan
+    plan = _default_project_control_plan(tenant_id, project_id)
+    db.add(plan)
+    db.flush()
+    return plan
+
+
+def _default_project_control_plan(tenant_id: int, project_id: int) -> ProjectControlPlan:
+    return ProjectControlPlan(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        execution_strategy="Execute through approved baseline, control accounts, weekly control cycle and exception-based decisions.",
+        control_strategy="Use schedule intake, data quality gates, WBS/CBS/activity mapping, EVM, AWP readiness and workflow approvals.",
+        progress_measurement_rule="Capture physical percent, installed quantities, labor hours and evidence by control account each control period.",
+        cost_measurement_rule="Capture actual and committed costs by control account; reconcile against BAC, PV, EV, AC, CPI and EAC.",
+        change_management_rule="Register deviations, evaluate cost/schedule impact, route workflow decisions and preserve audit trail.",
+        risk_management_rule="Review schedule quality, productivity, cost variance, open constraints, notices and claim exposure every cycle.",
+        procurement_strategy="Track procurement and contracting constraints that affect workface readiness, schedule logic and contractual notices.",
+        document_control_rule="Link field reports, communications, notices, claim evidence and decision records to the controlled entity.",
+        reporting_cadence="Weekly",
+        status="draft",
+    )
+
+
 def _require_current_version(entity: object, expected_version: int | None) -> None:
     if expected_version is None:
         return
@@ -2008,6 +2095,12 @@ def _touch_collaborative_record(entity: object) -> None:
 def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotReadinessOut:
     project_id = project.id
     latest_import = _latest_schedule_import(db, tenant_id, project_id)
+    control_plan = db.scalar(
+        select(ProjectControlPlan).where(
+            ProjectControlPlan.tenant_id == tenant_id,
+            ProjectControlPlan.project_id == project_id,
+        )
+    )
     findings = _schedule_findings_for_import(db, tenant_id, project_id, latest_import.id) if latest_import else []
     finding_errors = sum(item.item_count for item in findings if item.severity == "error")
     finding_warnings = sum(item.item_count for item in findings if item.severity == "warning")
@@ -2081,10 +2174,10 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         ),
         _readiness_item(
             "Fase 2",
-            "Business Process Engine",
-            100 if workflow_count and template_count else 45,
-            f"{workflow_count} instancias workflow y {template_count} plantillas configuradas.",
-            "Configurar plantillas del piloto y validar ball-in-court por rol.",
+            "Business Process Engine / Plan de Control",
+            min((100 if workflow_count and template_count else 45) * 0.65 + _control_plan_score(control_plan) * 0.35, 100),
+            f"{workflow_count} instancias workflow, {template_count} plantillas y plan de control {control_plan.status if control_plan else 'missing'}.",
+            "Aprobar el PEP/Plan de Control y validar ball-in-court por rol.",
         ),
         _readiness_item(
             "Fase 3",
@@ -2149,6 +2242,24 @@ def _readiness_item(phase: str, area: str, score: float, finding: str, next_acti
         finding=finding,
         next_action=next_action,
     )
+
+
+def _control_plan_score(plan: ProjectControlPlan | None) -> float:
+    if not plan:
+        return 0
+    fields = [
+        plan.execution_strategy,
+        plan.control_strategy,
+        plan.progress_measurement_rule,
+        plan.cost_measurement_rule,
+        plan.change_management_rule,
+        plan.risk_management_rule,
+        plan.procurement_strategy,
+        plan.document_control_rule,
+    ]
+    completeness = sum(1 for field in fields if field and field.strip()) / len(fields)
+    status_bonus = 20 if plan.status in {"approved", "active"} else 10 if plan.status == "in_review" else 0
+    return min((completeness * 80) + status_bonus, 100)
 
 
 def _count(db: Session, model: type, tenant_id: int, project_id: int) -> int:

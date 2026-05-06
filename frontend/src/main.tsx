@@ -29,6 +29,24 @@ type Project = {
   finish_date: string | null;
 };
 
+type ProjectControlPlan = {
+  id: number;
+  project_id: number;
+  execution_strategy: string;
+  control_strategy: string;
+  progress_measurement_rule: string;
+  cost_measurement_rule: string;
+  change_management_rule: string;
+  risk_management_rule: string;
+  procurement_strategy: string;
+  document_control_rule: string;
+  reporting_cadence: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
 type User = {
   id: number;
   email: string;
@@ -517,6 +535,7 @@ type PilotReadiness = {
 
 type Dashboard = {
   project: Project;
+  control_plan: ProjectControlPlan | null;
   current_user: User;
   current_membership: ProjectMembership;
   project_team: ProjectTeamMember[];
@@ -806,6 +825,18 @@ function App() {
     status: "open",
     blocking: true
   });
+  const [controlPlanDraft, setControlPlanDraft] = React.useState({
+    execution_strategy: "",
+    control_strategy: "",
+    progress_measurement_rule: "",
+    cost_measurement_rule: "",
+    change_management_rule: "",
+    risk_management_rule: "",
+    procurement_strategy: "",
+    document_control_rule: "",
+    reporting_cadence: "Weekly",
+    status: "draft"
+  });
 
   const login = React.useCallback(async (email = defaultLoginEmail) => {
     const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
@@ -919,6 +950,24 @@ function App() {
       return linkedValueIsAvailable ? current : { ...current, linked_entity_type: "ControlAccount", linked_entity_id: firstAccountId };
     });
   }, [dashboard]);
+
+  React.useEffect(() => {
+    if (!dashboard?.control_plan) {
+      return;
+    }
+    setControlPlanDraft({
+      execution_strategy: dashboard.control_plan.execution_strategy,
+      control_strategy: dashboard.control_plan.control_strategy,
+      progress_measurement_rule: dashboard.control_plan.progress_measurement_rule,
+      cost_measurement_rule: dashboard.control_plan.cost_measurement_rule,
+      change_management_rule: dashboard.control_plan.change_management_rule,
+      risk_management_rule: dashboard.control_plan.risk_management_rule,
+      procurement_strategy: dashboard.control_plan.procurement_strategy,
+      document_control_rule: dashboard.control_plan.document_control_rule,
+      reporting_cadence: dashboard.control_plan.reporting_cadence,
+      status: dashboard.control_plan.status
+    });
+  }, [dashboard?.control_plan]);
 
   React.useEffect(() => {
     setTeamDraft((current) => ({
@@ -1138,6 +1187,36 @@ function App() {
       await load();
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "User creation failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleControlPlanSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard?.control_plan) {
+      return;
+    }
+    setCaptureAction("control-plan");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/control-plan`, {
+        method: "PUT",
+        headers: apiHeaders(true),
+        body: JSON.stringify({
+          ...controlPlanDraft,
+          expected_version: dashboard.control_plan.version
+        })
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Project control plan update failed");
+      }
+      setUploadMessage("Project Control Plan updated. Pilot readiness recalculated.");
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Project control plan update failed");
     } finally {
       setCaptureAction(null);
     }
@@ -2180,6 +2259,118 @@ function App() {
             <small>Faltan auth real, migraciones, hardening, observabilidad y pruebas amplias.</small>
           </article>
         </div>
+        {dashboard.control_plan && (
+          <form className="adminPanel controlPlanPanel" onSubmit={handleControlPlanSubmit}>
+            <div className="panelHeader">
+              <h2><ClipboardCheck size={18} /> Project Control Plan / PEP</h2>
+              <span>{statusLabel(dashboard.control_plan.status)} / v{dashboard.control_plan.version}</span>
+            </div>
+            <div className="formColumns">
+              <label>
+                <span>Reporting Cadence</span>
+                <input
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, reporting_cadence: event.target.value }))}
+                  value={controlPlanDraft.reporting_cadence}
+                />
+              </label>
+              <label>
+                <span>Status</span>
+                <select
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, status: event.target.value }))}
+                  value={controlPlanDraft.status}
+                >
+                  <option value="draft">Draft</option>
+                  <option value="in_review">In Review</option>
+                  <option value="approved">Approved</option>
+                  <option value="active">Active</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              <span>Execution Strategy</span>
+              <textarea
+                disabled={!canConfigure}
+                onChange={(event) => setControlPlanDraft((current) => ({ ...current, execution_strategy: event.target.value }))}
+                rows={2}
+                value={controlPlanDraft.execution_strategy}
+              />
+            </label>
+            <label>
+              <span>Control Strategy</span>
+              <textarea
+                disabled={!canConfigure}
+                onChange={(event) => setControlPlanDraft((current) => ({ ...current, control_strategy: event.target.value }))}
+                rows={2}
+                value={controlPlanDraft.control_strategy}
+              />
+            </label>
+            <div className="formColumns">
+              <label>
+                <span>Progress Measurement</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, progress_measurement_rule: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.progress_measurement_rule}
+                />
+              </label>
+              <label>
+                <span>Cost Measurement</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, cost_measurement_rule: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.cost_measurement_rule}
+                />
+              </label>
+            </div>
+            <div className="formColumns">
+              <label>
+                <span>Change Rules</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, change_management_rule: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.change_management_rule}
+                />
+              </label>
+              <label>
+                <span>Risk Rules</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, risk_management_rule: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.risk_management_rule}
+                />
+              </label>
+            </div>
+            <div className="formColumns">
+              <label>
+                <span>Procurement Strategy</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, procurement_strategy: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.procurement_strategy}
+                />
+              </label>
+              <label>
+                <span>Document Control</span>
+                <textarea
+                  disabled={!canConfigure}
+                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, document_control_rule: event.target.value }))}
+                  rows={3}
+                  value={controlPlanDraft.document_control_rule}
+                />
+              </label>
+            </div>
+            <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
+              {captureAction === "control-plan" ? "Saving..." : "Save Control Plan"}
+            </button>
+          </form>
+        )}
         {pilotReadiness && (
           <div className="roadmapGrid">
             {pilotReadiness.items.map((item) => (

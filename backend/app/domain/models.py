@@ -73,6 +73,29 @@ class Project(Base):
     __table_args__ = (UniqueConstraint("tenant_id", "code"),)
 
 
+class ProjectControlPlan(Base):
+    __tablename__ = "project_control_plans"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    execution_strategy: Mapped[str] = mapped_column(Text, default="")
+    control_strategy: Mapped[str] = mapped_column(Text, default="")
+    progress_measurement_rule: Mapped[str] = mapped_column(Text, default="")
+    cost_measurement_rule: Mapped[str] = mapped_column(Text, default="")
+    change_management_rule: Mapped[str] = mapped_column(Text, default="")
+    risk_management_rule: Mapped[str] = mapped_column(Text, default="")
+    procurement_strategy: Mapped[str] = mapped_column(Text, default="")
+    document_control_rule: Mapped[str] = mapped_column(Text, default="")
+    reporting_cadence: Mapped[str] = mapped_column(String(120), default="Weekly")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id"),)
+
+
 class UserAccount(Base):
     __tablename__ = "user_accounts"
 

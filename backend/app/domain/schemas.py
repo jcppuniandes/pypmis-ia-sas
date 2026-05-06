@@ -24,6 +24,40 @@ class ProjectCreate(BaseModel):
     finish_date: date | None = None
 
 
+class ProjectControlPlanOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    execution_strategy: str
+    control_strategy: str
+    progress_measurement_rule: str
+    cost_measurement_rule: str
+    change_management_rule: str
+    risk_management_rule: str
+    procurement_strategy: str
+    document_control_rule: str
+    reporting_cadence: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ProjectControlPlanUpdate(BaseModel):
+    execution_strategy: str | None = None
+    control_strategy: str | None = None
+    progress_measurement_rule: str | None = None
+    cost_measurement_rule: str | None = None
+    change_management_rule: str | None = None
+    risk_management_rule: str | None = None
+    procurement_strategy: str | None = None
+    document_control_rule: str | None = None
+    reporting_cadence: str | None = None
+    status: str | None = None
+    expected_version: int | None = None
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -856,6 +890,7 @@ class ControlCoreLoop(BaseModel):
 
 class DashboardOut(BaseModel):
     project: ProjectOut
+    control_plan: ProjectControlPlanOut | None
     current_user: UserOut
     current_membership: ProjectMembershipOut
     project_team: list[ProjectTeamMemberOut]

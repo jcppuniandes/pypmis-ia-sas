@@ -34,6 +34,7 @@ from app.domain.models import (
     KPI,
     ProgressRecord,
     Project,
+    ProjectControlPlan,
     ProjectMembership,
     RelationshipType,
     Resource,
@@ -62,6 +63,7 @@ def seed_demo(db: Session) -> None:
         ensure_default_bp_templates(db, existing.id)
         project = ensure_primary_project(db, existing.id)
         if project:
+            ensure_project_control_plan(db, existing.id, project.id)
             neutralize_schedule_labels(db, existing.id, project.id)
             ensure_demo_schedule(db, existing.id, project.id)
             ensure_control_account_mapping_records(db, existing.id, project.id)
@@ -73,6 +75,7 @@ def seed_demo(db: Session) -> None:
             ensure_control_history_records(db, existing.id, project.id)
         secondary = ensure_secondary_project(db, existing.id)
         if secondary:
+            ensure_project_control_plan(db, existing.id, secondary.id)
             neutralize_schedule_labels(db, existing.id, secondary.id)
             ensure_control_account_mapping_records(db, existing.id, secondary.id)
             ensure_contract_records(db, existing.id, secondary.id)
@@ -100,6 +103,7 @@ def seed_demo(db: Session) -> None:
     )
     db.add(project)
     db.flush()
+    ensure_project_control_plan(db, tenant.id, project.id)
 
     wbs = WBS(tenant_id=tenant.id, project_id=project.id, code="1.2", name="Mechanical and Piping", parent_id=None)
     db.add(wbs)
@@ -235,6 +239,7 @@ def seed_demo(db: Session) -> None:
     ensure_claim_notice_and_impact_records(db, tenant.id, project.id)
     secondary = ensure_secondary_project(db, tenant.id)
     if secondary:
+        ensure_project_control_plan(db, tenant.id, secondary.id)
         ensure_contract_records(db, tenant.id, secondary.id)
         ensure_control_account_mapping_records(db, tenant.id, secondary.id)
         ensure_awp_records(db, tenant.id, secondary.id)
@@ -367,6 +372,45 @@ def ensure_primary_project(db: Session, tenant_id: int) -> Project | None:
     project.finish_date = project.finish_date or date(2026, 12, 18)
     db.flush()
     return project
+
+
+def ensure_project_control_plan(db: Session, tenant_id: int, project_id: int) -> None:
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    plan = db.scalar(
+        select(ProjectControlPlan).where(
+            ProjectControlPlan.tenant_id == tenant_id,
+            ProjectControlPlan.project_id == project_id,
+        )
+    )
+    is_turnaround = project.code == "REF-TURN-002"
+    defaults = {
+        "execution_strategy": (
+            "Execute turnaround windows through approved shutdown logic, discipline work packs and daily constraint review."
+            if is_turnaround
+            else "Execute the project through the approved control baseline, control accounts, AWP packages and weekly decision cycle."
+        ),
+        "control_strategy": "Use schedule intake, data quality gates, WBS/CBS/activity mapping, EVM, AWP readiness, claims exposure and workflow approvals.",
+        "progress_measurement_rule": "Capture physical percent, quantities, labor hours and field evidence by control account each control period.",
+        "cost_measurement_rule": "Capture actual and committed costs by control account; reconcile BAC, PV, EV, AC, CPI, EAC and VAC before reporting.",
+        "change_management_rule": "Identify deviations, quantify cost/schedule impact, route approvals, update forecasts and preserve audit trail.",
+        "risk_management_rule": "Review schedule quality, productivity, cost variance, open constraints, procurement slippage, notices and claim exposure.",
+        "procurement_strategy": "Track procurement and contracting constraints that can affect workface readiness, critical path or contractual notices.",
+        "document_control_rule": "Link field reports, correspondence, notices, evidence, decisions and baseline artifacts to the controlled entity.",
+        "reporting_cadence": "Weekly",
+        "status": "active",
+    }
+    if not plan:
+        db.add(ProjectControlPlan(tenant_id=tenant_id, project_id=project_id, **defaults))
+        db.flush()
+        return
+    for field, value in defaults.items():
+        if not getattr(plan, field):
+            setattr(plan, field, value)
+    if plan.status == "draft":
+        plan.status = "active"
+    db.flush()
 
 
 def neutralize_schedule_labels(db: Session, tenant_id: int, project_id: int) -> None:

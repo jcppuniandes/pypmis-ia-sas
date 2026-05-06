@@ -71,6 +71,38 @@ def test_pilot_readiness_scores_project_phases() -> None:
     assert {item["phase"] for item in payload["items"]} == {"Fase 1", "Fase 2", "Fase 3", "Fase 4", "Fase 5", "Fase 6"}
 
 
+def test_project_control_plan_can_be_updated_with_version() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        plan_response = client.get(f"/api/v1/projects/{project_id}/control-plan", headers=headers)
+        plan = plan_response.json()
+
+        update_response = client.put(
+            f"/api/v1/projects/{project_id}/control-plan",
+            headers=headers,
+            json={
+                "reporting_cadence": "Weekly pilot steering",
+                "status": "active",
+                "expected_version": plan["version"],
+            },
+        )
+        stale_response = client.put(
+            f"/api/v1/projects/{project_id}/control-plan",
+            headers=headers,
+            json={
+                "reporting_cadence": "Stale cadence",
+                "expected_version": plan["version"],
+            },
+        )
+
+    assert plan_response.status_code == 200
+    assert plan["control_strategy"]
+    assert update_response.status_code == 200
+    assert update_response.json()["version"] == plan["version"] + 1
+    assert stale_response.status_code == 409
+
+
 def test_project_routes_reject_authenticated_non_members() -> None:
     with TestClient(app) as client:
         control_manager_headers = _auth_headers(client)

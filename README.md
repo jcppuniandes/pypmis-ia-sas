@@ -82,6 +82,19 @@ GET /api/v1/projects/{project_id}/pilot-readiness
 
 El indicador cubre Fase 1 a Fase 6: Schedule Intake, BP Engine, Control Accounts, EVM/Forecast, Contracts/Claims y SaaS colaborativo.
 
+## Plan de Control del Proyecto / PEP
+
+La app incluye un plan de control por proyecto para formalizar lo que aparece en el flujo de procesos: estrategia de ejecucion, estrategia de control, reglas de medicion de progreso, reglas de medicion de costo, cambios, riesgos, adquisiciones, control documental y cadencia de reportes.
+
+Endpoints:
+
+```text
+GET /api/v1/projects/{project_id}/control-plan
+PUT /api/v1/projects/{project_id}/control-plan
+```
+
+El `PUT` usa `expected_version` para evitar que dos usuarios sobrescriban el mismo plan sin refrescar.
+
 ## Pruebas
 
 Con el stack levantado:
