@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: str = "plain"
     allow_insecure_production: bool = False
+    ai_provider: str = "disabled"
+    anthropic_api_key: str = ""
+    ai_model: str = "claude-haiku-4-5-20251001"
+    ai_max_tokens: int = 1024
+    ai_timeout_seconds: int = 30
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
