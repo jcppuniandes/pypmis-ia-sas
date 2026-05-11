@@ -200,6 +200,12 @@ class ControlAccountOut(BaseModel):
     name: str
     responsible: str
     discipline: str
+    cbs_code: str
+    contract_ref: str
+    measurement_rule: str
+    lifecycle_status: str
+    risk_ref: str
+    closure_note: str
     version: int
     updated_at: datetime
 
@@ -210,6 +216,12 @@ class ControlAccountCreate(BaseModel):
     name: str
     responsible: str
     discipline: str
+    cbs_code: str = ""
+    contract_ref: str = ""
+    measurement_rule: str = ""
+    lifecycle_status: str = "active"
+    risk_ref: str = ""
+    closure_note: str = ""
 
 
 class ControlAccountUpdate(BaseModel):
@@ -217,6 +229,12 @@ class ControlAccountUpdate(BaseModel):
     name: str | None = None
     responsible: str | None = None
     discipline: str | None = None
+    cbs_code: str | None = None
+    contract_ref: str | None = None
+    measurement_rule: str | None = None
+    lifecycle_status: str | None = None
+    risk_ref: str | None = None
+    closure_note: str | None = None
     expected_version: int | None = None
 
 
@@ -1379,6 +1397,7 @@ class WorkPackageOut(BaseModel):
     readiness_status: str
     planned_start: date | None
     planned_finish: date | None
+    release_required_on: date | None
     progress_percent: float
     version: int
     updated_at: datetime
@@ -1397,6 +1416,7 @@ class WorkPackageCreate(BaseModel):
     readiness_status: str = "constraint_review"
     planned_start: date | None = None
     planned_finish: date | None = None
+    release_required_on: date | None = None
     progress_percent: float = 0
 
 
@@ -1416,6 +1436,12 @@ class WorkPackageConstraintOut(BaseModel):
     owner_role: str
     required_by: date | None
     status: str
+    priority: str
+    evidence_ref: str
+    closure_note: str
+    exception_ref: str
+    closed_by: str
+    closed_on: date | None
     blocking: bool
     version: int
     updated_at: datetime
@@ -1427,12 +1453,20 @@ class WorkPackageConstraintCreate(BaseModel):
     owner_role: str = "Workface Planner"
     required_by: date | None = None
     status: str = "open"
+    priority: str = "medium"
+    evidence_ref: str = ""
+    closure_note: str = ""
+    exception_ref: str = ""
     blocking: bool = True
 
 
 class WorkPackageConstraintUpdate(BaseModel):
     status: str | None = None
     blocking: bool | None = None
+    priority: str | None = None
+    evidence_ref: str | None = None
+    closure_note: str | None = None
+    exception_ref: str | None = None
     expected_version: int | None = None
 
 
@@ -1440,10 +1474,14 @@ class AWPReadinessSummary(BaseModel):
     total_packages: int
     cwp_count: int
     iwp_count: int
+    twp_count: int
+    top_count: int
     ready_for_release: int
     blocked_packages: int
     open_constraints: int
     blocking_constraints: int
+    high_priority_constraints: int
+    closure_evidence_count: int
     readiness_score: float
 
 

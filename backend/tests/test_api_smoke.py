@@ -903,6 +903,151 @@ def test_collaborative_updates_reject_stale_versions() -> None:
     assert stale_response.status_code == 409
 
 
+def test_awp_minimum_register_supports_taxonomy_governance_and_evidence() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        suffix = uuid4().hex[:8]
+        wbs_response = client.get(f"/api/v1/projects/{project_id}/wbs", headers=headers)
+        wbs_id = wbs_response.json()[0]["id"]
+
+        account_response = client.post(
+            f"/api/v1/projects/{project_id}/control-accounts",
+            headers=headers,
+            json={
+                "wbs_id": wbs_id,
+                "code": f"CA-AWP-{suffix}",
+                "name": "AWP minimum governance account",
+                "responsible": "Project Controls",
+                "discipline": "Construction",
+                "cbs_code": f"CBS-AWP-{suffix}",
+                "contract_ref": "CTR-AWP-01",
+                "measurement_rule": "Physical percent by released IWP quantities.",
+                "lifecycle_status": "active",
+                "risk_ref": "R-AWP-01",
+            },
+        )
+        account = account_response.json()
+
+        cwa_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages",
+            headers=headers,
+            json={
+                "package_type": "CWA",
+                "code": f"CWA-{suffix}",
+                "title": "AWP test construction area",
+                "path_of_construction": "Area release before workface packaging.",
+                "release_required_on": "2026-06-01",
+            },
+        )
+        cwa = cwa_response.json()
+        cwp_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages",
+            headers=headers,
+            json={
+                "control_account_id": account["id"],
+                "parent_id": cwa["id"],
+                "package_type": "CWP",
+                "code": f"CWP-{suffix}",
+                "title": "AWP test construction work package",
+                "path_of_construction": "Construction sequence for IWP release.",
+                "release_required_on": "2026-06-08",
+            },
+        )
+        cwp = cwp_response.json()
+        twp_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages",
+            headers=headers,
+            json={
+                "control_account_id": account["id"],
+                "parent_id": cwp["id"],
+                "package_type": "TWP",
+                "code": f"TWP-{suffix}",
+                "title": "AWP test technical package",
+                "path_of_construction": "Technical turnover before closeout.",
+                "release_required_on": "2026-06-15",
+            },
+        )
+        top_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages",
+            headers=headers,
+            json={
+                "control_account_id": account["id"],
+                "parent_id": cwp["id"],
+                "package_type": "TOP",
+                "code": f"TOP-{suffix}",
+                "title": "AWP test turnover package",
+                "path_of_construction": "Turnover evidence package.",
+                "release_required_on": "2026-06-20",
+            },
+        )
+        invalid_parent_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages",
+            headers=headers,
+            json={
+                "parent_id": cwp["id"],
+                "package_type": "CWA",
+                "code": f"CWA-BAD-{suffix}",
+                "title": "Invalid child area",
+                "path_of_construction": "Invalid hierarchy.",
+            },
+        )
+
+        constraint_response = client.post(
+            f"/api/v1/projects/{project_id}/work-packages/{cwp['id']}/constraints",
+            headers=headers,
+            json={
+                "constraint_type": "Document",
+                "description": "Approved IFC drawing must be linked before workface release.",
+                "owner_role": "Document Control",
+                "required_by": "2026-06-05",
+                "priority": "high",
+                "evidence_ref": "DOC-AWP-IFC-001",
+                "closure_note": "",
+                "blocking": True,
+            },
+        )
+        constraint = constraint_response.json()
+        close_response = client.patch(
+            f"/api/v1/projects/{project_id}/work-packages/{cwp['id']}/constraints/{constraint['id']}",
+            headers=headers,
+            json={
+                "status": "closed",
+                "evidence_ref": "DOC-AWP-IFC-001 Rev B",
+                "closure_note": "IFC drawing approved and linked to package.",
+                "expected_version": constraint["version"],
+            },
+        )
+        dashboard_response = client.get(f"/api/v1/projects/{project_id}/dashboard", headers=headers)
+
+    assert account_response.status_code == 200
+    assert account["cbs_code"] == f"CBS-AWP-{suffix}"
+    assert account["contract_ref"] == "CTR-AWP-01"
+    assert account["measurement_rule"].startswith("Physical percent")
+    assert account["lifecycle_status"] == "active"
+    assert account["risk_ref"] == "R-AWP-01"
+    assert cwa_response.status_code == 200
+    assert cwp_response.status_code == 200
+    assert twp_response.status_code == 200
+    assert twp_response.json()["package_type"] == "TWP"
+    assert top_response.status_code == 200
+    assert top_response.json()["package_type"] == "TOP"
+    assert top_response.json()["release_required_on"] == "2026-06-20"
+    assert invalid_parent_response.status_code == 400
+    assert constraint_response.status_code == 200
+    assert constraint["priority"] == "high"
+    assert constraint["evidence_ref"] == "DOC-AWP-IFC-001"
+    assert close_response.status_code == 200
+    assert close_response.json()["status"] == "closed"
+    assert close_response.json()["closed_on"] is not None
+    assert close_response.json()["closed_by"] == "Ana Martinez"
+    assert close_response.json()["closure_note"] == "IFC drawing approved and linked to package."
+    assert dashboard_response.status_code == 200
+    assert dashboard_response.json()["awp_summary"]["twp_count"] >= 1
+    assert dashboard_response.json()["awp_summary"]["top_count"] >= 1
+    assert dashboard_response.json()["awp_summary"]["closure_evidence_count"] >= 1
+
+
 def test_control_cycle_job_can_be_enqueued() -> None:
     with TestClient(app) as client:
         headers = _auth_headers(client)

@@ -214,6 +214,19 @@ router = APIRouter(prefix="/api/v1")
 INTEGRATION_TOKEN_PREFIX = "pypmis_it_"
 INTEGRATION_TOKEN_MAX_DAYS = 90
 
+AWP_PACKAGE_TYPES = {"CWA", "CWP", "EWP", "PWP", "IWP", "TWP", "TOP"}
+AWP_PACKAGE_LEVELS = {
+    "CWA": 10,
+    "CWP": 20,
+    "EWP": 30,
+    "PWP": 30,
+    "IWP": 40,
+    "TWP": 50,
+    "TOP": 50,
+}
+AWP_CONSTRAINT_PRIORITIES = {"low", "medium", "high", "critical"}
+CONTROL_ACCOUNT_STATUSES = {"draft", "active", "under_change", "closed"}
+
 
 @dataclass(frozen=True)
 class IntegrationAccess:
@@ -902,7 +915,14 @@ def create_control_account(
         name=payload.name,
         responsible=payload.responsible,
         discipline=payload.discipline,
+        cbs_code=payload.cbs_code,
+        contract_ref=payload.contract_ref,
+        measurement_rule=payload.measurement_rule,
+        lifecycle_status=payload.lifecycle_status.strip().lower(),
+        risk_ref=payload.risk_ref,
+        closure_note=payload.closure_note,
     )
+    _validate_control_account_status(account.lifecycle_status)
     db.add(account)
     db.flush()
     _audit(
@@ -932,7 +952,10 @@ def update_control_account(
     account = _require_control_account(db, tenant_id, project_id, account_id)
     _require_current_version(account, payload.expected_version)
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        if field == "lifecycle_status" and value is not None:
+            value = value.strip().lower()
         setattr(account, field, value)
+    _validate_control_account_status(account.lifecycle_status)
     _touch_collaborative_record(account)
     _audit(
         db,
@@ -3124,13 +3147,15 @@ def create_work_package(
         raise HTTPException(status_code=403, detail="Current role cannot configure AWP work packages")
     _require_control_ready(db, tenant_id, project_id)
     current_user = _require_user(db, tenant_id, user_id)
-    package_type = payload.package_type.upper()
-    if package_type not in {"CWA", "EWA", "EWP", "CWP", "PWP", "IWP"}:
+    package_type = payload.package_type.strip().upper()
+    if package_type not in AWP_PACKAGE_TYPES:
         raise HTTPException(status_code=400, detail="Unsupported AWP package type")
     if payload.control_account_id is not None:
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    parent_package: WorkPackage | None = None
     if payload.parent_id is not None:
-        _require_work_package(db, tenant_id, project_id, payload.parent_id)
+        parent_package = _require_work_package(db, tenant_id, project_id, payload.parent_id)
+    _validate_awp_package_hierarchy(parent_package, package_type)
     existing = db.scalar(
         select(WorkPackage).where(
             WorkPackage.tenant_id == tenant_id,
@@ -3155,6 +3180,7 @@ def create_work_package(
         readiness_status=payload.readiness_status,
         planned_start=payload.planned_start,
         planned_finish=payload.planned_finish,
+        release_required_on=payload.release_required_on,
         progress_percent=payload.progress_percent,
     )
     db.add(package)
@@ -3288,6 +3314,7 @@ def create_work_package_constraint(
     _require_membership(db, tenant_id, project_id, user_id)
     current_user = _require_user(db, tenant_id, user_id)
     package = _require_work_package(db, tenant_id, project_id, package_id)
+    priority = _normalize_awp_constraint_priority(payload.priority)
     constraint = WorkPackageConstraint(
         tenant_id=tenant_id,
         project_id=project_id,
@@ -3297,8 +3324,13 @@ def create_work_package_constraint(
         owner_role=payload.owner_role,
         required_by=payload.required_by,
         status=payload.status,
+        priority=priority,
+        evidence_ref=payload.evidence_ref,
+        closure_note=payload.closure_note,
+        exception_ref=payload.exception_ref,
         blocking=payload.blocking,
     )
+    _apply_awp_constraint_closure(constraint, current_user.full_name)
     db.add(constraint)
     if constraint.blocking and constraint.status == "open":
         package.readiness_status = "blocked"
@@ -3346,7 +3378,10 @@ def update_work_package_constraint(
         raise HTTPException(status_code=404, detail="AWP constraint not found")
     _require_current_version(constraint, payload.expected_version)
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
+        if field == "priority" and value is not None:
+            value = _normalize_awp_constraint_priority(value)
         setattr(constraint, field, value)
+    _apply_awp_constraint_closure(constraint, current_user.full_name)
     open_blockers = db.scalar(
         select(func.count(WorkPackageConstraint.id)).where(
             WorkPackageConstraint.tenant_id == tenant_id,
@@ -6443,6 +6478,37 @@ def _require_work_package(db: Session, tenant_id: int, project_id: int, package_
     return package
 
 
+def _validate_awp_package_hierarchy(parent: WorkPackage | None, package_type: str) -> None:
+    if parent is None:
+        return
+    parent_type = parent.package_type.upper()
+    if parent_type not in AWP_PACKAGE_LEVELS:
+        raise HTTPException(status_code=400, detail="Parent AWP package type is not supported")
+    if AWP_PACKAGE_LEVELS[package_type] <= AWP_PACKAGE_LEVELS[parent_type]:
+        raise HTTPException(status_code=400, detail="AWP package hierarchy must move from area to more detailed package")
+
+
+def _normalize_awp_constraint_priority(priority: str) -> str:
+    normalized = priority.strip().lower()
+    if normalized not in AWP_CONSTRAINT_PRIORITIES:
+        raise HTTPException(status_code=400, detail="Unsupported AWP constraint priority")
+    return normalized
+
+
+def _apply_awp_constraint_closure(constraint: WorkPackageConstraint, actor: str) -> None:
+    if constraint.status == "closed":
+        constraint.closed_by = constraint.closed_by or actor
+        constraint.closed_on = constraint.closed_on or datetime.utcnow().date()
+        return
+    constraint.closed_by = ""
+    constraint.closed_on = None
+
+
+def _validate_control_account_status(status: str) -> None:
+    if status not in CONTROL_ACCOUNT_STATUSES:
+        raise HTTPException(status_code=400, detail="Unsupported control account lifecycle status")
+
+
 def _require_claim(db: Session, tenant_id: int, project_id: int, claim_id: int) -> Claim:
     claim = db.scalar(
         select(Claim).where(
@@ -6582,10 +6648,18 @@ def _awp_summary(
         total_packages=total_packages,
         cwp_count=sum(1 for package in packages if package.package_type == "CWP"),
         iwp_count=sum(1 for package in packages if package.package_type == "IWP"),
+        twp_count=sum(1 for package in packages if package.package_type == "TWP"),
+        top_count=sum(1 for package in packages if package.package_type == "TOP"),
         ready_for_release=ready_for_release,
         blocked_packages=len(blocked_package_ids),
         open_constraints=len(open_constraints),
         blocking_constraints=len(blocking_constraints),
+        high_priority_constraints=sum(
+            1 for constraint in open_constraints if constraint.priority in {"high", "critical"}
+        ),
+        closure_evidence_count=sum(
+            1 for constraint in constraints if constraint.status == "closed" and bool(constraint.evidence_ref.strip())
+        ),
         readiness_score=readiness_score,
     )
 
