@@ -221,11 +221,13 @@ from app.api.v1._helpers import (
 from app.api.v1.routers import admin as admin_router
 from app.api.v1.routers import auth as auth_router
 from app.api.v1.routers import health as health_router
+from app.api.v1.routers import projects as projects_router
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(health_router.router, tags=["health"])
 router.include_router(auth_router.router, tags=["auth"])
 router.include_router(admin_router.router, tags=["admin"])
+router.include_router(projects_router.router, tags=["projects"])
 
 
 INTEGRATION_TOKEN_PREFIX = "pypmis_it_"
@@ -339,73 +341,6 @@ INTEGRATION_DATASETS = {
         "schema": DocumentAttachmentOut,
     },
 }
-
-
-@router.get("/projects", response_model=list[ProjectOut])
-def list_projects(
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> list[Project]:
-    return list(
-        db.scalars(
-            select(Project)
-            .join(ProjectMembership, ProjectMembership.project_id == Project.id)
-            .where(
-                Project.tenant_id == tenant_id,
-                ProjectMembership.tenant_id == tenant_id,
-                ProjectMembership.user_id == user_id,
-            )
-            .order_by(Project.code)
-        ).all()
-    )
-
-
-@router.post("/projects", response_model=ProjectOut)
-def create_project(
-    payload: ProjectCreate,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> Project:
-    current_user = _require_tenant_configurator(db, tenant_id, user_id)
-    existing = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.code == payload.code))
-    if existing:
-        raise HTTPException(status_code=409, detail="Project code already exists")
-    project = Project(
-        tenant_id=tenant_id,
-        code=payload.code,
-        name=payload.name,
-        phase=payload.phase,
-        currency=payload.currency,
-        start_date=payload.start_date,
-        finish_date=payload.finish_date,
-    )
-    db.add(project)
-    db.flush()
-    db.add(WBS(tenant_id=tenant_id, project_id=project.id, parent_id=None, code="1.0", name="Project Control Baseline"))
-    db.add(_default_project_control_plan(tenant_id, project.id))
-    creator_membership = ProjectMembership(
-        tenant_id=tenant_id,
-        project_id=project.id,
-        user_id=user_id,
-        role="Control Manager",
-        **_role_permissions("Control Manager"),
-    )
-    db.add(creator_membership)
-    _audit(
-        db,
-        tenant_id,
-        project.id,
-        "create_project_shell",
-        "Project",
-        project.id,
-        f'{{"code":"{project.code}"}}',
-        current_user.full_name,
-    )
-    db.commit()
-    db.refresh(project)
-    return project
 
 
 @router.get("/projects/{project_id}/team", response_model=list[ProjectTeamMemberOut])
