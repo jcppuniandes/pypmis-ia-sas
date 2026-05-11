@@ -15,9 +15,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
       - run: pip install ruff
-      - run: ruff check backend/app/ backend/tests/ --output-format=github
       - run: ruff format --check backend/app/ backend/tests/
+      - run: ruff check backend/app/ backend/tests/ --output-format=github
 
   frontend-lint:
     name: Frontend lint (ESLint + Prettier)
@@ -30,17 +31,27 @@ jobs:
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
       - run: cd frontend && npm ci
-      - run: cd frontend && npm run lint -- --max-warnings=50
       - run: cd frontend && npm run format:check
+      # max-warnings=50 is a temporary grace period for legacy main.tsx violations;
+      # lower to 0 after Ola 2 frontend refactor is complete.
+      - run: cd frontend && npm run lint -- --max-warnings=50
 
   verify:
     name: Build + Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [backend-lint, frontend-lint]
     steps:
       - uses: actions/checkout@v4
       - name: Build stack
         run: docker compose up -d --build
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U pypmis -d pypmis 2>/dev/null; do sleep 2; done'
+          echo "Waiting for Redis..."
+          timeout 30 bash -c 'until docker compose exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 2; done'
+          echo "All services ready."
       - name: Run database migrations
         run: docker compose exec -T api alembic upgrade head
       - name: Run backend tests
