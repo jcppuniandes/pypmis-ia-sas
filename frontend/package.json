@@ -10,25 +10,36 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
-    "format:check": "prettier --check src/"
+    "format:check": "prettier --check src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@vitejs/plugin-react": "6.0.1",
     "lucide-react": "1.14.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "react-router-dom": "6.30.3",
     "recharts": "3.8.1",
     "typescript": "6.0.3",
-    "vite": "8.0.12"
+    "vite": "8.0.12",
+    "zustand": "4.5.7"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.59.3",
     "@typescript-eslint/parser": "8.59.3",
+    "@vitest/coverage-v8": "2.1.9",
     "eslint": "9.39.4",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.2",
-    "prettier": "3.8.3"
+    "jsdom": "25.0.1",
+    "prettier": "3.8.3",
+    "vitest": "2.1.9"
   }
 }
