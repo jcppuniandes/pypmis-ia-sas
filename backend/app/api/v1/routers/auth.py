@@ -8,13 +8,22 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from pydantic import BaseModel
+
 from app.api.deps import get_tenant_id, get_user_id
 from app.api.v1._helpers import require_active_user
 from app.core.config import get_settings
+from app.core.oidc import OIDCValidationError, get_oidc_validator
 from app.core.security import create_access_token, verify_password
 from app.database.session import get_db
 from app.domain.models import AuthCredential, Tenant, UserAccount
 from app.domain.schemas import AuthSessionOut, LoginRequest, UserOut
+
+
+class OIDCTokenExchange(BaseModel):
+    id_token: str
+    tenant_slug: str | None = None
+    tenant_id: int | None = None
 
 router = APIRouter()
 
@@ -66,6 +75,54 @@ def current_user(
     user_id: int = Depends(get_user_id),
 ) -> UserAccount:
     return require_active_user(db, tenant_id, user_id)
+
+
+@router.post("/auth/oidc/token", response_model=AuthSessionOut)
+def oidc_token_exchange(payload: OIDCTokenExchange, db: Session = Depends(get_db)) -> AuthSessionOut:
+    """Exchange a provider-issued OIDC id_token for a local session token."""
+
+    settings = get_settings()
+    if not settings.oidc_enabled:
+        raise HTTPException(status_code=404, detail="OIDC is not enabled on this deployment")
+    if not settings.oidc_issuer_url or not settings.oidc_client_id:
+        raise HTTPException(status_code=500, detail="OIDC issuer/client not configured")
+
+    validator = get_oidc_validator(settings.oidc_issuer_url, settings.oidc_client_id)
+    try:
+        claims = validator.decode_and_validate(payload.id_token)
+    except OIDCValidationError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+
+    email = (claims.get("email") or claims.get("preferred_username") or claims.get("sub") or "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=401, detail="OIDC token is missing an email claim")
+
+    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
+    tenant = db.scalar(select(Tenant).where(tenant_filter))
+    if not tenant:
+        raise HTTPException(status_code=401, detail="Tenant not recognised")
+
+    user = db.scalar(
+        select(UserAccount).where(
+            UserAccount.tenant_id == tenant.id,
+            UserAccount.email == email,
+            UserAccount.status == "active",
+        )
+    )
+    if not user:
+        raise HTTPException(status_code=403, detail="OIDC user is not provisioned in this tenant")
+
+    token, expires_in = create_access_token(
+        claims={"sub": user.id, "tenant_id": tenant.id, "email": user.email},
+        secret_key=settings.auth_secret_key,
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
+    return AuthSessionOut(
+        access_token=token,
+        expires_in=expires_in,
+        tenant_id=tenant.id,
+        user=UserOut.model_validate(user),
+    )
 
 
 @router.get("/auth/providers")
