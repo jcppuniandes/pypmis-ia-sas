@@ -208,6 +208,15 @@ from app.services.schedule_ingestion import ScheduleIngestionService
 from app.services.workflow_routing import WorkflowRoutingService
 from app.workers.tasks import run_control_cycle as run_control_cycle_task
 
+from app.api.v1._helpers import (
+    require_active_user as _require_user,
+    require_current_version as _require_current_version,
+    require_membership as _require_membership,
+    require_permission as _require_permission,
+    require_project as _require_project,
+    touch_collaborative_record as _touch_collaborative_record,
+    write_audit_log as _audit,
+)
 from app.api.v1.routers import auth as auth_router
 from app.api.v1.routers import health as health_router
 
@@ -5818,28 +5827,6 @@ def _default_project_control_plan(tenant_id: int, project_id: int) -> ProjectCon
     )
 
 
-def _require_current_version(entity: object, expected_version: int | None) -> None:
-    if expected_version is None:
-        return
-    current_version = int(getattr(entity, "version", 1) or 1)
-    if current_version != expected_version:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "message": "Record was updated by another user. Refresh before retrying.",
-                "current_version": current_version,
-                "expected_version": expected_version,
-            },
-        )
-
-
-def _touch_collaborative_record(entity: object) -> None:
-    current_version = int(getattr(entity, "version", 1) or 1)
-    entity.version = current_version + 1
-    if hasattr(entity, "updated_at"):
-        entity.updated_at = datetime.utcnow()
-
-
 def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotReadinessOut:
     project_id = project.id
     latest_import = _latest_schedule_import(db, tenant_id, project_id)
@@ -6275,46 +6262,6 @@ def _start_business_process(
     return process
 
 
-def _require_project(db: Session, tenant_id: int, project_id: int) -> Project:
-    project = db.scalar(select(Project).where(Project.id == project_id, Project.tenant_id == tenant_id))
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-    return project
-
-
-def _require_user(db: Session, tenant_id: int, user_id: int) -> UserAccount:
-    user = db.scalar(
-        select(UserAccount).where(
-            UserAccount.id == user_id,
-            UserAccount.tenant_id == tenant_id,
-            UserAccount.status == "active",
-        )
-    )
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
-def _require_membership(db: Session, tenant_id: int, project_id: int, user_id: int) -> ProjectMembership:
-    _require_project(db, tenant_id, project_id)
-    _require_user(db, tenant_id, user_id)
-    membership = db.scalar(
-        select(ProjectMembership).where(
-            ProjectMembership.tenant_id == tenant_id,
-            ProjectMembership.project_id == project_id,
-            ProjectMembership.user_id == user_id,
-        )
-    )
-    if not membership:
-        raise HTTPException(status_code=403, detail="User is not assigned to this project")
-    return membership
-
-
-def _require_permission(membership: ProjectMembership, permission: str, message: str) -> None:
-    if not bool(getattr(membership, permission)):
-        raise HTTPException(status_code=403, detail=message)
-
-
 def _project_team(db: Session, tenant_id: int, project_id: int) -> list[ProjectTeamMemberOut]:
     rows = db.execute(
         select(UserAccount, ProjectMembership)
@@ -6557,29 +6504,6 @@ def _default_wbs(db: Session, tenant_id: int, project_id: int) -> WBS:
     db.add(wbs)
     db.flush()
     return wbs
-
-
-def _audit(
-    db: Session,
-    tenant_id: int,
-    project_id: int | None,
-    action: str,
-    entity_type: str,
-    entity_id: int | None,
-    payload: str = "{}",
-    actor: str = "Project Controls",
-) -> None:
-    db.add(
-        AuditLog(
-            tenant_id=tenant_id,
-            project_id=project_id,
-            actor=actor,
-            action=action,
-            entity_type=entity_type,
-            entity_id=entity_id,
-            payload=payload,
-        )
-    )
 
 
 def _data_quality_gates(
