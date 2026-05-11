@@ -214,6 +214,7 @@ from app.api.v1._helpers import (
     require_membership as _require_membership,
     require_permission as _require_permission,
     require_project as _require_project,
+    require_tenant_configurator as _require_tenant_configurator,
     touch_collaborative_record as _touch_collaborative_record,
     write_audit_log as _audit,
 )
@@ -6198,20 +6199,6 @@ def _role_profiles() -> list[RoleProfileOut]:
             can_configure=False,
         ),
     ]
-
-
-def _require_tenant_configurator(db: Session, tenant_id: int, user_id: int) -> UserAccount:
-    user = _require_user(db, tenant_id, user_id)
-    membership = db.scalars(
-        select(ProjectMembership).where(
-            ProjectMembership.tenant_id == tenant_id,
-            ProjectMembership.user_id == user_id,
-            ProjectMembership.can_configure.is_(True),
-        )
-    ).first()
-    if not membership:
-        raise HTTPException(status_code=403, detail="Current user cannot configure tenant projects or users")
-    return user
 
 
 def _start_business_process(

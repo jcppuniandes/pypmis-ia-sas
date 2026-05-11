@@ -68,6 +68,28 @@ def require_permission(membership: ProjectMembership, permission: str, message: 
         raise HTTPException(status_code=403, detail=message)
 
 
+def require_tenant_configurator(db: Session, tenant_id: int, user_id: int) -> UserAccount:
+    """Require that the user can configure tenant-wide resources.
+
+    Configurator authority is derived from project memberships where
+    ``can_configure`` is true. Any active membership with that flag is
+    sufficient for tenant-level admin actions (user creation, process
+    templates, etc.).
+    """
+
+    user = require_active_user(db, tenant_id, user_id)
+    membership = db.scalars(
+        select(ProjectMembership).where(
+            ProjectMembership.tenant_id == tenant_id,
+            ProjectMembership.user_id == user_id,
+            ProjectMembership.can_configure.is_(True),
+        )
+    ).first()
+    if not membership:
+        raise HTTPException(status_code=403, detail="Current user cannot configure tenant projects or users")
+    return user
+
+
 def require_current_version(entity: object, expected_version: int | None) -> None:
     if expected_version is None:
         return
