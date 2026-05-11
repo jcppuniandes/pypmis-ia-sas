@@ -39,6 +39,11 @@ app.include_router(router)
 @app.on_event("startup")
 def startup() -> None:
     if settings.auto_create_schema:
+        if settings.is_production:
+            raise RuntimeError(
+                "AUTO_CREATE_SCHEMA=true is not allowed in production. "
+                "Use Alembic migrations ('alembic upgrade head')."
+            )
         Base.metadata.create_all(bind=engine)
     if not settings.seed_demo_data:
         return

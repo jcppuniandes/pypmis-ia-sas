@@ -92,6 +92,11 @@ class Settings(BaseSettings):
             raise RuntimeError("DOCS_ENABLED must be false in production")
         if self.oidc_enabled and (not self.oidc_issuer_url or not self.oidc_client_id):
             raise RuntimeError("OIDC_ISSUER_URL and OIDC_CLIENT_ID are required when OIDC is enabled")
+        if self.auto_create_schema:
+            raise RuntimeError(
+                "AUTO_CREATE_SCHEMA must be false in production. "
+                "Run 'alembic upgrade head' to manage schema changes."
+            )
 
 
 @lru_cache

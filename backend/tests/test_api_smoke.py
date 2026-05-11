@@ -75,6 +75,20 @@ def test_production_settings_require_oidc_metadata_when_enabled() -> None:
         settings.validate_for_runtime()
 
 
+def test_production_settings_reject_auto_create_schema() -> None:
+    settings = Settings(
+        app_environment="production",
+        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        allowed_hosts="pypmis.example.com",
+        cors_origins="https://pypmis.example.com",
+        docs_enabled=False,
+        auto_create_schema=True,
+    )
+
+    with pytest.raises(RuntimeError, match="AUTO_CREATE_SCHEMA"):
+        settings.validate_for_runtime()
+
+
 def test_readiness_checks_dependencies() -> None:
     with TestClient(app) as client:
         response = client.get("/api/v1/health/ready")
