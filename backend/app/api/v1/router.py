@@ -208,7 +208,12 @@ from app.services.schedule_ingestion import ScheduleIngestionService
 from app.services.workflow_routing import WorkflowRoutingService
 from app.workers.tasks import run_control_cycle as run_control_cycle_task
 
+from app.api.v1.routers import auth as auth_router
+from app.api.v1.routers import health as health_router
+
 router = APIRouter(prefix="/api/v1")
+router.include_router(health_router.router, tags=["health"])
+router.include_router(auth_router.router, tags=["auth"])
 
 
 INTEGRATION_TOKEN_PREFIX = "pypmis_it_"
@@ -322,128 +327,6 @@ INTEGRATION_DATASETS = {
         "schema": DocumentAttachmentOut,
     },
 }
-
-
-@router.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
-
-
-@router.get("/health/live")
-def liveness() -> dict[str, object]:
-    settings = get_settings()
-    return {
-        "status": "live",
-        "environment": settings.app_environment,
-        "version": settings.app_version,
-        "commit": settings.commit_sha,
-        "uptime_seconds": METRICS.snapshot()["uptime_seconds"],
-    }
-
-
-@router.get("/health/ready")
-def readiness(db: Session = Depends(get_db)) -> dict[str, object]:
-    checks: dict[str, str] = {"api": "ok"}
-    try:
-        db.execute(select(1)).scalar_one()
-        checks["database"] = "ok"
-    except SQLAlchemyError:
-        checks["database"] = "error"
-
-    try:
-        redis = Redis.from_url(get_settings().redis_url, socket_connect_timeout=1, socket_timeout=1)
-        redis.ping()
-        checks["redis"] = "ok"
-    except RedisError:
-        checks["redis"] = "error"
-
-    status = "ready" if all(value == "ok" for value in checks.values()) else "degraded"
-    if status != "ready":
-        raise HTTPException(status_code=503, detail={"status": status, "checks": checks})
-    settings = get_settings()
-    return {
-        "status": status,
-        "checks": checks,
-        "environment": settings.app_environment,
-        "version": settings.app_version,
-        "commit": settings.commit_sha,
-    }
-
-
-@router.get("/ops/metrics", response_class=PlainTextResponse)
-def metrics(x_metrics_token: str = Header(default="", alias="X-Metrics-Token")) -> PlainTextResponse:
-    settings = get_settings()
-    if not settings.metrics_enabled:
-        raise HTTPException(status_code=404, detail="Metrics endpoint disabled")
-    if settings.metrics_token and not x_metrics_token:
-        raise HTTPException(status_code=401, detail="Metrics token is required")
-    if settings.metrics_token and x_metrics_token != settings.metrics_token:
-        raise HTTPException(status_code=403, detail="Invalid metrics token")
-    payload = METRICS.prometheus(settings.app_name, settings.app_environment, settings.app_version)
-    return PlainTextResponse(payload, media_type="text/plain; version=0.0.4")
-
-
-@router.post("/auth/login", response_model=AuthSessionOut)
-def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOut:
-    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
-    tenant = db.scalar(select(Tenant).where(tenant_filter))
-    if not tenant:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    user = db.scalar(
-        select(UserAccount).where(
-            UserAccount.tenant_id == tenant.id,
-            UserAccount.email == payload.email.strip().lower(),
-            UserAccount.status == "active",
-        )
-    )
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    credential = db.scalar(
-        select(AuthCredential).where(
-            AuthCredential.tenant_id == tenant.id,
-            AuthCredential.user_id == user.id,
-            AuthCredential.provider == "local",
-            AuthCredential.is_active.is_(True),
-        )
-    )
-    if not credential or not verify_password(payload.password, credential.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    settings = get_settings()
-    token, expires_in = create_access_token(
-        claims={"sub": user.id, "tenant_id": tenant.id, "email": user.email},
-        secret_key=settings.auth_secret_key,
-        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
-    )
-    return AuthSessionOut(
-        access_token=token,
-        expires_in=expires_in,
-        tenant_id=tenant.id,
-        user=UserOut.model_validate(user),
-    )
-
-
-@router.get("/auth/me", response_model=UserOut)
-def current_user(
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> UserAccount:
-    return _require_user(db, tenant_id, user_id)
-
-
-@router.get("/auth/providers")
-def auth_providers() -> dict[str, object]:
-    settings = get_settings()
-    return {
-        "local": {"enabled": True},
-        "oidc": {
-            "enabled": settings.oidc_enabled,
-            "issuer_url": settings.oidc_issuer_url if settings.oidc_enabled else "",
-            "client_id": settings.oidc_client_id if settings.oidc_enabled else "",
-            "authorization_url": settings.oidc_authorization_url if settings.oidc_enabled else "",
-        },
-    }
 
 
 @router.get("/projects", response_model=list[ProjectOut])

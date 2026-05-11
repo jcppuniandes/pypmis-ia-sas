@@ -1,0 +1,82 @@
+"""Authentication endpoints: local login, current user, available providers."""
+
+from __future__ import annotations
+
+from datetime import timedelta
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_tenant_id, get_user_id
+from app.api.v1._helpers import require_active_user
+from app.core.config import get_settings
+from app.core.security import create_access_token, verify_password
+from app.database.session import get_db
+from app.domain.models import AuthCredential, Tenant, UserAccount
+from app.domain.schemas import AuthSessionOut, LoginRequest, UserOut
+
+router = APIRouter()
+
+
+@router.post("/auth/login", response_model=AuthSessionOut)
+def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOut:
+    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
+    tenant = db.scalar(select(Tenant).where(tenant_filter))
+    if not tenant:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    user = db.scalar(
+        select(UserAccount).where(
+            UserAccount.tenant_id == tenant.id,
+            UserAccount.email == payload.email.strip().lower(),
+            UserAccount.status == "active",
+        )
+    )
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    credential = db.scalar(
+        select(AuthCredential).where(
+            AuthCredential.tenant_id == tenant.id,
+            AuthCredential.user_id == user.id,
+            AuthCredential.provider == "local",
+            AuthCredential.is_active.is_(True),
+        )
+    )
+    if not credential or not verify_password(payload.password, credential.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    settings = get_settings()
+    token, expires_in = create_access_token(
+        claims={"sub": user.id, "tenant_id": tenant.id, "email": user.email},
+        secret_key=settings.auth_secret_key,
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
+    return AuthSessionOut(
+        access_token=token,
+        expires_in=expires_in,
+        tenant_id=tenant.id,
+        user=UserOut.model_validate(user),
+    )
+
+
+@router.get("/auth/me", response_model=UserOut)
+def current_user(
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> UserAccount:
+    return require_active_user(db, tenant_id, user_id)
+
+
+@router.get("/auth/providers")
+def auth_providers() -> dict[str, object]:
+    settings = get_settings()
+    return {
+        "local": {"enabled": True},
+        "oidc": {
+            "enabled": settings.oidc_enabled,
+            "issuer_url": settings.oidc_issuer_url if settings.oidc_enabled else "",
+            "client_id": settings.oidc_client_id if settings.oidc_enabled else "",
+            "authorization_url": settings.oidc_authorization_url if settings.oidc_enabled else "",
+        },
+    }
