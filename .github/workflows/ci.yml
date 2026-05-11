@@ -32,9 +32,11 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: cd frontend && npm ci
       - run: cd frontend && npm run format:check
-      # max-warnings=50 is a temporary grace period for legacy main.tsx violations;
-      # lower to 0 after Ola 2 frontend refactor is complete.
-      - run: cd frontend && npm run lint -- --max-warnings=50
+      # Ola 2 extracted the legacy main.tsx monolith; tighten the warning budget
+      # as remaining views are cleaned up further. Lower to 0 once all warnings
+      # are addressed.
+      - run: cd frontend && npm run lint -- --max-warnings=10
+      - run: cd frontend && npm run test -- --run
 
   verify:
     name: Build + Tests
