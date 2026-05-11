@@ -7,24 +7,46 @@ on:
       - main
 
 jobs:
-  verify:
+  backend-lint:
+    name: Backend lint (Ruff)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check backend/app/ backend/tests/ --output-format=github
+      - run: ruff format --check backend/app/ backend/tests/
 
+  frontend-lint:
+    name: Frontend lint (ESLint + Prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run lint -- --max-warnings=50
+      - run: cd frontend && npm run format:check
+
+  verify:
+    name: Build + Tests
+    runs-on: ubuntu-latest
+    needs: [backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
       - name: Build stack
         run: docker compose up -d --build
-
       - name: Run database migrations
         run: docker compose exec -T api alembic upgrade head
-
       - name: Run backend tests
         run: docker compose exec -T api pytest
-
       - name: Run frontend build
         run: docker compose exec -T frontend npm run build
-
       - name: Show service logs on failure
         if: failure()
         run: docker compose logs --tail=120 api worker frontend
