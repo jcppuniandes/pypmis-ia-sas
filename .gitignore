@@ -2,6 +2,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Windows Defender quarantine artefacts left behind by editing files
+# that contain AV test signatures (e.g. EICAR strings in dev fixtures).
+*.tmp.[0-9]*.[0-9]*
+backend/tests/test_document_scanner.py
+
 .Python
 .env
 .env.*
