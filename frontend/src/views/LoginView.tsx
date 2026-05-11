@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/auth";
 
 export default function LoginView() {
   const navigate = useNavigate();
-  const { setAuth } = useAuthStore();
+  const { login: setAuth } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export default function LoginView() {
     setLoading(true);
     try {
       const result = await login(email, password);
-      setAuth(result.token, result.user);
+      setAuth(result.access_token, result.user);
       navigate("/app");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

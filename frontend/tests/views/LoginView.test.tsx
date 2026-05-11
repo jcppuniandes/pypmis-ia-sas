@@ -8,7 +8,7 @@ vi.mock("../../src/api/auth", () => ({
 }));
 
 vi.mock("../../src/store/auth", () => ({
-  useAuthStore: vi.fn(() => ({ setAuth: vi.fn() })),
+  useAuthStore: vi.fn(() => ({ login: vi.fn() })),
 }));
 
 const mockNavigate = vi.fn();
@@ -61,8 +61,20 @@ describe("LoginView", () => {
 
   it("navigates to /app on successful login", async () => {
     const mockSetAuth = vi.fn();
-    vi.mocked(useAuthStore).mockReturnValue({ setAuth: mockSetAuth } as ReturnType<typeof useAuthStore>);
-    vi.mocked(login).mockResolvedValueOnce({ token: "tok123", user: { id: 1, email: "user@example.com", name: "Test User", role: "viewer", company_id: 1 } });
+    vi.mocked(useAuthStore).mockReturnValue({ login: mockSetAuth } as ReturnType<typeof useAuthStore>);
+    vi.mocked(login).mockResolvedValueOnce({
+      access_token: "tok123",
+      token_type: "bearer",
+      expires_in: 3600,
+      tenant_id: 1,
+      user: {
+        id: 1,
+        email: "user@example.com",
+        full_name: "Test User",
+        title: "Viewer",
+        status: "active",
+      },
+    });
 
     render(
       <MemoryRouter>

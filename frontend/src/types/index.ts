@@ -278,6 +278,12 @@ export type ControlAccount = {
   name: string;
   responsible: string;
   discipline: string;
+  cbs_code: string;
+  contract_ref: string;
+  measurement_rule: string;
+  lifecycle_status: string;
+  risk_ref: string;
+  closure_note: string;
   version: number;
   updated_at: string;
 };
@@ -742,6 +748,7 @@ export type WorkPackage = {
   readiness_status: string;
   planned_start: string | null;
   planned_finish: string | null;
+  release_required_on: string | null;
   progress_percent: number;
   version: number;
   updated_at: string;
@@ -755,6 +762,12 @@ export type WorkPackageConstraint = {
   owner_role: string;
   required_by: string | null;
   status: string;
+  priority: string;
+  evidence_ref: string;
+  closure_note: string;
+  exception_ref: string;
+  closed_by: string;
+  closed_on: string | null;
   blocking: boolean;
   version: number;
   updated_at: string;
@@ -764,10 +777,14 @@ export type AWPReadinessSummary = {
   total_packages: number;
   cwp_count: number;
   iwp_count: number;
+  twp_count: number;
+  top_count: number;
   ready_for_release: number;
   blocked_packages: number;
   open_constraints: number;
   blocking_constraints: number;
+  high_priority_constraints: number;
+  closure_evidence_count: number;
   readiness_score: number;
 };
 

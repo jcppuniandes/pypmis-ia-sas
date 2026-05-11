@@ -1219,6 +1219,38 @@ td span {
   text-transform: uppercase;
 }
 
+.navigatorToggle {
+  align-items: center;
+  background: #fbfcfd;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  color: #344450;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.navigatorToggle span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.navigatorToggle strong {
+  color: #0b6f71;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.navigatorToggle.active,
+.navigatorToggle:hover {
+  background: #edf7f7;
+  border-color: #b9dcdb;
+}
+
 .navigatorDivider {
   border-top: 1px solid #edf1f4;
   color: #8a98a5;
@@ -1280,6 +1312,36 @@ td span {
 
 .workspaceSection.hidden {
   display: none !important;
+}
+
+.phaseTwoGrid.hidden {
+  display: none !important;
+}
+
+.advancedHint {
+  align-items: center;
+  background: #fbfcfd;
+  border-top: 1px solid #edf1f4;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 16px 16px;
+}
+
+.advancedHint strong,
+.advancedHint span {
+  display: block;
+}
+
+.advancedHint strong {
+  font-size: 14px;
+}
+
+.advancedHint span {
+  color: #667481;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 3px;
 }
 
 .adminDrawer,
