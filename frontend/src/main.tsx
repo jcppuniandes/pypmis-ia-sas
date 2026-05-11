@@ -1,6 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Activity, ArrowRight, Bot, BriefcaseBusiness, Building2, CalendarClock, ClipboardCheck, FilePlus2, FileText, Gauge, GitBranch, RefreshCw, Send, Settings, ShieldCheck, Upload, UserPlus, Users } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  Bot,
+  BriefcaseBusiness,
+  Building2,
+  CalendarClock,
+  ClipboardCheck,
+  FilePlus2,
+  FileText,
+  Gauge,
+  GitBranch,
+  RefreshCw,
+  Send,
+  Settings,
+  ShieldCheck,
+  Upload,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import "./styles.css";
 
@@ -644,6 +663,24 @@ type DocumentItem = {
   updated_at: string;
 };
 
+type DocumentAttachment = {
+  id: number;
+  document_id: number;
+  original_file_name: string;
+  stored_file_name: string;
+  content_type: string;
+  extension: string;
+  size_bytes: number;
+  sha256: string;
+  source: string;
+  uploaded_by: string;
+  scan_status: string;
+  validation_message: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
 type DocumentTransmittal = {
   id: number;
   transmittal_no: string;
@@ -828,6 +865,7 @@ type Dashboard = {
   rfq_summary: RFQSummary;
   communications: ContractCommunication[];
   documents: DocumentItem[];
+  document_attachments: DocumentAttachment[];
   document_transmittals: DocumentTransmittal[];
   document_transmittal_items: DocumentTransmittalItem[];
   document_reviews: DocumentReview[];
@@ -855,6 +893,16 @@ function currency(value: number, code: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: code, maximumFractionDigits: 0 }).format(value);
 }
 
+function fileSize(value: number) {
+  if (value >= 1024 * 1024) {
+    return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  if (value >= 1024) {
+    return `${(value / 1024).toFixed(1)} KB`;
+  }
+  return `${value} B`;
+}
+
 function StatusLight({ value }: { value: number }) {
   const className = value < 0.9 ? "light red" : value < 1 ? "light amber" : "light green";
   return <span className={className} />;
@@ -865,9 +913,9 @@ function sourceLabel(source?: string) {
     p6_xer: "Schedule XER",
     p6_xml: "Schedule XML",
     ms_project_xml: "Schedule XML",
-    ms_project_mpp: "Schedule file"
+    ms_project_mpp: "Schedule file",
   };
-  return source ? labels[source] ?? source : "Not imported";
+  return source ? (labels[source] ?? source) : "Not imported";
 }
 
 function statusLabel(status?: string) {
@@ -907,13 +955,15 @@ function processStepsFromInput(value: string) {
     .map((row) => row.trim())
     .filter(Boolean)
     .map((row, index) => {
-      const [name = `Step ${index + 1}`, owner_role = "Project Controls", detail = "Workflow step."] = row.split("|").map((item) => item.trim());
+      const [name = `Step ${index + 1}`, owner_role = "Project Controls", detail = "Workflow step."] = row
+        .split("|")
+        .map((item) => item.trim());
       return {
         name,
         owner_role,
         detail,
         status: index === 0 ? "Active" : "Queued",
-        tone: index === 0 ? "active" : "queued"
+        tone: index === 0 ? "active" : "queued",
       };
     });
 }
@@ -924,7 +974,9 @@ function processTransitionsFromInput(value: string) {
     .map((row) => row.trim())
     .filter(Boolean)
     .map((row) => {
-      const [action = "", from_step = "", to_step = "", ball_in_court = "", process_status = "in_review"] = row.split("|").map((item) => item.trim());
+      const [action = "", from_step = "", to_step = "", ball_in_court = "", process_status = "in_review"] = row
+        .split("|")
+        .map((item) => item.trim());
       return {
         action: action.toLowerCase().replace(/\s+/g, "_"),
         label: statusLabel(action),
@@ -937,7 +989,7 @@ function processTransitionsFromInput(value: string) {
         to_status: to_step.toLowerCase() === "closed" ? "Complete" : "Active",
         to_tone: to_step.toLowerCase() === "closed" ? "complete" : "active",
         requires_approval: process_status === "approved",
-        permission_key: process_status === "approved" ? "can_approve_workflow" : ""
+        permission_key: process_status === "approved" ? "can_approve_workflow" : "",
       };
     })
     .filter((transition) => transition.action && transition.from_step && transition.to_step);
@@ -953,7 +1005,9 @@ function App() {
   const [roles, setRoles] = React.useState<RoleProfile[]>([]);
   const [selectedProjectId, setSelectedProjectId] = React.useState<string>("");
   const [selectedUserId, setSelectedUserId] = React.useState<string>("1");
-  const [authToken, setAuthToken] = React.useState<string>(() => window.localStorage.getItem("pypmis_access_token") ?? "");
+  const [authToken, setAuthToken] = React.useState<string>(
+    () => window.localStorage.getItem("pypmis_access_token") ?? ""
+  );
   const [authUser, setAuthUser] = React.useState<User | null>(null);
   const [activeView, setActiveView] = React.useState<WorkspaceView>("business-processes");
   const [selectedBpRecordNo, setSelectedBpRecordNo] = React.useState<string>("");
@@ -970,20 +1024,20 @@ function App() {
     quantity_installed: "",
     labor_hours: "",
     reported_on: defaultControlDate,
-    evidence_ref: ""
+    evidence_ref: "",
   });
   const [costDraft, setCostDraft] = React.useState({
     control_account_id: "",
     source: "invoice",
     amount: "",
     incurred_on: defaultControlDate,
-    description: ""
+    description: "",
   });
   const [fundingDraft, setFundingDraft] = React.useState({
     code: "",
     name: "",
     amount: "",
-    status: "approved"
+    status: "approved",
   });
   const [cashFlowDraft, setCashFlowDraft] = React.useState({
     period_label: "",
@@ -991,7 +1045,7 @@ function App() {
     planned_outflow: "",
     actual_inflow: "",
     actual_outflow: "",
-    forecast_outflow: ""
+    forecast_outflow: "",
   });
   const [projectDraft, setProjectDraft] = React.useState({
     code: "",
@@ -999,16 +1053,16 @@ function App() {
     phase: "Planning",
     currency: "USD",
     start_date: "",
-    finish_date: ""
+    finish_date: "",
   });
   const [userDraft, setUserDraft] = React.useState({
     email: "",
     full_name: "",
-    title: ""
+    title: "",
   });
   const [teamDraft, setTeamDraft] = React.useState({
     user_id: "",
-    role: "Planner"
+    role: "Planner",
   });
   const [processDraft, setProcessDraft] = React.useState({
     code: "",
@@ -1016,15 +1070,17 @@ function App() {
     category: "Project Controls",
     description: "",
     form_schema: "Business need, Control account, Impact, Evidence, Recommendation",
-    steps: "Creation | Originator | Record is created and validated.\nImpact Review | Project Controls | Schedule, cost and contractual impact are analyzed.\nApproval | Control Manager | Governance decision is recorded.\nAction | Execution Lead | Approved decision is converted into execution action.",
-    transitions: "route_to_approval | Impact Review | Approval | Control Manager | in_review\napprove_record | Approval | Action | Execution Lead | approved"
+    steps:
+      "Creation | Originator | Record is created and validated.\nImpact Review | Project Controls | Schedule, cost and contractual impact are analyzed.\nApproval | Control Manager | Governance decision is recorded.\nAction | Execution Lead | Approved decision is converted into execution action.",
+    transitions:
+      "route_to_approval | Impact Review | Approval | Control Manager | in_review\napprove_record | Approval | Action | Execution Lead | approved",
   });
   const [changeDraft, setChangeDraft] = React.useState({
     control_account_id: "",
     title: "",
     deviation: "",
     cost_impact: "",
-    schedule_impact_days: ""
+    schedule_impact_days: "",
   });
   const [contractDraft, setContractDraft] = React.useState({
     control_account_id: "",
@@ -1033,7 +1089,7 @@ function App() {
     counterparty: "",
     contract_type: "Services",
     value: "",
-    status: "active"
+    status: "active",
   });
   const [purchaseOrderDraft, setPurchaseOrderDraft] = React.useState({
     control_account_id: "",
@@ -1043,7 +1099,7 @@ function App() {
     vendor: "",
     committed_amount: "",
     status: "issued",
-    issued_on: defaultControlDate
+    issued_on: defaultControlDate,
   });
   const [paymentCertificateDraft, setPaymentCertificateDraft] = React.useState({
     control_account_id: "",
@@ -1054,7 +1110,7 @@ function App() {
     certified_amount: "",
     retained_amount: "",
     status: "certified",
-    certified_on: defaultControlDate
+    certified_on: defaultControlDate,
   });
   const [warehouseReceiptDraft, setWarehouseReceiptDraft] = React.useState({
     control_account_id: "",
@@ -1066,7 +1122,7 @@ function App() {
     unit_cost: "",
     received_value: "",
     status: "accepted",
-    received_on: defaultControlDate
+    received_on: defaultControlDate,
   });
   const [rfqDraft, setRfqDraft] = React.useState({
     control_account_id: "",
@@ -1077,7 +1133,7 @@ function App() {
     status: "issued",
     budget_amount: "",
     issue_date: defaultControlDate,
-    due_date: defaultControlDate
+    due_date: defaultControlDate,
   });
   const [rfqBidDraft, setRfqBidDraft] = React.useState({
     rfq_package_id: "",
@@ -1089,7 +1145,7 @@ function App() {
     risk_score: "80",
     status: "received",
     submitted_on: defaultControlDate,
-    notes: ""
+    notes: "",
   });
   const [communicationDraft, setCommunicationDraft] = React.useState({
     contract_id: "",
@@ -1097,7 +1153,7 @@ function App() {
     subject: "",
     reference: "",
     sent_on: defaultControlDate,
-    status: "issued"
+    status: "issued",
   });
   const [noticeDraft, setNoticeDraft] = React.useState({
     contract_id: "",
@@ -1109,7 +1165,7 @@ function App() {
     event_date: defaultControlDate,
     due_date: defaultControlDate,
     notice_date: defaultControlDate,
-    status: "issued"
+    status: "issued",
   });
   const [claimImpactDraft, setClaimImpactDraft] = React.useState({
     claim_id: "",
@@ -1122,7 +1178,7 @@ function App() {
     productivity_loss_percent: "",
     evidence_ref: "",
     confidence_score: "0.65",
-    status: "draft"
+    status: "draft",
   });
   const [documentDraft, setDocumentDraft] = React.useState({
     document_number: "",
@@ -1138,7 +1194,11 @@ function App() {
     review_status: "not_started",
     confidentiality: "project",
     file_name: "",
-    uri: ""
+    uri: "",
+  });
+  const [attachmentDraft, setAttachmentDraft] = React.useState({
+    document_id: "",
+    file: null as File | null,
   });
   const [transmittalDraft, setTransmittalDraft] = React.useState({
     transmittal_no: "",
@@ -1147,7 +1207,7 @@ function App() {
     recipient_org: "Owner Project Controls",
     recipient_contact: "Document Control",
     due_date: defaultControlDate,
-    document_id: ""
+    document_id: "",
   });
   const [mailDraft, setMailDraft] = React.useState({
     mail_no: "",
@@ -1156,14 +1216,14 @@ function App() {
     to_role: "Project Controls",
     due_date: defaultControlDate,
     document_id: "",
-    body: ""
+    body: "",
   });
   const [reviewDraft, setReviewDraft] = React.useState({
     document_id: "",
     reviewer_role: "Project Controls",
     review_status: "outstanding",
     due_date: defaultControlDate,
-    comments: ""
+    comments: "",
   });
   const [awpDraft, setAwpDraft] = React.useState({
     control_account_id: "",
@@ -1178,7 +1238,7 @@ function App() {
     readiness_status: "constraint_review",
     planned_start: "",
     planned_finish: "",
-    progress_percent: ""
+    progress_percent: "",
   });
   const [constraintDraft, setConstraintDraft] = React.useState({
     work_package_id: "",
@@ -1187,7 +1247,7 @@ function App() {
     owner_role: "Workface Planner",
     required_by: defaultControlDate,
     status: "open",
-    blocking: true
+    blocking: true,
   });
   const [controlPlanDraft, setControlPlanDraft] = React.useState({
     execution_strategy: "",
@@ -1199,14 +1259,14 @@ function App() {
     procurement_strategy: "",
     document_control_rule: "",
     reporting_cadence: "Weekly",
-    status: "draft"
+    status: "draft",
   });
 
   const login = React.useCallback(async (email = defaultLoginEmail) => {
     const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password: demoPassword, tenant_slug: "demo-energy" })
+      body: JSON.stringify({ email, password: demoPassword, tenant_slug: "demo-energy" }),
     });
     if (!response.ok) {
       throw new Error("Authentication failed");
@@ -1220,9 +1280,12 @@ function App() {
     return session;
   }, []);
 
-  const apiHeaders = React.useCallback((includeJson = false, tokenOverride?: string) => {
-    return authHeaders(tokenOverride ?? authToken, includeJson);
-  }, [authToken]);
+  const apiHeaders = React.useCallback(
+    (includeJson = false, tokenOverride?: string) => {
+      return authHeaders(tokenOverride ?? authToken, includeJson);
+    },
+    [authToken]
+  );
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -1247,7 +1310,7 @@ function App() {
     const headers = authHeaders(sessionToken);
     const [projectsResponse, rolesResponse] = await Promise.all([
       fetch(`${apiUrl}/api/v1/projects`, { headers }),
-      fetch(`${apiUrl}/api/v1/roles`, { headers })
+      fetch(`${apiUrl}/api/v1/roles`, { headers }),
     ]);
     const availableProjects = (await projectsResponse.json()) as Project[];
     const availableRoles = (await rolesResponse.json()) as RoleProfile[];
@@ -1270,7 +1333,7 @@ function App() {
     }
     const [dashboardResponse, pilotReadinessResponse] = await Promise.all([
       fetch(`${apiUrl}/api/v1/projects/${projectId}/dashboard`, { headers }),
-      fetch(`${apiUrl}/api/v1/projects/${projectId}/pilot-readiness`, { headers })
+      fetch(`${apiUrl}/api/v1/projects/${projectId}/pilot-readiness`, { headers }),
     ]);
     setDashboard((await dashboardResponse.json()) as Dashboard);
     setPilotReadiness((await pilotReadinessResponse.json()) as PilotReadiness);
@@ -1291,17 +1354,29 @@ function App() {
     const firstAccountId = String(dashboard.control_accounts[0].id);
     const controlDate = dashboard.schedule_import?.data_date ?? defaultControlDate;
     const accountIds = new Set(dashboard.control_accounts.map((account) => String(account.id)));
-    setProgressDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId, reported_on: controlDate });
-    setCostDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId, incurred_on: controlDate });
-    setChangeDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId });
-    setContractDraft((current) => accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId });
+    setProgressDraft((current) =>
+      accountIds.has(current.control_account_id)
+        ? current
+        : { ...current, control_account_id: firstAccountId, reported_on: controlDate }
+    );
+    setCostDraft((current) =>
+      accountIds.has(current.control_account_id)
+        ? current
+        : { ...current, control_account_id: firstAccountId, incurred_on: controlDate }
+    );
+    setChangeDraft((current) =>
+      accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId }
+    );
+    setContractDraft((current) =>
+      accountIds.has(current.control_account_id) ? current : { ...current, control_account_id: firstAccountId }
+    );
     setPurchaseOrderDraft((current) => {
       const contractIds = new Set(dashboard.contracts.map((contract) => String(contract.id)));
       return {
         ...current,
         control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
         contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
-        issued_on: current.issued_on || controlDate
+        issued_on: current.issued_on || controlDate,
       };
     });
     setPaymentCertificateDraft((current) => {
@@ -1311,8 +1386,9 @@ function App() {
         ...current,
         control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
         contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
-        purchase_order_id: !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
-        certified_on: current.certified_on || controlDate
+        purchase_order_id:
+          !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
+        certified_on: current.certified_on || controlDate,
       };
     });
     setWarehouseReceiptDraft((current) => {
@@ -1322,22 +1398,25 @@ function App() {
         ...current,
         control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
         contract_id: !current.contract_id || contractIds.has(current.contract_id) ? current.contract_id : "",
-        purchase_order_id: !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
-        received_on: current.received_on || controlDate
+        purchase_order_id:
+          !current.purchase_order_id || orderIds.has(current.purchase_order_id) ? current.purchase_order_id : "",
+        received_on: current.received_on || controlDate,
       };
     });
     setRfqDraft((current) => ({
       ...current,
       control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
       issue_date: current.issue_date || controlDate,
-      due_date: current.due_date || controlDate
+      due_date: current.due_date || controlDate,
     }));
     setRfqBidDraft((current) => {
       const rfqIds = new Set(dashboard.rfq_packages.map((item) => String(item.id)));
       return {
         ...current,
-        rfq_package_id: rfqIds.has(current.rfq_package_id) ? current.rfq_package_id : String(dashboard.rfq_packages[0]?.id ?? ""),
-        submitted_on: current.submitted_on || controlDate
+        rfq_package_id: rfqIds.has(current.rfq_package_id)
+          ? current.rfq_package_id
+          : String(dashboard.rfq_packages[0]?.id ?? ""),
+        submitted_on: current.submitted_on || controlDate,
       };
     });
     setAwpDraft((current) => {
@@ -1345,25 +1424,39 @@ function App() {
       return {
         ...current,
         control_account_id: accountIds.has(current.control_account_id) ? current.control_account_id : firstAccountId,
-        parent_id: !current.parent_id || packageIds.has(current.parent_id) ? current.parent_id : ""
+        parent_id: !current.parent_id || packageIds.has(current.parent_id) ? current.parent_id : "",
       };
     });
     setConstraintDraft((current) => {
       const packageIds = new Set(dashboard.work_packages.map((item) => String(item.id)));
       return {
         ...current,
-        work_package_id: packageIds.has(current.work_package_id) ? current.work_package_id : String(dashboard.work_packages[0]?.id ?? "")
+        work_package_id: packageIds.has(current.work_package_id)
+          ? current.work_package_id
+          : String(dashboard.work_packages[0]?.id ?? ""),
       };
     });
     setDocumentDraft((current) => {
-      const linkedValueIsAvailable = current.linked_entity_type !== "ControlAccount" || accountIds.has(current.linked_entity_id);
-      return linkedValueIsAvailable ? current : { ...current, linked_entity_type: "ControlAccount", linked_entity_id: firstAccountId };
+      const linkedValueIsAvailable =
+        current.linked_entity_type !== "ControlAccount" || accountIds.has(current.linked_entity_id);
+      return linkedValueIsAvailable
+        ? current
+        : { ...current, linked_entity_type: "ControlAccount", linked_entity_id: firstAccountId };
     });
     const documentIds = new Set(dashboard.documents.map((document) => String(document.id)));
     const firstDocumentId = String(dashboard.documents[0]?.id ?? "");
-    setTransmittalDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
-    setMailDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
-    setReviewDraft((current) => documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId });
+    setTransmittalDraft((current) =>
+      documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId }
+    );
+    setMailDraft((current) =>
+      documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId }
+    );
+    setReviewDraft((current) =>
+      documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId }
+    );
+    setAttachmentDraft((current) =>
+      documentIds.has(current.document_id) ? current : { ...current, document_id: firstDocumentId }
+    );
   }, [dashboard]);
 
   React.useEffect(() => {
@@ -1380,30 +1473,30 @@ function App() {
       procurement_strategy: dashboard.control_plan.procurement_strategy,
       document_control_rule: dashboard.control_plan.document_control_rule,
       reporting_cadence: dashboard.control_plan.reporting_cadence,
-      status: dashboard.control_plan.status
+      status: dashboard.control_plan.status,
     });
   }, [dashboard?.control_plan]);
 
   React.useEffect(() => {
     setTeamDraft((current) => ({
       user_id: current.user_id || String(users[0]?.id ?? ""),
-      role: roles.some((role) => role.role === current.role) ? current.role : roles[0]?.role ?? "Planner"
+      role: roles.some((role) => role.role === current.role) ? current.role : (roles[0]?.role ?? "Planner"),
     }));
   }, [roles, users]);
 
   React.useEffect(() => {
     setCommunicationDraft((current) => ({
       ...current,
-      contract_id: current.contract_id || String(dashboard?.contracts[0]?.id ?? "")
+      contract_id: current.contract_id || String(dashboard?.contracts[0]?.id ?? ""),
     }));
     setNoticeDraft((current) => ({
       ...current,
       contract_id: current.contract_id || String(dashboard?.contracts[0]?.id ?? ""),
-      claim_id: current.claim_id || String(dashboard?.claims[0]?.id ?? "")
+      claim_id: current.claim_id || String(dashboard?.claims[0]?.id ?? ""),
     }));
     setClaimImpactDraft((current) => ({
       ...current,
-      claim_id: current.claim_id || String(dashboard?.claims[0]?.id ?? "")
+      claim_id: current.claim_id || String(dashboard?.claims[0]?.id ?? ""),
     }));
   }, [dashboard?.contracts]);
 
@@ -1423,7 +1516,7 @@ function App() {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/schedule-imports`, {
         method: "POST",
         headers: apiHeaders(),
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
@@ -1432,7 +1525,9 @@ function App() {
       }
 
       const result = (await response.json()) as ScheduleImport;
-      setUploadMessage(`Schedule loaded. Workflow triggered from ${neutralScheduleText(result.file_name)} with quality ${result.quality_score.toFixed(0)}%.`);
+      setUploadMessage(
+        `Schedule loaded. Workflow triggered from ${neutralScheduleText(result.file_name)} with quality ${result.quality_score.toFixed(0)}%.`
+      );
       await load();
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Schedule import failed");
@@ -1460,8 +1555,8 @@ function App() {
           body: JSON.stringify({
             action,
             actor: dashboard.current_user.full_name,
-            expected_version: dashboard.workflow_instance.version
-          })
+            expected_version: dashboard.workflow_instance.version,
+          }),
         }
       );
       if (!response.ok) {
@@ -1494,15 +1589,21 @@ function App() {
           quantity_installed: Number(progressDraft.quantity_installed),
           labor_hours: Number(progressDraft.labor_hours),
           reported_on: progressDraft.reported_on,
-          evidence_ref: progressDraft.evidence_ref
-        })
+          evidence_ref: progressDraft.evidence_ref,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Progress capture failed");
       }
       setUploadMessage("Progress captured. Control Core recalculated EVM and early warnings.");
-      setProgressDraft((current) => ({ ...current, physical_percent: "", quantity_installed: "", labor_hours: "", evidence_ref: "" }));
+      setProgressDraft((current) => ({
+        ...current,
+        physical_percent: "",
+        quantity_installed: "",
+        labor_hours: "",
+        evidence_ref: "",
+      }));
       await load();
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Progress capture failed");
@@ -1528,8 +1629,8 @@ function App() {
           source: costDraft.source,
           amount: Number(costDraft.amount),
           incurred_on: costDraft.incurred_on,
-          description: costDraft.description
-        })
+          description: costDraft.description,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1562,8 +1663,8 @@ function App() {
           name: fundingDraft.name,
           amount: Number(fundingDraft.amount || 0),
           currency: dashboard.project.currency,
-          status: fundingDraft.status
-        })
+          status: fundingDraft.status,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1597,8 +1698,8 @@ function App() {
           planned_outflow: Number(cashFlowDraft.planned_outflow || 0),
           actual_inflow: Number(cashFlowDraft.actual_inflow || 0),
           actual_outflow: Number(cashFlowDraft.actual_outflow || 0),
-          forecast_outflow: Number(cashFlowDraft.forecast_outflow || 0)
-        })
+          forecast_outflow: Number(cashFlowDraft.forecast_outflow || 0),
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1610,7 +1711,7 @@ function App() {
         planned_outflow: "",
         actual_inflow: "",
         actual_outflow: "",
-        forecast_outflow: ""
+        forecast_outflow: "",
       });
       setUploadMessage("Cash flow period registered for Cost Manager.");
       await load();
@@ -1633,8 +1734,8 @@ function App() {
         body: JSON.stringify({
           ...projectDraft,
           start_date: projectDraft.start_date || null,
-          finish_date: projectDraft.finish_date || null
-        })
+          finish_date: projectDraft.finish_date || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1646,7 +1747,7 @@ function App() {
       setProjectDraft({ code: "", name: "", phase: "Planning", currency: "USD", start_date: "", finish_date: "" });
       setUploadMessage("Project shell created. Load the source schedule to trigger the control workflow.");
       const dashboardResponse = await fetch(`${apiUrl}/api/v1/projects/${created.id}/dashboard`, {
-        headers: apiHeaders()
+        headers: apiHeaders(),
       });
       setDashboard((await dashboardResponse.json()) as Dashboard);
     } catch (error) {
@@ -1665,7 +1766,7 @@ function App() {
       const response = await fetch(`${apiUrl}/api/v1/users`, {
         method: "POST",
         headers: apiHeaders(true),
-        body: JSON.stringify(userDraft)
+        body: JSON.stringify(userDraft),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1697,8 +1798,8 @@ function App() {
         headers: apiHeaders(true),
         body: JSON.stringify({
           ...controlPlanDraft,
-          expected_version: dashboard.control_plan.version
-        })
+          expected_version: dashboard.control_plan.version,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1725,7 +1826,7 @@ function App() {
       const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/team`, {
         method: "POST",
         headers: apiHeaders(true),
-        body: JSON.stringify({ user_id: Number(teamDraft.user_id), role: teamDraft.role })
+        body: JSON.stringify({ user_id: Number(teamDraft.user_id), role: teamDraft.role }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1758,8 +1859,8 @@ function App() {
           status: "Draft",
           version_no: 1,
           steps: processStepsFromInput(processDraft.steps),
-          transitions: processTransitionsFromInput(processDraft.transitions)
-        })
+          transitions: processTransitionsFromInput(processDraft.transitions),
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -1769,7 +1870,7 @@ function App() {
         ...current,
         code: "",
         name: "",
-        description: ""
+        description: "",
       }));
       setUploadMessage("Business process template created. It is now available in BP Setup and API routing.");
       await load();
@@ -1788,10 +1889,13 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/control-account-mapping/approve`, {
-        method: "POST",
-        headers: apiHeaders(true)
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/control-account-mapping/approve`,
+        {
+          method: "POST",
+          headers: apiHeaders(true),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Control baseline approval failed");
@@ -1822,14 +1926,20 @@ function App() {
           title: changeDraft.title,
           deviation: changeDraft.deviation,
           cost_impact: Number(changeDraft.cost_impact || 0),
-          schedule_impact_days: Number(changeDraft.schedule_impact_days || 0)
-        })
+          schedule_impact_days: Number(changeDraft.schedule_impact_days || 0),
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Change request failed");
       }
-      setChangeDraft((current) => ({ ...current, title: "", deviation: "", cost_impact: "", schedule_impact_days: "" }));
+      setChangeDraft((current) => ({
+        ...current,
+        title: "",
+        deviation: "",
+        cost_impact: "",
+        schedule_impact_days: "",
+      }));
       setUploadMessage("Change request created and routed as a business process.");
       await load();
     } catch (error) {
@@ -1854,14 +1964,22 @@ function App() {
         body: JSON.stringify({
           ...contractDraft,
           control_account_id: contractDraft.control_account_id ? Number(contractDraft.control_account_id) : null,
-          value: Number(contractDraft.value || 0)
-        })
+          value: Number(contractDraft.value || 0),
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Contract creation failed");
       }
-      setContractDraft({ control_account_id: contractDraft.control_account_id, code: "", title: "", counterparty: "", contract_type: "Services", value: "", status: "active" });
+      setContractDraft({
+        control_account_id: contractDraft.control_account_id,
+        code: "",
+        title: "",
+        counterparty: "",
+        contract_type: "Services",
+        value: "",
+        status: "active",
+      });
       setUploadMessage("Contract registered and available as committed cost source.");
       await load();
     } catch (error) {
@@ -1884,21 +2002,29 @@ function App() {
         method: "POST",
         headers: apiHeaders(true),
         body: JSON.stringify({
-          control_account_id: purchaseOrderDraft.control_account_id ? Number(purchaseOrderDraft.control_account_id) : null,
+          control_account_id: purchaseOrderDraft.control_account_id
+            ? Number(purchaseOrderDraft.control_account_id)
+            : null,
           contract_id: purchaseOrderDraft.contract_id ? Number(purchaseOrderDraft.contract_id) : null,
           po_number: purchaseOrderDraft.po_number,
           description: purchaseOrderDraft.description,
           vendor: purchaseOrderDraft.vendor,
           committed_amount: Number(purchaseOrderDraft.committed_amount || 0),
           status: purchaseOrderDraft.status,
-          issued_on: purchaseOrderDraft.issued_on || null
-        })
+          issued_on: purchaseOrderDraft.issued_on || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Purchase order creation failed");
       }
-      setPurchaseOrderDraft((current) => ({ ...current, po_number: "", description: "", vendor: "", committed_amount: "" }));
+      setPurchaseOrderDraft((current) => ({
+        ...current,
+        po_number: "",
+        description: "",
+        vendor: "",
+        committed_amount: "",
+      }));
       setUploadMessage("Purchase order registered as committed cost.");
       await load();
     } catch (error) {
@@ -1921,22 +2047,31 @@ function App() {
         method: "POST",
         headers: apiHeaders(true),
         body: JSON.stringify({
-          control_account_id: paymentCertificateDraft.control_account_id ? Number(paymentCertificateDraft.control_account_id) : null,
+          control_account_id: paymentCertificateDraft.control_account_id
+            ? Number(paymentCertificateDraft.control_account_id)
+            : null,
           contract_id: paymentCertificateDraft.contract_id ? Number(paymentCertificateDraft.contract_id) : null,
-          purchase_order_id: paymentCertificateDraft.purchase_order_id ? Number(paymentCertificateDraft.purchase_order_id) : null,
+          purchase_order_id: paymentCertificateDraft.purchase_order_id
+            ? Number(paymentCertificateDraft.purchase_order_id)
+            : null,
           certificate_no: paymentCertificateDraft.certificate_no,
           period_label: paymentCertificateDraft.period_label,
           certified_amount: Number(paymentCertificateDraft.certified_amount || 0),
           retained_amount: Number(paymentCertificateDraft.retained_amount || 0),
           status: paymentCertificateDraft.status,
-          certified_on: paymentCertificateDraft.certified_on || null
-        })
+          certified_on: paymentCertificateDraft.certified_on || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Payment certificate creation failed");
       }
-      setPaymentCertificateDraft((current) => ({ ...current, certificate_no: "", certified_amount: "", retained_amount: "" }));
+      setPaymentCertificateDraft((current) => ({
+        ...current,
+        certificate_no: "",
+        certified_amount: "",
+        retained_amount: "",
+      }));
       setUploadMessage("Payment certificate registered as incurred cost.");
       await load();
     } catch (error) {
@@ -1959,23 +2094,34 @@ function App() {
         method: "POST",
         headers: apiHeaders(true),
         body: JSON.stringify({
-          control_account_id: warehouseReceiptDraft.control_account_id ? Number(warehouseReceiptDraft.control_account_id) : null,
+          control_account_id: warehouseReceiptDraft.control_account_id
+            ? Number(warehouseReceiptDraft.control_account_id)
+            : null,
           contract_id: warehouseReceiptDraft.contract_id ? Number(warehouseReceiptDraft.contract_id) : null,
-          purchase_order_id: warehouseReceiptDraft.purchase_order_id ? Number(warehouseReceiptDraft.purchase_order_id) : null,
+          purchase_order_id: warehouseReceiptDraft.purchase_order_id
+            ? Number(warehouseReceiptDraft.purchase_order_id)
+            : null,
           receipt_no: warehouseReceiptDraft.receipt_no,
           description: warehouseReceiptDraft.description,
           received_quantity: Number(warehouseReceiptDraft.received_quantity || 0),
           unit_cost: Number(warehouseReceiptDraft.unit_cost || 0),
           received_value: Number(warehouseReceiptDraft.received_value || 0),
           status: warehouseReceiptDraft.status,
-          received_on: warehouseReceiptDraft.received_on || null
-        })
+          received_on: warehouseReceiptDraft.received_on || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Warehouse receipt creation failed");
       }
-      setWarehouseReceiptDraft((current) => ({ ...current, receipt_no: "", description: "", received_quantity: "", unit_cost: "", received_value: "" }));
+      setWarehouseReceiptDraft((current) => ({
+        ...current,
+        receipt_no: "",
+        description: "",
+        received_quantity: "",
+        unit_cost: "",
+        received_value: "",
+      }));
       setUploadMessage("Warehouse receipt registered as incurred cost from contract administration.");
       await load();
     } catch (error) {
@@ -2006,8 +2152,8 @@ function App() {
           status: rfqDraft.status,
           budget_amount: Number(rfqDraft.budget_amount || 0),
           issue_date: rfqDraft.issue_date || null,
-          due_date: rfqDraft.due_date || null
-        })
+          due_date: rfqDraft.due_date || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2032,21 +2178,24 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/rfq-packages/${rfqBidDraft.rfq_package_id}/bids`, {
-        method: "POST",
-        headers: apiHeaders(true),
-        body: JSON.stringify({
-          bidder_name: rfqBidDraft.bidder_name,
-          bid_amount: Number(rfqBidDraft.bid_amount || 0),
-          technical_score: Number(rfqBidDraft.technical_score || 0),
-          commercial_score: Number(rfqBidDraft.commercial_score || 0),
-          schedule_score: Number(rfqBidDraft.schedule_score || 0),
-          risk_score: Number(rfqBidDraft.risk_score || 0),
-          status: rfqBidDraft.status,
-          submitted_on: rfqBidDraft.submitted_on || null,
-          notes: rfqBidDraft.notes
-        })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/rfq-packages/${rfqBidDraft.rfq_package_id}/bids`,
+        {
+          method: "POST",
+          headers: apiHeaders(true),
+          body: JSON.stringify({
+            bidder_name: rfqBidDraft.bidder_name,
+            bid_amount: Number(rfqBidDraft.bid_amount || 0),
+            technical_score: Number(rfqBidDraft.technical_score || 0),
+            commercial_score: Number(rfqBidDraft.commercial_score || 0),
+            schedule_score: Number(rfqBidDraft.schedule_score || 0),
+            risk_score: Number(rfqBidDraft.risk_score || 0),
+            status: rfqBidDraft.status,
+            submitted_on: rfqBidDraft.submitted_on || null,
+            notes: rfqBidDraft.notes,
+          }),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "RFQ bid creation failed");
@@ -2075,8 +2224,8 @@ function App() {
         headers: apiHeaders(true),
         body: JSON.stringify({
           ...communicationDraft,
-          contract_id: communicationDraft.contract_id ? Number(communicationDraft.contract_id) : null
-        })
+          contract_id: communicationDraft.contract_id ? Number(communicationDraft.contract_id) : null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2111,8 +2260,8 @@ function App() {
           change_request_id: noticeDraft.change_request_id ? Number(noticeDraft.change_request_id) : null,
           event_date: noticeDraft.event_date || null,
           due_date: noticeDraft.due_date || null,
-          notice_date: noticeDraft.notice_date || null
-        })
+          notice_date: noticeDraft.notice_date || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2137,22 +2286,25 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/claims/${claimImpactDraft.claim_id}/impact-analyses`, {
-        method: "POST",
-        headers: apiHeaders(true),
-        body: JSON.stringify({
-          method: claimImpactDraft.method,
-          impacted_activity: claimImpactDraft.impacted_activity,
-          cause: claimImpactDraft.cause,
-          effect: claimImpactDraft.effect,
-          schedule_impact_days: Number(claimImpactDraft.schedule_impact_days || 0),
-          cost_impact: Number(claimImpactDraft.cost_impact || 0),
-          productivity_loss_percent: Number(claimImpactDraft.productivity_loss_percent || 0),
-          evidence_ref: claimImpactDraft.evidence_ref,
-          confidence_score: Number(claimImpactDraft.confidence_score || 0),
-          status: claimImpactDraft.status
-        })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/claims/${claimImpactDraft.claim_id}/impact-analyses`,
+        {
+          method: "POST",
+          headers: apiHeaders(true),
+          body: JSON.stringify({
+            method: claimImpactDraft.method,
+            impacted_activity: claimImpactDraft.impacted_activity,
+            cause: claimImpactDraft.cause,
+            effect: claimImpactDraft.effect,
+            schedule_impact_days: Number(claimImpactDraft.schedule_impact_days || 0),
+            cost_impact: Number(claimImpactDraft.cost_impact || 0),
+            productivity_loss_percent: Number(claimImpactDraft.productivity_loss_percent || 0),
+            evidence_ref: claimImpactDraft.evidence_ref,
+            confidence_score: Number(claimImpactDraft.confidence_score || 0),
+            status: claimImpactDraft.status,
+          }),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Claim impact analysis failed");
@@ -2165,7 +2317,7 @@ function App() {
         schedule_impact_days: "",
         cost_impact: "",
         productivity_loss_percent: "",
-        evidence_ref: ""
+        evidence_ref: "",
       }));
       setUploadMessage("Claim impact analysis added to the forensic package.");
       await load();
@@ -2191,8 +2343,8 @@ function App() {
         body: JSON.stringify({
           ...documentDraft,
           linked_entity_id: Number(documentDraft.linked_entity_id || 0),
-          revision_date: documentDraft.revision_date || null
-        })
+          revision_date: documentDraft.revision_date || null,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2205,6 +2357,70 @@ function App() {
       setUploadError(error instanceof Error ? error.message : "Document registration failed");
     } finally {
       setCaptureAction(null);
+    }
+  }
+
+  async function handleAttachmentSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dashboard || !attachmentDraft.document_id || !attachmentDraft.file) {
+      return;
+    }
+    setCaptureAction("document-attachment");
+    setUploadMessage(null);
+    setUploadError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", attachmentDraft.file);
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/documents/${attachmentDraft.document_id}/attachments`,
+        {
+          method: "POST",
+          headers: apiHeaders(),
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Attachment upload failed");
+      }
+      const attachments = (await response.json()) as DocumentAttachment[];
+      setAttachmentDraft((current) => ({ ...current, file: null }));
+      setUploadMessage(
+        `${attachments.length} file${attachments.length === 1 ? "" : "s"} stored with hash and document traceability.`
+      );
+      await load();
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Attachment upload failed");
+    } finally {
+      setCaptureAction(null);
+    }
+  }
+
+  async function handleAttachmentDownload(attachment: DocumentAttachment) {
+    if (!dashboard) {
+      return;
+    }
+    setUploadError(null);
+    try {
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/documents/${attachment.document_id}/attachments/${attachment.id}/download`,
+        { headers: apiHeaders() }
+      );
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || "Download failed");
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = attachment.original_file_name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Download failed");
     }
   }
 
@@ -2228,8 +2444,8 @@ function App() {
           recipient_contact: transmittalDraft.recipient_contact,
           due_date: transmittalDraft.due_date || null,
           document_ids: [Number(transmittalDraft.document_id)],
-          action_required: "review"
-        })
+          action_required: "review",
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2265,8 +2481,8 @@ function App() {
           due_date: mailDraft.due_date || null,
           document_id: mailDraft.document_id ? Number(mailDraft.document_id) : null,
           body: mailDraft.body,
-          response_required: true
-        })
+          response_required: true,
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2291,16 +2507,19 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/documents/${reviewDraft.document_id}/reviews`, {
-        method: "POST",
-        headers: apiHeaders(true),
-        body: JSON.stringify({
-          reviewer_role: reviewDraft.reviewer_role,
-          review_status: reviewDraft.review_status,
-          due_date: reviewDraft.due_date || null,
-          comments: reviewDraft.comments
-        })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/documents/${reviewDraft.document_id}/reviews`,
+        {
+          method: "POST",
+          headers: apiHeaders(true),
+          body: JSON.stringify({
+            reviewer_role: reviewDraft.reviewer_role,
+            review_status: reviewDraft.review_status,
+            due_date: reviewDraft.due_date || null,
+            comments: reviewDraft.comments,
+          }),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "Document review failed");
@@ -2334,8 +2553,8 @@ function App() {
           sequence_no: Number(awpDraft.sequence_no || dashboard.work_packages.length * 10 + 10),
           planned_start: awpDraft.planned_start || null,
           planned_finish: awpDraft.planned_finish || null,
-          progress_percent: Number(awpDraft.progress_percent || 0)
-        })
+          progress_percent: Number(awpDraft.progress_percent || 0),
+        }),
       });
       if (!response.ok) {
         const detail = await response.text();
@@ -2343,7 +2562,14 @@ function App() {
       }
       const created = (await response.json()) as WorkPackage;
       setConstraintDraft((current) => ({ ...current, work_package_id: String(created.id) }));
-      setAwpDraft((current) => ({ ...current, code: "", title: "", path_of_construction: "", sequence_no: "", progress_percent: "" }));
+      setAwpDraft((current) => ({
+        ...current,
+        code: "",
+        title: "",
+        path_of_construction: "",
+        sequence_no: "",
+        progress_percent: "",
+      }));
       setUploadMessage("AWP work package created and routed to readiness workflow.");
       await load();
     } catch (error) {
@@ -2362,23 +2588,32 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraintDraft.work_package_id}/constraints`, {
-        method: "POST",
-        headers: apiHeaders(true),
-        body: JSON.stringify({
-          constraint_type: constraintDraft.constraint_type,
-          description: constraintDraft.description,
-          owner_role: constraintDraft.owner_role,
-          required_by: constraintDraft.required_by || null,
-          status: constraintDraft.status,
-          blocking: constraintDraft.blocking
-        })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraintDraft.work_package_id}/constraints`,
+        {
+          method: "POST",
+          headers: apiHeaders(true),
+          body: JSON.stringify({
+            constraint_type: constraintDraft.constraint_type,
+            description: constraintDraft.description,
+            owner_role: constraintDraft.owner_role,
+            required_by: constraintDraft.required_by || null,
+            status: constraintDraft.status,
+            blocking: constraintDraft.blocking,
+          }),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "AWP constraint creation failed");
       }
-      setConstraintDraft((current) => ({ ...current, description: "", constraint_type: "Material", status: "open", blocking: true }));
+      setConstraintDraft((current) => ({
+        ...current,
+        description: "",
+        constraint_type: "Material",
+        status: "open",
+        blocking: true,
+      }));
       setUploadMessage("AWP constraint registered. Package readiness updated.");
       await load();
     } catch (error) {
@@ -2396,11 +2631,14 @@ function App() {
     setUploadMessage(null);
     setUploadError(null);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraint.work_package_id}/constraints/${constraint.id}`, {
-        method: "PATCH",
-        headers: apiHeaders(true),
-        body: JSON.stringify({ status: "closed", expected_version: constraint.version })
-      });
+      const response = await fetch(
+        `${apiUrl}/api/v1/projects/${dashboard.project.id}/work-packages/${constraint.work_package_id}/constraints/${constraint.id}`,
+        {
+          method: "PATCH",
+          headers: apiHeaders(true),
+          body: JSON.stringify({ status: "closed", expected_version: constraint.version }),
+        }
+      );
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(detail || "AWP constraint update failed");
@@ -2429,30 +2667,61 @@ function App() {
   const healthClass = kpi.spi < 0.9 || kpi.cpi < 0.9 ? "critical" : "stable";
   const workflowInstance = dashboard.workflow_instance;
   const workflowStatus = statusLabel(workflowInstance?.status);
-  const workflowActionButtons = workflowInstance?.current_step === "Impact Review"
-    ? [{ action: "route_to_approval", label: "Route to Approval", tone: "primary" }]
-    : workflowInstance?.current_step === "Approval"
-      ? [
-          { action: "approve_baseline", label: "Approve Baseline", tone: "primary" },
-          { action: "reject_baseline", label: "Reject", tone: "danger" }
-        ]
-      : workflowInstance?.current_step === "Action"
-        ? [{ action: "close_action", label: "Close Action Loop", tone: "primary" }]
-        : [];
+  const workflowActionButtons =
+    workflowInstance?.current_step === "Impact Review"
+      ? [{ action: "route_to_approval", label: "Route to Approval", tone: "primary" }]
+      : workflowInstance?.current_step === "Approval"
+        ? [
+            { action: "approve_baseline", label: "Approve Baseline", tone: "primary" },
+            { action: "reject_baseline", label: "Reject", tone: "danger" },
+          ]
+        : workflowInstance?.current_step === "Action"
+          ? [{ action: "close_action", label: "Close Action Loop", tone: "primary" }]
+          : [];
   const workflowStages = dashboard.workflow_steps.length
     ? dashboard.workflow_steps.map((stage) => ({
         name: stage.name,
         detail: neutralScheduleText(stage.detail),
         owner: stage.owner_role,
         status: stage.status,
-        tone: stage.tone
+        tone: stage.tone,
       }))
     : [
-        { name: "Creation", detail: "Waiting for source schedule upload.", owner: "Planner", status: "Waiting", tone: "queued" },
-        { name: "Data Quality", detail: "Calendar, logic and baseline gate starts after import.", owner: "Controls Engineer", status: "Queued", tone: "queued" },
-        { name: "Impact Review", detail: "Cost, schedule and productivity impact requires a valid schedule.", owner: "Project Controls", status: "Queued", tone: "queued" },
-        { name: "Approval", detail: "Control Manager route opens after impact analysis.", owner: "Control Manager", status: "Queued", tone: "queued" },
-        { name: "Action", detail: "Forecast and field actions wait for an approved decision.", owner: "Execution Lead", status: "Queued", tone: "queued" }
+        {
+          name: "Creation",
+          detail: "Waiting for source schedule upload.",
+          owner: "Planner",
+          status: "Waiting",
+          tone: "queued",
+        },
+        {
+          name: "Data Quality",
+          detail: "Calendar, logic and baseline gate starts after import.",
+          owner: "Controls Engineer",
+          status: "Queued",
+          tone: "queued",
+        },
+        {
+          name: "Impact Review",
+          detail: "Cost, schedule and productivity impact requires a valid schedule.",
+          owner: "Project Controls",
+          status: "Queued",
+          tone: "queued",
+        },
+        {
+          name: "Approval",
+          detail: "Control Manager route opens after impact analysis.",
+          owner: "Control Manager",
+          status: "Queued",
+          tone: "queued",
+        },
+        {
+          name: "Action",
+          detail: "Forecast and field actions wait for an approved decision.",
+          owner: "Execution Lead",
+          status: "Queued",
+          tone: "queued",
+        },
       ];
   const scheduleBpRecords = dashboard.business_processes.length
     ? dashboard.business_processes.map((process) => ({
@@ -2462,17 +2731,19 @@ function App() {
         step: process.current_step,
         ballInCourt: process.ball_in_court,
         status: statusLabel(process.status),
-        tone: process.status === "rejected" ? "critical" : process.status === "closed" ? "complete" : "active"
+        tone: process.status === "rejected" ? "critical" : process.status === "closed" ? "complete" : "active",
       }))
-    : [{
-        record: "SCH-PENDING",
-        process: "Schedule Intake",
-        title: "Waiting for source schedule upload",
-        step: "Schedule Upload Gate",
-        ballInCourt: "Planner",
-        status: "Not Started",
-        tone: "queued"
-      }];
+    : [
+        {
+          record: "SCH-PENDING",
+          process: "Schedule Intake",
+          title: "Waiting for source schedule upload",
+          step: "Schedule Upload Gate",
+          ballInCourt: "Planner",
+          status: "Not Started",
+          tone: "queued",
+        },
+      ];
   const bpRecords = [
     ...scheduleBpRecords,
     ...dashboard.alerts.slice(0, 3).map((alert) => ({
@@ -2482,7 +2753,7 @@ function App() {
       step: "Impact Review",
       ballInCourt: "Project Controls",
       status: alert.severity,
-      tone: alert.severity === "red" ? "critical" : alert.severity
+      tone: alert.severity === "red" ? "critical" : alert.severity,
     })),
     ...dashboard.changes.map((change) => ({
       record: `CR-${change.id}`,
@@ -2491,7 +2762,7 @@ function App() {
       step: "Cost and Schedule Review",
       ballInCourt: "Control Manager",
       status: change.status,
-      tone: "pending"
+      tone: "pending",
     })),
     ...dashboard.claims.map((claim) => ({
       record: `CL-${claim.id}`,
@@ -2500,7 +2771,7 @@ function App() {
       step: "Causality Review",
       ballInCourt: "Contract Manager",
       status: claim.status,
-      tone: "active"
+      tone: "active",
     })),
     ...dashboard.rfq_packages.map((rfqPackage) => ({
       record: `RFQ-${rfqPackage.id}`,
@@ -2509,7 +2780,7 @@ function App() {
       step: rfqPackage.status === "under_evaluation" ? "Bid Leveling" : "Package Setup",
       ballInCourt: "Contract Manager",
       status: rfqPackage.status,
-      tone: rfqPackage.status === "awarded" ? "complete" : "active"
+      tone: rfqPackage.status === "awarded" ? "complete" : "active",
     })),
     ...dashboard.contract_notices.map((notice) => ({
       record: `NT-${notice.id}`,
@@ -2518,7 +2789,7 @@ function App() {
       step: "Notice Compliance",
       ballInCourt: "Contract Manager",
       status: notice.compliance_status,
-      tone: notice.compliance_status === "late" ? "critical" : "complete"
+      tone: notice.compliance_status === "late" ? "critical" : "complete",
     })),
     ...dashboard.claim_impact_analyses.map((analysis) => ({
       record: `IA-${analysis.id}`,
@@ -2527,8 +2798,8 @@ function App() {
       step: "Impact / Quantum Analysis",
       ballInCourt: "Claims Analyst",
       status: analysis.status,
-      tone: analysis.status === "reviewed" ? "complete" : "pending"
-    }))
+      tone: analysis.status === "reviewed" ? "complete" : "pending",
+    })),
   ];
   const selectedBpRecord = bpRecords.find((record) => record.record === selectedBpRecordNo) ?? bpRecords[0] ?? null;
   const navigatorItems: Array<{ key: WorkspaceView; label: string; count: string | number }> = [
@@ -2541,11 +2812,19 @@ function App() {
     { key: "changes", label: "Changes", count: dashboard.changes.length },
     { key: "claims", label: "Claims", count: dashboard.claims.length },
     { key: "rfq", label: "RFQ / Bids", count: dashboard.rfq_summary.bids_received },
-    { key: "contracts", label: "Contracts", count: dashboard.contracts.length + dashboard.purchase_orders.length + dashboard.warehouse_receipts.length },
-    { key: "documents", label: "Document Control", count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%" },
+    {
+      key: "contracts",
+      label: "Contracts",
+      count: dashboard.contracts.length + dashboard.purchase_orders.length + dashboard.warehouse_receipts.length,
+    },
+    {
+      key: "documents",
+      label: "Document Control",
+      count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%",
+    },
     { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
     { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
-    { key: "admin", label: "Projects / Users / Roles", count: dashboard.project_team.length }
+    { key: "admin", label: "Projects / Users / Roles", count: dashboard.project_team.length },
   ];
   const chartData = dashboard.control_snapshots.length
     ? dashboard.control_snapshots.map((snapshot) => ({
@@ -2554,7 +2833,7 @@ function App() {
         EV: snapshot.ev,
         AC: snapshot.ac,
         SPI: snapshot.spi,
-        CPI: snapshot.cpi
+        CPI: snapshot.cpi,
       }))
     : [{ period: "Current", PV: kpi.pv, EV: kpi.ev, AC: kpi.ac, SPI: kpi.spi, CPI: kpi.cpi }];
   const accountLabel = (accountId: number) => {
@@ -2573,45 +2852,74 @@ function App() {
     acc[bid.rfq_package_id] = [...(acc[bid.rfq_package_id] ?? []), bid];
     return acc;
   }, {});
-  const constraintsByPackage = dashboard.work_package_constraints.reduce<Record<number, WorkPackageConstraint[]>>((acc, constraint) => {
-    acc[constraint.work_package_id] = [...(acc[constraint.work_package_id] ?? []), constraint];
-    return acc;
-  }, {});
-  const entitlementByClaim = dashboard.claim_entitlement_items.reduce<Record<number, ClaimEntitlementItem[]>>((acc, item) => {
-    acc[item.claim_id] = [...(acc[item.claim_id] ?? []), item];
-    return acc;
-  }, {});
+  const constraintsByPackage = dashboard.work_package_constraints.reduce<Record<number, WorkPackageConstraint[]>>(
+    (acc, constraint) => {
+      acc[constraint.work_package_id] = [...(acc[constraint.work_package_id] ?? []), constraint];
+      return acc;
+    },
+    {}
+  );
+  const entitlementByClaim = dashboard.claim_entitlement_items.reduce<Record<number, ClaimEntitlementItem[]>>(
+    (acc, item) => {
+      acc[item.claim_id] = [...(acc[item.claim_id] ?? []), item];
+      return acc;
+    },
+    {}
+  );
   const noticesByClaim = dashboard.contract_notices.reduce<Record<number, ContractNotice[]>>((acc, notice) => {
     if (notice.claim_id) {
       acc[notice.claim_id] = [...(acc[notice.claim_id] ?? []), notice];
     }
     return acc;
   }, {});
-  const impactByClaim = dashboard.claim_impact_analyses.reduce<Record<number, ClaimImpactAnalysis[]>>((acc, analysis) => {
-    acc[analysis.claim_id] = [...(acc[analysis.claim_id] ?? []), analysis];
-    return acc;
-  }, {});
+  const impactByClaim = dashboard.claim_impact_analyses.reduce<Record<number, ClaimImpactAnalysis[]>>(
+    (acc, analysis) => {
+      acc[analysis.claim_id] = [...(acc[analysis.claim_id] ?? []), analysis];
+      return acc;
+    },
+    {}
+  );
   const mappingSummary = dashboard.control_account_mapping_summary;
   const costManager = dashboard.cost_manager_summary;
-  const controlGateBlocked = !dashboard.schedule_import || dashboard.schedule_import.quality_score < 70 || !dashboard.control_accounts.length;
+  const controlGateBlocked =
+    !dashboard.schedule_import || dashboard.schedule_import.quality_score < 70 || !dashboard.control_accounts.length;
   const progressDisabled = controlGateBlocked || !dashboard.current_membership.can_capture_progress;
   const costDisabled = controlGateBlocked || !dashboard.current_membership.can_capture_cost;
   const canUploadSchedule = ["Planner", "Control Manager"].includes(dashboard.current_membership.role);
   const canConfigure = dashboard.current_membership.can_configure;
   const canManageContracts = dashboard.current_membership.can_manage_contract;
-  const contractCostDisabled = controlGateBlocked || !(dashboard.current_membership.can_capture_cost || canManageContracts);
+  const contractCostDisabled =
+    controlGateBlocked || !(dashboard.current_membership.can_capture_cost || canManageContracts);
   const warehouseDisabled = contractCostDisabled;
-  const canManageClaims = canManageContracts || ["Control Manager", "Claims Analyst", "Project Controls"].includes(dashboard.current_membership.role);
-  const canManageDocuments = ["Control Manager", "Project Controls", "Document Controller", "Contract Manager", "Planner"].includes(dashboard.current_membership.role);
+  const canManageClaims =
+    canManageContracts ||
+    ["Control Manager", "Claims Analyst", "Project Controls"].includes(dashboard.current_membership.role);
+  const canManageDocuments = [
+    "Control Manager",
+    "Project Controls",
+    "Document Controller",
+    "Contract Manager",
+    "Planner",
+  ].includes(dashboard.current_membership.role);
   const canCreateChange = dashboard.project_team.some((member) => member.user.id === dashboard.current_user.id);
-  const canManageAwp = ["Control Manager", "Planner", "Project Controls", "Field Engineer", "Workface Planner"].includes(dashboard.current_membership.role);
+  const canManageAwp = [
+    "Control Manager",
+    "Planner",
+    "Project Controls",
+    "Field Engineer",
+    "Workface Planner",
+  ].includes(dashboard.current_membership.role);
   const linkedEntityOptions = [
     ...dashboard.control_accounts.map((account) => ({ type: "ControlAccount", id: account.id, label: account.code })),
-    ...dashboard.work_packages.map((workPackage) => ({ type: "WorkPackage", id: workPackage.id, label: workPackage.code })),
+    ...dashboard.work_packages.map((workPackage) => ({
+      type: "WorkPackage",
+      id: workPackage.id,
+      label: workPackage.code,
+    })),
     ...dashboard.changes.map((change) => ({ type: "ChangeRequest", id: change.id, label: `CR-${change.id}` })),
     ...dashboard.claims.map((claim) => ({ type: "Claim", id: claim.id, label: `CL-${claim.id}` })),
     ...dashboard.contract_notices.map((notice) => ({ type: "ContractNotice", id: notice.id, label: `N-${notice.id}` })),
-    ...dashboard.contracts.map((contract) => ({ type: "Contract", id: contract.id, label: contract.code }))
+    ...dashboard.contracts.map((contract) => ({ type: "Contract", id: contract.id, label: contract.code })),
   ];
   const canRouteCurrentWorkflow =
     !workflowInstance ||
@@ -2628,45 +2936,53 @@ function App() {
       title: "Schedule ingestion",
       score: 65,
       state: "Parcial funcional",
-      detail: "XML/XER intake, QA gate, baseline y BP trigger existen; falta parser XER completo, validaciones DCMA/AACE profundas y log de errores operativo."
+      detail:
+        "XML/XER intake, QA gate, baseline y BP trigger existen; falta parser XER completo, validaciones DCMA/AACE profundas y log de errores operativo.",
     },
     {
       phase: "Fase 2",
       title: "BP Engine configurable",
       score: 68,
       state: "MVP configurable",
-      detail: "Plantillas BP persistentes, formularios, pasos, transiciones, ball-in-court y permisos basicos ya gobiernan el workflow; falta versionado avanzado y editor visual completo."
+      detail:
+        "Plantillas BP persistentes, formularios, pasos, transiciones, ball-in-court y permisos basicos ya gobiernan el workflow; falta versionado avanzado y editor visual completo.",
     },
     {
       phase: "Fase 3",
       title: "Control accounts automaticos",
       score: 58,
       state: "MVP automatico",
-      detail: "Mapeo WBS/CBS/Activity, trazabilidad por actividad, cost loading ponderado y aprobacion formal del baseline ya existen; falta reglas avanzadas de desglose y revision masiva."
+      detail:
+        "Mapeo WBS/CBS/Activity, trazabilidad por actividad, cost loading ponderado y aprobacion formal del baseline ya existen; falta reglas avanzadas de desglose y revision masiva.",
     },
     {
       phase: "Fase 4",
       title: "EVM historico y forecast",
       score: 62,
       state: "MVP historico",
-      detail: "Snapshots EVM por periodo, curva PV/EV/AC historica, productividad e escenarios EAC ya existen; falta curva de caja real, escenarios configurables y tendencia por disciplina."
+      detail:
+        "Snapshots EVM por periodo, curva PV/EV/AC historica, productividad e escenarios EAC ya existen; falta curva de caja real, escenarios configurables y tendencia por disciplina.",
     },
     {
       phase: "Fase 5",
       title: "Contracts & claims",
       score: 72,
       state: "MVP operativo",
-      detail: "Contratos, comunicaciones, notices formales, cumplimiento, matriz RP120R/RP130R, TIA, measured mile inicial e impactos cuantificados ya alimentan el paquete forense; falta quantum avanzado y generacion documental completa."
+      detail:
+        "Contratos, comunicaciones, notices formales, cumplimiento, matriz RP120R/RP130R, TIA, measured mile inicial e impactos cuantificados ya alimentan el paquete forense; falta quantum avanzado y generacion documental completa.",
     },
     {
       phase: "Fase 6",
       title: "SaaS empresarial",
       score: 30,
       state: "SaaS-ready tecnico",
-      detail: "Multi-proyecto, tenant_id, usuarios, roles y permisos existen; falta auth real, API tokens, hardening, observabilidad y auditoria avanzada."
-    }
+      detail:
+        "Multi-proyecto, tenant_id, usuarios, roles y permisos existen; falta auth real, API tokens, hardening, observabilidad y auditoria avanzada.",
+    },
   ];
-  const overallRoadmapScore = Math.round(roadmapStatus.reduce((total, item) => total + item.score, 0) / roadmapStatus.length);
+  const overallRoadmapScore = Math.round(
+    roadmapStatus.reduce((total, item) => total + item.score, 0) / roadmapStatus.length
+  );
 
   return (
     <main>
@@ -2675,18 +2991,25 @@ function App() {
           <p className="eyebrow">P&Pmis Ai SaaS</p>
           <h1>{project.name}</h1>
           <p className="productStatement">
-            Sistema integrado de Project Controls basado en AACE TCM para convertir cronograma, costos,
-            avance, cambios, reclamos y documentos en alertas, decisiones y acciones tempranas.
+            Sistema integrado de Project Controls basado en AACE TCM para convertir cronograma, costos, avance, cambios,
+            reclamos y documentos en alertas, decisiones y acciones tempranas.
           </p>
-          <span className="projectMeta">{project.code} - {project.phase} - {project.start_date ?? "Pending"} to {project.finish_date ?? "Pending"}</span>
+          <span className="projectMeta">
+            {project.code} - {project.phase} - {project.start_date ?? "Pending"} to {project.finish_date ?? "Pending"}
+          </span>
         </div>
         <div className="headerActions">
           <div className="contextSwitch">
             <label>
               <span>Project</span>
-              <select onChange={(event) => setSelectedProjectId(event.target.value)} value={selectedProjectId || String(project.id)}>
+              <select
+                onChange={(event) => setSelectedProjectId(event.target.value)}
+                value={selectedProjectId || String(project.id)}
+              >
                 {projects.map((item) => (
-                  <option key={item.id} value={item.id}>{item.code}</option>
+                  <option key={item.id} value={item.id}>
+                    {item.code}
+                  </option>
                 ))}
               </select>
             </label>
@@ -2694,7 +3017,9 @@ function App() {
               <span>User / Role</span>
               <select onChange={(event) => setSelectedUserId(event.target.value)} value={selectedUserId}>
                 {users.map((user) => (
-                  <option key={user.id} value={user.id}>{user.full_name}</option>
+                  <option key={user.id} value={user.id}>
+                    {user.full_name}
+                  </option>
                 ))}
               </select>
             </label>
@@ -2711,11 +3036,13 @@ function App() {
           </button>
           <div className={`healthBadge ${healthClass}`}>
             <span>{healthLabel}</span>
-            <strong>SPI {kpi.spi.toFixed(3)} / CPI {kpi.cpi.toFixed(3)}</strong>
+            <strong>
+              SPI {kpi.spi.toFixed(3)} / CPI {kpi.cpi.toFixed(3)}
+            </strong>
           </div>
-        <button className="iconButton" onClick={load} title="Run control refresh">
-          <RefreshCw size={18} />
-        </button>
+          <button className="iconButton" onClick={load} title="Run control refresh">
+            <RefreshCw size={18} />
+          </button>
         </div>
       </header>
 
@@ -2728,10 +3055,18 @@ function App() {
               <span>Schedule XML or XER is the master input before Planeacion</span>
             </div>
           </div>
-          <label className={`uploadButton ${uploading || !canUploadSchedule ? "disabled" : ""}`} title="Upload a schedule XML or XER file">
+          <label
+            className={`uploadButton ${uploading || !canUploadSchedule ? "disabled" : ""}`}
+            title="Upload a schedule XML or XER file"
+          >
             <Upload size={16} />
             <span>{uploading ? "Uploading" : "Upload Schedule"}</span>
-            <input accept=".xer,.xml,.mpp" disabled={uploading || !canUploadSchedule} onChange={handleScheduleUpload} type="file" />
+            <input
+              accept=".xer,.xml,.mpp"
+              disabled={uploading || !canUploadSchedule}
+              onChange={handleScheduleUpload}
+              type="file"
+            />
           </label>
         </div>
         <div className="gateFacts">
@@ -2741,7 +3076,9 @@ function App() {
           </div>
           <div>
             <span>Baseline</span>
-            <strong>{dashboard.schedule_import ? neutralScheduleText(dashboard.schedule_import.baseline_name) : "Pending"}</strong>
+            <strong>
+              {dashboard.schedule_import ? neutralScheduleText(dashboard.schedule_import.baseline_name) : "Pending"}
+            </strong>
           </div>
           <div>
             <span>Data Date</span>
@@ -2753,10 +3090,15 @@ function App() {
           </div>
           <div>
             <span>Activities / Logic</span>
-            <strong>{dashboard.schedule_activity_count} / {dashboard.schedule_relationship_count}</strong>
+            <strong>
+              {dashboard.schedule_activity_count} / {dashboard.schedule_relationship_count}
+            </strong>
           </div>
         </div>
-        <p>{dashboard.schedule_import?.validation_summary ?? "Import a schedule XML or XER file to activate the control baseline."}</p>
+        <p>
+          {dashboard.schedule_import?.validation_summary ??
+            "Import a schedule XML or XER file to activate the control baseline."}
+        </p>
         {uploadMessage && <p className="uploadMessage success">{uploadMessage}</p>}
         {uploadError && <p className="uploadMessage error">{uploadError}</p>}
       </section>
@@ -2781,3516 +3123,4451 @@ function App() {
         </aside>
 
         <div className="workArea">
-      <details className={activeView === "admin" ? "adminDrawer workspaceSection" : "adminDrawer workspaceSection hidden"} id="admin-setup" open={activeView === "admin"}>
-        <summary>
-          <span>Projects, Users & Roles</span>
-          <strong>Create project shells, tenant users and project role assignments</strong>
-        </summary>
-      <section className="workspaceAdmin">
-        <form className="adminPanel" onSubmit={handleProjectCreate}>
-          <div className="panelHeader">
-            <h2><Building2 size={18} /> Project Shell</h2>
-            <span>{projects.length} projects</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Code</span>
-              <input
-                disabled={!canConfigure}
-                onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
-                placeholder="PRJ-001"
-                required
-                value={projectDraft.code}
-              />
-            </label>
-            <label>
-              <span>Phase</span>
-              <select
-                disabled={!canConfigure}
-                onChange={(event) => setProjectDraft((current) => ({ ...current, phase: event.target.value }))}
-                value={projectDraft.phase}
-              >
-                <option value="Planning">Planning</option>
-                <option value="Execution">Execution</option>
-                <option value="Closeout">Closeout</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Name</span>
-            <input
-              disabled={!canConfigure}
-              onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
-              placeholder="Project control shell name"
-              required
-              value={projectDraft.name}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Start</span>
-              <input
-                disabled={!canConfigure}
-                onChange={(event) => setProjectDraft((current) => ({ ...current, start_date: event.target.value }))}
-                type="date"
-                value={projectDraft.start_date}
-              />
-            </label>
-            <label>
-              <span>Finish</span>
-              <input
-                disabled={!canConfigure}
-                onChange={(event) => setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))}
-                type="date"
-                value={projectDraft.finish_date}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
-            {captureAction === "project" ? "Creating..." : "Create Project Shell"}
-          </button>
-        </form>
-
-        <form className="adminPanel" onSubmit={handleUserCreate}>
-          <div className="panelHeader">
-            <h2><UserPlus size={18} /> Users</h2>
-            <span>{users.length} active</span>
-          </div>
-          <label>
-            <span>Full Name</span>
-            <input
-              disabled={!canConfigure}
-              onChange={(event) => setUserDraft((current) => ({ ...current, full_name: event.target.value }))}
-              required
-              value={userDraft.full_name}
-            />
-          </label>
-          <label>
-            <span>Email</span>
-            <input
-              disabled={!canConfigure}
-              onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))}
-              required
-              type="email"
-              value={userDraft.email}
-            />
-          </label>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canConfigure}
-              onChange={(event) => setUserDraft((current) => ({ ...current, title: event.target.value }))}
-              value={userDraft.title}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
-            {captureAction === "user" ? "Creating..." : "Create User"}
-          </button>
-        </form>
-
-        <form className="adminPanel" onSubmit={handleTeamAssign}>
-          <div className="panelHeader">
-            <h2><Users size={18} /> Roles</h2>
-            <span>{dashboard.project_team.length} assigned</span>
-          </div>
-          <label>
-            <span>User</span>
-            <select
-              disabled={!canConfigure}
-              onChange={(event) => setTeamDraft((current) => ({ ...current, user_id: event.target.value }))}
-              required
-              value={teamDraft.user_id}
-            >
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>{user.full_name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Role Profile</span>
-            <select
-              disabled={!canConfigure}
-              onChange={(event) => setTeamDraft((current) => ({ ...current, role: event.target.value }))}
-              required
-              value={teamDraft.role}
-            >
-              {roles.map((role) => (
-                <option key={role.role} value={role.role}>{role.role}</option>
-              ))}
-            </select>
-          </label>
-          <div className="permissionStrip">
-            {roles.find((role) => role.role === teamDraft.role)?.can_capture_progress && <span>Progress</span>}
-            {roles.find((role) => role.role === teamDraft.role)?.can_capture_cost && <span>Cost</span>}
-            {roles.find((role) => role.role === teamDraft.role)?.can_approve_workflow && <span>Approve</span>}
-            {roles.find((role) => role.role === teamDraft.role)?.can_manage_contract && <span>Contract</span>}
-            {roles.find((role) => role.role === teamDraft.role)?.can_configure && <span>Admin</span>}
-          </div>
-          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
-            {captureAction === "team" ? "Assigning..." : "Assign Role"}
-          </button>
-        </form>
-
-        <form className="adminPanel bpDesignerPanel" onSubmit={handleProcessTemplateCreate}>
-          <div className="panelHeader">
-            <h2><Settings size={18} /> BP Designer</h2>
-            <span>{dashboard.process_templates.length} templates</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Code</span>
-              <input
-                disabled={!canConfigure}
-                onChange={(event) => setProcessDraft((current) => ({ ...current, code: event.target.value.toUpperCase() }))}
-                placeholder="BP-CUSTOM"
-                required
-                value={processDraft.code}
-              />
-            </label>
-            <label>
-              <span>Category</span>
-              <input
-                disabled={!canConfigure}
-                onChange={(event) => setProcessDraft((current) => ({ ...current, category: event.target.value }))}
-                value={processDraft.category}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Name</span>
-            <input
-              disabled={!canConfigure}
-              onChange={(event) => setProcessDraft((current) => ({ ...current, name: event.target.value }))}
-              placeholder="Business process name"
-              required
-              value={processDraft.name}
-            />
-          </label>
-          <label>
-            <span>Description</span>
-            <textarea
-              disabled={!canConfigure}
-              onChange={(event) => setProcessDraft((current) => ({ ...current, description: event.target.value }))}
-              placeholder="Control purpose and decision point"
-              value={processDraft.description}
-            />
-          </label>
-          <label>
-            <span>Form Fields</span>
-            <textarea
-              disabled={!canConfigure}
-              onChange={(event) => setProcessDraft((current) => ({ ...current, form_schema: event.target.value }))}
-              value={processDraft.form_schema}
-            />
-          </label>
-          <label>
-            <span>Steps: Step | Role | Detail</span>
-            <textarea
-              disabled={!canConfigure}
-              onChange={(event) => setProcessDraft((current) => ({ ...current, steps: event.target.value }))}
-              value={processDraft.steps}
-            />
-          </label>
-          <label>
-            <span>Transitions: action | from | to | ball in court | status</span>
-            <textarea
-              disabled={!canConfigure}
-              onChange={(event) => setProcessDraft((current) => ({ ...current, transitions: event.target.value }))}
-              value={processDraft.transitions}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
-            {captureAction === "process-template" ? "Saving..." : "Create BP Template"}
-          </button>
-        </form>
-      </section>
-      </details>
-
-      <section className="controlSummary">
-        <div>
-          <span>Control Date</span>
-          <strong>{dashboard.schedule_import?.data_date ?? "Pending"}</strong>
-        </div>
-        <div>
-          <span>Control Period</span>
-          <strong>{dashboard.control_periods[0]?.period_label ?? "Pending"}</strong>
-        </div>
-        <div>
-          <span>Baseline</span>
-          <strong>{statusLabel(mappingSummary.baseline_status)}</strong>
-        </div>
-        <div>
-          <span>CA Mapping</span>
-          <strong>{mappingSummary.mapping_score.toFixed(0)}% / Cost {mappingSummary.cost_loading_score.toFixed(0)}%</strong>
-        </div>
-        <div>
-          <span>Open Warnings</span>
-          <strong>{redAlerts} red / {amberAlerts} amber</strong>
-        </div>
-        <div>
-          <span>Forecast Variance</span>
-          <strong>{currency(kpi.vac, project.currency)}</strong>
-        </div>
-      </section>
-
-      <section className="flowBand">
-        <div className="flowTrack">
-          {dashboard.flow.map((step, index) => (
-            <React.Fragment key={step.name}>
-              <div className="flowStep">
-                <strong>{step.name}</strong>
-                <span>{step.state}</span>
-              </div>
-              {index < dashboard.flow.length - 1 && <ArrowRight className="flowArrow" size={18} />}
-            </React.Fragment>
-          ))}
-        </div>
-      </section>
-
-      <section className={activeView === "roadmap" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Roadmap Maturity Assessment</h2>
-          <span>Estado global {overallRoadmapScore}%</span>
-        </div>
-        <div className="appAssessment">
-          <article>
-            <span>Calificacion actual</span>
-            <strong>{pilotReadiness ? `${pilotReadiness.score.toFixed(1)}/100` : `${overallRoadmapScore}/100`}</strong>
-            <small>{pilotReadiness ? statusLabel(pilotReadiness.status) : "Demo funcional avanzada, todavia no produccion empresarial."}</small>
-          </article>
-          <article>
-            <span>TCM / Control Core</span>
-            <strong>7/10</strong>
-            <small>Flujo TCM, EVM, alertas, BP y trazabilidad ya estan conectados.</small>
-          </article>
-          <article>
-            <span>AWP</span>
-            <strong>4/10</strong>
-            <small>CWA/CWP/EWP/PWP/IWP, readiness y constraints quedan integrados como MVP inicial.</small>
-          </article>
-          <article>
-            <span>Produccion SaaS</span>
-            <strong>3/10</strong>
-            <small>Faltan auth real, migraciones, hardening, observabilidad y pruebas amplias.</small>
-          </article>
-        </div>
-        {dashboard.control_plan && (
-          <form className="adminPanel controlPlanPanel" onSubmit={handleControlPlanSubmit}>
-            <div className="panelHeader">
-              <h2><ClipboardCheck size={18} /> Project Control Plan / PEP</h2>
-              <span>{statusLabel(dashboard.control_plan.status)} / v{dashboard.control_plan.version}</span>
-            </div>
-            <div className="formColumns">
-              <label>
-                <span>Reporting Cadence</span>
-                <input
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, reporting_cadence: event.target.value }))}
-                  value={controlPlanDraft.reporting_cadence}
-                />
-              </label>
-              <label>
-                <span>Status</span>
-                <select
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, status: event.target.value }))}
-                  value={controlPlanDraft.status}
-                >
-                  <option value="draft">Draft</option>
-                  <option value="in_review">In Review</option>
-                  <option value="approved">Approved</option>
-                  <option value="active">Active</option>
-                </select>
-              </label>
-            </div>
-            <label>
-              <span>Execution Strategy</span>
-              <textarea
-                disabled={!canConfigure}
-                onChange={(event) => setControlPlanDraft((current) => ({ ...current, execution_strategy: event.target.value }))}
-                rows={2}
-                value={controlPlanDraft.execution_strategy}
-              />
-            </label>
-            <label>
-              <span>Control Strategy</span>
-              <textarea
-                disabled={!canConfigure}
-                onChange={(event) => setControlPlanDraft((current) => ({ ...current, control_strategy: event.target.value }))}
-                rows={2}
-                value={controlPlanDraft.control_strategy}
-              />
-            </label>
-            <div className="formColumns">
-              <label>
-                <span>Progress Measurement</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, progress_measurement_rule: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.progress_measurement_rule}
-                />
-              </label>
-              <label>
-                <span>Cost Measurement</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, cost_measurement_rule: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.cost_measurement_rule}
-                />
-              </label>
-            </div>
-            <div className="formColumns">
-              <label>
-                <span>Change Rules</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, change_management_rule: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.change_management_rule}
-                />
-              </label>
-              <label>
-                <span>Risk Rules</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, risk_management_rule: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.risk_management_rule}
-                />
-              </label>
-            </div>
-            <div className="formColumns">
-              <label>
-                <span>Procurement Strategy</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, procurement_strategy: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.procurement_strategy}
-                />
-              </label>
-              <label>
-                <span>Document Control</span>
-                <textarea
-                  disabled={!canConfigure}
-                  onChange={(event) => setControlPlanDraft((current) => ({ ...current, document_control_rule: event.target.value }))}
-                  rows={3}
-                  value={controlPlanDraft.document_control_rule}
-                />
-              </label>
-            </div>
-            <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
-              {captureAction === "control-plan" ? "Saving..." : "Save Control Plan"}
-            </button>
-          </form>
-        )}
-        {pilotReadiness && (
-          <div className="roadmapGrid">
-            {pilotReadiness.items.map((item) => (
-              <article className="roadmapPhase" key={`${item.phase}-${item.area}`}>
-                <div>
-                  <span>{item.phase}</span>
-                  <strong>{item.area}</strong>
-                </div>
-                <div className="scoreBar">
-                  <span style={{ width: `${item.score}%` }} />
-                </div>
-                <div className="phaseMeta">
-                  <strong>{item.score.toFixed(1)}%</strong>
-                  <span>{statusLabel(item.status)}</span>
-                </div>
-                <p>{item.finding}</p>
-                <small>{item.next_action}</small>
-              </article>
-            ))}
-          </div>
-        )}
-        <div className="roadmapGrid">
-          {roadmapStatus.map((item) => (
-            <article className="roadmapPhase" key={item.phase}>
-              <div>
-                <span>{item.phase}</span>
-                <strong>{item.title}</strong>
-              </div>
-              <div className="scoreBar">
-                <span style={{ width: `${item.score}%` }} />
-              </div>
-              <div className="phaseMeta">
-                <strong>{item.score}%</strong>
-                <span>{item.state}</span>
-              </div>
-              <p>{item.detail}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={activeView === "schedule" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Schedule Control</h2>
-          <button
-            className="linkButton"
-            disabled={!canApproveControlBaseline || captureAction !== null}
-            onClick={handleControlBaselineApprove}
-            type="button"
+          <details
+            className={activeView === "admin" ? "adminDrawer workspaceSection" : "adminDrawer workspaceSection hidden"}
+            id="admin-setup"
+            open={activeView === "admin"}
           >
-            {captureAction === "control-baseline-approve" ? "Approving..." : "Approve Control Baseline"}
-          </button>
-        </div>
-        <div className="mappingSummary">
-          <article>
-            <span>Mapped Activities</span>
-            <strong>{mappingSummary.mapped_activities}/{mappingSummary.total_schedule_activities}</strong>
-            <small>{mappingSummary.mapping_score.toFixed(1)}% WBS to control account coverage</small>
-          </article>
-          <article>
-            <span>Cost Loading</span>
-            <strong>{mappingSummary.cost_loaded_activities}/{mappingSummary.total_schedule_activities}</strong>
-            <small>{mappingSummary.cost_loading_score.toFixed(1)}% schedule activities with cost</small>
-          </article>
-          <article>
-            <span>Control Accounts</span>
-            <strong>{mappingSummary.control_account_count}</strong>
-            <small>{currency(mappingSummary.total_bac, project.currency)} BAC / PV {currency(mappingSummary.total_planned_value, project.currency)}</small>
-          </article>
-          <article>
-            <span>Baseline Status</span>
-            <strong>{statusLabel(mappingSummary.baseline_status)}</strong>
-            <small>{dashboard.schedule_activity_count} activities / {dashboard.schedule_relationship_count} relationships</small>
-          </article>
-        </div>
-        <div className="viewSplit">
-          <div className="workList">
-            <article>
-              <strong>{dashboard.schedule_import ? neutralScheduleText(dashboard.schedule_import.baseline_name) : "No baseline"}</strong>
-              <span>{dashboard.schedule_import?.validation_summary ?? "Upload a schedule XML or XER file to start the baseline workflow."}</span>
-              <small>Quality {dashboard.schedule_import?.quality_score.toFixed(0) ?? "0"}% / Data date {dashboard.schedule_import?.data_date ?? "Pending"}</small>
-            </article>
-            {dashboard.baseline_versions.map((baseline) => (
-              <article key={baseline.id}>
-                <strong>BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}</strong>
-                <span>{neutralScheduleText(baseline.name)}</span>
-                <small>{baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%</small>
-              </article>
-            ))}
-          </div>
-          <div className="qualityList">
-            {dashboard.schedule_findings.length ? dashboard.schedule_findings.map((finding) => (
-              <article key={finding.id}>
-                <div>
-                  <strong>{finding.check_code}</strong>
-                  <span className={`qualityStatus ${finding.severity.toLowerCase()}`}>{statusLabel(finding.severity)}</span>
+            <summary>
+              <span>Projects, Users & Roles</span>
+              <strong>Create project shells, tenant users and project role assignments</strong>
+            </summary>
+            <section className="workspaceAdmin">
+              <form className="adminPanel" onSubmit={handleProjectCreate}>
+                <div className="panelHeader">
+                  <h2>
+                    <Building2 size={18} /> Project Shell
+                  </h2>
+                  <span>{projects.length} projects</span>
                 </div>
-                <p>{finding.message}</p>
-                <small>{finding.item_count} items / weight {finding.weight}</small>
-              </article>
-            )) : (
-              <article>
-                <div>
-                  <strong>No findings</strong>
-                  <span className="qualityStatus pass">Pass</span>
+                <div className="formColumns">
+                  <label>
+                    <span>Code</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
+                      placeholder="PRJ-001"
+                      required
+                      value={projectDraft.code}
+                    />
+                  </label>
+                  <label>
+                    <span>Phase</span>
+                    <select
+                      disabled={!canConfigure}
+                      onChange={(event) => setProjectDraft((current) => ({ ...current, phase: event.target.value }))}
+                      value={projectDraft.phase}
+                    >
+                      <option value="Planning">Planning</option>
+                      <option value="Execution">Execution</option>
+                      <option value="Closeout">Closeout</option>
+                    </select>
+                  </label>
                 </div>
-                <p>The active schedule has no stored QA findings.</p>
-              </article>
-            )}
-          </div>
-        </div>
-        <div className="mappingTable">
-          <div className="panelHeader compactHeader">
-            <h2>WBS / CBS / Activity Mapping</h2>
-            <span>{dashboard.control_account_mappings.length} linked activities</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>WBS</th>
-                <th>CBS</th>
-                <th>Control Account</th>
-                <th>Planned %</th>
-                <th>BAC</th>
-                <th>PV</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.control_account_mappings.slice(0, 12).map((mapping) => (
-                <tr key={mapping.id}>
-                  <td><strong>{mapping.wbs_code}</strong><span>{mapping.wbs_name}</span></td>
-                  <td>{mapping.cbs_code}</td>
-                  <td>{mapping.control_account_id ? accountLabel(mapping.control_account_id) : "Unmapped"}</td>
-                  <td>{mapping.planned_percent.toFixed(1)}%</td>
-                  <td>{currency(mapping.planned_cost, project.currency)}</td>
-                  <td>{currency(mapping.planned_value, project.currency)}</td>
-                  <td>{statusLabel(mapping.status)}</td>
-                </tr>
+                <label>
+                  <span>Name</span>
+                  <input
+                    disabled={!canConfigure}
+                    onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Project control shell name"
+                    required
+                    value={projectDraft.name}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Start</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
+                      }
+                      type="date"
+                      value={projectDraft.start_date}
+                    />
+                  </label>
+                  <label>
+                    <span>Finish</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
+                      }
+                      type="date"
+                      value={projectDraft.finish_date}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canConfigure || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "project" ? "Creating..." : "Create Project Shell"}
+                </button>
+              </form>
+
+              <form className="adminPanel" onSubmit={handleUserCreate}>
+                <div className="panelHeader">
+                  <h2>
+                    <UserPlus size={18} /> Users
+                  </h2>
+                  <span>{users.length} active</span>
+                </div>
+                <label>
+                  <span>Full Name</span>
+                  <input
+                    disabled={!canConfigure}
+                    onChange={(event) => setUserDraft((current) => ({ ...current, full_name: event.target.value }))}
+                    required
+                    value={userDraft.full_name}
+                  />
+                </label>
+                <label>
+                  <span>Email</span>
+                  <input
+                    disabled={!canConfigure}
+                    onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))}
+                    required
+                    type="email"
+                    value={userDraft.email}
+                  />
+                </label>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canConfigure}
+                    onChange={(event) => setUserDraft((current) => ({ ...current, title: event.target.value }))}
+                    value={userDraft.title}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canConfigure || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "user" ? "Creating..." : "Create User"}
+                </button>
+              </form>
+
+              <form className="adminPanel" onSubmit={handleTeamAssign}>
+                <div className="panelHeader">
+                  <h2>
+                    <Users size={18} /> Roles
+                  </h2>
+                  <span>{dashboard.project_team.length} assigned</span>
+                </div>
+                <label>
+                  <span>User</span>
+                  <select
+                    disabled={!canConfigure}
+                    onChange={(event) => setTeamDraft((current) => ({ ...current, user_id: event.target.value }))}
+                    required
+                    value={teamDraft.user_id}
+                  >
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.full_name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Role Profile</span>
+                  <select
+                    disabled={!canConfigure}
+                    onChange={(event) => setTeamDraft((current) => ({ ...current, role: event.target.value }))}
+                    required
+                    value={teamDraft.role}
+                  >
+                    {roles.map((role) => (
+                      <option key={role.role} value={role.role}>
+                        {role.role}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="permissionStrip">
+                  {roles.find((role) => role.role === teamDraft.role)?.can_capture_progress && <span>Progress</span>}
+                  {roles.find((role) => role.role === teamDraft.role)?.can_capture_cost && <span>Cost</span>}
+                  {roles.find((role) => role.role === teamDraft.role)?.can_approve_workflow && <span>Approve</span>}
+                  {roles.find((role) => role.role === teamDraft.role)?.can_manage_contract && <span>Contract</span>}
+                  {roles.find((role) => role.role === teamDraft.role)?.can_configure && <span>Admin</span>}
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canConfigure || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "team" ? "Assigning..." : "Assign Role"}
+                </button>
+              </form>
+
+              <form className="adminPanel bpDesignerPanel" onSubmit={handleProcessTemplateCreate}>
+                <div className="panelHeader">
+                  <h2>
+                    <Settings size={18} /> BP Designer
+                  </h2>
+                  <span>{dashboard.process_templates.length} templates</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Code</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setProcessDraft((current) => ({ ...current, code: event.target.value.toUpperCase() }))
+                      }
+                      placeholder="BP-CUSTOM"
+                      required
+                      value={processDraft.code}
+                    />
+                  </label>
+                  <label>
+                    <span>Category</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) => setProcessDraft((current) => ({ ...current, category: event.target.value }))}
+                      value={processDraft.category}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Name</span>
+                  <input
+                    disabled={!canConfigure}
+                    onChange={(event) => setProcessDraft((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Business process name"
+                    required
+                    value={processDraft.name}
+                  />
+                </label>
+                <label>
+                  <span>Description</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) =>
+                      setProcessDraft((current) => ({ ...current, description: event.target.value }))
+                    }
+                    placeholder="Control purpose and decision point"
+                    value={processDraft.description}
+                  />
+                </label>
+                <label>
+                  <span>Form Fields</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) =>
+                      setProcessDraft((current) => ({ ...current, form_schema: event.target.value }))
+                    }
+                    value={processDraft.form_schema}
+                  />
+                </label>
+                <label>
+                  <span>Steps: Step | Role | Detail</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) => setProcessDraft((current) => ({ ...current, steps: event.target.value }))}
+                    value={processDraft.steps}
+                  />
+                </label>
+                <label>
+                  <span>Transitions: action | from | to | ball in court | status</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) =>
+                      setProcessDraft((current) => ({ ...current, transitions: event.target.value }))
+                    }
+                    value={processDraft.transitions}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canConfigure || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "process-template" ? "Saving..." : "Create BP Template"}
+                </button>
+              </form>
+            </section>
+          </details>
+
+          <section className="controlSummary">
+            <div>
+              <span>Control Date</span>
+              <strong>{dashboard.schedule_import?.data_date ?? "Pending"}</strong>
+            </div>
+            <div>
+              <span>Control Period</span>
+              <strong>{dashboard.control_periods[0]?.period_label ?? "Pending"}</strong>
+            </div>
+            <div>
+              <span>Baseline</span>
+              <strong>{statusLabel(mappingSummary.baseline_status)}</strong>
+            </div>
+            <div>
+              <span>CA Mapping</span>
+              <strong>
+                {mappingSummary.mapping_score.toFixed(0)}% / Cost {mappingSummary.cost_loading_score.toFixed(0)}%
+              </strong>
+            </div>
+            <div>
+              <span>Open Warnings</span>
+              <strong>
+                {redAlerts} red / {amberAlerts} amber
+              </strong>
+            </div>
+            <div>
+              <span>Forecast Variance</span>
+              <strong>{currency(kpi.vac, project.currency)}</strong>
+            </div>
+          </section>
+
+          <section className="flowBand">
+            <div className="flowTrack">
+              {dashboard.flow.map((step, index) => (
+                <React.Fragment key={step.name}>
+                  <div className="flowStep">
+                    <strong>{step.name}</strong>
+                    <span>{step.state}</span>
+                  </div>
+                  {index < dashboard.flow.length - 1 && <ArrowRight className="flowArrow" size={18} />}
+                </React.Fragment>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </div>
+          </section>
 
-      <section className={activeView === "progress" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Progress Records</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open capture form</button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Control Account</th>
-              <th>Physical %</th>
-              <th>Quantity</th>
-              <th>Labor Hours</th>
-              <th>Reported On</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dashboard.latest_progress_records.map((record) => (
-              <tr key={record.id}>
-                <td>{accountLabel(record.control_account_id)}</td>
-                <td>{record.physical_percent.toFixed(1)}%</td>
-                <td>{record.quantity_installed.toLocaleString()}</td>
-                <td>{record.labor_hours.toLocaleString()}</td>
-                <td>{record.reported_on}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      <section className={activeView === "cost" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Cost Manager</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open capture form</button>
-        </div>
-        <div className="costManagerSummary">
-          <article className={costManager.cost_variance < 0 ? "risk" : ""}>
-            <span>Cost Variance</span>
-            <strong>{currency(costManager.cost_variance, project.currency)}</strong>
-            <small>EV {currency(costManager.total_earned_value, project.currency)} / actas {currency(costManager.total_incurred_from_payment_certificates, project.currency)} / almacen {currency(costManager.total_incurred_from_warehouse_receipts, project.currency)}</small>
-          </article>
-          <article>
-            <span>Funding Coverage</span>
-            <strong>{costManager.funding_coverage_percent.toFixed(1)}%</strong>
-            <small>{currency(costManager.total_funding, project.currency)} funding / {currency(costManager.total_bac, project.currency)} BAC</small>
-          </article>
-          <article className={costManager.cash_flow_variance < 0 ? "risk" : ""}>
-            <span>Cash Flow Variance</span>
-            <strong>{currency(costManager.cash_flow_variance, project.currency)}</strong>
-            <small>Actual net vs planned net</small>
-          </article>
-          <article>
-            <span>Committed Cost</span>
-            <strong>{currency(costManager.total_committed_cost, project.currency)}</strong>
-            <small>Contracts {currency(costManager.total_contract_commitments, project.currency)} / PO {currency(costManager.total_purchase_order_commitments, project.currency)}</small>
-          </article>
-          <article>
-            <span>Forecast Outflow</span>
-            <strong>{currency(costManager.forecast_outflow, project.currency)}</strong>
-            <small>{dashboard.cash_flow.length} periods / {dashboard.funding_sources.length} funds</small>
-          </article>
-        </div>
-        <div className="viewSplit">
-          <div>
-            <div className="subHeader">
-              <strong>Cost Sheet</strong>
-              <span>{dashboard.cost_sheet.length} control accounts</span>
+          <section
+            className={activeView === "roadmap" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Roadmap Maturity Assessment</h2>
+              <span>Estado global {overallRoadmapScore}%</span>
             </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Control Account</th>
-                  <th>CBS</th>
-                  <th>BAC</th>
-                  <th>EV</th>
-                  <th>Actas</th>
-                  <th>Almacen</th>
-                  <th>Incurred</th>
-                  <th>Contract</th>
-                  <th>PO</th>
-                  <th>Committed</th>
-                  <th>CPI</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.cost_sheet.map((line) => (
-                  <tr key={line.control_account_id}>
-                    <td>{line.control_account_code}</td>
-                    <td>{line.cbs_code || "Pending"}</td>
-                    <td>{currency(line.bac, project.currency)}</td>
-                    <td>{currency(line.earned_value, project.currency)}</td>
-                    <td>{currency(line.incurred_payment_certificate_value, project.currency)}</td>
-                    <td>{currency(line.incurred_warehouse_receipt_value, project.currency)}</td>
-                    <td>{currency(line.actual_cost, project.currency)}</td>
-                    <td>{currency(line.committed_contract_value, project.currency)}</td>
-                    <td>{currency(line.committed_purchase_order_value, project.currency)}</td>
-                    <td>{currency(line.committed_cost, project.currency)}</td>
-                    <td>{line.cpi.toFixed(2)}</td>
-                  </tr>
+            <div className="appAssessment">
+              <article>
+                <span>Calificacion actual</span>
+                <strong>
+                  {pilotReadiness ? `${pilotReadiness.score.toFixed(1)}/100` : `${overallRoadmapScore}/100`}
+                </strong>
+                <small>
+                  {pilotReadiness
+                    ? statusLabel(pilotReadiness.status)
+                    : "Demo funcional avanzada, todavia no produccion empresarial."}
+                </small>
+              </article>
+              <article>
+                <span>TCM / Control Core</span>
+                <strong>7/10</strong>
+                <small>Flujo TCM, EVM, alertas, BP y trazabilidad ya estan conectados.</small>
+              </article>
+              <article>
+                <span>AWP</span>
+                <strong>4/10</strong>
+                <small>CWA/CWP/EWP/PWP/IWP, readiness y constraints quedan integrados como MVP inicial.</small>
+              </article>
+              <article>
+                <span>Produccion SaaS</span>
+                <strong>3/10</strong>
+                <small>Faltan auth real, migraciones, hardening, observabilidad y pruebas amplias.</small>
+              </article>
+            </div>
+            {dashboard.control_plan && (
+              <form className="adminPanel controlPlanPanel" onSubmit={handleControlPlanSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <ClipboardCheck size={18} /> Project Control Plan / PEP
+                  </h2>
+                  <span>
+                    {statusLabel(dashboard.control_plan.status)} / v{dashboard.control_plan.version}
+                  </span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Reporting Cadence</span>
+                    <input
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, reporting_cadence: event.target.value }))
+                      }
+                      value={controlPlanDraft.reporting_cadence}
+                    />
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, status: event.target.value }))
+                      }
+                      value={controlPlanDraft.status}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="in_review">In Review</option>
+                      <option value="approved">Approved</option>
+                      <option value="active">Active</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Execution Strategy</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) =>
+                      setControlPlanDraft((current) => ({ ...current, execution_strategy: event.target.value }))
+                    }
+                    rows={2}
+                    value={controlPlanDraft.execution_strategy}
+                  />
+                </label>
+                <label>
+                  <span>Control Strategy</span>
+                  <textarea
+                    disabled={!canConfigure}
+                    onChange={(event) =>
+                      setControlPlanDraft((current) => ({ ...current, control_strategy: event.target.value }))
+                    }
+                    rows={2}
+                    value={controlPlanDraft.control_strategy}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Progress Measurement</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({
+                          ...current,
+                          progress_measurement_rule: event.target.value,
+                        }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.progress_measurement_rule}
+                    />
+                  </label>
+                  <label>
+                    <span>Cost Measurement</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, cost_measurement_rule: event.target.value }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.cost_measurement_rule}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Change Rules</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, change_management_rule: event.target.value }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.change_management_rule}
+                    />
+                  </label>
+                  <label>
+                    <span>Risk Rules</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, risk_management_rule: event.target.value }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.risk_management_rule}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Procurement Strategy</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, procurement_strategy: event.target.value }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.procurement_strategy}
+                    />
+                  </label>
+                  <label>
+                    <span>Document Control</span>
+                    <textarea
+                      disabled={!canConfigure}
+                      onChange={(event) =>
+                        setControlPlanDraft((current) => ({ ...current, document_control_rule: event.target.value }))
+                      }
+                      rows={3}
+                      value={controlPlanDraft.document_control_rule}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canConfigure || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "control-plan" ? "Saving..." : "Save Control Plan"}
+                </button>
+              </form>
+            )}
+            {pilotReadiness && (
+              <div className="roadmapGrid">
+                {pilotReadiness.items.map((item) => (
+                  <article className="roadmapPhase" key={`${item.phase}-${item.area}`}>
+                    <div>
+                      <span>{item.phase}</span>
+                      <strong>{item.area}</strong>
+                    </div>
+                    <div className="scoreBar">
+                      <span style={{ width: `${item.score}%` }} />
+                    </div>
+                    <div className="phaseMeta">
+                      <strong>{item.score.toFixed(1)}%</strong>
+                      <span>{statusLabel(item.status)}</span>
+                    </div>
+                    <p>{item.finding}</p>
+                    <small>{item.next_action}</small>
+                  </article>
                 ))}
-              </tbody>
-            </table>
-            <div className="subHeader spaced">
-              <strong>Payment Certificates</strong>
-              <span>{dashboard.payment_certificates.length} actas</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Control Account</th>
-                  <th>Certificate</th>
-                  <th>Amount</th>
-                  <th>Certified On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.payment_certificates.map((certificate) => (
-                  <tr key={certificate.id}>
-                    <td>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No account"}</td>
-                    <td>{certificate.certificate_no}</td>
-                    <td>{currency(certificate.certified_amount, project.currency)}</td>
-                    <td>{certificate.certified_on ?? "Open"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="subHeader spaced">
-              <strong>Warehouse Receipts</strong>
-              <span>{dashboard.warehouse_receipts.length} entradas</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Control Account</th>
-                  <th>Receipt</th>
-                  <th>Value</th>
-                  <th>Received On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.warehouse_receipts.map((receipt) => (
-                  <tr key={receipt.id}>
-                    <td>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No account"}</td>
-                    <td>{receipt.receipt_no}</td>
-                    <td>{currency(receipt.received_value, project.currency)}</td>
-                    <td>{receipt.received_on ?? "Open"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="subHeader spaced">
-              <strong>Cost Evidence Records</strong>
-              <span>{dashboard.latest_cost_records.length} recent</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Control Account</th>
-                  <th>Source</th>
-                  <th>Amount</th>
-                  <th>Incurred On</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.latest_cost_records.map((record) => (
-                  <tr key={record.id}>
-                    <td>{accountLabel(record.control_account_id)}</td>
-                    <td>{statusLabel(record.source)}</td>
-                    <td>{currency(record.amount, project.currency)}</td>
-                    <td>{record.incurred_on}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div>
-            <div className="subHeader">
-              <strong>Funding Sources</strong>
-              <span>{currency(costManager.total_funding, project.currency)}</span>
-            </div>
-            <div className="workList compactList">
-              {dashboard.funding_sources.map((funding) => (
-                <article key={funding.id}>
-                  <strong>{funding.code} / {currency(funding.amount, funding.currency)}</strong>
-                  <span>{funding.name}</span>
-                  <small>{statusLabel(funding.status)} / v{funding.version}</small>
+              </div>
+            )}
+            <div className="roadmapGrid">
+              {roadmapStatus.map((item) => (
+                <article className="roadmapPhase" key={item.phase}>
+                  <div>
+                    <span>{item.phase}</span>
+                    <strong>{item.title}</strong>
+                  </div>
+                  <div className="scoreBar">
+                    <span style={{ width: `${item.score}%` }} />
+                  </div>
+                  <div className="phaseMeta">
+                    <strong>{item.score}%</strong>
+                    <span>{item.state}</span>
+                  </div>
+                  <p>{item.detail}</p>
                 </article>
               ))}
             </div>
-            <form className="inlineCostForm" onSubmit={handleFundingSubmit}>
-              <input
-                disabled={costDisabled}
-                onChange={(event) => setFundingDraft((current) => ({ ...current, code: event.target.value }))}
-                placeholder="Code"
-                required
-                value={fundingDraft.code}
-              />
-              <input
-                disabled={costDisabled}
-                onChange={(event) => setFundingDraft((current) => ({ ...current, name: event.target.value }))}
-                placeholder="Name"
-                required
-                value={fundingDraft.name}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setFundingDraft((current) => ({ ...current, amount: event.target.value }))}
-                placeholder="Amount"
-                required
-                type="number"
-                value={fundingDraft.amount}
-              />
-              <select
-                disabled={costDisabled}
-                onChange={(event) => setFundingDraft((current) => ({ ...current, status: event.target.value }))}
-                value={fundingDraft.status}
+          </section>
+
+          <section
+            className={activeView === "schedule" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Schedule Control</h2>
+              <button
+                className="linkButton"
+                disabled={!canApproveControlBaseline || captureAction !== null}
+                onClick={handleControlBaselineApprove}
+                type="button"
               >
-                <option value="approved">Approved</option>
-                <option value="planned">Planned</option>
-                <option value="on_hold">On Hold</option>
-              </select>
-              <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
-                {captureAction === "funding" ? "Saving..." : "Add Funding"}
+                {captureAction === "control-baseline-approve" ? "Approving..." : "Approve Control Baseline"}
               </button>
-            </form>
-            <div className="subHeader spaced">
-              <strong>Cash Flow</strong>
-              <span>{dashboard.cash_flow.length} periods</span>
+            </div>
+            <div className="mappingSummary">
+              <article>
+                <span>Mapped Activities</span>
+                <strong>
+                  {mappingSummary.mapped_activities}/{mappingSummary.total_schedule_activities}
+                </strong>
+                <small>{mappingSummary.mapping_score.toFixed(1)}% WBS to control account coverage</small>
+              </article>
+              <article>
+                <span>Cost Loading</span>
+                <strong>
+                  {mappingSummary.cost_loaded_activities}/{mappingSummary.total_schedule_activities}
+                </strong>
+                <small>{mappingSummary.cost_loading_score.toFixed(1)}% schedule activities with cost</small>
+              </article>
+              <article>
+                <span>Control Accounts</span>
+                <strong>{mappingSummary.control_account_count}</strong>
+                <small>
+                  {currency(mappingSummary.total_bac, project.currency)} BAC / PV{" "}
+                  {currency(mappingSummary.total_planned_value, project.currency)}
+                </small>
+              </article>
+              <article>
+                <span>Baseline Status</span>
+                <strong>{statusLabel(mappingSummary.baseline_status)}</strong>
+                <small>
+                  {dashboard.schedule_activity_count} activities / {dashboard.schedule_relationship_count} relationships
+                </small>
+              </article>
+            </div>
+            <div className="viewSplit">
+              <div className="workList">
+                <article>
+                  <strong>
+                    {dashboard.schedule_import
+                      ? neutralScheduleText(dashboard.schedule_import.baseline_name)
+                      : "No baseline"}
+                  </strong>
+                  <span>
+                    {dashboard.schedule_import?.validation_summary ??
+                      "Upload a schedule XML or XER file to start the baseline workflow."}
+                  </span>
+                  <small>
+                    Quality {dashboard.schedule_import?.quality_score.toFixed(0) ?? "0"}% / Data date{" "}
+                    {dashboard.schedule_import?.data_date ?? "Pending"}
+                  </small>
+                </article>
+                {dashboard.baseline_versions.map((baseline) => (
+                  <article key={baseline.id}>
+                    <strong>
+                      BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}
+                    </strong>
+                    <span>{neutralScheduleText(baseline.name)}</span>
+                    <small>
+                      {baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%
+                    </small>
+                  </article>
+                ))}
+              </div>
+              <div className="qualityList">
+                {dashboard.schedule_findings.length ? (
+                  dashboard.schedule_findings.map((finding) => (
+                    <article key={finding.id}>
+                      <div>
+                        <strong>{finding.check_code}</strong>
+                        <span className={`qualityStatus ${finding.severity.toLowerCase()}`}>
+                          {statusLabel(finding.severity)}
+                        </span>
+                      </div>
+                      <p>{finding.message}</p>
+                      <small>
+                        {finding.item_count} items / weight {finding.weight}
+                      </small>
+                    </article>
+                  ))
+                ) : (
+                  <article>
+                    <div>
+                      <strong>No findings</strong>
+                      <span className="qualityStatus pass">Pass</span>
+                    </div>
+                    <p>The active schedule has no stored QA findings.</p>
+                  </article>
+                )}
+              </div>
+            </div>
+            <div className="mappingTable">
+              <div className="panelHeader compactHeader">
+                <h2>WBS / CBS / Activity Mapping</h2>
+                <span>{dashboard.control_account_mappings.length} linked activities</span>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>WBS</th>
+                    <th>CBS</th>
+                    <th>Control Account</th>
+                    <th>Planned %</th>
+                    <th>BAC</th>
+                    <th>PV</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.control_account_mappings.slice(0, 12).map((mapping) => (
+                    <tr key={mapping.id}>
+                      <td>
+                        <strong>{mapping.wbs_code}</strong>
+                        <span>{mapping.wbs_name}</span>
+                      </td>
+                      <td>{mapping.cbs_code}</td>
+                      <td>{mapping.control_account_id ? accountLabel(mapping.control_account_id) : "Unmapped"}</td>
+                      <td>{mapping.planned_percent.toFixed(1)}%</td>
+                      <td>{currency(mapping.planned_cost, project.currency)}</td>
+                      <td>{currency(mapping.planned_value, project.currency)}</td>
+                      <td>{statusLabel(mapping.status)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section
+            className={activeView === "progress" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Progress Records</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open capture form
+              </button>
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>Period</th>
-                  <th>Planned Out</th>
-                  <th>Actual Out</th>
-                  <th>Forecast Out</th>
+                  <th>Control Account</th>
+                  <th>Physical %</th>
+                  <th>Quantity</th>
+                  <th>Labor Hours</th>
+                  <th>Reported On</th>
                 </tr>
               </thead>
               <tbody>
-                {dashboard.cash_flow.map((period) => (
-                  <tr key={period.id}>
-                    <td>{period.period_label}</td>
-                    <td>{currency(period.planned_outflow, project.currency)}</td>
-                    <td>{currency(period.actual_outflow, project.currency)}</td>
-                    <td>{currency(period.forecast_outflow, project.currency)}</td>
+                {dashboard.latest_progress_records.map((record) => (
+                  <tr key={record.id}>
+                    <td>{accountLabel(record.control_account_id)}</td>
+                    <td>{record.physical_percent.toFixed(1)}%</td>
+                    <td>{record.quantity_installed.toLocaleString()}</td>
+                    <td>{record.labor_hours.toLocaleString()}</td>
+                    <td>{record.reported_on}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <form className="inlineCostForm cashFlowForm" onSubmit={handleCashFlowSubmit}>
-              <input
-                disabled={costDisabled}
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, period_label: event.target.value }))}
-                placeholder="YYYY-MM"
-                required
-                value={cashFlowDraft.period_label}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_inflow: event.target.value }))}
-                placeholder="Planned in"
-                type="number"
-                value={cashFlowDraft.planned_inflow}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_outflow: event.target.value }))}
-                placeholder="Planned out"
-                type="number"
-                value={cashFlowDraft.planned_outflow}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_inflow: event.target.value }))}
-                placeholder="Actual in"
-                type="number"
-                value={cashFlowDraft.actual_inflow}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_outflow: event.target.value }))}
-                placeholder="Actual out"
-                type="number"
-                value={cashFlowDraft.actual_outflow}
-              />
-              <input
-                disabled={costDisabled}
-                min="0"
-                onChange={(event) => setCashFlowDraft((current) => ({ ...current, forecast_outflow: event.target.value }))}
-                placeholder="Forecast out"
-                type="number"
-                value={cashFlowDraft.forecast_outflow}
-              />
-              <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
-                {captureAction === "cash-flow" ? "Saving..." : "Add Period"}
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <section className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>AWP Workface Readiness</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open AWP forms</button>
-        </div>
-        <div className="awpSummary">
-          <article>
-            <span>Readiness Score</span>
-            <strong>{dashboard.awp_summary.readiness_score.toFixed(1)}%</strong>
-            <small>{dashboard.awp_summary.ready_for_release} ready / {dashboard.awp_summary.total_packages} packages</small>
-          </article>
-          <article>
-            <span>CWP / IWP</span>
-            <strong>{dashboard.awp_summary.cwp_count} / {dashboard.awp_summary.iwp_count}</strong>
-            <small>Construction and installation work packages</small>
-          </article>
-          <article className={dashboard.awp_summary.blocking_constraints ? "risk" : ""}>
-            <span>Open Constraints</span>
-            <strong>{dashboard.awp_summary.open_constraints}</strong>
-            <small>{dashboard.awp_summary.blocking_constraints} blocking constraints</small>
-          </article>
-          <article className={dashboard.awp_summary.blocked_packages ? "risk" : ""}>
-            <span>Blocked Packages</span>
-            <strong>{dashboard.awp_summary.blocked_packages}</strong>
-            <small>Constraint review before field release</small>
-          </article>
-        </div>
-        <div className="viewSplit">
-          <div>
-            <div className="subHeader">
-              <strong>Path of Construction Packages</strong>
-              <span>{dashboard.work_packages.length} records</span>
+          <section
+            className={activeView === "cost" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Cost Manager</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open capture form
+              </button>
+            </div>
+            <div className="costManagerSummary">
+              <article className={costManager.cost_variance < 0 ? "risk" : ""}>
+                <span>Cost Variance</span>
+                <strong>{currency(costManager.cost_variance, project.currency)}</strong>
+                <small>
+                  EV {currency(costManager.total_earned_value, project.currency)} / actas{" "}
+                  {currency(costManager.total_incurred_from_payment_certificates, project.currency)} / almacen{" "}
+                  {currency(costManager.total_incurred_from_warehouse_receipts, project.currency)}
+                </small>
+              </article>
+              <article>
+                <span>Funding Coverage</span>
+                <strong>{costManager.funding_coverage_percent.toFixed(1)}%</strong>
+                <small>
+                  {currency(costManager.total_funding, project.currency)} funding /{" "}
+                  {currency(costManager.total_bac, project.currency)} BAC
+                </small>
+              </article>
+              <article className={costManager.cash_flow_variance < 0 ? "risk" : ""}>
+                <span>Cash Flow Variance</span>
+                <strong>{currency(costManager.cash_flow_variance, project.currency)}</strong>
+                <small>Actual net vs planned net</small>
+              </article>
+              <article>
+                <span>Committed Cost</span>
+                <strong>{currency(costManager.total_committed_cost, project.currency)}</strong>
+                <small>
+                  Contracts {currency(costManager.total_contract_commitments, project.currency)} / PO{" "}
+                  {currency(costManager.total_purchase_order_commitments, project.currency)}
+                </small>
+              </article>
+              <article>
+                <span>Forecast Outflow</span>
+                <strong>{currency(costManager.forecast_outflow, project.currency)}</strong>
+                <small>
+                  {dashboard.cash_flow.length} periods / {dashboard.funding_sources.length} funds
+                </small>
+              </article>
+            </div>
+            <div className="viewSplit">
+              <div>
+                <div className="subHeader">
+                  <strong>Cost Sheet</strong>
+                  <span>{dashboard.cost_sheet.length} control accounts</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Control Account</th>
+                      <th>CBS</th>
+                      <th>BAC</th>
+                      <th>EV</th>
+                      <th>Actas</th>
+                      <th>Almacen</th>
+                      <th>Incurred</th>
+                      <th>Contract</th>
+                      <th>PO</th>
+                      <th>Committed</th>
+                      <th>CPI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.cost_sheet.map((line) => (
+                      <tr key={line.control_account_id}>
+                        <td>{line.control_account_code}</td>
+                        <td>{line.cbs_code || "Pending"}</td>
+                        <td>{currency(line.bac, project.currency)}</td>
+                        <td>{currency(line.earned_value, project.currency)}</td>
+                        <td>{currency(line.incurred_payment_certificate_value, project.currency)}</td>
+                        <td>{currency(line.incurred_warehouse_receipt_value, project.currency)}</td>
+                        <td>{currency(line.actual_cost, project.currency)}</td>
+                        <td>{currency(line.committed_contract_value, project.currency)}</td>
+                        <td>{currency(line.committed_purchase_order_value, project.currency)}</td>
+                        <td>{currency(line.committed_cost, project.currency)}</td>
+                        <td>{line.cpi.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="subHeader spaced">
+                  <strong>Payment Certificates</strong>
+                  <span>{dashboard.payment_certificates.length} actas</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Control Account</th>
+                      <th>Certificate</th>
+                      <th>Amount</th>
+                      <th>Certified On</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.payment_certificates.map((certificate) => (
+                      <tr key={certificate.id}>
+                        <td>
+                          {certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No account"}
+                        </td>
+                        <td>{certificate.certificate_no}</td>
+                        <td>{currency(certificate.certified_amount, project.currency)}</td>
+                        <td>{certificate.certified_on ?? "Open"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="subHeader spaced">
+                  <strong>Warehouse Receipts</strong>
+                  <span>{dashboard.warehouse_receipts.length} entradas</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Control Account</th>
+                      <th>Receipt</th>
+                      <th>Value</th>
+                      <th>Received On</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.warehouse_receipts.map((receipt) => (
+                      <tr key={receipt.id}>
+                        <td>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No account"}</td>
+                        <td>{receipt.receipt_no}</td>
+                        <td>{currency(receipt.received_value, project.currency)}</td>
+                        <td>{receipt.received_on ?? "Open"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="subHeader spaced">
+                  <strong>Cost Evidence Records</strong>
+                  <span>{dashboard.latest_cost_records.length} recent</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Control Account</th>
+                      <th>Source</th>
+                      <th>Amount</th>
+                      <th>Incurred On</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.latest_cost_records.map((record) => (
+                      <tr key={record.id}>
+                        <td>{accountLabel(record.control_account_id)}</td>
+                        <td>{statusLabel(record.source)}</td>
+                        <td>{currency(record.amount, project.currency)}</td>
+                        <td>{record.incurred_on}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <div className="subHeader">
+                  <strong>Funding Sources</strong>
+                  <span>{currency(costManager.total_funding, project.currency)}</span>
+                </div>
+                <div className="workList compactList">
+                  {dashboard.funding_sources.map((funding) => (
+                    <article key={funding.id}>
+                      <strong>
+                        {funding.code} / {currency(funding.amount, funding.currency)}
+                      </strong>
+                      <span>{funding.name}</span>
+                      <small>
+                        {statusLabel(funding.status)} / v{funding.version}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+                <form className="inlineCostForm" onSubmit={handleFundingSubmit}>
+                  <input
+                    disabled={costDisabled}
+                    onChange={(event) => setFundingDraft((current) => ({ ...current, code: event.target.value }))}
+                    placeholder="Code"
+                    required
+                    value={fundingDraft.code}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    onChange={(event) => setFundingDraft((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Name"
+                    required
+                    value={fundingDraft.name}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) => setFundingDraft((current) => ({ ...current, amount: event.target.value }))}
+                    placeholder="Amount"
+                    required
+                    type="number"
+                    value={fundingDraft.amount}
+                  />
+                  <select
+                    disabled={costDisabled}
+                    onChange={(event) => setFundingDraft((current) => ({ ...current, status: event.target.value }))}
+                    value={fundingDraft.status}
+                  >
+                    <option value="approved">Approved</option>
+                    <option value="planned">Planned</option>
+                    <option value="on_hold">On Hold</option>
+                  </select>
+                  <button
+                    className="workflowAction primary"
+                    disabled={costDisabled || captureAction !== null}
+                    type="submit"
+                  >
+                    {captureAction === "funding" ? "Saving..." : "Add Funding"}
+                  </button>
+                </form>
+                <div className="subHeader spaced">
+                  <strong>Cash Flow</strong>
+                  <span>{dashboard.cash_flow.length} periods</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Period</th>
+                      <th>Planned Out</th>
+                      <th>Actual Out</th>
+                      <th>Forecast Out</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.cash_flow.map((period) => (
+                      <tr key={period.id}>
+                        <td>{period.period_label}</td>
+                        <td>{currency(period.planned_outflow, project.currency)}</td>
+                        <td>{currency(period.actual_outflow, project.currency)}</td>
+                        <td>{currency(period.forecast_outflow, project.currency)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <form className="inlineCostForm cashFlowForm" onSubmit={handleCashFlowSubmit}>
+                  <input
+                    disabled={costDisabled}
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, period_label: event.target.value }))
+                    }
+                    placeholder="YYYY-MM"
+                    required
+                    value={cashFlowDraft.period_label}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, planned_inflow: event.target.value }))
+                    }
+                    placeholder="Planned in"
+                    type="number"
+                    value={cashFlowDraft.planned_inflow}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, planned_outflow: event.target.value }))
+                    }
+                    placeholder="Planned out"
+                    type="number"
+                    value={cashFlowDraft.planned_outflow}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, actual_inflow: event.target.value }))
+                    }
+                    placeholder="Actual in"
+                    type="number"
+                    value={cashFlowDraft.actual_inflow}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, actual_outflow: event.target.value }))
+                    }
+                    placeholder="Actual out"
+                    type="number"
+                    value={cashFlowDraft.actual_outflow}
+                  />
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) =>
+                      setCashFlowDraft((current) => ({ ...current, forecast_outflow: event.target.value }))
+                    }
+                    placeholder="Forecast out"
+                    type="number"
+                    value={cashFlowDraft.forecast_outflow}
+                  />
+                  <button
+                    className="workflowAction primary"
+                    disabled={costDisabled || captureAction !== null}
+                    type="submit"
+                  >
+                    {captureAction === "cash-flow" ? "Saving..." : "Add Period"}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>AWP Workface Readiness</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open AWP forms
+              </button>
+            </div>
+            <div className="awpSummary">
+              <article>
+                <span>Readiness Score</span>
+                <strong>{dashboard.awp_summary.readiness_score.toFixed(1)}%</strong>
+                <small>
+                  {dashboard.awp_summary.ready_for_release} ready / {dashboard.awp_summary.total_packages} packages
+                </small>
+              </article>
+              <article>
+                <span>CWP / IWP</span>
+                <strong>
+                  {dashboard.awp_summary.cwp_count} / {dashboard.awp_summary.iwp_count}
+                </strong>
+                <small>Construction and installation work packages</small>
+              </article>
+              <article className={dashboard.awp_summary.blocking_constraints ? "risk" : ""}>
+                <span>Open Constraints</span>
+                <strong>{dashboard.awp_summary.open_constraints}</strong>
+                <small>{dashboard.awp_summary.blocking_constraints} blocking constraints</small>
+              </article>
+              <article className={dashboard.awp_summary.blocked_packages ? "risk" : ""}>
+                <span>Blocked Packages</span>
+                <strong>{dashboard.awp_summary.blocked_packages}</strong>
+                <small>Constraint review before field release</small>
+              </article>
+            </div>
+            <div className="viewSplit">
+              <div>
+                <div className="subHeader">
+                  <strong>Path of Construction Packages</strong>
+                  <span>{dashboard.work_packages.length} records</span>
+                </div>
+                <div className="workList">
+                  {dashboard.work_packages.map((workPackage) => {
+                    const openBlocking = (constraintsByPackage[workPackage.id] ?? []).filter(
+                      (constraint) => constraint.status === "open" && constraint.blocking
+                    ).length;
+                    return (
+                      <article className={openBlocking ? "blockedPackage" : ""} key={workPackage.id}>
+                        <strong>
+                          {workPackage.package_type} / {workPackage.code}
+                        </strong>
+                        <span>{workPackage.title}</span>
+                        <small>
+                          {workPackage.path_of_construction || "No path defined"} /{" "}
+                          {statusLabel(workPackage.readiness_status)}
+                        </small>
+                        <div className="packageFacts">
+                          <span>
+                            {workPackage.control_account_id
+                              ? accountLabel(workPackage.control_account_id)
+                              : "Area level"}
+                          </span>
+                          <span>
+                            {workPackage.planned_start ?? "Pending"} to {workPackage.planned_finish ?? "Pending"}
+                          </span>
+                          <span>{workPackage.progress_percent.toFixed(1)}% progress</span>
+                          <span>{openBlocking} blockers</span>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+              <div>
+                <div className="subHeader">
+                  <strong>Constraint Log</strong>
+                  <span>{dashboard.work_package_constraints.length} constraints</span>
+                </div>
+                <div className="workList">
+                  {dashboard.work_package_constraints.map((constraint) => (
+                    <article
+                      className={constraint.status === "open" && constraint.blocking ? "blockedPackage" : ""}
+                      key={constraint.id}
+                    >
+                      <strong>
+                        {constraint.constraint_type} / {packageLabel(constraint.work_package_id)}
+                      </strong>
+                      <span>{constraint.description}</span>
+                      <small>
+                        {constraint.owner_role} / Required {constraint.required_by ?? "Pending"} /{" "}
+                        {statusLabel(constraint.status)}
+                      </small>
+                      {constraint.status === "open" && (
+                        <button
+                          className="linkButton compact"
+                          disabled={!canManageAwp || captureAction === `awp-constraint-${constraint.id}`}
+                          onClick={() => handleConstraintClose(constraint)}
+                          type="button"
+                        >
+                          {captureAction === `awp-constraint-${constraint.id}` ? "Closing..." : "Close Constraint"}
+                        </button>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className={activeView === "changes" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Change Management</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Create change BP
+              </button>
             </div>
             <div className="workList">
-              {dashboard.work_packages.map((workPackage) => {
-                const openBlocking = (constraintsByPackage[workPackage.id] ?? []).filter((constraint) => constraint.status === "open" && constraint.blocking).length;
+              {dashboard.changes.map((change) => (
+                <article key={change.id}>
+                  <strong>{change.title}</strong>
+                  <span>{change.deviation}</span>
+                  <small>
+                    {currency(change.cost_impact, project.currency)} / {change.schedule_impact_days} days /{" "}
+                    {statusLabel(change.status)}
+                  </small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section
+            className={activeView === "claims" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Claims / Forensic Entitlement</h2>
+              <span>Notice / causation / impact / quantum / evidence</span>
+            </div>
+            <div className="claimSummary">
+              <article>
+                <span>Forensic Readiness</span>
+                <strong>{dashboard.claims_forensic_summary.forensic_readiness_score.toFixed(1)}%</strong>
+                <small>Weighted from notices, impact analysis and entitlement evidence</small>
+              </article>
+              <article className={dashboard.claims_forensic_summary.late_notices ? "risk" : ""}>
+                <span>Notice Compliance</span>
+                <strong>
+                  {dashboard.claims_forensic_summary.compliant_notices}/{dashboard.claims_forensic_summary.notice_count}
+                </strong>
+                <small>
+                  {dashboard.claims_forensic_summary.late_notices} late notices /{" "}
+                  {dashboard.claims_forensic_summary.total_claims} claims
+                </small>
+              </article>
+              <article>
+                <span>Quantified Claims</span>
+                <strong>{dashboard.claims_forensic_summary.quantified_claims}</strong>
+                <small>{dashboard.claims_forensic_summary.impact_analyses} impact analyses registered</small>
+              </article>
+              <article className={dashboard.claim_entitlement_summary.cumulative_gap_items ? "risk" : ""}>
+                <span>Claimed Impact</span>
+                <strong>{currency(dashboard.claims_forensic_summary.total_claimed_cost, project.currency)}</strong>
+                <small>
+                  {dashboard.claims_forensic_summary.total_schedule_impact_days} schedule days /{" "}
+                  {dashboard.claim_entitlement_summary.gap_items} entitlement gaps
+                </small>
+              </article>
+            </div>
+
+            <div className="forensicWorkspace">
+              <div>
+                <div className="subHeader">
+                  <strong>Contractual Notices</strong>
+                  <span>{dashboard.contract_notices.length} records</span>
+                </div>
+                <div className="noticeGrid">
+                  {dashboard.contract_notices.map((notice) => (
+                    <article className={notice.compliance_status === "late" ? "late" : "compliant"} key={notice.id}>
+                      <div>
+                        <strong>{notice.reference || `Notice ${notice.id}`}</strong>
+                        <span>{statusLabel(notice.compliance_status)}</span>
+                      </div>
+                      <p>{notice.subject}</p>
+                      <small>
+                        Event {notice.event_date ?? "pending"} / due {notice.due_date ?? "pending"} / issued{" "}
+                        {notice.notice_date ?? "pending"}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="subHeader">
+                  <strong>Impact Analysis</strong>
+                  <span>{dashboard.claim_impact_analyses.length} analyses</span>
+                </div>
+                <div className="impactGrid">
+                  {dashboard.claim_impact_analyses.map((analysis) => (
+                    <article key={analysis.id}>
+                      <div>
+                        <strong>{analysis.method}</strong>
+                        <span>{(analysis.confidence_score * 100).toFixed(0)}% confidence</span>
+                      </div>
+                      <p>{analysis.impacted_activity}</p>
+                      <small>
+                        {currency(analysis.cost_impact, project.currency)} / {analysis.schedule_impact_days} days /{" "}
+                        {analysis.productivity_loss_percent.toFixed(1)}% productivity loss
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="workList">
+              {dashboard.claims.map((claim) => {
+                const entitlementItems = entitlementByClaim[claim.id] ?? [];
+                const claimNotices = noticesByClaim[claim.id] ?? [];
+                const claimImpacts = impactByClaim[claim.id] ?? [];
+                const claimScore = entitlementItems.length
+                  ? Math.round(
+                      (entitlementItems.reduce((total, item) => total + item.score * item.weight, 0) /
+                        entitlementItems.reduce((total, item) => total + item.weight, 0)) *
+                        100
+                    )
+                  : 0;
+                const claimedCost = claimImpacts.reduce((total, item) => total + item.cost_impact, 0);
+                const claimedDays = claimImpacts.reduce((total, item) => total + item.schedule_impact_days, 0);
                 return (
-                  <article className={openBlocking ? "blockedPackage" : ""} key={workPackage.id}>
-                    <strong>{workPackage.package_type} / {workPackage.code}</strong>
-                    <span>{workPackage.title}</span>
-                    <small>{workPackage.path_of_construction || "No path defined"} / {statusLabel(workPackage.readiness_status)}</small>
-                    <div className="packageFacts">
-                      <span>{workPackage.control_account_id ? accountLabel(workPackage.control_account_id) : "Area level"}</span>
-                      <span>{workPackage.planned_start ?? "Pending"} to {workPackage.planned_finish ?? "Pending"}</span>
-                      <span>{workPackage.progress_percent.toFixed(1)}% progress</span>
-                      <span>{openBlocking} blockers</span>
+                  <article className="claimCard" key={claim.id}>
+                    <div className="claimHeader">
+                      <div>
+                        <strong>{claim.title}</strong>
+                        <span>{claim.causality}</span>
+                      </div>
+                      <div>
+                        <strong>{claimScore}%</strong>
+                        <small>{statusLabel(claim.status)}</small>
+                      </div>
+                    </div>
+                    <p>{claim.impact}</p>
+                    <small>{claim.evidence_summary}</small>
+                    <div className="claimTrace">
+                      <span>{claimNotices.length} notices</span>
+                      <span>{claimImpacts.length} impact analyses</span>
+                      <span>
+                        {currency(claimedCost, project.currency)} / {claimedDays} days
+                      </span>
+                    </div>
+                    <div className="entitlementMatrix">
+                      {entitlementItems.map((item) => (
+                        <article className={`entitlementItem ${item.status}`} key={item.id}>
+                          <div>
+                            <span>
+                              {item.practice_source} / {item.category}
+                            </span>
+                            <strong>{item.element}</strong>
+                          </div>
+                          <p>{item.requirement}</p>
+                          <small>{item.assessment}</small>
+                          <div className="entitlementMeta">
+                            <span>{item.evidence_ref || "No evidence linked"}</span>
+                            <strong>
+                              {statusLabel(item.status)} / {(item.score * 100).toFixed(0)}%
+                            </strong>
+                          </div>
+                        </article>
+                      ))}
                     </div>
                   </article>
                 );
               })}
             </div>
-          </div>
-          <div>
-            <div className="subHeader">
-              <strong>Constraint Log</strong>
-              <span>{dashboard.work_package_constraints.length} constraints</span>
-            </div>
-            <div className="workList">
-              {dashboard.work_package_constraints.map((constraint) => (
-                <article className={constraint.status === "open" && constraint.blocking ? "blockedPackage" : ""} key={constraint.id}>
-                  <strong>{constraint.constraint_type} / {packageLabel(constraint.work_package_id)}</strong>
-                  <span>{constraint.description}</span>
-                  <small>{constraint.owner_role} / Required {constraint.required_by ?? "Pending"} / {statusLabel(constraint.status)}</small>
-                  {constraint.status === "open" && (
-                    <button
-                      className="linkButton compact"
-                      disabled={!canManageAwp || captureAction === `awp-constraint-${constraint.id}`}
-                      onClick={() => handleConstraintClose(constraint)}
-                      type="button"
-                    >
-                      {captureAction === `awp-constraint-${constraint.id}` ? "Closing..." : "Close Constraint"}
-                    </button>
-                  )}
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <section className={activeView === "changes" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Change Management</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Create change BP</button>
-        </div>
-        <div className="workList">
-          {dashboard.changes.map((change) => (
-            <article key={change.id}>
-              <strong>{change.title}</strong>
-              <span>{change.deviation}</span>
-              <small>{currency(change.cost_impact, project.currency)} / {change.schedule_impact_days} days / {statusLabel(change.status)}</small>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={activeView === "claims" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Claims / Forensic Entitlement</h2>
-          <span>Notice / causation / impact / quantum / evidence</span>
-        </div>
-        <div className="claimSummary">
-          <article>
-            <span>Forensic Readiness</span>
-            <strong>{dashboard.claims_forensic_summary.forensic_readiness_score.toFixed(1)}%</strong>
-            <small>Weighted from notices, impact analysis and entitlement evidence</small>
-          </article>
-          <article className={dashboard.claims_forensic_summary.late_notices ? "risk" : ""}>
-            <span>Notice Compliance</span>
-            <strong>{dashboard.claims_forensic_summary.compliant_notices}/{dashboard.claims_forensic_summary.notice_count}</strong>
-            <small>{dashboard.claims_forensic_summary.late_notices} late notices / {dashboard.claims_forensic_summary.total_claims} claims</small>
-          </article>
-          <article>
-            <span>Quantified Claims</span>
-            <strong>{dashboard.claims_forensic_summary.quantified_claims}</strong>
-            <small>{dashboard.claims_forensic_summary.impact_analyses} impact analyses registered</small>
-          </article>
-          <article className={dashboard.claim_entitlement_summary.cumulative_gap_items ? "risk" : ""}>
-            <span>Claimed Impact</span>
-            <strong>{currency(dashboard.claims_forensic_summary.total_claimed_cost, project.currency)}</strong>
-            <small>{dashboard.claims_forensic_summary.total_schedule_impact_days} schedule days / {dashboard.claim_entitlement_summary.gap_items} entitlement gaps</small>
-          </article>
-        </div>
-
-        <div className="forensicWorkspace">
-          <div>
-            <div className="subHeader">
-              <strong>Contractual Notices</strong>
-              <span>{dashboard.contract_notices.length} records</span>
+          <section
+            className={activeView === "rfq" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>RFQ / Bid Evaluation</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open RFQ forms
+              </button>
             </div>
-            <div className="noticeGrid">
-              {dashboard.contract_notices.map((notice) => (
-                <article className={notice.compliance_status === "late" ? "late" : "compliant"} key={notice.id}>
-                  <div>
-                    <strong>{notice.reference || `Notice ${notice.id}`}</strong>
-                    <span>{statusLabel(notice.compliance_status)}</span>
-                  </div>
-                  <p>{notice.subject}</p>
-                  <small>Event {notice.event_date ?? "pending"} / due {notice.due_date ?? "pending"} / issued {notice.notice_date ?? "pending"}</small>
-                </article>
-              ))}
+            <div className="costManagerSummary">
+              <article>
+                <span>RFQ Packages</span>
+                <strong>{dashboard.rfq_summary.total_packages}</strong>
+                <small>{dashboard.rfq_summary.issued_packages} issued or under evaluation</small>
+              </article>
+              <article>
+                <span>Bids Received</span>
+                <strong>{dashboard.rfq_summary.bids_received}</strong>
+                <small>Average score {dashboard.rfq_summary.average_weighted_score.toFixed(1)}</small>
+              </article>
+              <article>
+                <span>Recommended Bidder</span>
+                <strong>{dashboard.rfq_summary.recommended_bidder || "Pending"}</strong>
+                <small>{currency(dashboard.rfq_summary.recommended_bid_amount, project.currency)}</small>
+              </article>
             </div>
-          </div>
-          <div>
-            <div className="subHeader">
-              <strong>Impact Analysis</strong>
-              <span>{dashboard.claim_impact_analyses.length} analyses</span>
-            </div>
-            <div className="impactGrid">
-              {dashboard.claim_impact_analyses.map((analysis) => (
-                <article key={analysis.id}>
-                  <div>
-                    <strong>{analysis.method}</strong>
-                    <span>{(analysis.confidence_score * 100).toFixed(0)}% confidence</span>
-                  </div>
-                  <p>{analysis.impacted_activity}</p>
-                  <small>{currency(analysis.cost_impact, project.currency)} / {analysis.schedule_impact_days} days / {analysis.productivity_loss_percent.toFixed(1)}% productivity loss</small>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="workList">
-          {dashboard.claims.map((claim) => {
-            const entitlementItems = entitlementByClaim[claim.id] ?? [];
-            const claimNotices = noticesByClaim[claim.id] ?? [];
-            const claimImpacts = impactByClaim[claim.id] ?? [];
-            const claimScore = entitlementItems.length
-              ? Math.round((entitlementItems.reduce((total, item) => total + item.score * item.weight, 0) / entitlementItems.reduce((total, item) => total + item.weight, 0)) * 100)
-              : 0;
-            const claimedCost = claimImpacts.reduce((total, item) => total + item.cost_impact, 0);
-            const claimedDays = claimImpacts.reduce((total, item) => total + item.schedule_impact_days, 0);
-            return (
-              <article className="claimCard" key={claim.id}>
-                <div className="claimHeader">
-                  <div>
-                    <strong>{claim.title}</strong>
-                    <span>{claim.causality}</span>
-                  </div>
-                  <div>
-                    <strong>{claimScore}%</strong>
-                    <small>{statusLabel(claim.status)}</small>
-                  </div>
+            <div className="viewSplit">
+              <div>
+                <div className="subHeader">
+                  <strong>RFQ Packages</strong>
+                  <span>{dashboard.rfq_packages.length} packages</span>
                 </div>
-                <p>{claim.impact}</p>
-                <small>{claim.evidence_summary}</small>
-                <div className="claimTrace">
-                  <span>{claimNotices.length} notices</span>
-                  <span>{claimImpacts.length} impact analyses</span>
-                  <span>{currency(claimedCost, project.currency)} / {claimedDays} days</span>
-                </div>
-                <div className="entitlementMatrix">
-                  {entitlementItems.map((item) => (
-                    <article className={`entitlementItem ${item.status}`} key={item.id}>
-                      <div>
-                        <span>{item.practice_source} / {item.category}</span>
-                        <strong>{item.element}</strong>
-                      </div>
-                      <p>{item.requirement}</p>
-                      <small>{item.assessment}</small>
-                      <div className="entitlementMeta">
-                        <span>{item.evidence_ref || "No evidence linked"}</span>
-                        <strong>{statusLabel(item.status)} / {(item.score * 100).toFixed(0)}%</strong>
-                      </div>
+                <div className="workList">
+                  {dashboard.rfq_packages.map((rfqPackage) => (
+                    <article key={rfqPackage.id}>
+                      <strong>
+                        {rfqPackage.package_no} / {currency(rfqPackage.budget_amount, project.currency)}
+                      </strong>
+                      <span>{rfqPackage.title}</span>
+                      <small>
+                        {rfqPackage.control_account_id
+                          ? accountLabel(rfqPackage.control_account_id)
+                          : "No control account"}{" "}
+                        / {statusLabel(rfqPackage.status)} / {bidsByRfq[rfqPackage.id]?.length ?? 0} bids / due{" "}
+                        {rfqPackage.due_date ?? "Open"}
+                      </small>
                     </article>
                   ))}
                 </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className={activeView === "rfq" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>RFQ / Bid Evaluation</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open RFQ forms</button>
-        </div>
-        <div className="costManagerSummary">
-          <article>
-            <span>RFQ Packages</span>
-            <strong>{dashboard.rfq_summary.total_packages}</strong>
-            <small>{dashboard.rfq_summary.issued_packages} issued or under evaluation</small>
-          </article>
-          <article>
-            <span>Bids Received</span>
-            <strong>{dashboard.rfq_summary.bids_received}</strong>
-            <small>Average score {dashboard.rfq_summary.average_weighted_score.toFixed(1)}</small>
-          </article>
-          <article>
-            <span>Recommended Bidder</span>
-            <strong>{dashboard.rfq_summary.recommended_bidder || "Pending"}</strong>
-            <small>{currency(dashboard.rfq_summary.recommended_bid_amount, project.currency)}</small>
-          </article>
-        </div>
-        <div className="viewSplit">
-          <div>
-            <div className="subHeader">
-              <strong>RFQ Packages</strong>
-              <span>{dashboard.rfq_packages.length} packages</span>
-            </div>
-            <div className="workList">
-              {dashboard.rfq_packages.map((rfqPackage) => (
-                <article key={rfqPackage.id}>
-                  <strong>{rfqPackage.package_no} / {currency(rfqPackage.budget_amount, project.currency)}</strong>
-                  <span>{rfqPackage.title}</span>
-                  <small>{rfqPackage.control_account_id ? accountLabel(rfqPackage.control_account_id) : "No control account"} / {statusLabel(rfqPackage.status)} / {bidsByRfq[rfqPackage.id]?.length ?? 0} bids / due {rfqPackage.due_date ?? "Open"}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="subHeader">
-              <strong>Bid Leveling</strong>
-              <span>{dashboard.rfq_bids.length} bids</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Bidder</th>
-                  <th>RFQ</th>
-                  <th>Amount</th>
-                  <th>Score</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.rfq_bids.map((bid) => (
-                  <tr key={bid.id}>
-                    <td>{bid.bidder_name}</td>
-                    <td>{rfqPackageLabel(bid.rfq_package_id)}</td>
-                    <td>{currency(bid.bid_amount, project.currency)}</td>
-                    <td>{bid.weighted_score.toFixed(1)}</td>
-                    <td>{statusLabel(bid.status)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section className={activeView === "contracts" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Contract Administration</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open contract forms</button>
-        </div>
-        <div className="contractGrid">
-          <div>
-            <strong>Contracts</strong>
-            <div className="workList">
-              {dashboard.contracts.map((contract) => (
-                <article key={contract.id}>
-                  <strong>{contract.code} / {contract.counterparty}</strong>
-                  <span>{contract.title}</span>
-                  <small>{currency(contract.value, project.currency)} / {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} / {statusLabel(contract.status)}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <strong>Purchase Orders</strong>
-            <div className="workList">
-              {dashboard.purchase_orders.map((order) => (
-                <article key={order.id}>
-                  <strong>{order.po_number} / {currency(order.committed_amount, project.currency)}</strong>
-                  <span>{order.description}</span>
-                  <small>{order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} / {order.vendor || "No vendor"} / {statusLabel(order.status)}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <strong>Payment Certificates</strong>
-            <div className="workList">
-              {dashboard.payment_certificates.map((certificate) => (
-                <article key={certificate.id}>
-                  <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
-                  <span>{certificate.period_label || "No period"}</span>
-                  <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <strong>Warehouse Receipts</strong>
-            <div className="workList">
-              {dashboard.warehouse_receipts.map((receipt) => (
-                <article key={receipt.id}>
-                  <strong>{receipt.receipt_no} / {currency(receipt.received_value, project.currency)}</strong>
-                  <span>{receipt.description || "Warehouse receipt"}</span>
-                  <small>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} / {statusLabel(receipt.status)}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <strong>Communications</strong>
-            <div className="workList">
-              {dashboard.communications.map((communication) => (
-                <article key={communication.id}>
-                  <strong>{statusLabel(communication.communication_type)} / {communication.sent_on}</strong>
-                  <span>{communication.subject}</span>
-                  <small>{communication.reference || "No reference"}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={activeView === "documents" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
-        <div className="panelHeader">
-          <h2>Aconex-style Document Control</h2>
-          <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">Open document forms</button>
-        </div>
-        <div className="costManagerSummary">
-          <article>
-            <span>Controlled Score</span>
-            <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(1)}%</strong>
-            <small>{dashboard.document_control_summary.current_documents} current / {dashboard.document_control_summary.total_documents} total</small>
-          </article>
-          <article className={dashboard.document_control_summary.outstanding_reviews ? "risk" : ""}>
-            <span>Reviews</span>
-            <strong>{dashboard.document_control_summary.outstanding_reviews}</strong>
-            <small>{dashboard.document_control_summary.overdue_reviews} overdue reviews</small>
-          </article>
-          <article>
-            <span>Transmittals</span>
-            <strong>{dashboard.document_control_summary.transmittals_sent}</strong>
-            <small>{dashboard.document_transmittal_items.length} issued document revisions</small>
-          </article>
-          <article className={dashboard.document_control_summary.open_mail ? "risk" : ""}>
-            <span>Project Mail</span>
-            <strong>{dashboard.document_control_summary.open_mail}</strong>
-            <small>{dashboard.document_control_summary.overdue_mail} overdue responses</small>
-          </article>
-        </div>
-        <div className="viewSplit">
-          <div>
-            <div className="subHeader">
-              <strong>Document Register</strong>
-              <span>{dashboard.documents.length} records</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Rev</th>
-                  <th>Title</th>
-                  <th>Discipline</th>
-                  <th>Status</th>
-                  <th>Review</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.documents.map((document) => (
-                  <tr key={document.id}>
-                    <td>{document.document_number}</td>
-                    <td>{document.revision}</td>
-                    <td>{document.title}</td>
-                    <td>{document.discipline || document.doc_type}</td>
-                    <td>{statusLabel(document.status)}</td>
-                    <td>{statusLabel(document.review_status)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="subHeader spaced">
-              <strong>Transmittals</strong>
-              <span>{dashboard.document_transmittals.length} records</span>
-            </div>
-            <div className="workList compactList">
-              {dashboard.document_transmittals.map((transmittal) => (
-                <article key={transmittal.id}>
-                  <strong>{transmittal.transmittal_no} / {statusLabel(transmittal.purpose)}</strong>
-                  <span>{transmittal.subject}</span>
-                  <small>{transmittal.recipient_org || "No recipient"} / Due {transmittal.due_date ?? "Open"} / {statusLabel(transmittal.status)}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="subHeader">
-              <strong>Project Mail</strong>
-              <span>{dashboard.project_mail.length} records</span>
-            </div>
-            <div className="workList compactList">
-              {dashboard.project_mail.map((mail) => (
-                <article className={mail.status === "outstanding" ? "blockedPackage" : ""} key={mail.id}>
-                  <strong>{mail.mail_no} / {statusLabel(mail.mail_type)}</strong>
-                  <span>{mail.subject}</span>
-                  <small>{mail.from_role || "Project"} to {mail.to_role || "Team"} / Due {mail.due_date ?? "Open"} / {statusLabel(mail.status)}</small>
-                </article>
-              ))}
-            </div>
-            <div className="subHeader spaced">
-              <strong>Review Steps</strong>
-              <span>{dashboard.document_reviews.length} records</span>
-            </div>
-            <div className="workList compactList">
-              {dashboard.document_reviews.map((review) => {
-                const document = dashboard.documents.find((item) => item.id === review.document_id);
-                return (
-                  <article className={review.review_status === "outstanding" ? "blockedPackage" : ""} key={review.id}>
-                    <strong>{document?.document_number ?? `Document ${review.document_id}`} / {review.reviewer_role}</strong>
-                    <span>{review.comments || "No comments"}</span>
-                    <small>Due {review.due_date ?? "Open"} / {statusLabel(review.review_status)}</small>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={activeView === "business-processes" ? "workflowShell workspaceSection" : "workflowShell workspaceSection hidden"} id="workflow-record">
-        <aside className="processRail">
-          <div className="railHeader">
-            <span>Business Processes</span>
-            <strong>Project Control Shell</strong>
-          </div>
-          {["Project Shell", "Schedule Intake", "AWP Readiness", "Progress Update", "Cost Actuals", "Change Request", "Contract Notice", "Claim Impact", "Document Link", "Decision Action"].map((item, index) => (
-            <button className={index === 0 ? "railItem active" : "railItem"} key={item}>
-              <span>{item}</span>
-              <strong>{item === "Schedule Intake" ? (workflowInstance ? "Open" : "Waiting") : item === "AWP Readiness" ? `${dashboard.awp_summary.open_constraints} open` : item === "Contract Notice" ? `${dashboard.contract_notices.length} records` : item === "Claim Impact" ? `${dashboard.claim_impact_analyses.length} analyses` : item === "Project Shell" ? "Active" : "Ready"}</strong>
-            </button>
-          ))}
-        </aside>
-
-        <div className="workflowCanvas">
-          <div className="workflowHeader">
-            <div>
-              <span>Workflow Routing</span>
-              <h2>{workflowInstance ? neutralScheduleText(workflowInstance.title) : "Schedule upload triggers the control workflow"}</h2>
-            </div>
-            <div className="workflowMeta">
-              <span>BP Status</span>
-              <strong>{workflowInstance ? workflowStatus : "Waiting for schedule"}</strong>
-            </div>
-          </div>
-
-          <div className="stageTrack">
-            {workflowStages.map((stage, index) => (
-              <React.Fragment key={stage.name}>
-                <article className={`stageCard ${stage.tone}`}>
-                  <span>{stage.status}</span>
-                  <strong>{stage.name}</strong>
-                  <p>{stage.detail}</p>
-                  <small>Ball in Court: {stage.owner}</small>
-                </article>
-                {index < workflowStages.length - 1 && <ArrowRight className="stageArrow" size={18} />}
-              </React.Fragment>
-            ))}
-          </div>
-
-          <div className="recordRegistry">
-            <div className="registryHeader">
-              <h2>BP Records</h2>
-              <span>{bpRecords.length} routed records</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Record No.</th>
-                  <th>Business Process</th>
-                  <th>Title</th>
-                  <th>Current Step</th>
-                  <th>Ball in Court</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bpRecords.map((record) => (
-                  <tr className={selectedBpRecord?.record === record.record ? "selectedRecord" : ""} key={record.record}>
-                    <td>
-                      <button className="recordLink" onClick={() => setSelectedBpRecordNo(record.record)} type="button">
-                        {record.record}
-                      </button>
-                    </td>
-                    <td>{record.process}</td>
-                    <td>{record.title}</td>
-                    <td>{record.step}</td>
-                    <td>{record.ballInCourt}</td>
-                    <td><span className={`statusPill ${record.tone}`}>{record.status}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {selectedBpRecord && (
-            <div className="bpRecordDetail">
+              </div>
               <div>
-                <span>Selected BP Record</span>
-                <strong>{selectedBpRecord.record} / {selectedBpRecord.process}</strong>
-              </div>
-              <p>{selectedBpRecord.title}</p>
-              <div className="detailFacts">
-                <span>Current Step: <strong>{selectedBpRecord.step}</strong></span>
-                <span>Ball in Court: <strong>{selectedBpRecord.ballInCourt}</strong></span>
-                <span>Status: <strong>{selectedBpRecord.status}</strong></span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <aside className="routingPanel">
-          <div>
-            <span>Current Step</span>
-            <strong>{workflowInstance?.current_step ?? "Schedule Upload Gate"}</strong>
-            <p>{workflowInstance ? "Validate schedule variance, cost exposure and contractual notice before routing to approval." : "Upload a schedule XML or XER file to create the BP record and start routing."}</p>
-          </div>
-          <div>
-            <span>Required Attachments</span>
-            <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(0)}% controlled</strong>
-            <p>Controlled revisions, transmittals, reviews and project mail remain tied to BP records.</p>
-          </div>
-          <div>
-            <span>Ball in Court</span>
-            <strong>{workflowInstance?.ball_in_court ?? "Planner"}</strong>
-            <p>{workflowInstance ? "The responsible role owns the next routed action in the control cycle." : "The planner must load the schedule before downstream controls can run."}</p>
-          </div>
-          <div>
-            <span>Workflow Actions</span>
-            <div className="actionStack">
-              {workflowActionButtons.length ? workflowActionButtons.map((item) => (
-                <button
-                  className={`workflowAction ${item.tone}`}
-                  disabled={routingAction !== null || !canRouteCurrentWorkflow}
-                  key={item.action}
-                  onClick={() => handleWorkflowAction(item.action)}
-                  type="button"
-                >
-                  {routingAction === item.action ? "Routing..." : item.label}
-                </button>
-              )) : <strong>No pending action</strong>}
-            </div>
-            <p>Each action updates the routed step, ball-in-court and audit trail.</p>
-          </div>
-        </aside>
-      </section>
-
-      <section className={activeView === "control-dashboard" ? "kpiGrid workspaceSection" : "kpiGrid workspaceSection hidden"}>
-        <article className="metric">
-          <div><Gauge size={18} /><span>SPI</span></div>
-          <strong>{kpi.spi.toFixed(3)}</strong>
-          <small>Schedule performance</small>
-          <StatusLight value={kpi.spi} />
-        </article>
-        <article className="metric">
-          <div><ShieldCheck size={18} /><span>CPI</span></div>
-          <strong>{kpi.cpi.toFixed(3)}</strong>
-          <small>Cost performance</small>
-          <StatusLight value={kpi.cpi} />
-        </article>
-        <article className="metric">
-          <div><Activity size={18} /><span>VAC</span></div>
-          <strong>{currency(kpi.vac, project.currency)}</strong>
-          <small>Variance at completion</small>
-        </article>
-        <article className="metric">
-          <div><GitBranch size={18} /><span>EAC</span></div>
-          <strong>{currency(kpi.eac, project.currency)}</strong>
-          <small>Estimate at completion</small>
-        </article>
-      </section>
-
-      <details className={activeView === "bp-entry-forms" ? "bpFormsDrawer workspaceSection" : "bpFormsDrawer workspaceSection hidden"} id="bp-entry-forms" open={activeView === "bp-entry-forms"}>
-        <summary>
-          <span>BP Entry Forms</span>
-          <strong>Progress, cost, AWP, change, contract notice, claim impact and document capture</strong>
-        </summary>
-      <section className="captureGrid">
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Data Quality Gate</h2>
-            <span>{dashboard.schedule_import ? `${dashboard.schedule_import.quality_score.toFixed(0)}%` : "waiting"}</span>
-          </div>
-          <div className="qualityList">
-            {(dashboard.data_quality_gates ?? []).map((gate) => (
-              <article key={gate.name}>
-                <div>
-                  <strong>{gate.name}</strong>
-                  <span className={`qualityStatus ${gate.status.toLowerCase()}`}>{gate.status}</span>
+                <div className="subHeader">
+                  <strong>Bid Leveling</strong>
+                  <span>{dashboard.rfq_bids.length} bids</span>
                 </div>
-                <p>{gate.finding}</p>
-                <small>{gate.owner_role} / Score {gate.score.toFixed(0)}%</small>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <form className="panel captureForm" onSubmit={handleProgressSubmit}>
-          <div className="panelHeader">
-            <h2>Progress Capture</h2>
-            <span>{(dashboard.latest_progress_records ?? []).length} recent</span>
-          </div>
-          <label>
-            <span>Control Account</span>
-            <select
-              disabled={progressDisabled}
-              onChange={(event) => setProgressDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-              required
-              value={progressDraft.control_account_id}
-            >
-              {dashboard.control_accounts.map((account) => (
-                <option key={account.id} value={account.id}>{account.code}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Physical %</span>
-              <input
-                disabled={progressDisabled}
-                max="100"
-                min="0"
-                onChange={(event) => setProgressDraft((current) => ({ ...current, physical_percent: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={progressDraft.physical_percent}
-              />
-            </label>
-            <label>
-              <span>Reported On</span>
-              <input
-                disabled={progressDisabled}
-                onChange={(event) => setProgressDraft((current) => ({ ...current, reported_on: event.target.value }))}
-                required
-                type="date"
-                value={progressDraft.reported_on}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Quantity</span>
-              <input
-                disabled={progressDisabled}
-                min="0"
-                onChange={(event) => setProgressDraft((current) => ({ ...current, quantity_installed: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={progressDraft.quantity_installed}
-              />
-            </label>
-            <label>
-              <span>Labor Hours</span>
-              <input
-                disabled={progressDisabled}
-                min="0"
-                onChange={(event) => setProgressDraft((current) => ({ ...current, labor_hours: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={progressDraft.labor_hours}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Evidence Ref</span>
-            <input
-              disabled={progressDisabled}
-              onChange={(event) => setProgressDraft((current) => ({ ...current, evidence_ref: event.target.value }))}
-              placeholder="FIELD-REPORT-YYYY-MM-DD"
-              value={progressDraft.evidence_ref}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={progressDisabled || captureAction !== null} type="submit">
-            {captureAction === "progress" ? "Capturing..." : "Capture Progress"}
-          </button>
-          <div className="recentList">
-            {(dashboard.latest_progress_records ?? []).slice(0, 2).map((record) => (
-              <article key={record.id}>
-                <strong>{record.physical_percent.toFixed(1)}% / {record.reported_on}</strong>
-                <span>{accountLabel(record.control_account_id)}</span>
-              </article>
-            ))}
-          </div>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleCostSubmit}>
-          <div className="panelHeader">
-            <h2>Cost Evidence</h2>
-            <span>{(dashboard.latest_cost_records ?? []).length} recent</span>
-          </div>
-          <label>
-            <span>Control Account</span>
-            <select
-              disabled={costDisabled}
-              onChange={(event) => setCostDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-              required
-              value={costDraft.control_account_id}
-            >
-              {dashboard.control_accounts.map((account) => (
-                <option key={account.id} value={account.id}>{account.code}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Source</span>
-              <select
-                disabled={costDisabled}
-                onChange={(event) => setCostDraft((current) => ({ ...current, source: event.target.value }))}
-                required
-                value={costDraft.source}
-              >
-                <option value="invoice">Invoice</option>
-                <option value="payroll">Payroll</option>
-                <option value="equipment">Equipment</option>
-                <option value="materials">Materials</option>
-              </select>
-            </label>
-            <label>
-              <span>Incurred On</span>
-              <input
-                disabled={costDisabled}
-                onChange={(event) => setCostDraft((current) => ({ ...current, incurred_on: event.target.value }))}
-                required
-                type="date"
-                value={costDraft.incurred_on}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Amount</span>
-            <input
-              disabled={costDisabled}
-              min="0"
-              onChange={(event) => setCostDraft((current) => ({ ...current, amount: event.target.value }))}
-              required
-              step="0.01"
-              type="number"
-              value={costDraft.amount}
-            />
-          </label>
-          <label>
-            <span>Description</span>
-            <input
-              disabled={costDisabled}
-              onChange={(event) => setCostDraft((current) => ({ ...current, description: event.target.value }))}
-              required
-              value={costDraft.description}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
-            {captureAction === "cost" ? "Capturing..." : "Capture Cost Evidence"}
-          </button>
-          <div className="recentList">
-            {(dashboard.latest_cost_records ?? []).slice(0, 2).map((record) => (
-              <article key={record.id}>
-                <strong>{currency(record.amount, project.currency)} / {statusLabel(record.source)}</strong>
-                <span>{accountLabel(record.control_account_id)}</span>
-              </article>
-            ))}
-          </div>
-        </form>
-      </section>
-
-      <section className="phaseTwoGrid">
-        <form className="panel captureForm" onSubmit={handleAwpSubmit}>
-          <div className="panelHeader">
-            <h2>AWP Package</h2>
-            <span>{dashboard.work_packages.length} packages</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageAwp || controlGateBlocked}
-                onChange={(event) => setAwpDraft((current) => ({ ...current, package_type: event.target.value }))}
-                value={awpDraft.package_type}
-              >
-                <option value="CWA">CWA</option>
-                <option value="EWA">EWA</option>
-                <option value="EWP">EWP</option>
-                <option value="CWP">CWP</option>
-                <option value="PWP">PWP</option>
-                <option value="IWP">IWP</option>
-              </select>
-            </label>
-            <label>
-              <span>Sequence</span>
-              <input
-                disabled={!canManageAwp || controlGateBlocked}
-                min="0"
-                onChange={(event) => setAwpDraft((current) => ({ ...current, sequence_no: event.target.value }))}
-                type="number"
-                value={awpDraft.sequence_no}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Code</span>
-            <input
-              disabled={!canManageAwp || controlGateBlocked}
-              onChange={(event) => setAwpDraft((current) => ({ ...current, code: event.target.value }))}
-              placeholder="IWP-PIPE-001"
-              required
-              value={awpDraft.code}
-            />
-          </label>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canManageAwp || controlGateBlocked}
-              onChange={(event) => setAwpDraft((current) => ({ ...current, title: event.target.value }))}
-              required
-              value={awpDraft.title}
-            />
-          </label>
-          <label>
-            <span>Control Account</span>
-            <select
-              disabled={!canManageAwp || controlGateBlocked}
-              onChange={(event) => setAwpDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-              value={awpDraft.control_account_id}
-            >
-              <option value="">Area level</option>
-              {dashboard.control_accounts.map((account) => (
-                <option key={account.id} value={account.id}>{account.code}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Parent Package</span>
-            <select
-              disabled={!canManageAwp || controlGateBlocked}
-              onChange={(event) => setAwpDraft((current) => ({ ...current, parent_id: event.target.value }))}
-              value={awpDraft.parent_id}
-            >
-              <option value="">No parent</option>
-              {dashboard.work_packages.map((workPackage) => (
-                <option key={workPackage.id} value={workPackage.id}>{workPackage.code}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Path of Construction</span>
-            <textarea
-              disabled={!canManageAwp || controlGateBlocked}
-              onChange={(event) => setAwpDraft((current) => ({ ...current, path_of_construction: event.target.value }))}
-              required
-              value={awpDraft.path_of_construction}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Start</span>
-              <input
-                disabled={!canManageAwp || controlGateBlocked}
-                onChange={(event) => setAwpDraft((current) => ({ ...current, planned_start: event.target.value }))}
-                type="date"
-                value={awpDraft.planned_start}
-              />
-            </label>
-            <label>
-              <span>Finish</span>
-              <input
-                disabled={!canManageAwp || controlGateBlocked}
-                onChange={(event) => setAwpDraft((current) => ({ ...current, planned_finish: event.target.value }))}
-                type="date"
-                value={awpDraft.planned_finish}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canManageAwp || controlGateBlocked || captureAction !== null} type="submit">
-            {captureAction === "awp" ? "Creating..." : "Create AWP Package"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleConstraintSubmit}>
-          <div className="panelHeader">
-            <h2>AWP Constraint</h2>
-            <span>{dashboard.awp_summary.open_constraints} open</span>
-          </div>
-          <label>
-            <span>Work Package</span>
-            <select
-              disabled={!canManageAwp || !dashboard.work_packages.length}
-              onChange={(event) => setConstraintDraft((current) => ({ ...current, work_package_id: event.target.value }))}
-              required
-              value={constraintDraft.work_package_id}
-            >
-              {dashboard.work_packages.map((workPackage) => (
-                <option key={workPackage.id} value={workPackage.id}>{workPackage.code}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageAwp || !dashboard.work_packages.length}
-                onChange={(event) => setConstraintDraft((current) => ({ ...current, constraint_type: event.target.value }))}
-                value={constraintDraft.constraint_type}
-              >
-                <option value="Engineering">Engineering</option>
-                <option value="Material">Material</option>
-                <option value="Access">Access</option>
-                <option value="Permit">Permit</option>
-                <option value="Safety">Safety</option>
-                <option value="Document">Document</option>
-              </select>
-            </label>
-            <label>
-              <span>Required By</span>
-              <input
-                disabled={!canManageAwp || !dashboard.work_packages.length}
-                onChange={(event) => setConstraintDraft((current) => ({ ...current, required_by: event.target.value }))}
-                type="date"
-                value={constraintDraft.required_by}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Description</span>
-            <textarea
-              disabled={!canManageAwp || !dashboard.work_packages.length}
-              onChange={(event) => setConstraintDraft((current) => ({ ...current, description: event.target.value }))}
-              required
-              value={constraintDraft.description}
-            />
-          </label>
-          <label>
-            <span>Owner Role</span>
-            <input
-              disabled={!canManageAwp || !dashboard.work_packages.length}
-              onChange={(event) => setConstraintDraft((current) => ({ ...current, owner_role: event.target.value }))}
-              required
-              value={constraintDraft.owner_role}
-            />
-          </label>
-          <label className="checkRow">
-            <input
-              checked={constraintDraft.blocking}
-              disabled={!canManageAwp || !dashboard.work_packages.length}
-              onChange={(event) => setConstraintDraft((current) => ({ ...current, blocking: event.target.checked }))}
-              type="checkbox"
-            />
-            <span>Blocking readiness constraint</span>
-          </label>
-          <button className="workflowAction primary" disabled={!canManageAwp || !dashboard.work_packages.length || captureAction !== null} type="submit">
-            {captureAction === "awp-constraint" ? "Registering..." : "Register Constraint"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleChangeSubmit}>
-          <div className="panelHeader">
-            <h2><GitBranch size={18} /> Change Control</h2>
-            <span>{dashboard.changes.length} open</span>
-          </div>
-          <label>
-            <span>Control Account</span>
-            <select
-              disabled={!canCreateChange || !dashboard.control_accounts.length}
-              onChange={(event) => setChangeDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-              value={changeDraft.control_account_id}
-            >
-              {dashboard.control_accounts.map((account) => (
-                <option key={account.id} value={account.id}>{account.code}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canCreateChange}
-              onChange={(event) => setChangeDraft((current) => ({ ...current, title: event.target.value }))}
-              required
-              value={changeDraft.title}
-            />
-          </label>
-          <label>
-            <span>Deviation</span>
-            <textarea
-              disabled={!canCreateChange}
-              onChange={(event) => setChangeDraft((current) => ({ ...current, deviation: event.target.value }))}
-              required
-              value={changeDraft.deviation}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Cost Impact</span>
-              <input
-                disabled={!canCreateChange}
-                min="0"
-                onChange={(event) => setChangeDraft((current) => ({ ...current, cost_impact: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={changeDraft.cost_impact}
-              />
-            </label>
-            <label>
-              <span>Days</span>
-              <input
-                disabled={!canCreateChange}
-                onChange={(event) => setChangeDraft((current) => ({ ...current, schedule_impact_days: event.target.value }))}
-                type="number"
-                value={changeDraft.schedule_impact_days}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canCreateChange || captureAction !== null} type="submit">
-            {captureAction === "change" ? "Routing..." : "Create Change BP"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleRfqSubmit}>
-          <div className="panelHeader">
-            <h2><BriefcaseBusiness size={18} /> RFQ Packages</h2>
-            <span>{dashboard.rfq_packages.length} packages</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Control Account</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setRfqDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-                required
-                value={rfqDraft.control_account_id}
-              >
-                {dashboard.control_accounts.map((account) => (
-                  <option key={account.id} value={account.id}>{account.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Package No.</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setRfqDraft((current) => ({ ...current, package_no: event.target.value }))}
-                required
-                value={rfqDraft.package_no}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setRfqDraft((current) => ({ ...current, title: event.target.value }))}
-              required
-              value={rfqDraft.title}
-            />
-          </label>
-          <label>
-            <span>Scope</span>
-            <textarea
-              disabled={!canManageContracts}
-              onChange={(event) => setRfqDraft((current) => ({ ...current, scope_summary: event.target.value }))}
-              required
-              value={rfqDraft.scope_summary}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Budget</span>
-              <input
-                disabled={!canManageContracts}
-                min="0"
-                onChange={(event) => setRfqDraft((current) => ({ ...current, budget_amount: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={rfqDraft.budget_amount}
-              />
-            </label>
-            <label>
-              <span>Status</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setRfqDraft((current) => ({ ...current, status: event.target.value }))}
-                value={rfqDraft.status}
-              >
-                <option value="draft">Draft</option>
-                <option value="issued">Issued</option>
-                <option value="under_evaluation">Under Evaluation</option>
-                <option value="awarded">Awarded</option>
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Issue Date</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setRfqDraft((current) => ({ ...current, issue_date: event.target.value }))}
-                type="date"
-                value={rfqDraft.issue_date}
-              />
-            </label>
-            <label>
-              <span>Due Date</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setRfqDraft((current) => ({ ...current, due_date: event.target.value }))}
-                type="date"
-                value={rfqDraft.due_date}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
-            {captureAction === "rfq-package" ? "Creating..." : "Create RFQ Package"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleRfqBidSubmit}>
-          <div className="panelHeader">
-            <h2><BriefcaseBusiness size={18} /> RFQ Bid</h2>
-            <span>{dashboard.rfq_bids.length} bids</span>
-          </div>
-          <label>
-            <span>RFQ Package</span>
-            <select
-              disabled={!canManageContracts || !dashboard.rfq_packages.length}
-              onChange={(event) => setRfqBidDraft((current) => ({ ...current, rfq_package_id: event.target.value }))}
-              required
-              value={rfqBidDraft.rfq_package_id}
-            >
-              {dashboard.rfq_packages.map((rfqPackage) => (
-                <option key={rfqPackage.id} value={rfqPackage.id}>{rfqPackage.package_no}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Bidder</span>
-              <input
-                disabled={!canManageContracts || !dashboard.rfq_packages.length}
-                onChange={(event) => setRfqBidDraft((current) => ({ ...current, bidder_name: event.target.value }))}
-                required
-                value={rfqBidDraft.bidder_name}
-              />
-            </label>
-            <label>
-              <span>Bid Amount</span>
-              <input
-                disabled={!canManageContracts || !dashboard.rfq_packages.length}
-                min="0"
-                onChange={(event) => setRfqBidDraft((current) => ({ ...current, bid_amount: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={rfqBidDraft.bid_amount}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Technical</span>
-              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, technical_score: event.target.value }))} type="number" value={rfqBidDraft.technical_score} />
-            </label>
-            <label>
-              <span>Commercial</span>
-              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, commercial_score: event.target.value }))} type="number" value={rfqBidDraft.commercial_score} />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Schedule</span>
-              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, schedule_score: event.target.value }))} type="number" value={rfqBidDraft.schedule_score} />
-            </label>
-            <label>
-              <span>Risk</span>
-              <input disabled={!canManageContracts || !dashboard.rfq_packages.length} max="100" min="0" onChange={(event) => setRfqBidDraft((current) => ({ ...current, risk_score: event.target.value }))} type="number" value={rfqBidDraft.risk_score} />
-            </label>
-          </div>
-          <label>
-            <span>Notes</span>
-            <textarea
-              disabled={!canManageContracts || !dashboard.rfq_packages.length}
-              onChange={(event) => setRfqBidDraft((current) => ({ ...current, notes: event.target.value }))}
-              value={rfqBidDraft.notes}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageContracts || !dashboard.rfq_packages.length || captureAction !== null} type="submit">
-            {captureAction === "rfq-bid" ? "Scoring..." : "Register Bid"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleContractSubmit}>
-          <div className="panelHeader">
-            <h2><BriefcaseBusiness size={18} /> Contracts</h2>
-            <span>{dashboard.contracts.length} active</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Control Account</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setContractDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-                required
-                value={contractDraft.control_account_id}
-              >
-                {dashboard.control_accounts.map((account) => (
-                  <option key={account.id} value={account.id}>{account.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Code</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setContractDraft((current) => ({ ...current, code: event.target.value }))}
-                required
-                value={contractDraft.code}
-              />
-            </label>
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setContractDraft((current) => ({ ...current, contract_type: event.target.value }))}
-                value={contractDraft.contract_type}
-              >
-                <option value="EPC">EPC</option>
-                <option value="Services">Services</option>
-                <option value="Supply">Supply</option>
-                <option value="Construction">Construction</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setContractDraft((current) => ({ ...current, title: event.target.value }))}
-              required
-              value={contractDraft.title}
-            />
-          </label>
-          <label>
-            <span>Counterparty</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setContractDraft((current) => ({ ...current, counterparty: event.target.value }))}
-              required
-              value={contractDraft.counterparty}
-            />
-          </label>
-          <label>
-            <span>Value</span>
-            <input
-              disabled={!canManageContracts}
-              min="0"
-              onChange={(event) => setContractDraft((current) => ({ ...current, value: event.target.value }))}
-              step="0.01"
-              type="number"
-              value={contractDraft.value}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
-            {captureAction === "contract" ? "Registering..." : "Register Contract"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handlePurchaseOrderSubmit}>
-          <div className="panelHeader">
-            <h2><BriefcaseBusiness size={18} /> Purchase Orders</h2>
-            <span>{dashboard.purchase_orders.length} committed</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Control Account</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-                required
-                value={purchaseOrderDraft.control_account_id}
-              >
-                {dashboard.control_accounts.map((account) => (
-                  <option key={account.id} value={account.id}>{account.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Contract</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, contract_id: event.target.value }))}
-                value={purchaseOrderDraft.contract_id}
-              >
-                <option value="">No contract link</option>
-                {dashboard.contracts.map((contract) => (
-                  <option key={contract.id} value={contract.id}>{contract.code}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>PO Number</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, po_number: event.target.value }))}
-                required
-                value={purchaseOrderDraft.po_number}
-              />
-            </label>
-            <label>
-              <span>Issued On</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, issued_on: event.target.value }))}
-                type="date"
-                value={purchaseOrderDraft.issued_on}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Description</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, description: event.target.value }))}
-              required
-              value={purchaseOrderDraft.description}
-            />
-          </label>
-          <label>
-            <span>Vendor</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, vendor: event.target.value }))}
-              required
-              value={purchaseOrderDraft.vendor}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Committed Amount</span>
-              <input
-                disabled={!canManageContracts}
-                min="0"
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, committed_amount: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={purchaseOrderDraft.committed_amount}
-              />
-            </label>
-            <label>
-              <span>Status</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setPurchaseOrderDraft((current) => ({ ...current, status: event.target.value }))}
-                value={purchaseOrderDraft.status}
-              >
-                <option value="issued">Issued</option>
-                <option value="approved">Approved</option>
-                <option value="closed">Closed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canManageContracts || captureAction !== null} type="submit">
-            {captureAction === "purchase-order" ? "Registering..." : "Register PO Commitment"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handlePaymentCertificateSubmit}>
-          <div className="panelHeader">
-            <h2>Payment Certificates</h2>
-            <span>{dashboard.payment_certificates.length} incurred</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Control Account</span>
-              <select
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-                required
-                value={paymentCertificateDraft.control_account_id}
-              >
-                {dashboard.control_accounts.map((account) => (
-                  <option key={account.id} value={account.id}>{account.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Contract</span>
-              <select
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, contract_id: event.target.value }))}
-                value={paymentCertificateDraft.contract_id}
-              >
-                <option value="">No contract link</option>
-                {dashboard.contracts.map((contract) => (
-                  <option key={contract.id} value={contract.id}>{contract.code}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Purchase Order</span>
-              <select
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, purchase_order_id: event.target.value }))}
-                value={paymentCertificateDraft.purchase_order_id}
-              >
-                <option value="">No PO link</option>
-                {dashboard.purchase_orders.map((order) => (
-                  <option key={order.id} value={order.id}>{order.po_number}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Period</span>
-              <input
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, period_label: event.target.value }))}
-                placeholder="YYYY-MM"
-                value={paymentCertificateDraft.period_label}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Certificate No.</span>
-              <input
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certificate_no: event.target.value }))}
-                required
-                value={paymentCertificateDraft.certificate_no}
-              />
-            </label>
-            <label>
-              <span>Certified On</span>
-              <input
-                disabled={contractCostDisabled}
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_on: event.target.value }))}
-                type="date"
-                value={paymentCertificateDraft.certified_on}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Certified Amount</span>
-              <input
-                disabled={contractCostDisabled}
-                min="0"
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, certified_amount: event.target.value }))}
-                required
-                step="0.01"
-                type="number"
-                value={paymentCertificateDraft.certified_amount}
-              />
-            </label>
-            <label>
-              <span>Retention</span>
-              <input
-                disabled={contractCostDisabled}
-                min="0"
-                onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, retained_amount: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={paymentCertificateDraft.retained_amount}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Status</span>
-            <select
-              disabled={contractCostDisabled}
-              onChange={(event) => setPaymentCertificateDraft((current) => ({ ...current, status: event.target.value }))}
-              value={paymentCertificateDraft.status}
-            >
-              <option value="certified">Certified</option>
-              <option value="approved">Approved</option>
-              <option value="paid">Paid</option>
-              <option value="draft">Draft</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
-          <button className="workflowAction primary" disabled={contractCostDisabled || captureAction !== null} type="submit">
-            {captureAction === "payment-certificate" ? "Certifying..." : "Register Payment Certificate"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleWarehouseReceiptSubmit}>
-          <div className="panelHeader">
-            <h2>Warehouse Receipts</h2>
-            <span>{dashboard.warehouse_receipts.length} incurred</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Control Account</span>
-              <select
-                disabled={warehouseDisabled}
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, control_account_id: event.target.value }))}
-                required
-                value={warehouseReceiptDraft.control_account_id}
-              >
-                {dashboard.control_accounts.map((account) => (
-                  <option key={account.id} value={account.id}>{account.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Contract</span>
-              <select
-                disabled={warehouseDisabled}
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, contract_id: event.target.value }))}
-                value={warehouseReceiptDraft.contract_id}
-              >
-                <option value="">No contract link</option>
-                {dashboard.contracts.map((contract) => (
-                  <option key={contract.id} value={contract.id}>{contract.code}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Purchase Order</span>
-              <select
-                disabled={warehouseDisabled}
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, purchase_order_id: event.target.value }))}
-                value={warehouseReceiptDraft.purchase_order_id}
-              >
-                <option value="">No PO link</option>
-                {dashboard.purchase_orders.map((order) => (
-                  <option key={order.id} value={order.id}>{order.po_number}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Receipt No.</span>
-              <input
-                disabled={warehouseDisabled}
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, receipt_no: event.target.value }))}
-                required
-                value={warehouseReceiptDraft.receipt_no}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Description</span>
-            <input
-              disabled={warehouseDisabled}
-              onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, description: event.target.value }))}
-              required
-              value={warehouseReceiptDraft.description}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Quantity</span>
-              <input
-                disabled={warehouseDisabled}
-                min="0"
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_quantity: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={warehouseReceiptDraft.received_quantity}
-              />
-            </label>
-            <label>
-              <span>Unit Cost</span>
-              <input
-                disabled={warehouseDisabled}
-                min="0"
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, unit_cost: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={warehouseReceiptDraft.unit_cost}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Received Value</span>
-              <input
-                disabled={warehouseDisabled}
-                min="0"
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_value: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={warehouseReceiptDraft.received_value}
-              />
-            </label>
-            <label>
-              <span>Received On</span>
-              <input
-                disabled={warehouseDisabled}
-                onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, received_on: event.target.value }))}
-                type="date"
-                value={warehouseReceiptDraft.received_on}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Status</span>
-            <select
-              disabled={warehouseDisabled}
-              onChange={(event) => setWarehouseReceiptDraft((current) => ({ ...current, status: event.target.value }))}
-              value={warehouseReceiptDraft.status}
-            >
-              <option value="received">Received</option>
-              <option value="accepted">Accepted</option>
-              <option value="posted">Posted</option>
-              <option value="draft">Draft</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
-          <button className="workflowAction primary" disabled={warehouseDisabled || captureAction !== null} type="submit">
-            {captureAction === "warehouse-receipt" ? "Registering..." : "Register Warehouse Receipt"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleCommunicationSubmit}>
-          <div className="panelHeader">
-            <h2><Send size={18} /> Communications</h2>
-            <span>{dashboard.communications.length} recent</span>
-          </div>
-          <label>
-            <span>Contract</span>
-            <select
-              disabled={!canManageContracts || !dashboard.contracts.length}
-              onChange={(event) => setCommunicationDraft((current) => ({ ...current, contract_id: event.target.value }))}
-              required
-              value={communicationDraft.contract_id}
-            >
-              {dashboard.contracts.map((contract) => (
-                <option key={contract.id} value={contract.id}>{contract.code}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageContracts || !dashboard.contracts.length}
-                onChange={(event) => setCommunicationDraft((current) => ({ ...current, communication_type: event.target.value }))}
-                value={communicationDraft.communication_type}
-              >
-                <option value="notice">Notice</option>
-                <option value="letter">Letter</option>
-                <option value="rfi">RFI</option>
-                <option value="meeting_minute">Minute</option>
-              </select>
-            </label>
-            <label>
-              <span>Date</span>
-              <input
-                disabled={!canManageContracts || !dashboard.contracts.length}
-                onChange={(event) => setCommunicationDraft((current) => ({ ...current, sent_on: event.target.value }))}
-                required
-                type="date"
-                value={communicationDraft.sent_on}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Subject</span>
-            <input
-              disabled={!canManageContracts || !dashboard.contracts.length}
-              onChange={(event) => setCommunicationDraft((current) => ({ ...current, subject: event.target.value }))}
-              required
-              value={communicationDraft.subject}
-            />
-          </label>
-          <label>
-            <span>Reference</span>
-            <input
-              disabled={!canManageContracts || !dashboard.contracts.length}
-              onChange={(event) => setCommunicationDraft((current) => ({ ...current, reference: event.target.value }))}
-              value={communicationDraft.reference}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageContracts || !dashboard.contracts.length || captureAction !== null} type="submit">
-            {captureAction === "communication" ? "Issuing..." : "Issue Communication"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleNoticeSubmit}>
-          <div className="panelHeader">
-            <h2><ShieldCheck size={18} /> Contract Notices</h2>
-            <span>{dashboard.contract_notices.length} records</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Contract</span>
-              <select
-                disabled={!canManageContracts || !dashboard.contracts.length}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, contract_id: event.target.value }))}
-                value={noticeDraft.contract_id}
-              >
-                {dashboard.contracts.map((contract) => (
-                  <option key={contract.id} value={contract.id}>{contract.code}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Claim</span>
-              <select
-                disabled={!canManageClaims || !dashboard.claims.length}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, claim_id: event.target.value }))}
-                value={noticeDraft.claim_id}
-              >
-                {dashboard.claims.map((claim) => (
-                  <option key={claim.id} value={claim.id}>{claim.title}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageContracts}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, notice_type: event.target.value }))}
-                value={noticeDraft.notice_type}
-              >
-                <option value="contractual_notice">Contractual Notice</option>
-                <option value="potential_claim">Potential Claim</option>
-                <option value="time_bar_response">Time Bar Response</option>
-              </select>
-            </label>
-            <label>
-              <span>Reference</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, reference: event.target.value }))}
-                placeholder="CON-001-NOT-001"
-                value={noticeDraft.reference}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Subject</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setNoticeDraft((current) => ({ ...current, subject: event.target.value }))}
-              required
-              value={noticeDraft.subject}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Event Date</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, event_date: event.target.value }))}
-                type="date"
-                value={noticeDraft.event_date}
-              />
-            </label>
-            <label>
-              <span>Due Date</span>
-              <input
-                disabled={!canManageContracts}
-                onChange={(event) => setNoticeDraft((current) => ({ ...current, due_date: event.target.value }))}
-                type="date"
-                value={noticeDraft.due_date}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Notice Date</span>
-            <input
-              disabled={!canManageContracts}
-              onChange={(event) => setNoticeDraft((current) => ({ ...current, notice_date: event.target.value }))}
-              required
-              type="date"
-              value={noticeDraft.notice_date}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageContracts || !dashboard.contracts.length || captureAction !== null} type="submit">
-            {captureAction === "contract-notice" ? "Issuing..." : "Issue Notice"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleClaimImpactSubmit}>
-          <div className="panelHeader">
-            <h2><GitBranch size={18} /> Claim Impact</h2>
-            <span>{dashboard.claim_impact_analyses.length} analyses</span>
-          </div>
-          <label>
-            <span>Claim</span>
-            <select
-              disabled={!canManageClaims || !dashboard.claims.length}
-              onChange={(event) => setClaimImpactDraft((current) => ({ ...current, claim_id: event.target.value }))}
-              required
-              value={claimImpactDraft.claim_id}
-            >
-              {dashboard.claims.map((claim) => (
-                <option key={claim.id} value={claim.id}>{claim.title}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Method</span>
-              <select
-                disabled={!canManageClaims || !dashboard.claims.length}
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, method: event.target.value }))}
-                value={claimImpactDraft.method}
-              >
-                <option value="Time Impact Analysis">Time Impact Analysis</option>
-                <option value="Measured Mile / Productivity">Measured Mile / Productivity</option>
-                <option value="Impacted As-Planned">Impacted As-Planned</option>
-                <option value="Window Analysis">Window Analysis</option>
-              </select>
-            </label>
-            <label>
-              <span>Impacted Activity</span>
-              <input
-                disabled={!canManageClaims || !dashboard.claims.length}
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, impacted_activity: event.target.value }))}
-                placeholder="Activity / control account"
-                value={claimImpactDraft.impacted_activity}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Cause</span>
-            <textarea
-              disabled={!canManageClaims || !dashboard.claims.length}
-              onChange={(event) => setClaimImpactDraft((current) => ({ ...current, cause: event.target.value }))}
-              value={claimImpactDraft.cause}
-            />
-          </label>
-          <label>
-            <span>Effect</span>
-            <textarea
-              disabled={!canManageClaims || !dashboard.claims.length}
-              onChange={(event) => setClaimImpactDraft((current) => ({ ...current, effect: event.target.value }))}
-              value={claimImpactDraft.effect}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Days</span>
-              <input
-                disabled={!canManageClaims || !dashboard.claims.length}
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, schedule_impact_days: event.target.value }))}
-                type="number"
-                value={claimImpactDraft.schedule_impact_days}
-              />
-            </label>
-            <label>
-              <span>Cost Impact</span>
-              <input
-                disabled={!canManageClaims || !dashboard.claims.length}
-                min="0"
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, cost_impact: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={claimImpactDraft.cost_impact}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Productivity Loss %</span>
-              <input
-                disabled={!canManageClaims || !dashboard.claims.length}
-                min="0"
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, productivity_loss_percent: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={claimImpactDraft.productivity_loss_percent}
-              />
-            </label>
-            <label>
-              <span>Confidence</span>
-              <input
-                disabled={!canManageClaims || !dashboard.claims.length}
-                max="1"
-                min="0"
-                onChange={(event) => setClaimImpactDraft((current) => ({ ...current, confidence_score: event.target.value }))}
-                step="0.01"
-                type="number"
-                value={claimImpactDraft.confidence_score}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Evidence Ref</span>
-            <input
-              disabled={!canManageClaims || !dashboard.claims.length}
-              onChange={(event) => setClaimImpactDraft((current) => ({ ...current, evidence_ref: event.target.value }))}
-              placeholder="edms:// or field report package"
-              value={claimImpactDraft.evidence_ref}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageClaims || !dashboard.claims.length || captureAction !== null} type="submit">
-            {captureAction === "claim-impact" ? "Analyzing..." : "Add Impact Analysis"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleDocumentSubmit}>
-          <div className="panelHeader">
-            <h2><FilePlus2 size={18} /> Document Register</h2>
-            <span>{dashboard.documents.length} controlled</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Document No.</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, document_number: event.target.value }))}
-                placeholder="Auto if blank"
-                value={documentDraft.document_number}
-              />
-            </label>
-            <label>
-              <span>Revision</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, revision: event.target.value }))}
-                required
-                value={documentDraft.revision}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Linked Record</span>
-            <select
-              disabled={!canManageDocuments || !linkedEntityOptions.length}
-              onChange={(event) => {
-                const [linkedType, linkedId] = event.target.value.split(":");
-                setDocumentDraft((current) => ({ ...current, linked_entity_type: linkedType, linked_entity_id: linkedId }));
-              }}
-              value={`${documentDraft.linked_entity_type}:${documentDraft.linked_entity_id}`}
-            >
-              {linkedEntityOptions.map((option) => (
-                <option key={`${option.type}-${option.id}`} value={`${option.type}:${option.id}`}>{option.label}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Title</span>
-            <input
-              disabled={!canManageDocuments || !linkedEntityOptions.length}
-              onChange={(event) => setDocumentDraft((current) => ({ ...current, title: event.target.value }))}
-              required
-              value={documentDraft.title}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageDocuments || !linkedEntityOptions.length}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, doc_type: event.target.value }))}
-                required
-                value={documentDraft.doc_type}
-              >
-                <option value="Drawing">Drawing</option>
-                <option value="Specification">Specification</option>
-                <option value="Field Report">Field Report</option>
-                <option value="Contract Communication">Contract Communication</option>
-                <option value="Procedure">Procedure</option>
-                <option value="Register">Register</option>
-              </select>
-            </label>
-            <label>
-              <span>Discipline</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, discipline: event.target.value }))}
-                required
-                value={documentDraft.discipline}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Organization</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, organization: event.target.value }))}
-                value={documentDraft.organization}
-              />
-            </label>
-            <label>
-              <span>Revision Date</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, revision_date: event.target.value }))}
-                type="date"
-                value={documentDraft.revision_date}
-              />
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Status</span>
-              <select
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, status: event.target.value }))}
-                value={documentDraft.status}
-              >
-                <option value="current">Current</option>
-                <option value="issued">Issued</option>
-                <option value="superseded">Superseded</option>
-                <option value="void">Void</option>
-              </select>
-            </label>
-            <label>
-              <span>Review</span>
-              <select
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, review_status: event.target.value }))}
-                value={documentDraft.review_status}
-              >
-                <option value="not_started">Not Started</option>
-                <option value="in_review">In Review</option>
-                <option value="approved">Approved</option>
-                <option value="revise_and_resubmit">Revise and Resubmit</option>
-              </select>
-            </label>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>File Name</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, file_name: event.target.value }))}
-                placeholder="document.pdf"
-                value={documentDraft.file_name}
-              />
-            </label>
-            <label>
-              <span>URI</span>
-              <input
-                disabled={!canManageDocuments || !linkedEntityOptions.length}
-                onChange={(event) => setDocumentDraft((current) => ({ ...current, uri: event.target.value }))}
-                placeholder="edms://..."
-                required
-                value={documentDraft.uri}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canManageDocuments || !linkedEntityOptions.length || captureAction !== null} type="submit">
-            {captureAction === "document" ? "Registering..." : "Register Document"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleTransmittalSubmit}>
-          <div className="panelHeader">
-            <h2><Send size={18} /> Document Transmittal</h2>
-            <span>{dashboard.document_transmittals.length} sent</span>
-          </div>
-          <label>
-            <span>Document</span>
-            <select
-              disabled={!canManageDocuments || !dashboard.documents.length}
-              onChange={(event) => setTransmittalDraft((current) => ({ ...current, document_id: event.target.value }))}
-              value={transmittalDraft.document_id}
-            >
-              {dashboard.documents.map((document) => (
-                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Transmittal No.</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setTransmittalDraft((current) => ({ ...current, transmittal_no: event.target.value }))}
-                placeholder="Auto if blank"
-                value={transmittalDraft.transmittal_no}
-              />
-            </label>
-            <label>
-              <span>Purpose</span>
-              <select
-                disabled={!canManageDocuments}
-                onChange={(event) => setTransmittalDraft((current) => ({ ...current, purpose: event.target.value }))}
-                value={transmittalDraft.purpose}
-              >
-                <option value="for_review">For Review</option>
-                <option value="for_approval">For Approval</option>
-                <option value="for_information">For Information</option>
-                <option value="for_construction">For Construction</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Subject</span>
-            <input
-              disabled={!canManageDocuments}
-              onChange={(event) => setTransmittalDraft((current) => ({ ...current, subject: event.target.value }))}
-              required
-              value={transmittalDraft.subject}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Recipient Org</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setTransmittalDraft((current) => ({ ...current, recipient_org: event.target.value }))}
-                value={transmittalDraft.recipient_org}
-              />
-            </label>
-            <label>
-              <span>Due Date</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setTransmittalDraft((current) => ({ ...current, due_date: event.target.value }))}
-                type="date"
-                value={transmittalDraft.due_date}
-              />
-            </label>
-          </div>
-          <button className="workflowAction primary" disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null} type="submit">
-            {captureAction === "document-transmittal" ? "Issuing..." : "Issue Transmittal"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleProjectMailSubmit}>
-          <div className="panelHeader">
-            <h2><FileText size={18} /> Project Mail</h2>
-            <span>{dashboard.project_mail.length} records</span>
-          </div>
-          <div className="formColumns">
-            <label>
-              <span>Mail No.</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setMailDraft((current) => ({ ...current, mail_no: event.target.value }))}
-                placeholder="Auto if blank"
-                value={mailDraft.mail_no}
-              />
-            </label>
-            <label>
-              <span>Type</span>
-              <select
-                disabled={!canManageDocuments}
-                onChange={(event) => setMailDraft((current) => ({ ...current, mail_type: event.target.value }))}
-                value={mailDraft.mail_type}
-              >
-                <option value="document_review">Document Review</option>
-                <option value="rfi">RFI</option>
-                <option value="letter">Letter</option>
-                <option value="site_instruction">Site Instruction</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Subject</span>
-            <input
-              disabled={!canManageDocuments}
-              onChange={(event) => setMailDraft((current) => ({ ...current, subject: event.target.value }))}
-              required
-              value={mailDraft.subject}
-            />
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>To Role</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setMailDraft((current) => ({ ...current, to_role: event.target.value }))}
-                value={mailDraft.to_role}
-              />
-            </label>
-            <label>
-              <span>Due Date</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setMailDraft((current) => ({ ...current, due_date: event.target.value }))}
-                type="date"
-                value={mailDraft.due_date}
-              />
-            </label>
-          </div>
-          <label>
-            <span>Linked Document</span>
-            <select
-              disabled={!canManageDocuments || !dashboard.documents.length}
-              onChange={(event) => setMailDraft((current) => ({ ...current, document_id: event.target.value }))}
-              value={mailDraft.document_id}
-            >
-              {dashboard.documents.map((document) => (
-                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Body</span>
-            <textarea
-              disabled={!canManageDocuments}
-              onChange={(event) => setMailDraft((current) => ({ ...current, body: event.target.value }))}
-              value={mailDraft.body}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageDocuments || captureAction !== null} type="submit">
-            {captureAction === "project-mail" ? "Sending..." : "Send Project Mail"}
-          </button>
-        </form>
-
-        <form className="panel captureForm" onSubmit={handleDocumentReviewSubmit}>
-          <div className="panelHeader">
-            <h2><ClipboardCheck size={18} /> Document Review</h2>
-            <span>{dashboard.document_reviews.length} steps</span>
-          </div>
-          <label>
-            <span>Document</span>
-            <select
-              disabled={!canManageDocuments || !dashboard.documents.length}
-              onChange={(event) => setReviewDraft((current) => ({ ...current, document_id: event.target.value }))}
-              value={reviewDraft.document_id}
-            >
-              {dashboard.documents.map((document) => (
-                <option key={document.id} value={document.id}>{document.document_number} Rev {document.revision}</option>
-              ))}
-            </select>
-          </label>
-          <div className="formColumns">
-            <label>
-              <span>Reviewer Role</span>
-              <input
-                disabled={!canManageDocuments}
-                onChange={(event) => setReviewDraft((current) => ({ ...current, reviewer_role: event.target.value }))}
-                value={reviewDraft.reviewer_role}
-              />
-            </label>
-            <label>
-              <span>Status</span>
-              <select
-                disabled={!canManageDocuments}
-                onChange={(event) => setReviewDraft((current) => ({ ...current, review_status: event.target.value }))}
-                value={reviewDraft.review_status}
-              >
-                <option value="outstanding">Outstanding</option>
-                <option value="in_review">In Review</option>
-                <option value="approved">Approved</option>
-                <option value="revise_and_resubmit">Revise and Resubmit</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Due Date</span>
-            <input
-              disabled={!canManageDocuments}
-              onChange={(event) => setReviewDraft((current) => ({ ...current, due_date: event.target.value }))}
-              type="date"
-              value={reviewDraft.due_date}
-            />
-          </label>
-          <label>
-            <span>Comments</span>
-            <textarea
-              disabled={!canManageDocuments}
-              onChange={(event) => setReviewDraft((current) => ({ ...current, comments: event.target.value }))}
-              value={reviewDraft.comments}
-            />
-          </label>
-          <button className="workflowAction primary" disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null} type="submit">
-            {captureAction === "document-review" ? "Creating..." : "Create Review Step"}
-          </button>
-        </form>
-      </section>
-      </details>
-
-      <section className={activeView === "control-dashboard" ? "mainGrid workspaceSection" : "mainGrid workspaceSection hidden"} id="control-dashboard">
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>S-Curve Control View</h2>
-            <span>PV / EV / AC</span>
-          </div>
-          <ResponsiveContainer width="100%" height={270}>
-            <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#d8dee5" />
-              <XAxis dataKey="period" />
-              <YAxis tickFormatter={(value) => `$${Number(value) / 1000000}M`} />
-              <Tooltip formatter={(value) => currency(Number(value), project.currency)} />
-              <Area type="monotone" dataKey="PV" stroke="#52616f" fill="#dce3ea" strokeWidth={2} />
-              <Area type="monotone" dataKey="EV" stroke="#0f8b8d" fill="#bde7e5" strokeWidth={2} />
-              <Area type="monotone" dataKey="AC" stroke="#c85a3a" fill="#f2c5b8" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Control Core Loop</h2>
-            <ClipboardCheck size={18} />
-          </div>
-          <div className="loopList">
-            {dashboard.loop.map((item) => (
-              <div key={item.step}>
-                <strong>{item.step}</strong>
-                <span>{item.description}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Early Warnings</h2>
-            <span>{redAlerts} critical</span>
-          </div>
-          <div className="stack">
-            {dashboard.alerts.map((alert) => (
-              <article className={`alert ${alert.severity}`} key={alert.id}>
-                <strong>{alert.rule}</strong>
-                <span>{alert.message}</span>
-                <small>{alert.recommendation}</small>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>EAC Forecast Scenarios</h2>
-            <span>{dashboard.forecast_scenarios.length} scenarios</span>
-          </div>
-          <div className="scenarioGrid">
-            {dashboard.forecast_scenarios.map((scenario) => (
-              <article className={`scenarioCard ${scenario.completion_risk}`} key={scenario.id}>
-                <div>
-                  <strong>{scenario.name}</strong>
-                  <span>{scenario.method}</span>
-                </div>
-                <div className="scenarioNumbers">
-                  <span>EAC <strong>{currency(scenario.eac, project.currency)}</strong></span>
-                  <span>VAC <strong>{currency(scenario.vac, project.currency)}</strong></span>
-                  <span>CPI/SPI <strong>{scenario.cpi_factor.toFixed(3)} / {scenario.spi_factor.toFixed(3)}</strong></span>
-                </div>
-                <small>{statusLabel(scenario.completion_risk)} risk / {scenario.period_label}</small>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Productivity</h2>
-            <span>{dashboard.productivity_summary.low_productivity_accounts} low accounts</span>
-          </div>
-          <div className="productivityCard">
-            <strong>{dashboard.productivity_summary.productivity_index.toFixed(3)}</strong>
-            <span>Productivity index</span>
-            <small>{dashboard.productivity_summary.total_quantity.toLocaleString()} qty / {dashboard.productivity_summary.total_labor_hours.toLocaleString()} labor hours</small>
-          </div>
-        </div>
-
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>Control Accounts</h2>
-            <span>{dashboard.control_accounts.length} mapped from schedule</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Account</th>
-                <th>Owner</th>
-                <th>Discipline</th>
-                <th>PV</th>
-                <th>EV</th>
-                <th>AC</th>
-                <th>SPI</th>
-                <th>CPI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.control_accounts.map((account) => {
-                const accountKpi = dashboard.account_kpis.find((item) => item.control_account_id === account.id);
-                return (
-                  <tr key={account.id}>
-                    <td><strong>{account.code}</strong><span>{account.name}</span></td>
-                    <td>{account.responsible}</td>
-                    <td>{account.discipline}</td>
-                    <td>{currency(accountKpi?.pv ?? 0, project.currency)}</td>
-                    <td>{currency(accountKpi?.ev ?? 0, project.currency)}</td>
-                    <td>{currency(accountKpi?.ac ?? 0, project.currency)}</td>
-                    <td>{accountKpi?.spi.toFixed(3)}</td>
-                    <td>{accountKpi?.cpi.toFixed(3)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>Schedule QA & Baseline</h2>
-            <span>{dashboard.schedule_findings.length} findings / {dashboard.baseline_versions.length} baselines</span>
-          </div>
-          <div className="contractGrid">
-            <div>
-              <strong>Validation Findings</strong>
-              <div className="workList">
-                {dashboard.schedule_findings.length ? dashboard.schedule_findings.slice(0, 5).map((finding) => (
-                  <article key={finding.id}>
-                    <strong>{finding.check_code} / {statusLabel(finding.severity)}</strong>
-                    <span>{finding.message}</span>
-                    <small>{finding.item_count} items / weight {finding.weight}</small>
-                  </article>
-                )) : (
-                  <article>
-                    <strong>No findings</strong>
-                    <span>The active schedule has no stored QA findings.</span>
-                  </article>
-                )}
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Bidder</th>
+                      <th>RFQ</th>
+                      <th>Amount</th>
+                      <th>Score</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.rfq_bids.map((bid) => (
+                      <tr key={bid.id}>
+                        <td>{bid.bidder_name}</td>
+                        <td>{rfqPackageLabel(bid.rfq_package_id)}</td>
+                        <td>{currency(bid.bid_amount, project.currency)}</td>
+                        <td>{bid.weighted_score.toFixed(1)}</td>
+                        <td>{statusLabel(bid.status)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div>
-              <strong>Baseline Versions</strong>
-              <div className="workList">
-                {dashboard.baseline_versions.length ? dashboard.baseline_versions.map((baseline) => (
-                  <article key={baseline.id}>
-                    <strong>BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}</strong>
-                    <span>{neutralScheduleText(baseline.name)}</span>
-                    <small>{baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%</small>
-                  </article>
-                )) : (
-                  <article>
-                    <strong>No baseline versions</strong>
-                    <span>Load a source schedule to create the first baseline version.</span>
-                  </article>
-                )}
+          </section>
+
+          <section
+            className={activeView === "contracts" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Contract Administration</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open contract forms
+              </button>
+            </div>
+            <div className="contractGrid">
+              <div>
+                <strong>Contracts</strong>
+                <div className="workList">
+                  {dashboard.contracts.map((contract) => (
+                    <article key={contract.id}>
+                      <strong>
+                        {contract.code} / {contract.counterparty}
+                      </strong>
+                      <span>{contract.title}</span>
+                      <small>
+                        {currency(contract.value, project.currency)} /{" "}
+                        {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"}{" "}
+                        / {statusLabel(contract.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <strong>Purchase Orders</strong>
+                <div className="workList">
+                  {dashboard.purchase_orders.map((order) => (
+                    <article key={order.id}>
+                      <strong>
+                        {order.po_number} / {currency(order.committed_amount, project.currency)}
+                      </strong>
+                      <span>{order.description}</span>
+                      <small>
+                        {order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} /{" "}
+                        {order.vendor || "No vendor"} / {statusLabel(order.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <strong>Payment Certificates</strong>
+                <div className="workList">
+                  {dashboard.payment_certificates.map((certificate) => (
+                    <article key={certificate.id}>
+                      <strong>
+                        {certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}
+                      </strong>
+                      <span>{certificate.period_label || "No period"}</span>
+                      <small>
+                        {certificate.control_account_id
+                          ? accountLabel(certificate.control_account_id)
+                          : "No control account"}{" "}
+                        / {statusLabel(certificate.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <strong>Warehouse Receipts</strong>
+                <div className="workList">
+                  {dashboard.warehouse_receipts.map((receipt) => (
+                    <article key={receipt.id}>
+                      <strong>
+                        {receipt.receipt_no} / {currency(receipt.received_value, project.currency)}
+                      </strong>
+                      <span>{receipt.description || "Warehouse receipt"}</span>
+                      <small>
+                        {receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} /{" "}
+                        {statusLabel(receipt.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <strong>Communications</strong>
+                <div className="workList">
+                  {dashboard.communications.map((communication) => (
+                    <article key={communication.id}>
+                      <strong>
+                        {statusLabel(communication.communication_type)} / {communication.sent_on}
+                      </strong>
+                      <span>{communication.subject}</span>
+                      <small>{communication.reference || "No reference"}</small>
+                    </article>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>BP Engine / uDesigner</h2>
-            <span>{dashboard.process_templates.length} persistent templates</span>
-          </div>
-          <div className="designerSummary">
-            <div>
-              <strong>{dashboard.process_templates.reduce((total, template) => total + template.step_templates.length, 0)}</strong>
-              <span>configured steps</span>
+          <section
+            className={activeView === "documents" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
+          >
+            <div className="panelHeader">
+              <h2>Aconex-style Document Control</h2>
+              <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
+                Open document forms
+              </button>
             </div>
-            <div>
-              <strong>{dashboard.process_templates.reduce((total, template) => total + template.transitions.length, 0)}</strong>
-              <span>workflow transitions</span>
-            </div>
-            <div>
-              <strong>{dashboard.process_templates.filter((template) => template.status.toLowerCase() === "active").length}</strong>
-              <span>active BP definitions</span>
-            </div>
-          </div>
-          <div className="templateGrid">
-            {dashboard.process_templates.map((template) => (
-              <article key={template.code}>
-                <div>
-                  <strong>{template.name}</strong>
-                  <span>{template.code} / {template.category} / v{template.version_no}</span>
-                </div>
-                <p>{template.description || "Business process controlled by the configurable workflow engine."}</p>
-                <small>Form: {template.form_schema.join(", ")}</small>
-                <small>Workflow: {template.workflow_steps.join(" -> ")}</small>
-                <small>Transitions: {template.transitions.map((transition) => `${transition.label || statusLabel(transition.action)}: ${transition.from_step} -> ${transition.to_step}`).join(" / ") || "Pending"}</small>
-                <small>Roles: {template.roles.join(", ")}</small>
-                <span className="templateStatus">{template.status}</span>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Project Team & Roles</h2>
-            <span>{dashboard.project_team.length} users</span>
-          </div>
-          <div className="teamList">
-            {dashboard.project_team.map((member) => (
-              <article key={member.membership.id}>
-                <strong>{member.user.full_name}</strong>
-                <span>{member.membership.role}</span>
-                <small>{member.user.title}</small>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Audit Trail</h2>
-            <span>{dashboard.audit_logs.length} recent</span>
-          </div>
-          <div className="auditList">
-            {dashboard.audit_logs.length ? dashboard.audit_logs.map((log) => (
-              <article key={log.id}>
-                <strong>{statusLabel(log.action.replace("workflow.", ""))}</strong>
-                <span>{log.actor} / {log.entity_type} #{log.entity_id ?? "-"}</span>
-                <small>{new Date(log.created_at).toLocaleString()}</small>
-              </article>
-            )) : (
+            <div className="costManagerSummary">
               <article>
-                <strong>No workflow actions yet</strong>
-                <span>Route a BP to create an audit entry.</span>
+                <span>Controlled Score</span>
+                <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(1)}%</strong>
+                <small>
+                  {dashboard.document_control_summary.current_documents} current /{" "}
+                  {dashboard.document_control_summary.total_documents} total
+                </small>
               </article>
-            )}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Decision Layer</h2>
-            <Bot size={18} />
-          </div>
-          <p className="aiBrief">{dashboard.ai_brief}</p>
-        </div>
-
-        <div className="panel">
-          <div className="panelHeader">
-            <h2>Changes & Claims</h2>
-            <FileText size={18} />
-          </div>
-          <div className="workList">
-            {[...dashboard.changes, ...dashboard.claims].map((item) => (
-              <article key={`${item.title}-${item.id}`}>
-                <strong>{item.title}</strong>
-                <span>{item.status}</span>
+              <article className={dashboard.document_control_summary.outstanding_reviews ? "risk" : ""}>
+                <span>Reviews</span>
+                <strong>{dashboard.document_control_summary.outstanding_reviews}</strong>
+                <small>{dashboard.document_control_summary.overdue_reviews} overdue reviews</small>
               </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>Contract Administration</h2>
-            <span>{dashboard.contracts.length} contracts / {dashboard.purchase_orders.length} POs / {dashboard.payment_certificates.length} actas / {dashboard.warehouse_receipts.length} almacen</span>
-          </div>
-          <div className="contractGrid">
-            <div>
-              <strong>Contracts</strong>
-              <div className="workList">
-                {dashboard.contracts.map((contract) => (
-                  <article key={contract.id}>
-                    <strong>{contract.code} / {contract.counterparty}</strong>
-                    <span>{contract.title}</span>
-                    <small>{currency(contract.value, project.currency)} / {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} / {statusLabel(contract.status)}</small>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div>
-              <strong>Purchase Orders</strong>
-              <div className="workList">
-                {dashboard.purchase_orders.map((order) => (
-                  <article key={order.id}>
-                    <strong>{order.po_number} / {currency(order.committed_amount, project.currency)}</strong>
-                    <span>{order.description}</span>
-                    <small>{order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} / {statusLabel(order.status)}</small>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div>
-              <strong>Payment Certificates</strong>
-              <div className="workList">
-                {dashboard.payment_certificates.map((certificate) => (
-                  <article key={certificate.id}>
-                    <strong>{certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}</strong>
-                    <span>{certificate.period_label || "No period"}</span>
-                    <small>{certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"} / {statusLabel(certificate.status)}</small>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div>
-              <strong>Warehouse Receipts</strong>
-              <div className="workList">
-                {dashboard.warehouse_receipts.map((receipt) => (
-                  <article key={receipt.id}>
-                    <strong>{receipt.receipt_no} / {currency(receipt.received_value, project.currency)}</strong>
-                    <span>{receipt.description || "Warehouse receipt"}</span>
-                    <small>{receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} / {statusLabel(receipt.status)}</small>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div>
-              <strong>Communications</strong>
-              <div className="workList">
-                {dashboard.communications.map((communication) => (
-                  <article key={communication.id}>
-                    <strong>{statusLabel(communication.communication_type)} / {communication.sent_on}</strong>
-                    <span>{communication.subject}</span>
-                    <small>{communication.reference || "No reference"}</small>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="panel wide">
-          <div className="panelHeader">
-            <h2>Document Control Register</h2>
-            <span>{dashboard.documents.length} controlled records</span>
-          </div>
-          <div className="documentGrid">
-            {dashboard.documents.map((document) => (
-              <article key={document.id}>
-                <strong>{document.document_number} Rev {document.revision}</strong>
-                <span>{document.title}</span>
-                <small>{statusLabel(document.review_status)} / {document.uri}</small>
+              <article>
+                <span>Transmittals</span>
+                <strong>{dashboard.document_control_summary.transmittals_sent}</strong>
+                <small>{dashboard.document_transmittal_items.length} issued document revisions</small>
               </article>
-            ))}
-          </div>
-        </div>
-      </section>
+              <article>
+                <span>Files</span>
+                <strong>{dashboard.document_attachments.length}</strong>
+                <small>
+                  {fileSize(dashboard.document_attachments.reduce((total, item) => total + item.size_bytes, 0))} stored
+                  evidence
+                </small>
+              </article>
+              <article className={dashboard.document_control_summary.open_mail ? "risk" : ""}>
+                <span>Project Mail</span>
+                <strong>{dashboard.document_control_summary.open_mail}</strong>
+                <small>{dashboard.document_control_summary.overdue_mail} overdue responses</small>
+              </article>
+            </div>
+            <div className="viewSplit">
+              <div>
+                <div className="subHeader">
+                  <strong>Document Register</strong>
+                  <span>{dashboard.documents.length} records</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>No.</th>
+                      <th>Rev</th>
+                      <th>Title</th>
+                      <th>Discipline</th>
+                      <th>Status</th>
+                      <th>Review</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dashboard.documents.map((document) => (
+                      <tr key={document.id}>
+                        <td>{document.document_number}</td>
+                        <td>{document.revision}</td>
+                        <td>{document.title}</td>
+                        <td>{document.discipline || document.doc_type}</td>
+                        <td>{statusLabel(document.status)}</td>
+                        <td>{statusLabel(document.review_status)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="subHeader spaced">
+                  <strong>Stored Files</strong>
+                  <span>{dashboard.document_attachments.length} files</span>
+                </div>
+                <div className="workList compactList">
+                  {dashboard.document_attachments.map((attachment) => {
+                    const document = dashboard.documents.find((item) => item.id === attachment.document_id);
+                    return (
+                      <article key={attachment.id}>
+                        <strong>{attachment.original_file_name}</strong>
+                        <span>
+                          {document?.document_number ?? `Document ${attachment.document_id}`} /{" "}
+                          {attachment.extension || "file"} / {fileSize(attachment.size_bytes)}
+                        </span>
+                        <small>
+                          {attachment.sha256.slice(0, 16)}... / {statusLabel(attachment.source)} /{" "}
+                          {statusLabel(attachment.scan_status)}
+                        </small>
+                        <button
+                          className="linkButton compact"
+                          onClick={() => void handleAttachmentDownload(attachment)}
+                          type="button"
+                        >
+                          Download
+                        </button>
+                      </article>
+                    );
+                  })}
+                </div>
+                <div className="subHeader spaced">
+                  <strong>Transmittals</strong>
+                  <span>{dashboard.document_transmittals.length} records</span>
+                </div>
+                <div className="workList compactList">
+                  {dashboard.document_transmittals.map((transmittal) => (
+                    <article key={transmittal.id}>
+                      <strong>
+                        {transmittal.transmittal_no} / {statusLabel(transmittal.purpose)}
+                      </strong>
+                      <span>{transmittal.subject}</span>
+                      <small>
+                        {transmittal.recipient_org || "No recipient"} / Due {transmittal.due_date ?? "Open"} /{" "}
+                        {statusLabel(transmittal.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="subHeader">
+                  <strong>Project Mail</strong>
+                  <span>{dashboard.project_mail.length} records</span>
+                </div>
+                <div className="workList compactList">
+                  {dashboard.project_mail.map((mail) => (
+                    <article className={mail.status === "outstanding" ? "blockedPackage" : ""} key={mail.id}>
+                      <strong>
+                        {mail.mail_no} / {statusLabel(mail.mail_type)}
+                      </strong>
+                      <span>{mail.subject}</span>
+                      <small>
+                        {mail.from_role || "Project"} to {mail.to_role || "Team"} / Due {mail.due_date ?? "Open"} /{" "}
+                        {statusLabel(mail.status)}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+                <div className="subHeader spaced">
+                  <strong>Review Steps</strong>
+                  <span>{dashboard.document_reviews.length} records</span>
+                </div>
+                <div className="workList compactList">
+                  {dashboard.document_reviews.map((review) => {
+                    const document = dashboard.documents.find((item) => item.id === review.document_id);
+                    return (
+                      <article
+                        className={review.review_status === "outstanding" ? "blockedPackage" : ""}
+                        key={review.id}
+                      >
+                        <strong>
+                          {document?.document_number ?? `Document ${review.document_id}`} / {review.reviewer_role}
+                        </strong>
+                        <span>{review.comments || "No comments"}</span>
+                        <small>
+                          Due {review.due_date ?? "Open"} / {statusLabel(review.review_status)}
+                        </small>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className={
+              activeView === "business-processes"
+                ? "workflowShell workspaceSection"
+                : "workflowShell workspaceSection hidden"
+            }
+            id="workflow-record"
+          >
+            <aside className="processRail">
+              <div className="railHeader">
+                <span>Business Processes</span>
+                <strong>Project Control Shell</strong>
+              </div>
+              {[
+                "Project Shell",
+                "Schedule Intake",
+                "AWP Readiness",
+                "Progress Update",
+                "Cost Actuals",
+                "Change Request",
+                "Contract Notice",
+                "Claim Impact",
+                "Document Link",
+                "Decision Action",
+              ].map((item, index) => (
+                <button className={index === 0 ? "railItem active" : "railItem"} key={item}>
+                  <span>{item}</span>
+                  <strong>
+                    {item === "Schedule Intake"
+                      ? workflowInstance
+                        ? "Open"
+                        : "Waiting"
+                      : item === "AWP Readiness"
+                        ? `${dashboard.awp_summary.open_constraints} open`
+                        : item === "Contract Notice"
+                          ? `${dashboard.contract_notices.length} records`
+                          : item === "Claim Impact"
+                            ? `${dashboard.claim_impact_analyses.length} analyses`
+                            : item === "Project Shell"
+                              ? "Active"
+                              : "Ready"}
+                  </strong>
+                </button>
+              ))}
+            </aside>
+
+            <div className="workflowCanvas">
+              <div className="workflowHeader">
+                <div>
+                  <span>Workflow Routing</span>
+                  <h2>
+                    {workflowInstance
+                      ? neutralScheduleText(workflowInstance.title)
+                      : "Schedule upload triggers the control workflow"}
+                  </h2>
+                </div>
+                <div className="workflowMeta">
+                  <span>BP Status</span>
+                  <strong>{workflowInstance ? workflowStatus : "Waiting for schedule"}</strong>
+                </div>
+              </div>
+
+              <div className="stageTrack">
+                {workflowStages.map((stage, index) => (
+                  <React.Fragment key={stage.name}>
+                    <article className={`stageCard ${stage.tone}`}>
+                      <span>{stage.status}</span>
+                      <strong>{stage.name}</strong>
+                      <p>{stage.detail}</p>
+                      <small>Ball in Court: {stage.owner}</small>
+                    </article>
+                    {index < workflowStages.length - 1 && <ArrowRight className="stageArrow" size={18} />}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              <div className="recordRegistry">
+                <div className="registryHeader">
+                  <h2>BP Records</h2>
+                  <span>{bpRecords.length} routed records</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Record No.</th>
+                      <th>Business Process</th>
+                      <th>Title</th>
+                      <th>Current Step</th>
+                      <th>Ball in Court</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bpRecords.map((record) => (
+                      <tr
+                        className={selectedBpRecord?.record === record.record ? "selectedRecord" : ""}
+                        key={record.record}
+                      >
+                        <td>
+                          <button
+                            className="recordLink"
+                            onClick={() => setSelectedBpRecordNo(record.record)}
+                            type="button"
+                          >
+                            {record.record}
+                          </button>
+                        </td>
+                        <td>{record.process}</td>
+                        <td>{record.title}</td>
+                        <td>{record.step}</td>
+                        <td>{record.ballInCourt}</td>
+                        <td>
+                          <span className={`statusPill ${record.tone}`}>{record.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {selectedBpRecord && (
+                <div className="bpRecordDetail">
+                  <div>
+                    <span>Selected BP Record</span>
+                    <strong>
+                      {selectedBpRecord.record} / {selectedBpRecord.process}
+                    </strong>
+                  </div>
+                  <p>{selectedBpRecord.title}</p>
+                  <div className="detailFacts">
+                    <span>
+                      Current Step: <strong>{selectedBpRecord.step}</strong>
+                    </span>
+                    <span>
+                      Ball in Court: <strong>{selectedBpRecord.ballInCourt}</strong>
+                    </span>
+                    <span>
+                      Status: <strong>{selectedBpRecord.status}</strong>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <aside className="routingPanel">
+              <div>
+                <span>Current Step</span>
+                <strong>{workflowInstance?.current_step ?? "Schedule Upload Gate"}</strong>
+                <p>
+                  {workflowInstance
+                    ? "Validate schedule variance, cost exposure and contractual notice before routing to approval."
+                    : "Upload a schedule XML or XER file to create the BP record and start routing."}
+                </p>
+              </div>
+              <div>
+                <span>Required Attachments</span>
+                <strong>{dashboard.document_control_summary.controlled_document_score.toFixed(0)}% controlled</strong>
+                <p>Controlled revisions, transmittals, reviews and project mail remain tied to BP records.</p>
+              </div>
+              <div>
+                <span>Ball in Court</span>
+                <strong>{workflowInstance?.ball_in_court ?? "Planner"}</strong>
+                <p>
+                  {workflowInstance
+                    ? "The responsible role owns the next routed action in the control cycle."
+                    : "The planner must load the schedule before downstream controls can run."}
+                </p>
+              </div>
+              <div>
+                <span>Workflow Actions</span>
+                <div className="actionStack">
+                  {workflowActionButtons.length ? (
+                    workflowActionButtons.map((item) => (
+                      <button
+                        className={`workflowAction ${item.tone}`}
+                        disabled={routingAction !== null || !canRouteCurrentWorkflow}
+                        key={item.action}
+                        onClick={() => handleWorkflowAction(item.action)}
+                        type="button"
+                      >
+                        {routingAction === item.action ? "Routing..." : item.label}
+                      </button>
+                    ))
+                  ) : (
+                    <strong>No pending action</strong>
+                  )}
+                </div>
+                <p>Each action updates the routed step, ball-in-court and audit trail.</p>
+              </div>
+            </aside>
+          </section>
+
+          <section
+            className={
+              activeView === "control-dashboard" ? "kpiGrid workspaceSection" : "kpiGrid workspaceSection hidden"
+            }
+          >
+            <article className="metric">
+              <div>
+                <Gauge size={18} />
+                <span>SPI</span>
+              </div>
+              <strong>{kpi.spi.toFixed(3)}</strong>
+              <small>Schedule performance</small>
+              <StatusLight value={kpi.spi} />
+            </article>
+            <article className="metric">
+              <div>
+                <ShieldCheck size={18} />
+                <span>CPI</span>
+              </div>
+              <strong>{kpi.cpi.toFixed(3)}</strong>
+              <small>Cost performance</small>
+              <StatusLight value={kpi.cpi} />
+            </article>
+            <article className="metric">
+              <div>
+                <Activity size={18} />
+                <span>VAC</span>
+              </div>
+              <strong>{currency(kpi.vac, project.currency)}</strong>
+              <small>Variance at completion</small>
+            </article>
+            <article className="metric">
+              <div>
+                <GitBranch size={18} />
+                <span>EAC</span>
+              </div>
+              <strong>{currency(kpi.eac, project.currency)}</strong>
+              <small>Estimate at completion</small>
+            </article>
+          </section>
+
+          <details
+            className={
+              activeView === "bp-entry-forms"
+                ? "bpFormsDrawer workspaceSection"
+                : "bpFormsDrawer workspaceSection hidden"
+            }
+            id="bp-entry-forms"
+            open={activeView === "bp-entry-forms"}
+          >
+            <summary>
+              <span>BP Entry Forms</span>
+              <strong>Progress, cost, AWP, change, contract notice, claim impact and document capture</strong>
+            </summary>
+            <section className="captureGrid">
+              <div className="panel">
+                <div className="panelHeader">
+                  <h2>Data Quality Gate</h2>
+                  <span>
+                    {dashboard.schedule_import ? `${dashboard.schedule_import.quality_score.toFixed(0)}%` : "waiting"}
+                  </span>
+                </div>
+                <div className="qualityList">
+                  {(dashboard.data_quality_gates ?? []).map((gate) => (
+                    <article key={gate.name}>
+                      <div>
+                        <strong>{gate.name}</strong>
+                        <span className={`qualityStatus ${gate.status.toLowerCase()}`}>{gate.status}</span>
+                      </div>
+                      <p>{gate.finding}</p>
+                      <small>
+                        {gate.owner_role} / Score {gate.score.toFixed(0)}%
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <form className="panel captureForm" onSubmit={handleProgressSubmit}>
+                <div className="panelHeader">
+                  <h2>Progress Capture</h2>
+                  <span>{(dashboard.latest_progress_records ?? []).length} recent</span>
+                </div>
+                <label>
+                  <span>Control Account</span>
+                  <select
+                    disabled={progressDisabled}
+                    onChange={(event) =>
+                      setProgressDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                    }
+                    required
+                    value={progressDraft.control_account_id}
+                  >
+                    {dashboard.control_accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Physical %</span>
+                    <input
+                      disabled={progressDisabled}
+                      max="100"
+                      min="0"
+                      onChange={(event) =>
+                        setProgressDraft((current) => ({ ...current, physical_percent: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={progressDraft.physical_percent}
+                    />
+                  </label>
+                  <label>
+                    <span>Reported On</span>
+                    <input
+                      disabled={progressDisabled}
+                      onChange={(event) =>
+                        setProgressDraft((current) => ({ ...current, reported_on: event.target.value }))
+                      }
+                      required
+                      type="date"
+                      value={progressDraft.reported_on}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Quantity</span>
+                    <input
+                      disabled={progressDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setProgressDraft((current) => ({ ...current, quantity_installed: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={progressDraft.quantity_installed}
+                    />
+                  </label>
+                  <label>
+                    <span>Labor Hours</span>
+                    <input
+                      disabled={progressDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setProgressDraft((current) => ({ ...current, labor_hours: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={progressDraft.labor_hours}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Evidence Ref</span>
+                  <input
+                    disabled={progressDisabled}
+                    onChange={(event) =>
+                      setProgressDraft((current) => ({ ...current, evidence_ref: event.target.value }))
+                    }
+                    placeholder="FIELD-REPORT-YYYY-MM-DD"
+                    value={progressDraft.evidence_ref}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={progressDisabled || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "progress" ? "Capturing..." : "Capture Progress"}
+                </button>
+                <div className="recentList">
+                  {(dashboard.latest_progress_records ?? []).slice(0, 2).map((record) => (
+                    <article key={record.id}>
+                      <strong>
+                        {record.physical_percent.toFixed(1)}% / {record.reported_on}
+                      </strong>
+                      <span>{accountLabel(record.control_account_id)}</span>
+                    </article>
+                  ))}
+                </div>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleCostSubmit}>
+                <div className="panelHeader">
+                  <h2>Cost Evidence</h2>
+                  <span>{(dashboard.latest_cost_records ?? []).length} recent</span>
+                </div>
+                <label>
+                  <span>Control Account</span>
+                  <select
+                    disabled={costDisabled}
+                    onChange={(event) =>
+                      setCostDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                    }
+                    required
+                    value={costDraft.control_account_id}
+                  >
+                    {dashboard.control_accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Source</span>
+                    <select
+                      disabled={costDisabled}
+                      onChange={(event) => setCostDraft((current) => ({ ...current, source: event.target.value }))}
+                      required
+                      value={costDraft.source}
+                    >
+                      <option value="invoice">Invoice</option>
+                      <option value="payroll">Payroll</option>
+                      <option value="equipment">Equipment</option>
+                      <option value="materials">Materials</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Incurred On</span>
+                    <input
+                      disabled={costDisabled}
+                      onChange={(event) => setCostDraft((current) => ({ ...current, incurred_on: event.target.value }))}
+                      required
+                      type="date"
+                      value={costDraft.incurred_on}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Amount</span>
+                  <input
+                    disabled={costDisabled}
+                    min="0"
+                    onChange={(event) => setCostDraft((current) => ({ ...current, amount: event.target.value }))}
+                    required
+                    step="0.01"
+                    type="number"
+                    value={costDraft.amount}
+                  />
+                </label>
+                <label>
+                  <span>Description</span>
+                  <input
+                    disabled={costDisabled}
+                    onChange={(event) => setCostDraft((current) => ({ ...current, description: event.target.value }))}
+                    required
+                    value={costDraft.description}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={costDisabled || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "cost" ? "Capturing..." : "Capture Cost Evidence"}
+                </button>
+                <div className="recentList">
+                  {(dashboard.latest_cost_records ?? []).slice(0, 2).map((record) => (
+                    <article key={record.id}>
+                      <strong>
+                        {currency(record.amount, project.currency)} / {statusLabel(record.source)}
+                      </strong>
+                      <span>{accountLabel(record.control_account_id)}</span>
+                    </article>
+                  ))}
+                </div>
+              </form>
+            </section>
+
+            <section className="phaseTwoGrid">
+              <form className="panel captureForm" onSubmit={handleAwpSubmit}>
+                <div className="panelHeader">
+                  <h2>AWP Package</h2>
+                  <span>{dashboard.work_packages.length} packages</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageAwp || controlGateBlocked}
+                      onChange={(event) => setAwpDraft((current) => ({ ...current, package_type: event.target.value }))}
+                      value={awpDraft.package_type}
+                    >
+                      <option value="CWA">CWA</option>
+                      <option value="EWA">EWA</option>
+                      <option value="EWP">EWP</option>
+                      <option value="CWP">CWP</option>
+                      <option value="PWP">PWP</option>
+                      <option value="IWP">IWP</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Sequence</span>
+                    <input
+                      disabled={!canManageAwp || controlGateBlocked}
+                      min="0"
+                      onChange={(event) => setAwpDraft((current) => ({ ...current, sequence_no: event.target.value }))}
+                      type="number"
+                      value={awpDraft.sequence_no}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Code</span>
+                  <input
+                    disabled={!canManageAwp || controlGateBlocked}
+                    onChange={(event) => setAwpDraft((current) => ({ ...current, code: event.target.value }))}
+                    placeholder="IWP-PIPE-001"
+                    required
+                    value={awpDraft.code}
+                  />
+                </label>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canManageAwp || controlGateBlocked}
+                    onChange={(event) => setAwpDraft((current) => ({ ...current, title: event.target.value }))}
+                    required
+                    value={awpDraft.title}
+                  />
+                </label>
+                <label>
+                  <span>Control Account</span>
+                  <select
+                    disabled={!canManageAwp || controlGateBlocked}
+                    onChange={(event) =>
+                      setAwpDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                    }
+                    value={awpDraft.control_account_id}
+                  >
+                    <option value="">Area level</option>
+                    {dashboard.control_accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Parent Package</span>
+                  <select
+                    disabled={!canManageAwp || controlGateBlocked}
+                    onChange={(event) => setAwpDraft((current) => ({ ...current, parent_id: event.target.value }))}
+                    value={awpDraft.parent_id}
+                  >
+                    <option value="">No parent</option>
+                    {dashboard.work_packages.map((workPackage) => (
+                      <option key={workPackage.id} value={workPackage.id}>
+                        {workPackage.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Path of Construction</span>
+                  <textarea
+                    disabled={!canManageAwp || controlGateBlocked}
+                    onChange={(event) =>
+                      setAwpDraft((current) => ({ ...current, path_of_construction: event.target.value }))
+                    }
+                    required
+                    value={awpDraft.path_of_construction}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Start</span>
+                    <input
+                      disabled={!canManageAwp || controlGateBlocked}
+                      onChange={(event) =>
+                        setAwpDraft((current) => ({ ...current, planned_start: event.target.value }))
+                      }
+                      type="date"
+                      value={awpDraft.planned_start}
+                    />
+                  </label>
+                  <label>
+                    <span>Finish</span>
+                    <input
+                      disabled={!canManageAwp || controlGateBlocked}
+                      onChange={(event) =>
+                        setAwpDraft((current) => ({ ...current, planned_finish: event.target.value }))
+                      }
+                      type="date"
+                      value={awpDraft.planned_finish}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageAwp || controlGateBlocked || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "awp" ? "Creating..." : "Create AWP Package"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleConstraintSubmit}>
+                <div className="panelHeader">
+                  <h2>AWP Constraint</h2>
+                  <span>{dashboard.awp_summary.open_constraints} open</span>
+                </div>
+                <label>
+                  <span>Work Package</span>
+                  <select
+                    disabled={!canManageAwp || !dashboard.work_packages.length}
+                    onChange={(event) =>
+                      setConstraintDraft((current) => ({ ...current, work_package_id: event.target.value }))
+                    }
+                    required
+                    value={constraintDraft.work_package_id}
+                  >
+                    {dashboard.work_packages.map((workPackage) => (
+                      <option key={workPackage.id} value={workPackage.id}>
+                        {workPackage.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageAwp || !dashboard.work_packages.length}
+                      onChange={(event) =>
+                        setConstraintDraft((current) => ({ ...current, constraint_type: event.target.value }))
+                      }
+                      value={constraintDraft.constraint_type}
+                    >
+                      <option value="Engineering">Engineering</option>
+                      <option value="Material">Material</option>
+                      <option value="Access">Access</option>
+                      <option value="Permit">Permit</option>
+                      <option value="Safety">Safety</option>
+                      <option value="Document">Document</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Required By</span>
+                    <input
+                      disabled={!canManageAwp || !dashboard.work_packages.length}
+                      onChange={(event) =>
+                        setConstraintDraft((current) => ({ ...current, required_by: event.target.value }))
+                      }
+                      type="date"
+                      value={constraintDraft.required_by}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <textarea
+                    disabled={!canManageAwp || !dashboard.work_packages.length}
+                    onChange={(event) =>
+                      setConstraintDraft((current) => ({ ...current, description: event.target.value }))
+                    }
+                    required
+                    value={constraintDraft.description}
+                  />
+                </label>
+                <label>
+                  <span>Owner Role</span>
+                  <input
+                    disabled={!canManageAwp || !dashboard.work_packages.length}
+                    onChange={(event) =>
+                      setConstraintDraft((current) => ({ ...current, owner_role: event.target.value }))
+                    }
+                    required
+                    value={constraintDraft.owner_role}
+                  />
+                </label>
+                <label className="checkRow">
+                  <input
+                    checked={constraintDraft.blocking}
+                    disabled={!canManageAwp || !dashboard.work_packages.length}
+                    onChange={(event) =>
+                      setConstraintDraft((current) => ({ ...current, blocking: event.target.checked }))
+                    }
+                    type="checkbox"
+                  />
+                  <span>Blocking readiness constraint</span>
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageAwp || !dashboard.work_packages.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "awp-constraint" ? "Registering..." : "Register Constraint"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleChangeSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <GitBranch size={18} /> Change Control
+                  </h2>
+                  <span>{dashboard.changes.length} open</span>
+                </div>
+                <label>
+                  <span>Control Account</span>
+                  <select
+                    disabled={!canCreateChange || !dashboard.control_accounts.length}
+                    onChange={(event) =>
+                      setChangeDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                    }
+                    value={changeDraft.control_account_id}
+                  >
+                    {dashboard.control_accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canCreateChange}
+                    onChange={(event) => setChangeDraft((current) => ({ ...current, title: event.target.value }))}
+                    required
+                    value={changeDraft.title}
+                  />
+                </label>
+                <label>
+                  <span>Deviation</span>
+                  <textarea
+                    disabled={!canCreateChange}
+                    onChange={(event) => setChangeDraft((current) => ({ ...current, deviation: event.target.value }))}
+                    required
+                    value={changeDraft.deviation}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Cost Impact</span>
+                    <input
+                      disabled={!canCreateChange}
+                      min="0"
+                      onChange={(event) =>
+                        setChangeDraft((current) => ({ ...current, cost_impact: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={changeDraft.cost_impact}
+                    />
+                  </label>
+                  <label>
+                    <span>Days</span>
+                    <input
+                      disabled={!canCreateChange}
+                      onChange={(event) =>
+                        setChangeDraft((current) => ({ ...current, schedule_impact_days: event.target.value }))
+                      }
+                      type="number"
+                      value={changeDraft.schedule_impact_days}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canCreateChange || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "change" ? "Routing..." : "Create Change BP"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleRfqSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <BriefcaseBusiness size={18} /> RFQ Packages
+                  </h2>
+                  <span>{dashboard.rfq_packages.length} packages</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Control Account</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setRfqDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                      }
+                      required
+                      value={rfqDraft.control_account_id}
+                    >
+                      {dashboard.control_accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Package No.</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setRfqDraft((current) => ({ ...current, package_no: event.target.value }))}
+                      required
+                      value={rfqDraft.package_no}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) => setRfqDraft((current) => ({ ...current, title: event.target.value }))}
+                    required
+                    value={rfqDraft.title}
+                  />
+                </label>
+                <label>
+                  <span>Scope</span>
+                  <textarea
+                    disabled={!canManageContracts}
+                    onChange={(event) => setRfqDraft((current) => ({ ...current, scope_summary: event.target.value }))}
+                    required
+                    value={rfqDraft.scope_summary}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Budget</span>
+                    <input
+                      disabled={!canManageContracts}
+                      min="0"
+                      onChange={(event) =>
+                        setRfqDraft((current) => ({ ...current, budget_amount: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={rfqDraft.budget_amount}
+                    />
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) => setRfqDraft((current) => ({ ...current, status: event.target.value }))}
+                      value={rfqDraft.status}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="issued">Issued</option>
+                      <option value="under_evaluation">Under Evaluation</option>
+                      <option value="awarded">Awarded</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Issue Date</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setRfqDraft((current) => ({ ...current, issue_date: event.target.value }))}
+                      type="date"
+                      value={rfqDraft.issue_date}
+                    />
+                  </label>
+                  <label>
+                    <span>Due Date</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setRfqDraft((current) => ({ ...current, due_date: event.target.value }))}
+                      type="date"
+                      value={rfqDraft.due_date}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "rfq-package" ? "Creating..." : "Create RFQ Package"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleRfqBidSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <BriefcaseBusiness size={18} /> RFQ Bid
+                  </h2>
+                  <span>{dashboard.rfq_bids.length} bids</span>
+                </div>
+                <label>
+                  <span>RFQ Package</span>
+                  <select
+                    disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                    onChange={(event) =>
+                      setRfqBidDraft((current) => ({ ...current, rfq_package_id: event.target.value }))
+                    }
+                    required
+                    value={rfqBidDraft.rfq_package_id}
+                  >
+                    {dashboard.rfq_packages.map((rfqPackage) => (
+                      <option key={rfqPackage.id} value={rfqPackage.id}>
+                        {rfqPackage.package_no}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Bidder</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, bidder_name: event.target.value }))
+                      }
+                      required
+                      value={rfqBidDraft.bidder_name}
+                    />
+                  </label>
+                  <label>
+                    <span>Bid Amount</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      min="0"
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, bid_amount: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={rfqBidDraft.bid_amount}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Technical</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      max="100"
+                      min="0"
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, technical_score: event.target.value }))
+                      }
+                      type="number"
+                      value={rfqBidDraft.technical_score}
+                    />
+                  </label>
+                  <label>
+                    <span>Commercial</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      max="100"
+                      min="0"
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, commercial_score: event.target.value }))
+                      }
+                      type="number"
+                      value={rfqBidDraft.commercial_score}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Schedule</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      max="100"
+                      min="0"
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, schedule_score: event.target.value }))
+                      }
+                      type="number"
+                      value={rfqBidDraft.schedule_score}
+                    />
+                  </label>
+                  <label>
+                    <span>Risk</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                      max="100"
+                      min="0"
+                      onChange={(event) =>
+                        setRfqBidDraft((current) => ({ ...current, risk_score: event.target.value }))
+                      }
+                      type="number"
+                      value={rfqBidDraft.risk_score}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Notes</span>
+                  <textarea
+                    disabled={!canManageContracts || !dashboard.rfq_packages.length}
+                    onChange={(event) => setRfqBidDraft((current) => ({ ...current, notes: event.target.value }))}
+                    value={rfqBidDraft.notes}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || !dashboard.rfq_packages.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "rfq-bid" ? "Scoring..." : "Register Bid"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleContractSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <BriefcaseBusiness size={18} /> Contracts
+                  </h2>
+                  <span>{dashboard.contracts.length} active</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Control Account</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setContractDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                      }
+                      required
+                      value={contractDraft.control_account_id}
+                    >
+                      {dashboard.control_accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Code</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setContractDraft((current) => ({ ...current, code: event.target.value }))}
+                      required
+                      value={contractDraft.code}
+                    />
+                  </label>
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setContractDraft((current) => ({ ...current, contract_type: event.target.value }))
+                      }
+                      value={contractDraft.contract_type}
+                    >
+                      <option value="EPC">EPC</option>
+                      <option value="Services">Services</option>
+                      <option value="Supply">Supply</option>
+                      <option value="Construction">Construction</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) => setContractDraft((current) => ({ ...current, title: event.target.value }))}
+                    required
+                    value={contractDraft.title}
+                  />
+                </label>
+                <label>
+                  <span>Counterparty</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) =>
+                      setContractDraft((current) => ({ ...current, counterparty: event.target.value }))
+                    }
+                    required
+                    value={contractDraft.counterparty}
+                  />
+                </label>
+                <label>
+                  <span>Value</span>
+                  <input
+                    disabled={!canManageContracts}
+                    min="0"
+                    onChange={(event) => setContractDraft((current) => ({ ...current, value: event.target.value }))}
+                    step="0.01"
+                    type="number"
+                    value={contractDraft.value}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "contract" ? "Registering..." : "Register Contract"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handlePurchaseOrderSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <BriefcaseBusiness size={18} /> Purchase Orders
+                  </h2>
+                  <span>{dashboard.purchase_orders.length} committed</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Control Account</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                      }
+                      required
+                      value={purchaseOrderDraft.control_account_id}
+                    >
+                      {dashboard.control_accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Contract</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, contract_id: event.target.value }))
+                      }
+                      value={purchaseOrderDraft.contract_id}
+                    >
+                      <option value="">No contract link</option>
+                      {dashboard.contracts.map((contract) => (
+                        <option key={contract.id} value={contract.id}>
+                          {contract.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>PO Number</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, po_number: event.target.value }))
+                      }
+                      required
+                      value={purchaseOrderDraft.po_number}
+                    />
+                  </label>
+                  <label>
+                    <span>Issued On</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, issued_on: event.target.value }))
+                      }
+                      type="date"
+                      value={purchaseOrderDraft.issued_on}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) =>
+                      setPurchaseOrderDraft((current) => ({ ...current, description: event.target.value }))
+                    }
+                    required
+                    value={purchaseOrderDraft.description}
+                  />
+                </label>
+                <label>
+                  <span>Vendor</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) =>
+                      setPurchaseOrderDraft((current) => ({ ...current, vendor: event.target.value }))
+                    }
+                    required
+                    value={purchaseOrderDraft.vendor}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Committed Amount</span>
+                    <input
+                      disabled={!canManageContracts}
+                      min="0"
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, committed_amount: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={purchaseOrderDraft.committed_amount}
+                    />
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setPurchaseOrderDraft((current) => ({ ...current, status: event.target.value }))
+                      }
+                      value={purchaseOrderDraft.status}
+                    >
+                      <option value="issued">Issued</option>
+                      <option value="approved">Approved</option>
+                      <option value="closed">Closed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "purchase-order" ? "Registering..." : "Register PO Commitment"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handlePaymentCertificateSubmit}>
+                <div className="panelHeader">
+                  <h2>Payment Certificates</h2>
+                  <span>{dashboard.payment_certificates.length} incurred</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Control Account</span>
+                    <select
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({
+                          ...current,
+                          control_account_id: event.target.value,
+                        }))
+                      }
+                      required
+                      value={paymentCertificateDraft.control_account_id}
+                    >
+                      {dashboard.control_accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Contract</span>
+                    <select
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, contract_id: event.target.value }))
+                      }
+                      value={paymentCertificateDraft.contract_id}
+                    >
+                      <option value="">No contract link</option>
+                      {dashboard.contracts.map((contract) => (
+                        <option key={contract.id} value={contract.id}>
+                          {contract.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Purchase Order</span>
+                    <select
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, purchase_order_id: event.target.value }))
+                      }
+                      value={paymentCertificateDraft.purchase_order_id}
+                    >
+                      <option value="">No PO link</option>
+                      {dashboard.purchase_orders.map((order) => (
+                        <option key={order.id} value={order.id}>
+                          {order.po_number}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Period</span>
+                    <input
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, period_label: event.target.value }))
+                      }
+                      placeholder="YYYY-MM"
+                      value={paymentCertificateDraft.period_label}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Certificate No.</span>
+                    <input
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, certificate_no: event.target.value }))
+                      }
+                      required
+                      value={paymentCertificateDraft.certificate_no}
+                    />
+                  </label>
+                  <label>
+                    <span>Certified On</span>
+                    <input
+                      disabled={contractCostDisabled}
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, certified_on: event.target.value }))
+                      }
+                      type="date"
+                      value={paymentCertificateDraft.certified_on}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Certified Amount</span>
+                    <input
+                      disabled={contractCostDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, certified_amount: event.target.value }))
+                      }
+                      required
+                      step="0.01"
+                      type="number"
+                      value={paymentCertificateDraft.certified_amount}
+                    />
+                  </label>
+                  <label>
+                    <span>Retention</span>
+                    <input
+                      disabled={contractCostDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setPaymentCertificateDraft((current) => ({ ...current, retained_amount: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={paymentCertificateDraft.retained_amount}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Status</span>
+                  <select
+                    disabled={contractCostDisabled}
+                    onChange={(event) =>
+                      setPaymentCertificateDraft((current) => ({ ...current, status: event.target.value }))
+                    }
+                    value={paymentCertificateDraft.status}
+                  >
+                    <option value="certified">Certified</option>
+                    <option value="approved">Approved</option>
+                    <option value="paid">Paid</option>
+                    <option value="draft">Draft</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={contractCostDisabled || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "payment-certificate" ? "Certifying..." : "Register Payment Certificate"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleWarehouseReceiptSubmit}>
+                <div className="panelHeader">
+                  <h2>Warehouse Receipts</h2>
+                  <span>{dashboard.warehouse_receipts.length} incurred</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Control Account</span>
+                    <select
+                      disabled={warehouseDisabled}
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, control_account_id: event.target.value }))
+                      }
+                      required
+                      value={warehouseReceiptDraft.control_account_id}
+                    >
+                      {dashboard.control_accounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Contract</span>
+                    <select
+                      disabled={warehouseDisabled}
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, contract_id: event.target.value }))
+                      }
+                      value={warehouseReceiptDraft.contract_id}
+                    >
+                      <option value="">No contract link</option>
+                      {dashboard.contracts.map((contract) => (
+                        <option key={contract.id} value={contract.id}>
+                          {contract.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Purchase Order</span>
+                    <select
+                      disabled={warehouseDisabled}
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, purchase_order_id: event.target.value }))
+                      }
+                      value={warehouseReceiptDraft.purchase_order_id}
+                    >
+                      <option value="">No PO link</option>
+                      {dashboard.purchase_orders.map((order) => (
+                        <option key={order.id} value={order.id}>
+                          {order.po_number}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Receipt No.</span>
+                    <input
+                      disabled={warehouseDisabled}
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, receipt_no: event.target.value }))
+                      }
+                      required
+                      value={warehouseReceiptDraft.receipt_no}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <input
+                    disabled={warehouseDisabled}
+                    onChange={(event) =>
+                      setWarehouseReceiptDraft((current) => ({ ...current, description: event.target.value }))
+                    }
+                    required
+                    value={warehouseReceiptDraft.description}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Quantity</span>
+                    <input
+                      disabled={warehouseDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, received_quantity: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={warehouseReceiptDraft.received_quantity}
+                    />
+                  </label>
+                  <label>
+                    <span>Unit Cost</span>
+                    <input
+                      disabled={warehouseDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, unit_cost: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={warehouseReceiptDraft.unit_cost}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Received Value</span>
+                    <input
+                      disabled={warehouseDisabled}
+                      min="0"
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, received_value: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={warehouseReceiptDraft.received_value}
+                    />
+                  </label>
+                  <label>
+                    <span>Received On</span>
+                    <input
+                      disabled={warehouseDisabled}
+                      onChange={(event) =>
+                        setWarehouseReceiptDraft((current) => ({ ...current, received_on: event.target.value }))
+                      }
+                      type="date"
+                      value={warehouseReceiptDraft.received_on}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Status</span>
+                  <select
+                    disabled={warehouseDisabled}
+                    onChange={(event) =>
+                      setWarehouseReceiptDraft((current) => ({ ...current, status: event.target.value }))
+                    }
+                    value={warehouseReceiptDraft.status}
+                  >
+                    <option value="received">Received</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="posted">Posted</option>
+                    <option value="draft">Draft</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={warehouseDisabled || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "warehouse-receipt" ? "Registering..." : "Register Warehouse Receipt"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleCommunicationSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <Send size={18} /> Communications
+                  </h2>
+                  <span>{dashboard.communications.length} recent</span>
+                </div>
+                <label>
+                  <span>Contract</span>
+                  <select
+                    disabled={!canManageContracts || !dashboard.contracts.length}
+                    onChange={(event) =>
+                      setCommunicationDraft((current) => ({ ...current, contract_id: event.target.value }))
+                    }
+                    required
+                    value={communicationDraft.contract_id}
+                  >
+                    {dashboard.contracts.map((contract) => (
+                      <option key={contract.id} value={contract.id}>
+                        {contract.code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageContracts || !dashboard.contracts.length}
+                      onChange={(event) =>
+                        setCommunicationDraft((current) => ({ ...current, communication_type: event.target.value }))
+                      }
+                      value={communicationDraft.communication_type}
+                    >
+                      <option value="notice">Notice</option>
+                      <option value="letter">Letter</option>
+                      <option value="rfi">RFI</option>
+                      <option value="meeting_minute">Minute</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Date</span>
+                    <input
+                      disabled={!canManageContracts || !dashboard.contracts.length}
+                      onChange={(event) =>
+                        setCommunicationDraft((current) => ({ ...current, sent_on: event.target.value }))
+                      }
+                      required
+                      type="date"
+                      value={communicationDraft.sent_on}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Subject</span>
+                  <input
+                    disabled={!canManageContracts || !dashboard.contracts.length}
+                    onChange={(event) =>
+                      setCommunicationDraft((current) => ({ ...current, subject: event.target.value }))
+                    }
+                    required
+                    value={communicationDraft.subject}
+                  />
+                </label>
+                <label>
+                  <span>Reference</span>
+                  <input
+                    disabled={!canManageContracts || !dashboard.contracts.length}
+                    onChange={(event) =>
+                      setCommunicationDraft((current) => ({ ...current, reference: event.target.value }))
+                    }
+                    value={communicationDraft.reference}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || !dashboard.contracts.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "communication" ? "Issuing..." : "Issue Communication"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleNoticeSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <ShieldCheck size={18} /> Contract Notices
+                  </h2>
+                  <span>{dashboard.contract_notices.length} records</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Contract</span>
+                    <select
+                      disabled={!canManageContracts || !dashboard.contracts.length}
+                      onChange={(event) =>
+                        setNoticeDraft((current) => ({ ...current, contract_id: event.target.value }))
+                      }
+                      value={noticeDraft.contract_id}
+                    >
+                      {dashboard.contracts.map((contract) => (
+                        <option key={contract.id} value={contract.id}>
+                          {contract.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span>Claim</span>
+                    <select
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      onChange={(event) => setNoticeDraft((current) => ({ ...current, claim_id: event.target.value }))}
+                      value={noticeDraft.claim_id}
+                    >
+                      {dashboard.claims.map((claim) => (
+                        <option key={claim.id} value={claim.id}>
+                          {claim.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setNoticeDraft((current) => ({ ...current, notice_type: event.target.value }))
+                      }
+                      value={noticeDraft.notice_type}
+                    >
+                      <option value="contractual_notice">Contractual Notice</option>
+                      <option value="potential_claim">Potential Claim</option>
+                      <option value="time_bar_response">Time Bar Response</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Reference</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setNoticeDraft((current) => ({ ...current, reference: event.target.value }))}
+                      placeholder="CON-001-NOT-001"
+                      value={noticeDraft.reference}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Subject</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) => setNoticeDraft((current) => ({ ...current, subject: event.target.value }))}
+                    required
+                    value={noticeDraft.subject}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Event Date</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) =>
+                        setNoticeDraft((current) => ({ ...current, event_date: event.target.value }))
+                      }
+                      type="date"
+                      value={noticeDraft.event_date}
+                    />
+                  </label>
+                  <label>
+                    <span>Due Date</span>
+                    <input
+                      disabled={!canManageContracts}
+                      onChange={(event) => setNoticeDraft((current) => ({ ...current, due_date: event.target.value }))}
+                      type="date"
+                      value={noticeDraft.due_date}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Notice Date</span>
+                  <input
+                    disabled={!canManageContracts}
+                    onChange={(event) => setNoticeDraft((current) => ({ ...current, notice_date: event.target.value }))}
+                    required
+                    type="date"
+                    value={noticeDraft.notice_date}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageContracts || !dashboard.contracts.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "contract-notice" ? "Issuing..." : "Issue Notice"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleClaimImpactSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <GitBranch size={18} /> Claim Impact
+                  </h2>
+                  <span>{dashboard.claim_impact_analyses.length} analyses</span>
+                </div>
+                <label>
+                  <span>Claim</span>
+                  <select
+                    disabled={!canManageClaims || !dashboard.claims.length}
+                    onChange={(event) =>
+                      setClaimImpactDraft((current) => ({ ...current, claim_id: event.target.value }))
+                    }
+                    required
+                    value={claimImpactDraft.claim_id}
+                  >
+                    {dashboard.claims.map((claim) => (
+                      <option key={claim.id} value={claim.id}>
+                        {claim.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Method</span>
+                    <select
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({ ...current, method: event.target.value }))
+                      }
+                      value={claimImpactDraft.method}
+                    >
+                      <option value="Time Impact Analysis">Time Impact Analysis</option>
+                      <option value="Measured Mile / Productivity">Measured Mile / Productivity</option>
+                      <option value="Impacted As-Planned">Impacted As-Planned</option>
+                      <option value="Window Analysis">Window Analysis</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Impacted Activity</span>
+                    <input
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({ ...current, impacted_activity: event.target.value }))
+                      }
+                      placeholder="Activity / control account"
+                      value={claimImpactDraft.impacted_activity}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Cause</span>
+                  <textarea
+                    disabled={!canManageClaims || !dashboard.claims.length}
+                    onChange={(event) => setClaimImpactDraft((current) => ({ ...current, cause: event.target.value }))}
+                    value={claimImpactDraft.cause}
+                  />
+                </label>
+                <label>
+                  <span>Effect</span>
+                  <textarea
+                    disabled={!canManageClaims || !dashboard.claims.length}
+                    onChange={(event) => setClaimImpactDraft((current) => ({ ...current, effect: event.target.value }))}
+                    value={claimImpactDraft.effect}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Days</span>
+                    <input
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({ ...current, schedule_impact_days: event.target.value }))
+                      }
+                      type="number"
+                      value={claimImpactDraft.schedule_impact_days}
+                    />
+                  </label>
+                  <label>
+                    <span>Cost Impact</span>
+                    <input
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      min="0"
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({ ...current, cost_impact: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={claimImpactDraft.cost_impact}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Productivity Loss %</span>
+                    <input
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      min="0"
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({
+                          ...current,
+                          productivity_loss_percent: event.target.value,
+                        }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={claimImpactDraft.productivity_loss_percent}
+                    />
+                  </label>
+                  <label>
+                    <span>Confidence</span>
+                    <input
+                      disabled={!canManageClaims || !dashboard.claims.length}
+                      max="1"
+                      min="0"
+                      onChange={(event) =>
+                        setClaimImpactDraft((current) => ({ ...current, confidence_score: event.target.value }))
+                      }
+                      step="0.01"
+                      type="number"
+                      value={claimImpactDraft.confidence_score}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Evidence Ref</span>
+                  <input
+                    disabled={!canManageClaims || !dashboard.claims.length}
+                    onChange={(event) =>
+                      setClaimImpactDraft((current) => ({ ...current, evidence_ref: event.target.value }))
+                    }
+                    placeholder="edms:// or field report package"
+                    value={claimImpactDraft.evidence_ref}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageClaims || !dashboard.claims.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "claim-impact" ? "Analyzing..." : "Add Impact Analysis"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleDocumentSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <FilePlus2 size={18} /> Document Register
+                  </h2>
+                  <span>{dashboard.documents.length} controlled</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Document No.</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, document_number: event.target.value }))
+                      }
+                      placeholder="Auto if blank"
+                      value={documentDraft.document_number}
+                    />
+                  </label>
+                  <label>
+                    <span>Revision</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, revision: event.target.value }))
+                      }
+                      required
+                      value={documentDraft.revision}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Linked Record</span>
+                  <select
+                    disabled={!canManageDocuments || !linkedEntityOptions.length}
+                    onChange={(event) => {
+                      const [linkedType, linkedId] = event.target.value.split(":");
+                      setDocumentDraft((current) => ({
+                        ...current,
+                        linked_entity_type: linkedType,
+                        linked_entity_id: linkedId,
+                      }));
+                    }}
+                    value={`${documentDraft.linked_entity_type}:${documentDraft.linked_entity_id}`}
+                  >
+                    {linkedEntityOptions.map((option) => (
+                      <option key={`${option.type}-${option.id}`} value={`${option.type}:${option.id}`}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Title</span>
+                  <input
+                    disabled={!canManageDocuments || !linkedEntityOptions.length}
+                    onChange={(event) => setDocumentDraft((current) => ({ ...current, title: event.target.value }))}
+                    required
+                    value={documentDraft.title}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageDocuments || !linkedEntityOptions.length}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, doc_type: event.target.value }))
+                      }
+                      required
+                      value={documentDraft.doc_type}
+                    >
+                      <option value="Drawing">Drawing</option>
+                      <option value="Specification">Specification</option>
+                      <option value="Field Report">Field Report</option>
+                      <option value="Contract Communication">Contract Communication</option>
+                      <option value="Procedure">Procedure</option>
+                      <option value="Register">Register</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Discipline</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, discipline: event.target.value }))
+                      }
+                      required
+                      value={documentDraft.discipline}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Organization</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, organization: event.target.value }))
+                      }
+                      value={documentDraft.organization}
+                    />
+                  </label>
+                  <label>
+                    <span>Revision Date</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, revision_date: event.target.value }))
+                      }
+                      type="date"
+                      value={documentDraft.revision_date}
+                    />
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Status</span>
+                    <select
+                      disabled={!canManageDocuments}
+                      onChange={(event) => setDocumentDraft((current) => ({ ...current, status: event.target.value }))}
+                      value={documentDraft.status}
+                    >
+                      <option value="current">Current</option>
+                      <option value="issued">Issued</option>
+                      <option value="superseded">Superseded</option>
+                      <option value="void">Void</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Review</span>
+                    <select
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, review_status: event.target.value }))
+                      }
+                      value={documentDraft.review_status}
+                    >
+                      <option value="not_started">Not Started</option>
+                      <option value="in_review">In Review</option>
+                      <option value="approved">Approved</option>
+                      <option value="revise_and_resubmit">Revise and Resubmit</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>File Name</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setDocumentDraft((current) => ({ ...current, file_name: event.target.value }))
+                      }
+                      placeholder="document.pdf"
+                      value={documentDraft.file_name}
+                    />
+                  </label>
+                  <label>
+                    <span>URI</span>
+                    <input
+                      disabled={!canManageDocuments || !linkedEntityOptions.length}
+                      onChange={(event) => setDocumentDraft((current) => ({ ...current, uri: event.target.value }))}
+                      placeholder="edms://..."
+                      required
+                      value={documentDraft.uri}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageDocuments || !linkedEntityOptions.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "document" ? "Registering..." : "Register Document"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleAttachmentSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <Upload size={18} /> Document File Upload
+                  </h2>
+                  <span>{dashboard.document_attachments.length} files</span>
+                </div>
+                <label>
+                  <span>Document</span>
+                  <select
+                    disabled={!canManageDocuments || !dashboard.documents.length}
+                    onChange={(event) =>
+                      setAttachmentDraft((current) => ({ ...current, document_id: event.target.value }))
+                    }
+                    value={attachmentDraft.document_id}
+                  >
+                    {dashboard.documents.map((document) => (
+                      <option key={document.id} value={document.id}>
+                        {document.document_number} Rev {document.revision}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>File / ZIP</span>
+                  <input
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.jpg,.jpeg,.png,.csv,.txt,.xml,.xer"
+                    disabled={!canManageDocuments || !dashboard.documents.length}
+                    onChange={(event) =>
+                      setAttachmentDraft((current) => ({ ...current, file: event.target.files?.[0] ?? null }))
+                    }
+                    type="file"
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={
+                    !canManageDocuments ||
+                    !dashboard.documents.length ||
+                    !attachmentDraft.file ||
+                    captureAction !== null
+                  }
+                  type="submit"
+                >
+                  {captureAction === "document-attachment" ? "Uploading..." : "Upload File"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleTransmittalSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <Send size={18} /> Document Transmittal
+                  </h2>
+                  <span>{dashboard.document_transmittals.length} sent</span>
+                </div>
+                <label>
+                  <span>Document</span>
+                  <select
+                    disabled={!canManageDocuments || !dashboard.documents.length}
+                    onChange={(event) =>
+                      setTransmittalDraft((current) => ({ ...current, document_id: event.target.value }))
+                    }
+                    value={transmittalDraft.document_id}
+                  >
+                    {dashboard.documents.map((document) => (
+                      <option key={document.id} value={document.id}>
+                        {document.document_number} Rev {document.revision}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Transmittal No.</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setTransmittalDraft((current) => ({ ...current, transmittal_no: event.target.value }))
+                      }
+                      placeholder="Auto if blank"
+                      value={transmittalDraft.transmittal_no}
+                    />
+                  </label>
+                  <label>
+                    <span>Purpose</span>
+                    <select
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setTransmittalDraft((current) => ({ ...current, purpose: event.target.value }))
+                      }
+                      value={transmittalDraft.purpose}
+                    >
+                      <option value="for_review">For Review</option>
+                      <option value="for_approval">For Approval</option>
+                      <option value="for_information">For Information</option>
+                      <option value="for_construction">For Construction</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Subject</span>
+                  <input
+                    disabled={!canManageDocuments}
+                    onChange={(event) =>
+                      setTransmittalDraft((current) => ({ ...current, subject: event.target.value }))
+                    }
+                    required
+                    value={transmittalDraft.subject}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Recipient Org</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setTransmittalDraft((current) => ({ ...current, recipient_org: event.target.value }))
+                      }
+                      value={transmittalDraft.recipient_org}
+                    />
+                  </label>
+                  <label>
+                    <span>Due Date</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setTransmittalDraft((current) => ({ ...current, due_date: event.target.value }))
+                      }
+                      type="date"
+                      value={transmittalDraft.due_date}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "document-transmittal" ? "Issuing..." : "Issue Transmittal"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleProjectMailSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <FileText size={18} /> Project Mail
+                  </h2>
+                  <span>{dashboard.project_mail.length} records</span>
+                </div>
+                <div className="formColumns">
+                  <label>
+                    <span>Mail No.</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) => setMailDraft((current) => ({ ...current, mail_no: event.target.value }))}
+                      placeholder="Auto if blank"
+                      value={mailDraft.mail_no}
+                    />
+                  </label>
+                  <label>
+                    <span>Type</span>
+                    <select
+                      disabled={!canManageDocuments}
+                      onChange={(event) => setMailDraft((current) => ({ ...current, mail_type: event.target.value }))}
+                      value={mailDraft.mail_type}
+                    >
+                      <option value="document_review">Document Review</option>
+                      <option value="rfi">RFI</option>
+                      <option value="letter">Letter</option>
+                      <option value="site_instruction">Site Instruction</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Subject</span>
+                  <input
+                    disabled={!canManageDocuments}
+                    onChange={(event) => setMailDraft((current) => ({ ...current, subject: event.target.value }))}
+                    required
+                    value={mailDraft.subject}
+                  />
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>To Role</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) => setMailDraft((current) => ({ ...current, to_role: event.target.value }))}
+                      value={mailDraft.to_role}
+                    />
+                  </label>
+                  <label>
+                    <span>Due Date</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) => setMailDraft((current) => ({ ...current, due_date: event.target.value }))}
+                      type="date"
+                      value={mailDraft.due_date}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>Linked Document</span>
+                  <select
+                    disabled={!canManageDocuments || !dashboard.documents.length}
+                    onChange={(event) => setMailDraft((current) => ({ ...current, document_id: event.target.value }))}
+                    value={mailDraft.document_id}
+                  >
+                    {dashboard.documents.map((document) => (
+                      <option key={document.id} value={document.id}>
+                        {document.document_number} Rev {document.revision}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Body</span>
+                  <textarea
+                    disabled={!canManageDocuments}
+                    onChange={(event) => setMailDraft((current) => ({ ...current, body: event.target.value }))}
+                    value={mailDraft.body}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageDocuments || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "project-mail" ? "Sending..." : "Send Project Mail"}
+                </button>
+              </form>
+
+              <form className="panel captureForm" onSubmit={handleDocumentReviewSubmit}>
+                <div className="panelHeader">
+                  <h2>
+                    <ClipboardCheck size={18} /> Document Review
+                  </h2>
+                  <span>{dashboard.document_reviews.length} steps</span>
+                </div>
+                <label>
+                  <span>Document</span>
+                  <select
+                    disabled={!canManageDocuments || !dashboard.documents.length}
+                    onChange={(event) => setReviewDraft((current) => ({ ...current, document_id: event.target.value }))}
+                    value={reviewDraft.document_id}
+                  >
+                    {dashboard.documents.map((document) => (
+                      <option key={document.id} value={document.id}>
+                        {document.document_number} Rev {document.revision}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="formColumns">
+                  <label>
+                    <span>Reviewer Role</span>
+                    <input
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setReviewDraft((current) => ({ ...current, reviewer_role: event.target.value }))
+                      }
+                      value={reviewDraft.reviewer_role}
+                    />
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select
+                      disabled={!canManageDocuments}
+                      onChange={(event) =>
+                        setReviewDraft((current) => ({ ...current, review_status: event.target.value }))
+                      }
+                      value={reviewDraft.review_status}
+                    >
+                      <option value="outstanding">Outstanding</option>
+                      <option value="in_review">In Review</option>
+                      <option value="approved">Approved</option>
+                      <option value="revise_and_resubmit">Revise and Resubmit</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  <span>Due Date</span>
+                  <input
+                    disabled={!canManageDocuments}
+                    onChange={(event) => setReviewDraft((current) => ({ ...current, due_date: event.target.value }))}
+                    type="date"
+                    value={reviewDraft.due_date}
+                  />
+                </label>
+                <label>
+                  <span>Comments</span>
+                  <textarea
+                    disabled={!canManageDocuments}
+                    onChange={(event) => setReviewDraft((current) => ({ ...current, comments: event.target.value }))}
+                    value={reviewDraft.comments}
+                  />
+                </label>
+                <button
+                  className="workflowAction primary"
+                  disabled={!canManageDocuments || !dashboard.documents.length || captureAction !== null}
+                  type="submit"
+                >
+                  {captureAction === "document-review" ? "Creating..." : "Create Review Step"}
+                </button>
+              </form>
+            </section>
+          </details>
+
+          <section
+            className={
+              activeView === "control-dashboard" ? "mainGrid workspaceSection" : "mainGrid workspaceSection hidden"
+            }
+            id="control-dashboard"
+          >
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>S-Curve Control View</h2>
+                <span>PV / EV / AC</span>
+              </div>
+              <ResponsiveContainer width="100%" height={270}>
+                <AreaChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#d8dee5" />
+                  <XAxis dataKey="period" />
+                  <YAxis tickFormatter={(value) => `$${Number(value) / 1000000}M`} />
+                  <Tooltip formatter={(value) => currency(Number(value), project.currency)} />
+                  <Area type="monotone" dataKey="PV" stroke="#52616f" fill="#dce3ea" strokeWidth={2} />
+                  <Area type="monotone" dataKey="EV" stroke="#0f8b8d" fill="#bde7e5" strokeWidth={2} />
+                  <Area type="monotone" dataKey="AC" stroke="#c85a3a" fill="#f2c5b8" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Control Core Loop</h2>
+                <ClipboardCheck size={18} />
+              </div>
+              <div className="loopList">
+                {dashboard.loop.map((item) => (
+                  <div key={item.step}>
+                    <strong>{item.step}</strong>
+                    <span>{item.description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Early Warnings</h2>
+                <span>{redAlerts} critical</span>
+              </div>
+              <div className="stack">
+                {dashboard.alerts.map((alert) => (
+                  <article className={`alert ${alert.severity}`} key={alert.id}>
+                    <strong>{alert.rule}</strong>
+                    <span>{alert.message}</span>
+                    <small>{alert.recommendation}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>EAC Forecast Scenarios</h2>
+                <span>{dashboard.forecast_scenarios.length} scenarios</span>
+              </div>
+              <div className="scenarioGrid">
+                {dashboard.forecast_scenarios.map((scenario) => (
+                  <article className={`scenarioCard ${scenario.completion_risk}`} key={scenario.id}>
+                    <div>
+                      <strong>{scenario.name}</strong>
+                      <span>{scenario.method}</span>
+                    </div>
+                    <div className="scenarioNumbers">
+                      <span>
+                        EAC <strong>{currency(scenario.eac, project.currency)}</strong>
+                      </span>
+                      <span>
+                        VAC <strong>{currency(scenario.vac, project.currency)}</strong>
+                      </span>
+                      <span>
+                        CPI/SPI{" "}
+                        <strong>
+                          {scenario.cpi_factor.toFixed(3)} / {scenario.spi_factor.toFixed(3)}
+                        </strong>
+                      </span>
+                    </div>
+                    <small>
+                      {statusLabel(scenario.completion_risk)} risk / {scenario.period_label}
+                    </small>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Productivity</h2>
+                <span>{dashboard.productivity_summary.low_productivity_accounts} low accounts</span>
+              </div>
+              <div className="productivityCard">
+                <strong>{dashboard.productivity_summary.productivity_index.toFixed(3)}</strong>
+                <span>Productivity index</span>
+                <small>
+                  {dashboard.productivity_summary.total_quantity.toLocaleString()} qty /{" "}
+                  {dashboard.productivity_summary.total_labor_hours.toLocaleString()} labor hours
+                </small>
+              </div>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>Control Accounts</h2>
+                <span>{dashboard.control_accounts.length} mapped from schedule</span>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Account</th>
+                    <th>Owner</th>
+                    <th>Discipline</th>
+                    <th>PV</th>
+                    <th>EV</th>
+                    <th>AC</th>
+                    <th>SPI</th>
+                    <th>CPI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.control_accounts.map((account) => {
+                    const accountKpi = dashboard.account_kpis.find((item) => item.control_account_id === account.id);
+                    return (
+                      <tr key={account.id}>
+                        <td>
+                          <strong>{account.code}</strong>
+                          <span>{account.name}</span>
+                        </td>
+                        <td>{account.responsible}</td>
+                        <td>{account.discipline}</td>
+                        <td>{currency(accountKpi?.pv ?? 0, project.currency)}</td>
+                        <td>{currency(accountKpi?.ev ?? 0, project.currency)}</td>
+                        <td>{currency(accountKpi?.ac ?? 0, project.currency)}</td>
+                        <td>{accountKpi?.spi.toFixed(3)}</td>
+                        <td>{accountKpi?.cpi.toFixed(3)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>Schedule QA & Baseline</h2>
+                <span>
+                  {dashboard.schedule_findings.length} findings / {dashboard.baseline_versions.length} baselines
+                </span>
+              </div>
+              <div className="contractGrid">
+                <div>
+                  <strong>Validation Findings</strong>
+                  <div className="workList">
+                    {dashboard.schedule_findings.length ? (
+                      dashboard.schedule_findings.slice(0, 5).map((finding) => (
+                        <article key={finding.id}>
+                          <strong>
+                            {finding.check_code} / {statusLabel(finding.severity)}
+                          </strong>
+                          <span>{finding.message}</span>
+                          <small>
+                            {finding.item_count} items / weight {finding.weight}
+                          </small>
+                        </article>
+                      ))
+                    ) : (
+                      <article>
+                        <strong>No findings</strong>
+                        <span>The active schedule has no stored QA findings.</span>
+                      </article>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <strong>Baseline Versions</strong>
+                  <div className="workList">
+                    {dashboard.baseline_versions.length ? (
+                      dashboard.baseline_versions.map((baseline) => (
+                        <article key={baseline.id}>
+                          <strong>
+                            BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}
+                          </strong>
+                          <span>{neutralScheduleText(baseline.name)}</span>
+                          <small>
+                            {baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%
+                          </small>
+                        </article>
+                      ))
+                    ) : (
+                      <article>
+                        <strong>No baseline versions</strong>
+                        <span>Load a source schedule to create the first baseline version.</span>
+                      </article>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>BP Engine / uDesigner</h2>
+                <span>{dashboard.process_templates.length} persistent templates</span>
+              </div>
+              <div className="designerSummary">
+                <div>
+                  <strong>
+                    {dashboard.process_templates.reduce((total, template) => total + template.step_templates.length, 0)}
+                  </strong>
+                  <span>configured steps</span>
+                </div>
+                <div>
+                  <strong>
+                    {dashboard.process_templates.reduce((total, template) => total + template.transitions.length, 0)}
+                  </strong>
+                  <span>workflow transitions</span>
+                </div>
+                <div>
+                  <strong>
+                    {
+                      dashboard.process_templates.filter((template) => template.status.toLowerCase() === "active")
+                        .length
+                    }
+                  </strong>
+                  <span>active BP definitions</span>
+                </div>
+              </div>
+              <div className="templateGrid">
+                {dashboard.process_templates.map((template) => (
+                  <article key={template.code}>
+                    <div>
+                      <strong>{template.name}</strong>
+                      <span>
+                        {template.code} / {template.category} / v{template.version_no}
+                      </span>
+                    </div>
+                    <p>{template.description || "Business process controlled by the configurable workflow engine."}</p>
+                    <small>Form: {template.form_schema.join(", ")}</small>
+                    <small>Workflow: {template.workflow_steps.join(" -> ")}</small>
+                    <small>
+                      Transitions:{" "}
+                      {template.transitions
+                        .map(
+                          (transition) =>
+                            `${transition.label || statusLabel(transition.action)}: ${transition.from_step} -> ${transition.to_step}`
+                        )
+                        .join(" / ") || "Pending"}
+                    </small>
+                    <small>Roles: {template.roles.join(", ")}</small>
+                    <span className="templateStatus">{template.status}</span>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Project Team & Roles</h2>
+                <span>{dashboard.project_team.length} users</span>
+              </div>
+              <div className="teamList">
+                {dashboard.project_team.map((member) => (
+                  <article key={member.membership.id}>
+                    <strong>{member.user.full_name}</strong>
+                    <span>{member.membership.role}</span>
+                    <small>{member.user.title}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Audit Trail</h2>
+                <span>{dashboard.audit_logs.length} recent</span>
+              </div>
+              <div className="auditList">
+                {dashboard.audit_logs.length ? (
+                  dashboard.audit_logs.map((log) => (
+                    <article key={log.id}>
+                      <strong>{statusLabel(log.action.replace("workflow.", ""))}</strong>
+                      <span>
+                        {log.actor} / {log.entity_type} #{log.entity_id ?? "-"}
+                      </span>
+                      <small>{new Date(log.created_at).toLocaleString()}</small>
+                    </article>
+                  ))
+                ) : (
+                  <article>
+                    <strong>No workflow actions yet</strong>
+                    <span>Route a BP to create an audit entry.</span>
+                  </article>
+                )}
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Decision Layer</h2>
+                <Bot size={18} />
+              </div>
+              <p className="aiBrief">{dashboard.ai_brief}</p>
+            </div>
+
+            <div className="panel">
+              <div className="panelHeader">
+                <h2>Changes & Claims</h2>
+                <FileText size={18} />
+              </div>
+              <div className="workList">
+                {[...dashboard.changes, ...dashboard.claims].map((item) => (
+                  <article key={`${item.title}-${item.id}`}>
+                    <strong>{item.title}</strong>
+                    <span>{item.status}</span>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>Contract Administration</h2>
+                <span>
+                  {dashboard.contracts.length} contracts / {dashboard.purchase_orders.length} POs /{" "}
+                  {dashboard.payment_certificates.length} actas / {dashboard.warehouse_receipts.length} almacen
+                </span>
+              </div>
+              <div className="contractGrid">
+                <div>
+                  <strong>Contracts</strong>
+                  <div className="workList">
+                    {dashboard.contracts.map((contract) => (
+                      <article key={contract.id}>
+                        <strong>
+                          {contract.code} / {contract.counterparty}
+                        </strong>
+                        <span>{contract.title}</span>
+                        <small>
+                          {currency(contract.value, project.currency)} /{" "}
+                          {contract.control_account_id
+                            ? accountLabel(contract.control_account_id)
+                            : "No control account"}{" "}
+                          / {statusLabel(contract.status)}
+                        </small>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <strong>Purchase Orders</strong>
+                  <div className="workList">
+                    {dashboard.purchase_orders.map((order) => (
+                      <article key={order.id}>
+                        <strong>
+                          {order.po_number} / {currency(order.committed_amount, project.currency)}
+                        </strong>
+                        <span>{order.description}</span>
+                        <small>
+                          {order.control_account_id ? accountLabel(order.control_account_id) : "No control account"} /{" "}
+                          {statusLabel(order.status)}
+                        </small>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <strong>Payment Certificates</strong>
+                  <div className="workList">
+                    {dashboard.payment_certificates.map((certificate) => (
+                      <article key={certificate.id}>
+                        <strong>
+                          {certificate.certificate_no} / {currency(certificate.certified_amount, project.currency)}
+                        </strong>
+                        <span>{certificate.period_label || "No period"}</span>
+                        <small>
+                          {certificate.control_account_id
+                            ? accountLabel(certificate.control_account_id)
+                            : "No control account"}{" "}
+                          / {statusLabel(certificate.status)}
+                        </small>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <strong>Warehouse Receipts</strong>
+                  <div className="workList">
+                    {dashboard.warehouse_receipts.map((receipt) => (
+                      <article key={receipt.id}>
+                        <strong>
+                          {receipt.receipt_no} / {currency(receipt.received_value, project.currency)}
+                        </strong>
+                        <span>{receipt.description || "Warehouse receipt"}</span>
+                        <small>
+                          {receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"}{" "}
+                          / {statusLabel(receipt.status)}
+                        </small>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <strong>Communications</strong>
+                  <div className="workList">
+                    {dashboard.communications.map((communication) => (
+                      <article key={communication.id}>
+                        <strong>
+                          {statusLabel(communication.communication_type)} / {communication.sent_on}
+                        </strong>
+                        <span>{communication.subject}</span>
+                        <small>{communication.reference || "No reference"}</small>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="panel wide">
+              <div className="panelHeader">
+                <h2>Document Control Register</h2>
+                <span>{dashboard.documents.length} controlled records</span>
+              </div>
+              <div className="documentGrid">
+                {dashboard.documents.map((document) => (
+                  <article key={document.id}>
+                    <strong>
+                      {document.document_number} Rev {document.revision}
+                    </strong>
+                    <span>{document.title}</span>
+                    <small>
+                      {statusLabel(document.review_status)} / {document.uri}
+                    </small>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
         </div>
       </section>
     </main>
@@ -6298,4 +7575,3 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
-

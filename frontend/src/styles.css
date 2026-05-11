@@ -1,7 +1,14 @@
 :root {
   color: #17212b;
   background: #f3f6f8;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -12,6 +19,16 @@
 
 body {
   margin: 0;
+}
+
+#root,
+main,
+.workspaceSection,
+.workArea,
+.viewPanel,
+.panel,
+.metric {
+  min-width: 0;
 }
 
 main {
@@ -91,7 +108,9 @@ h2 {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
+  flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-end;
 }
 
 .contextSwitch {
@@ -510,7 +529,8 @@ h2 {
 }
 
 .workflowCanvas {
-  overflow: hidden;
+  overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .workflowHeader,
@@ -641,6 +661,7 @@ h2 {
 
 .recordRegistry {
   border-top: 1px solid #edf1f4;
+  overflow-x: auto;
 }
 
 .recordRegistry table {
@@ -714,13 +735,9 @@ h2 {
   order: 8;
 }
 
-.metric,
-.panel {
-  overflow: hidden;
-}
-
 .metric {
   min-height: 124px;
+  overflow: visible;
   padding: 18px;
   position: relative;
 }
@@ -775,8 +792,11 @@ h2 {
 }
 
 .panel {
+  min-width: 0;
   min-height: 260px;
+  overflow: auto;
   padding: 18px;
+  scrollbar-gutter: stable;
 }
 
 .wide {
@@ -787,6 +807,8 @@ h2 {
   align-items: center;
   border-bottom: 1px solid #edf1f4;
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-between;
   margin: -18px -18px 16px;
   padding: 14px 18px;
@@ -796,6 +818,14 @@ h2 {
   align-items: center;
   display: inline-flex;
   gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.panelHeader span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .loopList,
@@ -810,6 +840,7 @@ h2 {
 .contractGrid {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .loopList div,
@@ -861,6 +892,26 @@ h2 {
   display: block;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.panel .stack,
+.panel .workList,
+.panel .documentGrid,
+.panel .templateGrid,
+.panel .auditList,
+.panel .qualityList,
+.panel .recentList,
+.panel .teamList,
+.panel .contractGrid,
+.viewPanel .workList,
+.viewPanel .documentGrid,
+.viewPanel .noticeGrid,
+.viewPanel .impactGrid,
+.viewPanel .entitlementMatrix {
+  max-height: min(64vh, 760px);
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-gutter: stable;
 }
 
 .qualityList article div {
@@ -1058,6 +1109,7 @@ h2 {
 
 table {
   border-collapse: collapse;
+  min-width: 720px;
   width: 100%;
 }
 
@@ -1081,6 +1133,14 @@ td span {
   display: block;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.viewPanel table,
+.panel table,
+.mappingTable table,
+.recordRegistry table {
+  width: max-content;
+  min-width: 100%;
 }
 
 .aiBrief {
@@ -1218,7 +1278,8 @@ td span {
   border: 1px solid #d8dee5;
   border-radius: 8px;
   box-shadow: 0 12px 24px rgba(23, 33, 43, 0.05);
-  overflow: hidden;
+  overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .adminDrawer summary,
@@ -1322,8 +1383,9 @@ td span {
   border: 1px solid #d8dee5;
   border-radius: 8px;
   box-shadow: 0 12px 24px rgba(23, 33, 43, 0.05);
-  overflow: hidden;
+  overflow: auto;
   padding: 18px;
+  scrollbar-gutter: stable;
 }
 
 .viewPanel > .panelHeader {
@@ -1334,6 +1396,12 @@ td span {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.viewSplit > div {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
 }
 
 .linkButton,
@@ -1398,7 +1466,8 @@ td span {
   border: 1px solid #e4e8ec;
   border-radius: 8px;
   margin-top: 16px;
-  overflow: hidden;
+  overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 .compactHeader {
@@ -1571,6 +1640,8 @@ td span {
 .subHeader {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: space-between;
   margin-bottom: 10px;
 }
@@ -1719,6 +1790,8 @@ td span {
 .phaseMeta {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: space-between;
 }
 
@@ -1802,6 +1875,7 @@ td span {
 .impactGrid article > div {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: space-between;
 }
@@ -1836,6 +1910,7 @@ td span {
 .claimHeader {
   align-items: start;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   justify-content: space-between;
 }
@@ -1890,12 +1965,13 @@ td span {
 .entitlementMeta {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: space-between;
 }
 
 .entitlementMeta strong {
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 1100px) {
