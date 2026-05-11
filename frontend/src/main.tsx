@@ -2558,7 +2558,7 @@ function App() {
       });
       if (!response.ok) {
         const detail = await response.text();
-        throw new Error(detail || "AWP package creation failed");
+        throw new Error(detail || "Work package creation failed");
       }
       const created = (await response.json()) as WorkPackage;
       setConstraintDraft((current) => ({ ...current, work_package_id: String(created.id) }));
@@ -2570,10 +2570,10 @@ function App() {
         sequence_no: "",
         progress_percent: "",
       }));
-      setUploadMessage("AWP work package created and routed to readiness workflow.");
+      setUploadMessage("Work package created and routed to readiness workflow.");
       await load();
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "AWP package creation failed");
+      setUploadError(error instanceof Error ? error.message : "Work package creation failed");
     } finally {
       setCaptureAction(null);
     }
@@ -2605,7 +2605,7 @@ function App() {
       );
       if (!response.ok) {
         const detail = await response.text();
-        throw new Error(detail || "AWP constraint creation failed");
+        throw new Error(detail || "Package constraint creation failed");
       }
       setConstraintDraft((current) => ({
         ...current,
@@ -2614,10 +2614,10 @@ function App() {
         status: "open",
         blocking: true,
       }));
-      setUploadMessage("AWP constraint registered. Package readiness updated.");
+      setUploadMessage("Package constraint registered. Readiness updated.");
       await load();
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "AWP constraint creation failed");
+      setUploadError(error instanceof Error ? error.message : "Package constraint creation failed");
     } finally {
       setCaptureAction(null);
     }
@@ -2641,12 +2641,12 @@ function App() {
       );
       if (!response.ok) {
         const detail = await response.text();
-        throw new Error(detail || "AWP constraint update failed");
+        throw new Error(detail || "Package constraint update failed");
       }
-      setUploadMessage("AWP constraint closed. Readiness recalculated.");
+      setUploadMessage("Package constraint closed. Readiness recalculated.");
       await load();
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "AWP constraint update failed");
+      setUploadError(error instanceof Error ? error.message : "Package constraint update failed");
     } finally {
       setCaptureAction(null);
     }
@@ -2802,16 +2802,13 @@ function App() {
     })),
   ];
   const selectedBpRecord = bpRecords.find((record) => record.record === selectedBpRecordNo) ?? bpRecords[0] ?? null;
-  const navigatorItems: Array<{ key: WorkspaceView; label: string; count: string | number }> = [
+  const primaryNavigatorItems: Array<{ key: WorkspaceView; label: string; count: string | number }> = [
     { key: "business-processes", label: "Business Processes", count: bpRecords.length },
     { key: "control-dashboard", label: "Control Dashboard", count: redAlerts },
     { key: "schedule", label: "Schedule", count: dashboard.schedule_activity_count },
     { key: "progress", label: "Progress", count: dashboard.latest_progress_records.length },
     { key: "cost", label: "Cost Manager", count: dashboard.cost_sheet.length },
-    { key: "awp", label: "AWP Workface", count: dashboard.awp_summary.total_packages },
     { key: "changes", label: "Changes", count: dashboard.changes.length },
-    { key: "claims", label: "Claims", count: dashboard.claims.length },
-    { key: "rfq", label: "RFQ / Bids", count: dashboard.rfq_summary.bids_received },
     {
       key: "contracts",
       label: "Contracts",
@@ -2822,8 +2819,13 @@ function App() {
       label: "Document Control",
       count: dashboard.document_control_summary.controlled_document_score.toFixed(0) + "%",
     },
+  ];
+  const secondaryNavigatorItems: Array<{ key: WorkspaceView; label: string; count: string | number }> = [
+    { key: "awp", label: "Work Packages", count: dashboard.awp_summary.total_packages },
+    { key: "claims", label: "Claims", count: dashboard.claims.length },
+    { key: "rfq", label: "RFQ / Bids", count: dashboard.rfq_summary.bids_received },
+    { key: "bp-entry-forms", label: "Capture Forms", count: "Open" },
     { key: "roadmap", label: "Roadmap", count: pilotReadiness ? `${Math.round(pilotReadiness.score)}%` : "59%" },
-    { key: "bp-entry-forms", label: "BP Entry Forms", count: "Open" },
     { key: "admin", label: "Projects / Users / Roles", count: dashboard.project_team.length },
   ];
   const chartData = dashboard.control_snapshots.length
@@ -3109,7 +3111,21 @@ function App() {
             <strong>Project Controls</strong>
             <span>Navigator</span>
           </div>
-          {navigatorItems.map((item) => (
+          {primaryNavigatorItems.map((item) => (
+            <button
+              className={activeView === item.key ? "navigatorItem active" : "navigatorItem"}
+              key={item.key}
+              onClick={() => setActiveView(item.key)}
+              type="button"
+            >
+              <span>{item.label}</span>
+              <strong>{item.count}</strong>
+            </button>
+          ))}
+          <div className="navigatorDivider">
+            <span>More</span>
+          </div>
+          {secondaryNavigatorItems.map((item) => (
             <button
               className={activeView === item.key ? "navigatorItem active" : "navigatorItem"}
               key={item.key}
@@ -3462,7 +3478,7 @@ function App() {
                 <small>Flujo TCM, EVM, alertas, BP y trazabilidad ya estan conectados.</small>
               </article>
               <article>
-                <span>AWP</span>
+                <span>Work Packages</span>
                 <strong>4/10</strong>
                 <small>CWA/CWP/EWP/PWP/IWP, readiness y constraints quedan integrados como MVP inicial.</small>
               </article>
@@ -4149,9 +4165,9 @@ function App() {
             className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
           >
             <div className="panelHeader">
-              <h2>AWP Workface Readiness</h2>
+              <h2>Work Package Readiness</h2>
               <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
-                Open AWP forms
+                Open package forms
               </button>
             </div>
             <div className="awpSummary">
@@ -4782,7 +4798,7 @@ function App() {
               {[
                 "Project Shell",
                 "Schedule Intake",
-                "AWP Readiness",
+                "Work Packages",
                 "Progress Update",
                 "Cost Actuals",
                 "Change Request",
@@ -4798,7 +4814,7 @@ function App() {
                       ? workflowInstance
                         ? "Open"
                         : "Waiting"
-                      : item === "AWP Readiness"
+                      : item === "Work Packages"
                         ? `${dashboard.awp_summary.open_constraints} open`
                         : item === "Contract Notice"
                           ? `${dashboard.contract_notices.length} records`
@@ -5009,7 +5025,7 @@ function App() {
           >
             <summary>
               <span>BP Entry Forms</span>
-              <strong>Progress, cost, AWP, change, contract notice, claim impact and document capture</strong>
+              <strong>Progress, cost, packages, change, contract notice, claim impact and document capture</strong>
             </summary>
             <section className="captureGrid">
               <div className="panel">
@@ -5238,7 +5254,7 @@ function App() {
             <section className="phaseTwoGrid">
               <form className="panel captureForm" onSubmit={handleAwpSubmit}>
                 <div className="panelHeader">
-                  <h2>AWP Package</h2>
+                  <h2>Work Package</h2>
                   <span>{dashboard.work_packages.length} packages</span>
                 </div>
                 <div className="formColumns">
@@ -5359,13 +5375,13 @@ function App() {
                   disabled={!canManageAwp || controlGateBlocked || captureAction !== null}
                   type="submit"
                 >
-                  {captureAction === "awp" ? "Creating..." : "Create AWP Package"}
+                  {captureAction === "awp" ? "Creating..." : "Create Work Package"}
                 </button>
               </form>
 
               <form className="panel captureForm" onSubmit={handleConstraintSubmit}>
                 <div className="panelHeader">
-                  <h2>AWP Constraint</h2>
+                  <h2>Package Constraint</h2>
                   <span>{dashboard.awp_summary.open_constraints} open</span>
                 </div>
                 <label>

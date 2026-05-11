@@ -8,7 +8,6 @@ from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
 
-
 settings = get_settings()
 settings.validate_for_runtime()
 configure_logging()

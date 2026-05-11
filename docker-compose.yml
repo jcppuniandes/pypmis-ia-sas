@@ -47,8 +47,23 @@ services:
       LOG_FORMAT: ${LOG_FORMAT:-plain}
       METRICS_ENABLED: "true"
       MAX_REQUEST_BODY_MB: "25"
+      DOCUMENT_STORAGE_PATH: /app/storage/documents
+      DOCUMENT_MAX_UPLOAD_MB: "50"
+      DOCUMENT_MAX_ZIP_FILES: "200"
+      DOCUMENT_MAX_ZIP_UNCOMPRESSED_MB: "250"
+      DOCUMENT_SCAN_MODE: ${DOCUMENT_SCAN_MODE:-local}
+      DOCUMENT_CLAMAV_HOST: ${DOCUMENT_CLAMAV_HOST:-clamav}
+      DOCUMENT_CLAMAV_PORT: ${DOCUMENT_CLAMAV_PORT:-3310}
+      OIDC_ENABLED: ${OIDC_ENABLED:-false}
+      OIDC_ISSUER_URL: ${OIDC_ISSUER_URL:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_AUTHORIZATION_URL: ${OIDC_AUTHORIZATION_URL:-}
+      OIDC_TOKEN_URL: ${OIDC_TOKEN_URL:-}
+      OIDC_JWKS_URL: ${OIDC_JWKS_URL:-}
     ports:
       - "8000:8000"
+    volumes:
+      - document_storage:/app/storage/documents
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2).read()"]
       interval: 15s
@@ -94,3 +109,4 @@ services:
 
 volumes:
   postgres_data:
+  document_storage:

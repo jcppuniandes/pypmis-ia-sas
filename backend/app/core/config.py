@@ -22,6 +22,20 @@ class Settings(BaseSettings):
     hsts_enabled: bool = False
     hsts_max_age_seconds: int = 31_536_000
     max_request_body_mb: int = 25
+    document_storage_path: str = "/app/storage/documents"
+    document_allowed_extensions: str = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.jpg,.jpeg,.png,.csv,.txt,.xml,.xer"
+    document_max_upload_mb: int = 50
+    document_max_zip_files: int = 200
+    document_max_zip_uncompressed_mb: int = 250
+    document_scan_mode: str = "local"
+    document_clamav_host: str = "clamav"
+    document_clamav_port: int = 3310
+    oidc_enabled: bool = False
+    oidc_issuer_url: str = ""
+    oidc_client_id: str = ""
+    oidc_authorization_url: str = ""
+    oidc_token_url: str = ""
+    oidc_jwks_url: str = ""
     rate_limit_enabled: bool = True
     rate_limit_requests: int = 600
     rate_limit_window_seconds: int = 60
@@ -50,6 +64,20 @@ class Settings(BaseSettings):
     def max_request_body_bytes(self) -> int:
         return max(self.max_request_body_mb, 1) * 1024 * 1024
 
+    @property
+    def document_allowed_extension_set(self) -> set[str]:
+        return {
+            extension.strip().lower() for extension in self.document_allowed_extensions.split(",") if extension.strip()
+        }
+
+    @property
+    def document_max_upload_bytes(self) -> int:
+        return max(self.document_max_upload_mb, 1) * 1024 * 1024
+
+    @property
+    def document_max_zip_uncompressed_bytes(self) -> int:
+        return max(self.document_max_zip_uncompressed_mb, 1) * 1024 * 1024
+
     def validate_for_runtime(self) -> None:
         if not self.is_production or self.allow_insecure_production:
             return
@@ -62,6 +90,8 @@ class Settings(BaseSettings):
             raise RuntimeError("CORS_ORIGINS cannot contain '*' in production")
         if self.docs_enabled:
             raise RuntimeError("DOCS_ENABLED must be false in production")
+        if self.oidc_enabled and (not self.oidc_issuer_url or not self.oidc_client_id):
+            raise RuntimeError("OIDC_ISSUER_URL and OIDC_CLIENT_ID are required when OIDC is enabled")
 
 
 @lru_cache

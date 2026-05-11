@@ -90,6 +90,74 @@ class AuthSessionOut(BaseModel):
     user: UserOut
 
 
+class IntegrationTokenCreate(BaseModel):
+    name: str
+    datasets: list[str] = Field(default_factory=lambda: ["cost_sheet", "funding_sources", "cash_flow"])
+    formats: list[str] = Field(default_factory=lambda: ["json", "csv", "both", "xlsx"])
+    expires_in_days: int = 30
+
+
+class IntegrationTokenOut(BaseModel):
+    id: int
+    project_id: int
+    name: str
+    token_prefix: str
+    datasets: list[str]
+    formats: list[str]
+    status: str
+    created_by_user_id: int
+    created_at: datetime
+    expires_at: datetime
+    last_used_at: datetime | None
+
+
+class IntegrationTokenCreated(IntegrationTokenOut):
+    token: str
+
+
+class IntegrationTokenAlertOut(BaseModel):
+    id: int
+    project_id: int
+    name: str
+    token_prefix: str
+    status: str
+    datasets: list[str]
+    formats: list[str]
+    expires_at: datetime
+    days_to_expiry: int
+    severity: str
+    message: str
+    last_used_at: datetime | None
+
+
+class IntegrationTokenAlertSummary(BaseModel):
+    project_id: int
+    warning_days: int
+    generated_at: datetime
+    active_count: int
+    expiring_count: int
+    expired_count: int
+    revoked_count: int
+    alerts: list[IntegrationTokenAlertOut]
+
+
+class IntegrationExportLogOut(BaseModel):
+    id: int
+    project_id: int
+    requested_by_user_id: int
+    integration_token_id: int | None
+    actor: str
+    artifact_type: str
+    datasets: list[str]
+    format: str
+    file_name: str
+    sha256: str
+    size_bytes: int
+    row_count: int
+    status: str
+    created_at: datetime
+
+
 class RoleProfileOut(BaseModel):
     role: str
     description: str
@@ -1108,6 +1176,26 @@ class DocumentOut(BaseModel):
     updated_at: datetime
 
 
+class DocumentAttachmentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    document_id: int
+    original_file_name: str
+    stored_file_name: str
+    content_type: str
+    extension: str
+    size_bytes: int
+    sha256: str
+    source: str
+    uploaded_by: str
+    scan_status: str
+    validation_message: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
 class DocumentCreate(BaseModel):
     document_number: str = ""
     revision: str = "A"
@@ -1439,6 +1527,7 @@ class DashboardOut(BaseModel):
     rfq_summary: RFQSummary
     communications: list[ContractCommunicationOut]
     documents: list[DocumentOut]
+    document_attachments: list[DocumentAttachmentOut]
     document_transmittals: list[DocumentTransmittalOut]
     document_transmittal_items: list[DocumentTransmittalItemOut]
     document_reviews: list[DocumentReviewOut]

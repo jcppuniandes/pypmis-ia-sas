@@ -30,6 +30,60 @@ DOCUMENTS = [
         "title": "Paso A Paso Detallado Del Piloto",
         "subtitle": "Runbook operativo y readiness para produccion",
     },
+    {
+        "source": ROOT / "docs" / "12-benchmarking-pypmis-ai-saas.md",
+        "output": ROOT / "docs" / "Benchmarking_Competitivo_Pypmis_Ai_SaaS.pdf",
+        "title": "Benchmarking Competitivo",
+        "subtitle": "Comparativo frente a suites PMIS y Project Controls",
+    },
+    {
+        "source": ROOT / "docs" / "13-roadmap-olas-robustecimiento-piloto.md",
+        "output": ROOT / "docs" / "Roadmap_Olas_Robustecimiento_Piloto_Pypmis_Ai_SaaS.pdf",
+        "title": "Roadmap Por Olas",
+        "subtitle": "Robustecimiento progresivo del piloto",
+    },
+    {
+        "source": ROOT / "docs" / "14-ola-2-seguridad-operacion-controlada.md",
+        "output": ROOT / "docs" / "Ola_2_Seguridad_Operacion_Controlada_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 2 Seguridad",
+        "subtitle": "Operacion controlada, adjuntos y backup del piloto",
+    },
+    {
+        "source": ROOT / "docs" / "15-ola-3-integraciones-gobernadas.md",
+        "output": ROOT / "docs" / "Ola_3_Integraciones_Gobernadas_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3 Integraciones",
+        "subtitle": "Manifiesto y exportaciones gobernadas para el piloto",
+    },
+    {
+        "source": ROOT / "docs" / "16-ola-3b-paquetes-integracion-gobernados.md",
+        "output": ROOT / "docs" / "Ola_3B_Paquetes_Integracion_Gobernados_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3B Paquetes",
+        "subtitle": "ZIP verificable con manifiesto y checksums",
+    },
+    {
+        "source": ROOT / "docs" / "17-ola-3c-tokens-integracion-gobernados.md",
+        "output": ROOT / "docs" / "Ola_3C_Tokens_Integracion_Gobernados_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3C Tokens",
+        "subtitle": "Tokens read-only con alcance, expiracion y revocacion",
+    },
+    {
+        "source": ROOT / "docs" / "18-ola-3d-workbooks-xlsx-gobernados.md",
+        "output": ROOT / "docs" / "Ola_3D_Workbooks_XLSX_Gobernados_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3D XLSX",
+        "subtitle": "Workbooks ejecutivos desde integraciones gobernadas",
+    },
+    {
+        "source": ROOT / "docs" / "19-ola-3e-catalogo-auditable-integraciones.md",
+        "output": ROOT / "docs" / "Ola_3E_Catalogo_Auditable_Integraciones_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3E Auditoria",
+        "subtitle": "Catalogo de descargas con actor, datasets y hash",
+    },
+    {
+        "source": ROOT / "docs" / "20-ola-3f-alertas-rotacion-tokens.md",
+        "output": ROOT / "docs" / "Ola_3F_Alertas_Rotacion_Tokens_Pypmis_Ai_SaaS.pdf",
+        "title": "Ola 3F Tokens",
+        "subtitle": "Alertas de vencimiento y rotacion de tokens",
+    },
 ]
 
 W, H = A4
@@ -74,11 +128,12 @@ def parse_table(lines: list[str], start: int) -> tuple[list[list[str]], int]:
 
 
 class PdfDoc:
-    def __init__(self, output: Path, title: str, subtitle: str, source_name: str) -> None:
+    def __init__(self, output: Path, title: str, subtitle: str, source_name: str, base_date: str) -> None:
         self.output = output
         self.title = title
         self.subtitle = subtitle
         self.source_name = source_name
+        self.base_date = base_date
         self.canvas = canvas.Canvas(str(output), pagesize=A4)
         self.canvas.setTitle(title)
         self.canvas.setAuthor("Codex")
@@ -126,7 +181,7 @@ class PdfDoc:
         c.drawCentredString(W / 2, H - 5.05 * cm, clean(self.subtitle))
         c.setFont("Helvetica", 10.2)
         c.setFillColor(colors.HexColor("#52616f"))
-        c.drawCentredString(W / 2, H - 5.75 * cm, "Fecha base: 2026-05-06")
+        c.drawCentredString(W / 2, H - 5.75 * cm, clean(f"Fecha base: {self.base_date}"))
         c.drawCentredString(W / 2, H - 6.35 * cm, clean(f"Fuente: {self.source_name}"))
 
         c.setFillColor(colors.HexColor("#edf7f7"))
@@ -251,7 +306,12 @@ class PdfDoc:
 def render_markdown(source: Path, output: Path, title: str, subtitle: str) -> int:
     lines = source.read_text(encoding="utf-8").splitlines()
     headings = [strip_markdown(line[3:].strip()) for line in lines if line.startswith("## ")]
-    doc = PdfDoc(output, title, subtitle, source.name)
+    base_date = "2026-05-07"
+    for line in lines:
+        if line.startswith("Fecha base:"):
+            base_date = line.split(":", 1)[1].strip()
+            break
+    doc = PdfDoc(output, title, subtitle, source.name, base_date)
     doc.cover(headings)
 
     index = 0

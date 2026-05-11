@@ -14,7 +14,6 @@ from starlette.responses import JSONResponse
 
 from app.core.config import get_settings
 
-
 logger = logging.getLogger("pypmis.request")
 
 
@@ -236,7 +235,9 @@ def _apply_security_headers(response: Response) -> None:
     response.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
     response.headers.setdefault("Content-Security-Policy", "frame-ancestors 'none'; base-uri 'none'; object-src 'none'")
     if settings.hsts_enabled:
-        response.headers.setdefault("Strict-Transport-Security", f"max-age={settings.hsts_max_age_seconds}; includeSubDomains")
+        response.headers.setdefault(
+            "Strict-Transport-Security", f"max-age={settings.hsts_max_age_seconds}; includeSubDomains"
+        )
 
 
 def _client_host(request: Request) -> str:

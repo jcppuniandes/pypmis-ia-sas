@@ -1,10 +1,10 @@
 # Resumen, Analisis, Manual De Uso Y Paso A Paso Del Piloto
 
-Fecha base: 2026-05-06
+Fecha base: 2026-05-07
 
 ## Resumen Ejecutivo
 
-P&Pmis Ai SaaS ya opera como una plataforma colaborativa en linea para Project Controls: multiusuario, multiproyecto, con roles por proyecto, auditoria, control de acceso, workflows, Plan de Control / PEP, ingestion de cronograma, cuentas de control, EVM, AWP, RFQ, contratos, ordenes de compra, actas de pago, entradas de almacen, claims, documentos y readiness de piloto.
+P&Pmis Ai SaaS ya opera como una plataforma colaborativa en linea para Project Controls: multiusuario, multiproyecto, con roles por proyecto, auditoria, control de acceso, workflows, Plan de Control / PEP, ingestion de cronograma, cuentas de control, EVM, AWP, RFQ, contratos, ordenes de compra, actas de pago, entradas de almacen, claims, documentos con adjuntos reales y readiness de piloto.
 
 En esta fase se agrego un Cost Manager basico inspirado en Oracle Primavera Unifier:
 
@@ -14,6 +14,13 @@ En esta fase se agrego un Cost Manager basico inspirado en Oracle Primavera Unif
 - Cost Manager Summary en dashboard, API y smoke test.
 - Readiness de piloto actualizado para validar funding y cash flow en Fase 4.
 
+En esta iteracion se cerro el punto pendiente de Fase 3 para `CTRL-DEMO-001` y se mejoro la ingesta documental:
+
+- Fase 3 Control Accounts / Mapping: 100% para piloto.
+- Carga real de archivos en Document Control: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG, CSV, TXT, XML, XER y ZIP.
+- ZIP seguro: extrae archivos permitidos, bloquea rutas inseguras, ZIP anidados y ejecutables.
+- Trazabilidad por archivo: nombre original, extension, tamano, hash SHA-256, origen upload/zip, usuario y descarga autenticada.
+
 Estado actual: la app queda lista para un piloto controlado, no para despliegue enterprise productivo. El piloto debe validar flujo real, colaboracion, datos, roles, tablero, decisiones y brechas de integracion.
 
 ## Analisis Frente A Oracle Primavera Unifier
@@ -22,7 +29,7 @@ Estado actual: la app queda lista para un piloto controlado, no para despliegue 
 | --- | --- | --- |
 | Cost Manager | MVP piloto implementado: Cost Sheet, Funding y Cash Flow basico. | Competitivo para demo/piloto; falta presupuesto avanzado, curvas versionadas, aprobaciones financieras y conciliacion ERP. |
 | Schedule Manager | Intake XML/XER, data quality, baseline, mapping y control periods. | Bueno para piloto; falta parser industrial completo y planificacion avanzada tipo P6. |
-| Document Manager | Documentos vinculados a entidades, claims, notices y evidencia. | MVP funcional; faltan versionado documental formal, revisiones, transmittals y permisos finos. |
+| Document Manager | Document Control tipo Aconex con registro, reviews, transmittals, project mail, adjuntos binarios, ZIP seguro, XML/XER como evidencia y descarga protegida. | MVP fuerte para piloto; faltan permisos por carpeta, retencion legal, antivirus integrado, distribucion masiva y repositorio corporativo real. |
 | Planning Manager | Roadmap/readiness y portafolio basico por proyectos. | Parcial; falta seleccion de portafolio, presupuesto capital multi-anual y escenarios ejecutivos. |
 | uDesigner | BP Designer basico para plantillas, campos, pasos y transiciones. | Diferenciador para piloto; falta editor visual completo, reglas por campo y migracion de versiones. |
 | Shell Manager | Multi-tenant, proyectos, membresias y roles por proyecto. | Base correcta; falta jerarquia enterprise por region, unidad de negocio y programa. |
@@ -58,7 +65,7 @@ Usuarios demo:
 - Claims: entitlement, notices, impacto, causalidad y evidencia.
 - RFQ / Bids: paquetes de licitacion, ofertas, score ponderado y recomendacion.
 - Contracts: contratos, ordenes de compra, actas de pago, entradas de almacen y comunicaciones.
-- Documents: evidencia y documentos vinculados.
+- Documents: evidencia, documentos vinculados, adjuntos PDF/DOCX/XML/XER/ZIP y descarga protegida.
 - Roadmap: madurez, readiness y Plan de Control / PEP.
 - Projects / Users / Roles: administracion colaborativa por proyecto.
 
@@ -71,7 +78,22 @@ Usuarios demo:
 5. Cost Controller captura costos, funding y cash flow.
 6. Control Core recalcula KPI, alertas y forecast.
 7. El equipo revisa cambios, AWP, contracts y claims.
-8. Las decisiones quedan en workflow y audit log.
+8. El Document Controller carga evidencia documental o ZIP controlado.
+9. Las decisiones quedan en workflow y audit log.
+
+### Carga De Documentos Y ZIP
+
+En la vista `BP Entry Forms`:
+
+1. Registrar primero el documento en `Document Register`.
+2. En `Document File Upload`, seleccionar el documento.
+3. Seleccionar un archivo permitido o un ZIP con varios archivos.
+4. Guardar con `Upload File`.
+5. Revisar `Stored Files` en `Documents`.
+6. Confirmar hash, tamano, origen y estado `pending_scan`.
+7. Descargar el archivo para validar acceso autenticado.
+
+Tipos permitidos para el piloto: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, JPEG, PNG, CSV, TXT, XML, XER y ZIP. El limite local configurado es 50 MB por archivo, 200 archivos por ZIP y 250 MB descomprimidos por ZIP.
 
 ### Cost Manager
 

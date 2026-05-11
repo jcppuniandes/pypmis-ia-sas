@@ -1,4 +1,8 @@
+import hashlib
+import json
+from io import BytesIO
 from uuid import uuid4
+from zipfile import ZipFile
 
 import pytest
 from fastapi.testclient import TestClient
@@ -55,6 +59,22 @@ def test_production_settings_require_explicit_hosts_and_closed_docs() -> None:
         settings.validate_for_runtime()
 
 
+def test_production_settings_require_oidc_metadata_when_enabled() -> None:
+    settings = Settings(
+        app_environment="production",
+        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        allowed_hosts="pypmis.example.com",
+        cors_origins="https://pypmis.example.com",
+        docs_enabled=False,
+        oidc_enabled=True,
+        oidc_issuer_url="",
+        oidc_client_id="",
+    )
+
+    with pytest.raises(RuntimeError, match="OIDC_ISSUER_URL"):
+        settings.validate_for_runtime()
+
+
 def test_readiness_checks_dependencies() -> None:
     with TestClient(app) as client:
         response = client.get("/api/v1/health/ready")
@@ -69,12 +89,16 @@ def test_readiness_checks_dependencies() -> None:
 def test_login_returns_bearer_token() -> None:
     with TestClient(app) as client:
         response = _login(client)
+        providers_response = client.get("/api/v1/auth/providers")
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["token_type"] == "bearer"
     assert payload["access_token"]
     assert payload["user"]["email"] == "ana.control@demo.local"
+    assert providers_response.status_code == 200
+    assert providers_response.json()["local"]["enabled"] is True
+    assert providers_response.json()["oidc"]["enabled"] is False
 
 
 def test_projects_rejects_missing_token() -> None:
@@ -184,7 +208,7 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
             f"/api/v1/projects/{project_id}/cash-flow",
             headers=headers,
             json={
-                "period_label": f"2099-{suffix[:2]}",
+                "period_label": f"2099-{suffix}",
                 "planned_inflow": 1000,
                 "planned_outflow": 700,
                 "actual_inflow": 900,
@@ -291,10 +315,19 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
     assert summary_response.status_code == 200
     assert dashboard_response.status_code == 200
     assert summary_response.json()["total_funding"] >= funding_update_response.json()["amount"]
-    assert summary_response.json()["total_incurred_from_payment_certificates"] >= payment_certificate_response.json()["certified_amount"]
-    assert summary_response.json()["total_incurred_from_warehouse_receipts"] >= warehouse_receipt_response.json()["received_value"]
+    assert (
+        summary_response.json()["total_incurred_from_payment_certificates"]
+        >= payment_certificate_response.json()["certified_amount"]
+    )
+    assert (
+        summary_response.json()["total_incurred_from_warehouse_receipts"]
+        >= warehouse_receipt_response.json()["received_value"]
+    )
     assert summary_response.json()["total_contract_commitments"] >= contract_response.json()["value"]
-    assert summary_response.json()["total_purchase_order_commitments"] >= purchase_order_response.json()["committed_amount"]
+    assert (
+        summary_response.json()["total_purchase_order_commitments"]
+        >= purchase_order_response.json()["committed_amount"]
+    )
     assert dashboard_response.json()["rfq_summary"]["bids_received"] >= 1
 
 
@@ -363,6 +396,24 @@ def test_document_control_register_transmittal_mail_and_review() -> None:
                 "body": "Controlled review request.",
             },
         )
+        attachment_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={"file": (f"DOC-TEST-{suffix}.pdf", b"%PDF-1.4\npilot evidence\n", "application/pdf")},
+        )
+        zip_payload = BytesIO()
+        with ZipFile(zip_payload, "w") as archive:
+            archive.writestr(f"daily-report-{suffix}.txt", "field report")
+            archive.writestr(f"schedule-fragment-{suffix}.xml", "<Project />")
+        zip_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={"file": (f"DOC-TEST-{suffix}.zip", zip_payload.getvalue(), "application/zip")},
+        )
+        download_response = client.get(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments/{attachment_response.json()[0]['id']}/download",
+            headers=headers,
+        )
         dashboard_response = client.get(f"/api/v1/projects/{project_id}/dashboard", headers=headers)
 
     assert document_response.status_code == 200
@@ -372,7 +423,449 @@ def test_document_control_register_transmittal_mail_and_review() -> None:
     assert review_response.status_code == 200
     assert transmittal_response.status_code == 200
     assert mail_response.status_code == 200
+    assert attachment_response.status_code == 200
+    assert attachment_response.json()[0]["sha256"]
+    assert attachment_response.json()[0]["scan_status"] == "clean"
+    assert zip_response.status_code == 200
+    assert len(zip_response.json()) == 2
+    assert download_response.status_code == 200
+    assert download_response.content.startswith(b"%PDF")
     assert dashboard_response.json()["document_control_summary"]["transmittals_sent"] >= 1
+    assert len(dashboard_response.json()["document_attachments"]) >= 3
+
+
+def test_document_attachment_upload_rejects_unsafe_payloads() -> None:
+    with TestClient(app) as client:
+        headers = _auth_headers(client)
+        project_id = _first_project_id(client, headers)
+        suffix = uuid4().hex[:8]
+
+        document_response = client.post(
+            f"/api/v1/projects/{project_id}/documents",
+            headers=headers,
+            json={
+                "document_number": f"DOC-SAFE-{suffix}",
+                "revision": "A",
+                "linked_entity_type": "ControlAccount",
+                "linked_entity_id": 1,
+                "title": "Pilot unsafe upload guard document",
+                "doc_type": "Evidence",
+                "discipline": "Project Controls",
+                "organization": "Pilot Team",
+                "status": "current",
+                "review_status": "not_started",
+                "confidentiality": "project",
+                "file_name": f"DOC-SAFE-{suffix}.pdf",
+                "uri": f"edms://pilot/safe/{suffix}",
+            },
+        )
+        document = document_response.json()
+        executable_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={"file": (f"malware-{suffix}.exe", b"MZ", "application/octet-stream")},
+        )
+
+        unsafe_zip_payload = BytesIO()
+        with ZipFile(unsafe_zip_payload, "w") as archive:
+            archive.writestr("../escape.txt", "unsafe path")
+        unsafe_zip_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={"file": (f"unsafe-path-{suffix}.zip", unsafe_zip_payload.getvalue(), "application/zip")},
+        )
+
+        inner_zip_payload = BytesIO()
+        with ZipFile(inner_zip_payload, "w") as archive:
+            archive.writestr("inner.txt", "nested")
+        nested_zip_payload = BytesIO()
+        with ZipFile(nested_zip_payload, "w") as archive:
+            archive.writestr("nested.zip", inner_zip_payload.getvalue())
+        nested_zip_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={"file": (f"nested-{suffix}.zip", nested_zip_payload.getvalue(), "application/zip")},
+        )
+        eicar_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=headers,
+            files={
+                "file": (
+                    f"eicar-{suffix}.txt",
+                    b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!",
+                    "text/plain",
+                )
+            },
+        )
+
+    assert document_response.status_code == 200
+    assert executable_response.status_code == 400
+    assert "not allowed" in executable_response.json()["detail"]
+    assert unsafe_zip_response.status_code == 400
+    assert "Unsafe ZIP member path" in unsafe_zip_response.json()["detail"]
+    assert nested_zip_response.status_code == 400
+    assert "Nested ZIP" in nested_zip_response.json()["detail"]
+    assert eicar_response.status_code == 400
+    assert "failed antivirus scan" in eicar_response.json()["detail"]
+
+
+def test_document_attachments_reject_non_member_access() -> None:
+    with TestClient(app) as client:
+        control_manager_headers = _auth_headers(client)
+        projects = client.get("/api/v1/projects", headers=control_manager_headers).json()
+        secondary_project = next(project for project in projects if project["code"] == "REF-TURN-002")
+        suffix = uuid4().hex[:8]
+
+        document_response = client.post(
+            f"/api/v1/projects/{secondary_project['id']}/documents",
+            headers=control_manager_headers,
+            json={
+                "document_number": f"DOC-SEC-{suffix}",
+                "revision": "A",
+                "linked_entity_type": "ControlAccount",
+                "linked_entity_id": 1,
+                "title": "Pilot member boundary document",
+                "doc_type": "Evidence",
+                "discipline": "Project Controls",
+                "organization": "Pilot Team",
+                "status": "current",
+                "review_status": "not_started",
+                "confidentiality": "project",
+                "file_name": f"DOC-SEC-{suffix}.pdf",
+                "uri": f"edms://pilot/member-boundary/{suffix}",
+            },
+        )
+        document = document_response.json()
+        attachment_response = client.post(
+            f"/api/v1/projects/{secondary_project['id']}/documents/{document['id']}/attachments",
+            headers=control_manager_headers,
+            files={"file": (f"DOC-SEC-{suffix}.pdf", b"%PDF-1.4\nrestricted evidence\n", "application/pdf")},
+        )
+        attachment = attachment_response.json()[0]
+
+        non_member_headers = _auth_headers_for(client, "laura.contracts@demo.local")
+        list_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/document-attachments",
+            headers=non_member_headers,
+        )
+        download_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/documents/{document['id']}/attachments/{attachment['id']}/download",
+            headers=non_member_headers,
+        )
+        anonymous_download_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/documents/{document['id']}/attachments/{attachment['id']}/download",
+        )
+
+    assert document_response.status_code == 200
+    assert attachment_response.status_code == 200
+    assert list_response.status_code == 403
+    assert download_response.status_code == 403
+    assert anonymous_download_response.status_code == 401
+
+
+def test_restricted_document_attachments_require_privileged_role() -> None:
+    with TestClient(app) as client:
+        control_manager_headers = _auth_headers(client)
+        project_id = _first_project_id(client, control_manager_headers)
+        suffix = uuid4().hex[:8]
+
+        document_response = client.post(
+            f"/api/v1/projects/{project_id}/documents",
+            headers=control_manager_headers,
+            json={
+                "document_number": f"DOC-REST-{suffix}",
+                "revision": "A",
+                "linked_entity_type": "ControlAccount",
+                "linked_entity_id": 1,
+                "title": "Pilot restricted document",
+                "doc_type": "Evidence",
+                "discipline": "Project Controls",
+                "organization": "Pilot Team",
+                "status": "current",
+                "review_status": "not_started",
+                "confidentiality": "restricted",
+                "file_name": f"DOC-REST-{suffix}.pdf",
+                "uri": f"edms://pilot/restricted/{suffix}",
+            },
+        )
+        document = document_response.json()
+        attachment_response = client.post(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=control_manager_headers,
+            files={"file": (f"DOC-REST-{suffix}.pdf", b"%PDF-1.4\nrestricted\n", "application/pdf")},
+        )
+        attachment = attachment_response.json()[0]
+
+        executive_headers = _auth_headers_for(client, "direccion@demo.local")
+        executive_project_list_response = client.get(
+            f"/api/v1/projects/{project_id}/document-attachments",
+            headers=executive_headers,
+        )
+        executive_document_list_response = client.get(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments",
+            headers=executive_headers,
+        )
+        executive_download_response = client.get(
+            f"/api/v1/projects/{project_id}/documents/{document['id']}/attachments/{attachment['id']}/download",
+            headers=executive_headers,
+        )
+        executive_dashboard_response = client.get(f"/api/v1/projects/{project_id}/dashboard", headers=executive_headers)
+
+    assert document_response.status_code == 200
+    assert attachment_response.status_code == 200
+    assert executive_project_list_response.status_code == 200
+    assert all(item["document_id"] != document["id"] for item in executive_project_list_response.json())
+    assert executive_document_list_response.status_code == 403
+    assert executive_download_response.status_code == 403
+    assert executive_dashboard_response.status_code == 200
+    assert all(item["id"] != document["id"] for item in executive_dashboard_response.json()["documents"])
+    assert all(
+        item["document_id"] != document["id"] for item in executive_dashboard_response.json()["document_attachments"]
+    )
+
+
+def test_project_audit_logs_are_queryable_and_membership_scoped() -> None:
+    with TestClient(app) as client:
+        control_manager_headers = _auth_headers(client)
+        projects = client.get("/api/v1/projects", headers=control_manager_headers).json()
+        primary_project = next(project for project in projects if project["code"] == "CTRL-DEMO-001")
+        secondary_project = next(project for project in projects if project["code"] == "REF-TURN-002")
+        suffix = uuid4().hex[:8]
+
+        funding_response = client.post(
+            f"/api/v1/projects/{primary_project['id']}/funding-sources",
+            headers=control_manager_headers,
+            json={
+                "code": f"AUDIT-FUND-{suffix}",
+                "name": "Audit trail pilot funding",
+                "amount": 1000,
+                "currency": "USD",
+                "status": "approved",
+            },
+        )
+        audit_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/audit-logs?limit=5",
+            headers=control_manager_headers,
+        )
+
+        non_member_headers = _auth_headers_for(client, "laura.contracts@demo.local")
+        restricted_audit_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/audit-logs",
+            headers=non_member_headers,
+        )
+        anonymous_audit_response = client.get(f"/api/v1/projects/{primary_project['id']}/audit-logs")
+
+    assert funding_response.status_code == 200
+    assert audit_response.status_code == 200
+    assert len(audit_response.json()) >= 1
+    assert audit_response.json()[0]["action"] == "create_funding_source"
+    assert restricted_audit_response.status_code == 403
+    assert anonymous_audit_response.status_code == 401
+
+
+def test_integration_manifest_and_exports_are_read_only_and_membership_scoped() -> None:
+    with TestClient(app) as client:
+        control_manager_headers = _auth_headers(client)
+        projects = client.get("/api/v1/projects", headers=control_manager_headers).json()
+        primary_project = next(project for project in projects if project["code"] == "CTRL-DEMO-001")
+        secondary_project = next(project for project in projects if project["code"] == "REF-TURN-002")
+
+        manifest_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-manifest",
+            headers=control_manager_headers,
+        )
+        csv_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=cost_sheet&format=csv",
+            headers=control_manager_headers,
+        )
+        json_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=document_attachments&format=json",
+            headers=control_manager_headers,
+        )
+        package_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-package?datasets=cost_sheet,documents&format=both",
+            headers=control_manager_headers,
+        )
+        workbook_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-workbook?datasets=cost_sheet,documents",
+            headers=control_manager_headers,
+        )
+        token_create_response = client.post(
+            f"/api/v1/projects/{primary_project['id']}/integration-tokens",
+            headers=control_manager_headers,
+            json={
+                "name": "Smoke BI export token",
+                "datasets": ["cost_sheet", "documents"],
+                "formats": ["json", "csv", "both", "xlsx"],
+                "expires_in_days": 7,
+            },
+        )
+        integration_headers = {"Authorization": f"Bearer {token_create_response.json()['token']}"}
+        token_manifest_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-manifest",
+            headers=integration_headers,
+        )
+        token_package_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-package?datasets=cost_sheet,documents&format=both",
+            headers=integration_headers,
+        )
+        token_workbook_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-workbook?datasets=cost_sheet,documents",
+            headers=integration_headers,
+        )
+        token_forbidden_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=funding_sources&format=json",
+            headers=integration_headers,
+        )
+        token_list_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-tokens",
+            headers=control_manager_headers,
+        )
+        token_alerts_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-token-alerts?warning_days=14",
+            headers=control_manager_headers,
+        )
+        token_revoke_response = client.post(
+            f"/api/v1/projects/{primary_project['id']}/integration-tokens/{token_create_response.json()['id']}/revoke",
+            headers=control_manager_headers,
+        )
+        revoked_token_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=cost_sheet&format=csv",
+            headers=integration_headers,
+        )
+        downloads_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-downloads?limit=20",
+            headers=control_manager_headers,
+        )
+        invalid_dataset_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=unknown&format=json",
+            headers=control_manager_headers,
+        )
+        invalid_format_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-export?dataset=cost_sheet&format=xlsx",
+            headers=control_manager_headers,
+        )
+        invalid_package_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-package?datasets=unknown&format=both",
+            headers=control_manager_headers,
+        )
+        invalid_workbook_response = client.get(
+            f"/api/v1/projects/{primary_project['id']}/integration-workbook?datasets=unknown",
+            headers=control_manager_headers,
+        )
+
+        non_member_headers = _auth_headers_for(client, "laura.contracts@demo.local")
+        restricted_manifest_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-manifest",
+            headers=non_member_headers,
+        )
+        restricted_export_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-export?dataset=cost_sheet&format=csv",
+            headers=non_member_headers,
+        )
+        restricted_package_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-package?datasets=cost_sheet&format=csv",
+            headers=non_member_headers,
+        )
+        restricted_workbook_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-workbook?datasets=cost_sheet",
+            headers=non_member_headers,
+        )
+        restricted_downloads_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-downloads",
+            headers=non_member_headers,
+        )
+        restricted_alerts_response = client.get(
+            f"/api/v1/projects/{secondary_project['id']}/integration-token-alerts",
+            headers=non_member_headers,
+        )
+
+    assert manifest_response.status_code == 200
+    manifest = manifest_response.json()
+    assert manifest["project"]["code"] == "CTRL-DEMO-001"
+    dataset_keys = {dataset["key"] for dataset in manifest["datasets"]}
+    assert {"cost_sheet", "documents", "document_attachments", "control_account_mappings"} <= dataset_keys
+    assert next(dataset for dataset in manifest["datasets"] if dataset["key"] == "cost_sheet")["row_count"] >= 1
+    assert csv_response.status_code == 200
+    assert "control_account_code" in csv_response.text
+    assert json_response.status_code == 200
+    assert json_response.json()["dataset"] == "document_attachments"
+    assert isinstance(json_response.json()["rows"], list)
+    assert package_response.status_code == 200
+    assert package_response.headers["x-package-sha256"] == hashlib.sha256(package_response.content).hexdigest()
+    with ZipFile(BytesIO(package_response.content)) as archive:
+        names = set(archive.namelist())
+        assert "package_manifest.json" in names
+        assert "datasets/cost_sheet.csv" in names
+        assert "datasets/cost_sheet.json" in names
+        assert "datasets/documents.csv" in names
+        package_manifest = json.loads(archive.read("package_manifest.json"))
+        cost_csv = archive.read("datasets/cost_sheet.csv")
+    assert package_manifest["mode"] == "read_only"
+    assert package_manifest["format"] == "both"
+    assert {dataset["key"] for dataset in package_manifest["datasets"]} == {"cost_sheet", "documents"}
+    assert any(file["sha256"] == hashlib.sha256(cost_csv).hexdigest() for file in package_manifest["files"])
+    assert workbook_response.status_code == 200
+    assert workbook_response.headers["x-workbook-sha256"] == hashlib.sha256(workbook_response.content).hexdigest()
+    with ZipFile(BytesIO(workbook_response.content)) as workbook:
+        workbook_names = set(workbook.namelist())
+        assert "xl/workbook.xml" in workbook_names
+        assert "xl/worksheets/sheet1.xml" in workbook_names
+        assert "xl/worksheets/sheet2.xml" in workbook_names
+        workbook_xml = workbook.read("xl/workbook.xml").decode("utf-8")
+        summary_xml = workbook.read("xl/worksheets/sheet1.xml").decode("utf-8")
+    assert "Summary" in workbook_xml
+    assert "cost_sheet" in workbook_xml
+    assert "control_account_code" in summary_xml
+    assert token_create_response.status_code == 200
+    created_token = token_create_response.json()
+    assert created_token["token"].startswith("pypmis_it_")
+    assert created_token["token_prefix"]
+    assert created_token["datasets"] == ["cost_sheet", "documents"]
+    assert "xlsx" in created_token["formats"]
+    assert token_manifest_response.status_code == 200
+    assert {dataset["key"] for dataset in token_manifest_response.json()["datasets"]} == {"cost_sheet", "documents"}
+    assert token_package_response.status_code == 200
+    assert (
+        token_package_response.headers["x-package-sha256"] == hashlib.sha256(token_package_response.content).hexdigest()
+    )
+    assert token_workbook_response.status_code == 200
+    assert (
+        token_workbook_response.headers["x-workbook-sha256"]
+        == hashlib.sha256(token_workbook_response.content).hexdigest()
+    )
+    assert token_forbidden_response.status_code == 403
+    assert token_list_response.status_code == 200
+    assert any(token["id"] == created_token["id"] for token in token_list_response.json())
+    assert token_alerts_response.status_code == 200
+    token_alerts = token_alerts_response.json()
+    assert token_alerts["project_id"] == primary_project["id"]
+    assert token_alerts["warning_days"] == 14
+    assert token_alerts["expiring_count"] >= 1
+    assert any(
+        alert["id"] == created_token["id"] and alert["severity"] == "warning" and alert["days_to_expiry"] <= 14
+        for alert in token_alerts["alerts"]
+    )
+    assert token_revoke_response.status_code == 200
+    assert token_revoke_response.json()["status"] == "revoked"
+    assert revoked_token_response.status_code == 401
+    assert downloads_response.status_code == 200
+    downloads = downloads_response.json()
+    assert len(downloads) >= 4
+    artifact_types = {download["artifact_type"] for download in downloads}
+    assert {"export", "package", "workbook"} <= artifact_types
+    assert any(download["file_name"].endswith(".xlsx") and download["sha256"] for download in downloads)
+    assert any(download["integration_token_id"] == created_token["id"] for download in downloads)
+    assert invalid_dataset_response.status_code == 400
+    assert invalid_format_response.status_code == 400
+    assert invalid_package_response.status_code == 400
+    assert invalid_workbook_response.status_code == 400
+    assert restricted_manifest_response.status_code == 403
+    assert restricted_export_response.status_code == 403
+    assert restricted_package_response.status_code == 403
+    assert restricted_workbook_response.status_code == 403
+    assert restricted_downloads_response.status_code == 403
+    assert restricted_alerts_response.status_code == 403
 
 
 def test_project_routes_reject_authenticated_non_members() -> None:

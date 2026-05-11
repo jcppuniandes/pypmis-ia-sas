@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.domain.models import (
+    WBS,
     Activity,
     ActivityRelationship,
     BaselineVersion,
@@ -23,7 +24,6 @@ from app.domain.models import (
     ScheduleImport,
     ScheduleSource,
     ScheduleValidationFinding,
-    WBS,
     WorkflowStepInstance,
 )
 
@@ -175,18 +175,66 @@ class ScheduleIngestionService:
         step_rows = (
             [
                 ("Creation", "Source schedule file received.", "Planner", "Complete", "complete"),
-                ("Data Quality", "DCMA/AACE schedule quality, logic and baseline checks passed.", "Controls Engineer", "Complete", "complete"),
-                ("Impact Review", "Schedule, cost, progress and contractual exposure analysis.", "Project Controls", "Active", "active"),
-                ("Approval", "Control Manager decision on baseline acceptance.", "Control Manager", "Pending", "pending"),
-                ("Action", "Forecast, lookahead, communication and audit updates.", "Execution Lead", "Queued", "queued"),
+                (
+                    "Data Quality",
+                    "DCMA/AACE schedule quality, logic and baseline checks passed.",
+                    "Controls Engineer",
+                    "Complete",
+                    "complete",
+                ),
+                (
+                    "Impact Review",
+                    "Schedule, cost, progress and contractual exposure analysis.",
+                    "Project Controls",
+                    "Active",
+                    "active",
+                ),
+                (
+                    "Approval",
+                    "Control Manager decision on baseline acceptance.",
+                    "Control Manager",
+                    "Pending",
+                    "pending",
+                ),
+                (
+                    "Action",
+                    "Forecast, lookahead, communication and audit updates.",
+                    "Execution Lead",
+                    "Queued",
+                    "queued",
+                ),
             ]
             if accepted
             else [
                 ("Creation", "Source schedule file received.", "Planner", "Complete", "complete"),
-                ("Data Quality", "Import failed the required schedule quality gate.", "Controls Engineer", "Rejected", "critical"),
-                ("Impact Review", "Blocked until the schedule file is corrected and reloaded.", "Project Controls", "Blocked", "queued"),
-                ("Approval", "No approval route until the data quality gate passes.", "Control Manager", "Queued", "queued"),
-                ("Action", "Execution feedback remains pending a valid schedule baseline.", "Execution Lead", "Queued", "queued"),
+                (
+                    "Data Quality",
+                    "Import failed the required schedule quality gate.",
+                    "Controls Engineer",
+                    "Rejected",
+                    "critical",
+                ),
+                (
+                    "Impact Review",
+                    "Blocked until the schedule file is corrected and reloaded.",
+                    "Project Controls",
+                    "Blocked",
+                    "queued",
+                ),
+                (
+                    "Approval",
+                    "No approval route until the data quality gate passes.",
+                    "Control Manager",
+                    "Queued",
+                    "queued",
+                ),
+                (
+                    "Action",
+                    "Execution feedback remains pending a valid schedule baseline.",
+                    "Execution Lead",
+                    "Queued",
+                    "queued",
+                ),
             ]
         )
         configured_step_rows = self._template_step_rows(tenant_id, "SCH-INTAKE")
@@ -222,7 +270,10 @@ class ScheduleIngestionService:
         steps = list(
             self.db.scalars(
                 select(BusinessProcessStepTemplate)
-                .where(BusinessProcessStepTemplate.tenant_id == tenant_id, BusinessProcessStepTemplate.template_id == template.id)
+                .where(
+                    BusinessProcessStepTemplate.tenant_id == tenant_id,
+                    BusinessProcessStepTemplate.template_id == template.id,
+                )
                 .order_by(BusinessProcessStepTemplate.step_order)
             ).all()
         )
@@ -240,9 +291,19 @@ class ScheduleIngestionService:
             if name == "Creation":
                 rejected.append((name, "Source schedule file received.", owner_role, "Complete", "complete"))
             elif name == "Data Quality":
-                rejected.append((name, "Import failed the required schedule quality gate.", owner_role, "Rejected", "critical"))
+                rejected.append(
+                    (name, "Import failed the required schedule quality gate.", owner_role, "Rejected", "critical")
+                )
             elif name == "Impact Review":
-                rejected.append((name, "Blocked until the schedule file is corrected and reloaded.", owner_role, "Blocked", "queued"))
+                rejected.append(
+                    (
+                        name,
+                        "Blocked until the schedule file is corrected and reloaded.",
+                        owner_role,
+                        "Blocked",
+                        "queued",
+                    )
+                )
             else:
                 rejected.append((name, detail, owner_role, "Queued", "queued"))
         return rejected
@@ -296,12 +357,14 @@ class ScheduleIngestionService:
             for row in task_rows
             if row.get("task_id")
         }
+        resource_cost_by_task = self._xer_resource_cost_by_task(rows_by_table)
 
         activities: list[ParsedActivity] = []
         for index, row in enumerate(task_rows, start=1):
             external_id = row.get("task_code") or row.get("task_id") or f"TASK-{index}"
             wbs = wbs_by_id.get(row.get("wbs_id", ""), {})
             total_float = self._hours_to_days(row.get("total_float_hr_cnt"))
+            task_cost = self._planned_cost_from_row(row) or resource_cost_by_task.get(row.get("task_id", ""), 0)
             activities.append(
                 ParsedActivity(
                     external_id=external_id,
@@ -322,7 +385,7 @@ class ScheduleIngestionService:
                     ),
                     total_float_days=total_float,
                     critical_path=(row.get("critical_flag") or "").upper() == "Y" or total_float <= 0,
-                    planned_cost=self._first_float(row, ["target_cost", "total_cost", "rem_late_start_cost"]),
+                    planned_cost=task_cost,
                 )
             )
 
@@ -342,7 +405,9 @@ class ScheduleIngestionService:
         data_date = None
         project_rows = rows_by_table.get("PROJECT", [])
         if project_rows:
-            data_date = self._parse_date(project_rows[0].get("last_recalc_date") or project_rows[0].get("plan_start_date"))
+            data_date = self._parse_date(
+                project_rows[0].get("last_recalc_date") or project_rows[0].get("plan_start_date")
+            )
         return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date
 
     def _parse_xml(
@@ -350,12 +415,17 @@ class ScheduleIngestionService:
         content: bytes,
         source: ScheduleSource,
     ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
-        root = ElementTree.fromstring(content)
+        try:
+            root = ElementTree.fromstring(content)
+        except ElementTree.ParseError:
+            return [], [], None
         if source == ScheduleSource.p6_xml:
             return self._parse_p6_xml(root)
         return self._parse_project_xml(root)
 
-    def _parse_project_xml(self, root: ElementTree.Element) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    def _parse_project_xml(
+        self, root: ElementTree.Element
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
         activities: list[ParsedActivity] = []
         relationships: list[ParsedRelationship] = []
         tasks = [element for element in root.iter() if self._local_name(element.tag) == "Task"]
@@ -375,7 +445,9 @@ class ScheduleIngestionService:
                     planned_finish=self._parse_date(self._child_text(task, "Finish")),
                     total_float_days=self._duration_to_days(self._child_text(task, "TotalSlack")),
                     critical_path=(self._child_text(task, "Critical") or "0") in {"1", "true", "True"},
-                    planned_cost=self._money_to_float(self._child_text(task, "Cost") or self._child_text(task, "BaselineCost")),
+                    planned_cost=self._money_to_float(
+                        self._child_text(task, "Cost") or self._child_text(task, "BaselineCost")
+                    ),
                 )
             )
             for predecessor in [child for child in task if self._local_name(child.tag) == "PredecessorLink"]:
@@ -391,26 +463,47 @@ class ScheduleIngestionService:
         data_date = self._parse_date(self._first_deep_text(root, ["StatusDate", "CurrentDate", "StartDate"]))
         return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date
 
-    def _parse_p6_xml(self, root: ElementTree.Element) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    def _parse_p6_xml(
+        self, root: ElementTree.Element
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
         activity_elements = [element for element in root.iter() if self._local_name(element.tag) == "Activity"]
         activity_by_object_id: dict[str, str] = {}
+        activity_refs: list[tuple[ElementTree.Element, int, str, str]] = []
         wbs_by_object_id = {
             self._child_text(element, "ObjectId"): {
-                "code": self._child_text(element, "Code") or self._child_text(element, "Id") or self._child_text(element, "ObjectId"),
+                "code": self._child_text(element, "Code")
+                or self._child_text(element, "Id")
+                or self._child_text(element, "ObjectId"),
                 "name": self._child_text(element, "Name") or self._child_text(element, "Code") or "WBS",
             }
             for element in root.iter()
             if self._local_name(element.tag) in {"WBS", "WBSNode"} and self._child_text(element, "ObjectId")
         }
 
-        activities: list[ParsedActivity] = []
         for index, activity in enumerate(activity_elements, start=1):
             object_id = self._child_text(activity, "ObjectId")
-            external_id = self._child_text(activity, "Id") or self._child_text(activity, "Code") or object_id or f"ACT-{index}"
-            activity_by_object_id[object_id] = external_id
+            external_id = (
+                self._child_text(activity, "Id")
+                or self._child_text(activity, "ActivityId")
+                or self._child_text(activity, "Code")
+                or object_id
+                or f"ACT-{index}"
+            )
+            if object_id:
+                activity_by_object_id[object_id] = external_id
+            activity_by_object_id[external_id] = external_id
+            activity_refs.append((activity, index, object_id, external_id))
+
+        assignment_cost_by_activity = self._p6_xml_assignment_cost_by_activity(root, activity_by_object_id)
+
+        activities: list[ParsedActivity] = []
+        for activity, _index, object_id, external_id in activity_refs:
             wbs_object_id = self._child_text(activity, "WBSObjectId")
             wbs = wbs_by_object_id.get(wbs_object_id, {})
-            total_float = self._duration_to_days(self._child_text(activity, "TotalFloat") or self._child_text(activity, "TotalFloatDuration"))
+            total_float = self._duration_to_days(
+                self._child_text(activity, "TotalFloat") or self._child_text(activity, "TotalFloatDuration")
+            )
+            activity_cost = self._planned_xml_cost(activity) or assignment_cost_by_activity.get(external_id, 0)
             activities.append(
                 ParsedActivity(
                     external_id=external_id,
@@ -428,11 +521,9 @@ class ScheduleIngestionService:
                         or self._child_text(activity, "RemainingEarlyFinishDate")
                     ),
                     total_float_days=total_float,
-                    critical_path=(self._child_text(activity, "IsCritical") or "").lower() in {"true", "1"} or total_float <= 0,
-                    planned_cost=self._money_to_float(
-                        self._child_text(activity, "AtCompletionTotalCost")
-                        or self._child_text(activity, "PlannedTotalCost")
-                    ),
+                    critical_path=(self._child_text(activity, "IsCritical") or "").lower() in {"true", "1"}
+                    or total_float <= 0,
+                    planned_cost=activity_cost,
                 )
             )
 
@@ -465,7 +556,9 @@ class ScheduleIngestionService:
     ) -> tuple[list[ValidationFinding], float, str]:
         findings: list[ValidationFinding] = []
         if not activities:
-            findings.append(ValidationFinding("NO_ACTIVITIES", "error", "No schedule activities were parsed from the file.", 1, 100))
+            findings.append(
+                ValidationFinding("NO_ACTIVITIES", "error", "No schedule activities were parsed from the file.", 1, 100)
+            )
             return findings, 0, "0 activities parsed. Schedule rejected."
 
         activity_ids = [activity.external_id for activity in activities]
@@ -489,14 +582,38 @@ class ScheduleIngestionService:
         cost_loaded = sum(1 for activity in activities if activity.planned_cost > 0)
 
         self._add_finding(findings, duplicate_ids, "DUPLICATE_IDS", "error", "Duplicate activity IDs detected.", 10)
-        self._add_finding(findings, missing_dates, "MISSING_DATES", "error", "Activities without start or finish dates.", 8)
-        self._add_finding(findings, invalid_dates, "INVALID_DATES", "error", "Activities with finish date earlier than start date.", 10)
-        self._add_finding(findings, relationship_deficit, "LOGIC_DENSITY", "warning", "Logic density below minimum activity chain expectation.", 5)
-        self._add_finding(findings, open_starts, "OPEN_STARTS", "warning", "Activities with missing predecessor logic.", 3)
-        self._add_finding(findings, open_finishes, "OPEN_FINISHES", "warning", "Activities with missing successor logic.", 3)
+        self._add_finding(
+            findings, missing_dates, "MISSING_DATES", "error", "Activities without start or finish dates.", 8
+        )
+        self._add_finding(
+            findings,
+            invalid_dates,
+            "INVALID_DATES",
+            "error",
+            "Activities with finish date earlier than start date.",
+            10,
+        )
+        self._add_finding(
+            findings,
+            relationship_deficit,
+            "LOGIC_DENSITY",
+            "warning",
+            "Logic density below minimum activity chain expectation.",
+            5,
+        )
+        self._add_finding(
+            findings, open_starts, "OPEN_STARTS", "warning", "Activities with missing predecessor logic.", 3
+        )
+        self._add_finding(
+            findings, open_finishes, "OPEN_FINISHES", "warning", "Activities with missing successor logic.", 3
+        )
         self._add_finding(findings, leads, "LEADS", "warning", "Relationships with negative lag/leads.", 5)
-        self._add_finding(findings, high_lags, "HIGH_LAGS", "warning", "Relationships with lag greater than 10 days.", 2)
-        self._add_finding(findings, high_float, "HIGH_FLOAT", "info", "Activities with total float greater than 44 days.", 1)
+        self._add_finding(
+            findings, high_lags, "HIGH_LAGS", "warning", "Relationships with lag greater than 10 days.", 2
+        )
+        self._add_finding(
+            findings, high_float, "HIGH_FLOAT", "info", "Activities with total float greater than 44 days.", 1
+        )
         self._add_finding(findings, negative_float, "NEGATIVE_FLOAT", "warning", "Activities with negative float.", 3)
         self._add_finding(findings, missing_wbs, "MISSING_WBS", "warning", "Activities without WBS mapping.", 3)
         if cost_loaded == 0:
@@ -510,7 +627,9 @@ class ScheduleIngestionService:
                 )
             )
 
-        penalty = sum(finding.item_count * finding.weight for finding in findings if finding.severity in {"error", "warning"})
+        penalty = sum(
+            finding.item_count * finding.weight for finding in findings if finding.severity in {"error", "warning"}
+        )
         quality_score = max(100 - penalty, 0)
         validation_summary = (
             f"{len(activities)} activities, {len(relationships)} relationships, "
@@ -561,7 +680,9 @@ class ScheduleIngestionService:
                 planned_percent,
             )
             schedule_row.activity_id = activity.id
-            planned_cost_by_account[account.id] = planned_cost_by_account.get(account.id, 0) + parsed_activity.planned_cost
+            planned_cost_by_account[account.id] = (
+                planned_cost_by_account.get(account.id, 0) + parsed_activity.planned_cost
+            )
             planned_value = parsed_activity.planned_cost * planned_percent / 100
             planned_value_by_account[account.id] = planned_value_by_account.get(account.id, 0) + planned_value
             cbs_by_account[account.id] = cbs_code
@@ -578,7 +699,9 @@ class ScheduleIngestionService:
                 planned_value=planned_value,
                 planned_percent=planned_percent,
                 status="mapped" if parsed_activity.planned_cost > 0 else "needs_cost_loading",
-                review_note="" if parsed_activity.planned_cost > 0 else "Activity mapped to control account, but schedule has no cost-loaded value.",
+                review_note=""
+                if parsed_activity.planned_cost > 0
+                else "Activity mapped to control account, but schedule has no cost-loaded value.",
             )
 
         for account_id, planned_cost in planned_cost_by_account.items():
@@ -652,7 +775,9 @@ class ScheduleIngestionService:
 
     def _cbs_code(self, wbs_code: str, parsed_activity: ParsedActivity) -> str:
         clean_wbs = self._clean_code(wbs_code or parsed_activity.wbs_code or "UNMAPPED")
-        activity_prefix = self._clean_code(parsed_activity.external_id.split("-")[0] if parsed_activity.external_id else clean_wbs)
+        activity_prefix = self._clean_code(
+            parsed_activity.external_id.split("-")[0] if parsed_activity.external_id else clean_wbs
+        )
         return f"CBS-{clean_wbs}-{activity_prefix}"[:120]
 
     def _create_baseline_version(self, tenant_id: int, project_id: int, schedule_import: ScheduleImport) -> None:
@@ -724,9 +849,15 @@ class ScheduleIngestionService:
         self.db.flush()
         return wbs
 
-    def _get_or_create_control_account(self, tenant_id: int, project_id: int, wbs_id: int, code: str, name: str) -> ControlAccount:
+    def _get_or_create_control_account(
+        self, tenant_id: int, project_id: int, wbs_id: int, code: str, name: str
+    ) -> ControlAccount:
         account = self.db.scalar(
-            select(ControlAccount).where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id, ControlAccount.code == code)
+            select(ControlAccount).where(
+                ControlAccount.tenant_id == tenant_id,
+                ControlAccount.project_id == project_id,
+                ControlAccount.code == code,
+            )
         )
         if account:
             account.wbs_id = wbs_id
@@ -796,14 +927,48 @@ class ScheduleIngestionService:
                 continue
             marker = parts[0]
             if marker == "%T":
-                current_table = parts[1] if len(parts) > 1 else ""
+                current_table = (parts[1] if len(parts) > 1 else "").upper()
                 fields = []
                 rows_by_table.setdefault(current_table, [])
             elif marker == "%F":
-                fields = parts[1:]
+                fields = [field.strip().lower() for field in parts[1:]]
             elif marker == "%R" and current_table:
                 rows_by_table.setdefault(current_table, []).append(dict(zip(fields, parts[1:], strict=False)))
         return rows_by_table
+
+    def _xer_resource_cost_by_task(self, rows_by_table: dict[str, list[dict[str, str]]]) -> dict[str, float]:
+        costs: dict[str, float] = {}
+        for table_name in ("TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT"):
+            for row in rows_by_table.get(table_name, []):
+                task_id = row.get("task_id") or row.get("activity_id") or row.get("task_code")
+                if not task_id:
+                    continue
+                cost = self._planned_cost_from_row(row)
+                if cost <= 0:
+                    continue
+                costs[task_id] = costs.get(task_id, 0) + cost
+        return costs
+
+    def _p6_xml_assignment_cost_by_activity(
+        self,
+        root: ElementTree.Element,
+        activity_by_object_id: dict[str, str],
+    ) -> dict[str, float]:
+        costs: dict[str, float] = {}
+        assignment_tags = {"ResourceAssignment", "ActivityResourceAssignment", "ActivityExpense", "ExpenseAssignment"}
+        activity_ref_tags = ["ActivityObjectId", "ActivityId", "TaskObjectId", "TaskId"]
+        for element in root.iter():
+            if self._local_name(element.tag) not in assignment_tags:
+                continue
+            activity_ref = self._first_child_text(element, activity_ref_tags)
+            activity_id = activity_by_object_id.get(activity_ref, activity_ref)
+            if not activity_id:
+                continue
+            cost = self._planned_xml_cost(element)
+            if cost <= 0:
+                continue
+            costs[activity_id] = costs.get(activity_id, 0) + cost
+        return costs
 
     def _planned_percent(self, activity: ParsedActivity, data_date: date | None) -> float:
         if not data_date or not activity.planned_start or not activity.planned_finish:
@@ -886,8 +1051,25 @@ class ScheduleIngestionService:
     def _money_to_float(self, value: str | None) -> float:
         if not value:
             return 0
+        cleaned = value.strip()
+        if not cleaned:
+            return 0
+        negative = cleaned.startswith("(") and cleaned.endswith(")")
+        cleaned = (
+            cleaned.replace("(", "")
+            .replace(")", "")
+            .replace("$", "")
+            .replace("USD", "")
+            .replace("COP", "")
+            .replace(" ", "")
+        )
+        if "," in cleaned and "." in cleaned and cleaned.rfind(",") > cleaned.rfind("."):
+            cleaned = cleaned.replace(".", "").replace(",", ".")
+        else:
+            cleaned = cleaned.replace(",", "")
         try:
-            return float(value.replace(",", "").replace("$", "").strip())
+            parsed = float(cleaned)
+            return -parsed if negative else parsed
         except ValueError:
             return 0
 
@@ -898,6 +1080,85 @@ class ScheduleIngestionService:
                 return value
         return 0
 
+    def _planned_cost_from_row(self, row: dict[str, str]) -> float:
+        aggregate = self._first_float(
+            row,
+            [
+                "target_cost",
+                "planned_cost",
+                "planned_total_cost",
+                "budgeted_cost",
+                "budgeted_total_cost",
+                "baseline_cost",
+                "at_complete_cost",
+                "at_complete_total_cost",
+                "total_cost",
+                "remain_cost",
+                "remaining_cost",
+                "actual_cost",
+                "act_reg_cost",
+                "act_ot_cost",
+                "rem_late_start_cost",
+            ],
+        )
+        if aggregate:
+            return aggregate
+
+        component_total = sum(
+            self._money_to_float(row.get(key))
+            for key in [
+                "target_labor_cost",
+                "target_equip_cost",
+                "target_material_cost",
+                "target_mat_cost",
+                "target_expense_cost",
+                "planned_labor_cost",
+                "planned_equip_cost",
+                "planned_material_cost",
+                "budgeted_labor_cost",
+                "budgeted_equip_cost",
+                "budgeted_material_cost",
+            ]
+        )
+        if component_total:
+            return component_total
+
+        quantity = self._first_float(row, ["target_qty", "planned_qty", "budgeted_units", "remaining_qty"])
+        unit_cost = self._first_float(row, ["cost_per_qty", "unit_cost", "price_per_unit"])
+        return quantity * unit_cost if quantity and unit_cost else 0
+
+    def _planned_xml_cost(self, element: ElementTree.Element) -> float:
+        aggregate = self._first_child_float(
+            element,
+            [
+                "AtCompletionTotalCost",
+                "AtCompletionCost",
+                "PlannedTotalCost",
+                "PlannedCost",
+                "BudgetedTotalCost",
+                "BudgetedCost",
+                "BaselineCost",
+                "RemainingTotalCost",
+                "RemainingCost",
+                "ActualTotalCost",
+                "ActualCost",
+                "Cost",
+            ],
+        )
+        if aggregate:
+            return aggregate
+        return sum(
+            self._money_to_float(self._child_text(element, tag_name))
+            for tag_name in [
+                "PlannedLaborCost",
+                "PlannedEquipmentCost",
+                "PlannedMaterialCost",
+                "BudgetedLaborCost",
+                "BudgetedEquipmentCost",
+                "BudgetedMaterialCost",
+            ]
+        )
+
     def _local_name(self, tag: str) -> str:
         return tag.split("}", 1)[-1] if "}" in tag else tag
 
@@ -906,6 +1167,20 @@ class ScheduleIngestionService:
             if self._local_name(child.tag) == tag_name and child.text:
                 return child.text.strip()
         return ""
+
+    def _first_child_text(self, element: ElementTree.Element, tag_names: list[str]) -> str:
+        for tag_name in tag_names:
+            value = self._child_text(element, tag_name)
+            if value:
+                return value
+        return ""
+
+    def _first_child_float(self, element: ElementTree.Element, tag_names: list[str]) -> float:
+        for tag_name in tag_names:
+            value = self._money_to_float(self._child_text(element, tag_name))
+            if value:
+                return value
+        return 0
 
     def _first_deep_text(self, root: ElementTree.Element, tag_names: list[str]) -> str:
         wanted = set(tag_names)

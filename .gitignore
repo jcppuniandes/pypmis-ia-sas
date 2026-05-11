@@ -28,6 +28,7 @@ pnpm-debug.log*
 *.db
 *.sqlite
 *.sqlite3
+backups/
 
 .DS_Store
 Thumbs.db

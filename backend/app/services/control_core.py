@@ -1,7 +1,19 @@
 from sqlalchemy import delete, func, inspect, select
 from sqlalchemy.orm import Session
 
-from app.domain.models import Alert, Budget, ControlAccount, ControlPeriod, ControlSnapshot, CostRecord, ForecastScenario, KPI, PaymentCertificate, ProgressRecord, WarehouseReceipt
+from app.domain.models import (
+    KPI,
+    Alert,
+    Budget,
+    ControlAccount,
+    ControlPeriod,
+    ControlSnapshot,
+    CostRecord,
+    ForecastScenario,
+    PaymentCertificate,
+    ProgressRecord,
+    WarehouseReceipt,
+)
 from app.services.early_warning import EarlyWarningService
 from app.services.evm import EVMEngine, EVMInput
 
@@ -69,7 +81,13 @@ class ControlCoreService:
                 actual_cost=project_totals["ac"],
             )
         )
-        project_kpi = KPI(tenant_id=tenant_id, project_id=project_id, control_account_id=None, period=period_label, **project_result.__dict__)
+        project_kpi = KPI(
+            tenant_id=tenant_id,
+            project_id=project_id,
+            control_account_id=None,
+            period=period_label,
+            **project_result.__dict__,
+        )
         self.db.add(project_kpi)
         self.db.flush()
         self._store_snapshot(
@@ -135,7 +153,13 @@ class ControlCoreService:
             productivity_index = min((progress.quantity_installed / progress.labor_hours) / 0.12, 1.2)
 
         result = self.evm.calculate(EVMInput(bac=bac, planned_value=pv, earned_percent=earned_percent, actual_cost=ac))
-        kpi = KPI(tenant_id=tenant_id, project_id=project_id, control_account_id=account.id, period=period_label, **result.__dict__)
+        kpi = KPI(
+            tenant_id=tenant_id,
+            project_id=project_id,
+            control_account_id=account.id,
+            period=period_label,
+            **result.__dict__,
+        )
         self.db.add(kpi)
         self.db.flush()
 
@@ -199,14 +223,30 @@ class ControlCoreService:
         current_spi = kpi.spi if kpi.spi > 0 else 1
         scenarios = [
             ("Current Performance", "EAC = BAC / current CPI", current_cpi, current_spi),
-            ("Recovery Plan", "EAC assumes corrective action improves CPI by 0.10", min(current_cpi + 0.10, 1.10), min(current_spi + 0.08, 1.05)),
-            ("Pessimistic Drift", "EAC assumes unresolved productivity and cost drift", max(current_cpi * 0.90, 0.10), max(current_spi * 0.92, 0.10)),
+            (
+                "Recovery Plan",
+                "EAC assumes corrective action improves CPI by 0.10",
+                min(current_cpi + 0.10, 1.10),
+                min(current_spi + 0.08, 1.05),
+            ),
+            (
+                "Pessimistic Drift",
+                "EAC assumes unresolved productivity and cost drift",
+                max(current_cpi * 0.90, 0.10),
+                max(current_spi * 0.92, 0.10),
+            ),
         ]
         for name, method, cpi_factor, spi_factor in scenarios:
             eac = kpi.bac / cpi_factor if cpi_factor else kpi.bac
             etc = max(eac - kpi.ac, 0)
             vac = kpi.bac - eac
-            risk = "high" if cpi_factor < 0.9 or spi_factor < 0.9 else "medium" if cpi_factor < 1 or spi_factor < 1 else "low"
+            risk = (
+                "high"
+                if cpi_factor < 0.9 or spi_factor < 0.9
+                else "medium"
+                if cpi_factor < 1 or spi_factor < 1
+                else "low"
+            )
             self.db.add(
                 ForecastScenario(
                     tenant_id=tenant_id,

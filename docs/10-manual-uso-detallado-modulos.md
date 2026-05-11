@@ -1,6 +1,6 @@
 # Manual De Uso Detallado Modulo Por Modulo
 
-Fecha base: 2026-05-06
+Fecha base: 2026-05-07
 
 Este manual explica como operar P&Pmis Ai SaaS durante el piloto. La plataforma debe usarse como una herramienta colaborativa en linea: cada usuario entra con su rol, trabaja solo en los proyectos donde tiene membresia y las acciones relevantes quedan trazadas en auditoria.
 
@@ -733,11 +733,11 @@ Evaluar reclamos con enfoque forense: notice, causalidad, impacto, quantum y evi
 - Evidencia visible.
 - Brechas de entitlement identificadas.
 
-## 16. Modulo Documents
+## 16. Modulo Documents / Document Control Files
 
 ### Objetivo
 
-Vincular evidencia documental a entidades de control.
+Vincular evidencia documental a entidades de control y almacenar archivos reales del piloto con trazabilidad, hash y descarga protegida.
 
 ### Entidades soportadas
 
@@ -755,18 +755,41 @@ Vincular evidencia documental a entidades de control.
 3. Seleccionar id/registro.
 4. Registrar titulo.
 5. Definir tipo documental.
-6. Registrar URI o referencia.
+6. Registrar URI o referencia si existe.
 7. Guardar.
-8. Revisar modulo `Documents`.
+8. En `Document File Upload`, seleccionar el documento creado.
+9. Seleccionar archivo PDF, DOCX, XLSX, XML, XER, imagen, TXT, CSV o ZIP.
+10. Presionar `Upload File`.
+11. Revisar `Stored Files` en `Documents`.
+12. Descargar el archivo para confirmar acceso autenticado.
+
+### Carga ZIP
+
+1. Preparar un ZIP con archivos permitidos.
+2. Evitar carpetas con rutas relativas inseguras como `../`.
+3. No incluir ZIP dentro de ZIP.
+4. No incluir ejecutables o scripts.
+5. Cargar el ZIP desde `Document File Upload`.
+6. Confirmar que cada archivo interno queda registrado como adjunto independiente.
+
+### Tipos y limites del piloto
+
+- Tipos permitidos: `.pdf`, `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.zip`, `.jpg`, `.jpeg`, `.png`, `.csv`, `.txt`, `.xml`, `.xer`.
+- Tamano maximo por archivo: 50 MB.
+- ZIP maximo: 200 archivos y 250 MB descomprimidos.
+- Tipos bloqueados: ejecutables y scripts como `.exe`, `.dll`, `.ps1`, `.sh`, `.js`, `.bat`, `.cmd`, `.vbs`.
 
 ### Salida esperada
 
 - Evidencia vinculada al registro correcto.
 - Trazabilidad para decision, claim o auditoria.
+- Hash SHA-256 por archivo.
+- Origen identificado como `upload` o `zip`.
+- Descarga protegida por autenticacion y membresia de proyecto.
 
 ### Limitacion actual
 
-El modulo es MVP. Falta versionado documental formal, revisiones, transmittals, permisos por carpeta y aprobaciones documentales.
+El modulo ya cubre register, reviews, transmittals, project mail y adjuntos binarios para piloto. Faltan antivirus integrado, versionado documental formal avanzado, permisos por carpeta, retencion legal, distribucion masiva e integracion con repositorio corporativo.
 
 ## 17. Modulo Pilot Readiness
 

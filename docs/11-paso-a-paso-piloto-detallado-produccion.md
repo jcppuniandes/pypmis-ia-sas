@@ -1,6 +1,6 @@
 # Paso A Paso Detallado Del Piloto Y Estado Para Produccion
 
-Fecha base: 2026-05-06
+Fecha base: 2026-05-07
 
 ## Resumen Ejecutivo
 
@@ -8,7 +8,7 @@ La plataforma esta lista para ejecutar un piloto controlado con el proyecto demo
 
 Resultado actual validado:
 
-- Readiness de piloto: 94.2%.
+- Readiness de piloto: 100.0% para `CTRL-DEMO-001`.
 - Estado del proyecto piloto: ready.
 - Smoke test: OK.
 - API, frontend, worker, PostgreSQL y Redis: arriba.
@@ -16,14 +16,14 @@ Resultado actual validado:
 - Comprometido: contratos y ordenes de compra desde administracion contractual.
 - Incurrido: actas de pago y entradas de almacen desde administracion contractual.
 - RFQ / Bid Evaluation: paquetes de licitacion, ofertas, scoring ponderado y recomendacion.
-- Document Control tipo Aconex: registro documental, revisiones, transmittals y project mail.
+- Document Control tipo Aconex: registro documental, revisiones, transmittals, project mail, adjuntos binarios, ZIP seguro y descarga autenticada.
 - Plataforma multiusuario colaborativa: funcional para piloto.
 
 Lectura honesta para produccion:
 
 - Preparacion para produccion empresarial controlada: 80%.
 - Preparacion para beta controlada en staging: 86%.
-- Preparacion para piloto operativo: 94.2%.
+- Preparacion para piloto operativo: 100.0% para `CTRL-DEMO-001`.
 
 La diferencia es intencional: una app puede estar lista para piloto y no estar lista para produccion empresarial. El piloto valida valor funcional, flujo, datos, roles y adopcion. Produccion exige seguridad, disponibilidad, backups, integraciones reales, observabilidad, pruebas amplias, hardening, soporte y gobierno operativo.
 
@@ -66,7 +66,7 @@ El piloto debe responder estas preguntas:
 - Transmittals.
 - Project mail / correspondencia.
 - Revisiones documentales.
-- Documentos/evidencia.
+- Documentos/evidencia con archivos reales PDF/DOCX/XLSX/XML/XER/ZIP.
 - Workflows y audit log.
 - Prueba de concurrencia multiusuario.
 
@@ -81,7 +81,7 @@ El piloto debe responder estas preguntas:
 - Parser XER industrial completo.
 - Observabilidad APM completa.
 - Notificaciones realtime.
-- Gobierno documental completo enterprise fuera del piloto, pero el MVP ya opera registro, revisiones, transmittals y project mail.
+- Gobierno documental completo enterprise fuera del piloto, pero el MVP ya opera registro, revisiones, transmittals, project mail, adjuntos binarios, ZIP seguro y descarga protegida.
 
 ## Equipo Minimo Del Piloto
 
@@ -208,7 +208,7 @@ Alinear alcance, usuarios, criterios de exito, duracion y reglas del piloto.
 - Se registra al menos una decision por workflow.
 - Se valida un paquete AWP.
 - Se opera control documental tipo Aconex: documento, revision, transmittal, review y project mail.
-- Se vincula evidencia documental.
+- Se carga evidencia documental real, incluyendo PDF o ZIP con XML/XER si aplica.
 - Readiness final mayor o igual a 75%.
 
 ### Salida esperada
@@ -844,7 +844,7 @@ Document Controller con apoyo de Control Manager, Planner, Contract Manager y Pr
 
 ### Objetivo
 
-Operar un flujo de control documental mas cercano a produccion: registro documental, revision, transmittal, project mail, trazabilidad de revision y evidencia vinculada.
+Operar un flujo de control documental mas cercano a produccion: registro documental, carga real de archivos, revision, transmittal, project mail, trazabilidad de revision y evidencia vinculada.
 
 ### 13.1 Registrar documento controlado
 
@@ -863,7 +863,20 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 13. Registrar URI o referencia EDMS.
 14. Guardar.
 
-### 13.2 Emitir transmittal
+### 13.2 Cargar archivo documental
+
+1. Ir a `BP Entry Forms`.
+2. Ubicar formulario `Document File Upload`.
+3. Seleccionar el documento registrado.
+4. Seleccionar archivo PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG, CSV, TXT, XML, XER o ZIP.
+5. Si se usa ZIP, incluir solo archivos permitidos y evitar ZIP anidados.
+6. Presionar `Upload File`.
+7. Confirmar mensaje de archivos almacenados.
+8. Ir a `Documents`.
+9. Revisar `Stored Files`: nombre, extension, tamano, hash corto, origen y estado.
+10. Descargar el archivo y confirmar que abre correctamente.
+
+### 13.3 Emitir transmittal
 
 1. Ir a `BP Entry Forms`.
 2. Ubicar formulario `Document Transmittal`.
@@ -876,7 +889,7 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 9. Emitir transmittal.
 10. Confirmar que aparece en `Document Control`.
 
-### 13.3 Crear project mail
+### 13.4 Crear project mail
 
 1. Ir a `BP Entry Forms`.
 2. Ubicar formulario `Project Mail`.
@@ -889,7 +902,7 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 9. Escribir cuerpo.
 10. Enviar project mail.
 
-### 13.4 Crear revision documental
+### 13.5 Crear revision documental
 
 1. Ir a `BP Entry Forms`.
 2. Ubicar formulario `Document Review`.
@@ -900,7 +913,7 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 7. Registrar comentarios.
 8. Crear paso de revision.
 
-### 13.5 Revisar modulo Document Control
+### 13.6 Revisar modulo Document Control
 
 1. Ir a `Document Control`.
 2. Revisar Controlled Score.
@@ -912,6 +925,8 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 8. Revisar transmittals.
 9. Revisar project mail.
 10. Revisar review steps.
+11. Revisar `Stored Files`.
+12. Validar descarga protegida.
 
 ### Entidades recomendadas
 
@@ -928,6 +943,7 @@ Operar un flujo de control documental mas cercano a produccion: registro documen
 - Transmittal emitido.
 - Project mail trazado.
 - Revision documental creada.
+- Archivo o ZIP cargado, extraido y trazado con hash.
 - Evidence package vinculado a decisiones, claims o contratos.
 - Document Control Score medido, sin overdue critico y con plan de cierre para revisiones abiertas.
 
@@ -1032,7 +1048,7 @@ Decidir si el producto pasa a siguiente ola, beta controlada o ajustes previos.
 - Dashboard revisado.
 - AWP revisado.
 - Contracts/claims revisados.
-- Document Control operado: register, transmittal, mail y reviews.
+- Document Control operado: register, file upload, ZIP seguro, transmittal, mail y reviews.
 - Documentos/evidencia vinculados.
 - Workflows usados.
 - Audit log revisado.
@@ -1051,13 +1067,13 @@ Decidir si el producto pasa a siguiente ola, beta controlada o ajustes previos.
 
 | Nivel | Porcentaje | Interpretacion |
 | --- | --- | --- |
-| Piloto operativo cercano a pre-produccion | 94.2% | Listo para ejecutar piloto con flujo multiusuario, Cost Manager, RFQ, administracion contractual y Document Control tipo Aconex. |
+| Piloto operativo cercano a pre-produccion | 100.0% | Listo para ejecutar piloto con flujo multiusuario, Fase 3 cerrada, Cost Manager, RFQ, administracion contractual y Document Control tipo Aconex con adjuntos. |
 | Beta controlada en staging | 86% | Viable con usuarios reales limitados, soporte cercano, backups basicos y ambiente staging. |
 | Produccion empresarial controlada | 80% | Apto para piloto productivo controlado, con brechas enterprise pendientes antes de mision critica 24/7. |
 
 ### Por que produccion es 80%
 
-La plataforma ya tiene flujo funcional amplio y colaborativo. Se sube la lectura a 80% porque ahora el piloto tiene fuentes financieras mas cercanas a operacion real: comprometido desde contratos/OC, incurrido desde actas de pago/entradas de almacen, RFQ/bid evaluation, control documental tipo Aconex, roles, auditoria, migraciones y smoke checks. No se marca como produccion critica porque aun faltan hardening, SSO, observabilidad avanzada, CI/CD productivo, HA, integraciones reales y pruebas de carga/seguridad.
+La plataforma ya tiene flujo funcional amplio y colaborativo. Se mantiene produccion controlada en 80% porque ahora el piloto tiene fuentes financieras mas cercanas a operacion real, Fase 3 cerrada, comprometido desde contratos/OC, incurrido desde actas de pago/entradas de almacen, RFQ/bid evaluation, control documental tipo Aconex con adjuntos, roles, auditoria, migraciones y smoke checks. No se marca como produccion critica porque aun faltan hardening, SSO, observabilidad avanzada, CI/CD productivo, HA, integraciones reales y pruebas de carga/seguridad.
 
 | Dimension | Score | Estado |
 | --- | --- | --- |
@@ -1124,7 +1140,7 @@ Promedio ponderado de produccion empresarial controlada: 80%.
 
 ### Producto
 
-- Parser XER/XML robusto.
+- Parser XER/XML robusto para cronogramas complejos; la ingesta documental XML/XER ya queda operativa para evidencia controlada.
 - Versionado de forecasts.
 - Versionado de cash flow.
 - Document Manager avanzado: paquetes masivos, distribucion, retencion legal, permisos por carpeta y adjuntos reales.

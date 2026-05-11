@@ -5,7 +5,11 @@ from pathlib import Path
 from sqlalchemy import inspect, select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
+from app.core.security import hash_password
 from app.domain.models import (
+    KPI,
+    WBS,
     Activity,
     ActivityRelationship,
     AuthCredential,
@@ -15,6 +19,7 @@ from app.domain.models import (
     BusinessProcessStepTemplate,
     BusinessProcessTemplate,
     BusinessProcessTransitionTemplate,
+    CashFlowPeriod,
     ChangeRequest,
     Claim,
     ClaimEntitlementItem,
@@ -24,31 +29,29 @@ from app.domain.models import (
     ContractNotice,
     ControlAccount,
     ControlAccountMapping,
+    ControlPeriod,
+    ControlSnapshot,
     CostRecord,
     CostSource,
-    CashFlowPeriod,
-    ControlSnapshot,
     Document,
     DocumentReview,
     DocumentTransmittal,
     DocumentTransmittalItem,
+    Event,
     ForecastScenario,
     FundingSource,
-    Event,
     ImportStatus,
-    KPI,
     PaymentCertificate,
     ProgressRecord,
     Project,
-    ProjectMail,
     ProjectControlPlan,
+    ProjectMail,
     ProjectMembership,
     PurchaseOrder,
-    RFQBid,
-    RFQPackage,
     RelationshipType,
     Resource,
-    ControlPeriod,
+    RFQBid,
+    RFQPackage,
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleSource,
@@ -56,13 +59,10 @@ from app.domain.models import (
     Tenant,
     UserAccount,
     WarehouseReceipt,
+    WorkflowStepInstance,
     WorkPackage,
     WorkPackageConstraint,
-    WBS,
-    WorkflowStepInstance,
 )
-from app.core.config import get_settings
-from app.core.security import hash_password
 from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.services.control_core import ControlCoreService
 from app.services.schedule_ingestion import ScheduleIngestionService
@@ -172,7 +172,16 @@ def seed_demo(db: Session) -> None:
         ("CBS-5110", 1_250_000, 750_000, 66, 730_000, 5100, 72000),
     ]
     for account, (cbs, bac, pv, percent, ac, hours, qty) in zip(accounts, budget_rows, strict=True):
-        db.add(Budget(tenant_id=tenant.id, project_id=project.id, control_account_id=account.id, cbs_code=cbs, bac=bac, cost_loaded_pv=pv))
+        db.add(
+            Budget(
+                tenant_id=tenant.id,
+                project_id=project.id,
+                control_account_id=account.id,
+                cbs_code=cbs,
+                bac=bac,
+                cost_loaded_pv=pv,
+            )
+        )
         db.add(
             CostRecord(
                 tenant_id=tenant.id,
@@ -512,7 +521,14 @@ def ensure_cost_manager_records(db: Session, tenant_id: int, project_id: int) ->
             ("2026-05", 650_000, 760_000, 610_000, 720_000, 820_000),
         ]
     )
-    for period_label, planned_inflow, planned_outflow, actual_inflow, actual_outflow, forecast_outflow in cash_flow_rows:
+    for (
+        period_label,
+        planned_inflow,
+        planned_outflow,
+        actual_inflow,
+        actual_outflow,
+        forecast_outflow,
+    ) in cash_flow_rows:
         if period_label not in existing_periods:
             db.add(
                 CashFlowPeriod(
@@ -594,7 +610,13 @@ def neutralize_schedule_labels(db: Session, tenant_id: int, project_id: int) -> 
 def neutral_schedule_file_name(schedule_import: ScheduleImport) -> str:
     current = schedule_import.file_name or f"SCHEDULE_IMPORT_{schedule_import.id:05d}"
     upper = current.upper()
-    suffix = ".xml" if current.lower().endswith(".xml") else ".xer" if current.lower().endswith(".xer") else Path(current).suffix or ".xml"
+    suffix = (
+        ".xml"
+        if current.lower().endswith(".xml")
+        else ".xer"
+        if current.lower().endswith(".xer")
+        else Path(current).suffix or ".xml"
+    )
     if "MSPROJECT" in upper or "MS PROJECT" in upper or "MSP" in upper:
         return f"Imported_Schedule_{schedule_import.id:05d}{suffix}"
     if "P6_EPC_PIPELINE" in upper or "EPC_PIPELINE" in upper:
@@ -770,7 +792,16 @@ def ensure_secondary_project(db: Session, tenant_id: int) -> Project | None:
         (accounts[0], "CBS-UTIL-120", 1_750_000, 840_000, 41, 910_000, 4200, 38000),
         (accounts[1], "CBS-INST-220", 980_000, 360_000, 34, 310_000, 2900, 25000),
     ]:
-        db.add(Budget(tenant_id=tenant_id, project_id=project.id, control_account_id=account.id, cbs_code=cbs, bac=bac, cost_loaded_pv=pv))
+        db.add(
+            Budget(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                control_account_id=account.id,
+                cbs_code=cbs,
+                bac=bac,
+                cost_loaded_pv=pv,
+            )
+        )
         db.add(
             CostRecord(
                 tenant_id=tenant_id,
@@ -854,7 +885,9 @@ def ensure_contract_records(db: Session, tenant_id: int, project_id: int) -> Non
         project_id=project_id,
         control_account_id=account.id if account else None,
         code="CON-TA-001" if is_turnaround else "CON-CTRL-001",
-        title="Turnaround mechanical and instrumentation services" if is_turnaround else "Integrated project controls and construction support",
+        title="Turnaround mechanical and instrumentation services"
+        if is_turnaround
+        else "Integrated project controls and construction support",
         counterparty="Industrial Services Contractor" if is_turnaround else "Owner / EPC Contractor",
         contract_type="Services" if is_turnaround else "EPC / Controls",
         value=1_850_000 if is_turnaround else 4_250_000,
@@ -911,18 +944,50 @@ def ensure_purchase_order_records(db: Session, tenant_id: int, project_id: int) 
             .order_by(Contract.code)
         ).all()
     )
-    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    contract_by_account = {
+        contract.control_account_id: contract for contract in contracts if contract.control_account_id
+    }
     is_turnaround = project.code == "REF-TURN-002"
     rows = (
         [
-            ("PO-CTRL-1001", accounts[0], "Mechanical installation purchase order", "Industrial Services Contractor", 1_250_000),
-            ("PO-CTRL-2101", accounts[1] if len(accounts) > 1 else accounts[0], "Valve and piping material purchase order", "Valve Supplier", 980_000),
-            ("PO-CTRL-3101", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical hook-up supply order", "Electrical Vendor", 420_000),
+            (
+                "PO-CTRL-1001",
+                accounts[0],
+                "Mechanical installation purchase order",
+                "Industrial Services Contractor",
+                1_250_000,
+            ),
+            (
+                "PO-CTRL-2101",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Valve and piping material purchase order",
+                "Valve Supplier",
+                980_000,
+            ),
+            (
+                "PO-CTRL-3101",
+                accounts[2] if len(accounts) > 2 else accounts[-1],
+                "Electrical hook-up supply order",
+                "Electrical Vendor",
+                420_000,
+            ),
         ]
         if not is_turnaround
         else [
-            ("PO-TA-1201", accounts[0], "Steam and condensate tie-in purchase order", "Industrial Services Contractor", 760_000),
-            ("PO-TA-2201", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation loop check order", "I&C Services Vendor", 290_000),
+            (
+                "PO-TA-1201",
+                accounts[0],
+                "Steam and condensate tie-in purchase order",
+                "Industrial Services Contractor",
+                760_000,
+            ),
+            (
+                "PO-TA-2201",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Instrumentation loop check order",
+                "I&C Services Vendor",
+                290_000,
+            ),
         ]
     )
     existing_numbers = set(
@@ -985,7 +1050,9 @@ def ensure_payment_certificate_records(db: Session, tenant_id: int, project_id: 
         ).all()
     )
     po_by_account = {order.control_account_id: order for order in purchase_orders if order.control_account_id}
-    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    contract_by_account = {
+        contract.control_account_id: contract for contract in contracts if contract.control_account_id
+    }
     is_turnaround = project.code == "REF-TURN-002"
     rows = (
         [
@@ -1060,18 +1127,48 @@ def ensure_warehouse_receipt_records(db: Session, tenant_id: int, project_id: in
         ).all()
     )
     po_by_account = {order.control_account_id: order for order in purchase_orders if order.control_account_id}
-    contract_by_account = {contract.control_account_id: contract for contract in contracts if contract.control_account_id}
+    contract_by_account = {
+        contract.control_account_id: contract for contract in contracts if contract.control_account_id
+    }
     is_turnaround = project.code == "REF-TURN-002"
     rows = (
         [
-            ("GRN-CTRL-100-001", accounts[0], "Mechanical material receipt and warehouse acceptance", 12, 18_500, 222_000),
-            ("GRN-CTRL-210-001", accounts[1] if len(accounts) > 1 else accounts[0], "Valve and piping materials received in warehouse", 8, 42_500, 340_000),
-            ("GRN-CTRL-310-001", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical bulk materials warehouse receipt", 15, 9_200, 138_000),
+            (
+                "GRN-CTRL-100-001",
+                accounts[0],
+                "Mechanical material receipt and warehouse acceptance",
+                12,
+                18_500,
+                222_000,
+            ),
+            (
+                "GRN-CTRL-210-001",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Valve and piping materials received in warehouse",
+                8,
+                42_500,
+                340_000,
+            ),
+            (
+                "GRN-CTRL-310-001",
+                accounts[2] if len(accounts) > 2 else accounts[-1],
+                "Electrical bulk materials warehouse receipt",
+                15,
+                9_200,
+                138_000,
+            ),
         ]
         if not is_turnaround
         else [
             ("GRN-TA-120-001", accounts[0], "Shutdown mechanical spares received", 9, 22_000, 198_000),
-            ("GRN-TA-220-001", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation materials received", 6, 15_500, 93_000),
+            (
+                "GRN-TA-220-001",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Instrumentation materials received",
+                6,
+                15_500,
+                93_000,
+            ),
         ]
     )
     existing_numbers = set(
@@ -1125,12 +1222,33 @@ def ensure_rfq_records(db: Session, tenant_id: int, project_id: int) -> None:
     is_turnaround = project.code == "REF-TURN-002"
     package_rows = (
         [
-            ("RFQ-CTRL-2101", accounts[1] if len(accounts) > 1 else accounts[0], "Valve supply and expediting RFQ", "Supply valves, expediting support, QA dossier and warehouse delivery requirements.", 1_050_000, "under_evaluation"),
-            ("RFQ-CTRL-3101", accounts[2] if len(accounts) > 2 else accounts[-1], "Electrical installation services RFQ", "Field electrical hook-up support, supervision, test packs and precommissioning labor.", 620_000, "issued"),
+            (
+                "RFQ-CTRL-2101",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Valve supply and expediting RFQ",
+                "Supply valves, expediting support, QA dossier and warehouse delivery requirements.",
+                1_050_000,
+                "under_evaluation",
+            ),
+            (
+                "RFQ-CTRL-3101",
+                accounts[2] if len(accounts) > 2 else accounts[-1],
+                "Electrical installation services RFQ",
+                "Field electrical hook-up support, supervision, test packs and precommissioning labor.",
+                620_000,
+                "issued",
+            ),
         ]
         if not is_turnaround
         else [
-            ("RFQ-TA-2201", accounts[1] if len(accounts) > 1 else accounts[0], "Instrumentation loop-check RFQ", "Loop checks, test packs, calibration records and turnaround shift support.", 330_000, "under_evaluation"),
+            (
+                "RFQ-TA-2201",
+                accounts[1] if len(accounts) > 1 else accounts[0],
+                "Instrumentation loop-check RFQ",
+                "Loop checks, test packs, calibration records and turnaround shift support.",
+                330_000,
+                "under_evaluation",
+            ),
         ]
     )
     existing_packages = {
@@ -1175,7 +1293,15 @@ def ensure_rfq_records(db: Session, tenant_id: int, project_id: int) -> None:
     )
     bid_rows = (
         [
-            ("Andes Industrial Supply", 970_000, 84, 88, 78, 80, "Shortlisted; best commercial position with acceptable schedule."),
+            (
+                "Andes Industrial Supply",
+                970_000,
+                84,
+                88,
+                78,
+                80,
+                "Shortlisted; best commercial position with acceptable schedule.",
+            ),
             ("Global Valve Partners", 1_020_000, 91, 76, 86, 84, "Technically strong and lower execution risk."),
             ("Rapid Pipe Logistics", 945_000, 74, 90, 72, 66, "Lowest price but higher delivery risk."),
         ]
@@ -1230,24 +1356,178 @@ def ensure_awp_records(db: Session, tenant_id: int, project_id: int) -> None:
     is_turnaround = project.code == "REF-TURN-002"
     package_seed = (
         [
-            (None, None, "CWA", "CWA-TA-01", "Turnaround utilities work area", "Construction", 10, "Utilities tie-in sequence", "Workface Planner", "ready_to_release", date(2026, 2, 2), date(2026, 9, 30), 35),
-            ("CWA-TA-01", by_code.get("CA-UTIL-120", first_account), "CWP", "CWP-UTIL-120", "Steam and condensate tie-ins construction package", "Mechanical", 20, "Outage window critical path", "Workface Planner", "constraint_review", date(2026, 3, 9), date(2026, 6, 26), 41),
-            ("CWP-UTIL-120", by_code.get("CA-UTIL-120", first_account), "IWP", "IWP-UTIL-120A", "Execute first tie-in workface package", "Mechanical", 30, "Tie-in train A before loop checks", "Field Engineer", "blocked", date(2026, 5, 6), date(2026, 5, 24), 28),
-            ("CWA-TA-01", by_code.get("CA-INST-220", second_account), "IWP", "IWP-INST-220A", "Instrumentation loop check package", "Instrumentation", 40, "Release after mechanical turnover", "Field Engineer", "ready_to_release", date(2026, 5, 27), date(2026, 6, 18), 15),
+            (
+                None,
+                None,
+                "CWA",
+                "CWA-TA-01",
+                "Turnaround utilities work area",
+                "Construction",
+                10,
+                "Utilities tie-in sequence",
+                "Workface Planner",
+                "ready_to_release",
+                date(2026, 2, 2),
+                date(2026, 9, 30),
+                35,
+            ),
+            (
+                "CWA-TA-01",
+                by_code.get("CA-UTIL-120", first_account),
+                "CWP",
+                "CWP-UTIL-120",
+                "Steam and condensate tie-ins construction package",
+                "Mechanical",
+                20,
+                "Outage window critical path",
+                "Workface Planner",
+                "constraint_review",
+                date(2026, 3, 9),
+                date(2026, 6, 26),
+                41,
+            ),
+            (
+                "CWP-UTIL-120",
+                by_code.get("CA-UTIL-120", first_account),
+                "IWP",
+                "IWP-UTIL-120A",
+                "Execute first tie-in workface package",
+                "Mechanical",
+                30,
+                "Tie-in train A before loop checks",
+                "Field Engineer",
+                "blocked",
+                date(2026, 5, 6),
+                date(2026, 5, 24),
+                28,
+            ),
+            (
+                "CWA-TA-01",
+                by_code.get("CA-INST-220", second_account),
+                "IWP",
+                "IWP-INST-220A",
+                "Instrumentation loop check package",
+                "Instrumentation",
+                40,
+                "Release after mechanical turnover",
+                "Field Engineer",
+                "ready_to_release",
+                date(2026, 5, 27),
+                date(2026, 6, 18),
+                15,
+            ),
         ]
         if is_turnaround
         else [
-            (None, None, "CWA", "CWA-COMP-01", "Compressor station construction area", "Construction", 10, "Mechanical completion before piping pressure test", "Workface Planner", "ready_to_release", date(2026, 2, 9), date(2026, 10, 9), 52),
-            ("CWA-COMP-01", by_code.get("CA-MECH-100", first_account), "EWP", "EWP-MECH-100", "Compressor mechanical engineering work package", "Mechanical", 20, "Engineering deliverables aligned to CWP-MECH-100", "Planner", "released", date(2026, 1, 15), date(2026, 3, 1), 100),
-            ("CWA-COMP-01", by_code.get("CA-MECH-100", first_account), "CWP", "CWP-MECH-100", "Compressor mechanical construction work package", "Mechanical", 30, "Set equipment before piping tie-ins", "Workface Planner", "ready_to_release", date(2026, 3, 2), date(2026, 7, 17), 62),
-            ("CWP-MECH-100", by_code.get("CA-PIPE-210", second_account), "PWP", "PWP-VALVE-210", "Owner-furnished valve procurement package", "Piping", 40, "Valve delivery gates piping IWP release", "Contract Manager", "blocked", date(2026, 2, 9), date(2026, 5, 28), 70),
-            ("CWP-MECH-100", by_code.get("CA-PIPE-210", second_account), "IWP", "IWP-PIPE-210A", "Pipe rack erection workface package A", "Piping", 50, "Piping train A after equipment set", "Field Engineer", "blocked", date(2026, 5, 6), date(2026, 6, 14), 48),
-            ("CWA-COMP-01", by_code.get("CA-ELEC-310", third_account), "IWP", "IWP-ELEC-310A", "Electrical hook-up workface package A", "Electrical", 60, "Hook-up after mechanical completion", "Field Engineer", "ready_to_release", date(2026, 6, 8), date(2026, 7, 10), 22),
+            (
+                None,
+                None,
+                "CWA",
+                "CWA-COMP-01",
+                "Compressor station construction area",
+                "Construction",
+                10,
+                "Mechanical completion before piping pressure test",
+                "Workface Planner",
+                "ready_to_release",
+                date(2026, 2, 9),
+                date(2026, 10, 9),
+                52,
+            ),
+            (
+                "CWA-COMP-01",
+                by_code.get("CA-MECH-100", first_account),
+                "EWP",
+                "EWP-MECH-100",
+                "Compressor mechanical engineering work package",
+                "Mechanical",
+                20,
+                "Engineering deliverables aligned to CWP-MECH-100",
+                "Planner",
+                "released",
+                date(2026, 1, 15),
+                date(2026, 3, 1),
+                100,
+            ),
+            (
+                "CWA-COMP-01",
+                by_code.get("CA-MECH-100", first_account),
+                "CWP",
+                "CWP-MECH-100",
+                "Compressor mechanical construction work package",
+                "Mechanical",
+                30,
+                "Set equipment before piping tie-ins",
+                "Workface Planner",
+                "ready_to_release",
+                date(2026, 3, 2),
+                date(2026, 7, 17),
+                62,
+            ),
+            (
+                "CWP-MECH-100",
+                by_code.get("CA-PIPE-210", second_account),
+                "PWP",
+                "PWP-VALVE-210",
+                "Owner-furnished valve procurement package",
+                "Piping",
+                40,
+                "Valve delivery gates piping IWP release",
+                "Contract Manager",
+                "blocked",
+                date(2026, 2, 9),
+                date(2026, 5, 28),
+                70,
+            ),
+            (
+                "CWP-MECH-100",
+                by_code.get("CA-PIPE-210", second_account),
+                "IWP",
+                "IWP-PIPE-210A",
+                "Pipe rack erection workface package A",
+                "Piping",
+                50,
+                "Piping train A after equipment set",
+                "Field Engineer",
+                "blocked",
+                date(2026, 5, 6),
+                date(2026, 6, 14),
+                48,
+            ),
+            (
+                "CWA-COMP-01",
+                by_code.get("CA-ELEC-310", third_account),
+                "IWP",
+                "IWP-ELEC-310A",
+                "Electrical hook-up workface package A",
+                "Electrical",
+                60,
+                "Hook-up after mechanical completion",
+                "Field Engineer",
+                "ready_to_release",
+                date(2026, 6, 8),
+                date(2026, 7, 10),
+                22,
+            ),
         ]
     )
 
     packages: dict[str, WorkPackage] = {}
-    for parent_code, account, package_type, code, title, discipline, sequence_no, path, owner_role, readiness, start, finish, progress in package_seed:
+    for (
+        parent_code,
+        account,
+        package_type,
+        code,
+        title,
+        discipline,
+        sequence_no,
+        path,
+        owner_role,
+        readiness,
+        start,
+        finish,
+        progress,
+    ) in package_seed:
         existing = db.scalar(
             select(WorkPackage).where(
                 WorkPackage.tenant_id == tenant_id,
@@ -1265,7 +1545,11 @@ def ensure_awp_records(db: Session, tenant_id: int, project_id: int) -> None:
             existing.sequence_no = sequence_no
             existing.path_of_construction = path
             existing.owner_role = owner_role
-            existing.readiness_status = readiness if existing.readiness_status not in {"blocked", "released", "complete"} else existing.readiness_status
+            existing.readiness_status = (
+                readiness
+                if existing.readiness_status not in {"blocked", "released", "complete"}
+                else existing.readiness_status
+            )
             existing.planned_start = start
             existing.planned_finish = finish
             existing.progress_percent = progress
@@ -1295,15 +1579,63 @@ def ensure_awp_records(db: Session, tenant_id: int, project_id: int) -> None:
 
     constraints_seed = (
         [
-            ("IWP-UTIL-120A", "Permit", "Hot work permit approval required before outage execution.", "Construction Manager", date(2026, 5, 6), "open", True),
-            ("CWP-UTIL-120", "Engineering", "Tie-in isometric revision must be issued for construction.", "Planner", date(2026, 5, 3), "open", True),
+            (
+                "IWP-UTIL-120A",
+                "Permit",
+                "Hot work permit approval required before outage execution.",
+                "Construction Manager",
+                date(2026, 5, 6),
+                "open",
+                True,
+            ),
+            (
+                "CWP-UTIL-120",
+                "Engineering",
+                "Tie-in isometric revision must be issued for construction.",
+                "Planner",
+                date(2026, 5, 3),
+                "open",
+                True,
+            ),
         ]
         if is_turnaround
         else [
-            ("PWP-VALVE-210", "Material", "Owner-furnished 24-inch valves are not available at workface.", "Contract Manager", date(2026, 5, 10), "open", True),
-            ("IWP-PIPE-210A", "Access", "Scaffold handover and access tag required for pipe rack elevation 2.", "Construction Manager", date(2026, 5, 8), "open", True),
-            ("IWP-PIPE-210A", "Document", "Latest hydrotest limits and marked-up isometrics must be linked.", "Document Control", date(2026, 5, 7), "closed", False),
-            ("IWP-ELEC-310A", "Safety", "JSA reviewed with field crew before release.", "Field Engineer", date(2026, 6, 6), "closed", False),
+            (
+                "PWP-VALVE-210",
+                "Material",
+                "Owner-furnished 24-inch valves are not available at workface.",
+                "Contract Manager",
+                date(2026, 5, 10),
+                "open",
+                True,
+            ),
+            (
+                "IWP-PIPE-210A",
+                "Access",
+                "Scaffold handover and access tag required for pipe rack elevation 2.",
+                "Construction Manager",
+                date(2026, 5, 8),
+                "open",
+                True,
+            ),
+            (
+                "IWP-PIPE-210A",
+                "Document",
+                "Latest hydrotest limits and marked-up isometrics must be linked.",
+                "Document Control",
+                date(2026, 5, 7),
+                "closed",
+                False,
+            ),
+            (
+                "IWP-ELEC-310A",
+                "Safety",
+                "JSA reviewed with field crew before release.",
+                "Field Engineer",
+                date(2026, 6, 6),
+                "closed",
+                False,
+            ),
         ]
     )
     for package_code, constraint_type, description, owner_role, required_by, status, blocking in constraints_seed:
@@ -1352,7 +1684,9 @@ def ensure_awp_business_process(db: Session, tenant_id: int, project_id: int, pa
     )
     if existing:
         existing.title = f"AWP Readiness - {package.code}"
-        existing.ball_in_court = package.owner_role if existing.current_step == "Constraint Review" else existing.ball_in_court
+        existing.ball_in_court = (
+            package.owner_role if existing.current_step == "Constraint Review" else existing.ball_in_court
+        )
         return
     process = BusinessProcessInstance(
         tenant_id=tenant_id,
@@ -1371,10 +1705,34 @@ def ensure_awp_business_process(db: Session, tenant_id: int, project_id: int, pa
     db.flush()
     for order, (name, detail, owner_role, status, tone) in enumerate(
         [
-            ("Path Definition", "Path of construction and sequence are aligned with the approved schedule.", "Planner", "Complete", "complete"),
-            ("Package Scope", "CWA/CWP/EWP/PWP/IWP scope is tied to control accounts and deliverables.", "Workface Planner", "Complete", "complete"),
-            ("Constraint Review", "Open constraints determine workface readiness.", package.owner_role, "Active", "active"),
-            ("Release", "Ready package can be released to field execution.", "Construction Manager", "Queued", "queued"),
+            (
+                "Path Definition",
+                "Path of construction and sequence are aligned with the approved schedule.",
+                "Planner",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Package Scope",
+                "CWA/CWP/EWP/PWP/IWP scope is tied to control accounts and deliverables.",
+                "Workface Planner",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Constraint Review",
+                "Open constraints determine workface readiness.",
+                package.owner_role,
+                "Active",
+                "active",
+            ),
+            (
+                "Release",
+                "Ready package can be released to field execution.",
+                "Construction Manager",
+                "Queued",
+                "queued",
+            ),
             ("Execute", "Field progress feeds Control Core and AWP status.", "Field Engineer", "Queued", "queued"),
         ],
         start=1,
@@ -1397,9 +1755,7 @@ def ensure_awp_business_process(db: Session, tenant_id: int, project_id: int, pa
 def ensure_claim_entitlement_records(db: Session, tenant_id: int, project_id: int) -> None:
     claims = list(
         db.scalars(
-            select(Claim)
-            .where(Claim.tenant_id == tenant_id, Claim.project_id == project_id)
-            .order_by(Claim.id)
+            select(Claim).where(Claim.tenant_id == tenant_id, Claim.project_id == project_id).order_by(Claim.id)
         ).all()
     )
     for claim in claims:
@@ -1547,7 +1903,17 @@ def ensure_claim_entitlement_records(db: Session, tenant_id: int, project_id: in
                 0.2,
             ),
         ]
-        for sequence_no, (source, category, element, requirement, assessment, evidence_ref, status, weight, score) in enumerate(entitlement_seed, start=10):
+        for sequence_no, (
+            source,
+            category,
+            element,
+            requirement,
+            assessment,
+            evidence_ref,
+            status,
+            weight,
+            score,
+        ) in enumerate(entitlement_seed, start=10):
             db.add(
                 ClaimEntitlementItem(
                     tenant_id=tenant_id,
@@ -1571,9 +1937,7 @@ def ensure_claim_entitlement_records(db: Session, tenant_id: int, project_id: in
 def ensure_claim_notice_and_impact_records(db: Session, tenant_id: int, project_id: int) -> None:
     claims = list(
         db.scalars(
-            select(Claim)
-            .where(Claim.tenant_id == tenant_id, Claim.project_id == project_id)
-            .order_by(Claim.id)
+            select(Claim).where(Claim.tenant_id == tenant_id, Claim.project_id == project_id).order_by(Claim.id)
         ).all()
     )
     if not claims:
@@ -1711,8 +2075,12 @@ def ensure_document_control_records(db: Session, tenant_id: int, project_id: int
             document.document_number = f"{project.code}-DOC-{index:04d}"
         document.revision = document.revision or "A"
         document.revision_date = document.revision_date or date(2026, 5, min(index + 1, 28))
-        document.discipline = document.discipline or ("Contracts" if document.linked_entity_type in {"Claim", "Contract"} else "Project Controls")
-        document.organization = document.organization or ("EPC Contractor" if project.code == "CTRL-DEMO-001" else "Turnaround Team")
+        document.discipline = document.discipline or (
+            "Contracts" if document.linked_entity_type in {"Claim", "Contract"} else "Project Controls"
+        )
+        document.organization = document.organization or (
+            "EPC Contractor" if project.code == "CTRL-DEMO-001" else "Turnaround Team"
+        )
         document.status = document.status or "current"
         document.review_status = document.review_status or ("approved" if index == 1 else "in_review")
         document.confidentiality = document.confidentiality or "project"
@@ -1773,7 +2141,9 @@ def ensure_document_control_records(db: Session, tenant_id: int, project_id: int
                     document_number=document.document_number,
                     revision=document.revision,
                     action_required="review",
-                    response_status="outstanding" if document.review_status not in {"approved", "reviewed"} else "closed",
+                    response_status="outstanding"
+                    if document.review_status not in {"approved", "reviewed"}
+                    else "closed",
                 )
             )
 
@@ -1793,7 +2163,9 @@ def ensure_document_control_records(db: Session, tenant_id: int, project_id: int
                     tenant_id=tenant_id,
                     project_id=project_id,
                     document_id=document.id,
-                    reviewer_role="Project Controls" if document.discipline == "Project Controls" else "Contract Manager",
+                    reviewer_role="Project Controls"
+                    if document.discipline == "Project Controls"
+                    else "Contract Manager",
                     review_status=status,
                     comments="Pilot document control review seeded for Aconex-style workflow.",
                     due_date=date(2026, 5, 10),
@@ -1860,11 +2232,41 @@ def ensure_claim_business_process(db: Session, tenant_id: int, project_id: int, 
     db.flush()
     for order, (name, detail, owner_role, status, tone) in enumerate(
         [
-            ("Event Capture", "Claim event, affected control account and evidence package are captured.", "Field Lead", "Complete", "complete"),
-            ("Notice Review", "Contract notice, timing and procedural compliance are checked.", "Contract Manager", "Active", "active"),
-            ("Causation Review", "Cause-and-effect analysis links event, schedule, productivity and cost impact.", "Claims Analyst", "Active", "active"),
-            ("Impact / Quantum Analysis", "Schedule impact, productivity loss and damages are quantified.", "Project Controls", "Pending", "pending"),
-            ("Entitlement Position", "Contract position and recovery strategy are approved.", "Control Manager", "Queued", "queued"),
+            (
+                "Event Capture",
+                "Claim event, affected control account and evidence package are captured.",
+                "Field Lead",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Notice Review",
+                "Contract notice, timing and procedural compliance are checked.",
+                "Contract Manager",
+                "Active",
+                "active",
+            ),
+            (
+                "Causation Review",
+                "Cause-and-effect analysis links event, schedule, productivity and cost impact.",
+                "Claims Analyst",
+                "Active",
+                "active",
+            ),
+            (
+                "Impact / Quantum Analysis",
+                "Schedule impact, productivity loss and damages are quantified.",
+                "Project Controls",
+                "Pending",
+                "pending",
+            ),
+            (
+                "Entitlement Position",
+                "Contract position and recovery strategy are approved.",
+                "Control Manager",
+                "Queued",
+                "queued",
+            ),
         ],
         start=1,
     ):
@@ -1986,13 +2388,25 @@ def ensure_control_history_records(db: Session, tenant_id: int, project_id: int)
     cpi = current.cpi if current.cpi > 0 else 1
     for name, method, cpi_factor, spi_factor in [
         ("Current Performance", "EAC = BAC / current CPI", cpi, current.spi if current.spi > 0 else 1),
-        ("Recovery Plan", "Corrective action improves CPI and SPI", min(cpi + 0.10, 1.10), min((current.spi if current.spi > 0 else 1) + 0.08, 1.05)),
-        ("Pessimistic Drift", "Unresolved productivity and cost drift", max(cpi * 0.90, 0.10), max((current.spi if current.spi > 0 else 1) * 0.92, 0.10)),
+        (
+            "Recovery Plan",
+            "Corrective action improves CPI and SPI",
+            min(cpi + 0.10, 1.10),
+            min((current.spi if current.spi > 0 else 1) + 0.08, 1.05),
+        ),
+        (
+            "Pessimistic Drift",
+            "Unresolved productivity and cost drift",
+            max(cpi * 0.90, 0.10),
+            max((current.spi if current.spi > 0 else 1) * 0.92, 0.10),
+        ),
     ]:
         eac = current.bac / cpi_factor if cpi_factor else current.bac
         etc = max(eac - current.ac, 0)
         vac = current.bac - eac
-        risk = "high" if cpi_factor < 0.9 or spi_factor < 0.9 else "medium" if cpi_factor < 1 or spi_factor < 1 else "low"
+        risk = (
+            "high" if cpi_factor < 0.9 or spi_factor < 0.9 else "medium" if cpi_factor < 1 or spi_factor < 1 else "low"
+        )
         db.add(
             ForecastScenario(
                 tenant_id=tenant_id,
@@ -2057,7 +2471,9 @@ def ensure_control_account_mapping_records(db: Session, tenant_id: int, project_
     }
     account_cache: dict[str, ControlAccount] = {
         account.code: account
-        for account in db.scalars(select(ControlAccount).where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)).all()
+        for account in db.scalars(
+            select(ControlAccount).where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+        ).all()
     }
     for row in schedule_rows:
         if row.activity_id and row.activity_id in activities:
@@ -2067,7 +2483,9 @@ def ensure_control_account_mapping_records(db: Session, tenant_id: int, project_
             wbs_code = row.wbs_code or "UNMAPPED"
             wbs = wbs_cache.get(wbs_code)
             if not wbs:
-                wbs = WBS(tenant_id=tenant_id, project_id=project_id, parent_id=None, code=wbs_code, name=f"WBS {wbs_code}")
+                wbs = WBS(
+                    tenant_id=tenant_id, project_id=project_id, parent_id=None, code=wbs_code, name=f"WBS {wbs_code}"
+                )
                 db.add(wbs)
                 db.flush()
                 wbs_cache[wbs_code] = wbs
@@ -2118,7 +2536,9 @@ def ensure_control_account_mapping_records(db: Session, tenant_id: int, project_
     }
     activity_count_by_account: dict[int, int] = {}
     for activity in activities.values():
-        activity_count_by_account[activity.control_account_id] = activity_count_by_account.get(activity.control_account_id, 0) + 1
+        activity_count_by_account[activity.control_account_id] = (
+            activity_count_by_account.get(activity.control_account_id, 0) + 1
+        )
 
     for row in schedule_rows:
         existing = db.scalar(
@@ -2132,7 +2552,9 @@ def ensure_control_account_mapping_records(db: Session, tenant_id: int, project_
         if not activity:
             continue
         budget = budgets_by_account.get(activity.control_account_id)
-        allocated_cost = (budget.bac / max(activity_count_by_account.get(activity.control_account_id, 1), 1)) if budget else 0
+        allocated_cost = (
+            (budget.bac / max(activity_count_by_account.get(activity.control_account_id, 1), 1)) if budget else 0
+        )
         planned_value = allocated_cost * activity.planned_percent / 100
         mapping = existing or ControlAccountMapping(
             tenant_id=tenant_id,
@@ -2150,7 +2572,9 @@ def ensure_control_account_mapping_records(db: Session, tenant_id: int, project_
         mapping.planned_value = planned_value
         mapping.planned_percent = activity.planned_percent
         mapping.status = "mapped" if allocated_cost > 0 else "needs_cost_loading"
-        mapping.review_note = "" if allocated_cost > 0 else "Activity mapped, but no loaded budget was found for the control account."
+        mapping.review_note = (
+            "" if allocated_cost > 0 else "Activity mapped, but no loaded budget was found for the control account."
+        )
         if not existing:
             db.add(mapping)
     db.flush()
@@ -2291,14 +2715,54 @@ def ensure_demo_schedule(db: Session, tenant_id: int, project_id: int) -> None:
 
     activity_rows = (
         [
-            (accounts[0], "P6-UTIL-1200", "Execute steam and condensate tie-ins", date(2026, 3, 9), date(2026, 6, 26), 2, False),
-            (accounts[1], "P6-INST-2200", "Complete instrumentation loop checks", date(2026, 5, 11), date(2026, 8, 21), 0, True),
+            (
+                accounts[0],
+                "P6-UTIL-1200",
+                "Execute steam and condensate tie-ins",
+                date(2026, 3, 9),
+                date(2026, 6, 26),
+                2,
+                False,
+            ),
+            (
+                accounts[1],
+                "P6-INST-2200",
+                "Complete instrumentation loop checks",
+                date(2026, 5, 11),
+                date(2026, 8, 21),
+                0,
+                True,
+            ),
         ]
         if is_turnaround and len(accounts) >= 2
         else [
-            (accounts[0], "P6-MECH-1000", "Install compressor mechanical package", date(2026, 3, 2), date(2026, 7, 17), 0, True),
-            (accounts[1], "P6-PIPE-2100", "Fabricate and erect process piping", date(2026, 2, 9), date(2026, 8, 28), 4, False),
-            (accounts[2], "P6-ELEC-3100", "Electrical hook-up and precommissioning", date(2026, 6, 8), date(2026, 10, 9), 0, True),
+            (
+                accounts[0],
+                "P6-MECH-1000",
+                "Install compressor mechanical package",
+                date(2026, 3, 2),
+                date(2026, 7, 17),
+                0,
+                True,
+            ),
+            (
+                accounts[1],
+                "P6-PIPE-2100",
+                "Fabricate and erect process piping",
+                date(2026, 2, 9),
+                date(2026, 8, 28),
+                4,
+                False,
+            ),
+            (
+                accounts[2],
+                "P6-ELEC-3100",
+                "Electrical hook-up and precommissioning",
+                date(2026, 6, 8),
+                date(2026, 10, 9),
+                0,
+                True,
+            ),
         ]
         if len(accounts) >= 3
         else [

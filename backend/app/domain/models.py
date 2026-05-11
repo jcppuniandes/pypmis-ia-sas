@@ -124,6 +124,47 @@ class AuthCredential(Base):
     __table_args__ = (UniqueConstraint("tenant_id", "user_id", "provider"),)
 
 
+class IntegrationToken(Base):
+    __tablename__ = "integration_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    name: Mapped[str] = mapped_column(String(160))
+    token_prefix: Mapped[str] = mapped_column(String(40), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), index=True)
+    allowed_datasets: Mapped[str] = mapped_column(Text, default="")
+    allowed_formats: Mapped[str] = mapped_column(String(80), default="json,csv,both,xlsx")
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "token_hash"),)
+
+
+class IntegrationExportLog(Base):
+    __tablename__ = "integration_export_logs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    requested_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    integration_token_id: Mapped[int | None] = mapped_column(ForeignKey("integration_tokens.id"), index=True)
+    actor: Mapped[str] = mapped_column(String(180), default="")
+    artifact_type: Mapped[str] = mapped_column(String(40), index=True)
+    datasets: Mapped[str] = mapped_column(Text, default="")
+    format: Mapped[str] = mapped_column(String(40), default="")
+    file_name: Mapped[str] = mapped_column(String(260), default="")
+    sha256: Mapped[str] = mapped_column(String(64), index=True)
+    size_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    row_count: Mapped[int] = mapped_column(Integer, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="completed", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class ProjectMembership(Base):
     __tablename__ = "project_memberships"
 
@@ -894,6 +935,29 @@ class Document(Base):
     confidentiality: Mapped[str] = mapped_column(String(40), default="project")
     file_name: Mapped[str] = mapped_column(String(260), default="")
     uri: Mapped[str] = mapped_column(String(500))
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class DocumentAttachment(Base):
+    __tablename__ = "document_attachments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"), index=True)
+    original_file_name: Mapped[str] = mapped_column(String(260))
+    stored_file_name: Mapped[str] = mapped_column(String(260))
+    storage_path: Mapped[str] = mapped_column(String(500))
+    content_type: Mapped[str] = mapped_column(String(160), default="application/octet-stream")
+    extension: Mapped[str] = mapped_column(String(20), default="")
+    size_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    sha256: Mapped[str] = mapped_column(String(64), index=True)
+    source: Mapped[str] = mapped_column(String(40), default="upload")
+    uploaded_by: Mapped[str] = mapped_column(String(160), default="system")
+    scan_status: Mapped[str] = mapped_column(String(40), default="not_scanned")
+    validation_message: Mapped[str] = mapped_column(String(360), default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

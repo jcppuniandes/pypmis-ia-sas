@@ -1,4 +1,4 @@
-from app.domain.models import Alert, KPI
+from app.domain.models import KPI, Alert
 
 
 class AIInsightService:

@@ -1,8 +1,20 @@
+import csv
+import hashlib
+import hmac
 import json
+import mimetypes
+import secrets
+import socket
+from dataclasses import dataclass
 from datetime import datetime, timedelta
+from io import BytesIO, StringIO
+from pathlib import Path, PurePosixPath
+from uuid import uuid4
+from xml.sax.saxutils import escape
+from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
-from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
-from fastapi.responses import PlainTextResponse
+from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse, PlainTextResponse, Response
 from redis import Redis
 from redis.exceptions import RedisError
 from sqlalchemy import func, select
@@ -12,20 +24,23 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_tenant_id, get_user_id
 from app.core.config import get_settings
 from app.core.observability import METRICS
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import TokenError, create_access_token, decode_access_token, hash_password, verify_password
 from app.database.session import get_db
 from app.domain.models import (
+    KPI,
+    WBS,
     Activity,
     ActivityRelationship,
     Alert,
-    AuthCredential,
     AuditLog,
+    AuthCredential,
     BaselineVersion,
     Budget,
     BusinessProcessInstance,
     BusinessProcessStepTemplate,
     BusinessProcessTemplate,
     BusinessProcessTransitionTemplate,
+    CashFlowPeriod,
     ChangeRequest,
     Claim,
     ClaimEntitlementItem,
@@ -37,22 +52,23 @@ from app.domain.models import (
     ControlAccountMapping,
     ControlPeriod,
     ControlSnapshot,
-    CashFlowPeriod,
     CostRecord,
     CostSource,
     Document,
+    DocumentAttachment,
     DocumentReview,
     DocumentTransmittal,
     DocumentTransmittalItem,
     ForecastScenario,
     FundingSource,
     ImportStatus,
-    KPI,
+    IntegrationExportLog,
+    IntegrationToken,
     PaymentCertificate,
     ProgressRecord,
-    ProjectMail,
     Project,
     ProjectControlPlan,
+    ProjectMail,
     ProjectMembership,
     PurchaseOrder,
     RFQBid,
@@ -63,10 +79,9 @@ from app.domain.models import (
     Tenant,
     UserAccount,
     WarehouseReceipt,
+    WorkflowStepInstance,
     WorkPackage,
     WorkPackageConstraint,
-    WBS,
-    WorkflowStepInstance,
 )
 from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.domain.schemas import (
@@ -74,6 +89,8 @@ from app.domain.schemas import (
     ActivityOut,
     AlertOut,
     AuditLogOut,
+    AuthSessionOut,
+    AWPReadinessSummary,
     BaselineVersionOut,
     BusinessProcessInstanceOut,
     CashFlowPeriodCreate,
@@ -81,7 +98,6 @@ from app.domain.schemas import (
     CashFlowPeriodUpdate,
     ChangeRequestCreate,
     ChangeRequestOut,
-    ClaimOut,
     ClaimEntitlementItemCreate,
     ClaimEntitlementItemOut,
     ClaimEntitlementItemUpdate,
@@ -89,6 +105,7 @@ from app.domain.schemas import (
     ClaimImpactAnalysisCreate,
     ClaimImpactAnalysisOut,
     ClaimImpactAnalysisUpdate,
+    ClaimOut,
     ClaimsForensicSummary,
     ContractCommunicationCreate,
     ContractCommunicationOut,
@@ -104,15 +121,16 @@ from app.domain.schemas import (
     ControlCoreLoop,
     ControlPeriodOut,
     ControlSnapshotOut,
+    CostManagerSummaryOut,
     CostRecordCreate,
     CostRecordOut,
-    CostManagerSummaryOut,
     CostSheetLineOut,
-    DataQualityGateOut,
     DashboardOut,
-    DocumentOut,
-    DocumentCreate,
+    DataQualityGateOut,
+    DocumentAttachmentOut,
     DocumentControlSummary,
+    DocumentCreate,
+    DocumentOut,
     DocumentReviewCreate,
     DocumentReviewOut,
     DocumentReviewUpdate,
@@ -124,7 +142,12 @@ from app.domain.schemas import (
     FundingSourceCreate,
     FundingSourceOut,
     FundingSourceUpdate,
-    AuthSessionOut,
+    IntegrationExportLogOut,
+    IntegrationTokenAlertOut,
+    IntegrationTokenAlertSummary,
+    IntegrationTokenCreate,
+    IntegrationTokenCreated,
+    IntegrationTokenOut,
     KPIOut,
     LoginRequest,
     PaymentCertificateCreate,
@@ -136,18 +159,19 @@ from app.domain.schemas import (
     ProcessTemplateCreate,
     ProcessTemplateOut,
     ProcessTransitionTemplateOut,
+    ProductivitySummary,
+    ProgressRecordCreate,
+    ProgressRecordOut,
+    ProjectControlPlanOut,
+    ProjectControlPlanUpdate,
     ProjectCreate,
     ProjectMailCreate,
     ProjectMailOut,
     ProjectMailUpdate,
-    ProjectControlPlanOut,
-    ProjectControlPlanUpdate,
-    ProjectMembershipOut,
     ProjectMembershipCreate,
+    ProjectMembershipOut,
+    ProjectOut,
     ProjectTeamMemberOut,
-    ProgressRecordCreate,
-    ProgressRecordOut,
-    ProductivitySummary,
     PurchaseOrderCreate,
     PurchaseOrderOut,
     PurchaseOrderUpdate,
@@ -158,27 +182,25 @@ from app.domain.schemas import (
     RFQPackageOut,
     RFQPackageUpdate,
     RFQSummary,
-    ProjectOut,
+    RoleProfileOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
     ScheduleValidationFindingOut,
     TCMFlowStep,
-    RoleProfileOut,
     UserCreate,
     UserOut,
-    AWPReadinessSummary,
     WarehouseReceiptCreate,
     WarehouseReceiptOut,
     WarehouseReceiptUpdate,
     WBSOut,
+    WorkflowActionIn,
+    WorkflowStepInstanceOut,
     WorkPackageConstraintCreate,
     WorkPackageConstraintOut,
     WorkPackageConstraintUpdate,
     WorkPackageCreate,
     WorkPackageOut,
     WorkPackageReadinessUpdate,
-    WorkflowActionIn,
-    WorkflowStepInstanceOut,
 )
 from app.services.ai_insights import AIInsightService
 from app.services.control_core import ControlCoreService
@@ -187,6 +209,106 @@ from app.services.workflow_routing import WorkflowRoutingService
 from app.workers.tasks import run_control_cycle as run_control_cycle_task
 
 router = APIRouter(prefix="/api/v1")
+
+
+INTEGRATION_TOKEN_PREFIX = "pypmis_it_"
+INTEGRATION_TOKEN_MAX_DAYS = 90
+
+
+@dataclass(frozen=True)
+class IntegrationAccess:
+    tenant_id: int
+    project: Project
+    membership: ProjectMembership
+    allowed_datasets: list[str]
+    allowed_formats: list[str]
+    actor_user_id: int
+    actor: str
+    token: IntegrationToken | None = None
+
+
+INTEGRATION_DATASETS = {
+    "wbs": {
+        "label": "WBS",
+        "description": "Work breakdown structure catalog for downstream BI or ERP staging.",
+        "schema": WBSOut,
+    },
+    "control_accounts": {
+        "label": "Control accounts",
+        "description": "Control account catalog used to join schedule, cost, contracts and documents.",
+        "schema": ControlAccountOut,
+    },
+    "schedule_imports": {
+        "label": "Schedule imports",
+        "description": "Imported schedule files, quality scores and data dates.",
+        "schema": ScheduleImportOut,
+    },
+    "schedule_validation_findings": {
+        "label": "Schedule validation findings",
+        "description": "Validation findings for the latest schedule import.",
+        "schema": ScheduleValidationFindingOut,
+    },
+    "control_account_mappings": {
+        "label": "Control account mappings",
+        "description": "Latest schedule-to-control-account mapping register.",
+        "schema": ControlAccountMappingOut,
+    },
+    "cost_sheet": {
+        "label": "Cost sheet",
+        "description": "Calculated BAC, PV, EV, AC, commitments, incurred cost, variance and CPI by control account.",
+        "schema": CostSheetLineOut,
+    },
+    "funding_sources": {
+        "label": "Funding sources",
+        "description": "Approved and draft funding records for the project.",
+        "schema": FundingSourceOut,
+    },
+    "cash_flow": {
+        "label": "Cash flow",
+        "description": "Planned, actual and forecast cash-flow periods.",
+        "schema": CashFlowPeriodOut,
+    },
+    "progress_records": {
+        "label": "Progress records",
+        "description": "Field progress captures by control account.",
+        "schema": ProgressRecordOut,
+    },
+    "cost_records": {
+        "label": "Cost records",
+        "description": "Legacy or direct cost captures by source and control account.",
+        "schema": CostRecordOut,
+    },
+    "contracts": {
+        "label": "Contracts",
+        "description": "Contract register for commitments and commercial traceability.",
+        "schema": ContractOut,
+    },
+    "purchase_orders": {
+        "label": "Purchase orders",
+        "description": "Purchase-order commitments issued against control accounts and contracts.",
+        "schema": PurchaseOrderOut,
+    },
+    "payment_certificates": {
+        "label": "Payment certificates",
+        "description": "Certified incurred cost records.",
+        "schema": PaymentCertificateOut,
+    },
+    "warehouse_receipts": {
+        "label": "Warehouse receipts",
+        "description": "Received goods/services evidence used as incurred cost.",
+        "schema": WarehouseReceiptOut,
+    },
+    "documents": {
+        "label": "Documents",
+        "description": "Document register filtered by the caller's confidentiality access.",
+        "schema": DocumentOut,
+    },
+    "document_attachments": {
+        "label": "Document attachments",
+        "description": "Stored files filtered by the caller's confidentiality access.",
+        "schema": DocumentAttachmentOut,
+    },
+}
 
 
 @router.get("/health")
@@ -297,6 +419,20 @@ def current_user(
     return _require_user(db, tenant_id, user_id)
 
 
+@router.get("/auth/providers")
+def auth_providers() -> dict[str, object]:
+    settings = get_settings()
+    return {
+        "local": {"enabled": True},
+        "oidc": {
+            "enabled": settings.oidc_enabled,
+            "issuer_url": settings.oidc_issuer_url if settings.oidc_enabled else "",
+            "client_id": settings.oidc_client_id if settings.oidc_enabled else "",
+            "authorization_url": settings.oidc_authorization_url if settings.oidc_enabled else "",
+        },
+    }
+
+
 @router.get("/projects", response_model=list[ProjectOut])
 def list_projects(
     db: Session = Depends(get_db),
@@ -349,7 +485,16 @@ def create_project(
         **_role_permissions("Control Manager"),
     )
     db.add(creator_membership)
-    _audit(db, tenant_id, project.id, "create_project_shell", "Project", project.id, f'{{"code":"{project.code}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project.id,
+        "create_project_shell",
+        "Project",
+        project.id,
+        f'{{"code":"{project.code}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(project)
     return project
@@ -396,7 +541,16 @@ def create_user(
             is_active=True,
         )
     )
-    _audit(db, tenant_id, None, "create_user", "UserAccount", user.id, f'{{"email":"{user.email}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        None,
+        "create_user",
+        "UserAccount",
+        user.id,
+        f'{{"email":"{user.email}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(user)
     return user
@@ -433,7 +587,11 @@ def create_process_template(
     code = payload.code.strip().upper()
     if not code:
         raise HTTPException(status_code=400, detail="Process code is required")
-    existing = db.scalar(select(BusinessProcessTemplate).where(BusinessProcessTemplate.tenant_id == tenant_id, BusinessProcessTemplate.code == code))
+    existing = db.scalar(
+        select(BusinessProcessTemplate).where(
+            BusinessProcessTemplate.tenant_id == tenant_id, BusinessProcessTemplate.code == code
+        )
+    )
     if existing:
         raise HTTPException(status_code=409, detail="Business process template code already exists")
 
@@ -451,10 +609,38 @@ def create_process_template(
     db.flush()
 
     step_payloads = payload.steps or [
-        ProcessStepTemplateOut(step_order=1, name="Creation", detail="Record is created and validated.", owner_role="Originator", status="Active", tone="active"),
-        ProcessStepTemplateOut(step_order=2, name="Review", detail="Responsible role reviews business impact.", owner_role="Project Controls", status="Queued", tone="queued"),
-        ProcessStepTemplateOut(step_order=3, name="Approval", detail="Governance approval is captured.", owner_role="Control Manager", status="Queued", tone="queued"),
-        ProcessStepTemplateOut(step_order=4, name="Action", detail="Approved decision is converted into execution action.", owner_role="Execution Lead", status="Queued", tone="queued"),
+        ProcessStepTemplateOut(
+            step_order=1,
+            name="Creation",
+            detail="Record is created and validated.",
+            owner_role="Originator",
+            status="Active",
+            tone="active",
+        ),
+        ProcessStepTemplateOut(
+            step_order=2,
+            name="Review",
+            detail="Responsible role reviews business impact.",
+            owner_role="Project Controls",
+            status="Queued",
+            tone="queued",
+        ),
+        ProcessStepTemplateOut(
+            step_order=3,
+            name="Approval",
+            detail="Governance approval is captured.",
+            owner_role="Control Manager",
+            status="Queued",
+            tone="queued",
+        ),
+        ProcessStepTemplateOut(
+            step_order=4,
+            name="Action",
+            detail="Approved decision is converted into execution action.",
+            owner_role="Execution Lead",
+            status="Queued",
+            tone="queued",
+        ),
     ]
     for index, step in enumerate(step_payloads, start=1):
         db.add(
@@ -490,7 +676,16 @@ def create_process_template(
             )
         )
 
-    _audit(db, tenant_id, None, "create_process_template", "BusinessProcessTemplate", template.id, f'{{"code":"{template.code}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        None,
+        "create_process_template",
+        "BusinessProcessTemplate",
+        template.id,
+        f'{{"code":"{template.code}"}}',
+        current_user.full_name,
+    )
     db.commit()
     return _process_template_out(db, template)
 
@@ -540,7 +735,16 @@ def assign_project_member(
         db.add(target_membership)
         db.flush()
     current_user = _require_user(db, tenant_id, user_id)
-    _audit(db, tenant_id, project_id, "assign_project_role", "ProjectMembership", target_membership.id, f'{{"user_id":{target_user.id},"role":"{payload.role}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "assign_project_role",
+        "ProjectMembership",
+        target_membership.id,
+        f'{{"user_id":{target_user.id},"role":"{payload.role}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(target_membership)
     return ProjectTeamMemberOut(
@@ -606,11 +810,7 @@ def list_wbs(
 ) -> list[WBS]:
     _require_membership(db, tenant_id, project_id, user_id)
     return list(
-        db.scalars(
-            select(WBS)
-            .where(WBS.project_id == project_id, WBS.tenant_id == tenant_id)
-            .order_by(WBS.code)
-        ).all()
+        db.scalars(select(WBS).where(WBS.project_id == project_id, WBS.tenant_id == tenant_id).order_by(WBS.code)).all()
     )
 
 
@@ -705,7 +905,15 @@ def create_control_account(
     )
     db.add(account)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_control_account", "ControlAccount", account.id, f'{{"code":"{account.code}"}}')
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_control_account",
+        "ControlAccount",
+        account.id,
+        f'{{"code":"{account.code}"}}',
+    )
     db.commit()
     db.refresh(account)
     return account
@@ -726,7 +934,15 @@ def update_control_account(
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(account, field, value)
     _touch_collaborative_record(account)
-    _audit(db, tenant_id, project_id, "update_control_account", "ControlAccount", account.id, f'{{"code":"{account.code}"}}')
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_control_account",
+        "ControlAccount",
+        account.id,
+        f'{{"code":"{account.code}"}}',
+    )
     db.commit()
     db.refresh(account)
     return account
@@ -791,9 +1007,20 @@ def approve_control_account_mapping(
     if summary.total_schedule_activities == 0 or summary.mapping_score < 100:
         raise HTTPException(status_code=409, detail="All schedule activities must be mapped before baseline approval")
     if summary.cost_loading_score < 80:
-        raise HTTPException(status_code=409, detail="Cost loading coverage must be at least 80% before baseline approval")
+        raise HTTPException(
+            status_code=409, detail="Cost loading coverage must be at least 80% before baseline approval"
+        )
     baseline.status = "approved"
-    _audit(db, tenant_id, project_id, "approve_control_baseline", "BaselineVersion", baseline.id, f'{{"mapping_score":{summary.mapping_score},"cost_loading_score":{summary.cost_loading_score}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "approve_control_baseline",
+        "BaselineVersion",
+        baseline.id,
+        f'{{"mapping_score":{summary.mapping_score},"cost_loading_score":{summary.cost_loading_score}}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(baseline)
     return baseline
@@ -843,7 +1070,16 @@ def create_progress_record(
     )
     db.add(record)
     db.flush()
-    _audit(db, tenant_id, project_id, "capture_progress", "ProgressRecord", record.id, f'{{"control_account_id":{record.control_account_id}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "capture_progress",
+        "ProgressRecord",
+        record.id,
+        f'{{"control_account_id":{record.control_account_id}}}',
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(record)
@@ -885,7 +1121,10 @@ def create_cost_record(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail="Invalid cost source") from exc
     if source == CostSource.commitment:
-        raise HTTPException(status_code=400, detail="Commitments are created from contracts or purchase orders, not from actual cost records")
+        raise HTTPException(
+            status_code=400,
+            detail="Commitments are created from contracts or purchase orders, not from actual cost records",
+        )
     if payload.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be greater than zero")
     record = CostRecord(
@@ -899,7 +1138,16 @@ def create_cost_record(
     )
     db.add(record)
     db.flush()
-    _audit(db, tenant_id, project_id, "capture_actual_cost", "CostRecord", record.id, f'{{"control_account_id":{record.control_account_id},"amount":{record.amount}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "capture_actual_cost",
+        "CostRecord",
+        record.id,
+        f'{{"control_account_id":{record.control_account_id},"amount":{record.amount}}}',
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(record)
@@ -966,7 +1214,16 @@ def create_funding_source(
     )
     db.add(funding)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_funding_source", "FundingSource", funding.id, f'{{"code":"{funding.code}","amount":{funding.amount}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_funding_source",
+        "FundingSource",
+        funding.id,
+        f'{{"code":"{funding.code}","amount":{funding.amount}}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(funding)
     return funding
@@ -1004,7 +1261,16 @@ def update_funding_source(
     if funding.currency:
         funding.currency = funding.currency.upper()
     _touch_collaborative_record(funding)
-    _audit(db, tenant_id, project_id, "update_funding_source", "FundingSource", funding.id, f'{{"version":{funding.version}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_funding_source",
+        "FundingSource",
+        funding.id,
+        f'{{"version":{funding.version}}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(funding)
     return funding
@@ -1058,7 +1324,16 @@ def create_cash_flow_period(
     )
     db.add(period)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_cash_flow_period", "CashFlowPeriod", period.id, f'{{"period_label":"{period.period_label}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_cash_flow_period",
+        "CashFlowPeriod",
+        period.id,
+        f'{{"period_label":"{period.period_label}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(period)
     return period
@@ -1093,7 +1368,16 @@ def update_cash_flow_period(
         if value is not None:
             setattr(period, field, value)
     _touch_collaborative_record(period)
-    _audit(db, tenant_id, project_id, "update_cash_flow_period", "CashFlowPeriod", period.id, f'{{"version":{period.version}}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_cash_flow_period",
+        "CashFlowPeriod",
+        period.id,
+        f'{{"version":{period.version}}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(period)
     return period
@@ -1146,7 +1430,11 @@ def create_contract(
     contract_code = payload.code.strip()
     if not contract_code:
         raise HTTPException(status_code=400, detail="Contract code is required")
-    existing = db.scalar(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id, Contract.code == contract_code))
+    existing = db.scalar(
+        select(Contract).where(
+            Contract.tenant_id == tenant_id, Contract.project_id == project_id, Contract.code == contract_code
+        )
+    )
     if existing:
         raise HTTPException(status_code=409, detail="Contract code already exists in this project")
     contract = Contract(
@@ -1162,7 +1450,16 @@ def create_contract(
     )
     db.add(contract)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_contract", "Contract", contract.id, f'{{"code":"{contract.code}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_contract",
+        "Contract",
+        contract.id,
+        f'{{"code":"{contract.code}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(contract)
     return contract
@@ -1222,7 +1519,16 @@ def create_purchase_order(
     )
     db.add(order)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_purchase_order", "PurchaseOrder", order.id, json.dumps({"po_number": order.po_number, "committed_amount": order.committed_amount}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_purchase_order",
+        "PurchaseOrder",
+        order.id,
+        json.dumps({"po_number": order.po_number, "committed_amount": order.committed_amount}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(order)
     return order
@@ -1256,12 +1562,29 @@ def update_purchase_order(
         _require_contract(db, tenant_id, project_id, payload.contract_id)
     if payload.committed_amount is not None and payload.committed_amount <= 0:
         raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
-    for field in ("control_account_id", "contract_id", "description", "vendor", "committed_amount", "status", "issued_on"):
+    for field in (
+        "control_account_id",
+        "contract_id",
+        "description",
+        "vendor",
+        "committed_amount",
+        "status",
+        "issued_on",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(order, field, value.strip() if isinstance(value, str) else value)
     _touch_collaborative_record(order)
-    _audit(db, tenant_id, project_id, "update_purchase_order", "PurchaseOrder", order.id, json.dumps({"status": order.status, "version": order.version}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_purchase_order",
+        "PurchaseOrder",
+        order.id,
+        json.dumps({"status": order.status, "version": order.version}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(order)
     return order
@@ -1326,7 +1649,16 @@ def create_payment_certificate(
     )
     db.add(certificate)
     db.flush()
-    _audit(db, tenant_id, project_id, "certify_incurred_cost", "PaymentCertificate", certificate.id, json.dumps({"certificate_no": certificate.certificate_no, "certified_amount": certificate.certified_amount}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "certify_incurred_cost",
+        "PaymentCertificate",
+        certificate.id,
+        json.dumps({"certificate_no": certificate.certificate_no, "certified_amount": certificate.certified_amount}),
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(certificate)
@@ -1365,12 +1697,30 @@ def update_payment_certificate(
         raise HTTPException(status_code=400, detail="Certified amount must be greater than zero")
     if payload.retained_amount is not None and payload.retained_amount < 0:
         raise HTTPException(status_code=400, detail="Retained amount cannot be negative")
-    for field in ("control_account_id", "contract_id", "purchase_order_id", "period_label", "certified_amount", "retained_amount", "status", "certified_on"):
+    for field in (
+        "control_account_id",
+        "contract_id",
+        "purchase_order_id",
+        "period_label",
+        "certified_amount",
+        "retained_amount",
+        "status",
+        "certified_on",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(certificate, field, value.strip() if isinstance(value, str) else value)
     _touch_collaborative_record(certificate)
-    _audit(db, tenant_id, project_id, "update_payment_certificate", "PaymentCertificate", certificate.id, json.dumps({"status": certificate.status, "version": certificate.version}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_payment_certificate",
+        "PaymentCertificate",
+        certificate.id,
+        json.dumps({"status": certificate.status, "version": certificate.version}),
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(certificate)
@@ -1435,7 +1785,16 @@ def create_warehouse_receipt(
     )
     db.add(receipt)
     db.flush()
-    _audit(db, tenant_id, project_id, "register_warehouse_receipt", "WarehouseReceipt", receipt.id, json.dumps({"receipt_no": receipt.receipt_no, "received_value": receipt.received_value}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "register_warehouse_receipt",
+        "WarehouseReceipt",
+        receipt.id,
+        json.dumps({"receipt_no": receipt.receipt_no, "received_value": receipt.received_value}),
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(receipt)
@@ -1470,18 +1829,42 @@ def update_warehouse_receipt(
         _require_contract(db, tenant_id, project_id, payload.contract_id)
     if payload.purchase_order_id is not None:
         _require_purchase_order(db, tenant_id, project_id, payload.purchase_order_id)
-    received_quantity = payload.received_quantity if payload.received_quantity is not None else receipt.received_quantity
+    received_quantity = (
+        payload.received_quantity if payload.received_quantity is not None else receipt.received_quantity
+    )
     unit_cost = payload.unit_cost if payload.unit_cost is not None else receipt.unit_cost
     received_value = payload.received_value if payload.received_value is not None else receipt.received_value
     _validate_warehouse_receipt_values(received_quantity, unit_cost, received_value)
-    for field in ("control_account_id", "contract_id", "purchase_order_id", "description", "received_quantity", "unit_cost", "status", "received_on"):
+    for field in (
+        "control_account_id",
+        "contract_id",
+        "purchase_order_id",
+        "description",
+        "received_quantity",
+        "unit_cost",
+        "status",
+        "received_on",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(receipt, field, value.strip() if isinstance(value, str) else value)
     if payload.received_value is not None or payload.received_quantity is not None or payload.unit_cost is not None:
-        receipt.received_value = _warehouse_received_value(receipt.received_quantity, receipt.unit_cost, payload.received_value if payload.received_value is not None else 0)
+        receipt.received_value = _warehouse_received_value(
+            receipt.received_quantity,
+            receipt.unit_cost,
+            payload.received_value if payload.received_value is not None else 0,
+        )
     _touch_collaborative_record(receipt)
-    _audit(db, tenant_id, project_id, "update_warehouse_receipt", "WarehouseReceipt", receipt.id, json.dumps({"status": receipt.status, "version": receipt.version}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_warehouse_receipt",
+        "WarehouseReceipt",
+        receipt.id,
+        json.dumps({"status": receipt.status, "version": receipt.version}),
+        current_user.full_name,
+    )
     db.commit()
     ControlCoreService(db).run_project_cycle(tenant_id, project_id)
     db.refresh(receipt)
@@ -1541,7 +1924,16 @@ def create_rfq_package(
     )
     db.add(package)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_rfq_package", "RFQPackage", package.id, json.dumps({"package_no": package.package_no, "budget_amount": package.budget_amount}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_rfq_package",
+        "RFQPackage",
+        package.id,
+        json.dumps({"package_no": package.package_no, "budget_amount": package.budget_amount}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(package)
     return package
@@ -1565,12 +1957,30 @@ def update_rfq_package(
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
     if payload.budget_amount is not None and payload.budget_amount < 0:
         raise HTTPException(status_code=400, detail="RFQ budget cannot be negative")
-    for field in ("control_account_id", "title", "scope_summary", "procurement_method", "status", "budget_amount", "issue_date", "due_date"):
+    for field in (
+        "control_account_id",
+        "title",
+        "scope_summary",
+        "procurement_method",
+        "status",
+        "budget_amount",
+        "issue_date",
+        "due_date",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(package, field, value.strip() if isinstance(value, str) else value)
     _touch_collaborative_record(package)
-    _audit(db, tenant_id, project_id, "update_rfq_package", "RFQPackage", package.id, json.dumps({"status": package.status, "version": package.version}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_rfq_package",
+        "RFQPackage",
+        package.id,
+        json.dumps({"status": package.status, "version": package.version}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(package)
     return package
@@ -1602,7 +2012,13 @@ def create_rfq_bid(
     _require_permission(membership, "can_manage_contract", "Current role cannot create RFQ bids")
     current_user = _require_user(db, tenant_id, user_id)
     _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
-    _validate_rfq_bid_values(payload.bid_amount, payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score)
+    _validate_rfq_bid_values(
+        payload.bid_amount,
+        payload.technical_score,
+        payload.commercial_score,
+        payload.schedule_score,
+        payload.risk_score,
+    )
     bidder_name = payload.bidder_name.strip()
     if not bidder_name:
         raise HTTPException(status_code=400, detail="Bidder name is required")
@@ -1626,14 +2042,25 @@ def create_rfq_bid(
         commercial_score=payload.commercial_score,
         schedule_score=payload.schedule_score,
         risk_score=payload.risk_score,
-        weighted_score=_rfq_weighted_score(payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score),
+        weighted_score=_rfq_weighted_score(
+            payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score
+        ),
         status=payload.status.strip() or "received",
         submitted_on=payload.submitted_on or datetime.utcnow().date(),
         notes=payload.notes.strip(),
     )
     db.add(bid)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_rfq_bid", "RFQBid", bid.id, json.dumps({"bidder_name": bid.bidder_name, "weighted_score": bid.weighted_score}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_rfq_bid",
+        "RFQBid",
+        bid.id,
+        json.dumps({"bidder_name": bid.bidder_name, "weighted_score": bid.weighted_score}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(bid)
     return bid
@@ -1667,13 +2094,34 @@ def update_rfq_bid(
     schedule_score = payload.schedule_score if payload.schedule_score is not None else bid.schedule_score
     risk_score = payload.risk_score if payload.risk_score is not None else bid.risk_score
     _validate_rfq_bid_values(bid_amount, technical_score, commercial_score, schedule_score, risk_score)
-    for field in ("bidder_name", "bid_amount", "technical_score", "commercial_score", "schedule_score", "risk_score", "status", "submitted_on", "notes"):
+    for field in (
+        "bidder_name",
+        "bid_amount",
+        "technical_score",
+        "commercial_score",
+        "schedule_score",
+        "risk_score",
+        "status",
+        "submitted_on",
+        "notes",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(bid, field, value.strip() if isinstance(value, str) else value)
-    bid.weighted_score = _rfq_weighted_score(bid.technical_score, bid.commercial_score, bid.schedule_score, bid.risk_score)
+    bid.weighted_score = _rfq_weighted_score(
+        bid.technical_score, bid.commercial_score, bid.schedule_score, bid.risk_score
+    )
     _touch_collaborative_record(bid)
-    _audit(db, tenant_id, project_id, "update_rfq_bid", "RFQBid", bid.id, json.dumps({"status": bid.status, "weighted_score": bid.weighted_score}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_rfq_bid",
+        "RFQBid",
+        bid.id,
+        json.dumps({"status": bid.status, "weighted_score": bid.weighted_score}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(bid)
     return bid
@@ -1708,7 +2156,11 @@ def create_contract_communication(
     _require_permission(membership, "can_manage_contract", "Current role cannot issue contractual communications")
     current_user = _require_user(db, tenant_id, user_id)
     if payload.contract_id is not None:
-        contract = db.scalar(select(Contract).where(Contract.id == payload.contract_id, Contract.tenant_id == tenant_id, Contract.project_id == project_id))
+        contract = db.scalar(
+            select(Contract).where(
+                Contract.id == payload.contract_id, Contract.tenant_id == tenant_id, Contract.project_id == project_id
+            )
+        )
         if not contract:
             raise HTTPException(status_code=404, detail="Contract not found")
     communication = ContractCommunication(
@@ -1723,7 +2175,16 @@ def create_contract_communication(
     )
     db.add(communication)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_contract_communication", "ContractCommunication", communication.id, f'{{"subject":"{communication.subject}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_contract_communication",
+        "ContractCommunication",
+        communication.id,
+        f'{{"subject":"{communication.subject}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(communication)
     return communication
@@ -1758,7 +2219,11 @@ def create_contract_notice(
     _require_permission(membership, "can_manage_contract", "Current role cannot issue contractual notices")
     current_user = _require_user(db, tenant_id, user_id)
     if payload.contract_id is not None:
-        contract = db.scalar(select(Contract).where(Contract.id == payload.contract_id, Contract.tenant_id == tenant_id, Contract.project_id == project_id))
+        contract = db.scalar(
+            select(Contract).where(
+                Contract.id == payload.contract_id, Contract.tenant_id == tenant_id, Contract.project_id == project_id
+            )
+        )
         if not contract:
             raise HTTPException(status_code=404, detail="Contract not found")
     if payload.claim_id is not None:
@@ -1848,14 +2313,47 @@ def create_change_request(
         current_step="Impact Review",
         ball_in_court="Project Controls",
         steps=[
-            ("Initiation", "Deviation captured with cost, schedule and contractual context.", "Originator", "Complete", "complete"),
-            ("Impact Review", "Evaluate cost, schedule, progress and risk exposure.", "Project Controls", "Active", "active"),
-            ("Contract Review", "Confirm notice, entitlement and contract position.", "Contract Manager", "Pending", "pending"),
+            (
+                "Initiation",
+                "Deviation captured with cost, schedule and contractual context.",
+                "Originator",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Impact Review",
+                "Evaluate cost, schedule, progress and risk exposure.",
+                "Project Controls",
+                "Active",
+                "active",
+            ),
+            (
+                "Contract Review",
+                "Confirm notice, entitlement and contract position.",
+                "Contract Manager",
+                "Pending",
+                "pending",
+            ),
             ("Approval", "Control Manager decision on disposition.", "Control Manager", "Queued", "queued"),
-            ("Implementation", "Approved disposition updates forecast, budget and action log.", "Execution Lead", "Queued", "queued"),
+            (
+                "Implementation",
+                "Approved disposition updates forecast, budget and action log.",
+                "Execution Lead",
+                "Queued",
+                "queued",
+            ),
         ],
     )
-    _audit(db, tenant_id, project_id, "create_change_request", "ChangeRequest", change.id, f'{{"title":"{change.title}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_change_request",
+        "ChangeRequest",
+        change.id,
+        f'{{"title":"{change.title}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(change)
     return change
@@ -1909,13 +2407,24 @@ def create_claim_entitlement_item(
     )
     db.add(item)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_claim_entitlement_item", "ClaimEntitlementItem", item.id, f'{{"claim_id":{claim.id},"element":"{item.element}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_claim_entitlement_item",
+        "ClaimEntitlementItem",
+        item.id,
+        f'{{"claim_id":{claim.id},"element":"{item.element}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(item)
     return item
 
 
-@router.patch("/projects/{project_id}/claims/{claim_id}/entitlement-items/{item_id}", response_model=ClaimEntitlementItemOut)
+@router.patch(
+    "/projects/{project_id}/claims/{claim_id}/entitlement-items/{item_id}", response_model=ClaimEntitlementItemOut
+)
 def update_claim_entitlement_item(
     project_id: int,
     claim_id: int,
@@ -1944,7 +2453,16 @@ def update_claim_entitlement_item(
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(item, field, value)
     _touch_collaborative_record(item)
-    _audit(db, tenant_id, project_id, "update_claim_entitlement_item", "ClaimEntitlementItem", item.id, f'{{"status":"{item.status}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_claim_entitlement_item",
+        "ClaimEntitlementItem",
+        item.id,
+        f'{{"status":"{item.status}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(item)
     return item
@@ -2013,7 +2531,9 @@ def create_claim_impact_analysis(
     return analysis
 
 
-@router.patch("/projects/{project_id}/claims/{claim_id}/impact-analyses/{analysis_id}", response_model=ClaimImpactAnalysisOut)
+@router.patch(
+    "/projects/{project_id}/claims/{claim_id}/impact-analyses/{analysis_id}", response_model=ClaimImpactAnalysisOut
+)
 def update_claim_impact_analysis(
     project_id: int,
     claim_id: int,
@@ -2064,8 +2584,8 @@ def list_documents(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> list[Document]:
-    _require_membership(db, tenant_id, project_id, user_id)
-    return _documents(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    return _accessible_documents(db, tenant_id, project_id, membership)
 
 
 @router.post("/projects/{project_id}/documents", response_model=DocumentOut)
@@ -2110,7 +2630,9 @@ def create_document(
         "register_document",
         "Document",
         document.id,
-        json.dumps({"document_number": document.document_number, "revision": document.revision, "title": document.title}),
+        json.dumps(
+            {"document_number": document.document_number, "revision": document.revision, "title": document.title}
+        ),
         current_user.full_name,
     )
     db.commit()
@@ -2132,10 +2654,14 @@ def update_document(
     current_user = _require_user(db, tenant_id, user_id)
     document = _require_document(db, tenant_id, project_id, document_id)
     _require_current_version(document, payload.expected_version)
-    next_document_number = payload.document_number.strip() if payload.document_number is not None else document.document_number
+    next_document_number = (
+        payload.document_number.strip() if payload.document_number is not None else document.document_number
+    )
     next_revision = payload.revision.strip() if payload.revision is not None else document.revision
     if next_document_number != document.document_number or next_revision != document.revision:
-        _ensure_document_revision_available(db, tenant_id, project_id, next_document_number, next_revision, exclude_id=document.id)
+        _ensure_document_revision_available(
+            db, tenant_id, project_id, next_document_number, next_revision, exclude_id=document.id
+        )
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         if isinstance(value, str):
             value = value.strip()
@@ -2152,12 +2678,124 @@ def update_document(
         "update_document",
         "Document",
         document.id,
-        json.dumps({"document_number": document.document_number, "revision": document.revision, "status": document.status}),
+        json.dumps(
+            {"document_number": document.document_number, "revision": document.revision, "status": document.status}
+        ),
         current_user.full_name,
     )
     db.commit()
     db.refresh(document)
     return document
+
+
+@router.get("/projects/{project_id}/document-attachments", response_model=list[DocumentAttachmentOut])
+def list_project_document_attachments(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentAttachment]:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    return _accessible_document_attachments(db, tenant_id, project_id, membership)
+
+
+@router.get("/projects/{project_id}/documents/{document_id}/attachments", response_model=list[DocumentAttachmentOut])
+def list_document_attachments(
+    project_id: int,
+    document_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentAttachment]:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    document = _require_document(db, tenant_id, project_id, document_id)
+    _require_document_access(membership, document)
+    return _document_attachments(db, tenant_id, project_id, document_id)
+
+
+@router.post("/projects/{project_id}/documents/{document_id}/attachments", response_model=list[DocumentAttachmentOut])
+async def upload_document_attachment(
+    project_id: int,
+    document_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[DocumentAttachment]:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_document_control_role(membership)
+    current_user = _require_user(db, tenant_id, user_id)
+    document = _require_document(db, tenant_id, project_id, document_id)
+    _require_document_access(membership, document)
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Document file is empty")
+
+    original_name = _safe_original_file_name(file.filename or "document.bin")
+    extension = _attachment_extension(original_name)
+    if extension == ".zip":
+        attachments = _store_zip_attachments(
+            db=db,
+            tenant_id=tenant_id,
+            project_id=project_id,
+            document=document,
+            zip_name=original_name,
+            content=content,
+            uploaded_by=current_user.full_name,
+        )
+    else:
+        attachments = [
+            _store_document_bytes(
+                db=db,
+                tenant_id=tenant_id,
+                project_id=project_id,
+                document=document,
+                original_name=original_name,
+                content=content,
+                content_type=file.content_type or _guess_content_type(original_name),
+                source="upload",
+                uploaded_by=current_user.full_name,
+            )
+        ]
+
+    document.file_name = document.file_name or attachments[0].original_file_name
+    document.uri = document.uri or f"attachment://{attachments[0].id}"
+    _touch_collaborative_record(document)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "upload_document_attachment",
+        "Document",
+        document.id,
+        json.dumps(
+            {"document_number": document.document_number, "attachments": [attachment.id for attachment in attachments]}
+        ),
+        current_user.full_name,
+    )
+    db.commit()
+    for attachment in attachments:
+        db.refresh(attachment)
+    return attachments
+
+
+@router.get("/projects/{project_id}/documents/{document_id}/attachments/{attachment_id}/download")
+def download_document_attachment(
+    project_id: int,
+    document_id: int,
+    attachment_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> FileResponse:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    document = _require_document(db, tenant_id, project_id, document_id)
+    _require_document_access(membership, document)
+    attachment = _require_document_attachment(db, tenant_id, project_id, document_id, attachment_id)
+    path = _attachment_absolute_path(attachment)
+    if not path.exists() or not path.is_file():
+        raise HTTPException(status_code=404, detail="Stored document file not found")
+    return FileResponse(path, media_type=attachment.content_type, filename=attachment.original_file_name)
 
 
 @router.get("/projects/{project_id}/document-transmittals", response_model=list[DocumentTransmittalOut])
@@ -2231,7 +2869,9 @@ def create_document_transmittal(
         "issue_document_transmittal",
         "DocumentTransmittal",
         transmittal.id,
-        json.dumps({"transmittal_no": transmittal.transmittal_no, "documents": [document.id for document in documents]}),
+        json.dumps(
+            {"transmittal_no": transmittal.transmittal_no, "documents": [document.id for document in documents]}
+        ),
         current_user.full_name,
     )
     db.commit()
@@ -2287,7 +2927,16 @@ def create_document_review(
     _touch_collaborative_record(document)
     db.add(review)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_document_review", "DocumentReview", review.id, json.dumps({"document_id": document.id, "reviewer_role": review.reviewer_role}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_document_review",
+        "DocumentReview",
+        review.id,
+        json.dumps({"document_id": document.id, "reviewer_role": review.reviewer_role}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(review)
     return review
@@ -2321,7 +2970,16 @@ def update_document_review(
     document = _require_document(db, tenant_id, project_id, review.document_id)
     document.review_status = review.review_status
     _touch_collaborative_record(document)
-    _audit(db, tenant_id, project_id, "update_document_review", "DocumentReview", review.id, json.dumps({"review_status": review.review_status}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_document_review",
+        "DocumentReview",
+        review.id,
+        json.dumps({"review_status": review.review_status}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(review)
     return review
@@ -2381,7 +3039,16 @@ def create_project_mail(
     )
     db.add(mail)
     db.flush()
-    _audit(db, tenant_id, project_id, "send_project_mail", "ProjectMail", mail.id, json.dumps({"mail_no": mail.mail_no, "mail_type": mail.mail_type}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "send_project_mail",
+        "ProjectMail",
+        mail.id,
+        json.dumps({"mail_no": mail.mail_no, "mail_type": mail.mail_type}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(mail)
     return mail
@@ -2412,7 +3079,16 @@ def update_project_mail(
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         setattr(mail, field, value.strip() if isinstance(value, str) else value)
     _touch_collaborative_record(mail)
-    _audit(db, tenant_id, project_id, "update_project_mail", "ProjectMail", mail.id, json.dumps({"status": mail.status}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_project_mail",
+        "ProjectMail",
+        mail.id,
+        json.dumps({"status": mail.status}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(mail)
     return mail
@@ -2496,14 +3172,53 @@ def create_work_package(
         current_step="Constraint Review",
         ball_in_court=package.owner_role,
         steps=[
-            ("Path Definition", "Path of construction, area and sequence are defined from the approved schedule.", "Planner", "Complete", "complete"),
-            ("Package Scope", "CWP/EWP/PWP/IWP scope is tied to control account and deliverables.", "Workface Planner", "Complete", "complete"),
-            ("Constraint Review", "Engineering, materials, access, permit, safety and document constraints are checked.", package.owner_role, "Active", "active"),
-            ("Release", "Ready package can be released to field execution.", "Construction Manager", "Queued", "queued"),
-            ("Execute", "Progress capture feeds Control Core and package status.", "Field Engineer", "Queued", "queued"),
+            (
+                "Path Definition",
+                "Path of construction, area and sequence are defined from the approved schedule.",
+                "Planner",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Package Scope",
+                "CWP/EWP/PWP/IWP scope is tied to control account and deliverables.",
+                "Workface Planner",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Constraint Review",
+                "Engineering, materials, access, permit, safety and document constraints are checked.",
+                package.owner_role,
+                "Active",
+                "active",
+            ),
+            (
+                "Release",
+                "Ready package can be released to field execution.",
+                "Construction Manager",
+                "Queued",
+                "queued",
+            ),
+            (
+                "Execute",
+                "Progress capture feeds Control Core and package status.",
+                "Field Engineer",
+                "Queued",
+                "queued",
+            ),
         ],
     )
-    _audit(db, tenant_id, project_id, "create_awp_work_package", "WorkPackage", package.id, f'{{"code":"{package.code}","type":"{package.package_type}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_awp_work_package",
+        "WorkPackage",
+        package.id,
+        f'{{"code":"{package.code}","type":"{package.package_type}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(package)
     return package
@@ -2529,7 +3244,16 @@ def update_work_package_readiness(
             raise HTTPException(status_code=400, detail="Progress percent must be between 0 and 100")
         package.progress_percent = payload.progress_percent
     _touch_collaborative_record(package)
-    _audit(db, tenant_id, project_id, "update_awp_readiness", "WorkPackage", package.id, f'{{"code":"{package.code}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_awp_readiness",
+        "WorkPackage",
+        package.id,
+        f'{{"code":"{package.code}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(package)
     return package
@@ -2579,13 +3303,25 @@ def create_work_package_constraint(
     if constraint.blocking and constraint.status == "open":
         package.readiness_status = "blocked"
     db.flush()
-    _audit(db, tenant_id, project_id, "create_awp_constraint", "WorkPackageConstraint", constraint.id, f'{{"work_package":"{package.code}","type":"{constraint.constraint_type}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_awp_constraint",
+        "WorkPackageConstraint",
+        constraint.id,
+        f'{{"work_package":"{package.code}","type":"{constraint.constraint_type}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(constraint)
     return constraint
 
 
-@router.patch("/projects/{project_id}/work-packages/{package_id}/constraints/{constraint_id}", response_model=WorkPackageConstraintOut)
+@router.patch(
+    "/projects/{project_id}/work-packages/{package_id}/constraints/{constraint_id}",
+    response_model=WorkPackageConstraintOut,
+)
 def update_work_package_constraint(
     project_id: int,
     package_id: int,
@@ -2624,7 +3360,16 @@ def update_work_package_constraint(
         package.readiness_status = "ready_to_release"
         _touch_collaborative_record(package)
     _touch_collaborative_record(constraint)
-    _audit(db, tenant_id, project_id, "update_awp_constraint", "WorkPackageConstraint", constraint.id, f'{{"status":"{constraint.status}"}}', current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_awp_constraint",
+        "WorkPackageConstraint",
+        constraint.id,
+        f'{{"status":"{constraint.status}"}}',
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(constraint)
     return constraint
@@ -2661,7 +3406,9 @@ def list_schedule_activities(
     return list(
         db.scalars(
             select(ScheduleActivityMap)
-            .where(ScheduleActivityMap.schedule_import_id == latest_import.id, ScheduleActivityMap.tenant_id == tenant_id)
+            .where(
+                ScheduleActivityMap.schedule_import_id == latest_import.id, ScheduleActivityMap.tenant_id == tenant_id
+            )
             .order_by(ScheduleActivityMap.external_activity_id)
         ).all()
     )
@@ -2818,7 +3565,9 @@ def get_pilot_readiness(
     return _pilot_readiness(db, tenant_id, project)
 
 
-@router.post("/projects/{project_id}/workflow-instances/{process_id}/actions", response_model=BusinessProcessInstanceOut)
+@router.post(
+    "/projects/{project_id}/workflow-instances/{process_id}/actions", response_model=BusinessProcessInstanceOut
+)
 def apply_workflow_action(
     project_id: int,
     process_id: int,
@@ -2916,11 +3665,15 @@ def get_dashboard(
         )
     alerts = list(
         db.scalars(
-            select(Alert).where(Alert.project_id == project_id, Alert.tenant_id == tenant_id).order_by(Alert.created_at.desc())
+            select(Alert)
+            .where(Alert.project_id == project_id, Alert.tenant_id == tenant_id)
+            .order_by(Alert.created_at.desc())
         ).all()
     )
     changes = list(
-        db.scalars(select(ChangeRequest).where(ChangeRequest.project_id == project_id, ChangeRequest.tenant_id == tenant_id)).all()
+        db.scalars(
+            select(ChangeRequest).where(ChangeRequest.project_id == project_id, ChangeRequest.tenant_id == tenant_id)
+        ).all()
     )
     claims = list(db.scalars(select(Claim).where(Claim.project_id == project_id, Claim.tenant_id == tenant_id)).all())
     claim_entitlement_items = list(
@@ -2944,7 +3697,13 @@ def get_dashboard(
             .order_by(ClaimImpactAnalysis.claim_id, ClaimImpactAnalysis.id)
         ).all()
     )
-    contracts = list(db.scalars(select(Contract).where(Contract.project_id == project_id, Contract.tenant_id == tenant_id).order_by(Contract.code)).all())
+    contracts = list(
+        db.scalars(
+            select(Contract)
+            .where(Contract.project_id == project_id, Contract.tenant_id == tenant_id)
+            .order_by(Contract.code)
+        ).all()
+    )
     purchase_orders = _purchase_orders(db, tenant_id, project_id)
     payment_certificates = _payment_certificates(db, tenant_id, project_id)
     warehouse_receipts = _warehouse_receipts(db, tenant_id, project_id)
@@ -2957,7 +3716,8 @@ def get_dashboard(
             .order_by(ContractCommunication.sent_on.desc(), ContractCommunication.id.desc())
         ).all()
     )
-    documents = _documents(db, tenant_id, project_id)
+    documents = _accessible_documents(db, tenant_id, project_id, current_membership)
+    document_attachments = _accessible_document_attachments(db, tenant_id, project_id, current_membership)
     document_transmittals = _document_transmittals(db, tenant_id, project_id)
     document_transmittal_items = _document_transmittal_items(db, tenant_id, project_id)
     document_reviews = _document_reviews(db, tenant_id, project_id)
@@ -2977,7 +3737,9 @@ def get_dashboard(
         ).all()
     )
     accounts = list(
-        db.scalars(select(ControlAccount).where(ControlAccount.project_id == project_id, ControlAccount.tenant_id == tenant_id)).all()
+        db.scalars(
+            select(ControlAccount).where(ControlAccount.project_id == project_id, ControlAccount.tenant_id == tenant_id)
+        ).all()
     )
     schedule_import = _latest_schedule_import(db, tenant_id, project_id)
     control_account_mappings = (
@@ -3046,7 +3808,9 @@ def get_dashboard(
             .order_by(ControlPeriod.data_date.desc(), ControlPeriod.created_at.desc())
         ).all()
     )
-    workflow_instance = _latest_schedule_workflow(db, tenant_id, project_id, schedule_import.id) if schedule_import else None
+    workflow_instance = (
+        _latest_schedule_workflow(db, tenant_id, project_id, schedule_import.id) if schedule_import else None
+    )
     workflow_steps = (
         list(
             db.scalars(
@@ -3118,19 +3882,33 @@ def get_dashboard(
 
     flow = [
         TCMFlowStep(name="Planeacion", purpose="WBS, baseline, logic, critical path and lookahead.", state="baselined"),
-        TCMFlowStep(name="Cuentas de Control", purpose="Integrated schedule/cost/progress control objects.", state="active"),
-        TCMFlowStep(name="Ejecucion", purpose="Field progress, actual cost, resources and evidence capture.", state="capturing"),
+        TCMFlowStep(
+            name="Cuentas de Control", purpose="Integrated schedule/cost/progress control objects.", state="active"
+        ),
+        TCMFlowStep(
+            name="Ejecucion", purpose="Field progress, actual cost, resources and evidence capture.", state="capturing"
+        ),
         TCMFlowStep(name="Control Core", purpose="EVM, changes, claims and early warning analysis.", state="running"),
         TCMFlowStep(name="Decision", purpose="Prioritized recommendations with governance.", state="open"),
-        TCMFlowStep(name="Retroalimentacion", purpose="Actions update lookahead, forecast and contractual traceability.", state="continuous"),
+        TCMFlowStep(
+            name="Retroalimentacion",
+            purpose="Actions update lookahead, forecast and contractual traceability.",
+            state="continuous",
+        ),
     ]
     loop = [
         ControlCoreLoop(step="CAPTURAR", description="Progress, cost, resources, documents and field events."),
-        ControlCoreLoop(step="VALIDAR", description="Data quality, contractual support and cross-discipline consistency."),
+        ControlCoreLoop(
+            step="VALIDAR", description="Data quality, contractual support and cross-discipline consistency."
+        ),
         ControlCoreLoop(step="ANALIZAR", description="EVM, productivity, change exposure and forensic signals."),
         ControlCoreLoop(step="ALERTAR", description="Threshold-based early warning with recommended response."),
-        ControlCoreLoop(step="DECIDIR", description="Decision layer separates recommendations from execution workflows."),
-        ControlCoreLoop(step="ACTUAR", description="Approved action updates forecast, lookahead, communications and audit."),
+        ControlCoreLoop(
+            step="DECIDIR", description="Decision layer separates recommendations from execution workflows."
+        ),
+        ControlCoreLoop(
+            step="ACTUAR", description="Approved action updates forecast, lookahead, communications and audit."
+        ),
         ControlCoreLoop(step="REPETIR", description="Next control period starts from the updated project reality."),
     ]
 
@@ -3151,12 +3929,18 @@ def get_dashboard(
         business_processes=[BusinessProcessInstanceOut.model_validate(process) for process in business_processes],
         process_templates=_configured_process_templates(db, tenant_id),
         audit_logs=[AuditLogOut.model_validate(log) for log in audit_logs[:8]],
-        data_quality_gates=_data_quality_gates(schedule_import, schedule_activity_count or 0, schedule_relationship_count or 0, schedule_findings),
+        data_quality_gates=_data_quality_gates(
+            schedule_import, schedule_activity_count or 0, schedule_relationship_count or 0, schedule_findings
+        ),
         flow=flow,
         loop=loop,
         control_accounts=[ControlAccountOut.model_validate(account) for account in accounts],
-        control_account_mappings=[ControlAccountMappingOut.model_validate(mapping) for mapping in control_account_mappings[:100]],
-        control_account_mapping_summary=_control_account_mapping_summary(control_account_mappings, baseline_versions[0].status if baseline_versions else "pending"),
+        control_account_mappings=[
+            ControlAccountMappingOut.model_validate(mapping) for mapping in control_account_mappings[:100]
+        ],
+        control_account_mapping_summary=_control_account_mapping_summary(
+            control_account_mappings, baseline_versions[0].status if baseline_versions else "pending"
+        ),
         latest_progress_records=[ProgressRecordOut.model_validate(record) for record in latest_progress_records[:6]],
         latest_cost_records=[CostRecordOut.model_validate(record) for record in latest_cost_records[:6]],
         cost_sheet=cost_sheet,
@@ -3175,26 +3959,1121 @@ def get_dashboard(
         claim_entitlement_summary=_claim_entitlement_summary(claim_entitlement_items),
         contract_notices=[ContractNoticeOut.model_validate(notice) for notice in contract_notices],
         claim_impact_analyses=[ClaimImpactAnalysisOut.model_validate(analysis) for analysis in claim_impact_analyses],
-        claims_forensic_summary=_claims_forensic_summary(claims, contract_notices, claim_impact_analyses, claim_entitlement_items),
+        claims_forensic_summary=_claims_forensic_summary(
+            claims, contract_notices, claim_impact_analyses, claim_entitlement_items
+        ),
         contracts=[ContractOut.model_validate(contract) for contract in contracts],
         purchase_orders=[PurchaseOrderOut.model_validate(order) for order in purchase_orders],
-        payment_certificates=[PaymentCertificateOut.model_validate(certificate) for certificate in payment_certificates],
+        payment_certificates=[
+            PaymentCertificateOut.model_validate(certificate) for certificate in payment_certificates
+        ],
         warehouse_receipts=[WarehouseReceiptOut.model_validate(receipt) for receipt in warehouse_receipts],
         rfq_packages=[RFQPackageOut.model_validate(package) for package in rfq_packages],
         rfq_bids=[RFQBidOut.model_validate(bid) for bid in rfq_bids],
         rfq_summary=_rfq_summary(rfq_packages, rfq_bids),
         communications=[ContractCommunicationOut.model_validate(communication) for communication in communications[:6]],
         documents=[DocumentOut.model_validate(document) for document in documents],
-        document_transmittals=[DocumentTransmittalOut.model_validate(transmittal) for transmittal in document_transmittals],
-        document_transmittal_items=[DocumentTransmittalItemOut.model_validate(item) for item in document_transmittal_items],
+        document_attachments=[DocumentAttachmentOut.model_validate(attachment) for attachment in document_attachments],
+        document_transmittals=[
+            DocumentTransmittalOut.model_validate(transmittal) for transmittal in document_transmittals
+        ],
+        document_transmittal_items=[
+            DocumentTransmittalItemOut.model_validate(item) for item in document_transmittal_items
+        ],
         document_reviews=[DocumentReviewOut.model_validate(review) for review in document_reviews],
         project_mail=[ProjectMailOut.model_validate(mail) for mail in project_mail],
-        document_control_summary=_document_control_summary(documents, document_transmittals, document_reviews, project_mail),
+        document_control_summary=_document_control_summary(
+            documents, document_transmittals, document_reviews, project_mail
+        ),
         work_packages=[WorkPackageOut.model_validate(package) for package in work_packages],
-        work_package_constraints=[WorkPackageConstraintOut.model_validate(constraint) for constraint in work_package_constraints],
+        work_package_constraints=[
+            WorkPackageConstraintOut.model_validate(constraint) for constraint in work_package_constraints
+        ],
         awp_summary=_awp_summary(work_packages, work_package_constraints),
         ai_brief=AIInsightService().explain_project_variance(project_kpi, alerts),
     )
+
+
+@router.get("/projects/{project_id}/audit-logs", response_model=list[AuditLogOut])
+def list_project_audit_logs(
+    project_id: int,
+    limit: int = Query(default=50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[AuditLog]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(AuditLog)
+            .where(AuditLog.tenant_id == tenant_id, AuditLog.project_id == project_id)
+            .order_by(AuditLog.created_at.desc(), AuditLog.id.desc())
+            .limit(limit)
+        ).all()
+    )
+
+
+@router.get("/projects/{project_id}/integration-tokens", response_model=list[IntegrationTokenOut])
+def list_integration_tokens(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[IntegrationTokenOut]:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot manage integration tokens")
+    tokens = list(
+        db.scalars(
+            select(IntegrationToken)
+            .where(IntegrationToken.tenant_id == tenant_id, IntegrationToken.project_id == project_id)
+            .order_by(IntegrationToken.created_at.desc(), IntegrationToken.id.desc())
+        ).all()
+    )
+    return [_integration_token_out(token) for token in tokens]
+
+
+@router.get("/projects/{project_id}/integration-token-alerts", response_model=IntegrationTokenAlertSummary)
+def list_integration_token_alerts(
+    project_id: int,
+    warning_days: int = Query(default=14, ge=1, le=90),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> IntegrationTokenAlertSummary:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot view integration token alerts")
+    tokens = list(
+        db.scalars(
+            select(IntegrationToken)
+            .where(IntegrationToken.tenant_id == tenant_id, IntegrationToken.project_id == project_id)
+            .order_by(IntegrationToken.expires_at.asc(), IntegrationToken.id.desc())
+        ).all()
+    )
+    return _integration_token_alert_summary(project_id, tokens, warning_days)
+
+
+@router.post("/projects/{project_id}/integration-tokens", response_model=IntegrationTokenCreated)
+def create_integration_token(
+    project_id: int,
+    payload: IntegrationTokenCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> IntegrationTokenCreated:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot manage integration tokens")
+    current_user = _require_user(db, tenant_id, user_id)
+    datasets = _validate_integration_token_datasets(payload.datasets)
+    formats = _validate_integration_token_formats(payload.formats)
+    expires_in_days = _validate_integration_token_expiry(payload.expires_in_days)
+    name = payload.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Integration token name is required")
+
+    raw_token = _generate_integration_token()
+    token = IntegrationToken(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        created_by_user_id=user_id,
+        name=name,
+        token_prefix=_integration_token_public_prefix(raw_token),
+        token_hash=_integration_token_hash(raw_token),
+        allowed_datasets=",".join(datasets),
+        allowed_formats=",".join(formats),
+        status="active",
+        expires_at=datetime.utcnow() + timedelta(days=expires_in_days),
+    )
+    db.add(token)
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_integration_token",
+        "IntegrationToken",
+        token.id,
+        json.dumps({"name": token.name, "datasets": datasets, "formats": formats, "expires_in_days": expires_in_days}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(token)
+    return _integration_token_created(token, raw_token)
+
+
+@router.post("/projects/{project_id}/integration-tokens/{token_id}/revoke", response_model=IntegrationTokenOut)
+def revoke_integration_token(
+    project_id: int,
+    token_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> IntegrationTokenOut:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot manage integration tokens")
+    current_user = _require_user(db, tenant_id, user_id)
+    token = db.scalar(
+        select(IntegrationToken).where(
+            IntegrationToken.tenant_id == tenant_id,
+            IntegrationToken.project_id == project_id,
+            IntegrationToken.id == token_id,
+        )
+    )
+    if not token:
+        raise HTTPException(status_code=404, detail="Integration token not found")
+    token.status = "revoked"
+    token.updated_at = datetime.utcnow()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "revoke_integration_token",
+        "IntegrationToken",
+        token.id,
+        json.dumps({"name": token.name}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(token)
+    return _integration_token_out(token)
+
+
+@router.get("/projects/{project_id}/integration-downloads", response_model=list[IntegrationExportLogOut])
+def list_integration_downloads(
+    project_id: int,
+    limit: int = Query(default=50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[IntegrationExportLogOut]:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot view integration download logs")
+    logs = list(
+        db.scalars(
+            select(IntegrationExportLog)
+            .where(IntegrationExportLog.tenant_id == tenant_id, IntegrationExportLog.project_id == project_id)
+            .order_by(IntegrationExportLog.created_at.desc(), IntegrationExportLog.id.desc())
+            .limit(limit)
+        ).all()
+    )
+    return [_integration_export_log_out(log) for log in logs]
+
+
+@router.get("/projects/{project_id}/integration-manifest")
+def get_integration_manifest(
+    project_id: int,
+    db: Session = Depends(get_db),
+    authorization: str = Header(default="", alias="Authorization"),
+) -> dict[str, object]:
+    access = _require_integration_access(db, project_id, authorization)
+    datasets = []
+    for dataset_key in access.allowed_datasets:
+        metadata = INTEGRATION_DATASETS[dataset_key]
+        rows = _integration_dataset_rows(db, access.tenant_id, project_id, access.membership, dataset_key)
+        datasets.append(
+            {
+                "key": dataset_key,
+                "label": metadata["label"],
+                "description": metadata["description"],
+                "formats": ["json", "csv"],
+                "row_count": len(rows),
+                "fields": _integration_dataset_fields(dataset_key),
+            }
+        )
+    return {
+        "project": ProjectOut.model_validate(access.project).model_dump(mode="json"),
+        "generated_at": _integration_generated_at(),
+        "mode": "read_only",
+        "datasets": datasets,
+    }
+
+
+@router.get("/projects/{project_id}/integration-export")
+def export_integration_dataset(
+    project_id: int,
+    dataset: str = Query(..., min_length=1),
+    export_format: str = Query(default="json", alias="format"),
+    db: Session = Depends(get_db),
+    authorization: str = Header(default="", alias="Authorization"),
+):
+    dataset_key = _normalize_integration_dataset(dataset)
+    if dataset_key not in INTEGRATION_DATASETS:
+        raise HTTPException(status_code=400, detail=f"Unsupported integration dataset: {dataset}")
+    normalized_format = export_format.strip().lower()
+    if normalized_format not in {"json", "csv"}:
+        raise HTTPException(status_code=400, detail=f"Unsupported integration export format: {export_format}")
+    access = _require_integration_access(db, project_id, authorization, [dataset_key], normalized_format)
+
+    rows = _integration_dataset_rows(db, access.tenant_id, project_id, access.membership, dataset_key)
+    fields = _integration_dataset_fields(dataset_key)
+    if normalized_format == "csv":
+        filename = f"{access.project.code}-{dataset_key}.csv"
+        csv_content = _integration_rows_to_csv(rows, fields).encode("utf-8")
+        download_log = _record_integration_download(
+            db, access, "export", [dataset_key], normalized_format, filename, csv_content, len(rows)
+        )
+        response = PlainTextResponse(csv_content.decode("utf-8"), media_type="text/csv")
+        response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response.headers["X-Integration-Download-Id"] = str(download_log.id)
+        return response
+
+    payload = {
+        "project": ProjectOut.model_validate(access.project).model_dump(mode="json"),
+        "dataset": dataset_key,
+        "format": "json",
+        "generated_at": _integration_generated_at(),
+        "row_count": len(rows),
+        "fields": fields,
+        "rows": rows,
+    }
+    _record_integration_download(
+        db,
+        access,
+        "export",
+        [dataset_key],
+        normalized_format,
+        f"{access.project.code}-{dataset_key}.json",
+        _integration_manifest_to_json_bytes(payload),
+        len(rows),
+    )
+    return payload
+
+
+@router.get("/projects/{project_id}/integration-package")
+def export_integration_package(
+    project_id: int,
+    datasets: str = Query(default="cost_sheet,funding_sources,cash_flow,documents,document_attachments"),
+    package_format: str = Query(default="both", alias="format"),
+    db: Session = Depends(get_db),
+    authorization: str = Header(default="", alias="Authorization"),
+) -> Response:
+    dataset_keys = _parse_integration_dataset_list(datasets)
+    normalized_format = package_format.strip().lower()
+    if normalized_format not in {"json", "csv", "both"}:
+        raise HTTPException(status_code=400, detail=f"Unsupported integration package format: {package_format}")
+    access = _require_integration_access(db, project_id, authorization, dataset_keys, normalized_format)
+
+    generated_at = _integration_generated_at()
+    package_id = f"{access.project.code}-{generated_at.replace(':', '').replace('-', '').replace('Z', 'Z')}"
+    zip_buffer = BytesIO()
+    package_files: list[dict[str, object]] = []
+    dataset_summaries: list[dict[str, object]] = []
+
+    with ZipFile(zip_buffer, "w", ZIP_DEFLATED) as archive:
+        for dataset_key in dataset_keys:
+            rows = _integration_dataset_rows(db, access.tenant_id, project_id, access.membership, dataset_key)
+            fields = _integration_dataset_fields(dataset_key)
+            dataset_summaries.append(
+                {
+                    "key": dataset_key,
+                    "label": INTEGRATION_DATASETS[dataset_key]["label"],
+                    "row_count": len(rows),
+                    "fields": fields,
+                }
+            )
+            if normalized_format in {"json", "both"}:
+                json_path = f"datasets/{dataset_key}.json"
+                json_content = _integration_rows_to_json_bytes(rows)
+                archive.writestr(json_path, json_content)
+                package_files.append(
+                    _integration_package_file_metadata(dataset_key, "json", json_path, rows, fields, json_content)
+                )
+            if normalized_format in {"csv", "both"}:
+                csv_path = f"datasets/{dataset_key}.csv"
+                csv_content = _integration_rows_to_csv(rows, fields).encode("utf-8")
+                archive.writestr(csv_path, csv_content)
+                package_files.append(
+                    _integration_package_file_metadata(dataset_key, "csv", csv_path, rows, fields, csv_content)
+                )
+
+        manifest = {
+            "package_id": package_id,
+            "project": ProjectOut.model_validate(access.project).model_dump(mode="json"),
+            "generated_at": generated_at,
+            "mode": "read_only",
+            "format": normalized_format,
+            "datasets": dataset_summaries,
+            "files": package_files,
+        }
+        archive.writestr("package_manifest.json", _integration_manifest_to_json_bytes(manifest))
+
+    package_bytes = zip_buffer.getvalue()
+    package_sha256 = hashlib.sha256(package_bytes).hexdigest()
+    filename = f"{_safe_integration_file_stem(access.project.code)}-integration-package.zip"
+    download_log = _record_integration_download(
+        db,
+        access,
+        "package",
+        dataset_keys,
+        normalized_format,
+        filename,
+        package_bytes,
+        sum(int(dataset["row_count"]) for dataset in dataset_summaries),
+    )
+    return Response(
+        content=package_bytes,
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-Package-Id": package_id,
+            "X-Package-Sha256": package_sha256,
+            "X-Integration-Download-Id": str(download_log.id),
+        },
+    )
+
+
+@router.get("/projects/{project_id}/integration-workbook")
+def export_integration_workbook(
+    project_id: int,
+    datasets: str = Query(default="cost_sheet,funding_sources,cash_flow,documents"),
+    db: Session = Depends(get_db),
+    authorization: str = Header(default="", alias="Authorization"),
+) -> Response:
+    dataset_keys = _parse_integration_dataset_list(datasets)
+    access = _require_integration_access(db, project_id, authorization, dataset_keys, "xlsx")
+    generated_at = _integration_generated_at()
+    workbook_datasets: list[dict[str, object]] = []
+    for dataset_key in dataset_keys:
+        rows = _integration_dataset_rows(db, access.tenant_id, project_id, access.membership, dataset_key)
+        workbook_datasets.append(
+            {
+                "key": dataset_key,
+                "label": INTEGRATION_DATASETS[dataset_key]["label"],
+                "fields": _integration_dataset_fields(dataset_key),
+                "rows": rows,
+            }
+        )
+    workbook_bytes = _integration_workbook_bytes(access.project, generated_at, workbook_datasets)
+    workbook_sha256 = hashlib.sha256(workbook_bytes).hexdigest()
+    filename = f"{_safe_integration_file_stem(access.project.code)}-integration-workbook.xlsx"
+    download_log = _record_integration_download(
+        db,
+        access,
+        "workbook",
+        dataset_keys,
+        "xlsx",
+        filename,
+        workbook_bytes,
+        sum(len(list(dataset["rows"])) for dataset in workbook_datasets),
+    )
+    return Response(
+        content=workbook_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-Workbook-Sha256": workbook_sha256,
+            "X-Workbook-Datasets": ",".join(dataset_keys),
+            "X-Integration-Download-Id": str(download_log.id),
+        },
+    )
+
+
+def _require_integration_access(
+    db: Session,
+    project_id: int,
+    authorization: str,
+    datasets: list[str] | None = None,
+    export_format: str | None = None,
+) -> IntegrationAccess:
+    if not authorization.lower().startswith("bearer "):
+        raise HTTPException(status_code=401, detail="Bearer token is required")
+    raw_token = authorization.split(" ", 1)[1].strip()
+    if raw_token.startswith(INTEGRATION_TOKEN_PREFIX):
+        access = _require_integration_token_access(db, project_id, raw_token)
+    else:
+        access = _require_jwt_integration_access(db, project_id, raw_token)
+    if datasets:
+        _require_integration_dataset_scope(access, datasets)
+    if export_format:
+        _require_integration_format_scope(access, export_format)
+    return access
+
+
+def _require_jwt_integration_access(db: Session, project_id: int, raw_token: str) -> IntegrationAccess:
+    try:
+        claims = decode_access_token(raw_token, get_settings().auth_secret_key)
+        tenant_id = int(claims["tenant_id"])
+        user_id = int(claims["sub"])
+    except (KeyError, TypeError, ValueError, TokenError) as exc:
+        raise HTTPException(status_code=401, detail="Invalid or expired token") from exc
+    project = _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    user = _require_user(db, tenant_id, user_id)
+    return IntegrationAccess(
+        tenant_id=tenant_id,
+        project=project,
+        membership=membership,
+        allowed_datasets=list(INTEGRATION_DATASETS.keys()),
+        allowed_formats=["json", "csv", "both", "xlsx"],
+        actor_user_id=user_id,
+        actor=user.email,
+    )
+
+
+def _require_integration_token_access(db: Session, project_id: int, raw_token: str) -> IntegrationAccess:
+    token_hash = _integration_token_hash(raw_token)
+    token = db.scalar(select(IntegrationToken).where(IntegrationToken.token_hash == token_hash))
+    if not token or not hmac.compare_digest(token.token_hash, token_hash):
+        raise HTTPException(status_code=401, detail="Invalid or expired integration token")
+    if token.project_id != project_id:
+        raise HTTPException(status_code=403, detail="Integration token is not scoped to this project")
+    if token.status != "active" or token.expires_at <= datetime.utcnow():
+        raise HTTPException(status_code=401, detail="Invalid or expired integration token")
+    project = _require_project(db, token.tenant_id, project_id)
+    membership = _require_membership(db, token.tenant_id, project_id, token.created_by_user_id)
+    creator = _require_user(db, token.tenant_id, token.created_by_user_id)
+    token.last_used_at = datetime.utcnow()
+    token.updated_at = token.last_used_at
+    db.commit()
+    db.refresh(token)
+    return IntegrationAccess(
+        tenant_id=token.tenant_id,
+        project=project,
+        membership=membership,
+        allowed_datasets=_split_csv(token.allowed_datasets),
+        allowed_formats=_split_csv(token.allowed_formats),
+        actor_user_id=token.created_by_user_id,
+        actor=f"integration_token:{token.token_prefix}:{creator.email}",
+        token=token,
+    )
+
+
+def _require_integration_dataset_scope(access: IntegrationAccess, datasets: list[str]) -> None:
+    allowed = set(access.allowed_datasets)
+    for dataset in datasets:
+        if dataset not in allowed:
+            raise HTTPException(status_code=403, detail=f"Integration token cannot access dataset: {dataset}")
+
+
+def _require_integration_format_scope(access: IntegrationAccess, export_format: str) -> None:
+    allowed = set(access.allowed_formats)
+    if export_format == "both":
+        if "both" in allowed or {"json", "csv"} <= allowed:
+            return
+    elif export_format in allowed or "both" in allowed:
+        return
+    raise HTTPException(status_code=403, detail=f"Integration token cannot use format: {export_format}")
+
+
+def _validate_integration_token_datasets(datasets: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for dataset in datasets:
+        dataset_key = _normalize_integration_dataset(dataset)
+        if not dataset_key:
+            continue
+        if dataset_key not in INTEGRATION_DATASETS:
+            raise HTTPException(status_code=400, detail=f"Unsupported integration dataset: {dataset}")
+        if dataset_key not in normalized:
+            normalized.append(dataset_key)
+    if not normalized:
+        raise HTTPException(status_code=400, detail="At least one integration token dataset is required")
+    if len(normalized) > 16:
+        raise HTTPException(status_code=400, detail="Integration token cannot contain more than 16 datasets")
+    return normalized
+
+
+def _validate_integration_token_formats(formats: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for item in formats:
+        value = item.strip().lower()
+        if not value:
+            continue
+        if value not in {"json", "csv", "both", "xlsx"}:
+            raise HTTPException(status_code=400, detail=f"Unsupported integration token format: {item}")
+        if value not in normalized:
+            normalized.append(value)
+    if not normalized:
+        raise HTTPException(status_code=400, detail="At least one integration token format is required")
+    return normalized
+
+
+def _validate_integration_token_expiry(expires_in_days: int) -> int:
+    if expires_in_days < 1:
+        raise HTTPException(status_code=400, detail="Integration token expiry must be at least 1 day")
+    if expires_in_days > INTEGRATION_TOKEN_MAX_DAYS:
+        raise HTTPException(
+            status_code=400, detail=f"Integration token expiry cannot exceed {INTEGRATION_TOKEN_MAX_DAYS} days"
+        )
+    return expires_in_days
+
+
+def _integration_token_out(token: IntegrationToken) -> IntegrationTokenOut:
+    return IntegrationTokenOut(
+        id=token.id,
+        project_id=token.project_id,
+        name=token.name,
+        token_prefix=token.token_prefix,
+        datasets=_split_csv(token.allowed_datasets),
+        formats=_split_csv(token.allowed_formats),
+        status=token.status,
+        created_by_user_id=token.created_by_user_id,
+        created_at=token.created_at,
+        expires_at=token.expires_at,
+        last_used_at=token.last_used_at,
+    )
+
+
+def _integration_token_created(token: IntegrationToken, raw_token: str) -> IntegrationTokenCreated:
+    token_out = _integration_token_out(token)
+    return IntegrationTokenCreated(**token_out.model_dump(), token=raw_token)
+
+
+def _integration_token_alert_summary(
+    project_id: int,
+    tokens: list[IntegrationToken],
+    warning_days: int,
+) -> IntegrationTokenAlertSummary:
+    now = datetime.utcnow()
+    alerts: list[IntegrationTokenAlertOut] = []
+    active_count = 0
+    expired_count = 0
+    expiring_count = 0
+    revoked_count = 0
+
+    for token in tokens:
+        if token.status == "revoked":
+            revoked_count += 1
+            continue
+        if token.status != "active":
+            continue
+
+        active_count += 1
+        days_to_expiry = _integration_token_days_to_expiry(token.expires_at, now)
+        severity = ""
+        message = ""
+        if token.expires_at <= now:
+            expired_count += 1
+            severity = "critical"
+            message = "Token expired; revoke or rotate immediately."
+        elif days_to_expiry <= warning_days:
+            expiring_count += 1
+            severity = "warning"
+            message = f"Token expires within {warning_days} days; rotate before expiry."
+
+        if severity:
+            alerts.append(
+                IntegrationTokenAlertOut(
+                    id=token.id,
+                    project_id=token.project_id,
+                    name=token.name,
+                    token_prefix=token.token_prefix,
+                    status=token.status,
+                    datasets=_split_csv(token.allowed_datasets),
+                    formats=_split_csv(token.allowed_formats),
+                    expires_at=token.expires_at,
+                    days_to_expiry=days_to_expiry,
+                    severity=severity,
+                    message=message,
+                    last_used_at=token.last_used_at,
+                )
+            )
+
+    return IntegrationTokenAlertSummary(
+        project_id=project_id,
+        warning_days=warning_days,
+        generated_at=now,
+        active_count=active_count,
+        expiring_count=expiring_count,
+        expired_count=expired_count,
+        revoked_count=revoked_count,
+        alerts=alerts,
+    )
+
+
+def _integration_token_days_to_expiry(expires_at: datetime, now: datetime) -> int:
+    seconds = int((expires_at - now).total_seconds())
+    if seconds >= 0:
+        return (seconds + 86399) // 86400
+    return -((-seconds + 86399) // 86400)
+
+
+def _integration_export_log_out(log: IntegrationExportLog) -> IntegrationExportLogOut:
+    return IntegrationExportLogOut(
+        id=log.id,
+        project_id=log.project_id,
+        requested_by_user_id=log.requested_by_user_id,
+        integration_token_id=log.integration_token_id,
+        actor=log.actor,
+        artifact_type=log.artifact_type,
+        datasets=_split_csv(log.datasets),
+        format=log.format,
+        file_name=log.file_name,
+        sha256=log.sha256,
+        size_bytes=log.size_bytes,
+        row_count=log.row_count,
+        status=log.status,
+        created_at=log.created_at,
+    )
+
+
+def _record_integration_download(
+    db: Session,
+    access: IntegrationAccess,
+    artifact_type: str,
+    datasets: list[str],
+    export_format: str,
+    file_name: str,
+    content: bytes,
+    row_count: int,
+) -> IntegrationExportLog:
+    log = IntegrationExportLog(
+        tenant_id=access.tenant_id,
+        project_id=access.project.id,
+        requested_by_user_id=access.actor_user_id,
+        integration_token_id=access.token.id if access.token else None,
+        actor=access.actor,
+        artifact_type=artifact_type,
+        datasets=",".join(datasets),
+        format=export_format,
+        file_name=file_name,
+        sha256=hashlib.sha256(content).hexdigest(),
+        size_bytes=len(content),
+        row_count=row_count,
+        status="completed",
+    )
+    db.add(log)
+    db.commit()
+    db.refresh(log)
+    return log
+
+
+def _generate_integration_token() -> str:
+    return f"{INTEGRATION_TOKEN_PREFIX}{uuid4().hex[:8]}_{secrets.token_urlsafe(32)}"
+
+
+def _integration_token_hash(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+
+def _integration_token_public_prefix(raw_token: str) -> str:
+    return raw_token[:24]
+
+
+def _split_csv(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _integration_generated_at() -> str:
+    return f"{datetime.utcnow().isoformat(timespec='seconds')}Z"
+
+
+def _normalize_integration_dataset(dataset: str) -> str:
+    return dataset.strip().lower().replace("-", "_")
+
+
+def _parse_integration_dataset_list(datasets: str) -> list[str]:
+    if datasets.strip().lower() == "all":
+        return list(INTEGRATION_DATASETS.keys())
+    dataset_keys: list[str] = []
+    for raw_dataset in datasets.split(","):
+        dataset_key = _normalize_integration_dataset(raw_dataset)
+        if not dataset_key:
+            continue
+        if dataset_key not in INTEGRATION_DATASETS:
+            raise HTTPException(status_code=400, detail=f"Unsupported integration dataset: {raw_dataset.strip()}")
+        if dataset_key not in dataset_keys:
+            dataset_keys.append(dataset_key)
+    if not dataset_keys:
+        raise HTTPException(status_code=400, detail="At least one integration dataset is required")
+    if len(dataset_keys) > 16:
+        raise HTTPException(status_code=400, detail="Integration package cannot contain more than 16 datasets")
+    return dataset_keys
+
+
+def _integration_dataset_fields(dataset: str) -> list[str]:
+    schema = INTEGRATION_DATASETS[dataset]["schema"]
+    return list(schema.model_fields.keys())
+
+
+def _integration_dataset_rows(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    membership: ProjectMembership,
+    dataset: str,
+) -> list[dict[str, object]]:
+    if dataset == "wbs":
+        records = db.scalars(
+            select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id).order_by(WBS.code)
+        ).all()
+        return _integration_records_to_rows(WBSOut, records)
+    if dataset == "control_accounts":
+        records = db.scalars(
+            select(ControlAccount)
+            .where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+            .order_by(ControlAccount.code)
+        ).all()
+        return _integration_records_to_rows(ControlAccountOut, records)
+    if dataset == "schedule_imports":
+        records = db.scalars(
+            select(ScheduleImport)
+            .where(ScheduleImport.tenant_id == tenant_id, ScheduleImport.project_id == project_id)
+            .order_by(ScheduleImport.imported_at.desc(), ScheduleImport.id.desc())
+        ).all()
+        return _integration_records_to_rows(ScheduleImportOut, records)
+    if dataset == "schedule_validation_findings":
+        latest_import = _latest_schedule_import(db, tenant_id, project_id)
+        if not latest_import:
+            return []
+        records = db.scalars(
+            select(ScheduleValidationFinding)
+            .where(
+                ScheduleValidationFinding.tenant_id == tenant_id,
+                ScheduleValidationFinding.project_id == project_id,
+                ScheduleValidationFinding.schedule_import_id == latest_import.id,
+            )
+            .order_by(ScheduleValidationFinding.severity, ScheduleValidationFinding.check_code)
+        ).all()
+        return _integration_records_to_rows(ScheduleValidationFindingOut, records)
+    if dataset == "control_account_mappings":
+        latest_import = _latest_schedule_import(db, tenant_id, project_id)
+        if not latest_import:
+            return []
+        records = db.scalars(
+            select(ControlAccountMapping)
+            .where(
+                ControlAccountMapping.tenant_id == tenant_id,
+                ControlAccountMapping.project_id == project_id,
+                ControlAccountMapping.schedule_import_id == latest_import.id,
+            )
+            .order_by(ControlAccountMapping.wbs_code, ControlAccountMapping.cbs_code, ControlAccountMapping.id)
+        ).all()
+        return _integration_records_to_rows(ControlAccountMappingOut, records)
+    if dataset == "cost_sheet":
+        return _integration_records_to_rows(CostSheetLineOut, _cost_sheet_lines(db, tenant_id, project_id))
+    if dataset == "funding_sources":
+        return _integration_records_to_rows(FundingSourceOut, _funding_sources(db, tenant_id, project_id))
+    if dataset == "cash_flow":
+        return _integration_records_to_rows(CashFlowPeriodOut, _cash_flow_periods(db, tenant_id, project_id))
+    if dataset == "progress_records":
+        records = db.scalars(
+            select(ProgressRecord)
+            .where(ProgressRecord.tenant_id == tenant_id, ProgressRecord.project_id == project_id)
+            .order_by(ProgressRecord.reported_on.desc(), ProgressRecord.id.desc())
+        ).all()
+        return _integration_records_to_rows(ProgressRecordOut, records)
+    if dataset == "cost_records":
+        records = db.scalars(
+            select(CostRecord)
+            .where(CostRecord.tenant_id == tenant_id, CostRecord.project_id == project_id)
+            .order_by(CostRecord.incurred_on.desc(), CostRecord.id.desc())
+        ).all()
+        return _integration_records_to_rows(CostRecordOut, records)
+    if dataset == "contracts":
+        records = db.scalars(
+            select(Contract)
+            .where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+            .order_by(Contract.code)
+        ).all()
+        return _integration_records_to_rows(ContractOut, records)
+    if dataset == "purchase_orders":
+        return _integration_records_to_rows(PurchaseOrderOut, _purchase_orders(db, tenant_id, project_id))
+    if dataset == "payment_certificates":
+        return _integration_records_to_rows(PaymentCertificateOut, _payment_certificates(db, tenant_id, project_id))
+    if dataset == "warehouse_receipts":
+        return _integration_records_to_rows(WarehouseReceiptOut, _warehouse_receipts(db, tenant_id, project_id))
+    if dataset == "documents":
+        return _integration_records_to_rows(DocumentOut, _accessible_documents(db, tenant_id, project_id, membership))
+    if dataset == "document_attachments":
+        return _integration_records_to_rows(
+            DocumentAttachmentOut, _accessible_document_attachments(db, tenant_id, project_id, membership)
+        )
+    raise HTTPException(status_code=400, detail=f"Unsupported integration dataset: {dataset}")
+
+
+def _integration_records_to_rows(schema, records) -> list[dict[str, object]]:
+    return [schema.model_validate(record).model_dump(mode="json") for record in records]
+
+
+def _integration_rows_to_csv(rows: list[dict[str, object]], fields: list[str]) -> str:
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(rows)
+    return output.getvalue()
+
+
+def _integration_workbook_bytes(project: Project, generated_at: str, datasets: list[dict[str, object]]) -> bytes:
+    sheets: list[dict[str, object]] = []
+    summary_rows = [
+        ["Pypmis Ai SaaS Integration Workbook"],
+        ["Project code", project.code],
+        ["Project name", project.name],
+        ["Generated at", generated_at],
+        ["Mode", "read_only"],
+        [],
+        ["Dataset", "Label", "Rows", "Fields"],
+    ]
+    for dataset in datasets:
+        fields = list(dataset["fields"])
+        rows = list(dataset["rows"])
+        summary_rows.append([dataset["key"], dataset["label"], len(rows), ", ".join(fields)])
+    sheets.append({"name": "Summary", "rows": summary_rows, "freeze_header": False})
+
+    used_names = {"Summary"}
+    for dataset in datasets:
+        fields = list(dataset["fields"])
+        data_rows = [
+            fields,
+            *[[row.get(field, "") for field in fields] for row in list(dataset["rows"])],
+        ]
+        sheet_name = _xlsx_unique_sheet_name(_xlsx_sheet_name(str(dataset["key"])), used_names)
+        used_names.add(sheet_name)
+        sheets.append({"name": sheet_name, "rows": data_rows, "freeze_header": True})
+
+    workbook = BytesIO()
+    with ZipFile(workbook, "w", ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", _xlsx_content_types(len(sheets)))
+        archive.writestr("_rels/.rels", _xlsx_root_relationships())
+        archive.writestr("xl/workbook.xml", _xlsx_workbook_xml([str(sheet["name"]) for sheet in sheets]))
+        archive.writestr("xl/_rels/workbook.xml.rels", _xlsx_workbook_relationships(len(sheets)))
+        archive.writestr("xl/styles.xml", _xlsx_styles_xml())
+        archive.writestr("docProps/core.xml", _xlsx_core_properties(generated_at))
+        archive.writestr("docProps/app.xml", _xlsx_app_properties([str(sheet["name"]) for sheet in sheets]))
+        for index, sheet in enumerate(sheets, start=1):
+            archive.writestr(
+                f"xl/worksheets/sheet{index}.xml",
+                _xlsx_worksheet_xml(list(sheet["rows"]), bool(sheet["freeze_header"])),
+            )
+    return workbook.getvalue()
+
+
+def _xlsx_content_types(sheet_count: int) -> str:
+    worksheet_overrides = "".join(
+        f'<Override PartName="/xl/worksheets/sheet{index}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        for index in range(1, sheet_count + 1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+        '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>'
+        '<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>'
+        f"{worksheet_overrides}"
+        "</Types>"
+    )
+
+
+def _xlsx_root_relationships() -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+        '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>'
+        '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>'
+        "</Relationships>"
+    )
+
+
+def _xlsx_workbook_xml(sheet_names: list[str]) -> str:
+    sheets = "".join(
+        f'<sheet name="{_xml_attr(name)}" sheetId="{index}" r:id="rId{index}"/>'
+        for index, name in enumerate(sheet_names, start=1)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        f"<sheets>{sheets}</sheets>"
+        "</workbook>"
+    )
+
+
+def _xlsx_workbook_relationships(sheet_count: int) -> str:
+    relationships = "".join(
+        f'<Relationship Id="rId{index}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{index}.xml"/>'
+        for index in range(1, sheet_count + 1)
+    )
+    styles_id = sheet_count + 1
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        f"{relationships}"
+        f'<Relationship Id="rId{styles_id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        "</Relationships>"
+    )
+
+
+def _xlsx_styles_xml() -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        '<fonts count="3">'
+        '<font><sz val="10"/><name val="Calibri"/></font>'
+        '<font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>'
+        '<font><b/><sz val="13"/><color rgb="FF17324D"/><name val="Calibri"/></font>'
+        "</fonts>"
+        '<fills count="3">'
+        '<fill><patternFill patternType="none"/></fill>'
+        '<fill><patternFill patternType="gray125"/></fill>'
+        '<fill><patternFill patternType="solid"><fgColor rgb="FF0F6B78"/><bgColor indexed="64"/></patternFill></fill>'
+        "</fills>"
+        '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+        '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+        '<cellXfs count="3">'
+        '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
+        '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+        "</cellXfs>"
+        '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+        "</styleSheet>"
+    )
+
+
+def _xlsx_core_properties(generated_at: str) -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" '
+        'xmlns:dc="http://purl.org/dc/elements/1.1/" '
+        'xmlns:dcterms="http://purl.org/dc/terms/" '
+        'xmlns:dcmitype="http://purl.org/dc/dcmitype/" '
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        "<dc:creator>Codex</dc:creator>"
+        "<cp:lastModifiedBy>Codex</cp:lastModifiedBy>"
+        f'<dcterms:created xsi:type="dcterms:W3CDTF">{_xml_text(generated_at)}</dcterms:created>'
+        f'<dcterms:modified xsi:type="dcterms:W3CDTF">{_xml_text(generated_at)}</dcterms:modified>'
+        "</cp:coreProperties>"
+    )
+
+
+def _xlsx_app_properties(sheet_names: list[str]) -> str:
+    titles = "".join(f"<vt:lpstr>{_xml_text(name)}</vt:lpstr>" for name in sheet_names)
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" '
+        'xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'
+        "<Application>Pypmis Ai SaaS</Application>"
+        '<HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant>'
+        f"<vt:variant><vt:i4>{len(sheet_names)}</vt:i4></vt:variant></vt:vector></HeadingPairs>"
+        f'<TitlesOfParts><vt:vector size="{len(sheet_names)}" baseType="lpstr">{titles}</vt:vector></TitlesOfParts>'
+        "</Properties>"
+    )
+
+
+def _xlsx_worksheet_xml(rows: list[list[object]], freeze_header: bool) -> str:
+    max_columns = max((len(row) for row in rows), default=1)
+    column_widths = _xlsx_column_widths(rows, max_columns)
+    columns = "".join(
+        f'<col min="{index}" max="{index}" width="{width}" customWidth="1"/>'
+        for index, width in enumerate(column_widths, start=1)
+    )
+    sheet_view = (
+        '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
+        if freeze_header and rows
+        else '<sheetViews><sheetView workbookViewId="0"/></sheetViews>'
+    )
+    xml_rows = []
+    for row_index, row in enumerate(rows, start=1):
+        cells = "".join(
+            _xlsx_cell(value, row_index, column_index, _xlsx_cell_style(row_index, freeze_header))
+            for column_index, value in enumerate(row, start=1)
+        )
+        xml_rows.append(f'<row r="{row_index}">{cells}</row>')
+    auto_filter = ""
+    if freeze_header and len(rows) > 1 and max_columns > 0:
+        last_cell = f"{_excel_column_name(max_columns)}{len(rows)}"
+        auto_filter = f'<autoFilter ref="A1:{last_cell}"/>'
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        f"{sheet_view}<cols>{columns}</cols><sheetData>{''.join(xml_rows)}</sheetData>{auto_filter}"
+        "</worksheet>"
+    )
+
+
+def _xlsx_cell(value: object, row_index: int, column_index: int, style: int) -> str:
+    ref = f"{_excel_column_name(column_index)}{row_index}"
+    style_attr = f' s="{style}"' if style else ""
+    if value is None:
+        return f'<c r="{ref}"{style_attr}/>'
+    if isinstance(value, bool):
+        return f'<c r="{ref}" t="b"{style_attr}><v>{1 if value else 0}</v></c>'
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return f'<c r="{ref}"{style_attr}><v>{value}</v></c>'
+    return f'<c r="{ref}" t="inlineStr"{style_attr}><is><t>{_xml_text(str(value))}</t></is></c>'
+
+
+def _xlsx_cell_style(row_index: int, freeze_header: bool) -> int:
+    if row_index == 1:
+        return 1 if freeze_header else 2
+    return 0
+
+
+def _xlsx_column_widths(rows: list[list[object]], max_columns: int) -> list[float]:
+    widths: list[float] = []
+    for column_index in range(max_columns):
+        longest = 10
+        for row in rows[:200]:
+            if column_index < len(row) and row[column_index] is not None:
+                longest = max(longest, min(len(str(row[column_index])), 48))
+        widths.append(float(min(max(longest + 2, 12), 52)))
+    return widths
+
+
+def _xlsx_sheet_name(value: str) -> str:
+    cleaned = "".join("_" if character in "[]:*?/\\'" else character for character in value.strip())
+    return (cleaned or "Sheet")[:31]
+
+
+def _xlsx_unique_sheet_name(value: str, used_names: set[str]) -> str:
+    candidate = value[:31]
+    suffix = 2
+    while candidate in used_names:
+        marker = f"_{suffix}"
+        candidate = f"{value[: 31 - len(marker)]}{marker}"
+        suffix += 1
+    return candidate
+
+
+def _excel_column_name(index: int) -> str:
+    name = ""
+    while index:
+        index, remainder = divmod(index - 1, 26)
+        name = chr(65 + remainder) + name
+    return name or "A"
+
+
+def _xml_text(value: str) -> str:
+    return escape(value, {"'": "&apos;", '"': "&quot;"})
+
+
+def _xml_attr(value: str) -> str:
+    return _xml_text(value)
+
+
+def _integration_rows_to_json_bytes(rows: list[dict[str, object]]) -> bytes:
+    return json.dumps(rows, indent=2, ensure_ascii=False).encode("utf-8")
+
+
+def _integration_manifest_to_json_bytes(manifest: dict[str, object]) -> bytes:
+    return json.dumps(manifest, indent=2, ensure_ascii=False).encode("utf-8")
+
+
+def _integration_package_file_metadata(
+    dataset: str,
+    file_format: str,
+    path: str,
+    rows: list[dict[str, object]],
+    fields: list[str],
+    content: bytes,
+) -> dict[str, object]:
+    return {
+        "dataset": dataset,
+        "format": file_format,
+        "path": path,
+        "row_count": len(rows),
+        "fields": fields,
+        "size_bytes": len(content),
+        "sha256": hashlib.sha256(content).hexdigest(),
+    }
+
+
+def _safe_integration_file_stem(value: str) -> str:
+    safe = "".join(character if character.isalnum() or character in {"-", "_"} else "-" for character in value.strip())
+    return safe.strip("-_") or "project"
 
 
 def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[CostSheetLineOut]:
@@ -3218,9 +5097,7 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
         ).all()
     )
     contracts = list(
-        db.scalars(
-            select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
-        ).all()
+        db.scalars(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)).all()
     )
     purchase_orders = _purchase_orders(db, tenant_id, project_id)
     payment_certificates = _payment_certificates(db, tenant_id, project_id)
@@ -3250,27 +5127,37 @@ def _cost_sheet_lines(db: Session, tenant_id: int, project_id: int) -> list[Cost
     payment_certificates_by_account: dict[int, float] = {}
     for certificate in payment_certificates:
         if certificate.control_account_id and certificate.status not in {"cancelled", "rejected", "void", "draft"}:
-            payment_certificates_by_account[certificate.control_account_id] = payment_certificates_by_account.get(certificate.control_account_id, 0) + certificate.certified_amount
+            payment_certificates_by_account[certificate.control_account_id] = (
+                payment_certificates_by_account.get(certificate.control_account_id, 0) + certificate.certified_amount
+            )
 
     warehouse_receipts_by_account: dict[int, float] = {}
     for receipt in warehouse_receipts:
         if receipt.control_account_id and receipt.status not in {"cancelled", "rejected", "void", "draft"}:
-            warehouse_receipts_by_account[receipt.control_account_id] = warehouse_receipts_by_account.get(receipt.control_account_id, 0) + receipt.received_value
+            warehouse_receipts_by_account[receipt.control_account_id] = (
+                warehouse_receipts_by_account.get(receipt.control_account_id, 0) + receipt.received_value
+            )
 
     legacy_actual_by_account: dict[int, float] = {}
     for record in cost_records:
         if record.source != CostSource.commitment:
-            legacy_actual_by_account[record.control_account_id] = legacy_actual_by_account.get(record.control_account_id, 0) + record.amount
+            legacy_actual_by_account[record.control_account_id] = (
+                legacy_actual_by_account.get(record.control_account_id, 0) + record.amount
+            )
 
     contract_commitments_by_account: dict[int, float] = {}
     for contract in contracts:
         if contract.control_account_id and contract.status not in {"cancelled", "rejected", "void", "draft"}:
-            contract_commitments_by_account[contract.control_account_id] = contract_commitments_by_account.get(contract.control_account_id, 0) + contract.value
+            contract_commitments_by_account[contract.control_account_id] = (
+                contract_commitments_by_account.get(contract.control_account_id, 0) + contract.value
+            )
 
     po_commitments_by_account: dict[int, float] = {}
     for order in purchase_orders:
         if order.control_account_id and order.status not in {"cancelled", "rejected", "void", "draft"}:
-            po_commitments_by_account[order.control_account_id] = po_commitments_by_account.get(order.control_account_id, 0) + order.committed_amount
+            po_commitments_by_account[order.control_account_id] = (
+                po_commitments_by_account.get(order.control_account_id, 0) + order.committed_amount
+            )
 
     lines: list[CostSheetLineOut] = []
     for account in accounts:
@@ -3401,7 +5288,9 @@ def _validate_warehouse_receipt_values(received_quantity: float, unit_cost: floa
     if received_value < 0:
         raise HTTPException(status_code=400, detail="Received value cannot be negative")
     if received_value <= 0 and received_quantity * unit_cost <= 0:
-        raise HTTPException(status_code=400, detail="Warehouse receipt must have received value or quantity times unit cost")
+        raise HTTPException(
+            status_code=400, detail="Warehouse receipt must have received value or quantity times unit cost"
+        )
 
 
 def _warehouse_received_value(received_quantity: float, unit_cost: float, received_value: float) -> float:
@@ -3438,7 +5327,9 @@ def _require_rfq_package(db: Session, tenant_id: int, project_id: int, rfq_packa
     return package
 
 
-def _validate_rfq_bid_values(bid_amount: float, technical_score: float, commercial_score: float, schedule_score: float, risk_score: float) -> None:
+def _validate_rfq_bid_values(
+    bid_amount: float, technical_score: float, commercial_score: float, schedule_score: float, risk_score: float
+) -> None:
     if bid_amount <= 0:
         raise HTTPException(status_code=400, detail="Bid amount must be greater than zero")
     for field, value in {
@@ -3451,7 +5342,9 @@ def _validate_rfq_bid_values(bid_amount: float, technical_score: float, commerci
             raise HTTPException(status_code=400, detail=f"{field} must be between 0 and 100")
 
 
-def _rfq_weighted_score(technical_score: float, commercial_score: float, schedule_score: float, risk_score: float) -> float:
+def _rfq_weighted_score(
+    technical_score: float, commercial_score: float, schedule_score: float, risk_score: float
+) -> float:
     return round(technical_score * 0.35 + commercial_score * 0.35 + schedule_score * 0.15 + risk_score * 0.15, 1)
 
 
@@ -3460,9 +5353,13 @@ def _rfq_summary(packages: list[RFQPackage], bids: list[RFQBid]) -> RFQSummary:
     recommended = max(scored_bids, key=lambda bid: (bid.weighted_score, -bid.bid_amount), default=None)
     return RFQSummary(
         total_packages=len(packages),
-        issued_packages=sum(1 for package in packages if package.status in {"issued", "open", "under_evaluation", "awarded"}),
+        issued_packages=sum(
+            1 for package in packages if package.status in {"issued", "open", "under_evaluation", "awarded"}
+        ),
         bids_received=len(scored_bids),
-        average_weighted_score=round(sum(bid.weighted_score for bid in scored_bids) / len(scored_bids), 1) if scored_bids else 0,
+        average_weighted_score=round(sum(bid.weighted_score for bid in scored_bids) / len(scored_bids), 1)
+        if scored_bids
+        else 0,
         recommended_bidder=recommended.bidder_name if recommended else "",
         recommended_bid_amount=_money(recommended.bid_amount) if recommended else 0,
     )
@@ -3542,6 +5439,241 @@ def _documents(db: Session, tenant_id: int, project_id: int) -> list[Document]:
     )
 
 
+def _accessible_documents(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    membership: ProjectMembership,
+) -> list[Document]:
+    return [
+        document for document in _documents(db, tenant_id, project_id) if _can_access_document(membership, document)
+    ]
+
+
+def _document_attachments(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    document_id: int | None = None,
+) -> list[DocumentAttachment]:
+    filters = [
+        DocumentAttachment.tenant_id == tenant_id,
+        DocumentAttachment.project_id == project_id,
+    ]
+    if document_id is not None:
+        filters.append(DocumentAttachment.document_id == document_id)
+    return list(
+        db.scalars(
+            select(DocumentAttachment)
+            .where(*filters)
+            .order_by(DocumentAttachment.created_at.desc(), DocumentAttachment.id.desc())
+        ).all()
+    )
+
+
+def _accessible_document_attachments(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    membership: ProjectMembership,
+) -> list[DocumentAttachment]:
+    attachments = _document_attachments(db, tenant_id, project_id)
+    if not attachments:
+        return []
+    documents = {
+        document.id: document
+        for document in db.scalars(
+            select(Document).where(
+                Document.tenant_id == tenant_id,
+                Document.project_id == project_id,
+                Document.id.in_({attachment.document_id for attachment in attachments}),
+            )
+        ).all()
+    }
+    return [
+        attachment
+        for attachment in attachments
+        if _can_access_document(membership, documents.get(attachment.document_id))
+    ]
+
+
+def _store_document_bytes(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    document: Document,
+    original_name: str,
+    content: bytes,
+    content_type: str,
+    source: str,
+    uploaded_by: str,
+) -> DocumentAttachment:
+    settings = get_settings()
+    extension = _attachment_extension(original_name)
+    _validate_document_upload(original_name, extension, len(content))
+    scan_status, validation_message = _scan_document_content(original_name, content)
+    digest = hashlib.sha256(content).hexdigest()
+    stored_name = f"{uuid4().hex}{extension or '.bin'}"
+    relative_path = Path(f"tenant_{tenant_id}") / f"project_{project_id}" / f"document_{document.id}" / stored_name
+    root = Path(settings.document_storage_path).resolve()
+    target = (root / relative_path).resolve()
+    if not target.is_relative_to(root):
+        raise HTTPException(status_code=400, detail="Invalid storage path")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
+    attachment = DocumentAttachment(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        document_id=document.id,
+        original_file_name=original_name,
+        stored_file_name=stored_name,
+        storage_path=relative_path.as_posix(),
+        content_type=content_type or _guess_content_type(original_name),
+        extension=extension,
+        size_bytes=len(content),
+        sha256=digest,
+        source=source,
+        uploaded_by=uploaded_by,
+        scan_status=scan_status,
+        validation_message=validation_message,
+    )
+    db.add(attachment)
+    db.flush()
+    return attachment
+
+
+def _store_zip_attachments(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    document: Document,
+    zip_name: str,
+    content: bytes,
+    uploaded_by: str,
+) -> list[DocumentAttachment]:
+    _validate_document_upload(zip_name, ".zip", len(content))
+    settings = get_settings()
+    try:
+        archive = ZipFile(BytesIO(content))
+    except BadZipFile as exc:
+        raise HTTPException(status_code=400, detail="ZIP file is invalid") from exc
+    with archive:
+        members = [member for member in archive.infolist() if not member.is_dir()]
+        if len(members) > settings.document_max_zip_files:
+            raise HTTPException(
+                status_code=413, detail=f"ZIP contains more than {settings.document_max_zip_files} files"
+            )
+        total_uncompressed = sum(member.file_size for member in members)
+        if total_uncompressed > settings.document_max_zip_uncompressed_bytes:
+            raise HTTPException(status_code=413, detail="ZIP uncompressed size exceeds configured limit")
+
+        attachments: list[DocumentAttachment] = []
+        for member in members:
+            original_name = _safe_zip_member_name(member.filename)
+            extension = _attachment_extension(original_name)
+            if extension == ".zip":
+                raise HTTPException(status_code=400, detail="Nested ZIP files are not accepted")
+            _validate_document_upload(original_name, extension, member.file_size)
+            attachments.append(
+                _store_document_bytes(
+                    db=db,
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    document=document,
+                    original_name=original_name,
+                    content=archive.read(member),
+                    content_type=_guess_content_type(original_name),
+                    source="zip",
+                    uploaded_by=uploaded_by,
+                )
+            )
+    if not attachments:
+        raise HTTPException(status_code=400, detail="ZIP file does not contain supported files")
+    return attachments
+
+
+def _validate_document_upload(original_name: str, extension: str, size_bytes: int) -> None:
+    settings = get_settings()
+    blocked_extensions = {".bat", ".cmd", ".com", ".dll", ".exe", ".jar", ".js", ".msi", ".ps1", ".scr", ".sh", ".vbs"}
+    if extension in blocked_extensions:
+        raise HTTPException(status_code=400, detail=f"File type {extension} is not allowed")
+    if extension not in settings.document_allowed_extension_set:
+        raise HTTPException(status_code=400, detail=f"File type {extension or '(none)'} is not allowed")
+    if size_bytes <= 0:
+        raise HTTPException(status_code=400, detail=f"{original_name} is empty")
+    if size_bytes > settings.document_max_upload_bytes:
+        raise HTTPException(status_code=413, detail=f"{original_name} exceeds the configured upload size limit")
+
+
+def _scan_document_content(original_name: str, content: bytes) -> tuple[str, str]:
+    settings = get_settings()
+    mode = settings.document_scan_mode.strip().lower()
+    if mode in {"", "disabled", "off", "none"}:
+        return "not_scanned", "Stored without antivirus scan. Enable DOCUMENT_SCAN_MODE=local or clamav."
+    if _contains_eicar_signature(content):
+        raise HTTPException(
+            status_code=400, detail=f"{original_name} failed antivirus scan: EICAR test signature detected"
+        )
+    if mode == "local":
+        return "clean", "Local malware signature gate passed."
+    if mode == "clamav":
+        _scan_with_clamav(original_name, content, settings.document_clamav_host, settings.document_clamav_port)
+        return "clean", "ClamAV scan passed."
+    raise HTTPException(status_code=500, detail=f"Unsupported DOCUMENT_SCAN_MODE: {settings.document_scan_mode}")
+
+
+def _contains_eicar_signature(content: bytes) -> bool:
+    return b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR" in content
+
+
+def _scan_with_clamav(original_name: str, content: bytes, host: str, port: int) -> None:
+    try:
+        with socket.create_connection((host, port), timeout=5) as sock:
+            sock.settimeout(10)
+            sock.sendall(b"zINSTREAM\0")
+            for index in range(0, len(content), 8192):
+                chunk = content[index : index + 8192]
+                sock.sendall(len(chunk).to_bytes(4, "big") + chunk)
+            sock.sendall((0).to_bytes(4, "big"))
+            response = sock.recv(4096).decode("utf-8", "replace")
+    except OSError as exc:
+        raise HTTPException(status_code=503, detail="ClamAV scan service is unavailable") from exc
+    if "FOUND" in response:
+        raise HTTPException(status_code=400, detail=f"{original_name} failed ClamAV scan")
+    if "OK" not in response:
+        raise HTTPException(status_code=503, detail=f"Unexpected ClamAV response: {response.strip()}")
+
+
+def _attachment_absolute_path(attachment: DocumentAttachment) -> Path:
+    root = Path(get_settings().document_storage_path).resolve()
+    path = (root / attachment.storage_path).resolve()
+    if not path.is_relative_to(root):
+        raise HTTPException(status_code=400, detail="Stored document path is invalid")
+    return path
+
+
+def _safe_original_file_name(file_name: str) -> str:
+    name = Path(file_name.replace("\\", "/")).name.strip()
+    safe = "".join(char if char.isalnum() or char in {" ", ".", "-", "_"} else "_" for char in name)
+    return (safe or "document.bin")[:240]
+
+
+def _safe_zip_member_name(file_name: str) -> str:
+    normalized = file_name.replace("\\", "/")
+    path = PurePosixPath(normalized)
+    if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
+        raise HTTPException(status_code=400, detail=f"Unsafe ZIP member path: {file_name}")
+    return _safe_original_file_name(path.name)
+
+
+def _attachment_extension(file_name: str) -> str:
+    return Path(file_name).suffix.lower()
+
+
+def _guess_content_type(file_name: str) -> str:
+    return mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+
+
 def _document_transmittals(db: Session, tenant_id: int, project_id: int) -> list[DocumentTransmittal]:
     return list(
         db.scalars(
@@ -3591,14 +5723,22 @@ def _document_control_summary(
     today = datetime.utcnow().date()
     current_documents = sum(1 for document in documents if document.status in {"current", "approved", "issued"})
     superseded_documents = sum(1 for document in documents if document.status in {"superseded", "void"})
-    outstanding_reviews = sum(1 for review in reviews if review.review_status in {"outstanding", "in_review", "revise_and_resubmit"})
+    outstanding_reviews = sum(
+        1 for review in reviews if review.review_status in {"outstanding", "in_review", "revise_and_resubmit"}
+    )
     overdue_reviews = sum(
         1
         for review in reviews
-        if review.due_date and review.due_date < today and review.review_status in {"outstanding", "in_review", "revise_and_resubmit"}
+        if review.due_date
+        and review.due_date < today
+        and review.review_status in {"outstanding", "in_review", "revise_and_resubmit"}
     )
     open_mail = sum(1 for item in mail if item.status in {"outstanding", "open", "in_review"})
-    overdue_mail = sum(1 for item in mail if item.due_date and item.due_date < today and item.status in {"outstanding", "open", "in_review"})
+    overdue_mail = sum(
+        1
+        for item in mail
+        if item.due_date and item.due_date < today and item.status in {"outstanding", "open", "in_review"}
+    )
     total_documents = len(documents)
     score = 0.0
     if total_documents:
@@ -3633,8 +5773,54 @@ def _require_document(db: Session, tenant_id: int, project_id: int, document_id:
     return document
 
 
+def _require_document_attachment(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    document_id: int,
+    attachment_id: int,
+) -> DocumentAttachment:
+    attachment = db.scalar(
+        select(DocumentAttachment).where(
+            DocumentAttachment.tenant_id == tenant_id,
+            DocumentAttachment.project_id == project_id,
+            DocumentAttachment.document_id == document_id,
+            DocumentAttachment.id == attachment_id,
+        )
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Document attachment not found")
+    return attachment
+
+
+def _require_document_access(membership: ProjectMembership, document: Document) -> None:
+    if not _can_access_document(membership, document):
+        raise HTTPException(status_code=403, detail="Current role cannot access this confidential document")
+
+
+def _can_access_document(membership: ProjectMembership, document: Document | None) -> bool:
+    if document is None:
+        return False
+    confidentiality = (document.confidentiality or "project").strip().lower()
+    if confidentiality in {"", "public", "project", "team", "internal"}:
+        return True
+    privileged_roles = {"Control Manager", "Project Controls", "Document Controller", "Contract Manager"}
+    restricted_roles = {"Control Manager", "Document Controller"}
+    if confidentiality in {"confidential", "controlled"}:
+        return membership.role in privileged_roles or membership.can_configure
+    if confidentiality in {"restricted", "private", "executive"}:
+        return membership.role in restricted_roles or membership.can_configure
+    return membership.role in privileged_roles or membership.can_configure
+
+
 def _require_document_control_role(membership: ProjectMembership) -> None:
-    if membership.role not in {"Control Manager", "Project Controls", "Document Controller", "Contract Manager", "Planner"}:
+    if membership.role not in {
+        "Control Manager",
+        "Project Controls",
+        "Document Controller",
+        "Contract Manager",
+        "Planner",
+    }:
         raise HTTPException(status_code=403, detail="Current role cannot manage document control")
 
 
@@ -3731,9 +5917,9 @@ def _require_current_version(entity: object, expected_version: int | None) -> No
 
 def _touch_collaborative_record(entity: object) -> None:
     current_version = int(getattr(entity, "version", 1) or 1)
-    setattr(entity, "version", current_version + 1)
+    entity.version = current_version + 1
     if hasattr(entity, "updated_at"):
-        setattr(entity, "updated_at", datetime.utcnow())
+        entity.updated_at = datetime.utcnow()
 
 
 def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotReadinessOut:
@@ -3751,9 +5937,12 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
 
     team = _project_team(db, tenant_id, project_id)
     roles = {member.membership.role for member in team}
-    audit_count = db.scalar(
-        select(func.count(AuditLog.id)).where(AuditLog.tenant_id == tenant_id, AuditLog.project_id == project_id)
-    ) or 0
+    audit_count = (
+        db.scalar(
+            select(func.count(AuditLog.id)).where(AuditLog.tenant_id == tenant_id, AuditLog.project_id == project_id)
+        )
+        or 0
+    )
     schedule_activity_count = _count(db, ScheduleActivityMap, tenant_id, project_id)
     relationship_count = _count(db, ActivityRelationship, tenant_id, project_id)
     control_account_count = _count(db, ControlAccount, tenant_id, project_id)
@@ -3778,18 +5967,22 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
     project_mail_count = _count(db, ProjectMail, tenant_id, project_id)
     package_count = _count(db, WorkPackage, tenant_id, project_id)
     constraint_count = _count(db, WorkPackageConstraint, tenant_id, project_id)
-    open_blocking_constraints = db.scalar(
-        select(func.count(WorkPackageConstraint.id)).where(
-            WorkPackageConstraint.tenant_id == tenant_id,
-            WorkPackageConstraint.project_id == project_id,
-            WorkPackageConstraint.blocking.is_(True),
-            WorkPackageConstraint.status == "open",
+    open_blocking_constraints = (
+        db.scalar(
+            select(func.count(WorkPackageConstraint.id)).where(
+                WorkPackageConstraint.tenant_id == tenant_id,
+                WorkPackageConstraint.project_id == project_id,
+                WorkPackageConstraint.blocking.is_(True),
+                WorkPackageConstraint.status == "open",
+            )
         )
-    ) or 0
+        or 0
+    )
     workflow_count = _count(db, BusinessProcessInstance, tenant_id, project_id)
-    template_count = db.scalar(
-        select(func.count(BusinessProcessTemplate.id)).where(BusinessProcessTemplate.tenant_id == tenant_id)
-    ) or 0
+    template_count = (
+        db.scalar(select(func.count(BusinessProcessTemplate.id)).where(BusinessProcessTemplate.tenant_id == tenant_id))
+        or 0
+    )
     latest_baseline = db.scalars(
         select(BaselineVersion)
         .where(BaselineVersion.tenant_id == tenant_id, BaselineVersion.project_id == project_id)
@@ -3813,7 +6006,9 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
                 )
             ).all()
         )
-        mapping_summary = _control_account_mapping_summary(mappings, latest_baseline.status if latest_baseline else "missing")
+        mapping_summary = _control_account_mapping_summary(
+            mappings, latest_baseline.status if latest_baseline else "missing"
+        )
         mapping_score = mapping_summary.mapping_score
         cost_loading_score = mapping_summary.cost_loading_score
 
@@ -3821,14 +6016,22 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         _readiness_item(
             "Fase 1",
             "Schedule Intake / Data Quality",
-            100 if latest_import and latest_import.status == ImportStatus.validated and latest_import.quality_score >= 70 and finding_errors == 0 else max(latest_import.quality_score if latest_import else 0, 0),
+            100
+            if latest_import
+            and latest_import.status == ImportStatus.validated
+            and latest_import.quality_score >= 70
+            and finding_errors == 0
+            else max(latest_import.quality_score if latest_import else 0, 0),
             f"{schedule_activity_count} actividades, {relationship_count} relaciones, {finding_errors} errores y {finding_warnings} advertencias.",
             "Cargar cronograma fuente y cerrar errores DCMA/AACE antes del piloto.",
         ),
         _readiness_item(
             "Fase 2",
             "Business Process Engine / Plan de Control",
-            min((100 if workflow_count and template_count else 45) * 0.65 + _control_plan_score(control_plan) * 0.35, 100),
+            min(
+                (100 if workflow_count and template_count else 45) * 0.65 + _control_plan_score(control_plan) * 0.35,
+                100,
+            ),
             f"{workflow_count} instancias workflow, {template_count} plantillas y plan de control {control_plan.status if control_plan else 'missing'}.",
             "Aprobar el PEP/Plan de Control y validar ball-in-court por rol.",
         ),
@@ -3842,7 +6045,17 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         _readiness_item(
             "Fase 4",
             "EVM / Forecast / Cost Manager",
-            100 if latest_kpi and snapshot_count and forecast_count and progress_count and payment_certificate_count and warehouse_receipt_count and purchase_order_count and funding_count and cash_flow_count else 55,
+            100
+            if latest_kpi
+            and snapshot_count
+            and forecast_count
+            and progress_count
+            and payment_certificate_count
+            and warehouse_receipt_count
+            and purchase_order_count
+            and funding_count
+            and cash_flow_count
+            else 55,
             f"{progress_count} avances, {payment_certificate_count} actas de pago, {warehouse_receipt_count} entradas de almacen, {purchase_order_count} ordenes de compra, {funding_count} fondos, {cash_flow_count} periodos cash flow, {snapshot_count} snapshots y {forecast_count} forecasts.",
             "Ejecutar ciclo de control con datos de avance, incurrido por actas de pago y entradas de almacen, comprometido contractual/OC, funding, cash flow y escenarios EAC.",
         ),
@@ -3869,7 +6082,14 @@ def _pilot_readiness(db: Session, tenant_id: int, project: Project) -> PilotRead
         _readiness_item(
             "Fase 6",
             "SaaS colaborativo / Operacion",
-            min((len(team) >= 5) * 30 + (len(roles) >= 5) * 25 + (audit_count > 0) * 20 + (package_count > 0) * 15 + (constraint_count >= 0) * 10, 100),
+            min(
+                (len(team) >= 5) * 30
+                + (len(roles) >= 5) * 25
+                + (audit_count > 0) * 20
+                + (package_count > 0) * 15
+                + (constraint_count >= 0) * 10,
+                100,
+            ),
             f"{len(team)} usuarios, {len(roles)} roles, {audit_count} eventos auditados, {package_count} work packages y {open_blocking_constraints} restricciones bloqueantes abiertas.",
             "Cerrar usuarios/roles del piloto, probar concurrencia y acordar rutina semanal.",
         ),
@@ -3929,12 +6149,15 @@ def _control_plan_score(plan: ProjectControlPlan | None) -> float:
 
 
 def _count(db: Session, model: type, tenant_id: int, project_id: int) -> int:
-    return db.scalar(
-        select(func.count(model.id)).where(
-            model.tenant_id == tenant_id,
-            model.project_id == project_id,
+    return (
+        db.scalar(
+            select(func.count(model.id)).where(
+                model.tenant_id == tenant_id,
+                model.project_id == project_id,
+            )
         )
-    ) or 0
+        or 0
+    )
 
 
 def _schedule_findings_for_import(
@@ -4295,7 +6518,11 @@ def _control_account_mapping_summary(
     baseline_status: str,
 ) -> ControlAccountMappingSummary:
     total = len(mappings)
-    mapped = sum(1 for mapping in mappings if mapping.control_account_id and mapping.status in {"mapped", "approved", "needs_cost_loading"})
+    mapped = sum(
+        1
+        for mapping in mappings
+        if mapping.control_account_id and mapping.status in {"mapped", "approved", "needs_cost_loading"}
+    )
     cost_loaded = sum(1 for mapping in mappings if mapping.planned_cost > 0)
     control_account_ids = {mapping.control_account_id for mapping in mappings if mapping.control_account_id}
     return ControlAccountMappingSummary(
@@ -4345,7 +6572,11 @@ def _awp_summary(
     blocking_constraints = [constraint for constraint in open_constraints if constraint.blocking]
     blocked_package_ids = {constraint.work_package_id for constraint in blocking_constraints}
     ready_statuses = {"ready_to_release", "released", "executing", "complete"}
-    ready_for_release = sum(1 for package in packages if package.readiness_status in ready_statuses and package.id not in blocked_package_ids)
+    ready_for_release = sum(
+        1
+        for package in packages
+        if package.readiness_status in ready_statuses and package.id not in blocked_package_ids
+    )
     readiness_score = round((ready_for_release / total_packages) * 100, 1) if total_packages else 0
     return AWPReadinessSummary(
         total_packages=total_packages,
@@ -4361,9 +6592,7 @@ def _awp_summary(
 
 def _default_wbs(db: Session, tenant_id: int, project_id: int) -> WBS:
     wbs = db.scalars(
-        select(WBS)
-        .where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)
-        .order_by(WBS.code)
+        select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id).order_by(WBS.code)
     ).first()
     if wbs:
         return wbs
@@ -4453,21 +6682,27 @@ def _data_quality_gates(
             name="Control Account Mapping",
             status="Pass" if mapping_passed else "Blocked",
             score=100 if mapping_passed else 0,
-            finding="Imported schedule activities are available for control account mapping." if mapping_passed else "No imported activities are available.",
+            finding="Imported schedule activities are available for control account mapping."
+            if mapping_passed
+            else "No imported activities are available.",
             owner_role="Project Controls",
         ),
         DataQualityGateOut(
             name="Cost Loading",
             status="Pass" if cost_loaded else "Review",
             score=100 if cost_loaded else 60,
-            finding="Cost-loaded schedule values were found." if cost_loaded else "No cost-loaded activity values found; budget loading is required before reliable EVM.",
+            finding="Cost-loaded schedule values were found."
+            if cost_loaded
+            else "No cost-loaded activity values found; budget loading is required before reliable EVM.",
             owner_role="Cost Controller",
         ),
         DataQualityGateOut(
             name="Control Capture",
             status="Open" if schedule_passed else "Blocked",
             score=85 if schedule_passed else 0,
-            finding="Progress and actual cost capture can feed the Control Core." if schedule_passed else "Control capture waits for an accepted baseline.",
+            finding="Progress and actual cost capture can feed the Control Core."
+            if schedule_passed
+            else "Control capture waits for an accepted baseline.",
             owner_role="Execution Lead",
         ),
     ]
@@ -4490,14 +6725,20 @@ def _process_template_out(db: Session, template: BusinessProcessTemplate) -> Pro
     steps = list(
         db.scalars(
             select(BusinessProcessStepTemplate)
-            .where(BusinessProcessStepTemplate.tenant_id == template.tenant_id, BusinessProcessStepTemplate.template_id == template.id)
+            .where(
+                BusinessProcessStepTemplate.tenant_id == template.tenant_id,
+                BusinessProcessStepTemplate.template_id == template.id,
+            )
             .order_by(BusinessProcessStepTemplate.step_order)
         ).all()
     )
     transitions = list(
         db.scalars(
             select(BusinessProcessTransitionTemplate)
-            .where(BusinessProcessTransitionTemplate.tenant_id == template.tenant_id, BusinessProcessTransitionTemplate.template_id == template.id)
+            .where(
+                BusinessProcessTransitionTemplate.tenant_id == template.tenant_id,
+                BusinessProcessTransitionTemplate.template_id == template.id,
+            )
             .order_by(BusinessProcessTransitionTemplate.id)
         ).all()
     )
@@ -4593,7 +6834,10 @@ def _template_step_rows(
     steps = list(
         db.scalars(
             select(BusinessProcessStepTemplate)
-            .where(BusinessProcessStepTemplate.tenant_id == tenant_id, BusinessProcessStepTemplate.template_id == template.id)
+            .where(
+                BusinessProcessStepTemplate.tenant_id == tenant_id,
+                BusinessProcessStepTemplate.template_id == template.id,
+            )
             .order_by(BusinessProcessStepTemplate.step_order)
         ).all()
     )
@@ -4624,7 +6868,11 @@ def _workflow_transition_permission(
     process_id: int,
     action: str,
 ) -> str:
-    process = db.scalar(select(BusinessProcessInstance).where(BusinessProcessInstance.tenant_id == tenant_id, BusinessProcessInstance.id == process_id))
+    process = db.scalar(
+        select(BusinessProcessInstance).where(
+            BusinessProcessInstance.tenant_id == tenant_id, BusinessProcessInstance.id == process_id
+        )
+    )
     if not process:
         return ""
     transition = _configured_transition(db, tenant_id, process.process_code, process.current_step, action)

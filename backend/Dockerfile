@@ -14,7 +14,8 @@ COPY alembic ./alembic
 COPY app ./app
 COPY tests ./tests
 
-RUN useradd --system --create-home --home-dir /app appuser \
+RUN mkdir -p /app/storage/documents \
+    && useradd --system --create-home --home-dir /app appuser \
     && chown -R appuser /app
 USER appuser
 
