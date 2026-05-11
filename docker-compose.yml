@@ -95,6 +95,26 @@ services:
       redis:
         condition: service_healthy
 
+  beat:
+    build:
+      context: ./backend
+    command: celery -A app.workers.celery_app beat --loglevel=INFO
+    restart: unless-stopped
+    environment:
+      APP_ENVIRONMENT: ${APP_ENVIRONMENT:-local}
+      DATABASE_URL: postgresql+psycopg://pypmis:pypmis@db:5432/pypmis
+      REDIS_URL: redis://redis:6379/0
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: dev-local-change-before-production
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-plain}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./frontend
