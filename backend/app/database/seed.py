@@ -2,7 +2,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from sqlalchemy import inspect, select
+from sqlalchemy import inspect, select, text
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -68,7 +68,45 @@ from app.services.control_core import ControlCoreService
 from app.services.schedule_ingestion import ScheduleIngestionService
 
 
+SEED_DEMO_ADVISORY_LOCK_ID = 572401
+
+
 def seed_demo(db: Session) -> None:
+    lock_acquired = acquire_seed_demo_lock(db)
+    if not lock_acquired:
+        return
+
+    try:
+        seed_demo_records(db)
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        release_seed_demo_lock(db)
+
+
+def acquire_seed_demo_lock(db: Session) -> bool:
+    if db.get_bind().dialect.name != "postgresql":
+        return True
+    return bool(
+        db.scalar(
+            text("SELECT pg_try_advisory_lock(:lock_id)"),
+            {"lock_id": SEED_DEMO_ADVISORY_LOCK_ID},
+        )
+    )
+
+
+def release_seed_demo_lock(db: Session) -> None:
+    if db.get_bind().dialect.name != "postgresql":
+        return
+    db.execute(
+        text("SELECT pg_advisory_unlock(:lock_id)"),
+        {"lock_id": SEED_DEMO_ADVISORY_LOCK_ID},
+    )
+    db.commit()
+
+
+def seed_demo_records(db: Session) -> None:
     existing = db.scalar(select(Tenant).where(Tenant.slug == "demo-energy"))
     if existing:
         ensure_default_bp_templates(db, existing.id)
