@@ -13,12 +13,12 @@ from __future__ import annotations
 
 import io
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from functools import lru_cache
 from typing import Any
 
 
-class ScanStatus(str, Enum):
+class ScanStatus(StrEnum):
     CLEAN = "clean"
     INFECTED = "infected"
     ERROR = "error"

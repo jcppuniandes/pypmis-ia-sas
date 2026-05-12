@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import time
+
 from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.responses import PlainTextResponse
 from redis import Redis
 from redis.exceptions import RedisError
-from sqlalchemy import select
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -36,27 +38,34 @@ def liveness() -> dict[str, object]:
 
 @router.get("/health/ready")
 def readiness(db: Session = Depends(get_db)) -> dict[str, object]:
-    checks: dict[str, str] = {"api": "ok"}
+    checks: dict[str, object] = {"api": "ok"}
+    latency: dict[str, float] = {}
+
+    t0 = time.monotonic()
     try:
-        db.execute(select(1)).scalar_one()
+        db.execute(text("SELECT 1")).scalar_one()
         checks["database"] = "ok"
     except SQLAlchemyError:
         checks["database"] = "error"
+    latency["database_ms"] = round((time.monotonic() - t0) * 1000, 1)
 
+    t0 = time.monotonic()
     try:
         redis = Redis.from_url(get_settings().redis_url, socket_connect_timeout=1, socket_timeout=1)
         redis.ping()
         checks["redis"] = "ok"
     except RedisError:
         checks["redis"] = "error"
+    latency["redis_ms"] = round((time.monotonic() - t0) * 1000, 1)
 
-    status = "ready" if all(value == "ok" for value in checks.values()) else "degraded"
+    status = "ready" if all(v == "ok" for v in checks.values()) else "degraded"
     if status != "ready":
-        raise HTTPException(status_code=503, detail={"status": status, "checks": checks})
+        raise HTTPException(status_code=503, detail={"status": status, "checks": checks, "latency": latency})
     settings = get_settings()
     return {
         "status": status,
         "checks": checks,
+        "latency": latency,
         "environment": settings.app_environment,
         "version": settings.app_version,
         "commit": settings.commit_sha,

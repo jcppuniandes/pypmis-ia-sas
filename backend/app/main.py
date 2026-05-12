@@ -1,4 +1,6 @@
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,6 +30,25 @@ if settings.sentry_dsn:
         send_default_pii=False,
     )
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    if settings.auto_create_schema:
+        if settings.is_production:
+            raise RuntimeError(
+                "AUTO_CREATE_SCHEMA=true is not allowed in production. "
+                "Use Alembic migrations ('alembic upgrade head')."
+            )
+        Base.metadata.create_all(bind=engine)
+    if settings.seed_demo_data:
+        db = SessionLocal()
+        try:
+            seed_demo(db)
+        finally:
+            db.close()
+    yield
+
+
 app = FastAPI(
     title=settings.app_name,
     description="API-first Project Controls platform based on AACE TCM.",
@@ -35,6 +56,7 @@ app = FastAPI(
     docs_url="/docs" if settings.docs_enabled else None,
     redoc_url="/redoc" if settings.docs_enabled else None,
     openapi_url="/openapi.json" if settings.docs_enabled else None,
+    lifespan=lifespan,
 )
 
 if settings.allowed_host_list and "*" not in settings.allowed_host_list:
@@ -60,21 +82,3 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
         status_code=500,
         content={"detail": "Internal server error", "request_id": request_id},
     )
-
-
-@app.on_event("startup")
-def startup() -> None:
-    if settings.auto_create_schema:
-        if settings.is_production:
-            raise RuntimeError(
-                "AUTO_CREATE_SCHEMA=true is not allowed in production. "
-                "Use Alembic migrations ('alembic upgrade head')."
-            )
-        Base.metadata.create_all(bind=engine)
-    if not settings.seed_demo_data:
-        return
-    db = SessionLocal()
-    try:
-        seed_demo(db)
-    finally:
-        db.close()

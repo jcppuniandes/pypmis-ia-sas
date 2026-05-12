@@ -287,7 +287,7 @@ class ScheduleIngestionService:
         if accepted:
             return step_rows
         rejected: list[tuple[str, str, str, str, str]] = []
-        for name, detail, owner_role, status, tone in step_rows:
+        for name, detail, owner_role, _status, _tone in step_rows:
             if name == "Creation":
                 rejected.append((name, "Source schedule file received.", owner_role, "Complete", "complete"))
             elif name == "Data Quality":
@@ -497,7 +497,7 @@ class ScheduleIngestionService:
         assignment_cost_by_activity = self._p6_xml_assignment_cost_by_activity(root, activity_by_object_id)
 
         activities: list[ParsedActivity] = []
-        for activity, _index, object_id, external_id in activity_refs:
+        for activity, _index, _object_id, external_id in activity_refs:
             wbs_object_id = self._child_text(activity, "WBSObjectId")
             wbs = wbs_by_object_id.get(wbs_object_id, {})
             total_float = self._duration_to_days(
