@@ -67,7 +67,6 @@ from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.services.control_core import ControlCoreService
 from app.services.schedule_ingestion import ScheduleIngestionService
 
-
 SEED_DEMO_ADVISORY_LOCK_ID = 572401
 
 

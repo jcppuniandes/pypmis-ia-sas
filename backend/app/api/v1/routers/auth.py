@@ -5,10 +5,9 @@ from __future__ import annotations
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
-from pydantic import BaseModel
 
 from app.api.deps import get_tenant_id, get_user_id
 from app.api.v1._helpers import require_active_user
