@@ -15,16 +15,37 @@ from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, Response
-from redis import Redis
-from redis.exceptions import RedisError
 from sqlalchemy import func, select
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_tenant_id, get_user_id
+from app.api.v1._helpers import (
+    require_active_user as _require_user,
+)
+from app.api.v1._helpers import (
+    require_current_version as _require_current_version,
+)
+from app.api.v1._helpers import (
+    require_membership as _require_membership,
+)
+from app.api.v1._helpers import (
+    require_permission as _require_permission,
+)
+from app.api.v1._helpers import (
+    require_project as _require_project,
+)
+from app.api.v1._helpers import (
+    touch_collaborative_record as _touch_collaborative_record,
+)
+from app.api.v1._helpers import (
+    write_audit_log as _audit,
+)
+from app.api.v1.routers import admin as admin_router
+from app.api.v1.routers import auth as auth_router
+from app.api.v1.routers import health as health_router
+from app.api.v1.routers import projects as projects_router
 from app.core.config import get_settings
-from app.core.observability import METRICS
-from app.core.security import TokenError, create_access_token, decode_access_token, hash_password, verify_password
+from app.core.security import TokenError, decode_access_token
 from app.database.session import get_db
 from app.domain.models import (
     KPI,
@@ -33,7 +54,6 @@ from app.domain.models import (
     ActivityRelationship,
     Alert,
     AuditLog,
-    AuthCredential,
     BaselineVersion,
     Budget,
     BusinessProcessInstance,
@@ -76,7 +96,6 @@ from app.domain.models import (
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleValidationFinding,
-    Tenant,
     UserAccount,
     WarehouseReceipt,
     WorkflowStepInstance,
@@ -89,7 +108,6 @@ from app.domain.schemas import (
     ActivityOut,
     AlertOut,
     AuditLogOut,
-    AuthSessionOut,
     AWPReadinessSummary,
     BaselineVersionOut,
     BusinessProcessInstanceOut,
@@ -149,26 +167,21 @@ from app.domain.schemas import (
     IntegrationTokenCreated,
     IntegrationTokenOut,
     KPIOut,
-    LoginRequest,
     PaymentCertificateCreate,
     PaymentCertificateOut,
     PaymentCertificateUpdate,
     PilotReadinessItem,
     PilotReadinessOut,
     ProcessStepTemplateOut,
-    ProcessTemplateCreate,
     ProcessTemplateOut,
     ProcessTransitionTemplateOut,
     ProductivitySummary,
     ProgressRecordCreate,
     ProgressRecordOut,
     ProjectControlPlanOut,
-    ProjectControlPlanUpdate,
-    ProjectCreate,
     ProjectMailCreate,
     ProjectMailOut,
     ProjectMailUpdate,
-    ProjectMembershipCreate,
     ProjectMembershipOut,
     ProjectOut,
     ProjectTeamMemberOut,
@@ -187,7 +200,6 @@ from app.domain.schemas import (
     ScheduleImportOut,
     ScheduleValidationFindingOut,
     TCMFlowStep,
-    UserCreate,
     UserOut,
     WarehouseReceiptCreate,
     WarehouseReceiptOut,
@@ -207,21 +219,6 @@ from app.services.control_core import ControlCoreService
 from app.services.schedule_ingestion import ScheduleIngestionService
 from app.services.workflow_routing import WorkflowRoutingService
 from app.workers.tasks import run_control_cycle as run_control_cycle_task
-
-from app.api.v1._helpers import (
-    require_active_user as _require_user,
-    require_current_version as _require_current_version,
-    require_membership as _require_membership,
-    require_permission as _require_permission,
-    require_project as _require_project,
-    require_tenant_configurator as _require_tenant_configurator,
-    touch_collaborative_record as _touch_collaborative_record,
-    write_audit_log as _audit,
-)
-from app.api.v1.routers import admin as admin_router
-from app.api.v1.routers import auth as auth_router
-from app.api.v1.routers import health as health_router
-from app.api.v1.routers import projects as projects_router
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(health_router.router, tags=["health"])
@@ -6217,6 +6214,10 @@ def _configured_process_templates(db: Session, tenant_id: int) -> list[ProcessTe
         db.scalars(
             select(BusinessProcessTemplate)
             .where(BusinessProcessTemplate.tenant_id == tenant_id)
+            .options(
+                selectinload(BusinessProcessTemplate.steps),
+                selectinload(BusinessProcessTemplate.transitions),
+            )
             .order_by(BusinessProcessTemplate.category, BusinessProcessTemplate.code)
         ).all()
     )
@@ -6226,26 +6227,8 @@ def _configured_process_templates(db: Session, tenant_id: int) -> list[ProcessTe
 
 
 def _process_template_out(db: Session, template: BusinessProcessTemplate) -> ProcessTemplateOut:
-    steps = list(
-        db.scalars(
-            select(BusinessProcessStepTemplate)
-            .where(
-                BusinessProcessStepTemplate.tenant_id == template.tenant_id,
-                BusinessProcessStepTemplate.template_id == template.id,
-            )
-            .order_by(BusinessProcessStepTemplate.step_order)
-        ).all()
-    )
-    transitions = list(
-        db.scalars(
-            select(BusinessProcessTransitionTemplate)
-            .where(
-                BusinessProcessTransitionTemplate.tenant_id == template.tenant_id,
-                BusinessProcessTransitionTemplate.template_id == template.id,
-            )
-            .order_by(BusinessProcessTransitionTemplate.id)
-        ).all()
-    )
+    steps = sorted(template.steps, key=lambda s: s.step_order)
+    transitions = sorted(template.transitions, key=lambda t: t.id)
     form_schema = _parse_form_schema(template.form_schema)
     roles = sorted({step.owner_role for step in steps if step.owner_role})
     return ProcessTemplateOut(

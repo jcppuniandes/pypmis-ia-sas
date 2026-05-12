@@ -17,9 +17,14 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_tenant_id, get_user_id
 from app.api.v1._helpers import (
     require_active_user as _require_user,
+)
+from app.api.v1._helpers import (
     require_tenant_configurator as _require_tenant_configurator,
+)
+from app.api.v1._helpers import (
     write_audit_log as _audit,
 )
+from app.core.cache import cache_key, get_cached, invalidate, set_cached
 from app.core.config import get_settings
 from app.core.security import hash_password
 from app.database.session import get_db
@@ -119,7 +124,13 @@ def list_process_templates(
     from app.api.v1.router import _configured_process_templates  # late import
 
     _require_user(db, tenant_id, user_id)
-    return _configured_process_templates(db, tenant_id)
+    key = cache_key("proc_tpl", tenant_id)
+    cached = get_cached(key)
+    if cached is not None:
+        return [ProcessTemplateOut(**item) for item in cached]
+    result = _configured_process_templates(db, tenant_id)
+    set_cached(key, [item.model_dump() for item in result], ttl=600)
+    return result
 
 
 @router.post("/process-templates", response_model=ProcessTemplateOut)
@@ -235,4 +246,5 @@ def create_process_template(
         current_user.full_name,
     )
     db.commit()
+    invalidate(cache_key("proc_tpl", tenant_id))
     return _process_template_out(db, template)
