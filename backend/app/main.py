@@ -17,6 +17,17 @@ settings = get_settings()
 settings.validate_for_runtime()
 configure_logging()
 
+if settings.sentry_dsn:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        environment=settings.app_environment,
+        release=settings.app_version,
+        traces_sample_rate=settings.sentry_traces_sample_rate,
+        send_default_pii=False,
+    )
+
 app = FastAPI(
     title=settings.app_name,
     description="API-first Project Controls platform based on AACE TCM.",

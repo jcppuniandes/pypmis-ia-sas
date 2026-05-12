@@ -45,6 +45,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: str = "plain"
     allow_insecure_production: bool = False
+    sentry_dsn: str = ""
+    sentry_traces_sample_rate: float = 0.1
     ai_provider: str = "disabled"
     anthropic_api_key: str = ""
     ai_model: str = "claude-haiku-4-5-20251001"
