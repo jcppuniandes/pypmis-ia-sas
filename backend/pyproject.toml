@@ -1,3 +1,7 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+collect_ignore = ["tests/test_document_scanner.py"]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 120

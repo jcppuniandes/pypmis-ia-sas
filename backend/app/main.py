@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+import logging
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.v1.router import router
@@ -7,6 +10,8 @@ from app.core.config import get_settings
 from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
+
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 settings.validate_for_runtime()
@@ -34,6 +39,16 @@ app.add_middleware(
 app.middleware("http")(request_context_middleware)
 
 app.include_router(router)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", "unknown")
+    logger.exception("Unhandled exception", extra={"request_id": request_id, "path": request.url.path})
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error", "request_id": request_id},
+    )
 
 
 @app.on_event("startup")
