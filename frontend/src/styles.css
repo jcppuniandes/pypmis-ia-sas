@@ -21,6 +21,140 @@ body {
   margin: 0;
 }
 
+.loginPage {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(243, 246, 248, 0.78), rgba(243, 246, 248, 0.96)),
+    url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23d8dee5' stroke-width='1'%3E%3Cpath d='M0 40h160M0 80h160M0 120h160M40 0v160M80 0v160M120 0v160'/%3E%3C/g%3E%3C/svg%3E");
+  display: grid;
+  min-height: 100vh;
+  padding: 28px;
+  place-items: center;
+}
+
+.loginPanel {
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(23, 33, 43, 0.14);
+  display: grid;
+  gap: 24px;
+  max-width: 440px;
+  padding: 32px;
+  width: 100%;
+}
+
+.loginBrand {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+}
+
+.loginBrand h1 {
+  font-size: 34px;
+}
+
+.loginBrand p {
+  color: #52616f;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.loginForm,
+.fieldStack {
+  display: grid;
+  gap: 12px;
+}
+
+.fieldStack {
+  gap: 6px;
+}
+
+.fieldStack label {
+  color: #344450;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.fieldStack input,
+.loginSubmit {
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.fieldStack input {
+  border: 1px solid #cfd8df;
+  color: #17212b;
+  font: inherit;
+  padding: 0 12px;
+}
+
+.loginSubmit {
+  background: #17212b;
+  border: 0;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.loginSubmit:disabled {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+.loginError {
+  background: #fff0ee;
+  border: 1px solid #ffc8c0;
+  border-radius: 8px;
+  color: #a42626;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 12px;
+}
+
+.productLogo {
+  align-items: center;
+  color: #17212b;
+  display: inline-flex;
+  gap: 12px;
+}
+
+.productLogo.compact {
+  margin-bottom: 8px;
+}
+
+.productLogoMark {
+  flex: 0 0 auto;
+  height: 58px;
+  width: 58px;
+}
+
+.productLogo.compact .productLogoMark {
+  height: 42px;
+  width: 42px;
+}
+
+.productLogo strong,
+.productLogo span {
+  display: block;
+}
+
+.productLogo strong {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.productLogo span {
+  color: #52616f;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
 #root,
 main,
 .workspaceSection,
@@ -272,9 +406,15 @@ h2 {
 
 .flowTrack {
   align-items: center;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  grid-template-columns: repeat(11, auto);
+}
+
+.flowStepWrap {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
 }
 
 .flowStep {
@@ -412,6 +552,23 @@ h2 {
 .workspaceAdmin {
   grid-template-columns: minmax(230px, 0.95fr) minmax(220px, 0.85fr) minmax(220px, 0.85fr) minmax(320px, 1.35fr);
   order: 3;
+}
+
+.flowSetup {
+  align-items: stretch;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.6fr);
+  order: 3;
+}
+
+.flowSetup .adminPanel,
+.flowSetup .scheduleGate {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.flowSetup .scheduleGate {
+  min-width: 0;
 }
 
 .phaseTwoGrid {
@@ -1147,6 +1304,48 @@ td span {
   color: #344450;
   font-size: 14px;
   line-height: 1.55;
+}
+
+.projectWorkspace {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 280px minmax(0, 1fr);
+  margin: 0 auto 18px;
+  max-width: 1480px;
+  width: 100%;
+}
+
+.projectWorkspaceRail {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.projectWorkspaceRail .adminPanel,
+.projectWorkspaceRail .navigatorRail {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.projectWorkspaceRail .adminPanel {
+  min-height: 0;
+}
+
+.projectDashboardArea {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.projectDashboardArea > .controlSummary,
+.projectDashboardArea > .flowBand,
+.projectDashboardArea > .viewPanel,
+.projectDashboardArea > .scheduleGate {
+  margin: 0;
+  max-width: none;
+  width: 100%;
 }
 
 .unifierFrame {
@@ -2047,6 +2246,7 @@ td span {
 }
 
 @media (max-width: 1100px) {
+  .projectWorkspace,
   .unifierFrame {
     grid-template-columns: 1fr;
   }
@@ -2166,6 +2366,10 @@ td span {
   .uploadButton {
     justify-content: center;
     width: 100%;
+  }
+
+  .projectWorkspaceRail {
+    gap: 10px;
   }
 
   .controlSummary {

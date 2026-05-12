@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
+import ProductLogo from "../components/ProductLogo";
 import { useAuthStore } from "../store/auth";
 
 export default function LoginView() {
@@ -27,38 +28,45 @@ export default function LoginView() {
   }
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-      <form onSubmit={handleSubmit} style={{ width: 360, display: "flex", flexDirection: "column", gap: 16 }}>
-        <h1 style={{ textAlign: "center" }}>PyPMIS</h1>
-        {error && (
-          <div role="alert" style={{ color: "red", padding: "8px", border: "1px solid red", borderRadius: 4 }}>
-            {error}
+    <main className="loginPage">
+      <section className="loginPanel" aria-label="Authentication">
+        <div className="loginBrand">
+          <ProductLogo />
+          <h1>P&Pmis Ai</h1>
+          <p>Project Controls, AWP and decision flow in one workspace.</p>
+        </div>
+
+        <form className="loginForm" onSubmit={handleSubmit}>
+          {error && (
+            <div className="loginError" role="alert">
+              {error}
+            </div>
+          )}
+          <div className="fieldStack">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        )}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-    </div>
+          <div className="fieldStack">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button className="loginSubmit" type="submit" disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </section>
+    </main>
   );
 }

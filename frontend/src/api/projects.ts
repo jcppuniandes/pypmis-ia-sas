@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { Project, ProjectControlPlan, ProjectTeamMember, RoleProfile } from "../types";
+import type { Project, ProjectControlPlan, ProjectTeamMember, RoleProfile, ScheduleImport } from "../types";
 
 export const projects = {
   list: (token: string) =>
@@ -14,6 +14,16 @@ export const projects = {
       token,
       body: JSON.stringify(data),
     }),
+
+  uploadSchedule: (token: string, projectId: number, file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    return apiFetch<ScheduleImport>(`/api/v1/projects/${projectId}/schedule-imports`, {
+      method: "POST",
+      token,
+      body,
+    });
+  },
 
   controlPlan: (token: string, projectId: number) =>
     apiFetch<ProjectControlPlan>(`/api/v1/projects/${projectId}/control-plan`, { token }),

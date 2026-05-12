@@ -31,6 +31,8 @@ describe("LoginView", () => {
         <LoginView />
       </MemoryRouter>
     );
+    expect(screen.getByLabelText(/p&p control intelligence logo/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /p&pmis ai/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
