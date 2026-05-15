@@ -28,9 +28,12 @@ from app.domain.models import (
     ContractCommunication,
     ContractNotice,
     ControlAccount,
+    ControlAccountFundingAllocation,
     ControlAccountMapping,
     ControlPeriod,
     ControlSnapshot,
+    CostBreakdownStructure,
+    CostCode,
     CostRecord,
     CostSource,
     Document,
@@ -47,6 +50,7 @@ from app.domain.models import (
     ProjectControlPlan,
     ProjectMail,
     ProjectMembership,
+    ProjectOperationalSetup,
     PurchaseOrder,
     RelationshipType,
     Resource,
@@ -65,6 +69,7 @@ from app.domain.models import (
 )
 from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.services.control_core import ControlCoreService
+from app.services.integrated_control import IntegratedControlService
 from app.services.schedule_ingestion import ScheduleIngestionService
 
 SEED_DEMO_ADVISORY_LOCK_ID = 572401
@@ -112,6 +117,7 @@ def seed_demo_records(db: Session) -> None:
         project = ensure_primary_project(db, existing.id)
         if project:
             ensure_project_control_plan(db, existing.id, project.id)
+            ensure_project_operational_setup(db, existing.id, project.id)
             neutralize_schedule_labels(db, existing.id, project.id)
             ensure_demo_schedule(db, existing.id, project.id)
             ensure_control_account_mapping_records(db, existing.id, project.id)
@@ -130,6 +136,7 @@ def seed_demo_records(db: Session) -> None:
         secondary = ensure_secondary_project(db, existing.id)
         if secondary:
             ensure_project_control_plan(db, existing.id, secondary.id)
+            ensure_project_operational_setup(db, existing.id, secondary.id)
             neutralize_schedule_labels(db, existing.id, secondary.id)
             ensure_control_account_mapping_records(db, existing.id, secondary.id)
             ensure_contract_records(db, existing.id, secondary.id)
@@ -144,6 +151,7 @@ def seed_demo_records(db: Session) -> None:
             ControlCoreService(db).run_project_cycle(existing.id, secondary.id)
             ensure_control_history_records(db, existing.id, secondary.id)
             ensure_cost_manager_records(db, existing.id, secondary.id)
+        ensure_integrated_control_examples(db, existing.id)
         ensure_demo_users(db, existing.id)
         return
 
@@ -164,6 +172,7 @@ def seed_demo_records(db: Session) -> None:
     db.add(project)
     db.flush()
     ensure_project_control_plan(db, tenant.id, project.id)
+    ensure_project_operational_setup(db, tenant.id, project.id)
 
     wbs = WBS(tenant_id=tenant.id, project_id=project.id, code="1.2", name="Mechanical and Piping", parent_id=None)
     db.add(wbs)
@@ -317,6 +326,7 @@ def seed_demo_records(db: Session) -> None:
     secondary = ensure_secondary_project(db, tenant.id)
     if secondary:
         ensure_project_control_plan(db, tenant.id, secondary.id)
+        ensure_project_operational_setup(db, tenant.id, secondary.id)
         ensure_contract_records(db, tenant.id, secondary.id)
         ensure_purchase_order_records(db, tenant.id, secondary.id)
         ensure_payment_certificate_records(db, tenant.id, secondary.id)
@@ -330,10 +340,33 @@ def seed_demo_records(db: Session) -> None:
         ControlCoreService(db).run_project_cycle(tenant.id, secondary.id)
         ensure_control_history_records(db, tenant.id, secondary.id)
         ensure_cost_manager_records(db, tenant.id, secondary.id)
+    ensure_integrated_control_examples(db, tenant.id)
     ensure_demo_users(db, tenant.id)
 
 
 def ensure_default_bp_templates(db: Session, tenant_id: int) -> None:
+    legacy_project_template = db.scalar(
+        select(BusinessProcessTemplate).where(
+            BusinessProcessTemplate.tenant_id == tenant_id,
+            BusinessProcessTemplate.code == "PJ-SHELL",
+        )
+    )
+    if legacy_project_template:
+        current_project_template = db.scalar(
+            select(BusinessProcessTemplate).where(
+                BusinessProcessTemplate.tenant_id == tenant_id,
+                BusinessProcessTemplate.code == "PJ-CREATE",
+            )
+        )
+        if current_project_template and current_project_template.id != legacy_project_template.id:
+            legacy_project_template.code = "PJ-CREATE-LEGACY"
+            legacy_project_template.name = "Project Creation Legacy"
+            legacy_project_template.description = "Legacy project creation process retained for audit history."
+            legacy_project_template.status = "Archived"
+        else:
+            legacy_project_template.code = "PJ-CREATE"
+        db.flush()
+
     for template_seed in DEFAULT_PROCESS_TEMPLATES:
         template = db.scalar(
             select(BusinessProcessTemplate).where(
@@ -493,6 +526,39 @@ def ensure_project_control_plan(db: Session, tenant_id: int, project_id: int) ->
             setattr(plan, field, value)
     if plan.status == "draft":
         plan.status = "active"
+    db.flush()
+
+
+def ensure_project_operational_setup(db: Session, tenant_id: int, project_id: int) -> None:
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    if not project:
+        return
+    setup = db.scalar(
+        select(ProjectOperationalSetup).where(
+            ProjectOperationalSetup.tenant_id == tenant_id,
+            ProjectOperationalSetup.project_id == project_id,
+        )
+    )
+    defaults = {
+        "project_number": project.code,
+        "setup_template": "Capital Project Controls Template",
+        "attribute_form": "Project Attribute Form",
+        "permissions_configured": True,
+        "modules_configured": True,
+        "cost_sheet_ready": True,
+        "funding_sheet_ready": True,
+        "p6_mapping_ready": True,
+        "status": "ready",
+        "readiness_status": "ready",
+        "readiness_notes": "Ready for controlled data loading.",
+    }
+    if not setup:
+        db.add(ProjectOperationalSetup(tenant_id=tenant_id, project_id=project_id, **defaults))
+        db.flush()
+        return
+    for field, value in defaults.items():
+        if getattr(setup, field) in ("", False, None, "not_ready", "draft"):
+            setattr(setup, field, value)
     db.flush()
 
 
@@ -676,6 +742,294 @@ def neutral_schedule_text(value: str) -> str:
     )
 
 
+def ensure_integrated_control_examples(db: Session, tenant_id: int) -> None:
+    examples = [
+        {
+            "project_code": "MIN-ABC",
+            "project_name": "MIN-ABC Planta Minera",
+            "fbs_code": "FBS-OWN-AFE002-PLT",
+            "source_of_funds": "Owner equity AFE002",
+            "funding_type": "AFE",
+            "authorization_ref": "AFE002",
+            "wbs_code": "1.5.3",
+            "wbs_name": "Obras civiles planta",
+            "package_type": "CWP",
+            "package_code": "CWP-PLT-CIV-001",
+            "control_account": "CA-PLT-CIV-001",
+            "cbs_code": "4000 MO",
+            "cost_category": "Mano de obra",
+            "cost_code": "MIN-1.5.3-CA-PLT-CIV-001-4000",
+            "contract": "CTR-CIV-001",
+            "budget": 5_000_000,
+            "funds": 4_800_000,
+            "currency": "USD",
+        },
+        {
+            "project_code": "VIA-001",
+            "project_name": "VIA-001 Infraestructura Vial",
+            "fbs_code": "FBS-PUB-VIG2027-T01",
+            "source_of_funds": "Vigencia publica 2027 Tramo 1",
+            "funding_type": "Public funding",
+            "authorization_ref": "VIG2027-T01",
+            "wbs_code": "1.5.1",
+            "wbs_name": "Tramo 1",
+            "package_type": "CWP",
+            "package_code": "CWP-T01-MT-001",
+            "control_account": "CA-VIA-T01-MT-001",
+            "cbs_code": "6000 Equipos",
+            "cost_category": "Equipos",
+            "cost_code": "VIA-1.5.1-CA-VIA-T01-MT-001-6000",
+            "contract": "CTR-MT-001",
+            "budget": 3_200_000,
+            "funds": 3_000_000,
+            "currency": "USD",
+        },
+    ]
+    for spec in examples:
+        project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.code == spec["project_code"]))
+        if not project:
+            project = Project(
+                tenant_id=tenant_id,
+                code=spec["project_code"],
+                name=spec["project_name"],
+                phase="Execution",
+                currency=spec["currency"],
+                calendar_base="5x8",
+                owner="Owner / Direccion",
+                status="authorized",
+                authorization_date=date(2026, 5, 12),
+                authorization_ref=spec["authorization_ref"],
+                configuration={"control_model": "FBS-WBS-CA-AWP-CBS-CostCode"},
+                start_date=date(2026, 5, 12),
+                finish_date=date(2027, 12, 31),
+            )
+            db.add(project)
+            db.flush()
+        ensure_project_control_plan(db, tenant_id, project.id)
+        ensure_project_operational_setup(db, tenant_id, project.id)
+
+        wbs = db.scalar(
+            select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project.id, WBS.code == spec["wbs_code"])
+        )
+        if not wbs:
+            wbs = WBS(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                parent_id=None,
+                code=spec["wbs_code"],
+                name=spec["wbs_name"],
+                level=3,
+                description=spec["wbs_name"],
+                dictionary=f"Diccionario WBS para {spec['wbs_name']}.",
+                responsible="Project Controls",
+                status="active",
+            )
+            db.add(wbs)
+            db.flush()
+
+        fbs = db.scalar(
+            select(FundingSource).where(
+                FundingSource.tenant_id == tenant_id,
+                FundingSource.project_id == project.id,
+                FundingSource.code == spec["fbs_code"],
+            )
+        )
+        if not fbs:
+            fbs = FundingSource(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                code=spec["fbs_code"],
+                name=spec["source_of_funds"],
+                source_of_funds=spec["source_of_funds"],
+                funding_type=spec["funding_type"],
+                authorization_ref=spec["authorization_ref"],
+                usage_restrictions=f"Uso restringido a {spec['wbs_name']}.",
+                usage_rules="Validar disponibilidad antes de emitir compromisos.",
+                amount=spec["funds"],
+                funds_available=spec["funds"],
+                currency=spec["currency"],
+                status="approved",
+            )
+            db.add(fbs)
+            db.flush()
+
+        cbs = db.scalar(
+            select(CostBreakdownStructure).where(
+                CostBreakdownStructure.tenant_id == tenant_id,
+                CostBreakdownStructure.project_id == project.id,
+                CostBreakdownStructure.code == spec["cbs_code"],
+            )
+        )
+        if not cbs:
+            cbs = CostBreakdownStructure(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                parent_id=None,
+                code=spec["cbs_code"],
+                level=2,
+                cost_category=spec["cost_category"],
+                description=f"CBS {spec['cost_category']} para {spec['project_code']}.",
+                status="active",
+            )
+            db.add(cbs)
+            db.flush()
+
+        account = db.scalar(
+            select(ControlAccount).where(
+                ControlAccount.tenant_id == tenant_id,
+                ControlAccount.project_id == project.id,
+                ControlAccount.code == spec["control_account"],
+            )
+        )
+        if not account:
+            account = ControlAccount(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                wbs_id=wbs.id,
+                code=spec["control_account"],
+                name=spec["wbs_name"],
+                responsible="Project Controls Manager",
+                discipline="Civil" if spec["project_code"] == "MIN-ABC" else "Roadworks",
+                scope=spec["wbs_name"],
+                budget=spec["budget"],
+                cbs_code=spec["cbs_code"],
+                contract_ref=spec["contract"],
+                measurement_rule="Avance fisico por cantidades instaladas.",
+                forecast=spec["budget"],
+                lifecycle_status="active",
+            )
+            db.add(account)
+            db.flush()
+
+        package = db.scalar(
+            select(WorkPackage).where(
+                WorkPackage.tenant_id == tenant_id,
+                WorkPackage.project_id == project.id,
+                WorkPackage.code == spec["package_code"],
+            )
+        )
+        if not package:
+            package = WorkPackage(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                wbs_id=wbs.id,
+                control_account_id=account.id,
+                parent_id=None,
+                package_type=spec["package_type"],
+                code=spec["package_code"],
+                title=spec["wbs_name"],
+                description=f"Paquete AWP para {spec['wbs_name']}.",
+                discipline=account.discipline,
+                path_of_construction=spec["wbs_name"],
+                owner_role="Workface Planner",
+                readiness_status="ready_to_release",
+                planned_release_date=date(2026, 6, 1),
+                release_required_on=date(2026, 6, 15),
+                main_constraints="Permisos, ingenieria IFC, materiales y acceso.",
+                progress_percent=0,
+            )
+            db.add(package)
+            db.flush()
+            account.awp_package_id = package.id
+
+        allocation = db.scalar(
+            select(ControlAccountFundingAllocation).where(
+                ControlAccountFundingAllocation.tenant_id == tenant_id,
+                ControlAccountFundingAllocation.project_id == project.id,
+                ControlAccountFundingAllocation.control_account_id == account.id,
+                ControlAccountFundingAllocation.funding_source_id == fbs.id,
+            )
+        )
+        if not allocation:
+            db.add(
+                ControlAccountFundingAllocation(
+                    tenant_id=tenant_id,
+                    project_id=project.id,
+                    control_account_id=account.id,
+                    funding_source_id=fbs.id,
+                    allocated_amount=spec["funds"],
+                    forecast_amount=spec["budget"],
+                    distribution_note="Seed de matriz integrada FBS-WBS-CA-CBS.",
+                    status="active",
+                )
+            )
+
+        budget = db.scalar(
+            select(Budget).where(
+                Budget.tenant_id == tenant_id,
+                Budget.project_id == project.id,
+                Budget.control_account_id == account.id,
+                Budget.cbs_code == spec["cbs_code"],
+            )
+        )
+        if not budget:
+            db.add(
+                Budget(
+                    tenant_id=tenant_id,
+                    project_id=project.id,
+                    control_account_id=account.id,
+                    cbs_code=spec["cbs_code"],
+                    bac=spec["budget"],
+                    cost_loaded_pv=spec["budget"] * 0.4,
+                )
+            )
+
+        contract = db.scalar(
+            select(Contract).where(
+                Contract.tenant_id == tenant_id,
+                Contract.project_id == project.id,
+                Contract.code == spec["contract"],
+            )
+        )
+        if not contract:
+            contract = Contract(
+                tenant_id=tenant_id,
+                project_id=project.id,
+                funding_source_id=fbs.id,
+                control_account_id=account.id,
+                code=spec["contract"],
+                title=f"Contrato {spec['wbs_name']}",
+                counterparty="Contratista demo",
+                contract_type="Construction",
+                value=spec["budget"] * 0.8,
+                status="active",
+            )
+            db.add(contract)
+            db.flush()
+        else:
+            contract.funding_source_id = contract.funding_source_id or fbs.id
+
+        cost_code = db.scalar(
+            select(CostCode).where(
+                CostCode.tenant_id == tenant_id,
+                CostCode.project_id == project.id,
+                CostCode.code == spec["cost_code"],
+            )
+        )
+        if not cost_code:
+            db.add(
+                CostCode(
+                    tenant_id=tenant_id,
+                    project_id=project.id,
+                    wbs_id=wbs.id,
+                    control_account_id=account.id,
+                    cbs_id=cbs.id,
+                    fbs_id=fbs.id,
+                    contract_ref=spec["contract"],
+                    code=spec["cost_code"],
+                    budget=spec["budget"],
+                    funds_available=spec["funds"],
+                    commitments=contract.value,
+                    actual_costs=0,
+                    forecast=spec["budget"],
+                    status="active",
+                )
+            )
+        IntegratedControlService(db).refresh_funding_balance(tenant_id, project.id, fbs)
+        ControlCoreService(db).run_project_cycle(tenant_id, project.id)
+    db.commit()
+
+
 def ensure_demo_users(db: Session, tenant_id: int) -> None:
     demo_password = get_settings().demo_user_password
     users_seed = [
@@ -733,6 +1087,7 @@ def ensure_local_credential(db: Session, tenant_id: int, user_id: int, password:
     )
     if credential:
         credential.is_active = True
+        credential.password_hash = hash_password(password)
         return
     db.add(
         AuthCredential(

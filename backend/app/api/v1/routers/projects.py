@@ -8,8 +8,9 @@ the ongoing split.
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -36,17 +37,38 @@ from app.api.v1._helpers import (
     write_audit_log as _audit,
 )
 from app.database.session import get_db
-from app.domain.models import WBS, Project, ProjectControlPlan, ProjectMembership
+from app.domain.models import (
+    WBS,
+    ActivitySheet,
+    ActivitySheetRow,
+    BusinessProcessPolicy,
+    ControlAccount,
+    ControlAccountMapping,
+    Project,
+    ProjectControlPlan,
+    ProjectMembership,
+    ProjectOperationalSetup,
+    ScheduleActivityMap,
+)
 from app.domain.schemas import (
+    ActivitySheetOut,
+    ActivitySheetRowOut,
+    ActivitySheetWbsRowOut,
     ProjectControlPlanOut,
     ProjectControlPlanUpdate,
     ProjectCreate,
     ProjectMembershipCreate,
     ProjectMembershipOut,
+    ProjectOperationalSetupOut,
+    ProjectOperationalSetupUpdate,
     ProjectOut,
+    ProjectRoleMatrixOut,
     ProjectTeamMemberOut,
+    RoleMatrixEntryOut,
+    RoleMatrixPolicyOut,
     UserOut,
 )
+from app.services.schedule_ingestion import ScheduleIngestionService
 
 router = APIRouter()
 
@@ -92,6 +114,12 @@ def create_project(
         name=payload.name,
         phase=payload.phase,
         currency=payload.currency,
+        calendar_base=payload.calendar_base,
+        owner=payload.owner,
+        status=payload.status,
+        authorization_date=payload.authorization_date,
+        authorization_ref=payload.authorization_ref,
+        configuration=payload.configuration,
         start_date=payload.start_date,
         finish_date=payload.finish_date,
     )
@@ -111,7 +139,7 @@ def create_project(
         db,
         tenant_id,
         project.id,
-        "create_project_shell",
+        "create_project",
         "Project",
         project.id,
         f'{{"code":"{project.code}"}}',
@@ -133,6 +161,66 @@ def list_project_team(
 
     _require_membership(db, tenant_id, project_id, user_id)
     return _project_team(db, tenant_id, project_id)
+
+
+@router.get("/projects/{project_id}/role-matrix", response_model=ProjectRoleMatrixOut)
+def get_project_role_matrix(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectRoleMatrixOut:
+    from app.api.v1.router import _project_team, _role_profiles  # late import
+
+    _require_membership(db, tenant_id, project_id, user_id)
+    team = _project_team(db, tenant_id, project_id)
+    policies = list(
+        db.scalars(
+            select(BusinessProcessPolicy)
+            .where(
+                BusinessProcessPolicy.tenant_id == tenant_id,
+                BusinessProcessPolicy.project_id == project_id,
+                BusinessProcessPolicy.status == "active",
+            )
+            .order_by(BusinessProcessPolicy.process_code, BusinessProcessPolicy.action)
+        ).all()
+    )
+    entries: list[RoleMatrixEntryOut] = []
+    for profile in _role_profiles():
+        assigned_users = [member.user for member in team if member.membership.role == profile.role]
+        role_policies = [
+            RoleMatrixPolicyOut(
+                process_code=policy.process_code,
+                action=policy.action,
+                required_role=policy.required_role,
+                permission_key=policy.permission_key,
+                status=policy.status,
+            )
+            for policy in policies
+            if policy.required_role == profile.role
+        ]
+        entries.append(
+            RoleMatrixEntryOut(
+                role=profile.role,
+                description=profile.description,
+                permissions={
+                    "can_capture_progress": profile.can_capture_progress,
+                    "can_capture_cost": profile.can_capture_cost,
+                    "can_approve_workflow": profile.can_approve_workflow,
+                    "can_manage_contract": profile.can_manage_contract,
+                    "can_configure": profile.can_configure,
+                },
+                assigned_users=assigned_users,
+                assigned_user_count=len(assigned_users),
+                business_process_actions=role_policies,
+            )
+        )
+    return ProjectRoleMatrixOut(
+        project_id=project_id,
+        generated_at=datetime.utcnow(),
+        role_count=len(entries),
+        entries=entries,
+    )
 
 
 @router.post("/projects/{project_id}/team", response_model=ProjectTeamMemberOut)
@@ -239,3 +327,396 @@ def update_project_control_plan(
     db.commit()
     db.refresh(plan)
     return plan
+
+
+@router.get("/projects/{project_id}/operational-setup", response_model=ProjectOperationalSetupOut)
+def get_project_operational_setup(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectOperationalSetup:
+    _require_membership(db, tenant_id, project_id, user_id)
+    setup = _get_project_operational_setup(db, tenant_id, project_id)
+    if not setup:
+        raise HTTPException(status_code=404, detail="Project operational setup not found")
+    return setup
+
+
+@router.put("/projects/{project_id}/operational-setup", response_model=ProjectOperationalSetupOut)
+def update_project_operational_setup(
+    project_id: int,
+    payload: ProjectOperationalSetupUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectOperationalSetup:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot configure the project operational setup")
+    current_user = _require_user(db, tenant_id, user_id)
+    setup = _get_project_operational_setup(db, tenant_id, project_id)
+    is_new = setup is None
+    if setup is None:
+        setup = ProjectOperationalSetup(tenant_id=tenant_id, project_id=project_id)
+        db.add(setup)
+        db.flush()
+    else:
+        _require_current_version(setup, payload.expected_version)
+
+    for field, value in payload.model_dump(exclude={"expected_version"}).items():
+        setattr(setup, field, value.strip() if isinstance(value, str) else value)
+    if setup.status not in {"draft", "in_review", "ready", "active"}:
+        raise HTTPException(status_code=400, detail="Unsupported project operational setup status")
+    _apply_operational_setup_readiness(setup)
+    if not is_new:
+        _touch_collaborative_record(setup)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_project_operational_setup",
+        "ProjectOperationalSetup",
+        setup.id,
+        json.dumps({"status": setup.status, "readiness_status": setup.readiness_status}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(setup)
+    return setup
+
+
+@router.get("/projects/{project_id}/activity-sheets", response_model=list[ActivitySheetOut])
+def list_activity_sheets(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ActivitySheet]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(ActivitySheet)
+            .where(ActivitySheet.tenant_id == tenant_id, ActivitySheet.project_id == project_id)
+            .order_by(ActivitySheet.created_at.desc(), ActivitySheet.id.desc())
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/activity-sheets/get-data", response_model=ActivitySheetOut)
+async def get_activity_sheet_data(
+    project_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ActivitySheet:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    if membership.role not in {"Planner", "Control Manager"}:
+        raise HTTPException(status_code=403, detail="Current role cannot load activity data")
+    _require_operational_setup_ready(db, tenant_id, project_id)
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Activity source file is empty")
+
+    schedule_import = ScheduleIngestionService(db).ingest(tenant_id, project_id, file.filename or "activity-data.xml", content)
+    rows = list(
+        db.scalars(
+            select(ScheduleActivityMap)
+            .where(
+                ScheduleActivityMap.tenant_id == tenant_id,
+                ScheduleActivityMap.project_id == project_id,
+                ScheduleActivityMap.schedule_import_id == schedule_import.id,
+            )
+            .order_by(ScheduleActivityMap.external_activity_id)
+        ).all()
+    )
+    mappings_by_schedule_row_id = {
+        mapping.schedule_activity_map_id: mapping
+        for mapping in db.scalars(
+            select(ControlAccountMapping).where(
+                ControlAccountMapping.tenant_id == tenant_id,
+                ControlAccountMapping.project_id == project_id,
+                ControlAccountMapping.schedule_import_id == schedule_import.id,
+            )
+        ).all()
+    }
+    activity_sheet = ActivitySheet(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        schedule_import_id=schedule_import.id,
+        source_file_name=schedule_import.file_name,
+        source=_enum_value(schedule_import.source),
+        status=_enum_value(schedule_import.status),
+        row_count=len(rows),
+        data_date=schedule_import.data_date,
+        baseline_name=schedule_import.baseline_name,
+        validation_summary=schedule_import.validation_summary,
+    )
+    db.add(activity_sheet)
+    db.flush()
+    for row in rows:
+        mapping = mappings_by_schedule_row_id.get(row.id)
+        db.add(
+            ActivitySheetRow(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                activity_sheet_id=activity_sheet.id,
+                external_activity_id=row.external_activity_id,
+                wbs_code=row.wbs_code,
+                activity_name=row.activity_name,
+                planned_start=row.planned_start,
+                planned_finish=row.planned_finish,
+                total_float_days=row.total_float_days,
+                critical_path=row.critical_path,
+                planned_cost=mapping.planned_cost if mapping else 0,
+            )
+        )
+    current_user = _require_user(db, tenant_id, user_id)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "get_activity_sheet_data",
+        "ActivitySheet",
+        activity_sheet.id,
+        json.dumps({"source_file_name": activity_sheet.source_file_name, "row_count": activity_sheet.row_count}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(activity_sheet)
+    return activity_sheet
+
+
+@router.get(
+    "/projects/{project_id}/activity-sheets/{activity_sheet_id}/rows",
+    response_model=list[ActivitySheetRowOut],
+)
+def list_activity_sheet_rows(
+    project_id: int,
+    activity_sheet_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ActivitySheetRow]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    activity_sheet = db.scalar(
+        select(ActivitySheet).where(
+            ActivitySheet.tenant_id == tenant_id,
+            ActivitySheet.project_id == project_id,
+            ActivitySheet.id == activity_sheet_id,
+        )
+    )
+    if not activity_sheet:
+        raise HTTPException(status_code=404, detail="Activity sheet not found")
+    return _activity_sheet_enriched_rows(db, tenant_id, project_id, activity_sheet)
+
+
+@router.get(
+    "/projects/{project_id}/activity-sheets/{activity_sheet_id}/wbs-sheet",
+    response_model=list[ActivitySheetWbsRowOut],
+)
+def get_activity_sheet_wbs_sheet(
+    project_id: int,
+    activity_sheet_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ActivitySheetWbsRowOut]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    activity_sheet = db.scalar(
+        select(ActivitySheet).where(
+            ActivitySheet.tenant_id == tenant_id,
+            ActivitySheet.project_id == project_id,
+            ActivitySheet.id == activity_sheet_id,
+        )
+    )
+    if not activity_sheet:
+        raise HTTPException(status_code=404, detail="Activity sheet not found")
+
+    wbs_by_code = {
+        wbs.code: wbs
+        for wbs in db.scalars(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)).all()
+    }
+    grouped: dict[str, dict[str, object]] = {}
+    for row in _activity_sheet_enriched_rows(db, tenant_id, project_id, activity_sheet):
+        wbs_code = row["wbs_code"] or "UNMAPPED"
+        group = grouped.setdefault(
+            wbs_code,
+            {
+                "activity_count": 0,
+                "control_account_ids": set(),
+                "planned_cost": 0.0,
+                "planned_value": 0.0,
+                "unmapped_activity_count": 0,
+                "needs_review_count": 0,
+            },
+        )
+        group["activity_count"] = int(group["activity_count"]) + 1
+        group["planned_cost"] = float(group["planned_cost"]) + float(row["planned_cost"] or 0)
+        group["planned_value"] = float(group["planned_value"]) + float(row["planned_value"] or 0)
+        control_account_ids = group["control_account_ids"]
+        if isinstance(control_account_ids, set) and row["control_account_id"]:
+            control_account_ids.add(row["control_account_id"])
+        if not row["control_account_id"]:
+            group["unmapped_activity_count"] = int(group["unmapped_activity_count"]) + 1
+        if row["mapping_status"] != "mapped":
+            group["needs_review_count"] = int(group["needs_review_count"]) + 1
+
+    rows: list[ActivitySheetWbsRowOut] = []
+    for wbs_code in sorted(grouped):
+        group = grouped[wbs_code]
+        wbs = wbs_by_code.get(wbs_code)
+        control_account_ids = group["control_account_ids"]
+        rows.append(
+            ActivitySheetWbsRowOut(
+                wbs_code=wbs_code,
+                wbs_name=wbs.name if wbs else wbs_code,
+                activity_count=int(group["activity_count"]),
+                control_account_count=len(control_account_ids) if isinstance(control_account_ids, set) else 0,
+                planned_cost=round(float(group["planned_cost"]), 2),
+                planned_value=round(float(group["planned_value"]), 2),
+                unmapped_activity_count=int(group["unmapped_activity_count"]),
+                needs_review_count=int(group["needs_review_count"]),
+            )
+        )
+    return rows
+
+
+def _activity_sheet_enriched_rows(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    activity_sheet: ActivitySheet,
+) -> list[dict[str, object]]:
+    activity_rows = list(
+        db.scalars(
+            select(ActivitySheetRow)
+            .where(
+                ActivitySheetRow.tenant_id == tenant_id,
+                ActivitySheetRow.project_id == project_id,
+                ActivitySheetRow.activity_sheet_id == activity_sheet.id,
+            )
+            .order_by(ActivitySheetRow.external_activity_id)
+        ).all()
+    )
+    if not activity_rows:
+        return []
+
+    schedule_rows = list(
+        db.scalars(
+            select(ScheduleActivityMap).where(
+                ScheduleActivityMap.tenant_id == tenant_id,
+                ScheduleActivityMap.project_id == project_id,
+                ScheduleActivityMap.schedule_import_id == activity_sheet.schedule_import_id,
+            )
+        ).all()
+    )
+    schedule_row_by_external_id = {row.external_activity_id: row for row in schedule_rows}
+    mappings = list(
+        db.scalars(
+            select(ControlAccountMapping).where(
+                ControlAccountMapping.tenant_id == tenant_id,
+                ControlAccountMapping.project_id == project_id,
+                ControlAccountMapping.schedule_import_id == activity_sheet.schedule_import_id,
+            )
+        ).all()
+    )
+    mapping_by_schedule_row_id = {mapping.schedule_activity_map_id: mapping for mapping in mappings}
+    account_ids = {mapping.control_account_id for mapping in mappings if mapping.control_account_id}
+    accounts_by_id = {
+        account.id: account
+        for account in db.scalars(
+            select(ControlAccount).where(
+                ControlAccount.tenant_id == tenant_id,
+                ControlAccount.project_id == project_id,
+                ControlAccount.id.in_(account_ids),
+            )
+        ).all()
+    } if account_ids else {}
+
+    enriched: list[dict[str, object]] = []
+    for row in activity_rows:
+        schedule_row = schedule_row_by_external_id.get(row.external_activity_id)
+        mapping = mapping_by_schedule_row_id.get(schedule_row.id) if schedule_row else None
+        account = accounts_by_id.get(mapping.control_account_id) if mapping and mapping.control_account_id else None
+        planned_cost = row.planned_cost or (mapping.planned_cost if mapping else 0)
+        enriched.append(
+            {
+                "id": row.id,
+                "activity_sheet_id": row.activity_sheet_id,
+                "external_activity_id": row.external_activity_id,
+                "wbs_code": row.wbs_code,
+                "activity_name": row.activity_name,
+                "planned_start": row.planned_start,
+                "planned_finish": row.planned_finish,
+                "total_float_days": row.total_float_days,
+                "critical_path": row.critical_path,
+                "planned_cost": round(float(planned_cost or 0), 2),
+                "planned_value": round(float(mapping.planned_value if mapping else 0), 2),
+                "planned_percent": round(float(mapping.planned_percent if mapping else 0), 2),
+                "cbs_code": mapping.cbs_code if mapping else "",
+                "control_account_id": mapping.control_account_id if mapping else None,
+                "control_account_code": account.code if account else "",
+                "mapping_status": mapping.status if mapping else "unmapped",
+                "review_note": mapping.review_note if mapping else "Activity has no control account mapping.",
+            }
+        )
+    return enriched
+
+
+def _get_project_operational_setup(
+    db: Session, tenant_id: int, project_id: int
+) -> ProjectOperationalSetup | None:
+    return db.scalar(
+        select(ProjectOperationalSetup).where(
+            ProjectOperationalSetup.tenant_id == tenant_id,
+            ProjectOperationalSetup.project_id == project_id,
+        )
+    )
+
+
+def _require_operational_setup_ready(db: Session, tenant_id: int, project_id: int) -> ProjectOperationalSetup:
+    setup = _get_project_operational_setup(db, tenant_id, project_id)
+    if not setup:
+        raise HTTPException(
+            status_code=409,
+            detail="Project operational setup must be completed before loading activity data",
+        )
+    _apply_operational_setup_readiness(setup)
+    if setup.readiness_status != "ready":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Project operational setup is not ready: {setup.readiness_notes}",
+        )
+    return setup
+
+
+def _apply_operational_setup_readiness(setup: ProjectOperationalSetup) -> None:
+    missing = _operational_setup_missing_items(setup)
+    setup.readiness_status = "ready" if not missing and setup.status in {"ready", "active"} else "not_ready"
+    setup.readiness_notes = "Ready for controlled data loading." if not missing else ", ".join(missing)
+
+
+def _operational_setup_missing_items(setup: ProjectOperationalSetup) -> list[str]:
+    missing: list[str] = []
+    for field, label in (
+        ("project_number", "project number"),
+        ("setup_template", "setup template"),
+        ("attribute_form", "attribute form"),
+    ):
+        if not str(getattr(setup, field, "") or "").strip():
+            missing.append(label)
+    for field, label in (
+        ("permissions_configured", "permissions"),
+        ("modules_configured", "modules"),
+        ("cost_sheet_ready", "cost sheet"),
+        ("funding_sheet_ready", "funding sheet"),
+        ("p6_mapping_ready", "P6 mapping"),
+    ):
+        if not bool(getattr(setup, field)):
+            missing.append(label)
+    return missing
+
+
+def _enum_value(value: object) -> str:
+    return str(getattr(value, "value", value))

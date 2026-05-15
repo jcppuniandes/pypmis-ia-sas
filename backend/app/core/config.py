@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     seed_demo_data: bool = True
     auth_secret_key: str = "change-me-before-production"
     access_token_expire_minutes: int = 480
-    demo_user_password: str = "demo123"
+    demo_user_password: str = "1234"
+    demo_admin_username: str = "admin"
+    demo_admin_email: str = "ana.control@demo.local"
     docs_enabled: bool = True
     security_headers_enabled: bool = True
     hsts_enabled: bool = False
@@ -104,6 +106,14 @@ class Settings(BaseSettings):
                 "AUTO_CREATE_SCHEMA must be false in production. "
                 "Run 'alembic upgrade head' to manage schema changes."
             )
+        if self.metrics_enabled and not self.metrics_token:
+            raise RuntimeError("METRICS_TOKEN is required when METRICS_ENABLED=true in production")
+        if not self.rate_limit_enabled:
+            raise RuntimeError("RATE_LIMIT_ENABLED must be true in production")
+        if not self.security_headers_enabled:
+            raise RuntimeError("SECURITY_HEADERS_ENABLED must be true in production")
+        if self.log_format.lower() != "json":
+            raise RuntimeError("LOG_FORMAT must be json in production")
 
 
 @lru_cache

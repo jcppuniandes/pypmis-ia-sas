@@ -11,6 +11,12 @@ class ProjectOut(BaseModel):
     name: str
     phase: str
     currency: str
+    calendar_base: str = ""
+    owner: str = ""
+    status: str = "draft"
+    authorization_date: date | None = None
+    authorization_ref: str = ""
+    configuration: dict[str, object] = Field(default_factory=dict)
     start_date: date | None
     finish_date: date | None
 
@@ -20,6 +26,12 @@ class ProjectCreate(BaseModel):
     name: str
     phase: str = "Planning"
     currency: str = "USD"
+    calendar_base: str = ""
+    owner: str = ""
+    status: str = "draft"
+    authorization_date: date | None = None
+    authorization_ref: str = ""
+    configuration: dict[str, object] = Field(default_factory=dict)
     start_date: date | None = None
     finish_date: date | None = None
 
@@ -56,6 +68,91 @@ class ProjectControlPlanUpdate(BaseModel):
     reporting_cadence: str | None = None
     status: str | None = None
     expected_version: int | None = None
+
+
+class ProjectOperationalSetupOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    project_number: str
+    setup_template: str
+    attribute_form: str
+    permissions_configured: bool
+    modules_configured: bool
+    cost_sheet_ready: bool
+    funding_sheet_ready: bool
+    p6_mapping_ready: bool
+    status: str
+    readiness_status: str
+    readiness_notes: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ProjectOperationalSetupUpdate(BaseModel):
+    project_number: str = ""
+    setup_template: str = ""
+    attribute_form: str = ""
+    permissions_configured: bool = False
+    modules_configured: bool = False
+    cost_sheet_ready: bool = False
+    funding_sheet_ready: bool = False
+    p6_mapping_ready: bool = False
+    status: str = "draft"
+    expected_version: int | None = None
+
+
+class ActivitySheetOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    schedule_import_id: int | None
+    source_file_name: str
+    source: str
+    status: str
+    row_count: int
+    data_date: date | None
+    baseline_name: str
+    validation_summary: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ActivitySheetRowOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    activity_sheet_id: int
+    external_activity_id: str
+    wbs_code: str
+    activity_name: str
+    planned_start: date | None
+    planned_finish: date | None
+    total_float_days: float
+    critical_path: bool
+    planned_cost: float
+    planned_value: float = 0
+    planned_percent: float = 0
+    cbs_code: str = ""
+    control_account_id: int | None = None
+    control_account_code: str = ""
+    mapping_status: str = ""
+    review_note: str = ""
+
+
+class ActivitySheetWbsRowOut(BaseModel):
+    wbs_code: str
+    wbs_name: str
+    activity_count: int
+    control_account_count: int
+    planned_cost: float
+    planned_value: float
+    unmapped_activity_count: int
+    needs_review_count: int
 
 
 class UserOut(BaseModel):
@@ -192,17 +289,50 @@ class ProjectTeamMemberOut(BaseModel):
     membership: ProjectMembershipOut
 
 
+class RoleMatrixPolicyOut(BaseModel):
+    process_code: str
+    action: str
+    required_role: str
+    permission_key: str
+    status: str
+
+
+class RoleMatrixEntryOut(BaseModel):
+    role: str
+    description: str
+    permissions: dict[str, bool]
+    assigned_users: list[UserOut]
+    assigned_user_count: int
+    business_process_actions: list[RoleMatrixPolicyOut]
+
+
+class ProjectRoleMatrixOut(BaseModel):
+    project_id: int
+    generated_at: datetime
+    role_count: int
+    entries: list[RoleMatrixEntryOut]
+
+
 class ControlAccountOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    wbs_id: int | None = None
+    awp_package_id: int | None = None
     code: str
     name: str
     responsible: str
     discipline: str
+    scope: str = ""
+    budget: float = 0
+    start_date: date | None = None
+    finish_date: date | None = None
     cbs_code: str
     contract_ref: str
     measurement_rule: str
+    earned_value: float = 0
+    actual_cost: float = 0
+    forecast: float = 0
     lifecycle_status: str
     risk_ref: str
     closure_note: str
@@ -212,26 +342,43 @@ class ControlAccountOut(BaseModel):
 
 class ControlAccountCreate(BaseModel):
     wbs_id: int | None = None
+    awp_package_id: int | None = None
     code: str
     name: str
     responsible: str
     discipline: str
+    scope: str = ""
+    budget: float = 0
+    start_date: date | None = None
+    finish_date: date | None = None
     cbs_code: str = ""
     contract_ref: str = ""
     measurement_rule: str = ""
+    earned_value: float = 0
+    actual_cost: float = 0
+    forecast: float = 0
     lifecycle_status: str = "active"
     risk_ref: str = ""
     closure_note: str = ""
 
 
 class ControlAccountUpdate(BaseModel):
+    wbs_id: int | None = None
+    awp_package_id: int | None = None
     code: str | None = None
     name: str | None = None
     responsible: str | None = None
     discipline: str | None = None
+    scope: str | None = None
+    budget: float | None = None
+    start_date: date | None = None
+    finish_date: date | None = None
     cbs_code: str | None = None
     contract_ref: str | None = None
     measurement_rule: str | None = None
+    earned_value: float | None = None
+    actual_cost: float | None = None
+    forecast: float | None = None
     lifecycle_status: str | None = None
     risk_ref: str | None = None
     closure_note: str | None = None
@@ -245,6 +392,22 @@ class WBSOut(BaseModel):
     parent_id: int | None
     code: str
     name: str
+    level: int = 1
+    description: str = ""
+    dictionary: str = ""
+    responsible: str = ""
+    status: str = "draft"
+
+
+class WBSCreate(BaseModel):
+    parent_id: int | None = None
+    code: str
+    name: str
+    level: int = 1
+    description: str = ""
+    dictionary: str = ""
+    responsible: str = ""
+    status: str = "draft"
 
 
 class ActivityOut(BaseModel):
@@ -301,8 +464,18 @@ class FundingSourceOut(BaseModel):
     code: str
     name: str
     amount: float
+    approved_amount: float = 0
+    source_of_funds: str = ""
+    funding_type: str = ""
+    authorization_ref: str = ""
+    usage_restrictions: str = ""
+    funds_available: float = 0
+    funds_committed: float = 0
+    funds_executed: float = 0
+    balance: float = 0
     currency: str
     status: str
+    usage_rules: str = ""
     version: int
     created_at: datetime
     updated_at: datetime
@@ -310,18 +483,284 @@ class FundingSourceOut(BaseModel):
 
 class FundingSourceCreate(BaseModel):
     code: str
-    name: str
-    amount: float
+    name: str = ""
+    source_of_funds: str = ""
+    funding_type: str = ""
+    authorization_ref: str = ""
+    usage_restrictions: str = ""
+    usage_rules: str = ""
+    amount: float | None = None
+    approved_amount: float | None = None
     currency: str = "USD"
     status: str = "approved"
 
 
 class FundingSourceUpdate(BaseModel):
     name: str | None = None
+    source_of_funds: str | None = None
+    funding_type: str | None = None
+    authorization_ref: str | None = None
+    usage_restrictions: str | None = None
+    usage_rules: str | None = None
     amount: float | None = None
+    approved_amount: float | None = None
     currency: str | None = None
     status: str | None = None
     expected_version: int | None = None
+
+
+class FundingAvailabilityOut(BaseModel):
+    project_id: int
+    funding_source_id: int
+    fbs_code: str
+    approved_amount: float
+    funds_available: float
+    funds_committed: float
+    funds_executed: float
+    requested_amount: float
+    is_available: bool
+    status: str
+
+
+class CostBreakdownStructureOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    parent_id: int | None
+    code: str
+    level: int
+    cost_category: str
+    description: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class CostBreakdownStructureCreate(BaseModel):
+    parent_id: int | None = None
+    code: str
+    level: int = 1
+    cost_category: str
+    description: str = ""
+    status: str = "draft"
+
+
+class CostCodeOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    wbs_id: int
+    control_account_id: int
+    cbs_id: int
+    fbs_id: int
+    contract_ref: str
+    code: str
+    budget: float
+    funds_available: float
+    commitments: float
+    actual_costs: float
+    forecast: float
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class CostCodeCreate(BaseModel):
+    code: str
+    wbs_id: int
+    control_account_id: int
+    cbs_id: int
+    fbs_id: int
+    contract_ref: str = ""
+    budget: float = 0
+    funds_available: float = 0
+    commitments: float = 0
+    actual_costs: float = 0
+    forecast: float = 0
+    status: str = "draft"
+
+
+class BusinessProcessLineItemCreate(BaseModel):
+    wbs_id: int | None = None
+    cbs_id: int
+    funding_source_id: int | None = None
+    control_account_id: int | None = None
+    amount: float
+    quantity: float = 0
+    description: str = ""
+
+
+class BusinessProcessLineItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    process_instance_id: int
+    line_type: str
+    wbs_id: int | None
+    cbs_id: int
+    funding_source_id: int | None
+    control_account_id: int | None
+    cost_code_id: int | None
+    amount: float
+    quantity: float
+    description: str
+    status: str
+    version: int = 1
+    created_at: datetime
+    updated_at: datetime
+
+
+class BusinessProcessCreate(BaseModel):
+    title: str
+    line_items: list[BusinessProcessLineItemCreate]
+
+
+class BusinessProcessPolicyOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    process_code: str
+    action: str
+    required_role: str
+    permission_key: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class BusinessProcessPolicyCreate(BaseModel):
+    process_code: str
+    action: str
+    required_role: str = ""
+    permission_key: str = ""
+    status: str = "active"
+
+
+class BusinessProcessLineItemUpdate(BaseModel):
+    amount: float | None = None
+    quantity: float | None = None
+    description: str | None = None
+    status: str | None = None
+    change_note: str = ""
+    expected_version: int | None = None
+
+
+class BusinessProcessLineItemRevisionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    line_item_id: int
+    process_instance_id: int
+    previous_version: int
+    new_version: int
+    previous_amount: float
+    new_amount: float
+    previous_quantity: float
+    new_quantity: float
+    previous_description: str
+    new_description: str
+    previous_status: str
+    new_status: str
+    change_note: str
+    changed_by: str
+    created_at: datetime
+
+
+class ControlAccountFundingAllocationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    control_account_id: int
+    funding_source_id: int
+    allocated_amount: float
+    committed_amount: float
+    actual_amount: float
+    forecast_amount: float
+    distribution_note: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ControlAccountFundingAllocationCreate(BaseModel):
+    control_account_id: int
+    funding_source_id: int
+    allocated_amount: float = 0
+    committed_amount: float = 0
+    actual_amount: float = 0
+    forecast_amount: float = 0
+    distribution_note: str = ""
+    status: str = "active"
+
+
+class IntegratedControlMatrixRow(BaseModel):
+    project_id: int
+    project_code: str
+    project_name: str
+    fbs_code: str
+    wbs_code: str
+    awp_package_code: str
+    awp_package_type: str
+    control_account_code: str
+    cbs_code: str
+    cost_code: str
+    contract_ref: str
+    budget: float
+    funds_available: float
+    committed: float
+    actual: float
+    forecast: float
+    balance: float
+    status: str
+
+
+class ForecastFundingRow(BaseModel):
+    funding_source_id: int
+    fbs_code: str
+    approved_amount: float
+    funds_available: float
+    funds_committed: float
+    funds_executed: float
+    forecast: float
+    forecast_vs_available: float
+    forecast_vs_approved: float
+    status: str
+
+
+class ForecastFundingReport(BaseModel):
+    project_id: int
+    rows: list[ForecastFundingRow]
+
+
+class BaselineApprovalOut(BaseModel):
+    project_id: int
+    project_status: str
+    fbs_count: int
+    wbs_count: int
+    control_account_count: int
+    cbs_count: int
+    cost_code_count: int
+
+
+class CloseoutReportOut(BaseModel):
+    project_id: int
+    funding_source_id: int | None = None
+    approved_amount: float
+    committed: float
+    actual: float
+    forecast: float
+    unused_balance: float
+    open_commitments: int
+    closed_commitments: int = 0
+    funding_status: str = ""
 
 
 class CashFlowPeriodOut(BaseModel):
@@ -909,6 +1348,7 @@ class ContractOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    funding_source_id: int | None = None
     control_account_id: int | None
     code: str
     title: str
@@ -919,6 +1359,7 @@ class ContractOut(BaseModel):
 
 
 class ContractCreate(BaseModel):
+    funding_source_id: int | None = None
     control_account_id: int | None = None
     code: str
     title: str
@@ -928,10 +1369,199 @@ class ContractCreate(BaseModel):
     status: str = "active"
 
 
+class ScheduleOfValueLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    contract_id: int
+    line_no: str
+    description: str
+    amount: float
+    cbs_id: int
+    wbs_id: int | None
+    control_account_id: int | None
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ScheduleOfValueLineCreate(BaseModel):
+    line_no: str
+    description: str = ""
+    amount: float
+    cbs_id: int | None = None
+    wbs_id: int | None = None
+    control_account_id: int | None = None
+    status: str = "active"
+
+
+class CommitmentFundingLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    contract_id: int
+    sov_line_id: int | None
+    funding_source_id: int
+    amount: float
+    consumed_amount: float
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class CommitmentFundingLineCreate(BaseModel):
+    contract_id: int
+    sov_line_id: int | None = None
+    funding_source_id: int
+    amount: float
+    consumed_amount: float = 0
+    status: str = "active"
+
+
+class RateSheetLineCreate(BaseModel):
+    cbs_code: str
+    unit_rate: float = 0
+    multiplier: float = 1
+    status: str = "active"
+
+
+class RateSheetLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    rate_sheet_id: int
+    cbs_code: str
+    unit_rate: float
+    multiplier: float
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class RateSheetCreate(BaseModel):
+    code: str
+    name: str = ""
+    status: str = "draft"
+    line_items: list[RateSheetLineCreate]
+
+
+class RateSheetOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    name: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+    line_items: list[RateSheetLineOut] = []
+
+
+class ActivitySheetRecostIn(BaseModel):
+    rate_sheet_id: int
+
+
+class ActivitySheetRecostOut(BaseModel):
+    project_id: int
+    activity_sheet_id: int
+    rate_sheet_id: int
+    recost_run_id: int | None = None
+    updated_rows: int
+    total_planned_cost: float
+    total_planned_value: float
+
+
+class ActivitySheetRecostRunLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    recost_run_id: int
+    activity_sheet_row_id: int
+    external_activity_id: str
+    cbs_code: str
+    previous_planned_cost: float
+    new_planned_cost: float
+    previous_planned_value: float
+    new_planned_value: float
+    created_at: datetime
+
+
+class ActivitySheetRecostRunOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    activity_sheet_id: int
+    rate_sheet_id: int
+    run_no: int
+    updated_rows: int
+    total_planned_cost: float
+    total_planned_value: float
+    created_by: str
+    created_at: datetime
+    lines: list[ActivitySheetRecostRunLineOut] = []
+
+
+class ReconciliationReportRow(BaseModel):
+    wbs_code: str
+    cbs_code: str
+    fbs_code: str
+    control_account_code: str
+    contract_ref: str
+    budget: float
+    committed: float
+    funded_amount: float
+    sov_amount: float
+    forecast: float
+    variance: float
+
+
+class ReconciliationReportOut(BaseModel):
+    project_id: int
+    rows: list[ReconciliationReportRow]
+
+
+class ControlAgentFindingOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    run_id: int
+    severity: str
+    category: str
+    title: str
+    evidence: str
+    recommendation: str
+    owner_role: str
+    entity_type: str
+    entity_id: int | None
+    status: str
+    created_at: datetime
+
+
+class ControlAgentRunOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    agent_code: str
+    agent_name: str
+    run_mode: str
+    model_name: str
+    status: str
+    score: int
+    summary: str
+    created_by: str
+    created_at: datetime
+    findings: list[ControlAgentFindingOut] = []
+
+
 class PurchaseOrderOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    funding_source_id: int | None = None
     control_account_id: int | None
     contract_id: int | None
     po_number: str
@@ -946,6 +1576,7 @@ class PurchaseOrderOut(BaseModel):
 
 
 class PurchaseOrderCreate(BaseModel):
+    funding_source_id: int | None = None
     control_account_id: int | None = None
     contract_id: int | None = None
     po_number: str
@@ -957,6 +1588,7 @@ class PurchaseOrderCreate(BaseModel):
 
 
 class PurchaseOrderUpdate(BaseModel):
+    funding_source_id: int | None = None
     control_account_id: int | None = None
     contract_id: int | None = None
     description: str | None = None
@@ -1385,38 +2017,46 @@ class WorkPackageOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    wbs_id: int | None = None
     control_account_id: int | None
     parent_id: int | None
     package_type: str
     code: str
     title: str
+    description: str = ""
     discipline: str
     sequence_no: int
     path_of_construction: str
     owner_role: str
     readiness_status: str
+    planned_release_date: date | None = None
     planned_start: date | None
     planned_finish: date | None
     release_required_on: date | None
+    main_constraints: str = ""
     progress_percent: float
     version: int
     updated_at: datetime
 
 
 class WorkPackageCreate(BaseModel):
+    wbs_id: int | None = None
     control_account_id: int | None = None
     parent_id: int | None = None
     package_type: str
     code: str
     title: str
+    description: str = ""
     discipline: str = ""
     sequence_no: int = 0
     path_of_construction: str = ""
     owner_role: str = "Workface Planner"
     readiness_status: str = "constraint_review"
+    planned_release_date: date | None = None
     planned_start: date | None = None
     planned_finish: date | None = None
     release_required_on: date | None = None
+    main_constraints: str = ""
     progress_percent: float = 0
 
 

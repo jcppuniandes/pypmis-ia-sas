@@ -1,6 +1,6 @@
 """Tests for seed_demo advisory locking."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from app.database.seed import acquire_seed_demo_lock, release_seed_demo_lock
 

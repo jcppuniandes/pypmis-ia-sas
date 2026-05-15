@@ -45,6 +45,12 @@ _SYSTEM_PROMPT = (
     "(CPI < 0.95), forecast accuracy, and re-baseline triggers. Be specific to the numbers given."
 )
 
+_CONTROL_AGENT_SYSTEM_PROMPT = (
+    "You are a senior project controls and AWP advisor. Summarize deterministic audit findings into "
+    "a concise production action brief for project leadership. Keep it under 5 bullets, avoid inventing "
+    "facts, and prioritize approvals, constraints, risk, cost and work package readiness."
+)
+
 _DISABLED_TEMPLATE = (
     "EVM Analysis: SPI={spi:.2f}, CPI={cpi:.2f}. "
     "Schedule Variance: {sv:+,.0f}. Cost Variance: {cv:+,.0f}. "
@@ -96,3 +102,44 @@ def generate_evm_insights(
         raise
     except Exception as exc:  # noqa: BLE001 — surface any SDK/network failure as AIInsightsError
         raise AIInsightsError(f"AI insights request failed: {exc}") from exc
+
+
+def generate_control_agent_synthesis(
+    agent_context: dict[str, Any],
+    ai_provider: str = "disabled",
+    api_key: str = "",
+    model: str = "claude-haiku-4-5-20251001",
+    max_tokens: int = 512,
+    timeout: int = 30,
+) -> str:
+    if ai_provider != "claude":
+        return ""
+    if not api_key:
+        raise AIInsightsError("ANTHROPIC_API_KEY is required when AI_PROVIDER=claude")
+
+    findings = agent_context.get("findings", [])
+    finding_lines = "\n".join(
+        f"- {item.get('severity', 'info')}: {item.get('title', '')} | {item.get('recommendation', '')}"
+        for item in findings[:8]
+    )
+    user_message = (
+        f"Agent: {agent_context.get('agent_name', 'AI Control Auditor')}\n"
+        f"Summary: {agent_context.get('summary', '')}\n"
+        f"Findings:\n{finding_lines or '- No open findings'}\n"
+        "\nReturn the production action synthesis:"
+    )
+    try:
+        import anthropic
+
+        client = anthropic.Anthropic(api_key=api_key, timeout=timeout)
+        message = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            system=_CONTROL_AGENT_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_message}],
+        )
+        return message.content[0].text
+    except AIInsightsError:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        raise AIInsightsError(f"Control agent synthesis request failed: {exc}") from exc

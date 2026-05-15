@@ -29,14 +29,17 @@ router = APIRouter()
 
 @router.post("/auth/login", response_model=AuthSessionOut)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOut:
+    settings = get_settings()
     tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
     tenant = db.scalar(select(Tenant).where(tenant_filter))
     if not tenant:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    login_name = payload.email.strip().lower()
+    login_email = settings.demo_admin_email if login_name == settings.demo_admin_username else login_name
     user = db.scalar(
         select(UserAccount).where(
             UserAccount.tenant_id == tenant.id,
-            UserAccount.email == payload.email.strip().lower(),
+            UserAccount.email == login_email,
             UserAccount.status == "active",
         )
     )
@@ -53,7 +56,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOu
     if not credential or not verify_password(payload.password, credential.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    settings = get_settings()
     token, expires_in = create_access_token(
         claims={"sub": user.id, "tenant_id": tenant.id, "email": user.email},
         secret_key=settings.auth_secret_key,

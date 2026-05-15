@@ -14,7 +14,7 @@ def _login(client: TestClient, email: str, password: str) -> dict:
 
 def test_user_sees_only_their_tenant_projects() -> None:
     with TestClient(app) as client:
-        session = _login(client, "ana.control@demo.local", "demo123")
+        session = _login(client, "ana.control@demo.local", "1234")
         tenant_id = session["tenant_id"]
         headers = {"Authorization": f"Bearer {session['access_token']}"}
 
@@ -28,7 +28,7 @@ def test_user_sees_only_their_tenant_projects() -> None:
 
 def test_user_cannot_access_project_from_another_tenant() -> None:
     with TestClient(app) as client:
-        session = _login(client, "ana.control@demo.local", "demo123")
+        session = _login(client, "ana.control@demo.local", "1234")
         headers = {"Authorization": f"Bearer {session['access_token']}"}
 
         # Project IDs in the billions are guaranteed to not exist in any tenant.
@@ -42,7 +42,7 @@ def test_login_rejects_user_from_wrong_tenant_slug() -> None:
             "/api/v1/auth/login",
             json={
                 "email": "ana.control@demo.local",
-                "password": "demo123",
+                "password": "1234",
                 "tenant_slug": "no-such-tenant",
             },
         )

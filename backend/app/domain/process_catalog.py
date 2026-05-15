@@ -1,16 +1,16 @@
 DEFAULT_PROCESS_TEMPLATES = [
     {
-        "code": "PJ-SHELL",
-        "name": "Project Shell Creation",
+        "code": "PJ-CREATE",
+        "name": "Project Creation",
         "category": "Administration",
-        "description": "Creates the project control shell, assigns the core team and opens the schedule intake gate.",
+        "description": "Creates the project control record, assigns the core team and opens the schedule intake gate.",
         "form_schema": ["Project code", "Project name", "Phase", "Dates", "Currency"],
         "status": "Active",
         "version_no": 1,
         "steps": [
             {
                 "name": "Creation",
-                "detail": "Project shell and governance metadata are captured.",
+                "detail": "Project and governance metadata are captured.",
                 "owner_role": "Control Manager",
                 "status": "Active",
                 "tone": "active",

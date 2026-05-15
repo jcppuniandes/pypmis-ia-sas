@@ -7,7 +7,7 @@ from app.main import app
 def _login(client: TestClient) -> tuple[str, int]:
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "ana.control@demo.local", "password": "demo123", "tenant_slug": "demo-energy"},
+        json={"email": "ana.control@demo.local", "password": "1234", "tenant_slug": "demo-energy"},
     )
     assert response.status_code == 200, response.text
     data = response.json()

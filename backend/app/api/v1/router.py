@@ -52,11 +52,18 @@ from app.domain.models import (
     WBS,
     Activity,
     ActivityRelationship,
+    ActivitySheet,
+    ActivitySheetRecostRun,
+    ActivitySheetRecostRunLine,
+    ActivitySheetRow,
     Alert,
     AuditLog,
     BaselineVersion,
     Budget,
     BusinessProcessInstance,
+    BusinessProcessLineItem,
+    BusinessProcessLineItemRevision,
+    BusinessProcessPolicy,
     BusinessProcessStepTemplate,
     BusinessProcessTemplate,
     BusinessProcessTransitionTemplate,
@@ -65,13 +72,19 @@ from app.domain.models import (
     Claim,
     ClaimEntitlementItem,
     ClaimImpactAnalysis,
+    CommitmentFundingLine,
     Contract,
     ContractCommunication,
     ContractNotice,
+    ControlAgentFinding,
+    ControlAgentRun,
     ControlAccount,
+    ControlAccountFundingAllocation,
     ControlAccountMapping,
     ControlPeriod,
     ControlSnapshot,
+    CostBreakdownStructure,
+    CostCode,
     CostRecord,
     CostSource,
     Document,
@@ -93,6 +106,9 @@ from app.domain.models import (
     PurchaseOrder,
     RFQBid,
     RFQPackage,
+    RateSheet,
+    RateSheetLine,
+    ScheduleOfValueLine,
     ScheduleActivityMap,
     ScheduleImport,
     ScheduleValidationFinding,
@@ -110,7 +126,18 @@ from app.domain.schemas import (
     AuditLogOut,
     AWPReadinessSummary,
     BaselineVersionOut,
+    BaselineApprovalOut,
+    ActivitySheetRecostIn,
+    ActivitySheetRecostOut,
+    ActivitySheetRecostRunLineOut,
+    ActivitySheetRecostRunOut,
+    BusinessProcessCreate,
     BusinessProcessInstanceOut,
+    BusinessProcessLineItemOut,
+    BusinessProcessLineItemRevisionOut,
+    BusinessProcessLineItemUpdate,
+    BusinessProcessPolicyCreate,
+    BusinessProcessPolicyOut,
     CashFlowPeriodCreate,
     CashFlowPeriodOut,
     CashFlowPeriodUpdate,
@@ -125,13 +152,20 @@ from app.domain.schemas import (
     ClaimImpactAnalysisUpdate,
     ClaimOut,
     ClaimsForensicSummary,
+    CloseoutReportOut,
+    CommitmentFundingLineCreate,
+    CommitmentFundingLineOut,
     ContractCommunicationCreate,
     ContractCommunicationOut,
     ContractCreate,
     ContractNoticeCreate,
     ContractNoticeOut,
     ContractOut,
+    ControlAgentFindingOut,
+    ControlAgentRunOut,
     ControlAccountCreate,
+    ControlAccountFundingAllocationCreate,
+    ControlAccountFundingAllocationOut,
     ControlAccountMappingOut,
     ControlAccountMappingSummary,
     ControlAccountOut,
@@ -140,6 +174,10 @@ from app.domain.schemas import (
     ControlPeriodOut,
     ControlSnapshotOut,
     CostManagerSummaryOut,
+    CostBreakdownStructureCreate,
+    CostBreakdownStructureOut,
+    CostCodeCreate,
+    CostCodeOut,
     CostRecordCreate,
     CostRecordOut,
     CostSheetLineOut,
@@ -157,7 +195,9 @@ from app.domain.schemas import (
     DocumentTransmittalOut,
     DocumentUpdate,
     ForecastScenarioOut,
+    ForecastFundingReport,
     FundingSourceCreate,
+    FundingAvailabilityOut,
     FundingSourceOut,
     FundingSourceUpdate,
     IntegrationExportLogOut,
@@ -166,6 +206,7 @@ from app.domain.schemas import (
     IntegrationTokenCreate,
     IntegrationTokenCreated,
     IntegrationTokenOut,
+    IntegratedControlMatrixRow,
     KPIOut,
     PaymentCertificateCreate,
     PaymentCertificateOut,
@@ -195,7 +236,14 @@ from app.domain.schemas import (
     RFQPackageOut,
     RFQPackageUpdate,
     RFQSummary,
+    RateSheetCreate,
+    RateSheetLineOut,
+    RateSheetOut,
+    ReconciliationReportOut,
+    ReconciliationReportRow,
     RoleProfileOut,
+    ScheduleOfValueLineCreate,
+    ScheduleOfValueLineOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
     ScheduleValidationFindingOut,
@@ -205,6 +253,7 @@ from app.domain.schemas import (
     WarehouseReceiptOut,
     WarehouseReceiptUpdate,
     WBSOut,
+    WBSCreate,
     WorkflowActionIn,
     WorkflowStepInstanceOut,
     WorkPackageConstraintCreate,
@@ -216,6 +265,8 @@ from app.domain.schemas import (
 )
 from app.services.ai_insights import AIInsightService
 from app.services.control_core import ControlCoreService
+from app.services.control_audit_agent import ControlAuditAgentService
+from app.services.integrated_control import IntegratedControlService
 from app.services.schedule_ingestion import ScheduleIngestionService
 from app.services.workflow_routing import WorkflowRoutingService
 from app.workers.tasks import run_control_cycle as run_control_cycle_task
@@ -353,6 +404,50 @@ def list_wbs(
     )
 
 
+@router.post("/projects/{project_id}/wbs", response_model=WBSOut)
+def create_wbs(
+    project_id: int,
+    payload: WBSCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> WBS:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot configure WBS")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.parent_id is not None:
+        parent = db.scalar(
+            select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.id == payload.parent_id)
+        )
+        if not parent:
+            raise HTTPException(status_code=404, detail="Parent WBS not found")
+    code = payload.code.strip()
+    if not code or not payload.name.strip():
+        raise HTTPException(status_code=400, detail="WBS code and name are required")
+    existing = db.scalar(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.code == code))
+    if existing:
+        raise HTTPException(status_code=409, detail="WBS code already exists in this project")
+    wbs = WBS(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        parent_id=payload.parent_id,
+        code=code,
+        name=payload.name.strip(),
+        level=payload.level,
+        description=payload.description.strip(),
+        dictionary=payload.dictionary.strip(),
+        responsible=payload.responsible.strip(),
+        status=payload.status.strip().lower() or "draft",
+    )
+    db.add(wbs)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_wbs", "WBS", wbs.id, json.dumps({"code": wbs.code}), current_user.full_name)
+    db.commit()
+    db.refresh(wbs)
+    return wbs
+
+
 @router.get("/projects/{project_id}/activities", response_model=list[ActivityOut])
 def list_activities(
     project_id: int,
@@ -433,17 +528,27 @@ def create_control_account(
     wbs = db.scalar(select(WBS).where(WBS.id == wbs_id, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
     if not wbs:
         raise HTTPException(status_code=404, detail="WBS not found")
+    if payload.awp_package_id is not None:
+        _require_work_package(db, tenant_id, project_id, payload.awp_package_id)
     account = ControlAccount(
         tenant_id=tenant_id,
         project_id=project_id,
         wbs_id=wbs.id,
+        awp_package_id=payload.awp_package_id,
         code=payload.code,
         name=payload.name,
         responsible=payload.responsible,
         discipline=payload.discipline,
+        scope=payload.scope,
+        budget=payload.budget,
+        start_date=payload.start_date,
+        finish_date=payload.finish_date,
         cbs_code=payload.cbs_code,
         contract_ref=payload.contract_ref,
         measurement_rule=payload.measurement_rule,
+        earned_value=payload.earned_value,
+        actual_cost=payload.actual_cost,
+        forecast=payload.forecast,
         lifecycle_status=payload.lifecycle_status.strip().lower(),
         risk_ref=payload.risk_ref,
         closure_note=payload.closure_note,
@@ -480,6 +585,12 @@ def update_control_account(
     for field, value in payload.model_dump(exclude_unset=True, exclude={"expected_version"}).items():
         if field == "lifecycle_status" and value is not None:
             value = value.strip().lower()
+        if field == "wbs_id" and value is not None:
+            wbs = db.scalar(select(WBS).where(WBS.id == value, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
+            if not wbs:
+                raise HTTPException(status_code=404, detail="WBS not found")
+        if field == "awp_package_id" and value is not None:
+            _require_work_package(db, tenant_id, project_id, value)
         setattr(account, field, value)
     _validate_control_account_status(account.lifecycle_status)
     _touch_collaborative_record(account)
@@ -739,9 +850,12 @@ def create_funding_source(
     membership = _require_membership(db, tenant_id, project_id, user_id)
     _require_permission(membership, "can_capture_cost", "Current role cannot manage project funding")
     current_user = _require_user(db, tenant_id, user_id)
-    if not payload.code.strip() or not payload.name.strip():
+    amount = payload.amount if payload.amount is not None else payload.approved_amount
+    amount = float(amount or 0)
+    funding_name = payload.name.strip() or payload.source_of_funds.strip() or payload.code.strip()
+    if not payload.code.strip() or not funding_name:
         raise HTTPException(status_code=400, detail="Funding code and name are required")
-    if payload.amount < 0:
+    if amount < 0:
         raise HTTPException(status_code=400, detail="Funding amount cannot be negative")
     existing = db.scalar(
         select(FundingSource).where(
@@ -756,8 +870,16 @@ def create_funding_source(
         tenant_id=tenant_id,
         project_id=project_id,
         code=payload.code.strip(),
-        name=payload.name.strip(),
-        amount=payload.amount,
+        name=funding_name,
+        source_of_funds=payload.source_of_funds.strip(),
+        funding_type=payload.funding_type.strip(),
+        authorization_ref=payload.authorization_ref.strip(),
+        usage_restrictions=payload.usage_restrictions.strip(),
+        usage_rules=payload.usage_rules.strip(),
+        amount=amount,
+        funds_available=amount,
+        funds_committed=0,
+        funds_executed=0,
         currency=(payload.currency or project.currency).upper(),
         status=payload.status.strip() or "approved",
     )
@@ -770,7 +892,7 @@ def create_funding_source(
         "create_funding_source",
         "FundingSource",
         funding.id,
-        f'{{"code":"{funding.code}","amount":{funding.amount}}}',
+        json.dumps({"code": funding.code, "amount": funding.amount}),
         current_user.full_name,
     )
     db.commit()
@@ -801,12 +923,25 @@ def update_funding_source(
     if not funding:
         raise HTTPException(status_code=404, detail="Funding source not found")
     _require_current_version(funding, payload.expected_version)
-    if payload.amount is not None and payload.amount < 0:
+    amount = payload.amount if payload.amount is not None else payload.approved_amount
+    if amount is not None and amount < 0:
         raise HTTPException(status_code=400, detail="Funding amount cannot be negative")
-    for field in ("name", "amount", "currency", "status"):
+    for field in (
+        "name",
+        "source_of_funds",
+        "funding_type",
+        "authorization_ref",
+        "usage_restrictions",
+        "usage_rules",
+        "currency",
+        "status",
+    ):
         value = getattr(payload, field)
         if value is not None:
             setattr(funding, field, value.strip() if isinstance(value, str) else value)
+    if amount is not None:
+        funding.amount = amount
+    IntegratedControlService(db).refresh_funding_balance(tenant_id, project_id, funding)
     if funding.currency:
         funding.currency = funding.currency.upper()
     _touch_collaborative_record(funding)
@@ -823,6 +958,33 @@ def update_funding_source(
     db.commit()
     db.refresh(funding)
     return funding
+
+
+@router.get("/projects/{project_id}/fbs", response_model=list[FundingSourceOut])
+def list_fbs(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[FundingSource]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    service = IntegratedControlService(db)
+    sources = _funding_sources(db, tenant_id, project_id)
+    for source in sources:
+        service.refresh_funding_balance(tenant_id, project_id, source)
+    return sources
+
+
+@router.post("/projects/{project_id}/fbs", response_model=FundingSourceOut)
+def create_fbs(
+    project_id: int,
+    payload: FundingSourceCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> FundingSource:
+    return create_funding_source(project_id, payload, db, tenant_id, user_id)
 
 
 @router.get("/projects/{project_id}/cash-flow", response_model=list[CashFlowPeriodOut])
@@ -944,6 +1106,1104 @@ def get_cost_manager_summary(
     return _cost_manager_summary(db, tenant_id, project_id)
 
 
+@router.get("/projects/{project_id}/cbs", response_model=list[CostBreakdownStructureOut])
+def list_cbs(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[CostBreakdownStructure]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(CostBreakdownStructure)
+            .where(CostBreakdownStructure.tenant_id == tenant_id, CostBreakdownStructure.project_id == project_id)
+            .order_by(CostBreakdownStructure.code)
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/cbs", response_model=CostBreakdownStructureOut)
+def create_cbs(
+    project_id: int,
+    payload: CostBreakdownStructureCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CostBreakdownStructure:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot configure CBS")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.parent_id is not None:
+        parent = db.scalar(
+            select(CostBreakdownStructure).where(
+                CostBreakdownStructure.tenant_id == tenant_id,
+                CostBreakdownStructure.project_id == project_id,
+                CostBreakdownStructure.id == payload.parent_id,
+            )
+        )
+        if not parent:
+            raise HTTPException(status_code=404, detail="Parent CBS not found")
+    code = payload.code.strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="CBS code is required")
+    existing = db.scalar(
+        select(CostBreakdownStructure).where(
+            CostBreakdownStructure.tenant_id == tenant_id,
+            CostBreakdownStructure.project_id == project_id,
+            CostBreakdownStructure.code == code,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="CBS code already exists in this project")
+    cbs = CostBreakdownStructure(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        parent_id=payload.parent_id,
+        code=code,
+        level=payload.level,
+        cost_category=payload.cost_category.strip(),
+        description=payload.description.strip(),
+        status=payload.status.strip().lower() or "draft",
+    )
+    db.add(cbs)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_cbs", "CostBreakdownStructure", cbs.id, json.dumps({"code": cbs.code}), current_user.full_name)
+    db.commit()
+    db.refresh(cbs)
+    return cbs
+
+
+@router.get("/projects/{project_id}/cost-codes", response_model=list[CostCodeOut])
+def list_cost_codes(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[CostCode]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(CostCode)
+            .where(CostCode.tenant_id == tenant_id, CostCode.project_id == project_id)
+            .order_by(CostCode.code)
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/cost-codes", response_model=CostCodeOut)
+def create_cost_code(
+    project_id: int,
+    payload: CostCodeCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CostCode:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot configure cost codes")
+    current_user = _require_user(db, tenant_id, user_id)
+    wbs = db.scalar(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.id == payload.wbs_id))
+    if not wbs:
+        raise HTTPException(status_code=404, detail="WBS not found")
+    account = _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    cbs = db.scalar(
+        select(CostBreakdownStructure).where(
+            CostBreakdownStructure.tenant_id == tenant_id,
+            CostBreakdownStructure.project_id == project_id,
+            CostBreakdownStructure.id == payload.cbs_id,
+        )
+    )
+    if not cbs:
+        raise HTTPException(status_code=404, detail="CBS not found")
+    fbs = IntegratedControlService(db).require_funding_source(tenant_id, project_id, payload.fbs_id)
+    if cbs.code == fbs.code:
+        raise HTTPException(status_code=400, detail="FBS cannot be used as a CBS substitute")
+    code = payload.code.strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="Cost code is required")
+    existing = db.scalar(
+        select(CostCode).where(CostCode.tenant_id == tenant_id, CostCode.project_id == project_id, CostCode.code == code)
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Cost code already exists in this project")
+    cost_code = CostCode(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        wbs_id=wbs.id,
+        control_account_id=account.id,
+        cbs_id=cbs.id,
+        fbs_id=fbs.id,
+        contract_ref=payload.contract_ref.strip(),
+        code=code,
+        budget=payload.budget,
+        funds_available=payload.funds_available,
+        commitments=payload.commitments,
+        actual_costs=payload.actual_costs,
+        forecast=payload.forecast,
+        status=payload.status.strip().lower() or "draft",
+    )
+    db.add(cost_code)
+    db.flush()
+    _audit(db, tenant_id, project_id, "create_cost_code", "CostCode", cost_code.id, json.dumps({"code": cost_code.code}), current_user.full_name)
+    db.commit()
+    db.refresh(cost_code)
+    return cost_code
+
+
+@router.post("/projects/{project_id}/business-processes/cbs-fund", response_model=BusinessProcessInstanceOut)
+def create_cbs_fund_business_process(
+    project_id: int,
+    payload: BusinessProcessCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> BusinessProcessInstance:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot allocate CBS funding")
+    current_user = _require_user(db, tenant_id, user_id)
+    if not payload.line_items:
+        raise HTTPException(status_code=400, detail="At least one CBS funding line item is required")
+
+    service = IntegratedControlService(db)
+    funding_totals: dict[int, float] = {}
+    funding_by_id: dict[int, FundingSource] = {}
+    validated: list[tuple[object, CostBreakdownStructure, FundingSource, ControlAccount | None]] = []
+    for line in payload.line_items:
+        if line.funding_source_id is None:
+            raise HTTPException(status_code=400, detail="FBS funding source is required for CBS funding")
+        if line.amount <= 0:
+            raise HTTPException(status_code=400, detail="CBS funding amount must be greater than zero")
+        cbs = _require_cbs(db, tenant_id, project_id, line.cbs_id)
+        funding = service.require_funding_source(tenant_id, project_id, line.funding_source_id)
+        account = (
+            _require_control_account(db, tenant_id, project_id, line.control_account_id)
+            if line.control_account_id is not None
+            else None
+        )
+        funding_totals[funding.id] = funding_totals.get(funding.id, 0.0) + float(line.amount)
+        funding_by_id[funding.id] = funding
+        validated.append((line, cbs, funding, account))
+
+    for funding_id, total_amount in funding_totals.items():
+        service.ensure_available(tenant_id, project_id, funding_by_id[funding_id], total_amount)
+
+    process = _start_business_process(
+        db,
+        tenant_id,
+        project_id,
+        trigger_entity_type="Project",
+        trigger_entity_id=project_id,
+        process_code="BP-CBS-FUND",
+        process_name="CBS + Fund Code",
+        record_no=f"BP-CBS-FUND-{uuid4().hex[:8].upper()}",
+        title=payload.title.strip() or "CBS + Fund Code",
+        current_step="Control Review",
+        ball_in_court="Project Controls",
+        steps=[
+            ("Creation", "CBS funding lines were captured from the cost form.", "Cost Engineer", "Complete", "complete"),
+            ("Control Review", "Validate FBS availability and control account funding split.", "Project Controls", "Active", "active"),
+            ("Approval", "Approve the funding allocation for execution.", "Control Manager", "Queued", "queued"),
+        ],
+    )
+    for line, cbs, funding, account in validated:
+        db.add(
+            BusinessProcessLineItem(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                process_instance_id=process.id,
+                line_type="cbs_fund",
+                cbs_id=cbs.id,
+                funding_source_id=funding.id,
+                control_account_id=account.id if account else None,
+                amount=line.amount,
+                quantity=line.quantity,
+                description=line.description.strip(),
+            )
+        )
+        if account:
+            allocation = db.scalar(
+                select(ControlAccountFundingAllocation).where(
+                    ControlAccountFundingAllocation.tenant_id == tenant_id,
+                    ControlAccountFundingAllocation.project_id == project_id,
+                    ControlAccountFundingAllocation.control_account_id == account.id,
+                    ControlAccountFundingAllocation.funding_source_id == funding.id,
+                )
+            )
+            if allocation:
+                allocation.allocated_amount = _money(allocation.allocated_amount + line.amount)
+                allocation.forecast_amount = _money(allocation.forecast_amount + line.amount)
+                _touch_collaborative_record(allocation)
+            else:
+                db.add(
+                    ControlAccountFundingAllocation(
+                        tenant_id=tenant_id,
+                        project_id=project_id,
+                        control_account_id=account.id,
+                        funding_source_id=funding.id,
+                        allocated_amount=line.amount,
+                        forecast_amount=line.amount,
+                        distribution_note=f"CBS {cbs.code}",
+                        status="active",
+                    )
+                )
+
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_bp_cbs_fund",
+        "BusinessProcessInstance",
+        process.id,
+        json.dumps({"line_count": len(validated)}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(process)
+    return process
+
+
+@router.post("/projects/{project_id}/business-processes/cbs-wbs", response_model=BusinessProcessInstanceOut)
+def create_cbs_wbs_business_process(
+    project_id: int,
+    payload: BusinessProcessCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> BusinessProcessInstance:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot create CBS/WBS transactions")
+    current_user = _require_user(db, tenant_id, user_id)
+    if not payload.line_items:
+        raise HTTPException(status_code=400, detail="At least one CBS/WBS line item is required")
+
+    service = IntegratedControlService(db)
+    funding_totals: dict[int, float] = {}
+    funding_by_id: dict[int, FundingSource] = {}
+    validated: list[tuple[object, WBS, CostBreakdownStructure, FundingSource, ControlAccount]] = []
+    for line in payload.line_items:
+        if line.wbs_id is None:
+            raise HTTPException(status_code=400, detail="WBS is required for CBS/WBS transactions")
+        if line.funding_source_id is None:
+            raise HTTPException(status_code=400, detail="FBS funding source is required for CBS/WBS transactions")
+        if line.control_account_id is None:
+            raise HTTPException(status_code=400, detail="Control account is required for CBS/WBS transactions")
+        if line.amount <= 0:
+            raise HTTPException(status_code=400, detail="CBS/WBS amount must be greater than zero")
+        wbs = _require_wbs(db, tenant_id, project_id, line.wbs_id)
+        cbs = _require_cbs(db, tenant_id, project_id, line.cbs_id)
+        funding = service.require_funding_source(tenant_id, project_id, line.funding_source_id)
+        account = _require_control_account(db, tenant_id, project_id, line.control_account_id)
+        if account.wbs_id != wbs.id:
+            raise HTTPException(status_code=400, detail="Control account must belong to the selected WBS")
+        funding_totals[funding.id] = funding_totals.get(funding.id, 0.0) + float(line.amount)
+        funding_by_id[funding.id] = funding
+        validated.append((line, wbs, cbs, funding, account))
+
+    for funding_id, total_amount in funding_totals.items():
+        service.ensure_available(tenant_id, project_id, funding_by_id[funding_id], total_amount)
+
+    process = _start_business_process(
+        db,
+        tenant_id,
+        project_id,
+        trigger_entity_type="Project",
+        trigger_entity_id=project_id,
+        process_code="BP-CBS-WBS",
+        process_name="CBS + WBS Code",
+        record_no=f"BP-CBS-WBS-{uuid4().hex[:8].upper()}",
+        title=payload.title.strip() or "CBS + WBS Code",
+        current_step="Budget Review",
+        ball_in_court="Project Controls",
+        steps=[
+            ("Creation", "Cost-scope line items were captured.", "Cost Engineer", "Complete", "complete"),
+            ("Budget Review", "Validate WBS, CBS, FBS and control account alignment.", "Project Controls", "Active", "active"),
+            ("Approval", "Approve dual WBS/CBS roll-up to cost codes.", "Control Manager", "Queued", "queued"),
+        ],
+    )
+    for line, wbs, cbs, funding, account in validated:
+        code = _cost_code_from_parts(wbs.code, account.code, cbs.code)
+        cost_code = db.scalar(
+            select(CostCode).where(
+                CostCode.tenant_id == tenant_id,
+                CostCode.project_id == project_id,
+                CostCode.code == code,
+            )
+        )
+        if cost_code:
+            cost_code.budget = _money(cost_code.budget + line.amount)
+            cost_code.funds_available = _money(cost_code.funds_available + line.amount)
+            cost_code.forecast = _money(cost_code.forecast + line.amount)
+            cost_code.status = "active"
+            _touch_collaborative_record(cost_code)
+        else:
+            cost_code = CostCode(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                wbs_id=wbs.id,
+                control_account_id=account.id,
+                cbs_id=cbs.id,
+                fbs_id=funding.id,
+                contract_ref=account.contract_ref or "",
+                code=code,
+                budget=line.amount,
+                funds_available=line.amount,
+                forecast=line.amount,
+                status="active",
+            )
+            db.add(cost_code)
+            db.flush()
+        budget = db.scalar(
+            select(Budget).where(
+                Budget.tenant_id == tenant_id,
+                Budget.project_id == project_id,
+                Budget.control_account_id == account.id,
+                Budget.cbs_code == cbs.code,
+            )
+        )
+        if budget:
+            budget.bac = _money(budget.bac + line.amount)
+            budget.cost_loaded_pv = _money(budget.cost_loaded_pv + line.amount)
+        else:
+            db.add(
+                Budget(
+                    tenant_id=tenant_id,
+                    project_id=project_id,
+                    control_account_id=account.id,
+                    cbs_code=cbs.code,
+                    bac=line.amount,
+                    cost_loaded_pv=line.amount,
+                )
+            )
+        account.budget = _money(account.budget + line.amount)
+        account.forecast = _money(account.forecast + line.amount)
+        if not account.cbs_code:
+            account.cbs_code = cbs.code
+        db.add(
+            BusinessProcessLineItem(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                process_instance_id=process.id,
+                line_type="cbs_wbs",
+                wbs_id=wbs.id,
+                cbs_id=cbs.id,
+                funding_source_id=funding.id,
+                control_account_id=account.id,
+                cost_code_id=cost_code.id,
+                amount=line.amount,
+                quantity=line.quantity,
+                description=line.description.strip(),
+            )
+        )
+
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_bp_cbs_wbs",
+        "BusinessProcessInstance",
+        process.id,
+        json.dumps({"line_count": len(validated)}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(process)
+    return process
+
+
+@router.get("/projects/{project_id}/business-process-policies", response_model=list[BusinessProcessPolicyOut])
+def list_business_process_policies(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[BusinessProcessPolicy]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(BusinessProcessPolicy)
+            .where(BusinessProcessPolicy.tenant_id == tenant_id, BusinessProcessPolicy.project_id == project_id)
+            .order_by(BusinessProcessPolicy.process_code, BusinessProcessPolicy.action)
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/business-process-policies", response_model=BusinessProcessPolicyOut)
+def upsert_business_process_policy(
+    project_id: int,
+    payload: BusinessProcessPolicyCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> BusinessProcessPolicy:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_configure", "Current role cannot configure business process policies")
+    current_user = _require_user(db, tenant_id, user_id)
+    process_code = payload.process_code.strip()
+    action = payload.action.strip().lower()
+    if not process_code or not action:
+        raise HTTPException(status_code=400, detail="Process code and action are required")
+    policy = db.scalar(
+        select(BusinessProcessPolicy).where(
+            BusinessProcessPolicy.tenant_id == tenant_id,
+            BusinessProcessPolicy.project_id == project_id,
+            BusinessProcessPolicy.process_code == process_code,
+            BusinessProcessPolicy.action == action,
+        )
+    )
+    details = {
+        "process_code": process_code,
+        "action": action,
+        "required_role": payload.required_role.strip(),
+        "permission_key": payload.permission_key.strip(),
+        "status": payload.status.strip().lower() or "active",
+    }
+    if policy:
+        policy.required_role = details["required_role"]
+        policy.permission_key = details["permission_key"]
+        policy.status = details["status"]
+        policy.version += 1
+        policy.updated_at = datetime.utcnow()
+        action_name = "update_business_process_policy"
+    else:
+        policy = BusinessProcessPolicy(
+            tenant_id=tenant_id,
+            project_id=project_id,
+            process_code=process_code,
+            action=action,
+            required_role=details["required_role"],
+            permission_key=details["permission_key"],
+            status=details["status"],
+        )
+        db.add(policy)
+        db.flush()
+        action_name = "create_business_process_policy"
+    _audit(db, tenant_id, project_id, action_name, "BusinessProcessPolicy", policy.id, json.dumps(details), current_user.full_name)
+    db.commit()
+    db.refresh(policy)
+    return policy
+
+
+@router.get(
+    "/projects/{project_id}/business-processes/{process_id}/line-items",
+    response_model=list[BusinessProcessLineItemOut],
+)
+def list_business_process_line_items(
+    project_id: int,
+    process_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[BusinessProcessLineItemOut]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_business_process(db, tenant_id, project_id, process_id)
+    lines = list(
+        db.scalars(
+            select(BusinessProcessLineItem)
+            .where(
+                BusinessProcessLineItem.tenant_id == tenant_id,
+                BusinessProcessLineItem.project_id == project_id,
+                BusinessProcessLineItem.process_instance_id == process_id,
+            )
+            .order_by(BusinessProcessLineItem.id)
+        ).all()
+    )
+    return [_business_process_line_item_out(db, tenant_id, project_id, line) for line in lines]
+
+
+@router.patch(
+    "/projects/{project_id}/business-process-line-items/{line_item_id}",
+    response_model=BusinessProcessLineItemOut,
+)
+def update_business_process_line_item(
+    project_id: int,
+    line_item_id: int,
+    payload: BusinessProcessLineItemUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> BusinessProcessLineItemOut:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot edit business process line items")
+    current_user = _require_user(db, tenant_id, user_id)
+    line = _require_business_process_line_item(db, tenant_id, project_id, line_item_id)
+    current_version = _business_process_line_item_version(db, tenant_id, project_id, line.id)
+    if payload.expected_version is not None and payload.expected_version != current_version:
+        raise HTTPException(status_code=409, detail="Business process line item has changed")
+    if payload.amount is not None and payload.amount < 0:
+        raise HTTPException(status_code=400, detail="Amount cannot be negative")
+    if payload.quantity is not None and payload.quantity < 0:
+        raise HTTPException(status_code=400, detail="Quantity cannot be negative")
+
+    previous_amount = float(line.amount or 0)
+    previous_quantity = float(line.quantity or 0)
+    previous_description = line.description or ""
+    previous_status = line.status or ""
+    if payload.amount is not None:
+        line.amount = payload.amount
+    if payload.quantity is not None:
+        line.quantity = payload.quantity
+    if payload.description is not None:
+        line.description = payload.description.strip()
+    if payload.status is not None:
+        line.status = payload.status.strip().lower() or "active"
+    line.updated_at = datetime.utcnow()
+    next_version = current_version + 1
+
+    revision = BusinessProcessLineItemRevision(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        line_item_id=line.id,
+        process_instance_id=line.process_instance_id,
+        previous_version=current_version,
+        new_version=next_version,
+        previous_amount=previous_amount,
+        new_amount=float(line.amount or 0),
+        previous_quantity=previous_quantity,
+        new_quantity=float(line.quantity or 0),
+        previous_description=previous_description,
+        new_description=line.description or "",
+        previous_status=previous_status,
+        new_status=line.status or "",
+        change_note=payload.change_note.strip(),
+        changed_by=current_user.full_name,
+    )
+    db.add(revision)
+    if line.cost_code_id and payload.amount is not None:
+        cost_code = db.scalar(
+            select(CostCode).where(
+                CostCode.tenant_id == tenant_id,
+                CostCode.project_id == project_id,
+                CostCode.id == line.cost_code_id,
+            )
+        )
+        if cost_code:
+            amount_delta = float(line.amount or 0) - previous_amount
+            cost_code.budget = _money(cost_code.budget + amount_delta)
+            cost_code.funds_available = _money(cost_code.funds_available + amount_delta)
+            cost_code.forecast = _money(cost_code.forecast + amount_delta)
+            _touch_collaborative_record(cost_code)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "update_business_process_line_item",
+        "BusinessProcessLineItem",
+        line.id,
+        json.dumps({"previous_version": current_version, "new_version": next_version}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(line)
+    return _business_process_line_item_out(db, tenant_id, project_id, line)
+
+
+@router.get(
+    "/projects/{project_id}/business-process-line-items/{line_item_id}/revisions",
+    response_model=list[BusinessProcessLineItemRevisionOut],
+)
+def list_business_process_line_item_revisions(
+    project_id: int,
+    line_item_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[BusinessProcessLineItemRevision]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_business_process_line_item(db, tenant_id, project_id, line_item_id)
+    return list(
+        db.scalars(
+            select(BusinessProcessLineItemRevision)
+            .where(
+                BusinessProcessLineItemRevision.tenant_id == tenant_id,
+                BusinessProcessLineItemRevision.project_id == project_id,
+                BusinessProcessLineItemRevision.line_item_id == line_item_id,
+            )
+            .order_by(BusinessProcessLineItemRevision.new_version)
+        ).all()
+    )
+
+
+@router.post(
+    "/projects/{project_id}/control-account-funding-allocations",
+    response_model=ControlAccountFundingAllocationOut,
+)
+def create_control_account_funding_allocation(
+    project_id: int,
+    payload: ControlAccountFundingAllocationCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ControlAccountFundingAllocation:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot configure funding allocations")
+    current_user = _require_user(db, tenant_id, user_id)
+    account = _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    funding = IntegratedControlService(db).require_funding_source(tenant_id, project_id, payload.funding_source_id)
+    existing = db.scalar(
+        select(ControlAccountFundingAllocation).where(
+            ControlAccountFundingAllocation.tenant_id == tenant_id,
+            ControlAccountFundingAllocation.project_id == project_id,
+            ControlAccountFundingAllocation.control_account_id == account.id,
+            ControlAccountFundingAllocation.funding_source_id == funding.id,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Control account already has this FBS allocation")
+    allocation = ControlAccountFundingAllocation(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=account.id,
+        funding_source_id=funding.id,
+        allocated_amount=payload.allocated_amount,
+        committed_amount=payload.committed_amount,
+        actual_amount=payload.actual_amount,
+        forecast_amount=payload.forecast_amount,
+        distribution_note=payload.distribution_note.strip(),
+        status=payload.status.strip().lower() or "active",
+    )
+    db.add(allocation)
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_control_account_funding_allocation",
+        "ControlAccountFundingAllocation",
+        allocation.id,
+        json.dumps({"control_account_id": account.id, "funding_source_id": funding.id}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(allocation)
+    return allocation
+
+
+@router.get("/projects/{project_id}/integrated-control-matrix", response_model=list[IntegratedControlMatrixRow])
+def get_integrated_control_matrix(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[IntegratedControlMatrixRow]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return IntegratedControlService(db).matrix(tenant_id, project_id)
+
+
+@router.get("/projects/{project_id}/funding-availability-check", response_model=FundingAvailabilityOut)
+def get_funding_availability_check(
+    project_id: int,
+    funding_source_id: int,
+    requested_amount: float = 0,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> FundingAvailabilityOut:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return IntegratedControlService(db).availability(tenant_id, project_id, funding_source_id, requested_amount)
+
+
+@router.get("/projects/{project_id}/forecast-vs-funding-report", response_model=ForecastFundingReport)
+def get_forecast_vs_funding_report(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ForecastFundingReport:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return IntegratedControlService(db).forecast_report(tenant_id, project_id)
+
+
+@router.post("/projects/{project_id}/baseline-approval", response_model=BaselineApprovalOut)
+def approve_integrated_baseline(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> BaselineApprovalOut:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_approve_workflow", "Current role cannot approve the integrated baseline")
+    result = IntegratedControlService(db).approve_baseline(tenant_id, project_id)
+    _audit(db, tenant_id, project_id, "approve_integrated_baseline", "Project", project_id, json.dumps(result.model_dump()))
+    db.commit()
+    return result
+
+
+@router.get("/projects/{project_id}/closeout-report", response_model=CloseoutReportOut)
+def get_closeout_report(
+    project_id: int,
+    funding_source_id: int | None = None,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CloseoutReportOut:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return IntegratedControlService(db).closeout_report(tenant_id, project_id, funding_source_id)
+
+
+@router.post("/projects/{project_id}/financial-closeout", response_model=CloseoutReportOut)
+def close_financial_funding(
+    project_id: int,
+    funding_source_id: int | None = None,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CloseoutReportOut:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot close financial funding")
+    result = IntegratedControlService(db).financial_closeout(tenant_id, project_id, funding_source_id)
+    _audit(db, tenant_id, project_id, "financial_closeout", "FundingSource", funding_source_id, json.dumps(result.model_dump()))
+    db.commit()
+    return result
+
+
+@router.get("/projects/{project_id}/rate-sheets", response_model=list[RateSheetOut])
+def list_rate_sheets(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[RateSheetOut]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    sheets = list(
+        db.scalars(
+            select(RateSheet)
+            .where(RateSheet.tenant_id == tenant_id, RateSheet.project_id == project_id)
+            .order_by(RateSheet.code)
+        ).all()
+    )
+    return [_rate_sheet_out(db, tenant_id, project_id, sheet) for sheet in sheets]
+
+
+@router.post("/projects/{project_id}/rate-sheets", response_model=RateSheetOut)
+def create_rate_sheet(
+    project_id: int,
+    payload: RateSheetCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RateSheetOut:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot manage rate sheets")
+    current_user = _require_user(db, tenant_id, user_id)
+    code = payload.code.strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="Rate sheet code is required")
+    if not payload.line_items:
+        raise HTTPException(status_code=400, detail="At least one rate sheet line is required")
+    existing = db.scalar(
+        select(RateSheet).where(RateSheet.tenant_id == tenant_id, RateSheet.project_id == project_id, RateSheet.code == code)
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="Rate sheet code already exists in this project")
+    sheet = RateSheet(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        code=code,
+        name=payload.name.strip() or code,
+        status=payload.status.strip().lower() or "draft",
+    )
+    db.add(sheet)
+    db.flush()
+    seen_codes: set[str] = set()
+    for line in payload.line_items:
+        cbs_code = line.cbs_code.strip()
+        if not cbs_code:
+            raise HTTPException(status_code=400, detail="Rate sheet CBS code is required")
+        if cbs_code in seen_codes:
+            raise HTTPException(status_code=409, detail="Rate sheet cannot contain duplicate CBS codes")
+        if line.multiplier <= 0:
+            raise HTTPException(status_code=400, detail="Rate sheet multiplier must be greater than zero")
+        if line.unit_rate < 0:
+            raise HTTPException(status_code=400, detail="Rate sheet unit rate cannot be negative")
+        seen_codes.add(cbs_code)
+        db.add(
+            RateSheetLine(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                rate_sheet_id=sheet.id,
+                cbs_code=cbs_code,
+                unit_rate=line.unit_rate,
+                multiplier=line.multiplier,
+                status=line.status.strip().lower() or "active",
+            )
+        )
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_rate_sheet",
+        "RateSheet",
+        sheet.id,
+        json.dumps({"code": sheet.code, "line_count": len(payload.line_items)}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(sheet)
+    return _rate_sheet_out(db, tenant_id, project_id, sheet)
+
+
+@router.post(
+    "/projects/{project_id}/activity-sheets/{activity_sheet_id}/recost",
+    response_model=ActivitySheetRecostOut,
+)
+def recost_activity_sheet(
+    project_id: int,
+    activity_sheet_id: int,
+    payload: ActivitySheetRecostIn,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ActivitySheetRecostOut:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_capture_cost", "Current role cannot recost activity sheets")
+    current_user = _require_user(db, tenant_id, user_id)
+    activity_sheet = _require_activity_sheet(db, tenant_id, project_id, activity_sheet_id)
+    rate_sheet = _require_rate_sheet(db, tenant_id, project_id, payload.rate_sheet_id)
+    rate_lines = list(
+        db.scalars(
+            select(RateSheetLine).where(
+                RateSheetLine.tenant_id == tenant_id,
+                RateSheetLine.project_id == project_id,
+                RateSheetLine.rate_sheet_id == rate_sheet.id,
+                RateSheetLine.status == "active",
+            )
+        ).all()
+    )
+    rates_by_cbs_code = {line.cbs_code: line for line in rate_lines}
+    mappings_by_external_id = _activity_sheet_mappings_by_external_id(db, tenant_id, project_id, activity_sheet)
+    updated_rows = 0
+    total_planned_cost = 0.0
+    total_planned_value = 0.0
+    activity_rows = list(
+        db.scalars(
+            select(ActivitySheetRow)
+            .where(
+                ActivitySheetRow.tenant_id == tenant_id,
+                ActivitySheetRow.project_id == project_id,
+                ActivitySheetRow.activity_sheet_id == activity_sheet.id,
+            )
+            .order_by(ActivitySheetRow.external_activity_id)
+        ).all()
+    )
+    next_run_no = int(
+        db.scalar(
+            select(func.coalesce(func.max(ActivitySheetRecostRun.run_no), 0)).where(
+                ActivitySheetRecostRun.tenant_id == tenant_id,
+                ActivitySheetRecostRun.project_id == project_id,
+                ActivitySheetRecostRun.activity_sheet_id == activity_sheet.id,
+            )
+        )
+        or 0
+    ) + 1
+    recost_run = ActivitySheetRecostRun(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        activity_sheet_id=activity_sheet.id,
+        rate_sheet_id=rate_sheet.id,
+        run_no=next_run_no,
+        created_by=current_user.full_name,
+    )
+    db.add(recost_run)
+    db.flush()
+    for row in activity_rows:
+        mapping = mappings_by_external_id.get(row.external_activity_id)
+        rate = rates_by_cbs_code.get(mapping.cbs_code) if mapping else None
+        if not mapping or not rate:
+            total_planned_cost += float(row.planned_cost or 0)
+            total_planned_value += float(mapping.planned_value if mapping else 0)
+            continue
+        previous_cost = float(row.planned_cost or 0)
+        previous_value = float(mapping.planned_value or 0)
+        base_cost = float(row.planned_cost or mapping.planned_cost or 0)
+        new_cost = _money(base_cost * rate.multiplier if base_cost else rate.unit_rate * rate.multiplier)
+        new_value = _money(new_cost * float(mapping.planned_percent or 0) / 100)
+        row.planned_cost = new_cost
+        mapping.planned_cost = new_cost
+        mapping.planned_value = new_value
+        mapping.review_note = f"Recosted with rate sheet {rate_sheet.code}"
+        db.add(
+            ActivitySheetRecostRunLine(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                recost_run_id=recost_run.id,
+                activity_sheet_row_id=row.id,
+                external_activity_id=row.external_activity_id,
+                cbs_code=mapping.cbs_code,
+                previous_planned_cost=_money(previous_cost),
+                new_planned_cost=new_cost,
+                previous_planned_value=_money(previous_value),
+                new_planned_value=new_value,
+            )
+        )
+        updated_rows += 1
+        total_planned_cost += new_cost
+        total_planned_value += new_value
+    recost_run.updated_rows = updated_rows
+    recost_run.total_planned_cost = _money(total_planned_cost)
+    recost_run.total_planned_value = _money(total_planned_value)
+    activity_sheet.updated_at = datetime.utcnow()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "recost_activity_sheet",
+        "ActivitySheet",
+        activity_sheet.id,
+        json.dumps({"rate_sheet_id": rate_sheet.id, "updated_rows": updated_rows}),
+        current_user.full_name,
+    )
+    db.commit()
+    return ActivitySheetRecostOut(
+        project_id=project_id,
+        activity_sheet_id=activity_sheet.id,
+        rate_sheet_id=rate_sheet.id,
+        recost_run_id=recost_run.id,
+        updated_rows=updated_rows,
+        total_planned_cost=_money(total_planned_cost),
+        total_planned_value=_money(total_planned_value),
+    )
+
+
+@router.get(
+    "/projects/{project_id}/activity-sheets/{activity_sheet_id}/recost-runs",
+    response_model=list[ActivitySheetRecostRunOut],
+)
+def list_activity_sheet_recost_runs(
+    project_id: int,
+    activity_sheet_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ActivitySheetRecostRunOut]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_activity_sheet(db, tenant_id, project_id, activity_sheet_id)
+    runs = list(
+        db.scalars(
+            select(ActivitySheetRecostRun)
+            .where(
+                ActivitySheetRecostRun.tenant_id == tenant_id,
+                ActivitySheetRecostRun.project_id == project_id,
+                ActivitySheetRecostRun.activity_sheet_id == activity_sheet_id,
+            )
+            .order_by(ActivitySheetRecostRun.run_no.desc())
+        ).all()
+    )
+    return [_recost_run_out(db, tenant_id, project_id, run) for run in runs]
+
+
+@router.get("/projects/{project_id}/reconciliation-report", response_model=ReconciliationReportOut)
+def get_reconciliation_report(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ReconciliationReportOut:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    return ReconciliationReportOut(project_id=project_id, rows=_reconciliation_report_rows(db, tenant_id, project_id))
+
+
+@router.get("/projects/{project_id}/reconciliation-report/export")
+def export_reconciliation_report(
+    project_id: int,
+    format: str = Query(default="xlsx"),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> Response:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    rows = _reconciliation_report_rows(db, tenant_id, project_id)
+    normalized = format.strip().lower()
+    if normalized in {"xlsx", "excel"}:
+        return Response(
+            content=_reconciliation_xlsx_bytes(rows),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="reconciliation-project-{project_id}.xlsx"'},
+        )
+    if normalized == "pdf":
+        return Response(
+            content=_reconciliation_pdf_bytes(project_id, rows),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="reconciliation-project-{project_id}.pdf"'},
+        )
+    raise HTTPException(status_code=400, detail="Unsupported export format")
+
+
+@router.post("/projects/{project_id}/agents/control-audit/run", response_model=ControlAgentRunOut)
+def run_control_audit_agent(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ControlAgentRunOut:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    current_user = _require_user(db, tenant_id, user_id)
+    run = ControlAuditAgentService(db).run(tenant_id, project_id, current_user.full_name)
+    return _control_agent_run_out(db, tenant_id, project_id, run)
+
+
+@router.post("/projects/{project_id}/agents/control-audit/awp-draft-packages", response_model=ControlAgentRunOut)
+def create_awp_draft_packages_from_agent(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ControlAgentRunOut:
+    _require_project(db, tenant_id, project_id)
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    if membership.role not in {"Control Manager", "Planner", "Project Controls", "Field Engineer", "Workface Planner"}:
+        raise HTTPException(status_code=403, detail="Current role cannot configure AWP work packages")
+    _require_control_ready(db, tenant_id, project_id)
+    current_user = _require_user(db, tenant_id, user_id)
+    run = ControlAuditAgentService(db).create_awp_draft_packages(tenant_id, project_id, current_user.full_name)
+    return _control_agent_run_out(db, tenant_id, project_id, run)
+
+
+@router.get("/projects/{project_id}/agents/control-audit/runs", response_model=list[ControlAgentRunOut])
+def list_control_audit_agent_runs(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ControlAgentRunOut]:
+    _require_project(db, tenant_id, project_id)
+    _require_membership(db, tenant_id, project_id, user_id)
+    runs = list(
+        db.scalars(
+            select(ControlAgentRun)
+            .where(
+                ControlAgentRun.tenant_id == tenant_id,
+                ControlAgentRun.project_id == project_id,
+                ControlAgentRun.agent_code == "control_audit",
+            )
+            .order_by(ControlAgentRun.created_at.desc(), ControlAgentRun.id.desc())
+            .limit(5)
+        ).all()
+    )
+    return [_control_agent_run_out(db, tenant_id, project_id, run) for run in runs]
+
+
 @router.get("/projects/{project_id}/contracts", response_model=list[ContractOut])
 def list_contracts(
     project_id: int,
@@ -976,6 +2236,10 @@ def create_contract(
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
     if payload.value < 0:
         raise HTTPException(status_code=400, detail="Contract value cannot be negative")
+    funding = IntegratedControlService(db).resolve_commitment_funding(
+        tenant_id, project_id, payload.funding_source_id, payload.control_account_id
+    )
+    IntegratedControlService(db).ensure_available(tenant_id, project_id, funding, payload.value)
     contract_code = payload.code.strip()
     if not contract_code:
         raise HTTPException(status_code=400, detail="Contract code is required")
@@ -989,6 +2253,7 @@ def create_contract(
     contract = Contract(
         tenant_id=tenant_id,
         project_id=project_id,
+        funding_source_id=funding.id,
         control_account_id=payload.control_account_id,
         code=contract_code,
         title=payload.title.strip(),
@@ -999,6 +2264,7 @@ def create_contract(
     )
     db.add(contract)
     db.flush()
+    IntegratedControlService(db).refresh_funding_balance(tenant_id, project_id, funding)
     _audit(
         db,
         tenant_id,
@@ -1012,6 +2278,203 @@ def create_contract(
     db.commit()
     db.refresh(contract)
     return contract
+
+
+@router.get("/projects/{project_id}/contracts/{contract_id}/sov-lines", response_model=list[ScheduleOfValueLineOut])
+def list_schedule_of_value_lines(
+    project_id: int,
+    contract_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ScheduleOfValueLine]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_contract(db, tenant_id, project_id, contract_id)
+    return list(
+        db.scalars(
+            select(ScheduleOfValueLine)
+            .where(
+                ScheduleOfValueLine.tenant_id == tenant_id,
+                ScheduleOfValueLine.project_id == project_id,
+                ScheduleOfValueLine.contract_id == contract_id,
+            )
+            .order_by(ScheduleOfValueLine.line_no)
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/contracts/{contract_id}/sov-lines", response_model=ScheduleOfValueLineOut)
+def create_schedule_of_value_line(
+    project_id: int,
+    contract_id: int,
+    payload: ScheduleOfValueLineCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ScheduleOfValueLine:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot manage schedule of values")
+    current_user = _require_user(db, tenant_id, user_id)
+    contract = _require_contract(db, tenant_id, project_id, contract_id)
+    if payload.cbs_id is None:
+        raise HTTPException(status_code=400, detail="CBS is required for every SOV line")
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="SOV amount must be greater than zero")
+    cbs = _require_cbs(db, tenant_id, project_id, payload.cbs_id)
+    wbs = _require_wbs(db, tenant_id, project_id, payload.wbs_id) if payload.wbs_id is not None else None
+    account = (
+        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+        if payload.control_account_id is not None
+        else None
+    )
+    if contract.control_account_id and account is None:
+        raise HTTPException(status_code=400, detail="Control account is required for this contract SOV line")
+    if contract.control_account_id and account and account.id != contract.control_account_id:
+        raise HTTPException(status_code=400, detail="SOV control account must match the contract control account")
+    if wbs and account and account.wbs_id != wbs.id:
+        raise HTTPException(status_code=400, detail="SOV WBS must match the selected control account")
+    line_no = payload.line_no.strip()
+    if not line_no:
+        raise HTTPException(status_code=400, detail="SOV line number is required")
+    existing = db.scalar(
+        select(ScheduleOfValueLine).where(
+            ScheduleOfValueLine.tenant_id == tenant_id,
+            ScheduleOfValueLine.project_id == project_id,
+            ScheduleOfValueLine.contract_id == contract.id,
+            ScheduleOfValueLine.line_no == line_no,
+        )
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="SOV line number already exists for this contract")
+    sov_line = ScheduleOfValueLine(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        contract_id=contract.id,
+        line_no=line_no,
+        description=payload.description.strip(),
+        amount=payload.amount,
+        cbs_id=cbs.id,
+        wbs_id=wbs.id if wbs else None,
+        control_account_id=account.id if account else None,
+        status=payload.status.strip().lower() or "active",
+    )
+    db.add(sov_line)
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_sov_line",
+        "ScheduleOfValueLine",
+        sov_line.id,
+        json.dumps({"contract_id": contract.id, "line_no": sov_line.line_no, "cbs_code": cbs.code}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(sov_line)
+    return sov_line
+
+
+@router.post("/projects/{project_id}/commitment-funding-lines", response_model=CommitmentFundingLineOut)
+def create_commitment_funding_line(
+    project_id: int,
+    payload: CommitmentFundingLineCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CommitmentFundingLine:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot manage commitment funding")
+    current_user = _require_user(db, tenant_id, user_id)
+    contract = _require_contract(db, tenant_id, project_id, payload.contract_id)
+    funding = IntegratedControlService(db).require_funding_source(tenant_id, project_id, payload.funding_source_id)
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="Commitment funding amount must be greater than zero")
+    sov_line = None
+    if payload.sov_line_id is not None:
+        sov_line = db.scalar(
+            select(ScheduleOfValueLine).where(
+                ScheduleOfValueLine.tenant_id == tenant_id,
+                ScheduleOfValueLine.project_id == project_id,
+                ScheduleOfValueLine.contract_id == contract.id,
+                ScheduleOfValueLine.id == payload.sov_line_id,
+            )
+        )
+        if not sov_line:
+            raise HTTPException(status_code=404, detail="SOV line not found for this contract")
+        allocated = db.scalar(
+            select(func.coalesce(func.sum(CommitmentFundingLine.amount), 0)).where(
+                CommitmentFundingLine.tenant_id == tenant_id,
+                CommitmentFundingLine.project_id == project_id,
+                CommitmentFundingLine.sov_line_id == sov_line.id,
+                CommitmentFundingLine.status != "cancelled",
+            )
+        ) or 0
+        if allocated + payload.amount > sov_line.amount:
+            raise HTTPException(status_code=409, detail="Commitment funding exceeds the SOV line amount")
+    line = CommitmentFundingLine(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        contract_id=contract.id,
+        sov_line_id=sov_line.id if sov_line else None,
+        funding_source_id=funding.id,
+        amount=payload.amount,
+        consumed_amount=payload.consumed_amount,
+        status=payload.status.strip().lower() or "active",
+    )
+    db.add(line)
+    if contract.control_account_id:
+        allocation = db.scalar(
+            select(ControlAccountFundingAllocation).where(
+                ControlAccountFundingAllocation.tenant_id == tenant_id,
+                ControlAccountFundingAllocation.project_id == project_id,
+                ControlAccountFundingAllocation.control_account_id == contract.control_account_id,
+                ControlAccountFundingAllocation.funding_source_id == funding.id,
+            )
+        )
+        if allocation:
+            allocation.committed_amount = _money(allocation.committed_amount + payload.amount)
+            _touch_collaborative_record(allocation)
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_commitment_funding_line",
+        "CommitmentFundingLine",
+        line.id,
+        json.dumps({"contract_id": contract.id, "funding_source_id": funding.id}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(line)
+    return line
+
+
+@router.get(
+    "/projects/{project_id}/contracts/{contract_id}/commitment-funding-lines",
+    response_model=list[CommitmentFundingLineOut],
+)
+def list_commitment_funding_lines(
+    project_id: int,
+    contract_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[CommitmentFundingLine]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    _require_contract(db, tenant_id, project_id, contract_id)
+    return list(
+        db.scalars(
+            select(CommitmentFundingLine)
+            .where(
+                CommitmentFundingLine.tenant_id == tenant_id,
+                CommitmentFundingLine.project_id == project_id,
+                CommitmentFundingLine.contract_id == contract_id,
+            )
+            .order_by(CommitmentFundingLine.id)
+        ).all()
+    )
 
 
 @router.get("/projects/{project_id}/purchase-orders", response_model=list[PurchaseOrderOut])
@@ -1038,10 +2501,16 @@ def create_purchase_order(
     current_user = _require_user(db, tenant_id, user_id)
     if payload.control_account_id is not None:
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    contract: Contract | None = None
     if payload.contract_id is not None:
-        _require_contract(db, tenant_id, project_id, payload.contract_id)
+        contract = _require_contract(db, tenant_id, project_id, payload.contract_id)
     if payload.committed_amount <= 0:
         raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
+    funding_source_id = payload.funding_source_id or (contract.funding_source_id if contract else None)
+    funding = IntegratedControlService(db).resolve_commitment_funding(
+        tenant_id, project_id, funding_source_id, payload.control_account_id
+    )
+    IntegratedControlService(db).ensure_available(tenant_id, project_id, funding, payload.committed_amount)
     po_number = payload.po_number.strip()
     if not po_number:
         raise HTTPException(status_code=400, detail="Purchase order number is required")
@@ -1057,6 +2526,7 @@ def create_purchase_order(
     order = PurchaseOrder(
         tenant_id=tenant_id,
         project_id=project_id,
+        funding_source_id=funding.id,
         control_account_id=payload.control_account_id,
         contract_id=payload.contract_id,
         po_number=po_number,
@@ -1068,6 +2538,7 @@ def create_purchase_order(
     )
     db.add(order)
     db.flush()
+    IntegratedControlService(db).refresh_funding_balance(tenant_id, project_id, funding)
     _audit(
         db,
         tenant_id,
@@ -1107,11 +2578,25 @@ def update_purchase_order(
     _require_current_version(order, payload.expected_version)
     if payload.control_account_id is not None:
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
+    contract: Contract | None = None
     if payload.contract_id is not None:
-        _require_contract(db, tenant_id, project_id, payload.contract_id)
+        contract = _require_contract(db, tenant_id, project_id, payload.contract_id)
     if payload.committed_amount is not None and payload.committed_amount <= 0:
         raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
+    funding_source_id = payload.funding_source_id or (contract.funding_source_id if contract else order.funding_source_id)
+    funding = IntegratedControlService(db).resolve_commitment_funding(
+        tenant_id, project_id, funding_source_id, payload.control_account_id or order.control_account_id
+    )
+    requested_amount = payload.committed_amount if payload.committed_amount is not None else order.committed_amount
+    IntegratedControlService(db).ensure_available(
+        tenant_id,
+        project_id,
+        funding,
+        requested_amount,
+        exclude_purchase_order_id=order.id,
+    )
     for field in (
+        "funding_source_id",
         "control_account_id",
         "contract_id",
         "description",
@@ -1123,6 +2608,8 @@ def update_purchase_order(
         value = getattr(payload, field)
         if value is not None:
             setattr(order, field, value.strip() if isinstance(value, str) else value)
+    order.funding_source_id = funding.id
+    IntegratedControlService(db).refresh_funding_balance(tenant_id, project_id, funding)
     _touch_collaborative_record(order)
     _audit(
         db,
@@ -2676,6 +4163,10 @@ def create_work_package(
     package_type = payload.package_type.strip().upper()
     if package_type not in AWP_PACKAGE_TYPES:
         raise HTTPException(status_code=400, detail="Unsupported AWP package type")
+    if payload.wbs_id is not None:
+        wbs = db.scalar(select(WBS).where(WBS.id == payload.wbs_id, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
+        if not wbs:
+            raise HTTPException(status_code=404, detail="WBS not found")
     if payload.control_account_id is not None:
         _require_control_account(db, tenant_id, project_id, payload.control_account_id)
     parent_package: WorkPackage | None = None
@@ -2694,19 +4185,23 @@ def create_work_package(
     package = WorkPackage(
         tenant_id=tenant_id,
         project_id=project_id,
+        wbs_id=payload.wbs_id,
         control_account_id=payload.control_account_id,
         parent_id=payload.parent_id,
         package_type=package_type,
         code=payload.code,
         title=payload.title,
+        description=payload.description,
         discipline=payload.discipline,
         sequence_no=payload.sequence_no,
         path_of_construction=payload.path_of_construction,
         owner_role=payload.owner_role,
         readiness_status=payload.readiness_status,
+        planned_release_date=payload.planned_release_date,
         planned_start=payload.planned_start,
         planned_finish=payload.planned_finish,
         release_required_on=payload.release_required_on,
+        main_constraints=payload.main_constraints,
         progress_percent=payload.progress_percent,
     )
     db.add(package)
@@ -3138,11 +4633,6 @@ def apply_workflow_action(
     user_id: int = Depends(get_user_id),
 ) -> BusinessProcessInstance:
     membership = _require_membership(db, tenant_id, project_id, user_id)
-    transition_permission = _workflow_transition_permission(db, tenant_id, process_id, payload.action)
-    if transition_permission:
-        _require_permission(membership, transition_permission, "Current role cannot execute this workflow transition")
-    elif payload.action in {"approve_baseline", "reject_baseline", "close_action"}:
-        _require_permission(membership, "can_approve_workflow", "Current role cannot approve or close workflow actions")
     current_user = _require_user(db, tenant_id, user_id)
     project = db.scalar(select(Project).where(Project.id == project_id, Project.tenant_id == tenant_id))
     if not project:
@@ -3156,6 +4646,18 @@ def apply_workflow_action(
     )
     if not process:
         raise HTTPException(status_code=404, detail="Workflow process not found")
+    policy = _workflow_process_policy(db, tenant_id, project_id, process.process_code, payload.action)
+    if policy:
+        if policy.required_role and membership.role != policy.required_role:
+            raise HTTPException(status_code=403, detail=f"Workflow action requires role {policy.required_role}")
+        if policy.permission_key:
+            _require_permission(membership, policy.permission_key, "Current role cannot execute this workflow policy")
+    else:
+        transition_permission = _workflow_transition_permission(db, tenant_id, process_id, payload.action)
+        if transition_permission:
+            _require_permission(membership, transition_permission, "Current role cannot execute this workflow transition")
+        elif payload.action in {"approve_baseline", "reject_baseline", "close_action"}:
+            _require_permission(membership, "can_approve_workflow", "Current role cannot approve or close workflow actions")
     _require_current_version(process, payload.expected_version)
     try:
         return WorkflowRoutingService(db).apply_action(
@@ -5915,6 +7417,498 @@ def _require_control_account(db: Session, tenant_id: int, project_id: int, accou
     return account
 
 
+def _require_wbs(db: Session, tenant_id: int, project_id: int, wbs_id: int) -> WBS:
+    wbs = db.scalar(
+        select(WBS).where(WBS.id == wbs_id, WBS.project_id == project_id, WBS.tenant_id == tenant_id)
+    )
+    if not wbs:
+        raise HTTPException(status_code=404, detail="WBS not found")
+    return wbs
+
+
+def _require_cbs(db: Session, tenant_id: int, project_id: int, cbs_id: int) -> CostBreakdownStructure:
+    cbs = db.scalar(
+        select(CostBreakdownStructure).where(
+            CostBreakdownStructure.id == cbs_id,
+            CostBreakdownStructure.project_id == project_id,
+            CostBreakdownStructure.tenant_id == tenant_id,
+        )
+    )
+    if not cbs:
+        raise HTTPException(status_code=404, detail="CBS not found")
+    return cbs
+
+
+def _require_activity_sheet(
+    db: Session, tenant_id: int, project_id: int, activity_sheet_id: int
+) -> ActivitySheet:
+    activity_sheet = db.scalar(
+        select(ActivitySheet).where(
+            ActivitySheet.id == activity_sheet_id,
+            ActivitySheet.project_id == project_id,
+            ActivitySheet.tenant_id == tenant_id,
+        )
+    )
+    if not activity_sheet:
+        raise HTTPException(status_code=404, detail="Activity sheet not found")
+    return activity_sheet
+
+
+def _require_rate_sheet(db: Session, tenant_id: int, project_id: int, rate_sheet_id: int) -> RateSheet:
+    rate_sheet = db.scalar(
+        select(RateSheet).where(
+            RateSheet.id == rate_sheet_id,
+            RateSheet.project_id == project_id,
+            RateSheet.tenant_id == tenant_id,
+        )
+    )
+    if not rate_sheet:
+        raise HTTPException(status_code=404, detail="Rate sheet not found")
+    return rate_sheet
+
+
+def _require_business_process(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    process_id: int,
+) -> BusinessProcessInstance:
+    process = db.scalar(
+        select(BusinessProcessInstance).where(
+            BusinessProcessInstance.id == process_id,
+            BusinessProcessInstance.project_id == project_id,
+            BusinessProcessInstance.tenant_id == tenant_id,
+        )
+    )
+    if not process:
+        raise HTTPException(status_code=404, detail="Business process not found")
+    return process
+
+
+def _require_business_process_line_item(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    line_item_id: int,
+) -> BusinessProcessLineItem:
+    line = db.scalar(
+        select(BusinessProcessLineItem).where(
+            BusinessProcessLineItem.id == line_item_id,
+            BusinessProcessLineItem.project_id == project_id,
+            BusinessProcessLineItem.tenant_id == tenant_id,
+        )
+    )
+    if not line:
+        raise HTTPException(status_code=404, detail="Business process line item not found")
+    return line
+
+
+def _business_process_line_item_version(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    line_item_id: int,
+) -> int:
+    latest_version = db.scalar(
+        select(func.coalesce(func.max(BusinessProcessLineItemRevision.new_version), 1)).where(
+            BusinessProcessLineItemRevision.tenant_id == tenant_id,
+            BusinessProcessLineItemRevision.project_id == project_id,
+            BusinessProcessLineItemRevision.line_item_id == line_item_id,
+        )
+    )
+    return int(latest_version or 1)
+
+
+def _business_process_line_item_out(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    line: BusinessProcessLineItem,
+) -> BusinessProcessLineItemOut:
+    return BusinessProcessLineItemOut(
+        id=line.id,
+        process_instance_id=line.process_instance_id,
+        line_type=line.line_type,
+        wbs_id=line.wbs_id,
+        cbs_id=line.cbs_id,
+        funding_source_id=line.funding_source_id,
+        control_account_id=line.control_account_id,
+        cost_code_id=line.cost_code_id,
+        amount=_money(line.amount),
+        quantity=float(line.quantity or 0),
+        description=line.description,
+        status=line.status,
+        version=_business_process_line_item_version(db, tenant_id, project_id, line.id),
+        created_at=line.created_at,
+        updated_at=line.updated_at,
+    )
+
+
+def _cost_code_from_parts(wbs_code: str, control_account_code: str, cbs_code: str) -> str:
+    code = f"{wbs_code}-{control_account_code}-{cbs_code}".replace(" ", "-")
+    while "--" in code:
+        code = code.replace("--", "-")
+    return code[:160]
+
+
+def _rate_sheet_out(db: Session, tenant_id: int, project_id: int, sheet: RateSheet) -> RateSheetOut:
+    lines = list(
+        db.scalars(
+            select(RateSheetLine)
+            .where(
+                RateSheetLine.tenant_id == tenant_id,
+                RateSheetLine.project_id == project_id,
+                RateSheetLine.rate_sheet_id == sheet.id,
+            )
+            .order_by(RateSheetLine.cbs_code)
+        ).all()
+    )
+    return RateSheetOut(
+        id=sheet.id,
+        code=sheet.code,
+        name=sheet.name,
+        status=sheet.status,
+        version=sheet.version,
+        created_at=sheet.created_at,
+        updated_at=sheet.updated_at,
+        line_items=[RateSheetLineOut.model_validate(line) for line in lines],
+    )
+
+
+def _recost_run_out(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    run: ActivitySheetRecostRun,
+) -> ActivitySheetRecostRunOut:
+    lines = list(
+        db.scalars(
+            select(ActivitySheetRecostRunLine)
+            .where(
+                ActivitySheetRecostRunLine.tenant_id == tenant_id,
+                ActivitySheetRecostRunLine.project_id == project_id,
+                ActivitySheetRecostRunLine.recost_run_id == run.id,
+            )
+            .order_by(ActivitySheetRecostRunLine.external_activity_id)
+        ).all()
+    )
+    return ActivitySheetRecostRunOut(
+        id=run.id,
+        activity_sheet_id=run.activity_sheet_id,
+        rate_sheet_id=run.rate_sheet_id,
+        run_no=run.run_no,
+        updated_rows=run.updated_rows,
+        total_planned_cost=_money(run.total_planned_cost),
+        total_planned_value=_money(run.total_planned_value),
+        created_by=run.created_by,
+        created_at=run.created_at,
+        lines=[ActivitySheetRecostRunLineOut.model_validate(line) for line in lines],
+    )
+
+
+def _activity_sheet_mappings_by_external_id(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    activity_sheet: ActivitySheet,
+) -> dict[str, ControlAccountMapping]:
+    schedule_rows = list(
+        db.scalars(
+            select(ScheduleActivityMap).where(
+                ScheduleActivityMap.tenant_id == tenant_id,
+                ScheduleActivityMap.project_id == project_id,
+                ScheduleActivityMap.schedule_import_id == activity_sheet.schedule_import_id,
+            )
+        ).all()
+    )
+    schedule_row_by_id = {row.id: row for row in schedule_rows}
+    mappings_by_external_id: dict[str, ControlAccountMapping] = {}
+    for mapping in db.scalars(
+        select(ControlAccountMapping).where(
+            ControlAccountMapping.tenant_id == tenant_id,
+            ControlAccountMapping.project_id == project_id,
+            ControlAccountMapping.schedule_import_id == activity_sheet.schedule_import_id,
+        )
+    ).all():
+        schedule_row = schedule_row_by_id.get(mapping.schedule_activity_map_id)
+        if schedule_row:
+            mappings_by_external_id[schedule_row.external_activity_id] = mapping
+    return mappings_by_external_id
+
+
+def _reconciliation_report_rows(db: Session, tenant_id: int, project_id: int) -> list[ReconciliationReportRow]:
+    cost_codes = list(
+        db.scalars(
+            select(CostCode)
+            .where(CostCode.tenant_id == tenant_id, CostCode.project_id == project_id)
+            .order_by(CostCode.code)
+        ).all()
+    )
+    wbs_by_id = {
+        row.id: row for row in db.scalars(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)).all()
+    }
+    account_by_id = {
+        row.id: row
+        for row in db.scalars(
+            select(ControlAccount).where(ControlAccount.tenant_id == tenant_id, ControlAccount.project_id == project_id)
+        ).all()
+    }
+    cbs_by_id = {
+        row.id: row
+        for row in db.scalars(
+            select(CostBreakdownStructure).where(
+                CostBreakdownStructure.tenant_id == tenant_id,
+                CostBreakdownStructure.project_id == project_id,
+            )
+        ).all()
+    }
+    fbs_by_id = {
+        row.id: row
+        for row in db.scalars(
+            select(FundingSource).where(FundingSource.tenant_id == tenant_id, FundingSource.project_id == project_id)
+        ).all()
+    }
+    contracts_by_code = {
+        row.code: row
+        for row in db.scalars(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)).all()
+    }
+    rows: list[ReconciliationReportRow] = []
+    for cost_code in cost_codes:
+        wbs = wbs_by_id.get(cost_code.wbs_id)
+        account = account_by_id.get(cost_code.control_account_id)
+        cbs = cbs_by_id.get(cost_code.cbs_id)
+        fbs = fbs_by_id.get(cost_code.fbs_id)
+        contract = contracts_by_code.get(cost_code.contract_ref)
+        sov_amount = 0.0
+        funded_amount = 0.0
+        if contract:
+            sov_amount = float(
+                db.scalar(
+                    select(func.coalesce(func.sum(ScheduleOfValueLine.amount), 0)).where(
+                        ScheduleOfValueLine.tenant_id == tenant_id,
+                        ScheduleOfValueLine.project_id == project_id,
+                        ScheduleOfValueLine.contract_id == contract.id,
+                        ScheduleOfValueLine.cbs_id == cost_code.cbs_id,
+                        ScheduleOfValueLine.status != "cancelled",
+                    )
+                )
+                or 0
+            )
+            funded_amount = float(
+                db.scalar(
+                    select(func.coalesce(func.sum(CommitmentFundingLine.amount), 0)).where(
+                        CommitmentFundingLine.tenant_id == tenant_id,
+                        CommitmentFundingLine.project_id == project_id,
+                        CommitmentFundingLine.contract_id == contract.id,
+                        CommitmentFundingLine.funding_source_id == cost_code.fbs_id,
+                        CommitmentFundingLine.status != "cancelled",
+                    )
+                )
+                or 0
+            )
+        rows.append(
+            ReconciliationReportRow(
+                wbs_code=wbs.code if wbs else "",
+                cbs_code=cbs.code if cbs else "",
+                fbs_code=fbs.code if fbs else "",
+                control_account_code=account.code if account else "",
+                contract_ref=cost_code.contract_ref,
+                budget=_money(cost_code.budget),
+                committed=_money(cost_code.commitments),
+                funded_amount=_money(funded_amount),
+                sov_amount=_money(sov_amount),
+                forecast=_money(cost_code.forecast),
+                variance=_money(cost_code.budget - cost_code.forecast),
+            )
+        )
+    return sorted(rows, key=lambda row: (row.wbs_code, row.cbs_code, row.contract_ref))
+
+
+def _control_agent_run_out(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    run: ControlAgentRun,
+) -> ControlAgentRunOut:
+    severity_order = {"high": 0, "medium": 1, "low": 2, "info": 3}
+    findings = list(
+        db.scalars(
+            select(ControlAgentFinding).where(
+                ControlAgentFinding.tenant_id == tenant_id,
+                ControlAgentFinding.project_id == project_id,
+                ControlAgentFinding.run_id == run.id,
+            )
+        ).all()
+    )
+    findings.sort(key=lambda finding: (severity_order.get(finding.severity, 9), finding.id))
+    return ControlAgentRunOut(
+        id=run.id,
+        project_id=run.project_id,
+        agent_code=run.agent_code,
+        agent_name=run.agent_name,
+        run_mode=run.run_mode,
+        model_name=run.model_name,
+        status=run.status,
+        score=run.score,
+        summary=run.summary,
+        created_by=run.created_by,
+        created_at=run.created_at,
+        findings=[ControlAgentFindingOut.model_validate(finding) for finding in findings],
+    )
+
+
+def _reconciliation_xlsx_bytes(rows: list[ReconciliationReportRow]) -> bytes:
+    headers = [
+        "WBS",
+        "CBS",
+        "FBS",
+        "Control Account",
+        "Contract",
+        "Budget",
+        "Committed",
+        "Funding",
+        "SOV",
+        "Forecast",
+        "Variance",
+    ]
+    values = [
+        [
+            row.wbs_code,
+            row.cbs_code,
+            row.fbs_code,
+            row.control_account_code,
+            row.contract_ref,
+            row.budget,
+            row.committed,
+            row.funded_amount,
+            row.sov_amount,
+            row.forecast,
+            row.variance,
+        ]
+        for row in rows
+    ]
+    sheet_rows = [headers, *values]
+
+    def col_name(index: int) -> str:
+        name = ""
+        while index:
+            index, remainder = divmod(index - 1, 26)
+            name = chr(65 + remainder) + name
+        return name
+
+    def cell(row_index: int, column_index: int, value: object) -> str:
+        cell_ref = f"{col_name(column_index)}{row_index}"
+        if isinstance(value, int | float):
+            return f'<c r="{cell_ref}"><v>{float(value):.2f}</v></c>'
+        text = escape(str(value or ""), {'"': "&quot;"})
+        return f'<c r="{cell_ref}" t="inlineStr"><is><t>{text}</t></is></c>'
+
+    sheet_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'
+        + "".join(
+            f'<row r="{row_index}">'
+            + "".join(cell(row_index, column_index, value) for column_index, value in enumerate(row_values, start=1))
+            + "</row>"
+            for row_index, row_values in enumerate(sheet_rows, start=1)
+        )
+        + "</sheetData></worksheet>"
+    )
+    workbook_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        '<sheets><sheet name="Reconciliation" sheetId="1" r:id="rId1"/></sheets></workbook>'
+    )
+    workbook_rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+        'Target="worksheets/sheet1.xml"/></Relationships>'
+    )
+    package_rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
+        'Target="xl/workbook.xml"/></Relationships>'
+    )
+    content_types = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        '<Override PartName="/xl/worksheets/sheet1.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        "</Types>"
+    )
+    buffer = BytesIO()
+    with ZipFile(buffer, "w", ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("_rels/.rels", package_rels)
+        archive.writestr("xl/workbook.xml", workbook_xml)
+        archive.writestr("xl/_rels/workbook.xml.rels", workbook_rels)
+        archive.writestr("xl/worksheets/sheet1.xml", sheet_xml)
+    return buffer.getvalue()
+
+
+def _reconciliation_pdf_bytes(project_id: int, rows: list[ReconciliationReportRow]) -> bytes:
+    def pdf_text(value: object, limit: int = 120) -> str:
+        text = str(value or "")[:limit]
+        return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+    lines = [
+        f"Reconciliation Report - Project {project_id}",
+        f"Rows: {len(rows)}",
+        "",
+        "WBS | CBS | FBS | Contract | Budget | Forecast | Variance",
+    ]
+    for row in rows[:32]:
+        lines.append(
+            " | ".join(
+                [
+                    row.wbs_code,
+                    row.cbs_code,
+                    row.fbs_code,
+                    row.contract_ref,
+                    f"{row.budget:.2f}",
+                    f"{row.forecast:.2f}",
+                    f"{row.variance:.2f}",
+                ]
+            )
+        )
+    if len(rows) > 32:
+        lines.append(f"... {len(rows) - 32} more rows")
+
+    content = "BT\n/F1 10 Tf\n13 TL\n40 792 Td\n" + "\n".join(f"({pdf_text(line)}) Tj\nT*" for line in lines) + "\nET"
+    content_bytes = content.encode("latin-1", errors="replace")
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(content_bytes)).encode("ascii") + b" >>\nstream\n" + content_bytes + b"\nendstream",
+    ]
+    output = BytesIO()
+    output.write(b"%PDF-1.4\n")
+    offsets = [0]
+    for index, obj in enumerate(objects, start=1):
+        offsets.append(output.tell())
+        output.write(f"{index} 0 obj\n".encode("ascii"))
+        output.write(obj)
+        output.write(b"\nendobj\n")
+    xref_offset = output.tell()
+    output.write(f"xref\n0 {len(objects) + 1}\n".encode("ascii"))
+    output.write(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        output.write(f"{offset:010d} 00000 n \n".encode("ascii"))
+    output.write(
+        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF\n".encode("ascii")
+    )
+    return output.getvalue()
+
+
 def _require_work_package(db: Session, tenant_id: int, project_id: int, package_id: int) -> WorkPackage:
     package = db.scalar(
         select(WorkPackage).where(
@@ -6368,6 +8362,24 @@ def _workflow_transition_permission(
     if transition.permission_key:
         return transition.permission_key
     return "can_approve_workflow" if transition.requires_approval else ""
+
+
+def _workflow_process_policy(
+    db: Session,
+    tenant_id: int,
+    project_id: int,
+    process_code: str,
+    action: str,
+) -> BusinessProcessPolicy | None:
+    return db.scalar(
+        select(BusinessProcessPolicy).where(
+            BusinessProcessPolicy.tenant_id == tenant_id,
+            BusinessProcessPolicy.project_id == project_id,
+            BusinessProcessPolicy.process_code == process_code,
+            BusinessProcessPolicy.action == action.strip().lower(),
+            BusinessProcessPolicy.status == "active",
+        )
+    )
 
 
 def _configured_transition(

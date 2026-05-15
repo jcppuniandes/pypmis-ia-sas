@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import StrEnum
 
-from sqlalchemy import Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.session import Base
@@ -67,6 +67,12 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(220))
     phase: Mapped[str] = mapped_column(String(80), default="Execution")
     currency: Mapped[str] = mapped_column(String(8), default="USD")
+    calendar_base: Mapped[str] = mapped_column(String(120), default="")
+    owner: Mapped[str] = mapped_column(String(160), default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    authorization_date: Mapped[date | None] = mapped_column(Date)
+    authorization_ref: Mapped[str] = mapped_column(String(160), default="")
+    configuration: Mapped[dict] = mapped_column(JSON, default=dict)
     start_date: Mapped[date | None] = mapped_column(Date)
     finish_date: Mapped[date | None] = mapped_column(Date)
 
@@ -94,6 +100,66 @@ class ProjectControlPlan(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id"),)
+
+
+class ProjectOperationalSetup(Base):
+    __tablename__ = "project_operational_setups"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    project_number: Mapped[str] = mapped_column(String(80), default="")
+    setup_template: Mapped[str] = mapped_column(String(180), default="")
+    attribute_form: Mapped[str] = mapped_column(String(180), default="")
+    permissions_configured: Mapped[bool] = mapped_column(default=False)
+    modules_configured: Mapped[bool] = mapped_column(default=False)
+    cost_sheet_ready: Mapped[bool] = mapped_column(default=False)
+    funding_sheet_ready: Mapped[bool] = mapped_column(default=False)
+    p6_mapping_ready: Mapped[bool] = mapped_column(default=False)
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    readiness_status: Mapped[str] = mapped_column(String(40), default="not_ready")
+    readiness_notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id"),)
+
+
+class ActivitySheet(Base):
+    __tablename__ = "activity_sheets"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    schedule_import_id: Mapped[int | None] = mapped_column(ForeignKey("schedule_imports.id"), index=True)
+    source_file_name: Mapped[str] = mapped_column(String(260))
+    source: Mapped[str] = mapped_column(String(40), default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    row_count: Mapped[int] = mapped_column(Integer, default=0)
+    data_date: Mapped[date | None] = mapped_column(Date)
+    baseline_name: Mapped[str] = mapped_column(String(160), default="")
+    validation_summary: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class ActivitySheetRow(Base):
+    __tablename__ = "activity_sheet_rows"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    activity_sheet_id: Mapped[int] = mapped_column(ForeignKey("activity_sheets.id"), index=True)
+    external_activity_id: Mapped[str] = mapped_column(String(120), index=True)
+    wbs_code: Mapped[str] = mapped_column(String(120), default="")
+    activity_name: Mapped[str] = mapped_column(String(260), default="")
+    planned_start: Mapped[date | None] = mapped_column(Date)
+    planned_finish: Mapped[date | None] = mapped_column(Date)
+    total_float_days: Mapped[float] = mapped_column(Float, default=0)
+    critical_path: Mapped[bool] = mapped_column(default=False)
+    planned_cost: Mapped[float] = mapped_column(Float, default=0)
 
 
 class UserAccount(Base):
@@ -252,6 +318,11 @@ class WBS(Base):
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("wbs.id"))
     code: Mapped[str] = mapped_column(String(80), index=True)
     name: Mapped[str] = mapped_column(String(220))
+    level: Mapped[int] = mapped_column(Integer, default=1)
+    description: Mapped[str] = mapped_column(Text, default="")
+    dictionary: Mapped[str] = mapped_column(Text, default="")
+    responsible: Mapped[str] = mapped_column(String(160), default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
 
 
 class ControlAccount(Base):
@@ -261,13 +332,21 @@ class ControlAccount(Base):
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
     wbs_id: Mapped[int] = mapped_column(ForeignKey("wbs.id"), index=True)
+    awp_package_id: Mapped[int | None] = mapped_column(ForeignKey("work_packages.id"), index=True)
     code: Mapped[str] = mapped_column(String(80), index=True)
     name: Mapped[str] = mapped_column(String(220))
     responsible: Mapped[str] = mapped_column(String(160))
     discipline: Mapped[str] = mapped_column(String(80))
+    scope: Mapped[str] = mapped_column(Text, default="")
+    budget: Mapped[float] = mapped_column(Float, default=0)
+    start_date: Mapped[date | None] = mapped_column(Date)
+    finish_date: Mapped[date | None] = mapped_column(Date)
     cbs_code: Mapped[str] = mapped_column(String(80), default="")
     contract_ref: Mapped[str] = mapped_column(String(120), default="")
     measurement_rule: Mapped[str] = mapped_column(String(260), default="")
+    earned_value: Mapped[float] = mapped_column(Float, default=0)
+    actual_cost: Mapped[float] = mapped_column(Float, default=0)
+    forecast: Mapped[float] = mapped_column(Float, default=0)
     lifecycle_status: Mapped[str] = mapped_column(String(40), default="active")
     risk_ref: Mapped[str] = mapped_column(String(120), default="")
     closure_note: Mapped[str] = mapped_column(String(360), default="")
@@ -359,19 +438,23 @@ class WorkPackage(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    wbs_id: Mapped[int | None] = mapped_column(ForeignKey("wbs.id"), index=True)
     control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("work_packages.id"), index=True)
     package_type: Mapped[str] = mapped_column(String(20), index=True)
     code: Mapped[str] = mapped_column(String(80), index=True)
     title: Mapped[str] = mapped_column(String(260))
+    description: Mapped[str] = mapped_column(Text, default="")
     discipline: Mapped[str] = mapped_column(String(80), default="")
     sequence_no: Mapped[int] = mapped_column(Integer, default=0)
     path_of_construction: Mapped[str] = mapped_column(String(260), default="")
     owner_role: Mapped[str] = mapped_column(String(120), default="Workface Planner")
     readiness_status: Mapped[str] = mapped_column(String(60), default="constraint_review")
+    planned_release_date: Mapped[date | None] = mapped_column(Date)
     planned_start: Mapped[date | None] = mapped_column(Date)
     planned_finish: Mapped[date | None] = mapped_column(Date)
     release_required_on: Mapped[date | None] = mapped_column(Date)
+    main_constraints: Mapped[str] = mapped_column(Text, default="")
     progress_percent: Mapped[float] = mapped_column(Float, default=0)
     version: Mapped[int] = mapped_column(Integer, default=1)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -439,6 +522,68 @@ class WorkflowStepInstance(Base):
     tone: Mapped[str] = mapped_column(String(40))
 
     process_instance: Mapped[BusinessProcessInstance] = relationship(back_populates="steps")
+
+
+class BusinessProcessLineItem(Base):
+    __tablename__ = "business_process_line_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    process_instance_id: Mapped[int] = mapped_column(ForeignKey("business_process_instances.id"), index=True)
+    line_type: Mapped[str] = mapped_column(String(40), index=True)
+    wbs_id: Mapped[int | None] = mapped_column(ForeignKey("wbs.id"), index=True)
+    cbs_id: Mapped[int] = mapped_column(ForeignKey("cost_breakdown_structures.id"), index=True)
+    funding_source_id: Mapped[int | None] = mapped_column(ForeignKey("funding_sources.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    cost_code_id: Mapped[int | None] = mapped_column(ForeignKey("cost_codes.id"), index=True)
+    amount: Mapped[float] = mapped_column(Float, default=0)
+    quantity: Mapped[float] = mapped_column(Float, default=0)
+    description: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class BusinessProcessPolicy(Base):
+    __tablename__ = "business_process_policies"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    process_code: Mapped[str] = mapped_column(String(80), index=True)
+    action: Mapped[str] = mapped_column(String(80), index=True)
+    required_role: Mapped[str] = mapped_column(String(120), default="")
+    permission_key: Mapped[str] = mapped_column(String(80), default="")
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "process_code", "action"),)
+
+
+class BusinessProcessLineItemRevision(Base):
+    __tablename__ = "business_process_line_item_revisions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    line_item_id: Mapped[int] = mapped_column(ForeignKey("business_process_line_items.id"), index=True)
+    process_instance_id: Mapped[int] = mapped_column(ForeignKey("business_process_instances.id"), index=True)
+    previous_version: Mapped[int] = mapped_column(Integer)
+    new_version: Mapped[int] = mapped_column(Integer)
+    previous_amount: Mapped[float] = mapped_column(Float, default=0)
+    new_amount: Mapped[float] = mapped_column(Float, default=0)
+    previous_quantity: Mapped[float] = mapped_column(Float, default=0)
+    new_quantity: Mapped[float] = mapped_column(Float, default=0)
+    previous_description: Mapped[str] = mapped_column(Text, default="")
+    new_description: Mapped[str] = mapped_column(Text, default="")
+    previous_status: Mapped[str] = mapped_column(String(40), default="")
+    new_status: Mapped[str] = mapped_column(String(40), default="")
+    change_note: Mapped[str] = mapped_column(Text, default="")
+    changed_by: Mapped[str] = mapped_column(String(160), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class BusinessProcessTemplate(Base):
@@ -551,9 +696,90 @@ class FundingSource(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
     code: Mapped[str] = mapped_column(String(80), index=True)
     name: Mapped[str] = mapped_column(String(180))
+    source_of_funds: Mapped[str] = mapped_column(String(180), default="")
+    funding_type: Mapped[str] = mapped_column(String(80), default="")
+    authorization_ref: Mapped[str] = mapped_column(String(160), default="")
+    usage_restrictions: Mapped[str] = mapped_column(Text, default="")
+    usage_rules: Mapped[str] = mapped_column(Text, default="")
     amount: Mapped[float] = mapped_column(Float, default=0)
+    funds_available: Mapped[float] = mapped_column(Float, default=0)
+    funds_committed: Mapped[float] = mapped_column(Float, default=0)
+    funds_executed: Mapped[float] = mapped_column(Float, default=0)
     currency: Mapped[str] = mapped_column(String(8), default="USD")
     status: Mapped[str] = mapped_column(String(40), default="approved")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
+
+    @property
+    def approved_amount(self) -> float:
+        return float(self.amount or 0)
+
+    @property
+    def balance(self) -> float:
+        return float(self.funds_available or 0)
+
+
+class ControlAccountFundingAllocation(Base):
+    __tablename__ = "control_account_funding_allocations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    control_account_id: Mapped[int] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    funding_source_id: Mapped[int] = mapped_column(ForeignKey("funding_sources.id"), index=True)
+    allocated_amount: Mapped[float] = mapped_column(Float, default=0)
+    committed_amount: Mapped[float] = mapped_column(Float, default=0)
+    actual_amount: Mapped[float] = mapped_column(Float, default=0)
+    forecast_amount: Mapped[float] = mapped_column(Float, default=0)
+    distribution_note: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "control_account_id", "funding_source_id"),)
+
+
+class CostBreakdownStructure(Base):
+    __tablename__ = "cost_breakdown_structures"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    parent_id: Mapped[int | None] = mapped_column(ForeignKey("cost_breakdown_structures.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    level: Mapped[int] = mapped_column(Integer, default=1)
+    cost_category: Mapped[str] = mapped_column(String(120), default="")
+    description: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
+
+
+class CostCode(Base):
+    __tablename__ = "cost_codes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    wbs_id: Mapped[int] = mapped_column(ForeignKey("wbs.id"), index=True)
+    control_account_id: Mapped[int] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    cbs_id: Mapped[int] = mapped_column(ForeignKey("cost_breakdown_structures.id"), index=True)
+    fbs_id: Mapped[int] = mapped_column(ForeignKey("funding_sources.id"), index=True)
+    contract_ref: Mapped[str] = mapped_column(String(120), default="")
+    code: Mapped[str] = mapped_column(String(160), index=True)
+    budget: Mapped[float] = mapped_column(Float, default=0)
+    funds_available: Mapped[float] = mapped_column(Float, default=0)
+    commitments: Mapped[float] = mapped_column(Float, default=0)
+    actual_costs: Mapped[float] = mapped_column(Float, default=0)
+    forecast: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="draft")
     version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -791,6 +1017,7 @@ class Contract(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    funding_source_id: Mapped[int | None] = mapped_column(ForeignKey("funding_sources.id"), index=True)
     control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
     code: Mapped[str] = mapped_column(String(80), index=True)
     title: Mapped[str] = mapped_column(String(220))
@@ -802,12 +1029,119 @@ class Contract(Base):
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
 
+class ScheduleOfValueLine(Base):
+    __tablename__ = "schedule_of_value_lines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    contract_id: Mapped[int] = mapped_column(ForeignKey("contracts.id"), index=True)
+    line_no: Mapped[str] = mapped_column(String(80), index=True)
+    description: Mapped[str] = mapped_column(Text, default="")
+    amount: Mapped[float] = mapped_column(Float, default=0)
+    cbs_id: Mapped[int] = mapped_column(ForeignKey("cost_breakdown_structures.id"), index=True)
+    wbs_id: Mapped[int | None] = mapped_column(ForeignKey("wbs.id"), index=True)
+    control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "contract_id", "line_no"),)
+
+
+class CommitmentFundingLine(Base):
+    __tablename__ = "commitment_funding_lines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    contract_id: Mapped[int] = mapped_column(ForeignKey("contracts.id"), index=True)
+    sov_line_id: Mapped[int | None] = mapped_column(ForeignKey("schedule_of_value_lines.id"), index=True)
+    funding_source_id: Mapped[int] = mapped_column(ForeignKey("funding_sources.id"), index=True)
+    amount: Mapped[float] = mapped_column(Float, default=0)
+    consumed_amount: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class RateSheet(Base):
+    __tablename__ = "rate_sheets"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    name: Mapped[str] = mapped_column(String(180), default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
+
+
+class RateSheetLine(Base):
+    __tablename__ = "rate_sheet_lines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    rate_sheet_id: Mapped[int] = mapped_column(ForeignKey("rate_sheets.id"), index=True)
+    cbs_code: Mapped[str] = mapped_column(String(120), index=True)
+    unit_rate: Mapped[float] = mapped_column(Float, default=0)
+    multiplier: Mapped[float] = mapped_column(Float, default=1)
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "rate_sheet_id", "cbs_code"),)
+
+
+class ActivitySheetRecostRun(Base):
+    __tablename__ = "activity_sheet_recost_runs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    activity_sheet_id: Mapped[int] = mapped_column(ForeignKey("activity_sheets.id"), index=True)
+    rate_sheet_id: Mapped[int] = mapped_column(ForeignKey("rate_sheets.id"), index=True)
+    run_no: Mapped[int] = mapped_column(Integer, default=1)
+    updated_rows: Mapped[int] = mapped_column(Integer, default=0)
+    total_planned_cost: Mapped[float] = mapped_column(Float, default=0)
+    total_planned_value: Mapped[float] = mapped_column(Float, default=0)
+    created_by: Mapped[str] = mapped_column(String(160), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "activity_sheet_id", "run_no"),)
+
+
+class ActivitySheetRecostRunLine(Base):
+    __tablename__ = "activity_sheet_recost_run_lines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    recost_run_id: Mapped[int] = mapped_column(ForeignKey("activity_sheet_recost_runs.id"), index=True)
+    activity_sheet_row_id: Mapped[int] = mapped_column(ForeignKey("activity_sheet_rows.id"), index=True)
+    external_activity_id: Mapped[str] = mapped_column(String(120), default="")
+    cbs_code: Mapped[str] = mapped_column(String(120), default="")
+    previous_planned_cost: Mapped[float] = mapped_column(Float, default=0)
+    new_planned_cost: Mapped[float] = mapped_column(Float, default=0)
+    previous_planned_value: Mapped[float] = mapped_column(Float, default=0)
+    new_planned_value: Mapped[float] = mapped_column(Float, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class PurchaseOrder(Base):
     __tablename__ = "purchase_orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    funding_source_id: Mapped[int | None] = mapped_column(ForeignKey("funding_sources.id"), index=True)
     control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
     contract_id: Mapped[int | None] = mapped_column(ForeignKey("contracts.id"), index=True)
     po_number: Mapped[str] = mapped_column(String(120), index=True)
@@ -1070,3 +1404,46 @@ class AuditLog(Base):
     entity_id: Mapped[int | None] = mapped_column(Integer)
     payload: Mapped[str] = mapped_column(Text, default="{}")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class ControlAgentRun(Base):
+    __tablename__ = "control_agent_runs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    agent_code: Mapped[str] = mapped_column(String(80), index=True)
+    agent_name: Mapped[str] = mapped_column(String(160))
+    run_mode: Mapped[str] = mapped_column(String(40), default="deterministic")
+    model_name: Mapped[str] = mapped_column(String(120), default="deterministic-control-audit-v1")
+    status: Mapped[str] = mapped_column(String(40), default="completed")
+    score: Mapped[int] = mapped_column(Integer, default=100)
+    summary: Mapped[str] = mapped_column(Text, default="")
+    created_by: Mapped[str] = mapped_column(String(160), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    findings: Mapped[list["ControlAgentFinding"]] = relationship(
+        back_populates="run",
+        cascade="all, delete-orphan",
+    )
+
+
+class ControlAgentFinding(Base):
+    __tablename__ = "control_agent_findings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("control_agent_runs.id"), index=True)
+    severity: Mapped[str] = mapped_column(String(40), index=True)
+    category: Mapped[str] = mapped_column(String(80), index=True)
+    title: Mapped[str] = mapped_column(String(220))
+    evidence: Mapped[str] = mapped_column(Text, default="")
+    recommendation: Mapped[str] = mapped_column(Text, default="")
+    owner_role: Mapped[str] = mapped_column(String(120), default="")
+    entity_type: Mapped[str] = mapped_column(String(80), default="")
+    entity_id: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(40), default="open")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    run: Mapped[ControlAgentRun] = relationship(back_populates="findings")

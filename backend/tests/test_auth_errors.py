@@ -65,11 +65,22 @@ def test_login_rejects_wrong_password() -> None:
     assert response.status_code == 401
 
 
+def test_login_accepts_admin_alias_with_demo_password() -> None:
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/v1/auth/login",
+            json={"email": "admin", "password": "1234", "tenant_slug": "demo-energy"},
+        )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["user"]["email"] == "ana.control@demo.local"
+
+
 def test_accessing_nonexistent_project_returns_403_or_404() -> None:
     with TestClient(app) as client:
         login = client.post(
             "/api/v1/auth/login",
-            json={"email": "ana.control@demo.local", "password": "demo123", "tenant_slug": "demo-energy"},
+            json={"email": "admin", "password": "1234", "tenant_slug": "demo-energy"},
         )
         assert login.status_code == 200, login.text
         token = login.json()["access_token"]

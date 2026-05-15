@@ -234,12 +234,13 @@ def test_cost_manager_records_can_be_created_and_versioned() -> None:
             f"/api/v1/projects/{project_id}/contracts",
             headers=headers,
             json={
+                "funding_source_id": funding["id"],
                 "control_account_id": control_account_id,
                 "code": f"CON-TEST-{suffix}",
                 "title": "Pilot commitment contract",
                 "counterparty": "Test Contractor",
                 "contract_type": "Services",
-                "value": 23000,
+                "value": 6000,
                 "status": "active",
             },
         )
@@ -1093,7 +1094,7 @@ def _login_as(client: TestClient, email: str):
         "/api/v1/auth/login",
         json={
             "email": email,
-            "password": "demo123",
+            "password": "1234",
             "tenant_slug": "demo-energy",
         },
     )

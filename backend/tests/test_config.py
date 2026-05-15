@@ -84,6 +84,39 @@ def test_validate_for_runtime_rejects_auto_schema_in_prod():
         s.validate_for_runtime()
 
 
+def test_validate_for_runtime_rejects_missing_metrics_token_in_prod():
+    s = Settings(
+        app_environment="production",
+        auth_secret_key="a" * 64,
+        allowed_hosts="a.com",
+        cors_origins="http://a.com",
+        docs_enabled=False,
+        auto_create_schema=False,
+        metrics_enabled=True,
+        metrics_token="",
+    )
+    with pytest.raises(RuntimeError, match="METRICS_TOKEN"):
+        s.validate_for_runtime()
+
+
+def test_validate_for_runtime_rejects_disabled_operational_hardening():
+    s = Settings(
+        app_environment="production",
+        auth_secret_key="a" * 64,
+        allowed_hosts="a.com",
+        cors_origins="http://a.com",
+        docs_enabled=False,
+        auto_create_schema=False,
+        metrics_enabled=True,
+        metrics_token="m" * 32,
+        rate_limit_enabled=False,
+        security_headers_enabled=False,
+        log_format="plain",
+    )
+    with pytest.raises(RuntimeError, match="RATE_LIMIT_ENABLED"):
+        s.validate_for_runtime()
+
+
 def test_validate_for_runtime_passes_secure_config():
     s = Settings(
         app_environment="production",
@@ -92,6 +125,10 @@ def test_validate_for_runtime_passes_secure_config():
         cors_origins="http://a.com",
         docs_enabled=False,
         auto_create_schema=False,
+        metrics_token="m" * 32,
+        rate_limit_enabled=True,
+        security_headers_enabled=True,
+        log_format="json",
     )
     s.validate_for_runtime()
 
