@@ -10,6 +10,7 @@ set -euo pipefail
 COMPOSE_FILE="docker-compose.vps.yml"
 ENV_FILE=".env"
 BACKUP_DIR="./backups"
+BACKUP_KEEP="${BACKUP_KEEP:-14}"
 
 if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: $ENV_FILE not found. Run from the repo root."
@@ -31,10 +32,12 @@ docker compose -f "$COMPOSE_FILE" exec -T db \
   | gzip > "$BACKUP_DIR/$BACKUP_FILE"
 
 SIZE=$(du -h "$BACKUP_DIR/$BACKUP_FILE" | cut -f1)
-echo "✓ Backup complete: $BACKUP_DIR/$BACKUP_FILE ($SIZE)"
+sha256sum "$BACKUP_DIR/$BACKUP_FILE" > "$BACKUP_DIR/$BACKUP_FILE.sha256"
+echo "Backup complete: $BACKUP_DIR/$BACKUP_FILE ($SIZE)"
+echo "Checksum: $BACKUP_DIR/$BACKUP_FILE.sha256"
 
-# Rotate: keep last 14 backups
-KEEP=14
+# Rotate: keep last BACKUP_KEEP backups
+KEEP="$BACKUP_KEEP"
 COUNT=$(ls -1 "$BACKUP_DIR"/pypmis_*.sql.gz 2>/dev/null | wc -l)
 if [ "$COUNT" -gt "$KEEP" ]; then
   REMOVE=$((COUNT - KEEP))

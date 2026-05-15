@@ -2,7 +2,7 @@ param(
   [string]$ApiUrl = "http://localhost:8000",
   [int]$TenantId = 1,
   [string]$Email = "ana.control@demo.local",
-  [string]$Password = "demo123"
+  [string]$Password = "1234"
 )
 
 $ErrorActionPreference = "Stop"

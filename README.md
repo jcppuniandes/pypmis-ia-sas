@@ -165,19 +165,19 @@ AUTO_CREATE_SCHEMA=true
 SEED_DEMO_DATA=true
 AUTH_SECRET_KEY=replace-with-a-long-random-secret
 ACCESS_TOKEN_EXPIRE_MINUTES=480
-DEMO_USER_PASSWORD=demo123
+DEMO_USER_PASSWORD=1234
 ```
 
 Para un entorno productivo, usar migraciones Alembic, configurar `AUTO_CREATE_SCHEMA=false`, `SEED_DEMO_DATA=false`, rotar `AUTH_SECRET_KEY` y conectar OIDC/SSO corporativo si aplica.
 
 ## Autenticacion
 
-La API usa token Bearer JWT. En la demo, todos los usuarios semilla tienen la clave `demo123`.
+La API usa token Bearer JWT. En la demo local, todos los usuarios semilla tienen la clave `1234`.
 
 ```powershell
 $session = Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/auth/login -ContentType "application/json" -Body (@{
   email = "ana.control@demo.local"
-  password = "demo123"
+  password = "1234"
   tenant_slug = "demo-energy"
 } | ConvertTo-Json)
 

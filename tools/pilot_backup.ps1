@@ -6,6 +6,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-DockerChecked {
+  param(
+    [string[]]$Arguments
+  )
+  & docker @Arguments
+  if ($LASTEXITCODE -ne 0) {
+    throw "Docker command failed ($LASTEXITCODE): docker $($Arguments -join ' ')"
+  }
+}
+
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $resolvedRoot = Resolve-Path -Path "."
 $backupDir = Join-Path $BackupRoot $timestamp
@@ -19,9 +29,9 @@ Write-Host "== Pilot backup =="
 Write-Host "Repository: $resolvedRoot"
 Write-Host "Output: $backupDir"
 
-docker compose exec -T db pg_dump -U $DbUser -d $DbName -Fc -f "/tmp/$dbBackupName"
-docker compose cp "db:/tmp/$dbBackupName" (Join-Path $backupDir $dbBackupName)
-docker compose exec -T db rm "/tmp/$dbBackupName" | Out-Null
+Invoke-DockerChecked @("compose", "exec", "-T", "db", "pg_dump", "-U", $DbUser, "-d", $DbName, "-Fc", "-f", "/tmp/$dbBackupName")
+Invoke-DockerChecked @("compose", "cp", "db:/tmp/$dbBackupName", (Join-Path $backupDir $dbBackupName))
+Invoke-DockerChecked @("compose", "exec", "-T", "db", "rm", "/tmp/$dbBackupName")
 
 $zipCommand = @"
 from pathlib import Path
@@ -35,9 +45,9 @@ with ZipFile(target, 'w', ZIP_DEFLATED) as archive:
                 archive.write(path, path.relative_to(root).as_posix())
 "@
 
-docker compose exec -T api python -c $zipCommand
-docker compose cp "api:/tmp/$documentBackupName" (Join-Path $backupDir $documentBackupName)
-docker compose exec -T api rm "/tmp/$documentBackupName" | Out-Null
+Invoke-DockerChecked @("compose", "exec", "-T", "api", "python", "-c", $zipCommand)
+Invoke-DockerChecked @("compose", "cp", "api:/tmp/$documentBackupName", (Join-Path $backupDir $documentBackupName))
+Invoke-DockerChecked @("compose", "exec", "-T", "api", "rm", "/tmp/$documentBackupName")
 
 $manifest = [ordered]@{
   created_at = (Get-Date).ToString("s")

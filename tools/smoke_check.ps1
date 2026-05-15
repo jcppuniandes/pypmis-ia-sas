@@ -3,7 +3,7 @@ param(
   [string]$FrontendUrl = "http://localhost:5173",
   [int]$TenantId = 1,
   [string]$Email = "ana.control@demo.local",
-  [string]$Password = "demo123",
+  [string]$Password = "1234",
   [string]$MetricsToken = ""
 )
 

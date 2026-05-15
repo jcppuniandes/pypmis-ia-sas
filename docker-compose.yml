@@ -42,7 +42,7 @@ services:
       AUTO_CREATE_SCHEMA: "true"
       SEED_DEMO_DATA: "true"
       AUTH_SECRET_KEY: dev-local-change-before-production
-      DEMO_USER_PASSWORD: demo123
+      DEMO_USER_PASSWORD: "1234"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       LOG_FORMAT: ${LOG_FORMAT:-plain}
       METRICS_ENABLED: "true"
@@ -60,6 +60,11 @@ services:
       OIDC_AUTHORIZATION_URL: ${OIDC_AUTHORIZATION_URL:-}
       OIDC_TOKEN_URL: ${OIDC_TOKEN_URL:-}
       OIDC_JWKS_URL: ${OIDC_JWKS_URL:-}
+      AI_PROVIDER: ${AI_PROVIDER:-disabled}
+      AI_MODEL: ${AI_MODEL:-claude-haiku-4-5-20251001}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_MAX_TOKENS: ${AI_MAX_TOKENS:-512}
+      AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-30}
     ports:
       - "8000:8000"
     volumes:

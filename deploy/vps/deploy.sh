@@ -84,7 +84,8 @@ echo "✓ Infrastructure ready"
 # ── 5. Run Alembic migrations ────────────────────────
 echo "Running database migrations..."
 docker compose -f "$COMPOSE_FILE" run --rm --no-deps api alembic upgrade head
-echo "✓ Migrations complete"
+docker compose -f "$COMPOSE_FILE" run --rm --no-deps api alembic current
+echo "Migrations complete and current revision verified"
 
 # ── 6. Optionally seed demo data ─────────────────────
 if [ "$SEED" = true ]; then

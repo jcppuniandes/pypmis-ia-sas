@@ -5,6 +5,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-DockerChecked {
+  param(
+    [string[]]$Arguments
+  )
+  & docker @Arguments
+  if ($LASTEXITCODE -ne 0) {
+    throw "Docker command failed ($LASTEXITCODE): docker $($Arguments -join ' ')"
+  }
+}
+
 if (-not $BackupDir) {
   $latest = Get-ChildItem -Path ".\backups\pilot" -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
   if ($null -eq $latest) {
@@ -33,7 +43,8 @@ Write-Host "== Pilot restore rehearsal =="
 Write-Host "Backup: $resolvedBackupDir"
 Write-Host "Temporary container: $ContainerName"
 
-docker run -d --name $ContainerName -e POSTGRES_DB=pypmis_restore -e POSTGRES_USER=pypmis -e POSTGRES_PASSWORD=pypmis postgres:16-alpine | Out-Null
+Invoke-DockerChecked @("run", "-d", "--name", $ContainerName, "-e", "POSTGRES_DB=pypmis_restore", "-e", "POSTGRES_USER=pypmis", "-e", "POSTGRES_PASSWORD=pypmis", "postgres:16-alpine")
+$containerStarted = $true
 try {
   $ready = $false
   for ($i = 0; $i -lt 30; $i++) {
@@ -48,21 +59,24 @@ try {
     throw "Temporary PostgreSQL container did not become ready."
   }
 
-  docker cp $dbBackup "${ContainerName}:/tmp/restore.dump"
-  docker exec $ContainerName pg_restore -h 127.0.0.1 -U pypmis -d pypmis_restore "/tmp/restore.dump"
-  if ($LASTEXITCODE -ne 0) {
-    throw "pg_restore failed in temporary restore container."
-  }
+  Invoke-DockerChecked @("cp", $dbBackup, "${ContainerName}:/tmp/restore.dump")
+  Invoke-DockerChecked @("exec", $ContainerName, "pg_restore", "-h", "127.0.0.1", "-U", "pypmis", "-d", "pypmis_restore", "/tmp/restore.dump")
   $tableCount = docker exec $ContainerName psql -h 127.0.0.1 -U pypmis -d pypmis_restore -tAc "select count(*) from information_schema.tables where table_schema = 'public';"
   if ($LASTEXITCODE -ne 0) {
     throw "Could not query restored database."
   }
+  $tableCount = $tableCount.Trim()
   if ([int]$tableCount -lt 1) {
     throw "Restore rehearsal finished with no public tables."
   }
   Write-Host "OK Restore rehearsal loaded $tableCount public tables"
 } finally {
-  docker rm -f $ContainerName | Out-Null
+  if ($containerStarted) {
+    docker rm -f $ContainerName | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+      Write-Warning "Could not remove temporary restore container: $ContainerName"
+    }
+  }
 }
 
 Write-Host "OK Temporary restore container removed"

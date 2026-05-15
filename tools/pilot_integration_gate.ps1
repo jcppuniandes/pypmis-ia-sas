@@ -4,7 +4,7 @@ param(
   [int]$TenantId = 1,
   [string]$PrimaryEmail = "ana.control@demo.local",
   [string]$SecondaryEmail = "laura.contracts@demo.local",
-  [string]$Password = "demo123"
+  [string]$Password = "1234"
 )
 
 $ErrorActionPreference = "Stop"
