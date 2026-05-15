@@ -4,6 +4,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import App from "../src/App";
 import { useAuthStore } from "../src/store/auth";
 
+const routerFuture = { v7_relativeSplatPath: true, v7_startTransition: true } as const;
+
 vi.mock("../src/store/auth", () => ({
   useAuthStore: vi.fn(),
 }));
@@ -21,7 +23,7 @@ describe("App routing", () => {
   it("redirects unauthenticated user from /app to /login", () => {
     vi.mocked(useAuthStore).mockReturnValue({ token: null, user: null } as ReturnType<typeof useAuthStore>);
     render(
-      <MemoryRouter initialEntries={["/app"]}>
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
       </MemoryRouter>
     );
@@ -34,7 +36,7 @@ describe("App routing", () => {
       user: { id: 1, email: "a@b.com", name: "A", role: "admin", company_id: 1 },
     } as ReturnType<typeof useAuthStore>);
     render(
-      <MemoryRouter initialEntries={["/app"]}>
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
       </MemoryRouter>
     );
@@ -45,7 +47,7 @@ describe("App routing", () => {
   it("redirects / to /app", () => {
     vi.mocked(useAuthStore).mockReturnValue({ token: "tok", user: { id: 1, email: "a@b.com", name: "A", role: "admin", company_id: 1 } } as ReturnType<typeof useAuthStore>);
     render(
-      <MemoryRouter initialEntries={["/"]}>
+      <MemoryRouter future={routerFuture} initialEntries={["/"]}>
         <App />
       </MemoryRouter>
     );

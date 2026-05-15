@@ -7,8 +7,8 @@ import { useAuthStore } from "../store/auth";
 export default function LoginView() {
   const navigate = useNavigate();
   const { login: setAuth } = useAuthStore();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin");
+  const [password, setPassword] = useState("1234");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,10 +43,10 @@ export default function LoginView() {
             </div>
           )}
           <div className="fieldStack">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">User</label>
             <input
               id="email"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

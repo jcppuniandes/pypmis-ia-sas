@@ -26,7 +26,8 @@ export function statusLabel(status?: string) {
   if (!status) {
     return "";
   }
-  return status.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  const neutral = neutralProjectText(status);
+  return neutral.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 export function neutralScheduleText(value: string) {
@@ -44,4 +45,19 @@ export function neutralScheduleText(value: string) {
     .replace(/\bMSP\b/gi, "schedule")
     .replace(/Imported\W+Schedule[_\s-]*/gi, "Imported Schedule ")
     .replace(/CONTROL\W+BASELINE[_\s-]*/gi, "Control Baseline ");
+}
+
+export function neutralProjectText(value?: string) {
+  if (!value) {
+    return "";
+  }
+  return value
+    .replace(/PJ-SHELL/gi, "PJ-CREATE")
+    .replace(/create_project_shell/gi, "create_project")
+    .replace(/Project Shell Creation/gi, "Project Creation")
+    .replace(/project shell creation/gi, "project creation")
+    .replace(/project control shells/gi, "projects")
+    .replace(/project control shell/gi, "project control")
+    .replace(/project shells/gi, "projects")
+    .replace(/project shell/gi, "project");
 }

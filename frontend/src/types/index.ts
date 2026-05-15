@@ -20,6 +20,12 @@ export type Project = {
   name: string;
   phase: string;
   currency: string;
+  calendar_base: string;
+  owner: string;
+  status: string;
+  authorization_date: string | null;
+  authorization_ref: string;
+  configuration: Record<string, unknown>;
   start_date: string | null;
   finish_date: string | null;
 };
@@ -40,6 +46,72 @@ export type ProjectControlPlan = {
   version: number;
   created_at: string;
   updated_at: string;
+};
+
+export type ProjectOperationalSetup = {
+  id: number;
+  project_id: number;
+  project_number: string;
+  setup_template: string;
+  attribute_form: string;
+  permissions_configured: boolean;
+  modules_configured: boolean;
+  cost_sheet_ready: boolean;
+  funding_sheet_ready: boolean;
+  p6_mapping_ready: boolean;
+  status: string;
+  readiness_status: string;
+  readiness_notes: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ActivitySheet = {
+  id: number;
+  project_id: number;
+  schedule_import_id: number | null;
+  source_file_name: string;
+  source: string;
+  status: string;
+  row_count: number;
+  data_date: string | null;
+  baseline_name: string;
+  validation_summary: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ActivitySheetRow = {
+  id: number;
+  activity_sheet_id: number;
+  external_activity_id: string;
+  wbs_code: string;
+  activity_name: string;
+  planned_start: string | null;
+  planned_finish: string | null;
+  total_float_days: number;
+  critical_path: boolean;
+  planned_cost: number;
+  planned_value: number;
+  planned_percent: number;
+  cbs_code: string;
+  control_account_id: number | null;
+  control_account_code: string;
+  mapping_status: string;
+  review_note: string;
+};
+
+export type ActivitySheetWbsRow = {
+  wbs_code: string;
+  wbs_name: string;
+  activity_count: number;
+  control_account_count: number;
+  planned_cost: number;
+  planned_value: number;
+  unmapped_activity_count: number;
+  needs_review_count: number;
 };
 
 export type User = {
@@ -274,18 +346,39 @@ export type AuditLog = {
 
 export type ControlAccount = {
   id: number;
+  wbs_id?: number;
+  awp_package_id?: number | null;
   code: string;
   name: string;
   responsible: string;
   discipline: string;
+  scope?: string;
+  budget?: number;
+  start_date?: string | null;
+  finish_date?: string | null;
   cbs_code: string;
   contract_ref: string;
   measurement_rule: string;
+  earned_value?: number;
+  actual_cost?: number;
+  forecast?: number;
   lifecycle_status: string;
   risk_ref: string;
   closure_note: string;
   version: number;
   updated_at: string;
+};
+
+export type WbsNode = {
+  id: number;
+  parent_id: number | null;
+  code: string;
+  name: string;
+  level: number;
+  description: string;
+  dictionary: string;
+  responsible: string;
+  status: string;
 };
 
 export type ControlAccountMapping = {
@@ -369,11 +462,308 @@ export type FundingSource = {
   code: string;
   name: string;
   amount: number;
+  approved_amount: number;
+  source_of_funds: string;
+  funding_type: string;
+  authorization_ref: string;
+  usage_restrictions: string;
+  funds_available: number;
+  funds_committed: number;
+  funds_executed: number;
+  balance: number;
   currency: string;
+  status: string;
+  usage_rules: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type IntegratedControlMatrixRow = {
+  project_id: number;
+  project_code: string;
+  project_name: string;
+  fbs_code: string;
+  wbs_code: string;
+  awp_package_code: string;
+  awp_package_type: string;
+  control_account_code: string;
+  cbs_code: string;
+  cost_code: string;
+  contract_ref: string;
+  budget: number;
+  funds_available: number;
+  committed: number;
+  actual: number;
+  forecast: number;
+  balance: number;
+  status: string;
+};
+
+export type CostBreakdownStructure = {
+  id: number;
+  project_id: number;
+  parent_id: number | null;
+  code: string;
+  level: number;
+  cost_category: string;
+  description: string;
   status: string;
   version: number;
   created_at: string;
   updated_at: string;
+};
+
+export type CostCode = {
+  id: number;
+  project_id: number;
+  wbs_id: number;
+  control_account_id: number;
+  cbs_id: number;
+  fbs_id: number;
+  contract_ref: string;
+  code: string;
+  budget: number;
+  funds_available: number;
+  commitments: number;
+  actual_costs: number;
+  forecast: number;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BusinessProcessInstance = {
+  id: number;
+  process_code: string;
+  process_name: string;
+  record_no: string;
+  title: string;
+  status: string;
+  current_step: string;
+  ball_in_court: string;
+  trigger_entity_type: string;
+  trigger_entity_id: number;
+  created_at: string;
+  updated_at: string;
+  version: number;
+};
+
+export type BusinessProcessPolicy = {
+  id: number;
+  project_id: number;
+  process_code: string;
+  action: string;
+  required_role: string;
+  permission_key: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BusinessProcessLineItem = {
+  id: number;
+  process_instance_id: number;
+  line_type: string;
+  wbs_id: number | null;
+  cbs_id: number;
+  funding_source_id: number | null;
+  control_account_id: number | null;
+  cost_code_id: number | null;
+  amount: number;
+  quantity: number;
+  description: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BusinessProcessLineItemRevision = {
+  id: number;
+  line_item_id: number;
+  process_instance_id: number;
+  previous_version: number;
+  new_version: number;
+  previous_amount: number;
+  new_amount: number;
+  previous_quantity: number;
+  new_quantity: number;
+  previous_description: string;
+  new_description: string;
+  previous_status: string;
+  new_status: string;
+  change_note: string;
+  changed_by: string;
+  created_at: string;
+};
+
+export type ScheduleOfValueLine = {
+  id: number;
+  contract_id: number;
+  line_no: string;
+  description: string;
+  amount: number;
+  cbs_id: number;
+  wbs_id: number | null;
+  control_account_id: number | null;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommitmentFundingLine = {
+  id: number;
+  contract_id: number;
+  sov_line_id: number | null;
+  funding_source_id: number;
+  amount: number;
+  consumed_amount: number;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RateSheetLine = {
+  id: number;
+  rate_sheet_id: number;
+  cbs_code: string;
+  unit_rate: number;
+  multiplier: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RateSheet = {
+  id: number;
+  code: string;
+  name: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  line_items: RateSheetLine[];
+};
+
+export type ActivitySheetRecostResult = {
+  project_id: number;
+  activity_sheet_id: number;
+  rate_sheet_id: number;
+  recost_run_id: number | null;
+  updated_rows: number;
+  total_planned_cost: number;
+  total_planned_value: number;
+};
+
+export type ActivitySheetRecostRunLine = {
+  id: number;
+  recost_run_id: number;
+  activity_sheet_row_id: number;
+  external_activity_id: string;
+  cbs_code: string;
+  previous_planned_cost: number;
+  new_planned_cost: number;
+  previous_planned_value: number;
+  new_planned_value: number;
+  created_at: string;
+};
+
+export type ActivitySheetRecostRun = {
+  id: number;
+  activity_sheet_id: number;
+  rate_sheet_id: number;
+  run_no: number;
+  updated_rows: number;
+  total_planned_cost: number;
+  total_planned_value: number;
+  created_by: string;
+  created_at: string;
+  lines: ActivitySheetRecostRunLine[];
+};
+
+export type ReconciliationReportRow = {
+  wbs_code: string;
+  cbs_code: string;
+  fbs_code: string;
+  control_account_code: string;
+  contract_ref: string;
+  budget: number;
+  committed: number;
+  funded_amount: number;
+  sov_amount: number;
+  forecast: number;
+  variance: number;
+};
+
+export type ReconciliationReport = {
+  project_id: number;
+  rows: ReconciliationReportRow[];
+};
+
+export type ControlAgentFinding = {
+  id: number;
+  run_id: number;
+  severity: string;
+  category: string;
+  title: string;
+  evidence: string;
+  recommendation: string;
+  owner_role: string;
+  entity_type: string;
+  entity_id: number | null;
+  status: string;
+  created_at: string;
+};
+
+export type ControlAgentRun = {
+  id: number;
+  project_id: number;
+  agent_code: string;
+  agent_name: string;
+  run_mode: string;
+  model_name: string;
+  status: string;
+  score: number;
+  summary: string;
+  created_by: string;
+  created_at: string;
+  findings: ControlAgentFinding[];
+};
+
+export type ForecastFundingRow = {
+  funding_source_id: number;
+  fbs_code: string;
+  approved_amount: number;
+  funds_available: number;
+  funds_committed: number;
+  funds_executed: number;
+  forecast: number;
+  forecast_vs_available: number;
+  forecast_vs_approved: number;
+  status: string;
+};
+
+export type ForecastFundingReport = {
+  project_id: number;
+  rows: ForecastFundingRow[];
+};
+
+export type CloseoutReport = {
+  project_id: number;
+  funding_source_id: number | null;
+  approved_amount: number;
+  committed: number;
+  actual: number;
+  forecast: number;
+  unused_balance: number;
+  open_commitments: number;
+  closed_commitments: number;
+  funding_status: string;
 };
 
 export type CashFlowPeriod = {
@@ -513,6 +903,7 @@ export type ClaimsForensicSummary = {
 
 export type Contract = {
   id: number;
+  funding_source_id?: number | null;
   control_account_id: number | null;
   code: string;
   title: string;

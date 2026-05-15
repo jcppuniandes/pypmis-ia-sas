@@ -31,3 +31,22 @@ export async function apiFetch<T>(
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
+
+export async function apiFetchFile(
+  path: string,
+  options: RequestInit & { token?: string } = {},
+): Promise<Blob> {
+  const { token, ...init } = options;
+  const headers: Record<string, string> = {
+    ...(init.headers as Record<string, string>),
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const response = await fetch(`${apiUrl}${path}`, { ...init, headers });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => response.statusText);
+    throw new ApiError(response.status, detail);
+  }
+  return response.blob();
+}

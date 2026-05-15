@@ -3,7 +3,7 @@ import { Activity, Bot, ClipboardCheck, FileText, Gauge, GitBranch, ShieldCheck 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { AppShellCtx } from "../components/AppShellCtx";
 import StatusLight from "../components/StatusLight";
-import { currency, neutralScheduleText, statusLabel } from "../components/utils";
+import { currency, neutralProjectText, neutralScheduleText, statusLabel } from "../components/utils";
 
 export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
   const {
@@ -292,12 +292,16 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
             {dashboard.process_templates.map((template) => (
               <article key={template.code}>
                 <div>
-                  <strong>{template.name}</strong>
+                  <strong>{neutralProjectText(template.name)}</strong>
                   <span>
-                    {template.code} / {template.category} / v{template.version_no}
+                    {neutralProjectText(template.code)} / {template.category} / v{template.version_no}
                   </span>
                 </div>
-                <p>{template.description || "Business process controlled by the configurable workflow engine."}</p>
+                <p>
+                  {neutralProjectText(
+                    template.description || "Business process controlled by the configurable workflow engine.",
+                  )}
+                </p>
                 <small>Form: {template.form_schema.join(", ")}</small>
                 <small>Workflow: {template.workflow_steps.join(" -> ")}</small>
                 <small>

@@ -3,6 +3,8 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import LoginView from "../../src/views/LoginView";
 
+const routerFuture = { v7_relativeSplatPath: true, v7_startTransition: true } as const;
+
 vi.mock("../../src/api/auth", () => ({
   login: vi.fn(),
 }));
@@ -25,16 +27,16 @@ describe("LoginView", () => {
     vi.clearAllMocks();
   });
 
-  it("renders email and password fields", () => {
+  it("renders demo username and password fields", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={routerFuture}>
         <LoginView />
       </MemoryRouter>
     );
     expect(screen.getByLabelText(/p&p control intelligence logo/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /p&pmis ai/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/user/i)).toHaveValue("admin");
+    expect(screen.getByLabelText(/password/i)).toHaveValue("1234");
     expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
   });
 
@@ -42,12 +44,12 @@ describe("LoginView", () => {
     vi.mocked(login).mockRejectedValueOnce(new Error("Invalid credentials"));
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={routerFuture}>
         <LoginView />
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    fireEvent.change(screen.getByLabelText(/user/i), {
       target: { value: "user@example.com" },
     });
     fireEvent.change(screen.getByLabelText(/password/i), {
@@ -79,12 +81,12 @@ describe("LoginView", () => {
     });
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={routerFuture}>
         <LoginView />
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    fireEvent.change(screen.getByLabelText(/user/i), {
       target: { value: "user@example.com" },
     });
     fireEvent.change(screen.getByLabelText(/password/i), {

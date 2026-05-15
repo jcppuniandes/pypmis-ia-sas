@@ -169,7 +169,7 @@ main {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 28px;
+  padding: 18px 28px 28px;
 }
 
 .loading {
@@ -180,18 +180,36 @@ main {
 }
 
 .topbar {
-  align-items: flex-start;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(23, 33, 43, 0.05);
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  margin: 0 auto 18px;
+  gap: 16px;
+  margin: 0 auto 10px;
   max-width: 1480px;
   order: 1;
+  padding: 10px 14px;
   width: 100%;
 }
 
 .brandBlock {
+  align-items: center;
+  column-gap: 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   min-width: 0;
+  row-gap: 2px;
+}
+
+.brandBlock .productLogo {
+  grid-row: 1 / span 3;
+}
+
+.brandBlock .productLogo.compact {
+  margin-bottom: 0;
 }
 
 .eyebrow {
@@ -204,6 +222,7 @@ main {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
 }
@@ -215,6 +234,17 @@ h1 {
   max-width: 920px;
 }
 
+.brandBlock h1 {
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.1;
+  max-width: none;
+}
+
+.brandBlock .eyebrow,
+.brandBlock .productStatement {
+  grid-column: 2;
+}
+
 .productStatement {
   color: #344450;
   font-size: 15px;
@@ -223,8 +253,18 @@ h1 {
   max-width: 980px;
 }
 
+.brandBlock .productStatement {
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+
 h2 {
   font-size: 16px;
+  letter-spacing: 0;
+}
+
+h3 {
+  font-size: 14px;
   letter-spacing: 0;
 }
 
@@ -846,12 +886,26 @@ h2 {
   margin: 10px 0 0;
 }
 
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actionRow .workflowAction {
+  flex: 1 1 160px;
+}
+
 .workflowAction {
+  align-items: center;
   border: 0;
   border-radius: 8px;
   cursor: pointer;
+  display: inline-flex;
   font-size: 13px;
   font-weight: 800;
+  gap: 6px;
+  justify-content: center;
   min-height: 38px;
   padding: 0 12px;
   text-align: center;
@@ -1169,6 +1223,34 @@ h2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.compactForm {
+  border: 1px solid #edf1f4;
+  border-radius: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 12px;
+  padding: 12px;
+}
+
+.compactForm .fullWidth {
+  grid-column: 1 / -1;
+}
+
+.compactForm .checkboxLine {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-height: 38px;
+}
+
+.compactForm .checkboxLine input {
+  min-height: auto;
+  width: auto;
+}
+
+.compactForm .workflowAction {
+  align-self: end;
+}
+
 .recentList {
   margin-top: 2px;
 }
@@ -1313,6 +1395,7 @@ td span {
   grid-template-columns: 280px minmax(0, 1fr);
   margin: 0 auto 18px;
   max-width: 1480px;
+  order: 2;
   width: 100%;
 }
 
@@ -1337,6 +1420,128 @@ td span {
   display: grid;
   gap: 14px;
   min-width: 0;
+}
+
+.projectCreatePanel {
+  min-height: 0;
+}
+
+.projectCreatePanel .panelHeader {
+  align-items: center;
+}
+
+.projectCreateForm {
+  display: grid;
+  gap: 10px;
+}
+
+.projectCurrentProject {
+  background: #f8fafb;
+  border: 1px solid #e4e8ec;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 11px 12px;
+}
+
+.projectCurrentProject span,
+.projectCurrentProject small,
+.projectHint {
+  color: #667481;
+  font-size: 13px;
+}
+
+.projectCurrentProject strong {
+  overflow-wrap: anywhere;
+}
+
+.projectHint {
+  line-height: 1.45;
+}
+
+.evmCurvePanel {
+  min-height: 340px;
+}
+
+.compactEmpty {
+  min-height: 0;
+  padding: 12px 0 0;
+}
+
+.dashboardOverviewPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboardChartDeck {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(360px, 1.25fr);
+}
+
+.chartTile {
+  background: #f8fafb;
+  border: 1px solid #e4e8ec;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.chartTileHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.chartTileHeader span {
+  color: #667481;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.pieChartLayout {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(160px, 1fr) minmax(110px, 0.65fr);
+}
+
+.pieChartCanvas,
+.barChartCanvas {
+  min-height: 220px;
+  min-width: 0;
+}
+
+.dashboardLegend {
+  display: grid;
+  gap: 8px;
+}
+
+.dashboardLegend div {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.dashboardLegend span {
+  border-radius: 999px;
+  height: 10px;
+  width: 10px;
+}
+
+.dashboardLegend strong {
+  font-size: 12px;
+}
+
+.dashboardLegend small {
+  color: #667481;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .projectDashboardArea > .controlSummary,
@@ -1669,7 +1874,8 @@ td span {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.viewSplit > div {
+.viewSplit > div,
+.viewSplit > form {
   min-width: 0;
   overflow-x: auto;
   scrollbar-gutter: stable;
@@ -1743,6 +1949,24 @@ td span {
 
 .compactHeader {
   margin: 0 !important;
+}
+
+.agentProfileBlock {
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.agentProfileBlock h2 {
+  margin: 0;
+}
+
+.agentProfileBlock small {
+  color: #136f8f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .scenarioGrid {
@@ -2308,6 +2532,7 @@ td span {
   .viewSplit,
   .detailFacts,
   .awpSummary,
+  .dashboardChartDeck,
   .costManagerSummary,
   .appAssessment,
   .roadmapGrid,
@@ -2382,6 +2607,10 @@ td span {
 
   .navigatorRail {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pieChartLayout {
+    grid-template-columns: 1fr;
   }
 
   .navigatorHeader {

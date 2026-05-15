@@ -30,10 +30,10 @@ export default function BusinessProcessesView({ ctx }: { ctx: AppShellCtx }) {
       <aside className="processRail">
         <div className="railHeader">
           <span>Business Processes</span>
-          <strong>Project Control Shell</strong>
+          <strong>Project Control</strong>
         </div>
         {[
-          "Project Shell",
+          "Project",
           "Schedule Intake",
           "Work Packages",
           "Progress Update",
@@ -57,7 +57,7 @@ export default function BusinessProcessesView({ ctx }: { ctx: AppShellCtx }) {
                     ? `${dashboard.contract_notices.length} records`
                     : item === "Claim Impact"
                       ? `${dashboard.claim_impact_analyses.length} analyses`
-                      : item === "Project Shell"
+                      : item === "Project"
                         ? "Active"
                         : "Ready"}
             </strong>

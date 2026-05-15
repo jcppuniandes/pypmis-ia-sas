@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM mcr.microsoft.com/playwright:v1.57.0-noble
 
 WORKDIR /app
 

@@ -31,13 +31,13 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
     >
       <summary>
         <span>Projects, Users & Roles</span>
-        <strong>Create project shells, tenant users and project role assignments</strong>
+        <strong>Create projects, tenant users and project role assignments</strong>
       </summary>
       <section className="workspaceAdmin">
         <form className="adminPanel" onSubmit={handleProjectCreate}>
           <div className="panelHeader">
             <h2>
-              <Building2 size={18} /> Project Shell
+              <Building2 size={18} /> Project
             </h2>
             <span>{projects.length} projects</span>
           </div>
@@ -70,7 +70,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             <input
               disabled={!canConfigure}
               onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
-              placeholder="Project control shell name"
+              placeholder="Project control name"
               required
               value={projectDraft.name}
             />
@@ -104,7 +104,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             disabled={!canConfigure || captureAction !== null}
             type="submit"
           >
-            {captureAction === "project" ? "Creating..." : "Create Project Shell"}
+            {captureAction === "project" ? "Creating..." : "Create Project"}
           </button>
         </form>
 
