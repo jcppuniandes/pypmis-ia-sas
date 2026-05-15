@@ -8,13 +8,13 @@ the ongoing split.
 from __future__ import annotations
 
 import json
-from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_tenant_id, get_user_id
+from app.core.time import utc_now
 from app.api.v1._helpers import (
     require_active_user as _require_user,
 )
@@ -217,7 +217,7 @@ def get_project_role_matrix(
         )
     return ProjectRoleMatrixOut(
         project_id=project_id,
-        generated_at=datetime.utcnow(),
+        generated_at=utc_now(),
         role_count=len(entries),
         entries=entries,
     )

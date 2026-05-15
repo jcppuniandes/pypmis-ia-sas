@@ -4,6 +4,7 @@ from enum import StrEnum
 from sqlalchemy import JSON, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.core.time import utc_now
 from app.database.session import Base
 
 
@@ -96,8 +97,8 @@ class ProjectControlPlan(Base):
     reporting_cadence: Mapped[str] = mapped_column(String(120), default="Weekly")
     status: Mapped[str] = mapped_column(String(40), default="draft")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id"),)
 
@@ -120,8 +121,8 @@ class ProjectOperationalSetup(Base):
     readiness_status: Mapped[str] = mapped_column(String(40), default="not_ready")
     readiness_notes: Mapped[str] = mapped_column(Text, default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id"),)
 
@@ -141,8 +142,8 @@ class ActivitySheet(Base):
     baseline_name: Mapped[str] = mapped_column(String(160), default="")
     validation_summary: Mapped[str] = mapped_column(Text, default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ActivitySheetRow(Base):
@@ -184,8 +185,8 @@ class AuthCredential(Base):
     provider: Mapped[str] = mapped_column(String(40), default="local")
     password_hash: Mapped[str] = mapped_column(String(220))
     is_active: Mapped[bool] = mapped_column(default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "user_id", "provider"),)
 
@@ -205,8 +206,8 @@ class IntegrationToken(Base):
     status: Mapped[str] = mapped_column(String(40), default="active", index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime)
     last_used_at: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "token_hash"),)
 
@@ -228,7 +229,7 @@ class IntegrationExportLog(Base):
     size_bytes: Mapped[int] = mapped_column(Integer, default=0)
     row_count: Mapped[int] = mapped_column(Integer, default=0)
     status: Mapped[str] = mapped_column(String(40), default="completed", index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ProjectMembership(Base):
@@ -261,7 +262,7 @@ class ScheduleImport(Base):
     baseline_name: Mapped[str] = mapped_column(String(160), default="")
     quality_score: Mapped[float] = mapped_column(Float, default=0)
     validation_summary: Mapped[str] = mapped_column(Text, default="")
-    imported_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    imported_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ScheduleValidationFinding(Base):
@@ -290,7 +291,7 @@ class BaselineVersion(Base):
     status: Mapped[str] = mapped_column(String(40), default="in_review")
     data_date: Mapped[date | None] = mapped_column(Date)
     quality_score: Mapped[float] = mapped_column(Float, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "version_no"),)
 
@@ -304,7 +305,7 @@ class ControlPeriod(Base):
     period_label: Mapped[str] = mapped_column(String(40), index=True)
     data_date: Mapped[date | None] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(40), default="open")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "period_label"),)
 
@@ -351,7 +352,7 @@ class ControlAccount(Base):
     risk_ref: Mapped[str] = mapped_column(String(120), default="")
     closure_note: Mapped[str] = mapped_column(String(360), default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     activities: Mapped[list["Activity"]] = relationship(back_populates="control_account")
     budgets: Mapped[list["Budget"]] = relationship(back_populates="control_account")
@@ -414,7 +415,7 @@ class ControlAccountMapping(Base):
     planned_percent: Mapped[float] = mapped_column(Float, default=0)
     status: Mapped[str] = mapped_column(String(40), default="mapped")
     review_note: Mapped[str] = mapped_column(String(260), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "schedule_activity_map_id"),)
 
@@ -457,7 +458,7 @@ class WorkPackage(Base):
     main_constraints: Mapped[str] = mapped_column(Text, default="")
     progress_percent: Mapped[float] = mapped_column(Float, default=0)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -482,7 +483,7 @@ class WorkPackageConstraint(Base):
     closed_on: Mapped[date | None] = mapped_column(Date)
     blocking: Mapped[bool] = mapped_column(default=True)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class BusinessProcessInstance(Base):
@@ -500,8 +501,8 @@ class BusinessProcessInstance(Base):
     status: Mapped[str] = mapped_column(String(40), default="in_review")
     current_step: Mapped[str] = mapped_column(String(120))
     ball_in_court: Mapped[str] = mapped_column(String(160))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     version: Mapped[int] = mapped_column(Integer, default=1)
 
     steps: Mapped[list["WorkflowStepInstance"]] = relationship(back_populates="process_instance")
@@ -541,8 +542,8 @@ class BusinessProcessLineItem(Base):
     quantity: Mapped[float] = mapped_column(Float, default=0)
     description: Mapped[str] = mapped_column(Text, default="")
     status: Mapped[str] = mapped_column(String(40), default="active")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class BusinessProcessPolicy(Base):
@@ -557,8 +558,8 @@ class BusinessProcessPolicy(Base):
     permission_key: Mapped[str] = mapped_column(String(80), default="")
     status: Mapped[str] = mapped_column(String(40), default="active")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "process_code", "action"),)
 
@@ -583,7 +584,7 @@ class BusinessProcessLineItemRevision(Base):
     new_status: Mapped[str] = mapped_column(String(40), default="")
     change_note: Mapped[str] = mapped_column(Text, default="")
     changed_by: Mapped[str] = mapped_column(String(160), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class BusinessProcessTemplate(Base):
@@ -598,8 +599,8 @@ class BusinessProcessTemplate(Base):
     form_schema: Mapped[str] = mapped_column(Text, default="[]")
     status: Mapped[str] = mapped_column(String(40), default="Draft")
     version_no: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     steps: Mapped[list["BusinessProcessStepTemplate"]] = relationship(back_populates="template")
     transitions: Mapped[list["BusinessProcessTransitionTemplate"]] = relationship(back_populates="template")
@@ -708,8 +709,8 @@ class FundingSource(Base):
     currency: Mapped[str] = mapped_column(String(8), default="USD")
     status: Mapped[str] = mapped_column(String(40), default="approved")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -737,8 +738,8 @@ class ControlAccountFundingAllocation(Base):
     distribution_note: Mapped[str] = mapped_column(Text, default="")
     status: Mapped[str] = mapped_column(String(40), default="active")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "control_account_id", "funding_source_id"),)
 
@@ -756,8 +757,8 @@ class CostBreakdownStructure(Base):
     description: Mapped[str] = mapped_column(Text, default="")
     status: Mapped[str] = mapped_column(String(40), default="draft")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -781,8 +782,8 @@ class CostCode(Base):
     forecast: Mapped[float] = mapped_column(Float, default=0)
     status: Mapped[str] = mapped_column(String(40), default="draft")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -800,8 +801,8 @@ class CashFlowPeriod(Base):
     actual_outflow: Mapped[float] = mapped_column(Float, default=0)
     forecast_outflow: Mapped[float] = mapped_column(Float, default=0)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "period_label"),)
 
@@ -841,7 +842,7 @@ class KPI(Base):
     eac: Mapped[float] = mapped_column(Float)
     etc: Mapped[float] = mapped_column(Float)
     vac: Mapped[float] = mapped_column(Float)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ControlSnapshot(Base):
@@ -865,7 +866,7 @@ class ControlSnapshot(Base):
     etc: Mapped[float] = mapped_column(Float)
     vac: Mapped[float] = mapped_column(Float)
     productivity_index: Mapped[float | None] = mapped_column(Float)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "control_account_id", "period_label"),)
 
@@ -886,7 +887,7 @@ class ForecastScenario(Base):
     vac: Mapped[float] = mapped_column(Float)
     completion_risk: Mapped[str] = mapped_column(String(40), default="medium")
     summary: Mapped[str] = mapped_column(String(360), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "period_label", "name"),)
 
@@ -903,7 +904,7 @@ class Alert(Base):
     message: Mapped[str] = mapped_column(String(360))
     recommendation: Mapped[str] = mapped_column(String(360))
     status: Mapped[str] = mapped_column(String(40), default="open")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ChangeRequest(Base):
@@ -952,7 +953,7 @@ class ClaimEntitlementItem(Base):
     score: Mapped[float] = mapped_column(Float, default=0)
     sequence_no: Mapped[int] = mapped_column(Integer, default=0)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ContractNotice(Base):
@@ -973,7 +974,7 @@ class ContractNotice(Base):
     status: Mapped[str] = mapped_column(String(40), default="draft")
     days_late: Mapped[int] = mapped_column(Integer, default=0)
     compliance_status: Mapped[str] = mapped_column(String(40), default="pending")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ClaimImpactAnalysis(Base):
@@ -993,9 +994,9 @@ class ClaimImpactAnalysis(Base):
     evidence_ref: Mapped[str] = mapped_column(String(260), default="")
     confidence_score: Mapped[float] = mapped_column(Float, default=0)
     status: Mapped[str] = mapped_column(String(40), default="draft")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class Event(Base):
@@ -1044,8 +1045,8 @@ class ScheduleOfValueLine(Base):
     control_account_id: Mapped[int | None] = mapped_column(ForeignKey("control_accounts.id"), index=True)
     status: Mapped[str] = mapped_column(String(40), default="active")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "contract_id", "line_no"),)
 
@@ -1063,8 +1064,8 @@ class CommitmentFundingLine(Base):
     consumed_amount: Mapped[float] = mapped_column(Float, default=0)
     status: Mapped[str] = mapped_column(String(40), default="active")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class RateSheet(Base):
@@ -1077,8 +1078,8 @@ class RateSheet(Base):
     name: Mapped[str] = mapped_column(String(180), default="")
     status: Mapped[str] = mapped_column(String(40), default="draft")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "code"),)
 
@@ -1094,8 +1095,8 @@ class RateSheetLine(Base):
     unit_rate: Mapped[float] = mapped_column(Float, default=0)
     multiplier: Mapped[float] = mapped_column(Float, default=1)
     status: Mapped[str] = mapped_column(String(40), default="active")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "rate_sheet_id", "cbs_code"),)
 
@@ -1113,7 +1114,7 @@ class ActivitySheetRecostRun(Base):
     total_planned_cost: Mapped[float] = mapped_column(Float, default=0)
     total_planned_value: Mapped[float] = mapped_column(Float, default=0)
     created_by: Mapped[str] = mapped_column(String(160), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "activity_sheet_id", "run_no"),)
 
@@ -1132,7 +1133,7 @@ class ActivitySheetRecostRunLine(Base):
     new_planned_cost: Mapped[float] = mapped_column(Float, default=0)
     previous_planned_value: Mapped[float] = mapped_column(Float, default=0)
     new_planned_value: Mapped[float] = mapped_column(Float, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class PurchaseOrder(Base):
@@ -1151,8 +1152,8 @@ class PurchaseOrder(Base):
     status: Mapped[str] = mapped_column(String(40), default="issued")
     issued_on: Mapped[date | None] = mapped_column(Date)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "po_number"),)
 
@@ -1173,8 +1174,8 @@ class PaymentCertificate(Base):
     status: Mapped[str] = mapped_column(String(40), default="certified")
     certified_on: Mapped[date | None] = mapped_column(Date)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "certificate_no"),)
 
@@ -1196,8 +1197,8 @@ class WarehouseReceipt(Base):
     status: Mapped[str] = mapped_column(String(40), default="accepted")
     received_on: Mapped[date | None] = mapped_column(Date)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "receipt_no"),)
 
@@ -1218,8 +1219,8 @@ class RFQPackage(Base):
     issue_date: Mapped[date | None] = mapped_column(Date)
     due_date: Mapped[date | None] = mapped_column(Date)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "package_no"),)
 
@@ -1242,8 +1243,8 @@ class RFQBid(Base):
     submitted_on: Mapped[date | None] = mapped_column(Date)
     notes: Mapped[str] = mapped_column(Text, default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "rfq_package_id", "bidder_name"),)
 
@@ -1283,8 +1284,8 @@ class Document(Base):
     file_name: Mapped[str] = mapped_column(String(260), default="")
     uri: Mapped[str] = mapped_column(String(500))
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class DocumentAttachment(Base):
@@ -1306,8 +1307,8 @@ class DocumentAttachment(Base):
     scan_status: Mapped[str] = mapped_column(String(40), default="not_scanned")
     validation_message: Mapped[str] = mapped_column(String(360), default="")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class DocumentTransmittal(Base):
@@ -1326,8 +1327,8 @@ class DocumentTransmittal(Base):
     due_date: Mapped[date | None] = mapped_column(Date)
     created_by: Mapped[str] = mapped_column(String(160), default="system")
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "transmittal_no"),)
 
@@ -1361,8 +1362,8 @@ class DocumentReview(Base):
     due_date: Mapped[date | None] = mapped_column(Date)
     closed_on: Mapped[date | None] = mapped_column(Date)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ProjectMail(Base):
@@ -1386,8 +1387,8 @@ class ProjectMail(Base):
     linked_entity_id: Mapped[int | None] = mapped_column(Integer)
     document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id"), index=True)
     version: Mapped[int] = mapped_column(Integer, default=1)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     __table_args__ = (UniqueConstraint("tenant_id", "project_id", "mail_no"),)
 
@@ -1403,7 +1404,7 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(80))
     entity_id: Mapped[int | None] = mapped_column(Integer)
     payload: Mapped[str] = mapped_column(Text, default="{}")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class ControlAgentRun(Base):
@@ -1420,7 +1421,7 @@ class ControlAgentRun(Base):
     score: Mapped[int] = mapped_column(Integer, default=100)
     summary: Mapped[str] = mapped_column(Text, default="")
     created_by: Mapped[str] = mapped_column(String(160), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     findings: Mapped[list["ControlAgentFinding"]] = relationship(
         back_populates="run",
@@ -1444,6 +1445,6 @@ class ControlAgentFinding(Base):
     entity_type: Mapped[str] = mapped_column(String(80), default="")
     entity_id: Mapped[int | None] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(40), default="open")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     run: Mapped[ControlAgentRun] = relationship(back_populates="findings")

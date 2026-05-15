@@ -12,9 +12,7 @@ def test_unhandled_exception_returns_500():
     request.state = MagicMock(spec=[])
     request.url.path = "/api/v1/test"
 
-    response = asyncio.get_event_loop().run_until_complete(
-        unhandled_exception_handler(request, RuntimeError("boom"))
-    )
+    response = asyncio.run(unhandled_exception_handler(request, RuntimeError("boom")))
 
     assert response.status_code == 500
     body = json.loads(response.body)
@@ -27,9 +25,7 @@ def test_unhandled_exception_includes_request_id():
     request.state.request_id = "abc-123"
     request.url.path = "/api/v1/test"
 
-    response = asyncio.get_event_loop().run_until_complete(
-        unhandled_exception_handler(request, ValueError("oops"))
-    )
+    response = asyncio.run(unhandled_exception_handler(request, ValueError("oops")))
 
     body = json.loads(response.body)
     assert body["request_id"] == "abc-123"

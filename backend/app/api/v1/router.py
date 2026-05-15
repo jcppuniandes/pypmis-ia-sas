@@ -19,6 +19,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_tenant_id, get_user_id
+from app.core.time import utc_now
 from app.api.v1._helpers import (
     require_active_user as _require_user,
 )
@@ -1570,7 +1571,7 @@ def upsert_business_process_policy(
         policy.permission_key = details["permission_key"]
         policy.status = details["status"]
         policy.version += 1
-        policy.updated_at = datetime.utcnow()
+        policy.updated_at = utc_now()
         action_name = "update_business_process_policy"
     else:
         policy = BusinessProcessPolicy(
@@ -1655,7 +1656,7 @@ def update_business_process_line_item(
         line.description = payload.description.strip()
     if payload.status is not None:
         line.status = payload.status.strip().lower() or "active"
-    line.updated_at = datetime.utcnow()
+    line.updated_at = utc_now()
     next_version = current_version + 1
 
     revision = BusinessProcessLineItemRevision(
@@ -2059,7 +2060,7 @@ def recost_activity_sheet(
     recost_run.updated_rows = updated_rows
     recost_run.total_planned_cost = _money(total_planned_cost)
     recost_run.total_planned_value = _money(total_planned_value)
-    activity_sheet.updated_at = datetime.utcnow()
+    activity_sheet.updated_at = utc_now()
     _audit(
         db,
         tenant_id,
@@ -2534,7 +2535,7 @@ def create_purchase_order(
         vendor=payload.vendor.strip(),
         committed_amount=payload.committed_amount,
         status=payload.status.strip() or "issued",
-        issued_on=payload.issued_on or datetime.utcnow().date(),
+        issued_on=payload.issued_on or utc_now().date(),
     )
     db.add(order)
     db.flush()
@@ -2681,7 +2682,7 @@ def create_payment_certificate(
         certified_amount=payload.certified_amount,
         retained_amount=payload.retained_amount,
         status=payload.status.strip() or "certified",
-        certified_on=payload.certified_on or datetime.utcnow().date(),
+        certified_on=payload.certified_on or utc_now().date(),
     )
     db.add(certificate)
     db.flush()
@@ -2817,7 +2818,7 @@ def create_warehouse_receipt(
         unit_cost=payload.unit_cost,
         received_value=received_value,
         status=payload.status.strip() or "accepted",
-        received_on=payload.received_on or datetime.utcnow().date(),
+        received_on=payload.received_on or utc_now().date(),
     )
     db.add(receipt)
     db.flush()
@@ -3082,7 +3083,7 @@ def create_rfq_bid(
             payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score
         ),
         status=payload.status.strip() or "received",
-        submitted_on=payload.submitted_on or datetime.utcnow().date(),
+        submitted_on=payload.submitted_on or utc_now().date(),
         notes=payload.notes.strip(),
     )
     db.add(bid)
@@ -3879,7 +3880,7 @@ def create_document_transmittal(
         recipient_org=payload.recipient_org,
         recipient_contact=payload.recipient_contact,
         status=payload.status,
-        sent_on=payload.sent_on or datetime.utcnow().date(),
+        sent_on=payload.sent_on or utc_now().date(),
         due_date=payload.due_date,
         created_by=current_user.full_name,
     )
@@ -4066,7 +4067,7 @@ def create_project_mail(
         to_role=payload.to_role,
         status=payload.status,
         response_required=payload.response_required,
-        sent_on=payload.sent_on or datetime.utcnow().date(),
+        sent_on=payload.sent_on or utc_now().date(),
         due_date=payload.due_date,
         body=payload.body,
         linked_entity_type=payload.linked_entity_type,
@@ -5144,7 +5145,7 @@ def create_integration_token(
         allowed_datasets=",".join(datasets),
         allowed_formats=",".join(formats),
         status="active",
-        expires_at=datetime.utcnow() + timedelta(days=expires_in_days),
+        expires_at=utc_now() + timedelta(days=expires_in_days),
     )
     db.add(token)
     db.flush()
@@ -5184,7 +5185,7 @@ def revoke_integration_token(
     if not token:
         raise HTTPException(status_code=404, detail="Integration token not found")
     token.status = "revoked"
-    token.updated_at = datetime.utcnow()
+    token.updated_at = utc_now()
     _audit(
         db,
         tenant_id,
@@ -5479,12 +5480,12 @@ def _require_integration_token_access(db: Session, project_id: int, raw_token: s
         raise HTTPException(status_code=401, detail="Invalid or expired integration token")
     if token.project_id != project_id:
         raise HTTPException(status_code=403, detail="Integration token is not scoped to this project")
-    if token.status != "active" or token.expires_at <= datetime.utcnow():
+    if token.status != "active" or token.expires_at <= utc_now():
         raise HTTPException(status_code=401, detail="Invalid or expired integration token")
     project = _require_project(db, token.tenant_id, project_id)
     membership = _require_membership(db, token.tenant_id, project_id, token.created_by_user_id)
     creator = _require_user(db, token.tenant_id, token.created_by_user_id)
-    token.last_used_at = datetime.utcnow()
+    token.last_used_at = utc_now()
     token.updated_at = token.last_used_at
     db.commit()
     db.refresh(token)
@@ -5585,7 +5586,7 @@ def _integration_token_alert_summary(
     tokens: list[IntegrationToken],
     warning_days: int,
 ) -> IntegrationTokenAlertSummary:
-    now = datetime.utcnow()
+    now = utc_now()
     alerts: list[IntegrationTokenAlertOut] = []
     active_count = 0
     expired_count = 0
@@ -5716,7 +5717,7 @@ def _split_csv(value: str) -> list[str]:
 
 
 def _integration_generated_at() -> str:
-    return f"{datetime.utcnow().isoformat(timespec='seconds')}Z"
+    return f"{utc_now().isoformat(timespec='seconds')}Z"
 
 
 def _normalize_integration_dataset(dataset: str) -> str:
@@ -6783,7 +6784,7 @@ def _document_control_summary(
     reviews: list[DocumentReview],
     mail: list[ProjectMail],
 ) -> DocumentControlSummary:
-    today = datetime.utcnow().date()
+    today = utc_now().date()
     current_documents = sum(1 for document in documents if document.status in {"current", "approved", "issued"})
     superseded_documents = sum(1 for document in documents if document.status in {"superseded", "void"})
     outstanding_reviews = sum(
@@ -7942,7 +7943,7 @@ def _normalize_awp_constraint_priority(priority: str) -> str:
 def _apply_awp_constraint_closure(constraint: WorkPackageConstraint, actor: str) -> None:
     if constraint.status == "closed":
         constraint.closed_by = constraint.closed_by or actor
-        constraint.closed_on = constraint.closed_on or datetime.utcnow().date()
+        constraint.closed_on = constraint.closed_on or utc_now().date()
         return
     constraint.closed_by = ""
     constraint.closed_on = None

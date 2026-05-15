@@ -12,12 +12,11 @@ responsible for committing.
 
 from __future__ import annotations
 
-from datetime import datetime
-
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.time import utc_now
 from app.domain.models import (
     AuditLog,
     Project,
@@ -109,7 +108,7 @@ def touch_collaborative_record(entity: object) -> None:
     current_version = int(getattr(entity, "version", 1) or 1)
     entity.version = current_version + 1
     if hasattr(entity, "updated_at"):
-        entity.updated_at = datetime.utcnow()
+        entity.updated_at = utc_now()
 
 
 def write_audit_log(

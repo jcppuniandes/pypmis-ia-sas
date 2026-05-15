@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.time import utc_now
 from app.domain.models import (
     AuditLog,
     BaselineVersion,
@@ -57,7 +56,7 @@ class WorkflowRoutingService:
         else:
             raise ValueError("Unsupported workflow action")
 
-        process.updated_at = datetime.utcnow()
+        process.updated_at = utc_now()
         process.version = (process.version or 1) + 1
         self.db.add(
             AuditLog(
