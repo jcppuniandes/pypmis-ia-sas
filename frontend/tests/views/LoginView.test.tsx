@@ -33,8 +33,8 @@ describe("LoginView", () => {
         <LoginView />
       </MemoryRouter>
     );
-    expect(screen.getByLabelText(/p&p control intelligence logo/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /p&pmis ai/i })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /pypmis ai saas logo/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /pypmis ai saas/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/user/i)).toHaveValue("admin");
     expect(screen.getByLabelText(/password/i)).toHaveValue("1234");
     expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();

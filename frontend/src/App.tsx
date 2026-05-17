@@ -1245,6 +1245,12 @@ function AppShell() {
 
   return (
     <main>
+      {guidedFlow && (
+        <header className="appBrandBar" aria-label="Application brand">
+          <ProductLogo compact />
+          <span>Project Controls Intelligence Platform</span>
+        </header>
+      )}
       {guidedFlow ? (
         <TenantCommandBar
           tenant={guidedFlow.tenant}

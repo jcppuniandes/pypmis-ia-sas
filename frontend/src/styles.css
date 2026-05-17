@@ -121,6 +121,7 @@ body {
   color: #17212b;
   display: inline-flex;
   gap: 12px;
+  min-width: 0;
 }
 
 .productLogo.compact {
@@ -144,15 +145,51 @@ body {
 }
 
 .productLogo strong {
+  font-family: "Segoe UI", Arial, sans-serif;
   font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
   line-height: 1.1;
+  white-space: nowrap;
 }
 
 .productLogo span {
   color: #52616f;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0;
   margin-top: 3px;
+}
+
+.appBrandBar {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  box-shadow: 0 10px 22px rgba(23, 33, 43, 0.05);
+  color: #344450;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto 10px;
+  max-width: 1480px;
+  padding: 10px 16px;
+  width: 100%;
+}
+
+.appBrandBar .productLogo.compact {
+  margin-bottom: 0;
+}
+
+.appBrandBar .productLogo strong {
+  font-size: 19px;
+}
+
+.appBrandBar > span {
+  color: #52616f;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: right;
 }
 
 #root,
@@ -2769,6 +2806,16 @@ td span {
 @media (max-width: 720px) {
   main {
     padding: 14px;
+  }
+
+  .appBrandBar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .appBrandBar > span {
+    text-align: left;
   }
 
   .topbar {

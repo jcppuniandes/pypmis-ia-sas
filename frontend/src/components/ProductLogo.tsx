@@ -6,12 +6,12 @@ export default function ProductLogo({ compact = false }: ProductLogoProps) {
   return (
     <div className={compact ? "productLogo compact" : "productLogo"}>
       <svg
-        aria-label="P&P Control Intelligence logo"
+        aria-label="Pypmis AI SaaS logo"
         className="productLogoMark"
         role="img"
         viewBox="0 0 64 64"
       >
-        <title>P&P Control Intelligence logo</title>
+        <title>Pypmis AI SaaS logo</title>
         <defs>
           <linearGradient id="pypmisMarkGradient" x1="10" x2="54" y1="8" y2="56">
             <stop offset="0" stopColor="#10a6a8" />
@@ -34,8 +34,8 @@ export default function ProductLogo({ compact = false }: ProductLogoProps) {
         <circle cx="51" cy="28" fill="#d89b2b" r="4.2" />
       </svg>
       <div>
-        <strong>P&Pmis Ai</strong>
-        {!compact && <span>Control Intelligence SaaS</span>}
+        <strong>Pypmis AI SaaS</strong>
+        {!compact && <span>Control Intelligence</span>}
       </div>
     </div>
   );
