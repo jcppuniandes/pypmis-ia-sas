@@ -54,9 +54,15 @@ class WorkflowStatus(StrEnum):
 class Tenant(Base):
     __tablename__ = "tenants"
 
+    def __init__(self, **kwargs: object) -> None:
+        super().__init__(**kwargs)
+        if self.base_currency is None:
+            self.base_currency = "COP"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(160), nullable=False)
     slug: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    base_currency: Mapped[str] = mapped_column(String(8), default="COP")
 
 
 class Project(Base):
@@ -252,6 +258,17 @@ class ProjectMembership(Base):
 class ScheduleImport(Base):
     __tablename__ = "schedule_imports"
 
+    def __init__(self, **kwargs: object) -> None:
+        super().__init__(**kwargs)
+        self.detected_currency = self.detected_currency or ""
+        self.currency_confidence = self.currency_confidence or "unknown"
+        self.currency_source = self.currency_source or ""
+        self.currency_confirmed = bool(self.currency_confirmed)
+        self.total_imported_cost = self.total_imported_cost or 0
+        self.cost_loaded_activity_count = self.cost_loaded_activity_count or 0
+        self.cost_loaded_activity_percent = self.cost_loaded_activity_percent or 0
+        self.cost_source_summary = self.cost_source_summary or {}
+
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
@@ -262,6 +279,14 @@ class ScheduleImport(Base):
     baseline_name: Mapped[str] = mapped_column(String(160), default="")
     quality_score: Mapped[float] = mapped_column(Float, default=0)
     validation_summary: Mapped[str] = mapped_column(Text, default="")
+    detected_currency: Mapped[str] = mapped_column(String(8), default="")
+    currency_confidence: Mapped[str] = mapped_column(String(40), default="unknown")
+    currency_source: Mapped[str] = mapped_column(String(160), default="")
+    currency_confirmed: Mapped[bool] = mapped_column(default=False)
+    total_imported_cost: Mapped[float] = mapped_column(Float, default=0)
+    cost_loaded_activity_count: Mapped[int] = mapped_column(Integer, default=0)
+    cost_loaded_activity_percent: Mapped[float] = mapped_column(Float, default=0)
+    cost_source_summary: Mapped[dict] = mapped_column(JSON, default=dict)
     imported_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 

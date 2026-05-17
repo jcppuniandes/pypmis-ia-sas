@@ -47,7 +47,13 @@ Formalizar el paso de piloto funcional a operacion productiva controlada para P&
 6. Revisar metricas y logs JSON.
 7. Ejecutar rollback solo con backup validado y aprobacion operativa.
 
+## Flujo guiado multi-tenant
+
+El usuario opera dentro de un tenant visible. La app guia el proceso desde proyecto hasta cierre:
+tenant, proyecto, cronograma, costos y moneda, WBS/CBS/FBS, baseline, progreso, costos reales, Control Core, AWP, evidencia y cierre.
+
+Despues de cargar XER/XML, el gate de costos y moneda muestra moneda detectada, fuente de deteccion, porcentaje cost-loaded, costo total importado, actividades sin costo y siguiente accion.
+
 ## Politica para el agente
 
 El agente sigue siendo deterministico por defecto para controlar costo y trazabilidad. La sintesis con modelo economico es una capa opcional: resume hallazgos, no decide ni escribe datos de negocio. Si `AI_PROVIDER` no esta configurado o falla el proveedor, el resumen deterministico permanece como fuente de verdad.
-

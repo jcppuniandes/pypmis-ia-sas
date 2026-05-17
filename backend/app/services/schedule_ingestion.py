@@ -27,6 +27,59 @@ from app.domain.models import (
     WorkflowStepInstance,
 )
 
+XER_COST_FIELDS = [
+    "target_cost",
+    "planned_cost",
+    "planned_total_cost",
+    "budgeted_cost",
+    "budgeted_total_cost",
+    "baseline_cost",
+    "at_complete_cost",
+    "at_complete_total_cost",
+    "total_cost",
+    "remain_cost",
+    "remaining_cost",
+    "actual_cost",
+    "act_reg_cost",
+    "act_ot_cost",
+    "rem_late_start_cost",
+]
+XER_COMPONENT_COST_FIELDS = [
+    "target_labor_cost",
+    "target_equip_cost",
+    "target_material_cost",
+    "target_mat_cost",
+    "target_expense_cost",
+    "planned_labor_cost",
+    "planned_equip_cost",
+    "planned_material_cost",
+    "budgeted_labor_cost",
+    "budgeted_equip_cost",
+    "budgeted_material_cost",
+]
+XML_COST_TAGS = [
+    "AtCompletionTotalCost",
+    "AtCompletionCost",
+    "PlannedTotalCost",
+    "PlannedCost",
+    "BudgetedTotalCost",
+    "BudgetedCost",
+    "BaselineCost",
+    "RemainingTotalCost",
+    "RemainingCost",
+    "ActualTotalCost",
+    "ActualCost",
+    "Cost",
+]
+XML_COMPONENT_COST_TAGS = [
+    "PlannedLaborCost",
+    "PlannedEquipmentCost",
+    "PlannedMaterialCost",
+    "BudgetedLaborCost",
+    "BudgetedEquipmentCost",
+    "BudgetedMaterialCost",
+]
+
 
 @dataclass(frozen=True)
 class ParsedActivity:
@@ -68,6 +121,14 @@ class ParsedSchedule:
     validation_summary: str
     quality_score: float
     findings: list[ValidationFinding]
+    detected_currency: str = ""
+    currency_confidence: str = "unknown"
+    currency_source: str = ""
+    currency_confirmed: bool = False
+    total_imported_cost: float = 0
+    cost_loaded_activity_count: int = 0
+    cost_loaded_activity_percent: float = 0
+    cost_source_summary: dict[str, int] | None = None
 
 
 class ScheduleIngestionService:
@@ -89,6 +150,14 @@ class ScheduleIngestionService:
             baseline_name=parsed.baseline_name,
             quality_score=parsed.quality_score,
             validation_summary=parsed.validation_summary,
+            detected_currency=parsed.detected_currency,
+            currency_confidence=parsed.currency_confidence,
+            currency_source=parsed.currency_source,
+            currency_confirmed=parsed.currency_confirmed,
+            total_imported_cost=parsed.total_imported_cost,
+            cost_loaded_activity_count=parsed.cost_loaded_activity_count,
+            cost_loaded_activity_percent=parsed.cost_loaded_activity_percent,
+            cost_source_summary=parsed.cost_source_summary or {},
         )
         self.db.add(schedule_import)
         self.db.flush()
@@ -319,6 +388,12 @@ class ScheduleIngestionService:
             activities, relationships = [], []
 
         findings, quality_score, validation_summary = self._validate_schedule(activities, relationships)
+        detected_currency, currency_confidence, currency_source = self._detect_currency(source, content)
+        total_imported_cost = round(sum(activity.planned_cost for activity in activities), 2)
+        cost_loaded_activity_count = sum(1 for activity in activities if activity.planned_cost > 0)
+        cost_loaded_activity_percent = (
+            round(cost_loaded_activity_count / len(activities) * 100, 2) if activities else 0
+        )
         return ParsedSchedule(
             source=source,
             activities=activities,
@@ -328,6 +403,14 @@ class ScheduleIngestionService:
             validation_summary=validation_summary,
             quality_score=quality_score,
             findings=findings,
+            detected_currency=detected_currency,
+            currency_confidence=currency_confidence,
+            currency_source=currency_source,
+            currency_confirmed=False,
+            total_imported_cost=total_imported_cost,
+            cost_loaded_activity_count=cost_loaded_activity_count,
+            cost_loaded_activity_percent=cost_loaded_activity_percent,
+            cost_source_summary=self._cost_source_summary(source, content),
         )
 
     def detect_source(self, file_name: str, content: bytes) -> ScheduleSource:
@@ -340,6 +423,96 @@ class ScheduleIngestionService:
         if "primavera" in sample or "apibo" in sample or "<activity" in sample:
             return ScheduleSource.p6_xml
         return ScheduleSource.ms_project_xml
+
+    def _detect_currency(self, source: ScheduleSource, content: bytes) -> tuple[str, str, str]:
+        if source == ScheduleSource.p6_xer:
+            return self._detect_xer_currency(self._xer_rows(content))
+        if source in {ScheduleSource.p6_xml, ScheduleSource.ms_project_xml}:
+            return self._detect_xml_currency(content)
+        return "", "unknown", ""
+
+    def _detect_xer_currency(self, rows_by_table: dict[str, list[dict[str, str]]]) -> tuple[str, str, str]:
+        for table_name in ("PROJECT", "CURRTYPE", "CURRENCY"):
+            for row in rows_by_table.get(table_name, []):
+                for field in ("currency_id", "base_currency_id", "curr_id", "currency", "curr_short_name", "curr_symbol"):
+                    currency = self._normalize_currency(row.get(field, ""))
+                    if currency:
+                        return currency, "detected", f"{table_name}.{field}"
+        for table_name, rows in rows_by_table.items():
+            for row in rows:
+                for field, value in row.items():
+                    if "currency" not in field and "curr" not in field:
+                        continue
+                    currency = self._normalize_currency(value)
+                    if currency:
+                        return currency, "detected", f"{table_name}.{field}"
+        return "", "unknown", ""
+
+    def _detect_xml_currency(self, content: bytes) -> tuple[str, str, str]:
+        try:
+            root = ElementTree.fromstring(content)
+        except ElementTree.ParseError:
+            return "", "unknown", ""
+        for tag_name in ("Currency", "BaseCurrency", "CurrencyCode", "CurrencyId", "CurrencyID", "CurrId"):
+            value = self._first_deep_text(root, [tag_name])
+            currency = self._normalize_currency(value)
+            if currency:
+                return currency, "detected", tag_name
+        return "", "unknown", ""
+
+    def _cost_source_summary(self, source: ScheduleSource, content: bytes) -> dict[str, int]:
+        if source == ScheduleSource.p6_xer:
+            return self._xer_cost_source_summary(self._xer_rows(content))
+        if source in {ScheduleSource.p6_xml, ScheduleSource.ms_project_xml}:
+            return self._xml_cost_source_summary(content)
+        return {}
+
+    def _xer_cost_source_summary(self, rows_by_table: dict[str, list[dict[str, str]]]) -> dict[str, int]:
+        summary: dict[str, int] = {}
+        for table_name in ("TASK", "TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT"):
+            for row in rows_by_table.get(table_name, []):
+                for field in [*XER_COST_FIELDS, *XER_COMPONENT_COST_FIELDS]:
+                    if self._money_to_float(row.get(field)) > 0:
+                        key = f"{table_name}.{field}"
+                        summary[key] = summary.get(key, 0) + 1
+                if self._money_to_float(row.get("target_qty")) and self._money_to_float(row.get("cost_per_qty")):
+                    key = f"{table_name}.target_qty*cost_per_qty"
+                    summary[key] = summary.get(key, 0) + 1
+        return summary
+
+    def _xml_cost_source_summary(self, content: bytes) -> dict[str, int]:
+        try:
+            root = ElementTree.fromstring(content)
+        except ElementTree.ParseError:
+            return {}
+        summary: dict[str, int] = {}
+        for element in root.iter():
+            element_name = self._local_name(element.tag)
+            for tag_name in [*XML_COST_TAGS, *XML_COMPONENT_COST_TAGS]:
+                if self._money_to_float(self._child_text(element, tag_name)) > 0:
+                    key = f"{element_name}.{tag_name}"
+                    summary[key] = summary.get(key, 0) + 1
+        return summary
+
+    def _normalize_currency(self, value: str | None) -> str:
+        cleaned = (value or "").strip().upper()
+        if not cleaned:
+            return ""
+        aliases = {
+            "$": "USD",
+            "US$": "USD",
+            "DOLLAR": "USD",
+            "DOLLARS": "USD",
+            "US DOLLAR": "USD",
+            "PESO": "COP",
+            "PESOS": "COP",
+            "COLOMBIAN PESO": "COP",
+        }
+        if cleaned in aliases:
+            return aliases[cleaned]
+        if len(cleaned) == 3 and cleaned.isalpha():
+            return cleaned
+        return ""
 
     def _parse_xer(self, content: bytes) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
         rows_by_table = self._xer_rows(content)

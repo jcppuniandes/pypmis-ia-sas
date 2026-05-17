@@ -20,7 +20,12 @@ import { ApiError } from "./api/client";
 import { dashboard as dashboardApi } from "./api/dashboard";
 import { integratedControl as integratedControlApi } from "./api/integratedControl";
 import { projects as projectsApi } from "./api/projects";
+import CostCurrencyGate from "./components/CostCurrencyGate";
+import GuidedProcessRail from "./components/GuidedProcessRail";
+import NextActionPanel from "./components/NextActionPanel";
 import ProductLogo from "./components/ProductLogo";
+import ProjectCreateDrawer from "./components/ProjectCreateDrawer";
+import TenantCommandBar from "./components/TenantCommandBar";
 import { useAuthStore } from "./store/auth";
 import { useProjectStore } from "./store/project";
 import type {
@@ -38,6 +43,7 @@ import type {
   CostCode,
   Dashboard,
   ForecastFundingReport,
+  GuidedFlow,
   IntegratedControlMatrixRow,
   Project,
   ProjectOperationalSetup,
@@ -77,6 +83,9 @@ function AppShell() {
   const [projectList, setProjectList] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [guidedFlow, setGuidedFlow] = useState<GuidedFlow | null>(null);
+  const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
+  const [currencyAction, setCurrencyAction] = useState(false);
   const [projectDraft, setProjectDraft] = useState({
     calendar_base: "5x8 Colombia",
     code: "",
@@ -257,9 +266,13 @@ function AppShell() {
       setLoading(true);
       setError(null);
       try {
-        const nextDashboard = await dashboardApi.get(token, projectId);
+        const [nextDashboard, flow] = await Promise.all([
+          dashboardApi.get(token, projectId),
+          projectsApi.guidedFlow(token, projectId),
+        ]);
         if (!cancelled) {
           setDashboard(nextDashboard);
+          setGuidedFlow(flow);
           setLoading(false);
           const firstFunding = nextDashboard.funding_sources?.[0];
           const firstContract = nextDashboard.contracts?.[0];
@@ -472,6 +485,11 @@ function AppShell() {
     };
   }, [token, logout]);
 
+  async function refreshGuidedFlow(projectId: number) {
+    const flow = await projectsApi.guidedFlow(token, projectId);
+    setGuidedFlow(flow);
+  }
+
   async function refreshDashboard(projectId: number) {
     const nextDashboard = await dashboardApi.get(token, projectId);
     setDashboard(nextDashboard);
@@ -482,6 +500,7 @@ function AppShell() {
       funding_source_id: current.funding_source_id || (firstFunding ? String(firstFunding.id) : ""),
     }));
     setSovDraft((current) => ({ ...current, contract_id: current.contract_id || (firstContract ? String(firstContract.id) : "") }));
+    await refreshGuidedFlow(projectId);
   }
 
   async function refreshIntegratedControl(projectId: number) {
@@ -592,6 +611,7 @@ function AppShell() {
         finish_date: "",
       });
       setShowProjectCreate(false);
+      setProjectDrawerOpen(false);
       setProjectMessage(`Project ${created.code} created and selected.`);
     } catch (err) {
       setProjectError(err instanceof Error ? err.message : "Could not create project");
@@ -615,6 +635,22 @@ function AppShell() {
     } finally {
       setUploading(false);
       event.target.value = "";
+    }
+  }
+
+  async function handleConfirmCurrency(currency: string) {
+    const scheduleImportId = dashboard?.schedule_import?.id;
+    if (!selectedProjectId || !scheduleImportId) return;
+    setCurrencyAction(true);
+    setIntegratedError(null);
+    try {
+      await projectsApi.confirmScheduleCurrency(token, selectedProjectId, scheduleImportId, currency);
+      await refreshDashboard(selectedProjectId);
+      setIntegratedMessage(`Schedule currency ${currency} confirmed.`);
+    } catch (err) {
+      setIntegratedError(err instanceof Error ? err.message : "Could not confirm schedule currency");
+    } finally {
+      setCurrencyAction(false);
     }
   }
 
@@ -1134,6 +1170,7 @@ function AppShell() {
   const canManageContract = Boolean(currentMembership?.can_manage_contract);
   const canUploadSchedule = currentMembership?.role === "Planner" || currentMembership?.role === "Control Manager";
   const activeImport = dashboard.schedule_import;
+  const nextActionStep = guidedFlow?.steps.find((step) => step.key === guidedFlow.next_action.key) ?? guidedFlow?.steps[0];
   const cbsCostLines = dashboard.cost_sheet ?? [];
   const fbsFundingSources = dashboard.funding_sources ?? [];
   const contractRows = dashboard.contracts ?? [];
@@ -1208,93 +1245,128 @@ function AppShell() {
 
   return (
     <main>
-      <header className="topbar">
-        <div className="brandBlock">
-          <ProductLogo compact />
-          <p className="eyebrow">Project Controls</p>
-          <h1>{project.name}</h1>
-          <p className="productStatement">
-            {project.code} / {project.phase} / {project.currency}
-          </p>
-        </div>
-        <div className="headerActions">
-          <div className="contextSwitch">
-            <label>
-              <span>Project</span>
-              <select
-                onChange={(event) => setSelectedProject(Number(event.target.value))}
-                value={selectedProjectId ?? project.id}
-              >
-                {projectList.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.code}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <strong>{user?.email ?? "Signed in"}</strong>
-            <button className="quickNavButton" onClick={logout} type="button">
-              Logout
-            </button>
+      {guidedFlow ? (
+        <TenantCommandBar
+          tenant={guidedFlow.tenant}
+          project={guidedFlow.project}
+          projects={projectList}
+          selectedProjectId={selectedProjectId ?? project.id}
+          onProjectChange={setSelectedProject}
+          onCreateProject={() => setProjectDrawerOpen(true)}
+          userEmail={user?.email ?? "Signed in"}
+          onLogout={logout}
+        />
+      ) : (
+        <header className="topbar">
+          <div className="brandBlock">
+            <ProductLogo compact />
+            <p className="eyebrow">Project Controls</p>
+            <h1>{project.name}</h1>
+            <p className="productStatement">
+              {project.code} / {project.phase} / {project.currency}
+            </p>
           </div>
-        </div>
-      </header>
-
-      <section className="projectWorkspace" aria-label="Project workspace and control flow">
-        <aside className="projectWorkspaceRail">
-          <aside className="navigatorRail" aria-label="Control Flow">
-            <div className="navigatorHeader">
-              <strong>Control Flow</strong>
-              <span>Essential views</span>
+          <div className="headerActions">
+            <div className="contextSwitch">
+              <label>
+                <span>Project</span>
+                <select
+                  onChange={(event) => setSelectedProject(Number(event.target.value))}
+                  value={selectedProjectId ?? project.id}
+                >
+                  {projectList.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.code}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <strong>{user?.email ?? "Signed in"}</strong>
+              <button className="quickNavButton" onClick={logout} type="button">
+                Logout
+              </button>
             </div>
-            {controlFlowItems.map((item) => (
+          </div>
+        </header>
+      )}
+
+      <ProjectCreateDrawer
+        canConfigure={canConfigure}
+        draft={projectDraft}
+        error={projectError}
+        message={projectMessage}
+        open={projectDrawerOpen}
+        pending={projectAction}
+        onClose={() => setProjectDrawerOpen(false)}
+        onDraftChange={setProjectDraft}
+        onSubmit={handleProjectCreate}
+      />
+
+      <section className={guidedFlow ? "projectWorkspace guidedWorkspace" : "projectWorkspace"} aria-label="Project workspace and control flow">
+        <aside className="projectWorkspaceRail">
+          {guidedFlow ? (
+            <GuidedProcessRail
+              activeKey={activeControlView}
+              steps={guidedFlow.steps}
+              onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
+            />
+          ) : (
+            <aside className="navigatorRail" aria-label="Control Flow">
+              <div className="navigatorHeader">
+                <strong>Control Flow</strong>
+                <span>Essential views</span>
+              </div>
+              {controlFlowItems.map((item) => (
+                <button
+                  aria-current={activeControlView === item.key ? "page" : undefined}
+                  className={activeControlView === item.key ? "navigatorItem active" : "navigatorItem"}
+                  key={item.key}
+                  onClick={() => handleControlFlowNavigate(item.key)}
+                  type="button"
+                >
+                  <span>{item.label}</span>
+                  <strong>{item.count}</strong>
+                </button>
+              ))}
+              <div className="navigatorDivider">
+                <span>Advanced</span>
+              </div>
               <button
-                aria-current={activeControlView === item.key ? "page" : undefined}
-                className={activeControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                key={item.key}
-                onClick={() => handleControlFlowNavigate(item.key)}
+                aria-current={activeControlView === "work-packages" ? "page" : undefined}
+                className={activeControlView === "work-packages" ? "navigatorItem active" : "navigatorItem"}
+                onClick={() => handleControlFlowNavigate("work-packages")}
                 type="button"
               >
-                <span>{item.label}</span>
-                <strong>{item.count}</strong>
+                <span>Work Packages</span>
+                <strong>{dashboard.awp_summary.total_packages}</strong>
               </button>
-            ))}
-            <div className="navigatorDivider">
-              <span>Advanced</span>
-            </div>
-            <button
-              aria-current={activeControlView === "work-packages" ? "page" : undefined}
-              className={activeControlView === "work-packages" ? "navigatorItem active" : "navigatorItem"}
-              onClick={() => handleControlFlowNavigate("work-packages")}
-              type="button"
-            >
-              <span>Work Packages</span>
-              <strong>{dashboard.awp_summary.total_packages}</strong>
-            </button>
-            <button
-              aria-current={activeControlView === "admin" ? "page" : undefined}
-              className={activeControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
-              onClick={() => handleControlFlowNavigate("admin")}
-              type="button"
-            >
-              <span>Users & Roles</span>
-              <strong>{dashboard.project_team.length}</strong>
-            </button>
-          </aside>
+              <button
+                aria-current={activeControlView === "admin" ? "page" : undefined}
+                className={activeControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
+                onClick={() => handleControlFlowNavigate("admin")}
+                type="button"
+              >
+                <span>Users & Roles</span>
+                <strong>{dashboard.project_team.length}</strong>
+              </button>
+            </aside>
+          )}
 
           <section className="adminPanel projectCreatePanel" aria-label="Project">
             <div className="panelHeader">
               <h2>
                 <Building2 size={18} /> Project
               </h2>
-              <button
-                className="quickNavButton"
-                disabled={!canConfigure}
-                onClick={() => setShowProjectCreate((current) => !current)}
-                type="button"
-              >
-                {showProjectCreate ? "Close" : "New Project"}
-              </button>
+              {!guidedFlow && (
+                <button
+                  className="quickNavButton"
+                  disabled={!canConfigure}
+                  onClick={() => setShowProjectCreate((current) => !current)}
+                  type="button"
+                >
+                  {showProjectCreate ? "Close" : "New Project"}
+                </button>
+              )}
             </div>
             <div className="projectCurrentProject">
               <span>Selected project</span>
@@ -1302,7 +1374,7 @@ function AppShell() {
               <small>{projectList.length} projects available</small>
             </div>
 
-            {showProjectCreate ? (
+            {!guidedFlow && showProjectCreate ? (
               <form className="projectCreateForm" onSubmit={handleProjectCreate}>
                 <div className="formColumns">
                   <label>
@@ -2829,6 +2901,14 @@ function AppShell() {
                   {dashboard.schedule_activity_count} activities / {dashboard.schedule_relationship_count} links
                 </span>
               </div>
+              {guidedFlow && (
+                <CostCurrencyGate
+                  gate={guidedFlow.cost_currency_gate}
+                  projectCurrency={project.currency}
+                  pending={currencyAction}
+                  onConfirm={handleConfirmCurrency}
+                />
+              )}
               <div className="gateFacts">
                 <div>
                   <span>Current Baseline</span>
@@ -3461,6 +3541,13 @@ function AppShell() {
             )}
           </section>
         </section>
+        {guidedFlow && nextActionStep && (
+          <NextActionPanel
+            action={guidedFlow.next_action}
+            step={nextActionStep}
+            onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
+          />
+        )}
       </section>
     </main>
   );

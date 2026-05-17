@@ -8,8 +8,8 @@ def _service() -> ScheduleIngestionService:
 
 def test_xer_import_reads_costs_from_resource_assignments() -> None:
     content = b"""%T\tPROJECT
-%F\tproj_id\tlast_recalc_date
-%R\t1\t2026-03-15 08:00
+%F\tproj_id\tlast_recalc_date\tcurrency_id
+%R\t1\t2026-03-15 08:00\tCOP
 %T\tPROJWBS
 %F\twbs_id\twbs_short_name\twbs_name
 %R\t10\tPIPE\tPipe Rack
@@ -26,6 +26,13 @@ def test_xer_import_reads_costs_from_resource_assignments() -> None:
     assert parsed.source == ScheduleSource.p6_xer
     assert parsed.data_date.isoformat() == "2026-03-15"
     assert parsed.activities[0].planned_cost == 1250.50
+    assert parsed.detected_currency == "COP"
+    assert parsed.currency_confidence == "detected"
+    assert parsed.currency_source == "PROJECT.currency_id"
+    assert parsed.total_imported_cost == 1250.50
+    assert parsed.cost_loaded_activity_count == 1
+    assert parsed.cost_loaded_activity_percent == 100
+    assert parsed.cost_source_summary["TASKRSRC.target_cost"] == 1
     assert "1 cost-loaded activities" in parsed.validation_summary
     assert not any(finding.check_code == "NO_COST_LOADING" for finding in parsed.findings)
 
@@ -59,6 +66,10 @@ def test_p6_xml_import_reads_costs_from_resource_assignments() -> None:
     assert parsed.source == ScheduleSource.p6_xml
     assert parsed.activities[0].external_id == "A100"
     assert parsed.activities[0].planned_cost == 2500
+    assert parsed.total_imported_cost == 2500
+    assert parsed.cost_loaded_activity_count == 1
+    assert parsed.cost_loaded_activity_percent == 100
+    assert parsed.cost_source_summary["ResourceAssignment.PlannedCost"] == 1
     assert "1 cost-loaded activities" in parsed.validation_summary
     assert not any(finding.check_code == "NO_COST_LOADING" for finding in parsed.findings)
 

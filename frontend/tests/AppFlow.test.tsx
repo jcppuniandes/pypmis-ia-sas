@@ -156,6 +156,8 @@ vi.mock("../src/store/auth", () => ({
 const listProjects = vi.fn();
 const createProject = vi.fn();
 const uploadSchedule = vi.fn();
+const guidedFlow = vi.fn();
+const confirmScheduleCurrency = vi.fn();
 const operationalSetup = vi.fn();
 const activitySheets = vi.fn();
 const activitySheetRows = vi.fn();
@@ -201,6 +203,8 @@ vi.mock("../src/api/projects", () => ({
     list: (...args: unknown[]) => listProjects(...args),
     create: (...args: unknown[]) => createProject(...args),
     uploadSchedule: (...args: unknown[]) => uploadSchedule(...args),
+    guidedFlow: (...args: unknown[]) => guidedFlow(...args),
+    confirmScheduleCurrency: (...args: unknown[]) => confirmScheduleCurrency(...args),
     operationalSetup: (...args: unknown[]) => operationalSetup(...args),
     activitySheets: (...args: unknown[]) => activitySheets(...args),
     activitySheetRows: (...args: unknown[]) => activitySheetRows(...args),
@@ -264,6 +268,179 @@ describe("served project control flow", () => {
     useProjectStore.setState({ selectedProjectId: null, dashboard: null });
     listProjects.mockResolvedValue([demoProject]);
     getDashboard.mockResolvedValue(demoDashboard);
+    guidedFlow.mockResolvedValue({
+      tenant: { id: 1, name: "Demo Energy Infrastructure", slug: "demo-energy", base_currency: "COP" },
+      project: {
+        id: demoProject.id,
+        code: demoProject.code,
+        name: demoProject.name,
+        status: demoProject.status,
+        currency: demoProject.currency,
+      },
+      steps: [
+        {
+          key: "dashboard",
+          label: "Dashboard",
+          state: "complete",
+          summary: "Control dashboard ready",
+          next_action: "Review dashboard",
+          owner_role: "Project Controls",
+          target_view: "dashboard",
+          blocking_count: 0,
+        },
+        {
+          key: "schedule",
+          label: "Schedule intake",
+          state: "complete",
+          summary: "0 activities imported",
+          next_action: "Load XER/XML schedule",
+          owner_role: "Planner",
+          target_view: "baseline",
+          blocking_count: 0,
+        },
+        {
+          key: "setup",
+          label: "Project Setup",
+          state: "review_required",
+          summary: "Control structures need periodic review",
+          next_action: "Review setup",
+          owner_role: "Project Controls",
+          target_view: "setup",
+          blocking_count: 0,
+        },
+        {
+          key: "cost_currency",
+          label: "Cost and currency gate",
+          state: "blocked",
+          summary: "Confirm detected currency before baseline approval.",
+          next_action: "Confirm currency",
+          owner_role: "Project Controls",
+          target_view: "baseline",
+          blocking_count: 1,
+        },
+        {
+          key: "baseline",
+          label: "Baseline",
+          state: "blocked",
+          summary: "Baseline approval is gated by schedule cost and currency evidence",
+          next_action: "Approve baseline",
+          owner_role: "Control Manager",
+          target_view: "baseline",
+          blocking_count: 1,
+        },
+        {
+          key: "progress",
+          label: "Progress",
+          state: "review_required",
+          summary: "Progress capture is available after baseline",
+          next_action: "Capture progress",
+          owner_role: "Field Engineer",
+          target_view: "progress",
+          blocking_count: 0,
+        },
+        {
+          key: "costs",
+          label: "Costs",
+          state: "review_required",
+          summary: "Cost control review",
+          next_action: "Review costs",
+          owner_role: "Cost Controller",
+          target_view: "costs",
+          blocking_count: 0,
+        },
+        {
+          key: "integrated_control",
+          label: "Integrated Control",
+          state: "review_required",
+          summary: "Conciliation and control governance review",
+          next_action: "Review integrated control",
+          owner_role: "Project Controls",
+          target_view: "integrated-control",
+          blocking_count: 0,
+        },
+        {
+          key: "decisions",
+          label: "Decisions",
+          state: "review_required",
+          summary: "Decision records pending review",
+          next_action: "Review decisions",
+          owner_role: "Project Manager",
+          target_view: "decisions",
+          blocking_count: 0,
+        },
+        {
+          key: "evidence",
+          label: "Evidence",
+          state: "review_required",
+          summary: "Document evidence register ready",
+          next_action: "Review evidence",
+          owner_role: "Document Controller",
+          target_view: "evidence",
+          blocking_count: 0,
+        },
+        {
+          key: "awp",
+          label: "Work Packages",
+          state: "review_required",
+          summary: "AWP register review",
+          next_action: "Review Work Packages",
+          owner_role: "Workface Planner",
+          target_view: "work-packages",
+          blocking_count: 0,
+        },
+        {
+          key: "admin",
+          label: "Users & Roles",
+          state: "review_required",
+          summary: "Role matrix and user assignments ready",
+          next_action: "Review users and roles",
+          owner_role: "Administrator",
+          target_view: "admin",
+          blocking_count: 0,
+        },
+      ],
+      next_action: {
+        key: "cost_currency",
+        label: "Confirm currency",
+        target_view: "baseline",
+        disabled: false,
+        reason: "Confirm detected currency before baseline approval.",
+      },
+      cost_currency_gate: {
+        project_id: demoProject.id,
+        schedule_import_id: 20,
+        detected_currency: "USD",
+        currency_confidence: "detected",
+        currency_source: "Currency",
+        currency_confirmed: false,
+        total_imported_cost: 2500,
+        cost_loaded_activity_count: 1,
+        cost_loaded_activity_percent: 100,
+        missing_cost_activity_count: 0,
+        cost_source_summary: { "ResourceAssignment.PlannedCost": 1 },
+        state: "review_required",
+        message: "Confirm detected currency before baseline approval.",
+      },
+    });
+    confirmScheduleCurrency.mockResolvedValue({
+      id: 20,
+      source: "p6_xml",
+      file_name: "baseline.xml",
+      status: "validated",
+      data_date: "2026-03-11",
+      baseline_name: "baseline",
+      quality_score: 92,
+      validation_summary: "1 activities, 0 relationships.",
+      detected_currency: "USD",
+      currency_confidence: "confirmed",
+      currency_source: "Currency",
+      currency_confirmed: true,
+      total_imported_cost: 2500,
+      cost_loaded_activity_count: 1,
+      cost_loaded_activity_percent: 100,
+      cost_source_summary: { "ResourceAssignment.PlannedCost": 1 },
+      imported_at: "2026-05-01T00:00:00Z",
+    });
     operationalSetup.mockResolvedValue({
       id: 1,
       project_id: 1,
@@ -581,6 +758,7 @@ describe("served project control flow", () => {
     await user.click(screen.getByRole("button", { name: /new project/i }));
 
     expect(screen.getByRole("button", { name: /^create project$/i })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: /create project/i })).toBeInTheDocument();
     expect(screen.queryByText(/shell/i)).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText(/shell/i)).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText(/project control name/i)).toBeInTheDocument();
@@ -613,7 +791,7 @@ describe("served project control flow", () => {
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
     await user.click(screen.getByRole("button", { name: /new project/i }));
-    const projectPanel = screen.getByRole("region", { name: /^project$/i });
+    const projectPanel = screen.getByRole("complementary", { name: /create project/i });
 
     fireEvent.change(within(projectPanel).getByLabelText(/^code$/i), { target: { value: "MIN-ABC" } });
     fireEvent.change(within(projectPanel).getByPlaceholderText(/project control name/i), {
@@ -647,7 +825,25 @@ describe("served project control flow", () => {
   });
 
   it("uploads the selected XML/XER file to the active project", async () => {
-    uploadSchedule.mockResolvedValue({ id: 20, file_name: "baseline.xer", quality_score: 92 });
+    uploadSchedule.mockResolvedValue({
+      id: 20,
+      source: "p6_xer",
+      file_name: "baseline.xer",
+      status: "validated",
+      data_date: "2026-03-11",
+      baseline_name: "baseline",
+      quality_score: 92,
+      validation_summary: "1 activities, 0 relationships.",
+      detected_currency: "USD",
+      currency_confidence: "detected",
+      currency_source: "PROJECT.currency_id",
+      currency_confirmed: false,
+      total_imported_cost: 2500,
+      cost_loaded_activity_count: 1,
+      cost_loaded_activity_percent: 100,
+      cost_source_summary: { "TASKRSRC.target_cost": 1 },
+      imported_at: "2026-05-01T00:00:00Z",
+    });
     const user = userEvent.setup();
 
     render(

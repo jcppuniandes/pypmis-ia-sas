@@ -49,11 +49,13 @@ from app.domain.models import (
     ProjectMembership,
     ProjectOperationalSetup,
     ScheduleActivityMap,
+    ScheduleImport,
 )
 from app.domain.schemas import (
     ActivitySheetOut,
     ActivitySheetRowOut,
     ActivitySheetWbsRowOut,
+    GuidedFlowOut,
     ProjectControlPlanOut,
     ProjectControlPlanUpdate,
     ProjectCreate,
@@ -66,8 +68,11 @@ from app.domain.schemas import (
     ProjectTeamMemberOut,
     RoleMatrixEntryOut,
     RoleMatrixPolicyOut,
+    ScheduleCurrencyConfirmIn,
+    ScheduleImportOut,
     UserOut,
 )
+from app.services.guided_flow import GuidedFlowService
 from app.services.schedule_ingestion import ScheduleIngestionService
 
 router = APIRouter()
@@ -221,6 +226,69 @@ def get_project_role_matrix(
         role_count=len(entries),
         entries=entries,
     )
+
+
+@router.get("/projects/{project_id}/guided-flow", response_model=GuidedFlowOut)
+def get_guided_flow(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> GuidedFlowOut:
+    _require_membership(db, tenant_id, project_id, user_id)
+    try:
+        return GuidedFlowService(db).build(tenant_id, project_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post(
+    "/projects/{project_id}/schedule-imports/{schedule_import_id}/confirm-currency",
+    response_model=ScheduleImportOut,
+)
+def confirm_schedule_currency(
+    project_id: int,
+    schedule_import_id: int,
+    payload: ScheduleCurrencyConfirmIn,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ScheduleImport:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    if membership.role not in {"Planner", "Control Manager", "Cost Controller"}:
+        raise HTTPException(status_code=403, detail="Current role cannot confirm schedule currency")
+    currency = payload.currency.strip().upper()
+    if len(currency) != 3 or not currency.isalpha():
+        raise HTTPException(status_code=400, detail="Currency must be a three-letter ISO code")
+    project = db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+    schedule_import = db.scalar(
+        select(ScheduleImport).where(
+            ScheduleImport.tenant_id == tenant_id,
+            ScheduleImport.project_id == project_id,
+            ScheduleImport.id == schedule_import_id,
+        )
+    )
+    if not project or not schedule_import:
+        raise HTTPException(status_code=404, detail="Schedule import not found")
+    current_user = _require_user(db, tenant_id, user_id)
+    schedule_import.detected_currency = currency
+    schedule_import.currency_confidence = "confirmed"
+    schedule_import.currency_source = schedule_import.currency_source or "user_confirmation"
+    schedule_import.currency_confirmed = True
+    project.currency = currency
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "confirm_schedule_currency",
+        "ScheduleImport",
+        schedule_import.id,
+        json.dumps({"currency": currency}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(schedule_import)
+    return schedule_import
 
 
 @router.post("/projects/{project_id}/team", response_model=ProjectTeamMemberOut)

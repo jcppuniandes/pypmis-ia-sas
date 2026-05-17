@@ -3,6 +3,7 @@ import type {
   ActivitySheet,
   ActivitySheetRow,
   ActivitySheetWbsRow,
+  GuidedFlow,
   Project,
   ProjectControlPlan,
   ProjectOperationalSetup,
@@ -41,6 +42,16 @@ export const projects = {
       body,
     });
   },
+
+  guidedFlow: (token: string, projectId: number) =>
+    apiFetch<GuidedFlow>(`/api/v1/projects/${projectId}/guided-flow`, { token }),
+
+  confirmScheduleCurrency: (token: string, projectId: number, scheduleImportId: number, currency: string) =>
+    apiFetch<ScheduleImport>(`/api/v1/projects/${projectId}/schedule-imports/${scheduleImportId}/confirm-currency`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ currency }),
+    }),
 
   operationalSetup: (token: string, projectId: number) =>
     apiFetch<ProjectOperationalSetup>(`/api/v1/projects/${projectId}/operational-setup`, { token }),

@@ -172,6 +172,215 @@ main {
   padding: 18px 28px 28px;
 }
 
+.tenantCommandBar {
+  align-items: center;
+  background: #17212b;
+  border-radius: 8px;
+  color: #ffffff;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 250px) minmax(180px, 1fr) auto auto auto;
+  margin: 0 auto 10px;
+  max-width: 1480px;
+  padding: 14px 18px;
+  width: 100%;
+}
+
+.tenantCommandBar label,
+.tenantCommandIdentity,
+.tenantCommandProject {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tenantCommandIdentity {
+  align-items: center;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.tenantCommandBar span,
+.tenantCommandBar label span {
+  color: #b9c7d3;
+  font-size: 12px;
+}
+
+.tenantCommandBar strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenantCommandProject h1 {
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.2;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenantCommandBar select {
+  background: #ffffff;
+  border: 1px solid #8aa0b3;
+  border-radius: 6px;
+  color: #17212b;
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.tenantCommandUser {
+  font-weight: 800;
+}
+
+.iconButton,
+.iconTextButton {
+  align-items: center;
+  border: 1px solid #cfd8df;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.iconButton {
+  aspect-ratio: 1;
+  padding: 0;
+  width: 36px;
+}
+
+.tenantCommandBar .iconButton,
+.tenantCommandBar .iconTextButton {
+  background: #24313d;
+  border-color: #3d5060;
+  color: #ffffff;
+}
+
+.projectCreateDrawer {
+  background: #ffffff;
+  border-left: 1px solid #d8dee5;
+  bottom: 0;
+  box-shadow: -18px 0 32px rgba(23, 33, 43, 0.16);
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+  overflow-y: auto;
+  padding: 18px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: min(520px, 94vw);
+  z-index: 50;
+}
+
+.guidedWorkspace {
+  grid-template-columns: 270px minmax(0, 1fr) 300px;
+}
+
+.guidedProcessRail,
+.nextActionPanel,
+.costCurrencyGate {
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(23, 33, 43, 0.05);
+}
+
+.guidedProcessRail {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.guidedRailItem {
+  align-items: center;
+  background: #f8fafb;
+  border: 1px solid #e2e8ee;
+  border-radius: 8px;
+  color: #17212b;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 10px;
+  text-align: left;
+}
+
+.guidedRailItem.active {
+  border-color: #0f8b8d;
+  box-shadow: inset 3px 0 0 #0f8b8d;
+}
+
+.guidedRailItem.blocked {
+  background: #fff7ed;
+}
+
+.guidedRailItem.complete {
+  background: #effaf5;
+}
+
+.guidedRailItem small,
+.nextActionPanel p {
+  color: #52616f;
+  display: block;
+  font-size: 12px;
+  line-height: 1.35;
+  margin: 2px 0 0;
+}
+
+.guidedRailItem em {
+  color: #52616f;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.nextActionPanel {
+  align-self: start;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  position: sticky;
+  top: 12px;
+}
+
+.nextActionPanel > span {
+  color: #0f8b8d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.costCurrencyGate {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 1fr) minmax(360px, 2fr) auto;
+  margin-bottom: 14px;
+  padding: 14px;
+}
+
+.costCurrencyGate > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.costCurrencyGate > div:first-child span {
+  color: #0f8b8d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.costCurrencyGate.blocked {
+  border-color: #f0b36a;
+}
+
+.costCurrencyGate.ready {
+  border-color: #5bb98c;
+}
+
 .loading {
   display: grid;
   min-height: 100vh;

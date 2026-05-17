@@ -21,6 +21,70 @@ class ProjectOut(BaseModel):
     finish_date: date | None
 
 
+class TenantContextOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    slug: str
+    base_currency: str = "COP"
+
+
+class GuidedProjectContextOut(BaseModel):
+    id: int
+    code: str
+    name: str
+    status: str
+    currency: str
+
+
+class CostCurrencyGateOut(BaseModel):
+    project_id: int
+    schedule_import_id: int | None = None
+    detected_currency: str = ""
+    currency_confidence: str = "unknown"
+    currency_source: str = ""
+    currency_confirmed: bool = False
+    total_imported_cost: float = 0
+    cost_loaded_activity_count: int = 0
+    cost_loaded_activity_percent: float = 0
+    missing_cost_activity_count: int = 0
+    cost_source_summary: dict[str, object] = Field(default_factory=dict)
+    state: str = "blocked"
+    message: str = "Load XER/XML schedule to evaluate cost and currency."
+
+
+class GuidedFlowStepOut(BaseModel):
+    key: str
+    label: str
+    state: str
+    summary: str
+    next_action: str
+    owner_role: str
+    target_view: str
+    blocking_count: int = 0
+
+
+class GuidedNextActionOut(BaseModel):
+    key: str
+    label: str
+    target_view: str
+    disabled: bool = False
+    reason: str = ""
+
+
+class GuidedFlowOut(BaseModel):
+    tenant: TenantContextOut
+    project: GuidedProjectContextOut
+    steps: list[GuidedFlowStepOut]
+    next_action: GuidedNextActionOut
+    cost_currency_gate: CostCurrencyGateOut
+
+
+class ScheduleCurrencyConfirmIn(BaseModel):
+    currency: str
+
+
 class ProjectCreate(BaseModel):
     code: str
     name: str
@@ -957,6 +1021,14 @@ class ScheduleImportOut(BaseModel):
     baseline_name: str
     quality_score: float
     validation_summary: str
+    detected_currency: str = ""
+    currency_confidence: str = "unknown"
+    currency_source: str = ""
+    currency_confirmed: bool = False
+    total_imported_cost: float = 0
+    cost_loaded_activity_count: int = 0
+    cost_loaded_activity_percent: float = 0
+    cost_source_summary: dict[str, object] = Field(default_factory=dict)
     imported_at: datetime
 
 

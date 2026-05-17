@@ -113,6 +113,7 @@ def release_seed_demo_lock(db: Session) -> None:
 def seed_demo_records(db: Session) -> None:
     existing = db.scalar(select(Tenant).where(Tenant.slug == "demo-energy"))
     if existing:
+        existing.base_currency = existing.base_currency or "COP"
         ensure_default_bp_templates(db, existing.id)
         project = ensure_primary_project(db, existing.id)
         if project:
@@ -155,7 +156,7 @@ def seed_demo_records(db: Session) -> None:
         ensure_demo_users(db, existing.id)
         return
 
-    tenant = Tenant(name="Demo Energy Infrastructure", slug="demo-energy")
+    tenant = Tenant(name="Demo Energy Infrastructure", slug="demo-energy", base_currency="COP")
     db.add(tenant)
     db.flush()
     ensure_default_bp_templates(db, tenant.id)

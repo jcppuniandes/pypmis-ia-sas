@@ -30,6 +30,64 @@ export type Project = {
   finish_date: string | null;
 };
 
+export type TenantContext = {
+  id: number;
+  name: string;
+  slug: string;
+  base_currency: string;
+};
+
+export type GuidedProjectContext = {
+  id: number;
+  code: string;
+  name: string;
+  status: string;
+  currency: string;
+};
+
+export type CostCurrencyGate = {
+  project_id: number;
+  schedule_import_id: number | null;
+  detected_currency: string;
+  currency_confidence: string;
+  currency_source: string;
+  currency_confirmed: boolean;
+  total_imported_cost: number;
+  cost_loaded_activity_count: number;
+  cost_loaded_activity_percent: number;
+  missing_cost_activity_count: number;
+  cost_source_summary: Record<string, unknown>;
+  state: string;
+  message: string;
+};
+
+export type GuidedFlowStep = {
+  key: string;
+  label: string;
+  state: string;
+  summary: string;
+  next_action: string;
+  owner_role: string;
+  target_view: string;
+  blocking_count: number;
+};
+
+export type GuidedNextAction = {
+  key: string;
+  label: string;
+  target_view: string;
+  disabled: boolean;
+  reason: string;
+};
+
+export type GuidedFlow = {
+  tenant: TenantContext;
+  project: GuidedProjectContext;
+  steps: GuidedFlowStep[];
+  next_action: GuidedNextAction;
+  cost_currency_gate: CostCurrencyGate;
+};
+
 export type ProjectControlPlan = {
   id: number;
   project_id: number;
@@ -234,6 +292,14 @@ export type ScheduleImport = {
   baseline_name: string;
   quality_score: number;
   validation_summary: string;
+  detected_currency: string;
+  currency_confidence: string;
+  currency_source: string;
+  currency_confirmed: boolean;
+  total_imported_cost: number;
+  cost_loaded_activity_count: number;
+  cost_loaded_activity_percent: number;
+  cost_source_summary: Record<string, unknown>;
   imported_at: string;
 };
 
