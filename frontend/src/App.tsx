@@ -10,18 +10,21 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { Building2, Database, Download, FileSearch, FileUp, GitBranch, PackagePlus, Ruler, Save, ShieldCheck, Trash2 } from "lucide-react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Building2,
+  Database,
+  Download,
+  FileSearch,
+  FileUp,
+  GitBranch,
+  PackagePlus,
+  Ruler,
+  Save,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { admin as adminApi } from "./api/admin";
 import { ApiError } from "./api/client";
 import { dashboard as dashboardApi } from "./api/dashboard";
@@ -188,7 +191,16 @@ type ControlFlowView =
   | "work-packages"
   | "admin";
 
-const FRONTEND_VALIDATION_MODE = true;
+// Validation mode narrows the UI to Dashboard + BIM while field validation is
+// running. Runtime default stays on; tests set VITE_FRONTEND_VALIDATION_MODE
+// to "false" (or the globalThis override, per test) to exercise both layouts.
+type ValidationModeGlobal = typeof globalThis & { __PYPMIS_VALIDATION_MODE__?: boolean };
+
+function frontendValidationMode(): boolean {
+  const override = (globalThis as ValidationModeGlobal).__PYPMIS_VALIDATION_MODE__;
+  if (override !== undefined) return override;
+  return import.meta.env.VITE_FRONTEND_VALIDATION_MODE !== "false";
+}
 const FRONTEND_VALIDATION_VIEWS: ControlFlowView[] = [
   "dashboard",
   "opc-gap",
@@ -348,7 +360,7 @@ function inferWbsParentId(node: WbsNode, nodes: WbsNode[]) {
       const candidateCode = candidate.code.trim();
       if (!candidateCode || candidateCode.length >= normalizedCode.length) return false;
       const isCodeParent = ["-", ".", "/", "_"].some((separator) =>
-        normalizedCode.startsWith(`${candidateCode}${separator}`),
+        normalizedCode.startsWith(`${candidateCode}${separator}`)
       );
       if (!isCodeParent) return false;
       return node.level > candidate.level || !hasMeaningfulLevels;
@@ -401,7 +413,7 @@ function sortWorkPackages(packages: WorkPackage[]) {
     (left, right) =>
       left.sequence_no - right.sequence_no ||
       left.package_type.localeCompare(right.package_type) ||
-      left.code.localeCompare(right.code, undefined, { numeric: true }),
+      left.code.localeCompare(right.code, undefined, { numeric: true })
   );
 }
 
@@ -422,7 +434,7 @@ function buildWorkPackageTree(packages: WorkPackage[]) {
       (left, right) =>
         left.sequence_no - right.sequence_no ||
         left.package_type.localeCompare(right.package_type) ||
-        left.code.localeCompare(right.code, undefined, { numeric: true }),
+        left.code.localeCompare(right.code, undefined, { numeric: true })
     );
     items.forEach((item) => sortNodes(item.children));
   };
@@ -508,7 +520,7 @@ function addActivityRollup(left: ActivitySheetWbsRow, right: ActivitySheetWbsRow
 
 function buildActivityWbsRollupMap(
   nodes: WbsTreeNode[],
-  directRowsByCode: Map<string, ActivitySheetWbsRow>,
+  directRowsByCode: Map<string, ActivitySheetWbsRow>
 ): Map<string, ActivitySheetWbsRow> {
   const rollups = new Map<string, ActivitySheetWbsRow>();
   const visit = (node: WbsTreeNode): ActivitySheetWbsRow => {
@@ -587,7 +599,7 @@ function publicPackageTitle(
   project: Project,
   wbsName: string,
   sourceWbsCode: string,
-  sourceControlAccountCode: string,
+  sourceControlAccountCode: string
 ) {
   const trimmed = title?.trim() ?? "";
   if (!trimmed) return "AWP pending";
@@ -632,66 +644,58 @@ function buildWbsTraceabilityRows(
   integratedMatrix: IntegratedControlMatrixRow[],
   cbsCatalog: CostBreakdownStructure[],
   costCodes: CostCode[],
-  fundingSources: FundingSource[],
+  fundingSources: FundingSource[]
 ): WbsTraceabilityRow[] {
   const wbsById = new Map(wbsCatalog.map((node) => [node.id, node]));
   const wbsByCode = new Map(wbsCatalog.map((node) => [node.code, node]));
   const cbsById = new Map(cbsCatalog.map((node) => [node.id, node]));
   const fundingById = new Map(fundingSources.map((source) => [source.id, source]));
-  const accountRows = controlAccounts
-    .filter(isActiveControlAccount)
-    .map((account) => {
-      const wbs = account.wbs_id ? wbsById.get(account.wbs_id) : undefined;
-      const matrixRow = integratedMatrix.find(
-        (row) =>
-          row.control_account_code === account.code ||
-          (wbs ? row.wbs_code === wbs.code : false) ||
-          row.cbs_code === account.cbs_code,
-      );
-      const linkedPackage =
-        workPackages.find(
-          (workPackage) =>
-            workPackage.control_account_id === account.id && workPackage.package_type.toUpperCase() === "CWP",
-        ) ??
-        workPackages.find((workPackage) => workPackage.control_account_id === account.id) ??
-        (wbs ? workPackages.find((workPackage) => workPackage.wbs_id === wbs.id) : undefined);
-      const linkedCostCode =
-        costCodes.find((costCode) => costCode.control_account_id === account.id) ??
-        (wbs ? costCodes.find((costCode) => costCode.wbs_id === wbs.id) : undefined);
-      const cbsFromCostCode = linkedCostCode ? cbsById.get(linkedCostCode.cbs_id) : undefined;
-      const fbsFromCostCode = linkedCostCode ? fundingById.get(linkedCostCode.fbs_id) : undefined;
-      const sourceWbsCode = wbs?.code || matrixRow?.wbs_code || "WBS pending";
-      const publicWbsName = wbs?.name || "Pending WBS assignment";
+  const accountRows = controlAccounts.filter(isActiveControlAccount).map((account) => {
+    const wbs = account.wbs_id ? wbsById.get(account.wbs_id) : undefined;
+    const matrixRow = integratedMatrix.find(
+      (row) =>
+        row.control_account_code === account.code ||
+        (wbs ? row.wbs_code === wbs.code : false) ||
+        row.cbs_code === account.cbs_code
+    );
+    const linkedPackage =
+      workPackages.find(
+        (workPackage) =>
+          workPackage.control_account_id === account.id && workPackage.package_type.toUpperCase() === "CWP"
+      ) ??
+      workPackages.find((workPackage) => workPackage.control_account_id === account.id) ??
+      (wbs ? workPackages.find((workPackage) => workPackage.wbs_id === wbs.id) : undefined);
+    const linkedCostCode =
+      costCodes.find((costCode) => costCode.control_account_id === account.id) ??
+      (wbs ? costCodes.find((costCode) => costCode.wbs_id === wbs.id) : undefined);
+    const cbsFromCostCode = linkedCostCode ? cbsById.get(linkedCostCode.cbs_id) : undefined;
+    const fbsFromCostCode = linkedCostCode ? fundingById.get(linkedCostCode.fbs_id) : undefined;
+    const sourceWbsCode = wbs?.code || matrixRow?.wbs_code || "WBS pending";
+    const publicWbsName = wbs?.name || "Pending WBS assignment";
 
-      return {
-        awpPackageTitle: publicPackageTitle(
-          linkedPackage?.title,
-          project,
-          publicWbsName,
-          sourceWbsCode,
-          account.code,
-        ),
-        id: `${account.id}-${wbs?.id ?? "pending"}`,
-        wbsCode: publicWbsCode(sourceWbsCode, project),
-        sourceWbsCode,
-        wbsName: publicWbsName,
-        controlAccountCode: publicControlAccountCode(account.code, project),
-        sourceControlAccountCode: account.code,
-        controlAccountName: publicControlAccountName(account.name, publicWbsName, account.code),
-        cbsCode: matrixRow?.cbs_code || cbsFromCostCode?.code || account.cbs_code || "CBS pending",
-        fbsCode: matrixRow?.fbs_code || fbsFromCostCode?.code || "FBS pending",
-        awpPackageCode: publicPackageCode(linkedPackage?.code || matrixRow?.awp_package_code, project),
-        costCode: matrixRow?.cost_code || linkedCostCode?.code || "Cost code pending",
-        status: statusLabel(account.lifecycle_status || matrixRow?.status || "active"),
-        budget: matrixRow?.budget ?? linkedCostCode?.budget ?? account.budget ?? 0,
-      };
-    });
+    return {
+      awpPackageTitle: publicPackageTitle(linkedPackage?.title, project, publicWbsName, sourceWbsCode, account.code),
+      id: `${account.id}-${wbs?.id ?? "pending"}`,
+      wbsCode: publicWbsCode(sourceWbsCode, project),
+      sourceWbsCode,
+      wbsName: publicWbsName,
+      controlAccountCode: publicControlAccountCode(account.code, project),
+      sourceControlAccountCode: account.code,
+      controlAccountName: publicControlAccountName(account.name, publicWbsName, account.code),
+      cbsCode: matrixRow?.cbs_code || cbsFromCostCode?.code || account.cbs_code || "CBS pending",
+      fbsCode: matrixRow?.fbs_code || fbsFromCostCode?.code || "FBS pending",
+      awpPackageCode: publicPackageCode(linkedPackage?.code || matrixRow?.awp_package_code, project),
+      costCode: matrixRow?.cost_code || linkedCostCode?.code || "Cost code pending",
+      status: statusLabel(account.lifecycle_status || matrixRow?.status || "active"),
+      budget: matrixRow?.budget ?? linkedCostCode?.budget ?? account.budget ?? 0,
+    };
+  });
   const hasAccountRowForMatrix = (matrixRow: IntegratedControlMatrixRow) =>
     accountRows.some(
       (row) =>
         (matrixRow.control_account_code && row.sourceControlAccountCode === matrixRow.control_account_code) ||
         (matrixRow.cost_code && row.costCode === matrixRow.cost_code) ||
-        (matrixRow.wbs_code && row.sourceWbsCode === matrixRow.wbs_code && row.cbsCode === matrixRow.cbs_code),
+        (matrixRow.wbs_code && row.sourceWbsCode === matrixRow.wbs_code && row.cbsCode === matrixRow.cbs_code)
     );
   const matrixRows = integratedMatrix
     .filter((matrixRow) => !hasAccountRowForMatrix(matrixRow))
@@ -706,7 +710,7 @@ function buildWbsTraceabilityRows(
             project,
             publicWbsName,
             matrixRow.wbs_code,
-            matrixRow.control_account_code,
+            matrixRow.control_account_code
           ) || publicPackageCode(matrixRow.awp_package_code, project),
         id: `matrix-${matrixRow.cost_code || matrixRow.control_account_code || matrixRow.wbs_code}`,
         wbsCode: publicWbsCode(matrixRow.wbs_code, project),
@@ -725,19 +729,18 @@ function buildWbsTraceabilityRows(
         budget: matrixRow.budget ?? 0,
       };
     });
-  return [...accountRows, ...matrixRows]
-    .sort(
-      (left, right) =>
-        left.wbsCode.localeCompare(right.wbsCode, undefined, { numeric: true }) ||
-        left.controlAccountCode.localeCompare(right.controlAccountCode, undefined, { numeric: true }),
-    );
+  return [...accountRows, ...matrixRows].sort(
+    (left, right) =>
+      left.wbsCode.localeCompare(right.wbsCode, undefined, { numeric: true }) ||
+      left.controlAccountCode.localeCompare(right.controlAccountCode, undefined, { numeric: true })
+  );
 }
 
 function buildCostFundingTraceabilityRows(
   traceabilityRows: WbsTraceabilityRow[],
   costLines: CostSheetLine[],
   fundingSources: FundingSource[],
-  baselineOnly: boolean,
+  baselineOnly: boolean
 ): CostFundingTraceabilityRow[] {
   const costByControlAccount = new Map(costLines.map((line) => [line.control_account_code, line]));
   const fundingByCode = new Map(fundingSources.map((source) => [source.code, source]));
@@ -796,6 +799,7 @@ function buildCostFundingTraceabilityRows(
 }
 
 function AppShell() {
+  const FRONTEND_VALIDATION_MODE = frontendValidationMode();
   const location = useLocation();
   const navigate = useNavigate();
   const { token, user, logout } = useAuthStore();
@@ -970,19 +974,18 @@ function AppShell() {
     description: "",
     change_note: "Controlled production edit",
   });
-  const [priorityAction, setPriorityAction] = useState<"cbs" | "fund" | "wbs" | "sov" | "rate" | "recost" | null>(
-    null,
-  );
+  const [priorityAction, setPriorityAction] = useState<"cbs" | "fund" | "wbs" | "sov" | "rate" | "recost" | null>(null);
   const [hardeningAction, setHardeningAction] = useState<"policy" | "line" | "export-xlsx" | "export-pdf" | null>(null);
   const [agentAction, setAgentAction] = useState(false);
   const [constraintAction, setConstraintAction] = useState(false);
   const [baselineAction, setBaselineAction] = useState(false);
   const [integratedMessage, setIntegratedMessage] = useState<string | null>(null);
   const [activeControlView, setActiveControlView] = useState<ControlFlowView>(
-    () => routeControlView(location.pathname) ?? "dashboard",
+    () => routeControlView(location.pathname) ?? "dashboard"
   );
   const routedControlView = routeControlView(location.pathname);
-  const requestedControlView = routedControlView ?? (activeControlView === "schedule-control" ? "dashboard" : activeControlView);
+  const requestedControlView =
+    routedControlView ?? (activeControlView === "schedule-control" ? "dashboard" : activeControlView);
   const visibleControlView = FRONTEND_VALIDATION_MODE ? focusedControlView(requestedControlView) : requestedControlView;
   const [constraintDraft, setConstraintDraft] = useState({
     work_package_id: "",
@@ -1004,8 +1007,10 @@ function AppShell() {
         const records = await projectsApi.list(token);
         if (cancelled) return;
         setProjectList(records);
-        const selectedStillVisible = selectedProjectId ? records.some((record) => record.id === selectedProjectId) : false;
-        const nextProjectId = selectedStillVisible ? selectedProjectId : records[0]?.id ?? null;
+        const selectedStillVisible = selectedProjectId
+          ? records.some((record) => record.id === selectedProjectId)
+          : false;
+        const nextProjectId = selectedStillVisible ? selectedProjectId : (records[0]?.id ?? null);
         if (nextProjectId) {
           setSelectedProject(nextProjectId);
         } else {
@@ -1062,16 +1067,23 @@ function AppShell() {
             ...current,
             funding_source_id: current.funding_source_id || (firstFunding ? String(firstFunding.id) : ""),
           }));
-          setSovDraft((current) => ({ ...current, contract_id: current.contract_id || (firstContract ? String(firstContract.id) : "") }));
+          setSovDraft((current) => ({
+            ...current,
+            contract_id: current.contract_id || (firstContract ? String(firstContract.id) : ""),
+          }));
         }
         const businessProcesses = nextDashboard.business_processes ?? [];
         const priorityProcess =
           businessProcesses.find((process) => process.process_code === "BP-CBS-WBS") ??
           businessProcesses.find((process) => process.process_code === "BP-CBS-FUND");
         if (priorityProcess) {
-          const lineItems = await integratedControlApi.businessProcessLineItems(token, projectId, priorityProcess.id).catch(() => []);
+          const lineItems = await integratedControlApi
+            .businessProcessLineItems(token, projectId, priorityProcess.id)
+            .catch(() => []);
           const revisions = lineItems[0]
-            ? await integratedControlApi.businessProcessLineItemRevisions(token, projectId, lineItems[0].id).catch(() => [])
+            ? await integratedControlApi
+                .businessProcessLineItemRevisions(token, projectId, lineItems[0].id)
+                .catch(() => [])
             : [];
           if (!cancelled) {
             setBpLineItems(lineItems);
@@ -1137,20 +1149,31 @@ function AppShell() {
     async function loadIntegratedControl() {
       setIntegratedError(null);
       try {
-        const [matrix, forecast, closeout, wbsRows, accounts, cbsRows, codeRows, sheets, reconciliation, policies, agentRuns] =
-          await Promise.all([
-            integratedControlApi.matrix(token, projectId),
-            integratedControlApi.forecastVsFunding(token, projectId),
-            integratedControlApi.closeoutReport(token, projectId),
-            integratedControlApi.wbs(token, projectId),
-            integratedControlApi.controlAccounts(token, projectId),
-            integratedControlApi.cbs(token, projectId),
-            integratedControlApi.costCodes(token, projectId),
-            integratedControlApi.rateSheets(token, projectId),
-            integratedControlApi.reconciliationReport(token, projectId),
-            integratedControlApi.businessProcessPolicies(token, projectId),
-            integratedControlApi.controlAuditAgentRuns(token, projectId).catch(() => []),
-          ]);
+        const [
+          matrix,
+          forecast,
+          closeout,
+          wbsRows,
+          accounts,
+          cbsRows,
+          codeRows,
+          sheets,
+          reconciliation,
+          policies,
+          agentRuns,
+        ] = await Promise.all([
+          integratedControlApi.matrix(token, projectId),
+          integratedControlApi.forecastVsFunding(token, projectId),
+          integratedControlApi.closeoutReport(token, projectId),
+          integratedControlApi.wbs(token, projectId),
+          integratedControlApi.controlAccounts(token, projectId),
+          integratedControlApi.cbs(token, projectId),
+          integratedControlApi.costCodes(token, projectId),
+          integratedControlApi.rateSheets(token, projectId),
+          integratedControlApi.reconciliationReport(token, projectId),
+          integratedControlApi.businessProcessPolicies(token, projectId),
+          integratedControlApi.controlAuditAgentRuns(token, projectId).catch(() => []),
+        ]);
         if (!cancelled) {
           setIntegratedMatrix(matrix);
           setForecastFunding(forecast);
@@ -1164,9 +1187,7 @@ function AppShell() {
           setBpPolicies(policies);
           setControlAgentRuns(agentRuns);
           const firstAccount = accounts.find(isActiveControlAccount) ?? accounts[0];
-          const accountWbs = firstAccount?.wbs_id
-            ? wbsRows.find((item) => item.id === firstAccount.wbs_id)
-            : undefined;
+          const accountWbs = firstAccount?.wbs_id ? wbsRows.find((item) => item.id === firstAccount.wbs_id) : undefined;
           const firstWbs = accountWbs ?? wbsRows.find((item) => item.code !== "1.0") ?? wbsRows[0];
           const firstCbs = cbsRows[0];
           setPriorityDraft((current) => ({
@@ -1245,9 +1266,12 @@ function AppShell() {
           if (firstActivityCbs) {
             setRateDraft((current) => ({ ...current, cbs_code: current.cbs_code || firstActivityCbs }));
           }
-          integratedControlApi.recostRuns(token, projectId, latestSheet.id).then((history) => {
-            if (!cancelled) setRecostRuns(history);
-          }).catch(() => undefined);
+          integratedControlApi
+            .recostRuns(token, projectId, latestSheet.id)
+            .then((history) => {
+              if (!cancelled) setRecostRuns(history);
+            })
+            .catch(() => undefined);
         }
         const selectedProject = projectList.find((item) => item.id === projectId);
         setSetupDraft({
@@ -1300,7 +1324,9 @@ function AppShell() {
           setManagedUserDraft(managedDraftForUser(selectedUser));
           setUserDraft((current) => ({
             ...current,
-            role: nextRoles.some((role) => role.role === current.role) ? current.role : nextRoles[0]?.role || current.role,
+            role: nextRoles.some((role) => role.role === current.role)
+              ? current.role
+              : nextRoles[0]?.role || current.role,
           }));
         }
       } catch (err) {
@@ -1343,25 +1369,39 @@ function AppShell() {
       ...current,
       funding_source_id: current.funding_source_id || (firstFunding ? String(firstFunding.id) : ""),
     }));
-    setSovDraft((current) => ({ ...current, contract_id: current.contract_id || (firstContract ? String(firstContract.id) : "") }));
+    setSovDraft((current) => ({
+      ...current,
+      contract_id: current.contract_id || (firstContract ? String(firstContract.id) : ""),
+    }));
     await refreshGuidedFlow(projectId);
   }
 
   async function refreshIntegratedControl(projectId: number) {
-    const [matrix, forecast, closeout, wbsRows, accounts, cbsRows, codeRows, sheets, reconciliation, policies, agentRuns] =
-      await Promise.all([
-        integratedControlApi.matrix(token, projectId),
-        integratedControlApi.forecastVsFunding(token, projectId),
-        integratedControlApi.closeoutReport(token, projectId),
-        integratedControlApi.wbs(token, projectId),
-        integratedControlApi.controlAccounts(token, projectId),
-        integratedControlApi.cbs(token, projectId),
-        integratedControlApi.costCodes(token, projectId),
-        integratedControlApi.rateSheets(token, projectId),
-        integratedControlApi.reconciliationReport(token, projectId),
-        integratedControlApi.businessProcessPolicies(token, projectId),
-        integratedControlApi.controlAuditAgentRuns(token, projectId).catch(() => []),
-      ]);
+    const [
+      matrix,
+      forecast,
+      closeout,
+      wbsRows,
+      accounts,
+      cbsRows,
+      codeRows,
+      sheets,
+      reconciliation,
+      policies,
+      agentRuns,
+    ] = await Promise.all([
+      integratedControlApi.matrix(token, projectId),
+      integratedControlApi.forecastVsFunding(token, projectId),
+      integratedControlApi.closeoutReport(token, projectId),
+      integratedControlApi.wbs(token, projectId),
+      integratedControlApi.controlAccounts(token, projectId),
+      integratedControlApi.cbs(token, projectId),
+      integratedControlApi.costCodes(token, projectId),
+      integratedControlApi.rateSheets(token, projectId),
+      integratedControlApi.reconciliationReport(token, projectId),
+      integratedControlApi.businessProcessPolicies(token, projectId),
+      integratedControlApi.controlAuditAgentRuns(token, projectId).catch(() => []),
+    ]);
     setIntegratedMatrix(matrix);
     setForecastFunding(forecast);
     setCloseoutReport(closeout);
@@ -1374,9 +1414,7 @@ function AppShell() {
     setBpPolicies(policies);
     setControlAgentRuns(agentRuns);
     const firstAccount = accounts.find(isActiveControlAccount) ?? accounts[0];
-    const accountWbs = firstAccount?.wbs_id
-      ? wbsRows.find((item) => item.id === firstAccount.wbs_id)
-      : undefined;
+    const accountWbs = firstAccount?.wbs_id ? wbsRows.find((item) => item.id === firstAccount.wbs_id) : undefined;
     const firstWbs = accountWbs ?? wbsRows.find((item) => item.code !== "1.0") ?? wbsRows[0];
     const firstCbs = cbsRows[0];
     setPriorityDraft((current) => ({
@@ -1436,7 +1474,7 @@ function AppShell() {
       setProjectList((current) =>
         current.some((projectItem) => projectItem.id === created.id)
           ? current.map((projectItem) => (projectItem.id === created.id ? created : projectItem))
-          : [...current, created],
+          : [...current, created]
       );
       setSelectedProject(created.id);
       setProjectDraft({
@@ -1468,7 +1506,7 @@ function AppShell() {
     if (!selectedProjectId || !dashboard) return;
     const projectToDelete = dashboard.project;
     const confirmed = window.confirm(
-      `Delete project ${projectToDelete.code}? This will remove the project workspace and its control records.`,
+      `Delete project ${projectToDelete.code}? This will remove the project workspace and its control records.`
     );
     if (!confirmed) return;
     setProjectDeleteAction(true);
@@ -1483,12 +1521,12 @@ function AppShell() {
       if (nextProjectId) {
         setSelectedProject(nextProjectId);
       } else {
-          setSelectedProject(null);
-          setDashboard(null);
-          setScheduleActivities([]);
-          setScheduleRelationships([]);
-          setGuidedFlow(null);
-          setProcessFlowBoard(null);
+        setSelectedProject(null);
+        setDashboard(null);
+        setScheduleActivities([]);
+        setScheduleRelationships([]);
+        setGuidedFlow(null);
+        setProcessFlowBoard(null);
         setLoading(false);
       }
     } catch (err) {
@@ -1611,16 +1649,13 @@ function AppShell() {
       if (isIfcModel(file)) {
         const registeredModel = await bimModelsApi.upload(token, selectedProjectId, file);
         if (file.size > BIM_TAKEOFF_MAX_BYTES) {
-          setBimModelRuns((current) => [
-            registeredModel,
-            ...current.filter((item) => item.id !== registeredModel.id),
-          ]);
+          setBimModelRuns((current) => [registeredModel, ...current.filter((item) => item.id !== registeredModel.id)]);
           setQuantityTakeoffRuns([]);
           setQuantityTakeoffLines([]);
           setGeometryMeasurementBatch(null);
           setQuantityRuleRecalculation(null);
           setQuantityMessage(
-            `${file.name} quedo registrado para coordinacion BIM.${bimModelGeoreferenceMessage(registeredModel)} El archivo supera ${BIM_TAKEOFF_MAX_MB} MB, por eso se omitio el takeoff sincrono; carga una exportacion IFC de cantidades o Excel/CSV para la tabla controlada.`,
+            `${file.name} quedo registrado para coordinacion BIM.${bimModelGeoreferenceMessage(registeredModel)} El archivo supera ${BIM_TAKEOFF_MAX_MB} MB, por eso se omitio el takeoff sincrono; carga una exportacion IFC de cantidades o Excel/CSV para la tabla controlada.`
           );
           return;
         }
@@ -1632,14 +1667,11 @@ function AppShell() {
           ]);
           setQuantityTakeoffRuns(runs);
           setQuantityTakeoffLines(lines);
-          setBimModelRuns((current) => [
-            registeredModel,
-            ...current.filter((item) => item.id !== registeredModel.id),
-          ]);
+          setBimModelRuns((current) => [registeredModel, ...current.filter((item) => item.id !== registeredModel.id)]);
           setGeometryMeasurementBatch(null);
           setQuantityRuleRecalculation(null);
           setQuantityMessage(
-            `${registeredModel.source_file_name} quedo registrado como modelo IFC y se cargaron ${lines.length} linea(s) de cantidades.${bimModelGeoreferenceMessage(registeredModel)}`,
+            `${registeredModel.source_file_name} quedo registrado como modelo IFC y se cargaron ${lines.length} linea(s) de cantidades.${bimModelGeoreferenceMessage(registeredModel)}`
           );
         } catch (err) {
           if (isUnauthorizedApiError(err)) {
@@ -1648,14 +1680,11 @@ function AppShell() {
           }
           setQuantityTakeoffRuns([]);
           setQuantityTakeoffLines([]);
-          setBimModelRuns((current) => [
-            registeredModel,
-            ...current.filter((item) => item.id !== registeredModel.id),
-          ]);
+          setBimModelRuns((current) => [registeredModel, ...current.filter((item) => item.id !== registeredModel.id)]);
           setGeometryMeasurementBatch(null);
           setQuantityRuleRecalculation(null);
           setQuantityMessage(
-            `${registeredModel.source_file_name} quedo registrado para coordinacion BIM.${bimModelGeoreferenceMessage(registeredModel)} La extraccion de cantidades no termino; carga una exportacion IFC de cantidades o Excel/CSV para la tabla controlada.`,
+            `${registeredModel.source_file_name} quedo registrado para coordinacion BIM.${bimModelGeoreferenceMessage(registeredModel)} La extraccion de cantidades no termino; carga una exportacion IFC de cantidades o Excel/CSV para la tabla controlada.`
           );
           setQuantityError(quantityTakeoffErrorMessage(err));
         }
@@ -1749,7 +1778,7 @@ function AppShell() {
       setQuantityTakeoffLines(lines);
       setQuantityRuleRecalculation(result);
       setQuantityMessage(
-        `Reglas recalculadas: ${result.changed_line_count} linea(s) cambiadas. Gate de costos: ${result.cost_rollup_gate}.`,
+        `Reglas recalculadas: ${result.changed_line_count} linea(s) cambiadas. Gate de costos: ${result.cost_rollup_gate}.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1773,12 +1802,12 @@ function AppShell() {
         token,
         selectedProjectId,
         colombiaApuSearch.trim(),
-        colombiaApuSource,
+        colombiaApuSource
       );
       setColombiaApuSync(syncResult);
       setColombiaApuCatalog(catalog);
       setQuantityMessage(
-        `Base APU Colombia actualizada: ${syncResult.created_count} nueva(s), ${syncResult.updated_count} actualizada(s), ${syncResult.total_count} disponible(s).`,
+        `Base APU Colombia actualizada: ${syncResult.created_count} nueva(s), ${syncResult.updated_count} actualizada(s), ${syncResult.total_count} disponible(s).`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1802,13 +1831,13 @@ function AppShell() {
         token,
         selectedProjectId,
         colombiaApuSearch.trim(),
-        colombiaApuSource,
+        colombiaApuSource
       );
       setColombiaApuCatalog(catalog);
       setQuantityMessage(
         colombiaApuSearch.trim()
           ? `Consulta APU: ${catalog.length} resultado(s) para "${colombiaApuSearch.trim()}".`
-          : `Consulta APU: ${catalog.length} registro(s) visibles.`,
+          : `Consulta APU: ${catalog.length} registro(s) visibles.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1876,7 +1905,7 @@ function AppShell() {
       setQuantityMessage(
         suggestions.length
           ? `APU Colombia sugirio ${suggestions.length} partida(s). Revisa alcance, AIU, region y vigencia antes de aprobar presupuesto.`
-          : "No se encontro una partida APU con coincidencia suficiente para esas cantidades.",
+          : "No se encontro una partida APU con coincidencia suficiente para esas cantidades."
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1911,7 +1940,7 @@ function AppShell() {
       const updatedById = new Map(updatedLines.map((line) => [line.id, line]));
       setQuantityTakeoffLines((current) => current.map((line) => updatedById.get(line.id) ?? line));
       setQuantityMessage(
-        `${updatedLines.length} linea(s) aprobadas en grupos APU. Ya estan disponibles en Presupuesto BIM.`,
+        `${updatedLines.length} linea(s) aprobadas en grupos APU. Ya estan disponibles en Presupuesto BIM.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1939,12 +1968,12 @@ function AppShell() {
         token,
         selectedProjectId,
         claimsAuditMode,
-        claimsAuditFiles,
+        claimsAuditFiles
       );
       setClaimsAuditResult(result);
       await refreshDashboard(selectedProjectId);
       setClaimsAuditMessage(
-        `${result.created_claims.length} claim(s), ${result.created_entitlement_items.length} punto(s) de entitlement y ${result.created_impact_analyses.length} impacto(s) creados.`,
+        `${result.created_claims.length} claim(s), ${result.created_entitlement_items.length} punto(s) de entitlement y ${result.created_impact_analyses.length} impacto(s) creados.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -1972,11 +2001,11 @@ function AppShell() {
         token,
         selectedProjectId,
         windowAnalysisThreshold,
-        windowAnalysisFiles,
+        windowAnalysisFiles
       );
       setWindowAnalysisResult(result);
       setWindowAnalysisMessage(
-        `${result.windows.length} ventana(s), ${result.summary.total_critical_delay_days ?? 0} dia(s) de impacto critico neto.`,
+        `${result.windows.length} ventana(s), ${result.summary.total_critical_delay_days ?? 0} dia(s) de impacto critico neto.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -2003,7 +2032,9 @@ function AppShell() {
       const updatedLines = await projectsApi.approveControlledMeasurements(token, selectedProjectId, run.id, payload);
       const updatedById = new Map(updatedLines.map((line) => [line.id, line]));
       setQuantityTakeoffLines((current) => current.map((line) => updatedById.get(line.id) ?? line));
-      setQuantityMessage(`Medicion controlada aprobada para ${updatedLines.length} linea(s). Regla: ${payload.measurement_rule}.`);
+      setQuantityMessage(
+        `Medicion controlada aprobada para ${updatedLines.length} linea(s). Regla: ${payload.measurement_rule}.`
+      );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
         logout();
@@ -2023,7 +2054,7 @@ function AppShell() {
       setQuantityError(
         run && bimModelRuns.length
           ? "Vincula la corrida de cantidades a la revision IFC correcta antes de calcular la geometria."
-          : "Carga el modelo IFC y su tabla de cantidades antes de calcular la geometria masiva.",
+          : "Carga el modelo IFC y su tabla de cantidades antes de calcular la geometria masiva."
       );
       return;
     }
@@ -2047,13 +2078,13 @@ function AppShell() {
         setQuantityMessage(
           result.applied_count
             ? `${result.applied_count} medicion(es) geometricas aprobadas y versionadas. Las cantidades validas se conservaron.`
-            : "No habia mediciones geometricas listas para aprobar.",
+            : "No habia mediciones geometricas listas para aprobar."
         );
       } else {
         setQuantityMessage(
           `Calculo geometrico terminado: ${result.ready_count} lista(s), ${result.compare_count} para comparar y ${
             result.unmatched_count + result.invalid_count
-          } sin resultado.`,
+          } sin resultado.`
         );
       }
     } catch (err) {
@@ -2110,7 +2141,7 @@ function AppShell() {
       setQuantityTakeoffLines((current) => current.map((line) => updatedById.get(line.id) ?? line));
       setQuantityTakeoffRuns(updatedRuns);
       setQuantityMessage(
-        `Codigos de control asignados a ${updatedLines.length} linea(s): ${payload.wbs_code} / ${payload.cbs_code} / ${payload.fbs_code} / ${payload.package_code}.`,
+        `Codigos de control asignados a ${updatedLines.length} linea(s): ${payload.wbs_code} / ${payload.cbs_code} / ${payload.fbs_code} / ${payload.package_code}.`
       );
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
@@ -2143,7 +2174,7 @@ function AppShell() {
       setUsers((current) =>
         current.some((item) => item.id === created.id)
           ? current.map((item) => (item.id === created.id ? created : item))
-          : [...current, created],
+          : [...current, created]
       );
       setSelectedIamUserId(String(created.id));
       setManagedUserDraft(managedDraftForUser(created));
@@ -2301,8 +2332,8 @@ function AppShell() {
       await refreshIntegratedControl(selectedProjectId);
       setWbsCatalog((current) =>
         [...current.filter((item) => item.id !== created.id), created].sort((left, right) =>
-          left.code.localeCompare(right.code),
-        ),
+          left.code.localeCompare(right.code)
+        )
       );
       setPriorityDraft((current) => ({ ...current, wbs_id: current.wbs_id || String(created.id) }));
       setWbsDraft((current) => ({
@@ -2378,7 +2409,13 @@ function AppShell() {
       await refreshIntegratedControl(selectedProjectId);
       setPriorityDraft((current) => ({ ...current, cbs_id: String(created.id) }));
       setRateDraft((current) => ({ ...current, cbs_code: created.code }));
-      setCbsDraft({ code: "", level: "3", cost_category: created.cost_category || "", description: "", status: "active" });
+      setCbsDraft({
+        code: "",
+        level: "3",
+        cost_category: created.cost_category || "",
+        description: "",
+        status: "active",
+      });
       setIntegratedMessage(`CBS ${created.code} created.`);
     } catch (err) {
       setIntegratedError(err instanceof Error ? err.message : "Could not create CBS");
@@ -2393,7 +2430,9 @@ function AppShell() {
     setIntegratedError(null);
     setIntegratedMessage(null);
     try {
-      const selectedAccount = activeControlAccounts.find((account) => account.id === Number(priorityDraft.control_account_id));
+      const selectedAccount = activeControlAccounts.find(
+        (account) => account.id === Number(priorityDraft.control_account_id)
+      );
       const wbsId = Number(priorityDraft.wbs_id || selectedAccount?.wbs_id || 0);
       const payload = {
         title: kind === "fund" ? "CBS + Fund Code allocation" : "CBS + WBS Code transaction",
@@ -2451,7 +2490,12 @@ function AppShell() {
       });
       await refreshDashboard(selectedProjectId);
       await refreshIntegratedControl(selectedProjectId);
-      setSovDraft((current) => ({ ...current, line_no: String(Number(current.line_no || 0) + 10), description: "", amount: "" }));
+      setSovDraft((current) => ({
+        ...current,
+        line_no: String(Number(current.line_no || 0) + 10),
+        description: "",
+        amount: "",
+      }));
       setIntegratedMessage(`SOV ${sovLine.line_no} funded.`);
     } catch (err) {
       setIntegratedError(err instanceof Error ? err.message : "Could not create SOV funding");
@@ -2505,7 +2549,9 @@ function AppShell() {
         status: "active",
       });
       await refreshIntegratedControl(selectedProjectId);
-      setIntegratedMessage(`${policy.process_code} ${policy.action} policy saved for ${policy.required_role || "permission key"}.`);
+      setIntegratedMessage(
+        `${policy.process_code} ${policy.action} policy saved for ${policy.required_role || "permission key"}.`
+      );
     } catch (err) {
       setIntegratedError(err instanceof Error ? err.message : "Could not save business process policy");
     } finally {
@@ -2539,13 +2585,18 @@ function AppShell() {
     setIntegratedError(null);
     setIntegratedMessage(null);
     try {
-      const updated = await integratedControlApi.updateBusinessProcessLineItem(token, selectedProjectId, selectedLine.id, {
-        amount: Number(lineEditDraft.amount),
-        quantity: Number(lineEditDraft.quantity || 0),
-        description: lineEditDraft.description,
-        change_note: lineEditDraft.change_note,
-        expected_version: selectedLine.version,
-      });
+      const updated = await integratedControlApi.updateBusinessProcessLineItem(
+        token,
+        selectedProjectId,
+        selectedLine.id,
+        {
+          amount: Number(lineEditDraft.amount),
+          quantity: Number(lineEditDraft.quantity || 0),
+          description: lineEditDraft.description,
+          change_note: lineEditDraft.change_note,
+          expected_version: selectedLine.version,
+        }
+      );
       await refreshDashboard(selectedProjectId);
       await refreshIntegratedControl(selectedProjectId);
       await refreshProcessLineItems(selectedProjectId, updated.process_instance_id, updated.id);
@@ -2622,7 +2673,12 @@ function AppShell() {
     setIntegratedError(null);
     setIntegratedMessage(null);
     try {
-      const result = await integratedControlApi.recostActivitySheet(token, selectedProjectId, activitySheets[0].id, rateSheets[0].id);
+      const result = await integratedControlApi.recostActivitySheet(
+        token,
+        selectedProjectId,
+        activitySheets[0].id,
+        rateSheets[0].id
+      );
       const [wbsRows, detailRows] = await Promise.all([
         projectsApi.activitySheetWbsRows(token, selectedProjectId, activitySheets[0].id),
         projectsApi.activitySheetRows(token, selectedProjectId, activitySheets[0].id),
@@ -2718,11 +2774,11 @@ function AppShell() {
   }, [dashboard?.work_package_constraints]);
   const workPackageTree = useMemo(
     () => buildWorkPackageTree(dashboard?.work_packages ?? []),
-    [dashboard?.work_packages],
+    [dashboard?.work_packages]
   );
   const workPackagePocRoute = useMemo(
     () => sortWorkPackages(dashboard?.work_packages ?? []).filter(isPathOfConstructionStep),
-    [dashboard?.work_packages],
+    [dashboard?.work_packages]
   );
   const evmDataDate = dashboard?.schedule_import?.data_date ?? activitySheets[0]?.data_date ?? null;
   const baselineOnlyEvm =
@@ -2736,14 +2792,20 @@ function AppShell() {
             baselineOnly: baselineOnlyEvm,
           })
         : null,
-    [activitySheetRows, baselineOnlyEvm, dashboard, evmDataDate],
+    [activitySheetRows, baselineOnlyEvm, dashboard, evmDataDate]
   );
 
   const evmCurveData = useMemo(() => {
     if (!dashboard) return [];
-    const currentEvm = deriveProjectEvm(dashboard.project_kpi, dashboard.cost_sheet ?? [], activitySheetRows, evmDataDate, {
-      baselineOnly: baselineOnlyEvm,
-    });
+    const currentEvm = deriveProjectEvm(
+      dashboard.project_kpi,
+      dashboard.cost_sheet ?? [],
+      activitySheetRows,
+      evmDataDate,
+      {
+        baselineOnly: baselineOnlyEvm,
+      }
+    );
     return buildCumulativeEvmCurve(dashboard.control_snapshots ?? [], currentEvm, activitySheetRows, evmDataDate, {
       baselineOnly: baselineOnlyEvm,
     });
@@ -2807,18 +2869,21 @@ function AppShell() {
   const canLoadQuantities = canConfigure || canCaptureCost;
   const activeImport = dashboard.schedule_import;
   const scheduleQualityMetrics = dashboard.schedule_quality_metrics ?? [];
-  const nextActionStep = guidedFlow?.steps.find((step) => step.key === guidedFlow.next_action.key) ?? guidedFlow?.steps[0];
+  const nextActionStep =
+    guidedFlow?.steps.find((step) => step.key === guidedFlow.next_action.key) ?? guidedFlow?.steps[0];
   const cbsCostLines = dashboard.cost_sheet ?? [];
   const fbsFundingSources = dashboard.funding_sources ?? [];
   const contractRows = dashboard.contracts ?? [];
   const activeControlAccounts = controlAccounts.filter(isActiveControlAccount);
-  const selectedControlAccount = activeControlAccounts.find((account) => account.id === Number(priorityDraft.control_account_id));
+  const selectedControlAccount = activeControlAccounts.find(
+    (account) => account.id === Number(priorityDraft.control_account_id)
+  );
   const selectedWbsForAccount = selectedControlAccount
     ? wbsCatalog.find((wbs) => wbs.id === selectedControlAccount.wbs_id)
     : undefined;
   const selectedCbs = cbsCatalog.find((cbs) => cbs.id === Number(priorityDraft.cbs_id));
   const rateCbsOptions = Array.from(
-    new Set([...cbsCatalog.map((cbs) => cbs.code), ...activitySheetRows.map((row) => row.cbs_code).filter(Boolean)]),
+    new Set([...cbsCatalog.map((cbs) => cbs.code), ...activitySheetRows.map((row) => row.cbs_code).filter(Boolean)])
   );
   const latestActivitySheet = activitySheets[0];
   const latestQuantityTakeoff = quantityTakeoffRuns[0];
@@ -2831,11 +2896,14 @@ function AppShell() {
       : "";
   const quantityRuleValidCount = bimQuantityRules.filter((rule) => rule.status === "valid").length;
   const quantityRuleBlockedCount = bimQuantityRules.filter((rule) => rule.status === "blocked").length;
-  const quantityRuleReviewCount = Math.max(bimQuantityRules.length - quantityRuleValidCount - quantityRuleBlockedCount, 0);
+  const quantityRuleReviewCount = Math.max(
+    bimQuantityRules.length - quantityRuleValidCount - quantityRuleBlockedCount,
+    0
+  );
   const hasRenderableIfcGeometry = Boolean(
     latestBimModel &&
-      latestBimModel.element_count > 0 &&
-      !["failed", "geometry_failed", "error"].includes(latestBimModel.status.toLowerCase()),
+    latestBimModel.element_count > 0 &&
+    !["failed", "geometry_failed", "error"].includes(latestBimModel.status.toLowerCase())
   );
   const reconciliationRows = reconciliationReport?.rows ?? [];
   const latestAgentRun = controlAgentRuns[0];
@@ -2843,8 +2911,12 @@ function AppShell() {
   const selectedLineItem = bpLineItems.find((line) => String(line.id) === lineEditDraft.line_item_id);
   const policyRoleOptions = roles.length ? roles.map((role) => role.role) : ["Control Manager"];
   const canRunPriority =
-    Boolean(priorityDraft.cbs_id && priorityDraft.funding_source_id && priorityDraft.control_account_id && priorityDraft.amount) &&
-    Number(priorityDraft.amount) > 0;
+    Boolean(
+      priorityDraft.cbs_id &&
+      priorityDraft.funding_source_id &&
+      priorityDraft.control_account_id &&
+      priorityDraft.amount
+    ) && Number(priorityDraft.amount) > 0;
   const totalFunding = fbsFundingSources.reduce((total, source) => total + source.amount, 0);
   const quantityNeedsMapping = quantityTakeoffLines.filter((line) => line.mapping_status !== "mapped").length;
   const latestBimIdentity = latestBimModel?.model_identity ?? {};
@@ -2860,10 +2932,14 @@ function AppShell() {
     ]
       .filter(Boolean)
       .join(" / ");
-  const quantityElementCount = new Set(quantityTakeoffLines.map((line) => line.element_guid || line.element_id).filter(Boolean)).size;
-  const quantityClassCount = new Set(quantityTakeoffLines.map((line) => line.ifc_class || line.category).filter(Boolean)).size;
+  const quantityElementCount = new Set(
+    quantityTakeoffLines.map((line) => line.element_guid || line.element_id).filter(Boolean)
+  ).size;
+  const quantityClassCount = new Set(
+    quantityTakeoffLines.map((line) => line.ifc_class || line.category).filter(Boolean)
+  ).size;
   const quantityRuleSummary = Array.from(
-    new Set(quantityTakeoffLines.map((line) => line.measurement_rule).filter(Boolean)),
+    new Set(quantityTakeoffLines.map((line) => line.measurement_rule).filter(Boolean))
   )
     .slice(0, 4)
     .join(" / ");
@@ -2873,10 +2949,10 @@ function AppShell() {
       : latestBimModel
         ? "Modelo IFC registrado"
         : latestQuantityTakeoff?.source_type === "ifc"
-      ? "IFC Quantity Sets"
-      : latestQuantityTakeoff
-        ? "Spreadsheet quantity columns"
-        : "Waiting for source";
+          ? "IFC Quantity Sets"
+          : latestQuantityTakeoff
+            ? "Spreadsheet quantity columns"
+            : "Waiting for source";
   const bimBudgetSummary = buildBimBudget(quantityTakeoffLines, project.currency);
   const setupReadyForActivityLoad = operationalSetup?.readiness_status === "ready" || isSetupDraftReady(setupDraft);
   const displayWbsCatalog =
@@ -2894,7 +2970,7 @@ function AppShell() {
       .map((candidate) => candidate.code);
     const childActivityCount = childCodes.reduce(
       (total, code) => total + (backendActivityWbsByCode.get(code)?.activity_count ?? 0),
-      0,
+      0
     );
     return childActivityCount > 0 && row.activity_count >= childActivityCount;
   });
@@ -2905,7 +2981,7 @@ function AppShell() {
     .map(({ node, depth }) => ({ depth, node, row: activityWbsByCode.get(node.code) }))
     .filter((item): item is { depth: number; node: WbsTreeNode; row: ActivitySheetWbsRow } => Boolean(item.row));
   const activitySheetUnmatchedRows = activitySheetWbsRows.filter(
-    (row) => !displayWbsCatalog.some((node) => node.code === row.wbs_code),
+    (row) => !displayWbsCatalog.some((node) => node.code === row.wbs_code)
   );
   const activitySheetTotalRows =
     primaryWbsTree.length > 0
@@ -2914,7 +2990,7 @@ function AppShell() {
   const activitySheetPlannedCost = activitySheetTotalRows.reduce((total, row) => total + (row?.planned_cost ?? 0), 0);
   const activitySheetNeedsReview = activitySheetTotalRows.reduce(
     (total, row) => total + (row?.needs_review_count ?? 0),
-    0,
+    0
   );
   const wbsTraceabilityRows = buildWbsTraceabilityRows(
     project,
@@ -2924,13 +3000,13 @@ function AppShell() {
     integratedMatrix,
     cbsCatalog,
     costCodes,
-    fbsFundingSources,
+    fbsFundingSources
   );
   const costFundingTraceabilityRows = buildCostFundingTraceabilityRows(
     wbsTraceabilityRows,
     cbsCostLines,
     fbsFundingSources,
-    baselineOnlyEvm,
+    baselineOnlyEvm
   );
   const opcGapAnalysis = buildOpcGapAnalysis({
     activitySheetRowCount: activitySheetRows.length,
@@ -2967,7 +3043,11 @@ function AppShell() {
   });
   const evmSummaryCards = [
     { label: "PV", value: currency(projectEvm.pv, project.currency), detail: "Valor planeado a la fecha de corte" },
-    { label: "EV", value: currency(projectEvm.ev, project.currency), detail: "Valor ganado por avance fisico aprobado" },
+    {
+      label: "EV",
+      value: currency(projectEvm.ev, project.currency),
+      detail: "Valor ganado por avance fisico aprobado",
+    },
     { label: "AC", value: currency(projectEvm.ac, project.currency), detail: "Costo real certificado o incurrido" },
     { label: "SPI", value: spiLabel, detail: "EV / PV", risk: projectEvm.spi !== null && projectEvm.spi < 0.95 },
     { label: "CPI", value: cpiLabel, detail: "EV / AC", risk: projectEvm.cpi !== null && projectEvm.cpi < 0.95 },
@@ -3057,9 +3137,7 @@ function AppShell() {
     {
       key: "window-analysis-37",
       label: "Ventanas 3.7",
-      count: windowAnalysisResult
-        ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias`
-        : "open",
+      count: windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
     },
   ];
   const visibleControlFlowItems = FRONTEND_VALIDATION_MODE ? validationControlFlowItems : controlFlowItems;
@@ -3072,7 +3150,8 @@ function AppShell() {
     },
     "apu-catalog": {
       action: "Actualizar la base gratuita y revisar partidas antes de usarlas como sugerencias de presupuesto.",
-      objective: "Mantener visible la base APU Colombia que conecta cantidades BIM con partida, unidad y precio unitario.",
+      objective:
+        "Mantener visible la base APU Colombia que conecta cantidades BIM con partida, unidad y precio unitario.",
       state: colombiaApuCatalog.length ? `${colombiaApuCatalog.length} partida(s)` : "Sin sincronizar",
       title: "Base APU Colombia",
     },
@@ -3083,7 +3162,8 @@ function AppShell() {
       title: "Reclamaciones y Auditoria Forense",
     },
     "window-analysis-37": {
-      action: "Cargar dos o mas actualizaciones XER/XML ordenadas por fecha de corte y revisar las ventanas con impacto.",
+      action:
+        "Cargar dos o mas actualizaciones XER/XML ordenadas por fecha de corte y revisar las ventanas con impacto.",
       objective: "Identificar deslizamientos CPM entre bases multiples bajo el enfoque AACE RP29R MIP 3.7.",
       state: windowAnalysisResult
         ? `${windowAnalysisResult.windows.length} ventana(s) / ${windowAnalysisResult.summary.net_delay_days ?? 0} dia(s) netos`
@@ -3094,7 +3174,8 @@ function AppShell() {
       action: bimBudgetSummary.rows.length
         ? "Revisar partidas, unidades, duplicados y trazabilidad antes de exportar el presupuesto."
         : "Asignar partida APU y precio unitario desde Cantidades BIM.",
-      objective: "Consolidar cantidades IFC en partidas presupuestales trazables a WBS, CBS, FBS y elementos del modelo.",
+      objective:
+        "Consolidar cantidades IFC en partidas presupuestales trazables a WBS, CBS, FBS y elementos del modelo.",
       state: `${bimBudgetSummary.rows.length} partida(s) / ${
         bimBudgetSummary.gate === "ready" ? "listo" : bimBudgetSummary.gate === "review" ? "pendiente" : "bloqueado"
       }`,
@@ -3119,7 +3200,9 @@ function AppShell() {
       title: "Dashboard",
     },
     "opc-gap": {
-      action: opcGapAnalysis.nextActions[0] ?? "Mantener el flujo BIM -> APU -> presupuesto -> EVM trazable antes de operar paquetes.",
+      action:
+        opcGapAnalysis.nextActions[0] ??
+        "Mantener el flujo BIM -> APU -> presupuesto -> EVM trazable antes de operar paquetes.",
       objective: "Evaluar la madurez del flujo de planificacion, BIM, costos, EVM y AWP con datos reales del proyecto.",
       state: `${opcGapAnalysis.readinessScore}% readiness / ${opcGapAnalysis.criticalGapCount} P1 gap(s)`,
       title: "Diagnóstico de Control",
@@ -3156,7 +3239,8 @@ function AppShell() {
     },
     "quantity-takeoff": {
       action: "Load prepared IFC quantity exports or Excel/CSV takeoff, then map WBS, CBS, FBS and packages.",
-      objective: "Convert BIM/Excel data into controlled physical quantity items with source evidence before package assignment.",
+      objective:
+        "Convert BIM/Excel data into controlled physical quantity items with source evidence before package assignment.",
       state: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} quantity line(s)` : "Waiting for takeoff",
       title: "Cantidades BIM",
     },
@@ -3169,7 +3253,9 @@ function AppShell() {
     "schedule-control": {
       action: "Review WBS, baseline activities, CPM, progress, delays, lookahead constraints and recovery actions.",
       objective: "Use the imported P6 XML/XER data as the planning backbone: WBS, baseline, CPM, updates and recovery.",
-      state: dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} imported activities` : "Waiting for schedule",
+      state: dashboard.schedule_activity_count
+        ? `${dashboard.schedule_activity_count} imported activities`
+        : "Waiting for schedule",
       title: "Planning Module",
     },
     setup: {
@@ -3186,7 +3272,7 @@ function AppShell() {
     },
   } satisfies Record<ControlFlowView, { action: string; objective: string; state: string; title: string }>;
   const formallyLinkedControlRows = wbsTraceabilityRows.filter(
-    (row) => row.costCode !== "Cost code pending" && row.fbsCode !== "FBS pending",
+    (row) => row.costCode !== "Cost code pending" && row.fbsCode !== "FBS pending"
   ).length;
   const informationFlowSteps: Array<{
     detail: string;
@@ -3309,7 +3395,10 @@ function AppShell() {
         onSubmit={handleProjectCreate}
       />
 
-      <section className={guidedFlow ? "projectWorkspace guidedWorkspace" : "projectWorkspace"} aria-label="Project workspace and control flow">
+      <section
+        className={guidedFlow ? "projectWorkspace guidedWorkspace" : "projectWorkspace"}
+        aria-label="Project workspace and control flow"
+      >
         <aside className="projectWorkspaceRail">
           {guidedFlow ? (
             <>
@@ -3359,7 +3448,9 @@ function AppShell() {
                         {
                           key: "schedule-control" as ControlFlowView,
                           label: "Planning",
-                          count: dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
+                          count: dashboard.schedule_activity_count
+                            ? `${dashboard.schedule_activity_count} activities`
+                            : "open",
                         },
                         {
                           key: "quantity-takeoff" as ControlFlowView,
@@ -3378,7 +3469,11 @@ function AppShell() {
                         },
                         { key: "costs" as ControlFlowView, label: "Costs", count: dashboard.cost_sheet.length },
                         { key: "decisions" as ControlFlowView, label: "Decisions", count: dashboard.changes.length },
-                        { key: "admin" as ControlFlowView, label: "Users & Roles", count: dashboard.project_team.length },
+                        {
+                          key: "admin" as ControlFlowView,
+                          label: "Users & Roles",
+                          count: dashboard.project_team.length,
+                        },
                       ].map((item) => (
                         <button
                           aria-current={visibleControlView === item.key ? "page" : undefined}
@@ -3482,203 +3577,203 @@ function AppShell() {
           )}
 
           {!guidedFlow && (
-          <section className="adminPanel projectCreatePanel" aria-label="Project">
-            <div className="panelHeader">
-              <h2>
-                <Building2 size={18} /> Project
-              </h2>
-              {!guidedFlow && (
+            <section className="adminPanel projectCreatePanel" aria-label="Project">
+              <div className="panelHeader">
+                <h2>
+                  <Building2 size={18} /> Project
+                </h2>
+                {!guidedFlow && (
+                  <button
+                    className="quickNavButton"
+                    disabled={!canConfigure}
+                    onClick={() => setShowProjectCreate((current) => !current)}
+                    type="button"
+                  >
+                    {showProjectCreate ? "Close" : "New Project"}
+                  </button>
+                )}
+              </div>
+              <div className="projectCurrentProject">
+                <span>Selected project</span>
+                <strong>{project.code}</strong>
+                <small>{projectList.length} projects available</small>
                 <button
-                  className="quickNavButton"
-                  disabled={!canConfigure}
-                  onClick={() => setShowProjectCreate((current) => !current)}
+                  className="workflowAction subtleDanger"
+                  disabled={!canConfigure || projectDeleteAction}
+                  onClick={handleProjectDelete}
                   type="button"
                 >
-                  {showProjectCreate ? "Close" : "New Project"}
+                  <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
                 </button>
-              )}
-            </div>
-            <div className="projectCurrentProject">
-              <span>Selected project</span>
-              <strong>{project.code}</strong>
-              <small>{projectList.length} projects available</small>
-              <button
-                className="workflowAction subtleDanger"
-                disabled={!canConfigure || projectDeleteAction}
-                onClick={handleProjectDelete}
-                type="button"
-              >
-                <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
-              </button>
-            </div>
+              </div>
 
-            {!guidedFlow && showProjectCreate ? (
-              <form className="projectCreateForm" onSubmit={handleProjectCreate}>
-                <div className="formColumns">
+              {!guidedFlow && showProjectCreate ? (
+                <form className="projectCreateForm" onSubmit={handleProjectCreate}>
+                  <div className="formColumns">
+                    <label>
+                      <span>Code</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
+                        placeholder="PRJ-001"
+                        required
+                        value={projectDraft.code}
+                      />
+                    </label>
+                    <label>
+                      <span>Phase</span>
+                      <select
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) => setProjectDraft((current) => ({ ...current, phase: event.target.value }))}
+                        value={projectDraft.phase}
+                      >
+                        <option value="Planning">Planning</option>
+                        <option value="Execution">Execution</option>
+                        <option value="Closeout">Closeout</option>
+                      </select>
+                    </label>
+                  </div>
                   <label>
-                    <span>Code</span>
+                    <span>Name</span>
                     <input
                       disabled={!canConfigure || projectAction}
-                      onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
-                      placeholder="PRJ-001"
+                      onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
+                      placeholder="Project control name"
                       required
-                      value={projectDraft.code}
+                      value={projectDraft.name}
                     />
                   </label>
-                  <label>
-                    <span>Phase</span>
-                    <select
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) => setProjectDraft((current) => ({ ...current, phase: event.target.value }))}
-                      value={projectDraft.phase}
-                    >
-                      <option value="Planning">Planning</option>
-                      <option value="Execution">Execution</option>
-                      <option value="Closeout">Closeout</option>
-                    </select>
-                  </label>
-                </div>
-                <label>
-                  <span>Name</span>
-                  <input
-                    disabled={!canConfigure || projectAction}
-                    onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
-                    placeholder="Project control name"
-                    required
-                    value={projectDraft.name}
-                  />
-                </label>
-                <div className="formColumns">
-                  <label>
-                    <span>Owner</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) => setProjectDraft((current) => ({ ...current, owner: event.target.value }))}
-                      value={projectDraft.owner}
-                    />
-                  </label>
-                  <label>
-                    <span>Base Calendar</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, calendar_base: event.target.value }))
-                      }
-                      value={projectDraft.calendar_base}
-                    />
-                  </label>
-                </div>
-                <div className="formColumns">
-                  <label>
-                    <span>Status</span>
-                    <select
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) => setProjectDraft((current) => ({ ...current, status: event.target.value }))}
-                      value={projectDraft.status}
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="authorized">Authorized</option>
-                      <option value="baseline_approved">Baseline Approved</option>
-                      <option value="in_execution">In Execution</option>
-                      <option value="closed">Closed</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>Authorization Reference</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, authorization_ref: event.target.value }))
-                      }
-                      value={projectDraft.authorization_ref}
-                    />
-                  </label>
-                  <label>
-                    <span>Authorization Date</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, authorization_date: event.target.value }))
-                      }
-                      type="date"
-                      value={projectDraft.authorization_date}
-                    />
-                  </label>
-                </div>
-                <div className="formColumns">
-                  <label>
-                    <span>Currency</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      maxLength={3}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
-                      }
-                      value={projectDraft.currency}
-                    />
-                  </label>
-                  <label>
-                    <span>Start</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
-                      }
-                      type="date"
-                      value={projectDraft.start_date}
-                    />
-                  </label>
-                  <label>
-                    <span>Finish</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
-                      }
-                      type="date"
-                      value={projectDraft.finish_date}
-                    />
-                  </label>
-                </div>
-                <div className="formColumns">
-                  <label>
-                    <span>Control Level</span>
-                    <select
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, control_level: event.target.value }))
-                      }
-                      value={projectDraft.control_level}
-                    >
-                      <option value="control_account">Control Account</option>
-                      <option value="cost_code">Cost Code</option>
-                      <option value="awp_package">AWP Package</option>
-                    </select>
-                  </label>
-                  <label className="checkboxLine">
-                    <input
-                      checked={projectDraft.funding_required}
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) =>
-                        setProjectDraft((current) => ({ ...current, funding_required: event.target.checked }))
-                      }
-                      type="checkbox"
-                    />
-                    <span>Funding Required</span>
-                  </label>
-                </div>
-                <button className="workflowAction primary" disabled={!canConfigure || projectAction} type="submit">
-                  {projectAction ? "Creating..." : "Create Project"}
-                </button>
-              </form>
-            ) : (
-              <p className="projectHint">
-                The selected project dashboard is open. Create a project only when onboarding a new project.
-              </p>
-            )}
-            {projectMessage && <div className="uploadMessage success">{projectMessage}</div>}
-            {projectError && <div className="uploadMessage error">{projectError}</div>}
-          </section>
+                  <div className="formColumns">
+                    <label>
+                      <span>Owner</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) => setProjectDraft((current) => ({ ...current, owner: event.target.value }))}
+                        value={projectDraft.owner}
+                      />
+                    </label>
+                    <label>
+                      <span>Base Calendar</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, calendar_base: event.target.value }))
+                        }
+                        value={projectDraft.calendar_base}
+                      />
+                    </label>
+                  </div>
+                  <div className="formColumns">
+                    <label>
+                      <span>Status</span>
+                      <select
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) => setProjectDraft((current) => ({ ...current, status: event.target.value }))}
+                        value={projectDraft.status}
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="authorized">Authorized</option>
+                        <option value="baseline_approved">Baseline Approved</option>
+                        <option value="in_execution">In Execution</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Authorization Reference</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, authorization_ref: event.target.value }))
+                        }
+                        value={projectDraft.authorization_ref}
+                      />
+                    </label>
+                    <label>
+                      <span>Authorization Date</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, authorization_date: event.target.value }))
+                        }
+                        type="date"
+                        value={projectDraft.authorization_date}
+                      />
+                    </label>
+                  </div>
+                  <div className="formColumns">
+                    <label>
+                      <span>Currency</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        maxLength={3}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
+                        }
+                        value={projectDraft.currency}
+                      />
+                    </label>
+                    <label>
+                      <span>Start</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
+                        }
+                        type="date"
+                        value={projectDraft.start_date}
+                      />
+                    </label>
+                    <label>
+                      <span>Finish</span>
+                      <input
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
+                        }
+                        type="date"
+                        value={projectDraft.finish_date}
+                      />
+                    </label>
+                  </div>
+                  <div className="formColumns">
+                    <label>
+                      <span>Control Level</span>
+                      <select
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, control_level: event.target.value }))
+                        }
+                        value={projectDraft.control_level}
+                      >
+                        <option value="control_account">Control Account</option>
+                        <option value="cost_code">Cost Code</option>
+                        <option value="awp_package">AWP Package</option>
+                      </select>
+                    </label>
+                    <label className="checkboxLine">
+                      <input
+                        checked={projectDraft.funding_required}
+                        disabled={!canConfigure || projectAction}
+                        onChange={(event) =>
+                          setProjectDraft((current) => ({ ...current, funding_required: event.target.checked }))
+                        }
+                        type="checkbox"
+                      />
+                      <span>Funding Required</span>
+                    </label>
+                  </div>
+                  <button className="workflowAction primary" disabled={!canConfigure || projectAction} type="submit">
+                    {projectAction ? "Creating..." : "Create Project"}
+                  </button>
+                </form>
+              ) : (
+                <p className="projectHint">
+                  The selected project dashboard is open. Create a project only when onboarding a new project.
+                </p>
+              )}
+              {projectMessage && <div className="uploadMessage success">{projectMessage}</div>}
+              {projectError && <div className="uploadMessage error">{projectError}</div>}
+            </section>
           )}
         </aside>
 
@@ -3722,7 +3817,9 @@ function AppShell() {
                 {informationFlowSteps.map((step, index) => (
                   <button
                     aria-label={`${index + 1} ${step.label}`}
-                    className={visibleControlView === step.targetView ? "informationFlowStep active" : "informationFlowStep"}
+                    className={
+                      visibleControlView === step.targetView ? "informationFlowStep active" : "informationFlowStep"
+                    }
                     key={step.label}
                     onClick={() => handleControlFlowNavigate(step.targetView)}
                     type="button"
@@ -3764,100 +3861,589 @@ function AppShell() {
           </section>
 
           <section aria-live="polite" className="viewPanel workspaceSection" id="control-flow-content">
-          {visibleControlView === "opc-gap" && <OpcGapReadinessPanel analysis={opcGapAnalysis} />}
+            {visibleControlView === "opc-gap" && <OpcGapReadinessPanel analysis={opcGapAnalysis} />}
 
-          {visibleControlView === "schedule-intake" && (
-            <section className="scheduleGate scheduleIntakeModule" aria-label="Schedule Intake">
-              <div className="gateHeader">
-                <div className="gateIntro">
-                  <GitBranch size={20} />
-                  <div>
-                    <strong>Schedule Intake</strong>
-                    <span>Upload the source XML/XER to open the Data Quality Gate and baseline workflow.</span>
+            {visibleControlView === "schedule-intake" && (
+              <section className="scheduleGate scheduleIntakeModule" aria-label="Schedule Intake">
+                <div className="gateHeader">
+                  <div className="gateIntro">
+                    <GitBranch size={20} />
+                    <div>
+                      <strong>Schedule Intake</strong>
+                      <span>Upload the source XML/XER to open the Data Quality Gate and baseline workflow.</span>
+                    </div>
                   </div>
-                </div>
-                <label className={uploading ? "uploadButton disabled" : "uploadButton"}>
-                  <FileUp size={18} />
-                  <span>{uploading ? "Uploading..." : "Schedule XML or XER"}</span>
-                  <input
-                    aria-label="Schedule XML or XER"
-                    accept=".xml,.xer"
-                    disabled={!canUploadSchedule || uploading}
-                    onChange={handleScheduleUpload}
-                    type="file"
-                  />
-                </label>
-              </div>
-              <div className="gateFacts">
-                <div>
-                  <span>Current Baseline</span>
-                  <strong>{activeImport?.baseline_name ?? "Pending upload"}</strong>
-                </div>
-                <div>
-                  <span>Data Quality Gate</span>
-                  <strong>
-                    {activeImport ? `${activeImport.quality_score.toFixed(0)}% / ${activeImport.status}` : "Open"}
-                  </strong>
-                </div>
-                <div>
-                  <span>Data Date</span>
-                  <strong>{activeImport?.data_date ?? "Pending"}</strong>
-                </div>
-                <div>
-                  <span>Activities</span>
-                  <strong>{dashboard.schedule_activity_count}</strong>
-                </div>
-                <div>
-                  <span>Findings</span>
-                  <strong>{dashboard.schedule_findings.length}</strong>
-                </div>
-              </div>
-              <p>
-                The approved baseline feeds Activity Sheet rows, control accounts, AWP packages, progress capture,
-                cost loading and Control Core decisions.
-              </p>
-              <div className="viewSplit">
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>
-                      <FileUp size={18} /> Activity Sheet
-                    </h2>
-                    <span>{activitySheets.length} loads</span>
-                  </div>
-                  <label
-                    className={
-                      activityAction || !setupReadyForActivityLoad
-                        ? "uploadButton disabled"
-                        : "uploadButton"
-                    }
-                  >
+                  <label className={uploading ? "uploadButton disabled" : "uploadButton"}>
+                    <FileUp size={18} />
+                    <span>{uploading ? "Uploading..." : "Schedule XML or XER"}</span>
                     <input
+                      aria-label="Schedule XML or XER"
                       accept=".xml,.xer"
-                      disabled={!canUploadSchedule || activityAction || !setupReadyForActivityLoad}
-                      onChange={handleActivitySheetUpload}
+                      disabled={!canUploadSchedule || uploading}
+                      onChange={handleScheduleUpload}
                       type="file"
                     />
-                    <span>{activityAction ? "Loading..." : "Load XML/XER"}</span>
                   </label>
-                  <div className="workList compactList">
-                    {activitySheets.slice(0, 6).map((sheet) => (
-                      <article key={sheet.id}>
-                        <strong>{sheet.source_file_name}</strong>
-                        <span>
-                          {sheet.row_count} rows / {statusLabel(sheet.status)}
-                        </span>
-                        <small>{sheet.data_date ?? "No data date"}</small>
-                      </article>
-                    ))}
-                    {!activitySheets.length && (
-                      <article>
-                        <strong>No activity loads</strong>
-                        <span>Activity data will appear after controlled load.</span>
-                      </article>
+                </div>
+                <div className="gateFacts">
+                  <div>
+                    <span>Current Baseline</span>
+                    <strong>{activeImport?.baseline_name ?? "Pending upload"}</strong>
+                  </div>
+                  <div>
+                    <span>Data Quality Gate</span>
+                    <strong>
+                      {activeImport ? `${activeImport.quality_score.toFixed(0)}% / ${activeImport.status}` : "Open"}
+                    </strong>
+                  </div>
+                  <div>
+                    <span>Data Date</span>
+                    <strong>{activeImport?.data_date ?? "Pending"}</strong>
+                  </div>
+                  <div>
+                    <span>Activities</span>
+                    <strong>{dashboard.schedule_activity_count}</strong>
+                  </div>
+                  <div>
+                    <span>Findings</span>
+                    <strong>{dashboard.schedule_findings.length}</strong>
+                  </div>
+                </div>
+                <p>
+                  The approved baseline feeds Activity Sheet rows, control accounts, AWP packages, progress capture,
+                  cost loading and Control Core decisions.
+                </p>
+                <div className="viewSplit">
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>
+                        <FileUp size={18} /> Activity Sheet
+                      </h2>
+                      <span>{activitySheets.length} loads</span>
+                    </div>
+                    <label
+                      className={
+                        activityAction || !setupReadyForActivityLoad ? "uploadButton disabled" : "uploadButton"
+                      }
+                    >
+                      <input
+                        accept=".xml,.xer"
+                        disabled={!canUploadSchedule || activityAction || !setupReadyForActivityLoad}
+                        onChange={handleActivitySheetUpload}
+                        type="file"
+                      />
+                      <span>{activityAction ? "Loading..." : "Load XML/XER"}</span>
+                    </label>
+                    <div className="workList compactList">
+                      {activitySheets.slice(0, 6).map((sheet) => (
+                        <article key={sheet.id}>
+                          <strong>{sheet.source_file_name}</strong>
+                          <span>
+                            {sheet.row_count} rows / {statusLabel(sheet.status)}
+                          </span>
+                          <small>{sheet.data_date ?? "No data date"}</small>
+                        </article>
+                      ))}
+                      {!activitySheets.length && (
+                        <article>
+                          <strong>No activity loads</strong>
+                          <span>Activity data will appear after controlled load.</span>
+                        </article>
+                      )}
+                    </div>
+                  </div>
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>WBS Sheet</h2>
+                      <span>
+                        {activitySheetDisplayRows.length || activitySheetWbsRows.length} WBS /{" "}
+                        {currency(activitySheetPlannedCost, project.currency)}
+                      </span>
+                    </div>
+                    {activitySheetDisplayRows.length || activitySheetUnmatchedRows.length ? (
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>WBS</th>
+                            <th>Activities</th>
+                            <th>PV</th>
+                            <th>Review</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            ...activitySheetDisplayRows,
+                            ...activitySheetUnmatchedRows.map((row) => ({ depth: 0, node: null, row })),
+                          ]
+                            .slice(0, 6)
+                            .map(({ depth, node, row }) => (
+                              <tr key={row.wbs_code}>
+                                <td className="wbsNameCell" style={{ paddingLeft: `${12 + depth * 18}px` }}>
+                                  <strong>{node?.name ?? row.wbs_name}</strong>
+                                  <span>{publicWbsCode(node?.code ?? row.wbs_code, project)}</span>
+                                </td>
+                                <td>{row.activity_count}</td>
+                                <td>{currency(row.planned_value, project.currency)}</td>
+                                <td>{row.needs_review_count}</td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="workspaceEmpty compactEmpty">
+                        <strong>WBS Sheet pending</strong>
+                      </div>
                     )}
                   </div>
                 </div>
-                <div className="panel">
+                {uploadMessage && <div className="uploadMessage success">{uploadMessage}</div>}
+                {uploadError && <div className="uploadMessage error">{uploadError}</div>}
+                {setupMessage && <div className="uploadMessage success">{setupMessage}</div>}
+                {setupError && <div className="uploadMessage error">{setupError}</div>}
+                {!canUploadSchedule && (
+                  <div className="uploadMessage error">Only Planner or Control Manager roles can upload baselines.</div>
+                )}
+              </section>
+            )}
+            {visibleControlView === "schedule-control" && (
+              <ProjectControlsHandbook
+                currencyCode={project.currency}
+                key={project.id}
+                projectCode={project.code}
+                projectId={project.id}
+                scheduleActivities={scheduleActivities}
+                scheduleDataDate={dashboard.schedule_import?.data_date ?? null}
+                scheduleRelationships={scheduleRelationships}
+                wbsCatalog={wbsCatalog}
+              />
+            )}
+            {visibleControlView === "process-flow" && (
+              <>
+                <div className="panelHeader">
+                  <h2>BPM Process Flow</h2>
+                  <span>
+                    {processFlowBoard
+                      ? `${statusLabel(processFlowBoard.overall_status)} / ${processFlowBoard.completion_percent.toFixed(1)}%`
+                      : "Loading"}
+                  </span>
+                </div>
+                {processFlowBoard ? (
+                  <div className="processFlowBoard">
+                    {processFlowBoard.lanes.map((lane) => (
+                      <section className="processLane" key={lane.key} aria-label={lane.label}>
+                        <div className="processLaneHeader">
+                          <strong>{lane.label}</strong>
+                          <span>{lane.owner_role}</span>
+                        </div>
+                        <div className="processLaneItems">
+                          {lane.items.map((item) => (
+                            <article
+                              aria-label={`Open ${item.label}`}
+                              className={`processFlowItem ${item.status}`}
+                              key={item.key}
+                              onClick={() => handleControlFlowNavigate(item.target_view as ControlFlowView)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                  event.preventDefault();
+                                  handleControlFlowNavigate(item.target_view as ControlFlowView);
+                                }
+                              }}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <div className="processItemHeader">
+                                <strong>{item.label}</strong>
+                                <span className={`qualityStatus ${processStatusTone(item.status)}`}>
+                                  {statusLabel(item.status)}
+                                </span>
+                              </div>
+                              <p>{item.evidence}</p>
+                              <small>{item.next_action}</small>
+                              <ul>
+                                {item.acceptance_criteria.map((criterion) => (
+                                  <li key={criterion}>{criterion}</li>
+                                ))}
+                              </ul>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="emptyState compactEmpty">
+                    <strong>Process board pending</strong>
+                    <p>The BPM process board will load after the project context is available.</p>
+                  </div>
+                )}
+              </>
+            )}
+            {visibleControlView === "setup" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Project Setup</h2>
+                  <span>{operationalSetup?.readiness_status === "ready" ? "Ready" : "Open"}</span>
+                </div>
+                <section aria-label="WBS Structure" className="panel wide wbsStructurePanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>
+                      <GitBranch size={18} /> WBS Structure
+                    </h2>
+                    <span>{wbsTableRows.length} nodes</span>
+                  </div>
+                  {primaryWbsTree.length ? (
+                    <div aria-label={`WBS tree for ${project.code}`} className="wbsTreeCanvas" role="tree">
+                      {shouldRenderProjectRoot ? (
+                        <div className="wbsProjectTreeRoot">
+                          <article
+                            aria-label={`${project.code} ${project.name}`}
+                            aria-level={1}
+                            className="wbsNodeCard projectRoot"
+                            role="treeitem"
+                          >
+                            <strong>{project.code}</strong>
+                            <span>{project.name}</span>
+                            <small>Project</small>
+                          </article>
+                          <div className="wbsChildren wbsProjectChildren">
+                            {primaryWbsTree.map((node) => (
+                              <WbsTreeBranch
+                                activityByCode={activityWbsByCode}
+                                currencyCode={project.currency}
+                                depth={1}
+                                key={node.id}
+                                node={node}
+                                project={project}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="wbsTreeRoots">
+                          {primaryWbsTree.map((node) => (
+                            <WbsTreeBranch
+                              activityByCode={activityWbsByCode}
+                              currencyCode={project.currency}
+                              depth={0}
+                              key={node.id}
+                              node={node}
+                              project={project}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>No WBS nodes</strong>
+                    </div>
+                  )}
+                  <section aria-label="WBS Table" className="wbsTablePanel">
+                    <div className="panelHeader compactHeader">
+                      <h2>WBS Table</h2>
+                      <span>{wbsTableRows.length} rows</span>
+                    </div>
+                    {wbsTableRows.length ? (
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>WBS</th>
+                            <th>Parent</th>
+                            <th>Level</th>
+                            <th>Status</th>
+                            <th>Activities</th>
+                            <th>Planned</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {wbsTableRows.map(({ node, depth }) => {
+                            const parent = node.parent_id
+                              ? wbsTableRows.find((item) => item.node.id === node.parent_id)?.node
+                              : null;
+                            const activityRollup = activityWbsByCode.get(node.code);
+                            const visualDepth = depth + 1;
+                            return (
+                              <tr key={node.id}>
+                                <td className="wbsNameCell" style={{ paddingLeft: `${12 + visualDepth * 18}px` }}>
+                                  <strong>{node.name}</strong>
+                                  <span>{publicWbsCode(node.code, project)}</span>
+                                </td>
+                                <td>{parent?.name ?? "Project"}</td>
+                                <td>{node.level}</td>
+                                <td>{statusLabel(node.status)}</td>
+                                <td>{activityRollup?.activity_count ?? 0}</td>
+                                <td>{currency(activityRollup?.planned_cost ?? 0, project.currency)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="workspaceEmpty compactEmpty">
+                        <strong>WBS table pending</strong>
+                      </div>
+                    )}
+                  </section>
+                </section>
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handleOperationalSetupSubmit}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Operational Readiness</h2>
+                      <span>{operationalSetup?.readiness_notes ?? "Pending setup"}</span>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Project Number</span>
+                        <input
+                          disabled={!canConfigure || setupAction}
+                          onChange={(event) =>
+                            setSetupDraft((current) => ({ ...current, project_number: event.target.value }))
+                          }
+                          required
+                          value={setupDraft.project_number}
+                        />
+                      </label>
+                      <label>
+                        <span>Status</span>
+                        <select
+                          disabled={!canConfigure || setupAction}
+                          onChange={(event) => setSetupDraft((current) => ({ ...current, status: event.target.value }))}
+                          value={setupDraft.status}
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="in_review">In Review</option>
+                          <option value="ready">Ready</option>
+                          <option value="active">Active</option>
+                        </select>
+                      </label>
+                    </div>
+                    <details className="advancedFields">
+                      <summary>Advanced setup template</summary>
+                      <div className="advancedFieldsBody">
+                        <label>
+                          <span>Setup Template</span>
+                          <input
+                            disabled={!canConfigure || setupAction}
+                            onChange={(event) =>
+                              setSetupDraft((current) => ({ ...current, setup_template: event.target.value }))
+                            }
+                            required
+                            value={setupDraft.setup_template}
+                          />
+                        </label>
+                        <label>
+                          <span>Attribute Form</span>
+                          <input
+                            disabled={!canConfigure || setupAction}
+                            onChange={(event) =>
+                              setSetupDraft((current) => ({ ...current, attribute_form: event.target.value }))
+                            }
+                            required
+                            value={setupDraft.attribute_form}
+                          />
+                        </label>
+                      </div>
+                    </details>
+                    <div className="formColumns">
+                      {[
+                        ["permissions_configured", "Permissions"],
+                        ["modules_configured", "Modules"],
+                        ["cost_sheet_ready", "Cost Sheet"],
+                        ["funding_sheet_ready", "Funding Sheet"],
+                        ["p6_mapping_ready", "P6 Mapping"],
+                      ].map(([field, label]) => (
+                        <label className="checkboxLine" key={field}>
+                          <input
+                            checked={Boolean(setupDraft[field as keyof typeof setupDraft])}
+                            disabled={!canConfigure || setupAction}
+                            onChange={(event) =>
+                              setSetupDraft((current) => ({ ...current, [field]: event.target.checked }))
+                            }
+                            type="checkbox"
+                          />
+                          <span>{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <button className="workflowAction primary" disabled={!canConfigure || setupAction} type="submit">
+                      {setupAction ? "Saving..." : "Save Setup"}
+                    </button>
+                  </form>
+
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>
+                        <FileUp size={18} /> Activity Sheet
+                      </h2>
+                      <span>{activitySheets.length} loads</span>
+                    </div>
+                    <label
+                      className={
+                        activityAction || !setupReadyForActivityLoad ? "uploadButton disabled" : "uploadButton"
+                      }
+                    >
+                      <input
+                        accept=".xml,.xer"
+                        disabled={!canUploadSchedule || activityAction || !setupReadyForActivityLoad}
+                        onChange={handleActivitySheetUpload}
+                        type="file"
+                      />
+                      <span>{activityAction ? "Loading..." : "Load XML/XER"}</span>
+                    </label>
+                    <div className="workList compactList">
+                      {activitySheets.slice(0, 6).map((sheet) => (
+                        <article key={sheet.id}>
+                          <strong>{sheet.source_file_name}</strong>
+                          <span>
+                            {sheet.row_count} rows / {statusLabel(sheet.status)}
+                          </span>
+                          <small>{sheet.data_date ?? "No data date"}</small>
+                        </article>
+                      ))}
+                      {!activitySheets.length && (
+                        <article>
+                          <strong>No activity loads</strong>
+                          <span>Activity data will appear after controlled load.</span>
+                        </article>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <section aria-label="WBS Catalog" className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>
+                      <GitBranch size={18} /> WBS Catalog
+                    </h2>
+                    <span>{wbsCatalog.length} nodes</span>
+                  </div>
+                  <div className="viewSplit">
+                    <form className="adminPanel compactForm wbsCatalogForm" onSubmit={handleWbsCreate}>
+                      <label>
+                        <span>WBS Code</span>
+                        <input
+                          disabled={!canConfigure || wbsAction}
+                          onChange={(event) => setWbsDraft((current) => ({ ...current, code: event.target.value }))}
+                          required
+                          value={wbsDraft.code}
+                        />
+                      </label>
+                      <label>
+                        <span>WBS Name</span>
+                        <input
+                          disabled={!canConfigure || wbsAction}
+                          onChange={(event) => setWbsDraft((current) => ({ ...current, name: event.target.value }))}
+                          required
+                          value={wbsDraft.name}
+                        />
+                      </label>
+                      <label>
+                        <span>Parent WBS</span>
+                        <select
+                          disabled={!canConfigure || wbsAction}
+                          onChange={(event) => {
+                            const nextParentId = event.target.value;
+                            const parentNode = wbsCatalog.find((node) => String(node.id) === nextParentId);
+                            setWbsDraft((current) => ({
+                              ...current,
+                              parent_id: nextParentId,
+                              level: parentNode ? String(parentNode.level + 1) : "1",
+                            }));
+                          }}
+                          value={wbsDraft.parent_id}
+                        >
+                          <option value="">Root WBS</option>
+                          {wbsCatalog.map((node) => (
+                            <option key={node.id} value={node.id}>
+                              {publicWbsCode(node.code, project)} - {node.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <details className="advancedFields">
+                        <summary>Advanced WBS metadata</summary>
+                        <div className="advancedFieldsBody">
+                          <div className="formColumns">
+                            <label>
+                              <span>Level</span>
+                              <input
+                                disabled={!canConfigure || wbsAction}
+                                min="1"
+                                onChange={(event) =>
+                                  setWbsDraft((current) => ({ ...current, level: event.target.value }))
+                                }
+                                type="number"
+                                value={wbsDraft.level}
+                              />
+                            </label>
+                            <label>
+                              <span>Status</span>
+                              <select
+                                disabled={!canConfigure || wbsAction}
+                                onChange={(event) =>
+                                  setWbsDraft((current) => ({ ...current, status: event.target.value }))
+                                }
+                                value={wbsDraft.status}
+                              >
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
+                                <option value="in_review">In Review</option>
+                              </select>
+                            </label>
+                          </div>
+                          <label>
+                            <span>Responsible</span>
+                            <input
+                              disabled={!canConfigure || wbsAction}
+                              onChange={(event) =>
+                                setWbsDraft((current) => ({ ...current, responsible: event.target.value }))
+                              }
+                              value={wbsDraft.responsible}
+                            />
+                          </label>
+                          <label>
+                            <span>Description</span>
+                            <textarea
+                              disabled={!canConfigure || wbsAction}
+                              onChange={(event) =>
+                                setWbsDraft((current) => ({ ...current, description: event.target.value }))
+                              }
+                              rows={3}
+                              value={wbsDraft.description}
+                            />
+                          </label>
+                        </div>
+                      </details>
+                      <button className="workflowAction primary" disabled={!canConfigure || wbsAction} type="submit">
+                        {wbsAction ? "Creating..." : "Create WBS"}
+                      </button>
+                    </form>
+                    <div className="workList compactList">
+                      {wbsCatalog.slice(0, 10).map((node) => {
+                        const parent = node.parent_id ? wbsCatalog.find((item) => item.id === node.parent_id) : null;
+                        return (
+                          <article key={node.id}>
+                            <strong>{node.name}</strong>
+                            <span>{publicWbsCode(node.code, project)}</span>
+                            <small>
+                              Level {node.level} / {parent ? `Parent ${parent.name}` : "Root"} /{" "}
+                              {statusLabel(node.status)}
+                            </small>
+                            {node.responsible && <small>{node.responsible}</small>}
+                          </article>
+                        );
+                      })}
+                      {!wbsCatalog.length && (
+                        <article>
+                          <strong>No WBS nodes</strong>
+                          <span>Create the first WBS or load a P6 XML/XER source.</span>
+                        </article>
+                      )}
+                    </div>
+                  </div>
+                </section>
+                {integratedMessage && <div className="uploadMessage success">{integratedMessage}</div>}
+                {integratedError && <div className="uploadMessage error">{integratedError}</div>}
+                <div className="panel wide">
                   <div className="panelHeader compactHeader">
                     <h2>WBS Sheet</h2>
                     <span>
@@ -3871,210 +4457,89 @@ function AppShell() {
                         <tr>
                           <th>WBS</th>
                           <th>Activities</th>
+                          <th>Control Accounts</th>
                           <th>PV</th>
                           <th>Review</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {[...activitySheetDisplayRows, ...activitySheetUnmatchedRows.map((row) => ({ depth: 0, node: null, row }))]
-                          .slice(0, 6)
+                        {[
+                          ...activitySheetDisplayRows,
+                          ...activitySheetUnmatchedRows.map((row) => ({ depth: 0, node: null, row })),
+                        ]
+                          .slice(0, 8)
                           .map(({ depth, node, row }) => (
-                          <tr key={row.wbs_code}>
-                            <td className="wbsNameCell" style={{ paddingLeft: `${12 + depth * 18}px` }}>
-                              <strong>{node?.name ?? row.wbs_name}</strong>
-                              <span>{publicWbsCode(node?.code ?? row.wbs_code, project)}</span>
-                            </td>
-                            <td>{row.activity_count}</td>
-                            <td>{currency(row.planned_value, project.currency)}</td>
-                            <td>{row.needs_review_count}</td>
-                          </tr>
-                        ))}
+                            <tr key={row.wbs_code}>
+                              <td className="wbsNameCell" style={{ paddingLeft: `${12 + depth * 18}px` }}>
+                                <strong>{node?.name ?? row.wbs_name}</strong>
+                                <span>{publicWbsCode(node?.code ?? row.wbs_code, project)}</span>
+                              </td>
+                              <td>{row.activity_count}</td>
+                              <td>{row.control_account_count}</td>
+                              <td>
+                                <strong>{currency(row.planned_value, project.currency)}</strong>
+                                <span>{currency(row.planned_cost, project.currency)} planned</span>
+                              </td>
+                              <td>
+                                <strong>{row.needs_review_count}</strong>
+                                <span>{row.unmapped_activity_count} unmapped</span>
+                              </td>
+                            </tr>
+                          ))}
                       </tbody>
                     </table>
                   ) : (
                     <div className="workspaceEmpty compactEmpty">
                       <strong>WBS Sheet pending</strong>
+                      <p>WBS roll-up will appear after the first controlled Activity Sheet load.</p>
+                    </div>
+                  )}
+                  {activitySheetNeedsReview > 0 && (
+                    <div className="uploadMessage error">
+                      {activitySheetNeedsReview} activity rows need CBS, cost or control-account review.
                     </div>
                   )}
                 </div>
-              </div>
-              {uploadMessage && <div className="uploadMessage success">{uploadMessage}</div>}
-              {uploadError && <div className="uploadMessage error">{uploadError}</div>}
-              {setupMessage && <div className="uploadMessage success">{setupMessage}</div>}
-              {setupError && <div className="uploadMessage error">{setupError}</div>}
-              {!canUploadSchedule && (
-                <div className="uploadMessage error">Only Planner or Control Manager roles can upload baselines.</div>
-              )}
-            </section>
-          )}
-          {visibleControlView === "schedule-control" && (
-            <ProjectControlsHandbook
-              currencyCode={project.currency}
-              key={project.id}
-              projectCode={project.code}
-              projectId={project.id}
-              scheduleActivities={scheduleActivities}
-              scheduleDataDate={dashboard.schedule_import?.data_date ?? null}
-              scheduleRelationships={scheduleRelationships}
-              wbsCatalog={wbsCatalog}
-            />
-          )}
-          {visibleControlView === "process-flow" && (
-            <>
-              <div className="panelHeader">
-                <h2>BPM Process Flow</h2>
-                <span>
-                  {processFlowBoard
-                    ? `${statusLabel(processFlowBoard.overall_status)} / ${processFlowBoard.completion_percent.toFixed(1)}%`
-                    : "Loading"}
-                </span>
-              </div>
-              {processFlowBoard ? (
-                <div className="processFlowBoard">
-                  {processFlowBoard.lanes.map((lane) => (
-                    <section className="processLane" key={lane.key} aria-label={lane.label}>
-                      <div className="processLaneHeader">
-                        <strong>{lane.label}</strong>
-                        <span>{lane.owner_role}</span>
-                      </div>
-                      <div className="processLaneItems">
-                        {lane.items.map((item) => (
-                          <article
-                            aria-label={`Open ${item.label}`}
-                            className={`processFlowItem ${item.status}`}
-                            key={item.key}
-                            onClick={() => handleControlFlowNavigate(item.target_view as ControlFlowView)}
-                            onKeyDown={(event) => {
-                              if (event.key === "Enter" || event.key === " ") {
-                                event.preventDefault();
-                                handleControlFlowNavigate(item.target_view as ControlFlowView);
-                              }
-                            }}
-                            role="button"
-                            tabIndex={0}
-                          >
-                            <div className="processItemHeader">
-                              <strong>{item.label}</strong>
-                              <span className={`qualityStatus ${processStatusTone(item.status)}`}>
-                                {statusLabel(item.status)}
-                              </span>
-                            </div>
-                            <p>{item.evidence}</p>
-                            <small>{item.next_action}</small>
-                            <ul>
-                              {item.acceptance_criteria.map((criterion) => (
-                                <li key={criterion}>{criterion}</li>
-                              ))}
-                            </ul>
-                          </article>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              ) : (
-                <div className="emptyState compactEmpty">
-                  <strong>Process board pending</strong>
-                  <p>The BPM process board will load after the project context is available.</p>
-                </div>
-              )}
-            </>
-          )}
-          {visibleControlView === "setup" && (
-            <>
-              <div className="panelHeader">
-                <h2>Project Setup</h2>
-                <span>{operationalSetup?.readiness_status === "ready" ? "Ready" : "Open"}</span>
-              </div>
-              <section aria-label="WBS Structure" className="panel wide wbsStructurePanel">
-                <div className="panelHeader compactHeader">
-                  <h2>
-                    <GitBranch size={18} /> WBS Structure
-                  </h2>
-                  <span>{wbsTableRows.length} nodes</span>
-                </div>
-                {primaryWbsTree.length ? (
-                  <div aria-label={`WBS tree for ${project.code}`} className="wbsTreeCanvas" role="tree">
-                    {shouldRenderProjectRoot ? (
-                      <div className="wbsProjectTreeRoot">
-                        <article
-                          aria-label={`${project.code} ${project.name}`}
-                          aria-level={1}
-                          className="wbsNodeCard projectRoot"
-                          role="treeitem"
-                        >
-                          <strong>{project.code}</strong>
-                          <span>{project.name}</span>
-                          <small>Project</small>
-                        </article>
-                        <div className="wbsChildren wbsProjectChildren">
-                          {primaryWbsTree.map((node) => (
-                            <WbsTreeBranch
-                              activityByCode={activityWbsByCode}
-                              currencyCode={project.currency}
-                              depth={1}
-                              key={node.id}
-                              node={node}
-                              project={project}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="wbsTreeRoots">
-                        {primaryWbsTree.map((node) => (
-                          <WbsTreeBranch
-                            activityByCode={activityWbsByCode}
-                            currencyCode={project.currency}
-                            depth={0}
-                            key={node.id}
-                            node={node}
-                            project={project}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>No WBS nodes</strong>
-                  </div>
-                )}
-                <section aria-label="WBS Table" className="wbsTablePanel">
+                <div className="panel wide">
                   <div className="panelHeader compactHeader">
-                    <h2>WBS Table</h2>
-                    <span>{wbsTableRows.length} rows</span>
+                    <h2>Activity Rows</h2>
+                    <span>{activitySheetRows.length} lines</span>
                   </div>
-                  {wbsTableRows.length ? (
+                  {activitySheetRows.length ? (
                     <table>
                       <thead>
                         <tr>
-                          <th>WBS</th>
-                          <th>Parent</th>
-                          <th>Level</th>
-                          <th>Status</th>
-                          <th>Activities</th>
+                          <th>Activity</th>
+                          <th>WBS / CA</th>
+                          <th>CBS</th>
                           <th>Planned</th>
+                          <th>PV</th>
+                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {wbsTableRows.map(({ node, depth }) => {
-                          const parent = node.parent_id
-                            ? wbsTableRows.find((item) => item.node.id === node.parent_id)?.node
-                            : null;
-                          const activityRollup = activityWbsByCode.get(node.code);
-                          const visualDepth = depth + 1;
+                        {activitySheetRows.slice(0, 10).map((row) => {
+                          const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
                           return (
-                            <tr key={node.id}>
-                              <td className="wbsNameCell" style={{ paddingLeft: `${12 + visualDepth * 18}px` }}>
-                                <strong>{node.name}</strong>
-                                <span>{publicWbsCode(node.code, project)}</span>
+                            <tr key={row.id}>
+                              <td>
+                                <strong>{row.external_activity_id}</strong>
+                                <span>{row.activity_name}</span>
                               </td>
-                              <td>{parent?.name ?? "Project"}</td>
-                              <td>{node.level}</td>
-                              <td>{statusLabel(node.status)}</td>
-                              <td>{activityRollup?.activity_count ?? 0}</td>
-                              <td>{currency(activityRollup?.planned_cost ?? 0, project.currency)}</td>
+                              <td>
+                                <strong>{rowWbs?.name ?? row.wbs_code}</strong>
+                                <span>
+                                  {publicControlAccountCode(row.control_account_code || "CA pending", project)} /{" "}
+                                  {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
+                                </span>
+                              </td>
+                              <td>{row.cbs_code || "CBS pending"}</td>
+                              <td>{currency(row.planned_cost, project.currency)}</td>
+                              <td>
+                                <strong>{currency(row.planned_value, project.currency)}</strong>
+                                <span>{row.planned_percent.toFixed(1)}%</span>
+                              </td>
+                              <td>{statusLabel(row.mapping_status)}</td>
                             </tr>
                           );
                         })}
@@ -4082,2583 +4547,1208 @@ function AppShell() {
                     </table>
                   ) : (
                     <div className="workspaceEmpty compactEmpty">
-                      <strong>WBS table pending</strong>
+                      <strong>No activity rows</strong>
                     </div>
                   )}
-                </section>
-              </section>
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handleOperationalSetupSubmit}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Operational Readiness</h2>
-                    <span>{operationalSetup?.readiness_notes ?? "Pending setup"}</span>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Project Number</span>
-                      <input
-                        disabled={!canConfigure || setupAction}
-                        onChange={(event) =>
-                          setSetupDraft((current) => ({ ...current, project_number: event.target.value }))
-                        }
-                        required
-                        value={setupDraft.project_number}
-                      />
-                    </label>
-                    <label>
-                      <span>Status</span>
-                      <select
-                        disabled={!canConfigure || setupAction}
-                        onChange={(event) => setSetupDraft((current) => ({ ...current, status: event.target.value }))}
-                        value={setupDraft.status}
-                      >
-                        <option value="draft">Draft</option>
-                        <option value="in_review">In Review</option>
-                        <option value="ready">Ready</option>
-                        <option value="active">Active</option>
-                      </select>
-                    </label>
-                  </div>
-                  <details className="advancedFields">
-                    <summary>Advanced setup template</summary>
-                    <div className="advancedFieldsBody">
-                      <label>
-                        <span>Setup Template</span>
-                        <input
-                          disabled={!canConfigure || setupAction}
-                          onChange={(event) =>
-                            setSetupDraft((current) => ({ ...current, setup_template: event.target.value }))
-                          }
-                          required
-                          value={setupDraft.setup_template}
-                        />
-                      </label>
-                      <label>
-                        <span>Attribute Form</span>
-                        <input
-                          disabled={!canConfigure || setupAction}
-                          onChange={(event) =>
-                            setSetupDraft((current) => ({ ...current, attribute_form: event.target.value }))
-                          }
-                          required
-                          value={setupDraft.attribute_form}
-                        />
-                      </label>
-                    </div>
-                  </details>
-                  <div className="formColumns">
-                    {[
-                      ["permissions_configured", "Permissions"],
-                      ["modules_configured", "Modules"],
-                      ["cost_sheet_ready", "Cost Sheet"],
-                      ["funding_sheet_ready", "Funding Sheet"],
-                      ["p6_mapping_ready", "P6 Mapping"],
-                    ].map(([field, label]) => (
-                      <label className="checkboxLine" key={field}>
-                        <input
-                          checked={Boolean(setupDraft[field as keyof typeof setupDraft])}
-                          disabled={!canConfigure || setupAction}
-                          onChange={(event) =>
-                            setSetupDraft((current) => ({ ...current, [field]: event.target.checked }))
-                          }
-                          type="checkbox"
-                        />
-                        <span>{label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <button className="workflowAction primary" disabled={!canConfigure || setupAction} type="submit">
-                    {setupAction ? "Saving..." : "Save Setup"}
-                  </button>
-                </form>
-
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>
-                      <FileUp size={18} /> Activity Sheet
-                    </h2>
-                    <span>{activitySheets.length} loads</span>
-                  </div>
-                  <label
-                    className={
-                      activityAction || !setupReadyForActivityLoad
-                        ? "uploadButton disabled"
-                        : "uploadButton"
-                    }
-                  >
-                    <input
-                      accept=".xml,.xer"
-                      disabled={!canUploadSchedule || activityAction || !setupReadyForActivityLoad}
-                      onChange={handleActivitySheetUpload}
-                      type="file"
-                    />
-                    <span>{activityAction ? "Loading..." : "Load XML/XER"}</span>
-                  </label>
-                  <div className="workList compactList">
-                    {activitySheets.slice(0, 6).map((sheet) => (
-                      <article key={sheet.id}>
-                        <strong>{sheet.source_file_name}</strong>
-                        <span>
-                          {sheet.row_count} rows / {statusLabel(sheet.status)}
-                        </span>
-                        <small>{sheet.data_date ?? "No data date"}</small>
-                      </article>
-                    ))}
-                    {!activitySheets.length && (
-                      <article>
-                        <strong>No activity loads</strong>
-                        <span>Activity data will appear after controlled load.</span>
-                      </article>
-                    )}
-                  </div>
                 </div>
-              </div>
-              <section aria-label="WBS Catalog" className="panel wide">
-                <div className="panelHeader compactHeader">
+                {setupMessage && <div className="uploadMessage success">{setupMessage}</div>}
+                {setupError && <div className="uploadMessage error">{setupError}</div>}
+              </>
+            )}
+            {visibleControlView === "apu-catalog" && (
+              <section aria-label="Base de datos APU Colombia Module" className="quantityModule">
+                <div className="panelHeader">
                   <h2>
-                    <GitBranch size={18} /> WBS Catalog
+                    <Database size={20} /> Base APU Colombia
                   </h2>
-                  <span>{wbsCatalog.length} nodes</span>
+                  <span>
+                    Base gratuita sincronizable con DataCauca, INVIAS e IDU para revisar partidas antes de sugerir APU
+                    desde cantidades BIM.
+                  </span>
                 </div>
-                <div className="viewSplit">
-                  <form className="adminPanel compactForm wbsCatalogForm" onSubmit={handleWbsCreate}>
-                    <label>
-                      <span>WBS Code</span>
-                      <input
-                        disabled={!canConfigure || wbsAction}
-                        onChange={(event) => setWbsDraft((current) => ({ ...current, code: event.target.value }))}
-                        required
-                        value={wbsDraft.code}
-                      />
-                    </label>
-                    <label>
-                      <span>WBS Name</span>
-                      <input
-                        disabled={!canConfigure || wbsAction}
-                        onChange={(event) => setWbsDraft((current) => ({ ...current, name: event.target.value }))}
-                        required
-                        value={wbsDraft.name}
-                      />
-                    </label>
-                    <label>
-                      <span>Parent WBS</span>
-                      <select
-                        disabled={!canConfigure || wbsAction}
-                        onChange={(event) => {
-                          const nextParentId = event.target.value;
-                          const parentNode = wbsCatalog.find((node) => String(node.id) === nextParentId);
-                          setWbsDraft((current) => ({
-                            ...current,
-                            parent_id: nextParentId,
-                            level: parentNode ? String(parentNode.level + 1) : "1",
-                          }));
-                        }}
-                        value={wbsDraft.parent_id}
+                <section aria-label="Base de datos APU Colombia" className="colombiaApuBridge visibleApuCatalog">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Base de datos APU Colombia</h3>
+                      <span>
+                        Estructura: fuente oficial, grupo, capitulo, partida/APU, unidad y costo directo de referencia.
+                      </span>
+                    </div>
+                    <div className="apuBridgeActions">
+                      <button
+                        className="secondaryAction"
+                        disabled={quantityAction}
+                        onClick={handleColombiaApuCatalogSync}
+                        type="button"
                       >
-                        <option value="">Root WBS</option>
-                        {wbsCatalog.map((node) => (
-                          <option key={node.id} value={node.id}>
-                            {publicWbsCode(node.code, project)} - {node.name}
+                        Actualizar base gratis
+                      </button>
+                      <button
+                        className="primaryAction"
+                        disabled={quantityAction || !latestQuantityTakeoff || !quantityTakeoffLines.length}
+                        onClick={() => handleQuantityApuSuggestion(quantityTakeoffLines.map((line) => line.id))}
+                        type="button"
+                      >
+                        Sugerir APU
+                      </button>
+                    </div>
+                  </div>
+                  <div className="apuBridgeSummary">
+                    <article>
+                      <span>Registros visibles</span>
+                      <strong>{colombiaApuCatalog.length}</strong>
+                      <small>
+                        {colombiaApuSearch.trim()
+                          ? `${colombiaApuSourceLabel} / Filtro: ${colombiaApuSearch.trim()}`
+                          : colombiaApuCatalog.length
+                            ? `${colombiaApuSourceLabel} / partida(s) disponibles`
+                            : "sin sincronizar"}
+                      </small>
+                    </article>
+                    <article>
+                      <span>Ultima sincronizacion</span>
+                      <strong>
+                        {colombiaApuSync
+                          ? `${colombiaApuSync.created_count} nuevas / ${colombiaApuSync.updated_count} actualizadas`
+                          : "Pendiente"}
+                      </strong>
+                      <small>{colombiaApuSync?.source_key ?? "DataCauca/public source"}</small>
+                    </article>
+                    <article>
+                      <span>Uso permitido</span>
+                      <strong>Revision</strong>
+                      <small>
+                        {colombiaApuSync?.license_note ??
+                          colombiaApuCatalog[0]?.license_note ??
+                          "Validar vigencia, region, AIU y alcance antes de aprobar presupuesto."}
+                      </small>
+                    </article>
+                  </div>
+                  <form className="apuCatalogSearch" onSubmit={handleColombiaApuCatalogSearch}>
+                    <label>
+                      <span>Fuente</span>
+                      <select
+                        aria-label="Fuente APU Colombia"
+                        disabled={quantityAction}
+                        onChange={(event) => setColombiaApuSource(event.target.value)}
+                        value={colombiaApuSource}
+                      >
+                        {APU_SOURCE_OPTIONS.map((source) => (
+                          <option key={source.key || "all"} value={source.key}>
+                            {source.label}
                           </option>
                         ))}
                       </select>
                     </label>
-                    <details className="advancedFields">
-                      <summary>Advanced WBS metadata</summary>
-                      <div className="advancedFieldsBody">
-                        <div className="formColumns">
-                          <label>
-                            <span>Level</span>
-                            <input
-                              disabled={!canConfigure || wbsAction}
-                              min="1"
-                              onChange={(event) => setWbsDraft((current) => ({ ...current, level: event.target.value }))}
-                              type="number"
-                              value={wbsDraft.level}
-                            />
-                          </label>
-                          <label>
-                            <span>Status</span>
-                            <select
-                              disabled={!canConfigure || wbsAction}
-                              onChange={(event) => setWbsDraft((current) => ({ ...current, status: event.target.value }))}
-                              value={wbsDraft.status}
-                            >
-                              <option value="active">Active</option>
-                              <option value="draft">Draft</option>
-                              <option value="in_review">In Review</option>
-                            </select>
-                          </label>
-                        </div>
-                        <label>
-                          <span>Responsible</span>
-                          <input
-                            disabled={!canConfigure || wbsAction}
-                            onChange={(event) =>
-                              setWbsDraft((current) => ({ ...current, responsible: event.target.value }))
-                            }
-                            value={wbsDraft.responsible}
-                          />
-                        </label>
-                        <label>
-                          <span>Description</span>
-                          <textarea
-                            disabled={!canConfigure || wbsAction}
-                            onChange={(event) =>
-                              setWbsDraft((current) => ({ ...current, description: event.target.value }))
-                            }
-                            rows={3}
-                            value={wbsDraft.description}
-                          />
-                        </label>
-                      </div>
-                    </details>
-                    <button className="workflowAction primary" disabled={!canConfigure || wbsAction} type="submit">
-                      {wbsAction ? "Creating..." : "Create WBS"}
+                    <label>
+                      <span>Consultar base</span>
+                      <input
+                        aria-label="Consultar base APU Colombia"
+                        disabled={quantityAction}
+                        onChange={(event) => setColombiaApuSearch(event.target.value)}
+                        placeholder="Buscar por codigo, partida, capitulo o grupo"
+                        type="search"
+                        value={colombiaApuSearch}
+                      />
+                    </label>
+                    <button className="primaryAction" disabled={quantityAction} type="submit">
+                      Buscar
                     </button>
-                  </form>
-                  <div className="workList compactList">
-                    {wbsCatalog.slice(0, 10).map((node) => {
-                      const parent = node.parent_id ? wbsCatalog.find((item) => item.id === node.parent_id) : null;
-                      return (
-                        <article key={node.id}>
-                          <strong>{node.name}</strong>
-                          <span>{publicWbsCode(node.code, project)}</span>
-                          <small>
-                            Level {node.level} / {parent ? `Parent ${parent.name}` : "Root"} / {statusLabel(node.status)}
-                          </small>
-                          {node.responsible && <small>{node.responsible}</small>}
-                        </article>
-                      );
-                    })}
-                    {!wbsCatalog.length && (
-                      <article>
-                        <strong>No WBS nodes</strong>
-                        <span>Create the first WBS or load a P6 XML/XER source.</span>
-                      </article>
-                    )}
-                  </div>
-                </div>
-              </section>
-              {integratedMessage && <div className="uploadMessage success">{integratedMessage}</div>}
-              {integratedError && <div className="uploadMessage error">{integratedError}</div>}
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>WBS Sheet</h2>
-                  <span>
-                    {activitySheetDisplayRows.length || activitySheetWbsRows.length} WBS /{" "}
-                    {currency(activitySheetPlannedCost, project.currency)}
-                  </span>
-                </div>
-                {activitySheetDisplayRows.length || activitySheetUnmatchedRows.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>WBS</th>
-                        <th>Activities</th>
-                        <th>Control Accounts</th>
-                        <th>PV</th>
-                        <th>Review</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...activitySheetDisplayRows, ...activitySheetUnmatchedRows.map((row) => ({ depth: 0, node: null, row }))]
-                        .slice(0, 8)
-                        .map(({ depth, node, row }) => (
-                        <tr key={row.wbs_code}>
-                          <td className="wbsNameCell" style={{ paddingLeft: `${12 + depth * 18}px` }}>
-                            <strong>{node?.name ?? row.wbs_name}</strong>
-                            <span>{publicWbsCode(node?.code ?? row.wbs_code, project)}</span>
-                          </td>
-                          <td>{row.activity_count}</td>
-                          <td>{row.control_account_count}</td>
-                          <td>
-                            <strong>{currency(row.planned_value, project.currency)}</strong>
-                            <span>{currency(row.planned_cost, project.currency)} planned</span>
-                          </td>
-                          <td>
-                            <strong>{row.needs_review_count}</strong>
-                            <span>{row.unmapped_activity_count} unmapped</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>WBS Sheet pending</strong>
-                    <p>WBS roll-up will appear after the first controlled Activity Sheet load.</p>
-                  </div>
-                )}
-                {activitySheetNeedsReview > 0 && (
-                  <div className="uploadMessage error">
-                    {activitySheetNeedsReview} activity rows need CBS, cost or control-account review.
-                  </div>
-                )}
-              </div>
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>Activity Rows</h2>
-                  <span>{activitySheetRows.length} lines</span>
-                </div>
-                {activitySheetRows.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Activity</th>
-                        <th>WBS / CA</th>
-                        <th>CBS</th>
-                        <th>Planned</th>
-                        <th>PV</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {activitySheetRows.slice(0, 10).map((row) => {
-                        const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
-                        return (
-                          <tr key={row.id}>
-                            <td>
-                              <strong>{row.external_activity_id}</strong>
-                              <span>{row.activity_name}</span>
-                            </td>
-                            <td>
-                              <strong>{rowWbs?.name ?? row.wbs_code}</strong>
-                              <span>
-                                {publicControlAccountCode(row.control_account_code || "CA pending", project)} /{" "}
-                                {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
-                              </span>
-                            </td>
-                            <td>{row.cbs_code || "CBS pending"}</td>
-                            <td>{currency(row.planned_cost, project.currency)}</td>
-                            <td>
-                              <strong>{currency(row.planned_value, project.currency)}</strong>
-                              <span>{row.planned_percent.toFixed(1)}%</span>
-                            </td>
-                            <td>{statusLabel(row.mapping_status)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>No activity rows</strong>
-                  </div>
-                )}
-              </div>
-              {setupMessage && <div className="uploadMessage success">{setupMessage}</div>}
-              {setupError && <div className="uploadMessage error">{setupError}</div>}
-            </>
-          )}
-          {visibleControlView === "apu-catalog" && (
-            <section aria-label="Base de datos APU Colombia Module" className="quantityModule">
-              <div className="panelHeader">
-                <h2>
-                  <Database size={20} /> Base APU Colombia
-                </h2>
-                <span>Base gratuita sincronizable con DataCauca, INVIAS e IDU para revisar partidas antes de sugerir APU desde cantidades BIM.</span>
-              </div>
-              <section aria-label="Base de datos APU Colombia" className="colombiaApuBridge visibleApuCatalog">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Base de datos APU Colombia</h3>
-                    <span>Estructura: fuente oficial, grupo, capitulo, partida/APU, unidad y costo directo de referencia.</span>
-                  </div>
-                  <div className="apuBridgeActions">
                     <button
                       className="secondaryAction"
                       disabled={quantityAction}
-                      onClick={handleColombiaApuCatalogSync}
+                      onClick={handleColombiaApuCatalogClearSearch}
                       type="button"
                     >
-                      Actualizar base gratis
+                      Limpiar
                     </button>
-                    <button
-                      className="primaryAction"
-                      disabled={quantityAction || !latestQuantityTakeoff || !quantityTakeoffLines.length}
-                      onClick={() => handleQuantityApuSuggestion(quantityTakeoffLines.map((line) => line.id))}
-                      type="button"
-                    >
-                      Sugerir APU
-                    </button>
-                  </div>
+                  </form>
+                  {colombiaApuCatalog.length ? (
+                    <>
+                      <div className="apuCatalogStructure" aria-label="Estructura visible de catalogo APU">
+                        {colombiaApuStructure.map((source) => (
+                          <article key={source.sourceKey}>
+                            <div>
+                              <strong>{source.sourceLabel}</strong>
+                              <span>
+                                {source.totalItems} partida(s) / {source.groups.length} grupo(s)
+                              </span>
+                            </div>
+                            <ul>
+                              {source.groups.slice(0, 4).map((group) => (
+                                <li key={`${source.sourceKey}-${group.groupName}`}>
+                                  <strong>{group.groupName}</strong>
+                                  <span>
+                                    {group.totalItems} partida(s) en {group.chapters.length} capitulo(s):{" "}
+                                    {group.chapters
+                                      .slice(0, 3)
+                                      .map((chapter) => chapter.chapterName)
+                                      .join(" / ")}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </article>
+                        ))}
+                      </div>
+                      <div className="mappingTable apuCatalogTable">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Codigo</th>
+                              <th>Partida / APU</th>
+                              <th>Estructura</th>
+                              <th>Unidad</th>
+                              <th>Precio unitario</th>
+                              <th>Region / fuente</th>
+                              <th>Estado</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {colombiaApuCatalog.map((item) => {
+                              const structureLines = apuStructureLines(item);
+                              return (
+                                <tr key={item.id}>
+                                  <td data-label="Codigo">
+                                    <strong>{item.item_code}</strong>
+                                    <span>{item.chapter || item.group_name || "Capitulo pendiente"}</span>
+                                  </td>
+                                  <td data-label="Partida / APU">
+                                    <strong>{item.item_name}</strong>
+                                    <span>{item.group_name || "Grupo pendiente"}</span>
+                                  </td>
+                                  <td data-label="Estructura">
+                                    <div className="apuStructureStack">
+                                      {structureLines.map((line, index) => (
+                                        <span key={`${item.id}-${line.component}-${index}`}>
+                                          <strong>{line.component}</strong>
+                                          <small>{line.description}</small>
+                                          <em>
+                                            {line.quantity} {line.unit} x {currency(line.unitRate, item.currency)}
+                                            {line.amount ? ` = ${currency(line.amount, item.currency)}` : ""}
+                                          </em>
+                                        </span>
+                                      ))}
+                                      <small>{apuStructureNote(item)}</small>
+                                    </div>
+                                  </td>
+                                  <td data-label="Unidad">{item.unit}</td>
+                                  <td data-label="Precio unitario">
+                                    <strong>{currency(item.unit_rate, item.currency)}</strong>
+                                    <span>{item.currency}</span>
+                                  </td>
+                                  <td data-label="Region / fuente">
+                                    <strong>{item.region || "Region pendiente"}</strong>
+                                    <span>{sourceLabel(item.source_key)}</span>
+                                  </td>
+                                  <td data-label="Estado">
+                                    <strong>{statusLabel(item.status)}</strong>
+                                    <span>Validar antes de aprobar</span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>Base APU sin registros visibles</strong>
+                      <span>
+                        Usa Actualizar base gratis para traer partidas publicas al proyecto antes de cargar cantidades.
+                      </span>
+                    </div>
+                  )}
+                  {quantityMessage && <div className="uploadMessage success">{quantityMessage}</div>}
+                  {quantityError && <div className="uploadMessage error">{quantityError}</div>}
+                </section>
+              </section>
+            )}
+            {visibleControlView === "claims-audit" && (
+              <section aria-label="Reclamaciones y Auditoria Forense Module" className="quantityModule">
+                <div className="panelHeader">
+                  <h2>
+                    <FileSearch size={20} /> Reclamaciones y Auditoria Forense
+                  </h2>
+                  <span>
+                    Convierte expedientes contractuales en claim, aviso, matriz de entitlement e impacto auditable.
+                  </span>
                 </div>
-                <div className="apuBridgeSummary">
+                <div className="claimSummary">
                   <article>
-                    <span>Registros visibles</span>
-                    <strong>{colombiaApuCatalog.length}</strong>
-                    <small>
-                      {colombiaApuSearch.trim()
-                        ? `${colombiaApuSourceLabel} / Filtro: ${colombiaApuSearch.trim()}`
-                        : colombiaApuCatalog.length
-                          ? `${colombiaApuSourceLabel} / partida(s) disponibles`
-                          : "sin sincronizar"}
-                    </small>
+                    <span>Claims</span>
+                    <strong>{dashboard.claims_forensic_summary.total_claims}</strong>
+                    <small>Registro contractual del proyecto</small>
                   </article>
                   <article>
-                    <span>Ultima sincronizacion</span>
+                    <span>Avisos</span>
                     <strong>
-                      {colombiaApuSync
-                        ? `${colombiaApuSync.created_count} nuevas / ${colombiaApuSync.updated_count} actualizadas`
-                        : "Pendiente"}
+                      {dashboard.claims_forensic_summary.compliant_notices}/
+                      {dashboard.claims_forensic_summary.notice_count}
                     </strong>
-                    <small>{colombiaApuSync?.source_key ?? "DataCauca/public source"}</small>
+                    <small>Compliant / total</small>
                   </article>
                   <article>
-                    <span>Uso permitido</span>
-                    <strong>Revision</strong>
-                    <small>
-                      {colombiaApuSync?.license_note ??
-                        colombiaApuCatalog[0]?.license_note ??
-                        "Validar vigencia, region, AIU y alcance antes de aprobar presupuesto."}
-                    </small>
+                    <span>Impacto costo</span>
+                    <strong>{currency(dashboard.claims_forensic_summary.total_claimed_cost, project.currency)}</strong>
+                    <small>Reclamado o detectado</small>
+                  </article>
+                  <article className={dashboard.claims_forensic_summary.forensic_readiness_score < 70 ? "risk" : ""}>
+                    <span>Readiness</span>
+                    <strong>{dashboard.claims_forensic_summary.forensic_readiness_score.toFixed(0)}%</strong>
+                    <small>Notice + impacto + entitlement</small>
                   </article>
                 </div>
-                <form className="apuCatalogSearch" onSubmit={handleColombiaApuCatalogSearch}>
+                <form className="adminPanel compactForm" onSubmit={handleClaimsForensicSubmit}>
                   <label>
-                    <span>Fuente</span>
-                    <select
-                      aria-label="Fuente APU Colombia"
-                      disabled={quantityAction}
-                      onChange={(event) => setColombiaApuSource(event.target.value)}
-                      value={colombiaApuSource}
-                    >
-                      {APU_SOURCE_OPTIONS.map((source) => (
-                        <option key={source.key || "all"} value={source.key}>
-                          {source.label}
-                        </option>
-                      ))}
+                    <span>Modo de analisis</span>
+                    <select value={claimsAuditMode} onChange={(event) => setClaimsAuditMode(event.target.value)}>
+                      <option value="review">Review del dossier</option>
+                      <option value="discovery">Descubrir eventos compensables</option>
+                      <option value="rebuttal">Rebatir reclamacion</option>
+                      <option value="shielding">Blindar informe</option>
+                      <option value="interrogatory">Preguntas al expediente</option>
                     </select>
                   </label>
                   <label>
-                    <span>Consultar base</span>
+                    <span>Expediente</span>
                     <input
-                      aria-label="Consultar base APU Colombia"
-                      disabled={quantityAction}
-                      onChange={(event) => setColombiaApuSearch(event.target.value)}
-                      placeholder="Buscar por codigo, partida, capitulo o grupo"
-                      type="search"
-                      value={colombiaApuSearch}
-                    />
-                  </label>
-                  <button className="primaryAction" disabled={quantityAction} type="submit">
-                    Buscar
-                  </button>
-                  <button className="secondaryAction" disabled={quantityAction} onClick={handleColombiaApuCatalogClearSearch} type="button">
-                    Limpiar
-                  </button>
-                </form>
-                {colombiaApuCatalog.length ? (
-                  <>
-                    <div className="apuCatalogStructure" aria-label="Estructura visible de catalogo APU">
-                      {colombiaApuStructure.map((source) => (
-                        <article key={source.sourceKey}>
-                          <div>
-                            <strong>{source.sourceLabel}</strong>
-                            <span>
-                              {source.totalItems} partida(s) / {source.groups.length} grupo(s)
-                            </span>
-                          </div>
-                          <ul>
-                            {source.groups.slice(0, 4).map((group) => (
-                              <li key={`${source.sourceKey}-${group.groupName}`}>
-                                <strong>{group.groupName}</strong>
-                                <span>
-                                  {group.totalItems} partida(s) en {group.chapters.length} capitulo(s):{" "}
-                                  {group.chapters
-                                    .slice(0, 3)
-                                    .map((chapter) => chapter.chapterName)
-                                    .join(" / ")}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </article>
-                      ))}
-                    </div>
-                    <div className="mappingTable apuCatalogTable">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Codigo</th>
-                            <th>Partida / APU</th>
-                            <th>Estructura</th>
-                            <th>Unidad</th>
-                            <th>Precio unitario</th>
-                            <th>Region / fuente</th>
-                            <th>Estado</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {colombiaApuCatalog.map((item) => {
-                            const structureLines = apuStructureLines(item);
-                            return (
-                              <tr key={item.id}>
-                                <td data-label="Codigo">
-                                  <strong>{item.item_code}</strong>
-                                  <span>{item.chapter || item.group_name || "Capitulo pendiente"}</span>
-                                </td>
-                                <td data-label="Partida / APU">
-                                  <strong>{item.item_name}</strong>
-                                  <span>{item.group_name || "Grupo pendiente"}</span>
-                                </td>
-                                <td data-label="Estructura">
-                                  <div className="apuStructureStack">
-                                    {structureLines.map((line, index) => (
-                                      <span key={`${item.id}-${line.component}-${index}`}>
-                                        <strong>{line.component}</strong>
-                                        <small>{line.description}</small>
-                                        <em>
-                                          {line.quantity} {line.unit} x {currency(line.unitRate, item.currency)}
-                                          {line.amount ? ` = ${currency(line.amount, item.currency)}` : ""}
-                                        </em>
-                                      </span>
-                                    ))}
-                                    <small>{apuStructureNote(item)}</small>
-                                  </div>
-                                </td>
-                                <td data-label="Unidad">{item.unit}</td>
-                                <td data-label="Precio unitario">
-                                  <strong>{currency(item.unit_rate, item.currency)}</strong>
-                                  <span>{item.currency}</span>
-                                </td>
-                                <td data-label="Region / fuente">
-                                  <strong>{item.region || "Region pendiente"}</strong>
-                                  <span>{sourceLabel(item.source_key)}</span>
-                                </td>
-                                <td data-label="Estado">
-                                  <strong>{statusLabel(item.status)}</strong>
-                                  <span>Validar antes de aprobar</span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>Base APU sin registros visibles</strong>
-                    <span>Usa Actualizar base gratis para traer partidas publicas al proyecto antes de cargar cantidades.</span>
-                  </div>
-                )}
-                {quantityMessage && <div className="uploadMessage success">{quantityMessage}</div>}
-                {quantityError && <div className="uploadMessage error">{quantityError}</div>}
-              </section>
-            </section>
-          )}
-          {visibleControlView === "claims-audit" && (
-            <section aria-label="Reclamaciones y Auditoria Forense Module" className="quantityModule">
-              <div className="panelHeader">
-                <h2>
-                  <FileSearch size={20} /> Reclamaciones y Auditoria Forense
-                </h2>
-                <span>
-                  Convierte expedientes contractuales en claim, aviso, matriz de entitlement e impacto auditable.
-                </span>
-              </div>
-              <div className="claimSummary">
-                <article>
-                  <span>Claims</span>
-                  <strong>{dashboard.claims_forensic_summary.total_claims}</strong>
-                  <small>Registro contractual del proyecto</small>
-                </article>
-                <article>
-                  <span>Avisos</span>
-                  <strong>
-                    {dashboard.claims_forensic_summary.compliant_notices}/
-                    {dashboard.claims_forensic_summary.notice_count}
-                  </strong>
-                  <small>Compliant / total</small>
-                </article>
-                <article>
-                  <span>Impacto costo</span>
-                  <strong>{currency(dashboard.claims_forensic_summary.total_claimed_cost, project.currency)}</strong>
-                  <small>Reclamado o detectado</small>
-                </article>
-                <article className={dashboard.claims_forensic_summary.forensic_readiness_score < 70 ? "risk" : ""}>
-                  <span>Readiness</span>
-                  <strong>{dashboard.claims_forensic_summary.forensic_readiness_score.toFixed(0)}%</strong>
-                  <small>Notice + impacto + entitlement</small>
-                </article>
-              </div>
-              <form className="adminPanel compactForm" onSubmit={handleClaimsForensicSubmit}>
-                <label>
-                  <span>Modo de analisis</span>
-                  <select value={claimsAuditMode} onChange={(event) => setClaimsAuditMode(event.target.value)}>
-                    <option value="review">Review del dossier</option>
-                    <option value="discovery">Descubrir eventos compensables</option>
-                    <option value="rebuttal">Rebatir reclamacion</option>
-                    <option value="shielding">Blindar informe</option>
-                    <option value="interrogatory">Preguntas al expediente</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Expediente</span>
-                  <input
-                    accept=".csv,.docx,.json,.md,.pdf,.txt,.xml,.zip"
-                    multiple
-                    onChange={(event) => setClaimsAuditFiles(Array.from(event.target.files ?? []))}
-                    type="file"
-                  />
-                </label>
-                <button className="primaryAction" disabled={claimsAuditAction || !claimsAuditFiles.length} type="submit">
-                  {claimsAuditAction ? "Analizando..." : "Analizar expediente"}
-                </button>
-                <small>
-                  Soporta texto, CSV, JSON, XML, DOCX simple y ZIP. PDF queda registrado como evidencia si no hay texto extraible.
-                </small>
-              </form>
-              {claimsAuditFiles.length ? (
-                <div className="uploadMessage success">
-                  {claimsAuditFiles.map((file) => file.name).join(" / ")}
-                </div>
-              ) : null}
-              {claimsAuditResult && (
-                <div className="uploadMessage success">
-                  {claimsAuditResult.summary} Readiness {claimsAuditResult.readiness_score.toFixed(0)}%.
-                </div>
-              )}
-              {claimsAuditMessage && <div className="uploadMessage success">{claimsAuditMessage}</div>}
-              {claimsAuditError && <div className="uploadMessage error">{claimsAuditError}</div>}
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Claim register</h3>
-                    <span>Una tabla para revisar causacion, impacto, soporte y estado de cada reclamo.</span>
-                  </div>
-                  <span>{dashboard.claims.length} claim(s)</span>
-                </div>
-                {dashboard.claims.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Claim</th>
-                        <th>Causacion</th>
-                        <th>Impacto</th>
-                        <th>Entitlement</th>
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dashboard.claims.map((claim) => {
-                        const items = dashboard.claim_entitlement_items.filter((item) => item.claim_id === claim.id);
-                        const satisfied = items.filter((item) => item.status === "satisfied").length;
-                        return (
-                          <tr key={claim.id}>
-                            <td data-label="Claim">
-                              <strong>{claim.title}</strong>
-                              <span>{claim.evidence_summary || "Sin evidencia vinculada"}</span>
-                            </td>
-                            <td data-label="Causacion">{claim.causality || "Pendiente"}</td>
-                            <td data-label="Impacto">{claim.impact || "Pendiente"}</td>
-                            <td data-label="Entitlement">
-                              <strong>
-                                {satisfied}/{items.length}
-                              </strong>
-                              <span>{items.length ? "puntos soportados" : "sin matriz"}</span>
-                            </td>
-                            <td data-label="Estado">{statusLabel(claim.status)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>Sin claims registrados</strong>
-                    <span>Carga un expediente para crear el primer claim auditable.</span>
-                  </div>
-                )}
-              </div>
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Impactos y avisos</h3>
-                    <span>Resumen de dias, costos, metodo de analisis y trazabilidad contractual.</span>
-                  </div>
-                  <span>{dashboard.claim_impact_analyses.length} impacto(s)</span>
-                </div>
-                {dashboard.claim_impact_analyses.length || dashboard.contract_notices.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Tipo</th>
-                        <th>Metodo / asunto</th>
-                        <th>Dias</th>
-                        <th>Costo</th>
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dashboard.claim_impact_analyses.map((analysis) => (
-                        <tr key={`impact-${analysis.id}`}>
-                          <td data-label="Tipo">Impacto</td>
-                          <td data-label="Metodo / asunto">
-                            <strong>{analysis.method}</strong>
-                            <span>{analysis.evidence_ref || "Sin referencia"}</span>
-                          </td>
-                          <td data-label="Dias">{analysis.schedule_impact_days}</td>
-                          <td data-label="Costo">{currency(analysis.cost_impact, project.currency)}</td>
-                          <td data-label="Estado">{statusLabel(analysis.status)}</td>
-                        </tr>
-                      ))}
-                      {dashboard.contract_notices.map((notice) => (
-                        <tr key={`notice-${notice.id}`}>
-                          <td data-label="Tipo">Aviso</td>
-                          <td data-label="Metodo / asunto">
-                            <strong>{notice.subject}</strong>
-                            <span>{notice.reference || "Sin referencia"}</span>
-                          </td>
-                          <td data-label="Dias">{notice.days_late}</td>
-                          <td data-label="Costo">N/A</td>
-                          <td data-label="Estado">{statusLabel(notice.compliance_status)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>Sin impactos ni avisos</strong>
-                    <span>El analisis creara registros cuando detecte aviso, demora, costo o productividad.</span>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-          {visibleControlView === "window-analysis-37" && (
-            <section aria-label="Analisis de Ventanas 3.7 Module" className="quantityModule">
-              <div className="panelHeader">
-                <h2>
-                  <GitBranch size={20} /> Analisis de Ventanas 3.7
-                </h2>
-                <span>
-                  Compara multiples bases o actualizaciones CPM bajo AACE RP29R MIP 3.7 para detectar ventanas,
-                  deslizamientos y candidatos de causa-efecto.
-                </span>
-              </div>
-              <div className="claimSummary">
-                <article>
-                  <span>Cronogramas</span>
-                  <strong>{windowAnalysisResult?.summary.valid_schedule_count ?? 0}</strong>
-                  <small>Validados para comparar</small>
-                </article>
-                <article>
-                  <span>Ventanas</span>
-                  <strong>{windowAnalysisResult?.windows.length ?? 0}</strong>
-                  <small>Entre bases sucesivas</small>
-                </article>
-                <article className={(Number(windowAnalysisResult?.summary.net_delay_days ?? 0) || 0) > 0 ? "risk" : ""}>
-                  <span>Impacto neto</span>
-                  <strong>{windowAnalysisResult?.summary.net_delay_days ?? 0} dias</strong>
-                  <small>Demora critica menos mitigacion</small>
-                </article>
-                <article>
-                  <span>RAG</span>
-                  <strong>{windowAnalysisResult?.rag_sources.length ?? windowAnalysisRagSources.length}</strong>
-                  <small>AACE + guias adjuntas</small>
-                </article>
-              </div>
-              <form className="adminPanel compactForm" onSubmit={handleWindowAnalysis37Submit}>
-                <label>
-                  <span>Actualizaciones CPM</span>
-                  <input
-                    accept=".xer,.xml,.mpp"
-                    multiple
-                    onChange={(event) => setWindowAnalysisFiles(Array.from(event.target.files ?? []))}
-                    type="file"
-                  />
-                </label>
-                <label>
-                  <span>Umbral near-critical dias</span>
-                  <input
-                    min="0"
-                    onChange={(event) => setWindowAnalysisThreshold(Number(event.target.value || 0))}
-                    type="number"
-                    value={windowAnalysisThreshold}
-                  />
-                </label>
-                <button className="primaryAction" disabled={windowAnalysisAction || windowAnalysisFiles.length < 2} type="submit">
-                  {windowAnalysisAction ? "Analizando..." : "Ejecutar ventanas 3.7"}
-                </button>
-                <small>
-                  Soporta XER, Primavera XML y Microsoft Project XML. MPP binario debe exportarse a XML mientras se integra
-                  conversor nativo.
-                </small>
-              </form>
-              {windowAnalysisFiles.length ? (
-                <div className="uploadMessage success">
-                  {windowAnalysisFiles.map((file) => file.name).join(" / ")}
-                </div>
-              ) : null}
-              {windowAnalysisMessage && <div className="uploadMessage success">{windowAnalysisMessage}</div>}
-              {windowAnalysisError && <div className="uploadMessage error">{windowAnalysisError}</div>}
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Fuentes y calidad CPM</h3>
-                    <span>El analisis ordena las bases por fecha de corte y valida actividad, logica y fuente.</span>
-                  </div>
-                  <span>{windowAnalysisResult?.schedule_sources.length ?? 0} archivo(s)</span>
-                </div>
-                {windowAnalysisResult?.schedule_sources.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Archivo</th>
-                        <th>Fuente</th>
-                        <th>Fecha de corte</th>
-                        <th>Actividades</th>
-                        <th>Logica</th>
-                        <th>Calidad</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {windowAnalysisResult.schedule_sources.map((source) => (
-                        <tr key={source.file_name}>
-                          <td data-label="Archivo">
-                            <strong>{source.file_name}</strong>
-                            <span>{source.message || source.finding_code || "Fuente valida"}</span>
-                          </td>
-                          <td data-label="Fuente">{source.source}</td>
-                          <td data-label="Fecha de corte">{source.data_date ?? "N/A"}</td>
-                          <td data-label="Actividades">{source.activity_count}</td>
-                          <td data-label="Logica">{source.relationship_count}</td>
-                          <td data-label="Calidad">
-                            <strong>{source.quality_score.toFixed(0)}%</strong>
-                            <span>{statusLabel(source.status)}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>Sin corrida de ventanas</strong>
-                    <span>Carga dos o mas cronogramas XER/XML para crear las ventanas comparables.</span>
-                  </div>
-                )}
-              </div>
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Ventanas detectadas</h3>
-                    <span>Cada fila compara una base contra la siguiente actualizacion CPM.</span>
-                  </div>
-                  <span>{windowAnalysisResult?.windows.length ?? 0} ventana(s)</span>
-                </div>
-                {windowAnalysisResult?.windows.length ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Ventana</th>
-                        <th>Periodo</th>
-                        <th>Terminacion</th>
-                        <th>Impacto</th>
-                        <th>Cambios</th>
-                        <th>Lectura</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {windowAnalysisResult.windows.map((window) => (
-                        <tr key={`${window.window_no}-${window.start_schedule}-${window.finish_schedule}`}>
-                          <td data-label="Ventana">
-                            <strong>W{window.window_no}</strong>
-                            <span>
-                              {window.start_schedule} {"->"} {window.finish_schedule}
-                            </span>
-                          </td>
-                          <td data-label="Periodo">
-                            {window.start_data_date ?? "N/A"} {"->"} {window.finish_data_date ?? "N/A"}
-                          </td>
-                          <td data-label="Terminacion">
-                            <strong>
-                              {window.start_completion ?? "N/A"} {"->"} {window.finish_completion ?? "N/A"}
-                            </strong>
-                            <span>{window.completion_slip_days} dia(s)</span>
-                          </td>
-                          <td data-label="Impacto">
-                            <strong>{window.critical_delay_days} demora / {window.mitigation_days} mitigacion</strong>
-                            <span>{window.critical_or_near_critical_delay_count} candidato(s) criticos</span>
-                          </td>
-                          <td data-label="Cambios">
-                            <strong>
-                              +{window.added_activity_count} / -{window.removed_activity_count} act
-                            </strong>
-                            <span>
-                              Logica +{window.logic_delta.added_relationships} / -{window.logic_delta.removed_relationships} /{" "}
-                              {window.logic_delta.changed_relationships} mod
-                            </span>
-                          </td>
-                          <td data-label="Lectura">{window.interpretation}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>No hay ventanas calculadas</strong>
-                    <span>Se necesita minimo dos schedules validos con actividades comparables.</span>
-                  </div>
-                )}
-              </div>
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Actividades candidatas de impacto</h3>
-                    <span>Primero se revisan actividades criticas o near-critical con deslizamiento de finish.</span>
-                  </div>
-                  <span>
-                    {windowAnalysisResult?.windows.reduce((total, window) => total + window.top_delay_events.length, 0) ?? 0} candidato(s)
-                  </span>
-                </div>
-                {windowAnalysisResult?.windows.some((window) => window.top_delay_events.length) ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Ventana</th>
-                        <th>Actividad</th>
-                        <th>WBS</th>
-                        <th>Deslizamiento</th>
-                        <th>Float</th>
-                        <th>Clasificacion</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {windowAnalysisResult.windows.flatMap((window) =>
-                        window.top_delay_events.map((event) => (
-                          <tr key={`${window.window_no}-${event.activity_id}`}>
-                            <td data-label="Ventana">W{window.window_no}</td>
-                            <td data-label="Actividad">
-                              <strong>{event.activity_id}</strong>
-                              <span>{event.activity_name}</span>
-                            </td>
-                            <td data-label="WBS">
-                              <strong>{event.wbs_code || "Sin WBS"}</strong>
-                              <span>{event.wbs_name}</span>
-                            </td>
-                            <td data-label="Deslizamiento">
-                              {event.finish_slip_days} finish / {event.start_slip_days} start
-                            </td>
-                            <td data-label="Float">{event.total_float_delta_days} dia(s)</td>
-                            <td data-label="Clasificacion">{statusLabel(event.classification)}</td>
-                          </tr>
-                        )),
-                      )}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>Sin candidatos criticos</strong>
-                    <span>La corrida no detecto deslizamientos criticos o near-critical en actividades comunes.</span>
-                  </div>
-                )}
-              </div>
-              <div className="mappingTable">
-                <div className="panelHeader compactHeader registerHeader">
-                  <div>
-                    <h3>Lineamientos RAG aplicados</h3>
-                    <span>Referencias cargadas para orientar el analisis y sus limitaciones.</span>
-                  </div>
-                  <span>{(windowAnalysisResult?.rag_sources ?? windowAnalysisRagSources).length} fuente(s)</span>
-                </div>
-                <div className="apuCatalogSources">
-                  {(windowAnalysisResult?.rag_sources ?? windowAnalysisRagSources).map((source) => (
-                    <article key={`${source.file_name}-${source.source_type}`}>
-                      <strong>{source.title}</strong>
-                      <span>{source.relevance}</span>
-                      <small>{source.file_name}</small>
-                    </article>
-                  ))}
-                </div>
-                {windowAnalysisResult?.limitations.length ? (
-                  <div className="uploadMessage success">{windowAnalysisResult.limitations.join(" ")}</div>
-                ) : null}
-              </div>
-            </section>
-          )}
-          {visibleControlView === "quantity-takeoff" && (
-            <section aria-label="Cantidades BIM Module" className="quantityModule">
-              <div className="panelHeader">
-                <h2>
-                  <Ruler size={20} /> Cantidades BIM
-                </h2>
-                <span>
-                  {latestQuantityTakeoff?.validation_summary ??
-                    (latestBimModel
-                      ? `Modelo IFC registrado: ${latestBimModel.source_file_name}. Cantidades pendientes de tabla controlada.`
-                      : null) ??
-                    "Carga un IFC, Excel o CSV para iniciar"}
-                </span>
-              </div>
-              <div className="quantityModuleHeader">
-                <div className="quantityUploadActions">
-                  <label className={quantityAction || !canLoadQuantities ? "uploadButton disabled" : "uploadButton"}>
-                    <input
-                      accept=".ifc,.xlsx,.xls,.csv"
-                      aria-label="Load BIM/IFC or Excel quantities"
-                      disabled={!canLoadQuantities || quantityAction}
-                      onChange={handleQuantityTakeoffUpload}
+                      accept=".csv,.docx,.json,.md,.pdf,.txt,.xml,.zip"
+                      multiple
+                      onChange={(event) => setClaimsAuditFiles(Array.from(event.target.files ?? []))}
                       type="file"
                     />
-                    <span>{quantityAction ? "Cargando..." : "Cargar IFC o Excel"}</span>
                   </label>
                   <button
-                    className="quickNavButton"
-                    disabled={quantityAction || (!bimModelRuns.length && !quantityTakeoffRuns.length && !quantityTakeoffLines.length)}
-                    onClick={handleQuantityTakeoffClear}
-                    type="button"
+                    className="primaryAction"
+                    disabled={claimsAuditAction || !claimsAuditFiles.length}
+                    type="submit"
                   >
-                    Limpiar modelo
+                    {claimsAuditAction ? "Analizando..." : "Analizar expediente"}
                   </button>
-                </div>
-                <div className="mappingSummary quantitySummary">
-                  <article>
-                    <span>Cargas</span>
-                    <strong>{bimModelRuns.length || quantityTakeoffRuns.length || 0}</strong>
-                    <small>
-                      {latestBimModel
-                        ? "Modelo IFC registrado"
-                        : latestQuantityTakeoff
-                          ? "Ultima fuente controlada"
-                          : "Sin archivo"}
-                    </small>
-                  </article>
-                  <article>
-                    <span>Lineas</span>
-                    <strong>{latestQuantityTakeoff?.row_count ?? 0}</strong>
-                    <small>{latestQuantityTakeoff?.source_type.toUpperCase() ?? "BIM/Excel"}</small>
-                  </article>
-                  <article>
-                    <span>Codificadas</span>
-                    <strong>{latestQuantityTakeoff?.mapped_line_count ?? 0}</strong>
-                    <small>WBS + CBS + FBS</small>
-                  </article>
-                  <article>
-                    <span>Por revisar</span>
-                    <strong>{quantityNeedsMapping}</strong>
-                    <small>Lineas sin codificacion completa</small>
-                  </article>
-                </div>
-              </div>
-              <div className="bimScopeNote" role="note">
-                <strong>Objetivo del modulo</strong>
-                <span>
-                  Carga el modelo o la plantilla de cantidades, verifica que cada elemento tenga cantidad y trazabilidad,
-                  y deja una sola tabla para asignarlo a WBS, CBS, FBS y paquete de trabajo.
-                </span>
-              </div>
-              <section aria-label="Quantity provenance" className="bimEvidencePanel">
-                <article>
-                  <span>Archivo fuente</span>
-                  <strong>
-                    {latestBimModel?.source_file_name ?? latestQuantityTakeoff?.source_file_name ?? "Sin fuente cargada"}
-                  </strong>
                   <small>
-                    {latestBimModel
-                      ? `Modelo #${latestBimModel.id} / ${latestBimModel.schema || "IFC"} / ${(
-                          latestBimModel.source_size_bytes /
-                          (1024 * 1024)
-                        ).toFixed(2)} MB`
-                      : latestQuantityTakeoff
-                      ? `Run #${latestQuantityTakeoff.id} / v${latestQuantityTakeoff.version} / ${latestQuantityTakeoff.source_type.toUpperCase()}`
-                        : "Carga IFC, Excel o CSV"}
+                    Soporta texto, CSV, JSON, XML, DOCX simple y ZIP. PDF queda registrado como evidencia si no hay
+                    texto extraible.
                   </small>
-                </article>
-                <article>
-                  <span>Identidad del modelo</span>
-                  <strong>{quantityModelIdentity || "Se leera desde las cantidades"}</strong>
-                  <small>
-                    {latestBimModel && !quantityTakeoffLines.length
-                      ? "Faltan las lineas de cantidad extraidas"
-                      : `${quantityElementCount} referencia(s) / ${quantityClassCount} clase(s) IFC`}
-                  </small>
-                </article>
-                <article>
-                  <span>Base de cantidad</span>
-                  <strong>{quantitySourceBasis}</strong>
-                  <small>{quantityRuleSummary || "Reglas de medicion pendientes"}</small>
-                </article>
-                <article>
-                  <span>Vista y control</span>
-                  <strong>
-                    {latestBimModel
-                      ? "Modelo IFC registrado"
-                      : latestQuantityTakeoff?.source_type === "ifc"
-                      ? "Modelo IFC y tabla controlada"
-                        : "Tabla unica de cantidades"}
-                  </strong>
-                  <small>
-                    El visor muestra la geometria guardada; la tabla concentra cantidad, elemento y codigos de control.
-                  </small>
-                </article>
-              </section>
-              <div className="bimAwpGateGrid">
-                <article>
-                  <span>Ubicacion</span>
-                  <strong>{quantityTakeoffLines.length ? "Leida" : "Pendiente"}</strong>
-                  <small>Nivel, zona, sistema o conjunto ayudan a ordenar las cantidades.</small>
-                </article>
-                <article>
-                  <span>Elementos</span>
-                  <strong>
-                    {new Set(
-                      quantityTakeoffLines.map((line) =>
-                        [line.ifc_class, line.type_name, line.unit, line.cbs_code].filter(Boolean).join("|"),
-                      ),
-                    ).size}
-                  </strong>
-                  <small>Agrupados por tipo, unidad, costo y ubicacion de control.</small>
-                </article>
-                <article>
-                  <span>Paquetes</span>
-                  <strong>{quantityTakeoffLines.filter((line) => line.package_code).length}</strong>
-                  <small>Listo cuando cada elemento tenga paquete de trabajo.</small>
-                </article>
-              </div>
-              <LazyModuleErrorBoundary moduleName="Modelo IFC">
-                <Suspense
-                  fallback={
-                    <section aria-label="Modelo IFC" className="bimViewer bimViewerWide ifcGeometryViewer">
-                      <div className="panelHeader compactHeader bimViewerHeader">
-                        <div className="bimViewerTitle">
-                          <h3>Modelo IFC</h3>
-                          <span>Cargando visor IFC bajo demanda...</span>
-                        </div>
-                      </div>
-                      <div className="bimViewerCanvasWrap ifcGeometryCanvasWrap loadingCanvas">
-                        <strong>Preparando visor geometrico</strong>
-                      </div>
-                    </section>
-                  }
-                >
-                  <BimIfcModelViewer
-                    approvalDisabled={quantityAction || !latestQuantityTakeoff}
-                    lines={quantityTakeoffLines}
-                    onApproveControlledMeasurement={handleControlledMeasurementApproval}
-                    projectId={selectedProjectId}
-                    model={displayedBimModel}
-                    run={latestQuantityTakeoff}
-                    token={token}
-                  />
-                </Suspense>
-              </LazyModuleErrorBoundary>
-              <BimScopeValidationPanel
-                cbsCatalog={cbsCatalog}
-                colombiaApuCatalog={colombiaApuCatalog}
-                colombiaApuSync={colombiaApuSync}
-                fbsFundingSources={fbsFundingSources}
-                geometryBatch={geometryMeasurementBatch}
-                geometryBatchDisabled={quantityAction || !latestQuantityTakeoff}
-                geometryModelAvailable={Boolean(geometryMeasurementModel && latestQuantityTakeoff && quantityTakeoffLines.length)}
-                geometryModels={bimModelRuns}
-                geometryModelStatusMessage={geometryModelStatusMessage}
-                geometryRun={latestQuantityTakeoff}
-                lines={quantityTakeoffLines}
-                quantityRules={bimQuantityRules}
-                showApuCatalogBridge={false}
-                apuActionDisabled={quantityAction}
-                approvalDisabled={quantityAction || !latestQuantityTakeoff}
-                assignmentDisabled={quantityAction || !latestQuantityTakeoff}
-                onApproveControlledMeasurement={handleControlledMeasurementApproval}
-                onApproveApuForLines={handleQuantityApuApproval}
-                onAnalyzeGeometryBatch={() => handleGeometryMeasurementBatch(false)}
-                onApplyGeometryBatch={() => handleGeometryMeasurementBatch(true)}
-                onLinkGeometryModel={handleQuantityTakeoffModelLink}
-                onAssignControlCodes={handleQuantityControlCodeAssignment}
-                onOpenBimBudget={() => handleControlFlowNavigate("bim-budget")}
-                onSuggestApuForLines={handleQuantityApuSuggestion}
-                onSyncColombiaApuCatalog={handleColombiaApuCatalogSync}
-                onUpdateQuantityRule={handleBimQuantityRuleUpdate}
-                onRecalculateQuantityRules={handleQuantityRuleRecalculation}
-                recalculationSummary={quantityRuleRecalculation}
-                recalculateDisabled={quantityAction || !latestQuantityTakeoff}
-                wbsCatalog={wbsCatalog}
-                workPackages={dashboard.work_packages ?? []}
-              />
-              {quantityMessage && <div className="uploadMessage success">{quantityMessage}</div>}
-              {quantityError && <div className="uploadMessage error">{quantityError}</div>}
-            </section>
-          )}
-          {visibleControlView === "bim-budget" && (
-            <BimBudgetPanel
-              currency={project.currency}
-              lines={quantityTakeoffLines}
-              onOpenQuantities={() => handleControlFlowNavigate("quantity-takeoff")}
-              onUpdateBudgetItem={handleQuantityControlCodeAssignment}
-              projectCode={project.code}
-              projectName={project.name}
-            />
-          )}
-          {visibleControlView === "dashboard" && (
-            <>
-              <div className="panelHeader">
-                <h2>Dashboard EVM</h2>
-                <span>
-                  Earned Value Management / {project.code} / {project.phase}
-                </span>
-              </div>
-              <div className="dashboardOverviewPanel evmDashboardPanel">
-                <div className="panelHeader compactHeader">
-                  <h2>Resumen EVM</h2>
-                  <span>Valor ganado, variacion y forecast del proyecto</span>
-                </div>
-                <div className="awpSummary evmSummaryGrid">
-                  {evmSummaryCards.map((item) => (
-                    <article className={item.risk ? "risk" : ""} key={item.label}>
-                      <span>{item.label}</span>
-                      <strong>{item.value}</strong>
-                      <small>{item.detail}</small>
-                    </article>
-                  ))}
-                </div>
-                <p className="projectHint">
-                  {baselineOnlyEvm
-                    ? "Solo existe linea base: la curva muestra el plan acumulado y las tarjetas PV, EV y AC quedan en cero hasta cargar un corte de avance/costo."
-                    : "El control se calcula por EVM: PV es el valor planeado acumulado por fecha de corte desde Activity Sheet o cost loading, EV viene del avance fisico aprobado y AC de costos certificados o incurridos. SPI y CPI solo son confiables cuando existen PV, EV y AC del periodo."}
-                </p>
-              </div>
-              <div className="panel wide evmCurvePanel">
-                <div className="panelHeader compactHeader">
-                  <h2>Curva S acumulada</h2>
-                  <span>PV / EV / AC por periodo de control</span>
-                </div>
-                <p className="projectHint">
-                  {baselineOnlyEvm
-                    ? "Fuente: Activity Sheet / linea base aprobada. Sin corte de control no se dibujan EV ni AC."
-                    : "Fuente: Activity Sheet para la curva PV planificada y snapshots de Control Core para EV/AC. Si el backend no trae PV por periodo, la app lo reconstruye desde fechas y costos planificados de actividades."}
-                </p>
-                <ResponsiveContainer width="100%" height={270}>
-                  <LineChart data={evmCurveData} margin={{ bottom: 8, left: 6, right: 26, top: 14 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#d8dee5" />
-                    <XAxis
-                      dataKey="timestamp"
-                      domain={["dataMin", "dataMax"]}
-                      scale="time"
-                      tickFormatter={dateAxis}
-                      type="number"
-                    />
-                    <YAxis domain={[0, "dataMax"]} tickFormatter={(value) => currencyAxis(Number(value), project.currency)} />
-                    <Tooltip
-                      formatter={(value, name) => [currency(Number(value), project.currency), name]}
-                      labelFormatter={tooltipDate}
-                    />
-                    <ReferenceLine
-                      ifOverflow="extendDomain"
-                      label={{ position: "insideBottomLeft", value: `BAC ${currency(projectEvm.bac, project.currency)}` }}
-                      stroke="#52616f"
-                      strokeDasharray="4 4"
-                      y={projectEvm.bac}
-                    />
-                    <ReferenceLine
-                      ifOverflow="extendDomain"
-                      label={{ position: "insideTopRight", value: `EAC ${currency(projectEvm.eac, project.currency)}` }}
-                      stroke="#7c3aed"
-                      strokeDasharray="6 4"
-                      y={projectEvm.eac}
-                    />
-                    <Line
-                      dataKey="PV"
-                      dot={false}
-                      name="PV planned"
-                      stroke="#52616f"
-                      strokeWidth={2.4}
-                      type="monotone"
-                    />
-                    <Line
-                      connectNulls={false}
-                      dataKey="EV"
-                      dot={{ r: 3 }}
-                      name="EV earned"
-                      stroke="#0f8b8d"
-                      strokeWidth={2.4}
-                      type="monotone"
-                    />
-                    <Line
-                      connectNulls={false}
-                      dataKey="AC"
-                      dot={{ r: 3 }}
-                      name="AC actual"
-                      stroke="#c85a3a"
-                      strokeWidth={2.4}
-                      type="monotone"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="viewSplit">
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Control Core Status</h2>
-                    <span>{dashboard.control_accounts.length} accounts</span>
+                </form>
+                {claimsAuditFiles.length ? (
+                  <div className="uploadMessage success">{claimsAuditFiles.map((file) => file.name).join(" / ")}</div>
+                ) : null}
+                {claimsAuditResult && (
+                  <div className="uploadMessage success">
+                    {claimsAuditResult.summary} Readiness {claimsAuditResult.readiness_score.toFixed(0)}%.
                   </div>
-                  <div className="workList">
+                )}
+                {claimsAuditMessage && <div className="uploadMessage success">{claimsAuditMessage}</div>}
+                {claimsAuditError && <div className="uploadMessage error">{claimsAuditError}</div>}
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Claim register</h3>
+                      <span>Una tabla para revisar causacion, impacto, soporte y estado de cada reclamo.</span>
+                    </div>
+                    <span>{dashboard.claims.length} claim(s)</span>
+                  </div>
+                  {dashboard.claims.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Claim</th>
+                          <th>Causacion</th>
+                          <th>Impacto</th>
+                          <th>Entitlement</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dashboard.claims.map((claim) => {
+                          const items = dashboard.claim_entitlement_items.filter((item) => item.claim_id === claim.id);
+                          const satisfied = items.filter((item) => item.status === "satisfied").length;
+                          return (
+                            <tr key={claim.id}>
+                              <td data-label="Claim">
+                                <strong>{claim.title}</strong>
+                                <span>{claim.evidence_summary || "Sin evidencia vinculada"}</span>
+                              </td>
+                              <td data-label="Causacion">{claim.causality || "Pendiente"}</td>
+                              <td data-label="Impacto">{claim.impact || "Pendiente"}</td>
+                              <td data-label="Entitlement">
+                                <strong>
+                                  {satisfied}/{items.length}
+                                </strong>
+                                <span>{items.length ? "puntos soportados" : "sin matriz"}</span>
+                              </td>
+                              <td data-label="Estado">{statusLabel(claim.status)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>Sin claims registrados</strong>
+                      <span>Carga un expediente para crear el primer claim auditable.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Impactos y avisos</h3>
+                      <span>Resumen de dias, costos, metodo de analisis y trazabilidad contractual.</span>
+                    </div>
+                    <span>{dashboard.claim_impact_analyses.length} impacto(s)</span>
+                  </div>
+                  {dashboard.claim_impact_analyses.length || dashboard.contract_notices.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Tipo</th>
+                          <th>Metodo / asunto</th>
+                          <th>Dias</th>
+                          <th>Costo</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dashboard.claim_impact_analyses.map((analysis) => (
+                          <tr key={`impact-${analysis.id}`}>
+                            <td data-label="Tipo">Impacto</td>
+                            <td data-label="Metodo / asunto">
+                              <strong>{analysis.method}</strong>
+                              <span>{analysis.evidence_ref || "Sin referencia"}</span>
+                            </td>
+                            <td data-label="Dias">{analysis.schedule_impact_days}</td>
+                            <td data-label="Costo">{currency(analysis.cost_impact, project.currency)}</td>
+                            <td data-label="Estado">{statusLabel(analysis.status)}</td>
+                          </tr>
+                        ))}
+                        {dashboard.contract_notices.map((notice) => (
+                          <tr key={`notice-${notice.id}`}>
+                            <td data-label="Tipo">Aviso</td>
+                            <td data-label="Metodo / asunto">
+                              <strong>{notice.subject}</strong>
+                              <span>{notice.reference || "Sin referencia"}</span>
+                            </td>
+                            <td data-label="Dias">{notice.days_late}</td>
+                            <td data-label="Costo">N/A</td>
+                            <td data-label="Estado">{statusLabel(notice.compliance_status)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>Sin impactos ni avisos</strong>
+                      <span>El analisis creara registros cuando detecte aviso, demora, costo o productividad.</span>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+            {visibleControlView === "window-analysis-37" && (
+              <section aria-label="Analisis de Ventanas 3.7 Module" className="quantityModule">
+                <div className="panelHeader">
+                  <h2>
+                    <GitBranch size={20} /> Analisis de Ventanas 3.7
+                  </h2>
+                  <span>
+                    Compara multiples bases o actualizaciones CPM bajo AACE RP29R MIP 3.7 para detectar ventanas,
+                    deslizamientos y candidatos de causa-efecto.
+                  </span>
+                </div>
+                <div className="claimSummary">
+                  <article>
+                    <span>Cronogramas</span>
+                    <strong>{windowAnalysisResult?.summary.valid_schedule_count ?? 0}</strong>
+                    <small>Validados para comparar</small>
+                  </article>
+                  <article>
+                    <span>Ventanas</span>
+                    <strong>{windowAnalysisResult?.windows.length ?? 0}</strong>
+                    <small>Entre bases sucesivas</small>
+                  </article>
+                  <article
+                    className={(Number(windowAnalysisResult?.summary.net_delay_days ?? 0) || 0) > 0 ? "risk" : ""}
+                  >
+                    <span>Impacto neto</span>
+                    <strong>{windowAnalysisResult?.summary.net_delay_days ?? 0} dias</strong>
+                    <small>Demora critica menos mitigacion</small>
+                  </article>
+                  <article>
+                    <span>RAG</span>
+                    <strong>{windowAnalysisResult?.rag_sources.length ?? windowAnalysisRagSources.length}</strong>
+                    <small>AACE + guias adjuntas</small>
+                  </article>
+                </div>
+                <form className="adminPanel compactForm" onSubmit={handleWindowAnalysis37Submit}>
+                  <label>
+                    <span>Actualizaciones CPM</span>
+                    <input
+                      accept=".xer,.xml,.mpp"
+                      multiple
+                      onChange={(event) => setWindowAnalysisFiles(Array.from(event.target.files ?? []))}
+                      type="file"
+                    />
+                  </label>
+                  <label>
+                    <span>Umbral near-critical dias</span>
+                    <input
+                      min="0"
+                      onChange={(event) => setWindowAnalysisThreshold(Number(event.target.value || 0))}
+                      type="number"
+                      value={windowAnalysisThreshold}
+                    />
+                  </label>
+                  <button
+                    className="primaryAction"
+                    disabled={windowAnalysisAction || windowAnalysisFiles.length < 2}
+                    type="submit"
+                  >
+                    {windowAnalysisAction ? "Analizando..." : "Ejecutar ventanas 3.7"}
+                  </button>
+                  <small>
+                    Soporta XER, Primavera XML y Microsoft Project XML. MPP binario debe exportarse a XML mientras se
+                    integra conversor nativo.
+                  </small>
+                </form>
+                {windowAnalysisFiles.length ? (
+                  <div className="uploadMessage success">
+                    {windowAnalysisFiles.map((file) => file.name).join(" / ")}
+                  </div>
+                ) : null}
+                {windowAnalysisMessage && <div className="uploadMessage success">{windowAnalysisMessage}</div>}
+                {windowAnalysisError && <div className="uploadMessage error">{windowAnalysisError}</div>}
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Fuentes y calidad CPM</h3>
+                      <span>El analisis ordena las bases por fecha de corte y valida actividad, logica y fuente.</span>
+                    </div>
+                    <span>{windowAnalysisResult?.schedule_sources.length ?? 0} archivo(s)</span>
+                  </div>
+                  {windowAnalysisResult?.schedule_sources.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Archivo</th>
+                          <th>Fuente</th>
+                          <th>Fecha de corte</th>
+                          <th>Actividades</th>
+                          <th>Logica</th>
+                          <th>Calidad</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {windowAnalysisResult.schedule_sources.map((source) => (
+                          <tr key={source.file_name}>
+                            <td data-label="Archivo">
+                              <strong>{source.file_name}</strong>
+                              <span>{source.message || source.finding_code || "Fuente valida"}</span>
+                            </td>
+                            <td data-label="Fuente">{source.source}</td>
+                            <td data-label="Fecha de corte">{source.data_date ?? "N/A"}</td>
+                            <td data-label="Actividades">{source.activity_count}</td>
+                            <td data-label="Logica">{source.relationship_count}</td>
+                            <td data-label="Calidad">
+                              <strong>{source.quality_score.toFixed(0)}%</strong>
+                              <span>{statusLabel(source.status)}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>Sin corrida de ventanas</strong>
+                      <span>Carga dos o mas cronogramas XER/XML para crear las ventanas comparables.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Ventanas detectadas</h3>
+                      <span>Cada fila compara una base contra la siguiente actualizacion CPM.</span>
+                    </div>
+                    <span>{windowAnalysisResult?.windows.length ?? 0} ventana(s)</span>
+                  </div>
+                  {windowAnalysisResult?.windows.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Ventana</th>
+                          <th>Periodo</th>
+                          <th>Terminacion</th>
+                          <th>Impacto</th>
+                          <th>Cambios</th>
+                          <th>Lectura</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {windowAnalysisResult.windows.map((window) => (
+                          <tr key={`${window.window_no}-${window.start_schedule}-${window.finish_schedule}`}>
+                            <td data-label="Ventana">
+                              <strong>W{window.window_no}</strong>
+                              <span>
+                                {window.start_schedule} {"->"} {window.finish_schedule}
+                              </span>
+                            </td>
+                            <td data-label="Periodo">
+                              {window.start_data_date ?? "N/A"} {"->"} {window.finish_data_date ?? "N/A"}
+                            </td>
+                            <td data-label="Terminacion">
+                              <strong>
+                                {window.start_completion ?? "N/A"} {"->"} {window.finish_completion ?? "N/A"}
+                              </strong>
+                              <span>{window.completion_slip_days} dia(s)</span>
+                            </td>
+                            <td data-label="Impacto">
+                              <strong>
+                                {window.critical_delay_days} demora / {window.mitigation_days} mitigacion
+                              </strong>
+                              <span>{window.critical_or_near_critical_delay_count} candidato(s) criticos</span>
+                            </td>
+                            <td data-label="Cambios">
+                              <strong>
+                                +{window.added_activity_count} / -{window.removed_activity_count} act
+                              </strong>
+                              <span>
+                                Logica +{window.logic_delta.added_relationships} / -
+                                {window.logic_delta.removed_relationships} / {window.logic_delta.changed_relationships}{" "}
+                                mod
+                              </span>
+                            </td>
+                            <td data-label="Lectura">{window.interpretation}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>No hay ventanas calculadas</strong>
+                      <span>Se necesita minimo dos schedules validos con actividades comparables.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Actividades candidatas de impacto</h3>
+                      <span>Primero se revisan actividades criticas o near-critical con deslizamiento de finish.</span>
+                    </div>
+                    <span>
+                      {windowAnalysisResult?.windows.reduce(
+                        (total, window) => total + window.top_delay_events.length,
+                        0
+                      ) ?? 0}{" "}
+                      candidato(s)
+                    </span>
+                  </div>
+                  {windowAnalysisResult?.windows.some((window) => window.top_delay_events.length) ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Ventana</th>
+                          <th>Actividad</th>
+                          <th>WBS</th>
+                          <th>Deslizamiento</th>
+                          <th>Float</th>
+                          <th>Clasificacion</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {windowAnalysisResult.windows.flatMap((window) =>
+                          window.top_delay_events.map((event) => (
+                            <tr key={`${window.window_no}-${event.activity_id}`}>
+                              <td data-label="Ventana">W{window.window_no}</td>
+                              <td data-label="Actividad">
+                                <strong>{event.activity_id}</strong>
+                                <span>{event.activity_name}</span>
+                              </td>
+                              <td data-label="WBS">
+                                <strong>{event.wbs_code || "Sin WBS"}</strong>
+                                <span>{event.wbs_name}</span>
+                              </td>
+                              <td data-label="Deslizamiento">
+                                {event.finish_slip_days} finish / {event.start_slip_days} start
+                              </td>
+                              <td data-label="Float">{event.total_float_delta_days} dia(s)</td>
+                              <td data-label="Clasificacion">{statusLabel(event.classification)}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>Sin candidatos criticos</strong>
+                      <span>La corrida no detecto deslizamientos criticos o near-critical en actividades comunes.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mappingTable">
+                  <div className="panelHeader compactHeader registerHeader">
+                    <div>
+                      <h3>Lineamientos RAG aplicados</h3>
+                      <span>Referencias cargadas para orientar el analisis y sus limitaciones.</span>
+                    </div>
+                    <span>{(windowAnalysisResult?.rag_sources ?? windowAnalysisRagSources).length} fuente(s)</span>
+                  </div>
+                  <div className="apuCatalogSources">
+                    {(windowAnalysisResult?.rag_sources ?? windowAnalysisRagSources).map((source) => (
+                      <article key={`${source.file_name}-${source.source_type}`}>
+                        <strong>{source.title}</strong>
+                        <span>{source.relevance}</span>
+                        <small>{source.file_name}</small>
+                      </article>
+                    ))}
+                  </div>
+                  {windowAnalysisResult?.limitations.length ? (
+                    <div className="uploadMessage success">{windowAnalysisResult.limitations.join(" ")}</div>
+                  ) : null}
+                </div>
+              </section>
+            )}
+            {visibleControlView === "quantity-takeoff" && (
+              <section aria-label="Cantidades BIM Module" className="quantityModule">
+                <div className="panelHeader">
+                  <h2>
+                    <Ruler size={20} /> Cantidades BIM
+                  </h2>
+                  <span>
+                    {latestQuantityTakeoff?.validation_summary ??
+                      (latestBimModel
+                        ? `Modelo IFC registrado: ${latestBimModel.source_file_name}. Cantidades pendientes de tabla controlada.`
+                        : null) ??
+                      "Carga un IFC, Excel o CSV para iniciar"}
+                  </span>
+                </div>
+                <div className="quantityModuleHeader">
+                  <div className="quantityUploadActions">
+                    <label className={quantityAction || !canLoadQuantities ? "uploadButton disabled" : "uploadButton"}>
+                      <input
+                        accept=".ifc,.xlsx,.xls,.csv"
+                        aria-label="Load BIM/IFC or Excel quantities"
+                        disabled={!canLoadQuantities || quantityAction}
+                        onChange={handleQuantityTakeoffUpload}
+                        type="file"
+                      />
+                      <span>{quantityAction ? "Cargando..." : "Cargar IFC o Excel"}</span>
+                    </label>
+                    <button
+                      className="quickNavButton"
+                      disabled={
+                        quantityAction ||
+                        (!bimModelRuns.length && !quantityTakeoffRuns.length && !quantityTakeoffLines.length)
+                      }
+                      onClick={handleQuantityTakeoffClear}
+                      type="button"
+                    >
+                      Limpiar modelo
+                    </button>
+                  </div>
+                  <div className="mappingSummary quantitySummary">
                     <article>
-                      <strong>{activeImport ? "Baseline loaded" : "Baseline pending"}</strong>
-                      <span>
-                        {activeImport
-                          ? `${activeImport.baseline_name} / quality ${activeImport.quality_score.toFixed(0)}%`
-                          : "Upload XML/XER to start the baseline and control workflow."}
-                      </span>
+                      <span>Cargas</span>
+                      <strong>{bimModelRuns.length || quantityTakeoffRuns.length || 0}</strong>
                       <small>
-                        {dashboard.schedule_activity_count} activities / {dashboard.schedule_findings.length} findings
+                        {latestBimModel
+                          ? "Modelo IFC registrado"
+                          : latestQuantityTakeoff
+                            ? "Ultima fuente controlada"
+                            : "Sin archivo"}
                       </small>
                     </article>
                     <article>
-                      <strong>AWP readiness {dashboard.awp_summary.readiness_score.toFixed(1)}%</strong>
-                      <span>
-                        {dashboard.awp_summary.ready_for_release} ready / {dashboard.awp_summary.blocked_packages} blocked
-                      </span>
-                      <small>{dashboard.awp_summary.total_packages} work packages</small>
+                      <span>Lineas</span>
+                      <strong>{latestQuantityTakeoff?.row_count ?? 0}</strong>
+                      <small>{latestQuantityTakeoff?.source_type.toUpperCase() ?? "BIM/Excel"}</small>
+                    </article>
+                    <article>
+                      <span>Codificadas</span>
+                      <strong>{latestQuantityTakeoff?.mapped_line_count ?? 0}</strong>
+                      <small>WBS + CBS + FBS</small>
+                    </article>
+                    <article>
+                      <span>Por revisar</span>
+                      <strong>{quantityNeedsMapping}</strong>
+                      <small>Lineas sin codificacion completa</small>
                     </article>
                   </div>
                 </div>
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Control Flow Snapshot</h2>
-                    <span>Live project controls</span>
-                  </div>
-                  <div className="loopList">
-                    {(dashboard.flow ?? []).length ? (
-                      dashboard.flow.map((item) => (
-                        <div key={item.name}>
-                          <strong>{item.name}</strong>
-                          <span>
-                            {item.state} / {item.purpose}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <>
-                        <div>
-                          <strong>Baseline</strong>
-                          <span>{dashboard.schedule_activity_count} activities loaded</span>
-                        </div>
-                        <div>
-                          <strong>Progress</strong>
-                          <span>{dashboard.latest_progress_records.length} records captured</span>
-                        </div>
-                        <div>
-                          <strong>Costs</strong>
-                          <span>{dashboard.cost_sheet.length} cost lines available</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                <div className="bimScopeNote" role="note">
+                  <strong>Objetivo del modulo</strong>
+                  <span>
+                    Carga el modelo o la plantilla de cantidades, verifica que cada elemento tenga cantidad y
+                    trazabilidad, y deja una sola tabla para asignarlo a WBS, CBS, FBS y paquete de trabajo.
+                  </span>
                 </div>
-              </div>
-            </>
-          )}
-          {visibleControlView === "integrated-control" && (
-            <>
-              <div className="panelHeader">
-                <h2>Mapa WBS-CBS-FBS</h2>
-                <span>{integratedMatrix.length} trace rows</span>
-              </div>
-              <section className="moduleGuide" aria-label="CBS FBS relation guide">
-                <strong className="moduleGuideTitle">Como se vincula WBS, CBS y FBS</strong>
-                <span>
-                  FBS es fuente de financiacion; CBS es estructura de costo. Se relacionan con WBS por cuenta de control,
-                  Cost Code y procesos BP CBS-Fund / BP CBS-WBS, no como listas sueltas.
-                </span>
-                <span>
-                  Convencion: CBS-{"{Proyecto}"}-{"{WBS}"}-{"{Familia de costo}"}. La Activity Sheet propone
-                  drafts por WBS y familia; el usuario valida el catalogo antes del rollup de costos.
-                </span>
+                <section aria-label="Quantity provenance" className="bimEvidencePanel">
+                  <article>
+                    <span>Archivo fuente</span>
+                    <strong>
+                      {latestBimModel?.source_file_name ??
+                        latestQuantityTakeoff?.source_file_name ??
+                        "Sin fuente cargada"}
+                    </strong>
+                    <small>
+                      {latestBimModel
+                        ? `Modelo #${latestBimModel.id} / ${latestBimModel.schema || "IFC"} / ${(
+                            latestBimModel.source_size_bytes /
+                            (1024 * 1024)
+                          ).toFixed(2)} MB`
+                        : latestQuantityTakeoff
+                          ? `Run #${latestQuantityTakeoff.id} / v${latestQuantityTakeoff.version} / ${latestQuantityTakeoff.source_type.toUpperCase()}`
+                          : "Carga IFC, Excel o CSV"}
+                    </small>
+                  </article>
+                  <article>
+                    <span>Identidad del modelo</span>
+                    <strong>{quantityModelIdentity || "Se leera desde las cantidades"}</strong>
+                    <small>
+                      {latestBimModel && !quantityTakeoffLines.length
+                        ? "Faltan las lineas de cantidad extraidas"
+                        : `${quantityElementCount} referencia(s) / ${quantityClassCount} clase(s) IFC`}
+                    </small>
+                  </article>
+                  <article>
+                    <span>Base de cantidad</span>
+                    <strong>{quantitySourceBasis}</strong>
+                    <small>{quantityRuleSummary || "Reglas de medicion pendientes"}</small>
+                  </article>
+                  <article>
+                    <span>Vista y control</span>
+                    <strong>
+                      {latestBimModel
+                        ? "Modelo IFC registrado"
+                        : latestQuantityTakeoff?.source_type === "ifc"
+                          ? "Modelo IFC y tabla controlada"
+                          : "Tabla unica de cantidades"}
+                    </strong>
+                    <small>
+                      El visor muestra la geometria guardada; la tabla concentra cantidad, elemento y codigos de
+                      control.
+                    </small>
+                  </article>
+                </section>
+                <div className="bimAwpGateGrid">
+                  <article>
+                    <span>Ubicacion</span>
+                    <strong>{quantityTakeoffLines.length ? "Leida" : "Pendiente"}</strong>
+                    <small>Nivel, zona, sistema o conjunto ayudan a ordenar las cantidades.</small>
+                  </article>
+                  <article>
+                    <span>Elementos</span>
+                    <strong>
+                      {
+                        new Set(
+                          quantityTakeoffLines.map((line) =>
+                            [line.ifc_class, line.type_name, line.unit, line.cbs_code].filter(Boolean).join("|")
+                          )
+                        ).size
+                      }
+                    </strong>
+                    <small>Agrupados por tipo, unidad, costo y ubicacion de control.</small>
+                  </article>
+                  <article>
+                    <span>Paquetes</span>
+                    <strong>{quantityTakeoffLines.filter((line) => line.package_code).length}</strong>
+                    <small>Listo cuando cada elemento tenga paquete de trabajo.</small>
+                  </article>
+                </div>
+                <LazyModuleErrorBoundary moduleName="Modelo IFC">
+                  <Suspense
+                    fallback={
+                      <section aria-label="Modelo IFC" className="bimViewer bimViewerWide ifcGeometryViewer">
+                        <div className="panelHeader compactHeader bimViewerHeader">
+                          <div className="bimViewerTitle">
+                            <h3>Modelo IFC</h3>
+                            <span>Cargando visor IFC bajo demanda...</span>
+                          </div>
+                        </div>
+                        <div className="bimViewerCanvasWrap ifcGeometryCanvasWrap loadingCanvas">
+                          <strong>Preparando visor geometrico</strong>
+                        </div>
+                      </section>
+                    }
+                  >
+                    <BimIfcModelViewer
+                      approvalDisabled={quantityAction || !latestQuantityTakeoff}
+                      lines={quantityTakeoffLines}
+                      onApproveControlledMeasurement={handleControlledMeasurementApproval}
+                      projectId={selectedProjectId}
+                      model={displayedBimModel}
+                      run={latestQuantityTakeoff}
+                      token={token}
+                    />
+                  </Suspense>
+                </LazyModuleErrorBoundary>
+                <BimScopeValidationPanel
+                  cbsCatalog={cbsCatalog}
+                  colombiaApuCatalog={colombiaApuCatalog}
+                  colombiaApuSync={colombiaApuSync}
+                  fbsFundingSources={fbsFundingSources}
+                  geometryBatch={geometryMeasurementBatch}
+                  geometryBatchDisabled={quantityAction || !latestQuantityTakeoff}
+                  geometryModelAvailable={Boolean(
+                    geometryMeasurementModel && latestQuantityTakeoff && quantityTakeoffLines.length
+                  )}
+                  geometryModels={bimModelRuns}
+                  geometryModelStatusMessage={geometryModelStatusMessage}
+                  geometryRun={latestQuantityTakeoff}
+                  lines={quantityTakeoffLines}
+                  quantityRules={bimQuantityRules}
+                  showApuCatalogBridge={false}
+                  apuActionDisabled={quantityAction}
+                  approvalDisabled={quantityAction || !latestQuantityTakeoff}
+                  assignmentDisabled={quantityAction || !latestQuantityTakeoff}
+                  onApproveControlledMeasurement={handleControlledMeasurementApproval}
+                  onApproveApuForLines={handleQuantityApuApproval}
+                  onAnalyzeGeometryBatch={() => handleGeometryMeasurementBatch(false)}
+                  onApplyGeometryBatch={() => handleGeometryMeasurementBatch(true)}
+                  onLinkGeometryModel={handleQuantityTakeoffModelLink}
+                  onAssignControlCodes={handleQuantityControlCodeAssignment}
+                  onOpenBimBudget={() => handleControlFlowNavigate("bim-budget")}
+                  onSuggestApuForLines={handleQuantityApuSuggestion}
+                  onSyncColombiaApuCatalog={handleColombiaApuCatalogSync}
+                  onUpdateQuantityRule={handleBimQuantityRuleUpdate}
+                  onRecalculateQuantityRules={handleQuantityRuleRecalculation}
+                  recalculationSummary={quantityRuleRecalculation}
+                  recalculateDisabled={quantityAction || !latestQuantityTakeoff}
+                  wbsCatalog={wbsCatalog}
+                  workPackages={dashboard.work_packages ?? []}
+                />
+                {quantityMessage && <div className="uploadMessage success">{quantityMessage}</div>}
+                {quantityError && <div className="uploadMessage error">{quantityError}</div>}
               </section>
-              <section aria-label="WBS Master Structure" className="panel wide wbsStructurePanel">
-                <div className="panelHeader compactHeader">
-                  <h2>
-                    <GitBranch size={18} /> WBS Master Structure
-                  </h2>
-                  <span>{wbsTableRows.length} active nodes</span>
+            )}
+            {visibleControlView === "bim-budget" && (
+              <BimBudgetPanel
+                currency={project.currency}
+                lines={quantityTakeoffLines}
+                onOpenQuantities={() => handleControlFlowNavigate("quantity-takeoff")}
+                onUpdateBudgetItem={handleQuantityControlCodeAssignment}
+                projectCode={project.code}
+                projectName={project.name}
+              />
+            )}
+            {visibleControlView === "dashboard" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Dashboard EVM</h2>
+                  <span>
+                    Earned Value Management / {project.code} / {project.phase}
+                  </span>
                 </div>
-                {primaryWbsTree.length ? (
-                  <div aria-label={`WBS mapping tree for ${project.code}`} className="wbsTreeCanvas" role="tree">
-                    {shouldRenderProjectRoot ? (
-                      <div className="wbsProjectTreeRoot">
-                        <article
-                          aria-label={`${project.code} ${project.name}`}
-                          aria-level={1}
-                          className="wbsNodeCard projectRoot"
-                          role="treeitem"
-                        >
-                          <strong>{project.code}</strong>
-                          <span>{project.name}</span>
-                          <small>Project</small>
-                        </article>
-                        <div className="wbsChildren wbsProjectChildren">
+                <div className="dashboardOverviewPanel evmDashboardPanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>Resumen EVM</h2>
+                    <span>Valor ganado, variacion y forecast del proyecto</span>
+                  </div>
+                  <div className="awpSummary evmSummaryGrid">
+                    {evmSummaryCards.map((item) => (
+                      <article className={item.risk ? "risk" : ""} key={item.label}>
+                        <span>{item.label}</span>
+                        <strong>{item.value}</strong>
+                        <small>{item.detail}</small>
+                      </article>
+                    ))}
+                  </div>
+                  <p className="projectHint">
+                    {baselineOnlyEvm
+                      ? "Solo existe linea base: la curva muestra el plan acumulado y las tarjetas PV, EV y AC quedan en cero hasta cargar un corte de avance/costo."
+                      : "El control se calcula por EVM: PV es el valor planeado acumulado por fecha de corte desde Activity Sheet o cost loading, EV viene del avance fisico aprobado y AC de costos certificados o incurridos. SPI y CPI solo son confiables cuando existen PV, EV y AC del periodo."}
+                  </p>
+                </div>
+                <div className="panel wide evmCurvePanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>Curva S acumulada</h2>
+                    <span>PV / EV / AC por periodo de control</span>
+                  </div>
+                  <p className="projectHint">
+                    {baselineOnlyEvm
+                      ? "Fuente: Activity Sheet / linea base aprobada. Sin corte de control no se dibujan EV ni AC."
+                      : "Fuente: Activity Sheet para la curva PV planificada y snapshots de Control Core para EV/AC. Si el backend no trae PV por periodo, la app lo reconstruye desde fechas y costos planificados de actividades."}
+                  </p>
+                  <ResponsiveContainer width="100%" height={270}>
+                    <LineChart data={evmCurveData} margin={{ bottom: 8, left: 6, right: 26, top: 14 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#d8dee5" />
+                      <XAxis
+                        dataKey="timestamp"
+                        domain={["dataMin", "dataMax"]}
+                        scale="time"
+                        tickFormatter={dateAxis}
+                        type="number"
+                      />
+                      <YAxis
+                        domain={[0, "dataMax"]}
+                        tickFormatter={(value) => currencyAxis(Number(value), project.currency)}
+                      />
+                      <Tooltip
+                        formatter={(value, name) => [currency(Number(value), project.currency), name]}
+                        labelFormatter={tooltipDate}
+                      />
+                      <ReferenceLine
+                        ifOverflow="extendDomain"
+                        label={{
+                          position: "insideBottomLeft",
+                          value: `BAC ${currency(projectEvm.bac, project.currency)}`,
+                        }}
+                        stroke="#52616f"
+                        strokeDasharray="4 4"
+                        y={projectEvm.bac}
+                      />
+                      <ReferenceLine
+                        ifOverflow="extendDomain"
+                        label={{
+                          position: "insideTopRight",
+                          value: `EAC ${currency(projectEvm.eac, project.currency)}`,
+                        }}
+                        stroke="#7c3aed"
+                        strokeDasharray="6 4"
+                        y={projectEvm.eac}
+                      />
+                      <Line
+                        dataKey="PV"
+                        dot={false}
+                        name="PV planned"
+                        stroke="#52616f"
+                        strokeWidth={2.4}
+                        type="monotone"
+                      />
+                      <Line
+                        connectNulls={false}
+                        dataKey="EV"
+                        dot={{ r: 3 }}
+                        name="EV earned"
+                        stroke="#0f8b8d"
+                        strokeWidth={2.4}
+                        type="monotone"
+                      />
+                      <Line
+                        connectNulls={false}
+                        dataKey="AC"
+                        dot={{ r: 3 }}
+                        name="AC actual"
+                        stroke="#c85a3a"
+                        strokeWidth={2.4}
+                        type="monotone"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="viewSplit">
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Control Core Status</h2>
+                      <span>{dashboard.control_accounts.length} accounts</span>
+                    </div>
+                    <div className="workList">
+                      <article>
+                        <strong>{activeImport ? "Baseline loaded" : "Baseline pending"}</strong>
+                        <span>
+                          {activeImport
+                            ? `${activeImport.baseline_name} / quality ${activeImport.quality_score.toFixed(0)}%`
+                            : "Upload XML/XER to start the baseline and control workflow."}
+                        </span>
+                        <small>
+                          {dashboard.schedule_activity_count} activities / {dashboard.schedule_findings.length} findings
+                        </small>
+                      </article>
+                      <article>
+                        <strong>AWP readiness {dashboard.awp_summary.readiness_score.toFixed(1)}%</strong>
+                        <span>
+                          {dashboard.awp_summary.ready_for_release} ready / {dashboard.awp_summary.blocked_packages}{" "}
+                          blocked
+                        </span>
+                        <small>{dashboard.awp_summary.total_packages} work packages</small>
+                      </article>
+                    </div>
+                  </div>
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Control Flow Snapshot</h2>
+                      <span>Live project controls</span>
+                    </div>
+                    <div className="loopList">
+                      {(dashboard.flow ?? []).length ? (
+                        dashboard.flow.map((item) => (
+                          <div key={item.name}>
+                            <strong>{item.name}</strong>
+                            <span>
+                              {item.state} / {item.purpose}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <>
+                          <div>
+                            <strong>Baseline</strong>
+                            <span>{dashboard.schedule_activity_count} activities loaded</span>
+                          </div>
+                          <div>
+                            <strong>Progress</strong>
+                            <span>{dashboard.latest_progress_records.length} records captured</span>
+                          </div>
+                          <div>
+                            <strong>Costs</strong>
+                            <span>{dashboard.cost_sheet.length} cost lines available</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {visibleControlView === "integrated-control" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Mapa WBS-CBS-FBS</h2>
+                  <span>{integratedMatrix.length} trace rows</span>
+                </div>
+                <section className="moduleGuide" aria-label="CBS FBS relation guide">
+                  <strong className="moduleGuideTitle">Como se vincula WBS, CBS y FBS</strong>
+                  <span>
+                    FBS es fuente de financiacion; CBS es estructura de costo. Se relacionan con WBS por cuenta de
+                    control, Cost Code y procesos BP CBS-Fund / BP CBS-WBS, no como listas sueltas.
+                  </span>
+                  <span>
+                    Convencion: CBS-{"{Proyecto}"}-{"{WBS}"}-{"{Familia de costo}"}. La Activity Sheet propone drafts
+                    por WBS y familia; el usuario valida el catalogo antes del rollup de costos.
+                  </span>
+                </section>
+                <section aria-label="WBS Master Structure" className="panel wide wbsStructurePanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>
+                      <GitBranch size={18} /> WBS Master Structure
+                    </h2>
+                    <span>{wbsTableRows.length} active nodes</span>
+                  </div>
+                  {primaryWbsTree.length ? (
+                    <div aria-label={`WBS mapping tree for ${project.code}`} className="wbsTreeCanvas" role="tree">
+                      {shouldRenderProjectRoot ? (
+                        <div className="wbsProjectTreeRoot">
+                          <article
+                            aria-label={`${project.code} ${project.name}`}
+                            aria-level={1}
+                            className="wbsNodeCard projectRoot"
+                            role="treeitem"
+                          >
+                            <strong>{project.code}</strong>
+                            <span>{project.name}</span>
+                            <small>Project</small>
+                          </article>
+                          <div className="wbsChildren wbsProjectChildren">
+                            {primaryWbsTree.map((node) => (
+                              <WbsTreeBranch
+                                activityByCode={activityWbsByCode}
+                                currencyCode={project.currency}
+                                depth={1}
+                                key={node.id}
+                                node={node}
+                                project={project}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="wbsTreeRoots">
                           {primaryWbsTree.map((node) => (
                             <WbsTreeBranch
                               activityByCode={activityWbsByCode}
                               currencyCode={project.currency}
-                              depth={1}
+                              depth={0}
                               key={node.id}
                               node={node}
                               project={project}
                             />
                           ))}
                         </div>
-                      </div>
-                    ) : (
-                      <div className="wbsTreeRoots">
-                        {primaryWbsTree.map((node) => (
-                          <WbsTreeBranch
-                            activityByCode={activityWbsByCode}
-                            currencyCode={project.currency}
-                            depth={0}
-                            key={node.id}
-                            node={node}
-                            project={project}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>No WBS nodes</strong>
-                    <p>Load the schedule or create WBS nodes before mapping CBS and FBS.</p>
-                  </div>
-                )}
-              </section>
-              <section aria-label="WBS Control Alignment" className="panel wide wbsControlAlignment">
-                <div className="panelHeader compactHeader">
-                  <h2>WBS Control Alignment</h2>
-                  <span>{wbsTraceabilityRows.length} linked control chain(s)</span>
-                </div>
-                {wbsTraceabilityRows.length ? (
-                  <div className="wbsAlignmentList">
-                    {wbsTraceabilityRows.map((row) => (
-                      <article
-                        aria-label={`${row.wbsName} control alignment`}
-                        className="wbsAlignmentCard"
-                        key={row.id}
-                      >
-                        <div className="wbsAlignmentNode primary">
-                          <span>WBS</span>
-                          <strong>{row.wbsName}</strong>
-                          <small>{row.wbsCode}</small>
-                        </div>
-                        <div className="wbsAlignmentNode">
-                          <span>Control Account</span>
-                          <strong>{row.controlAccountName}</strong>
-                          <small>{row.controlAccountCode}</small>
-                        </div>
-                        <div className="wbsAlignmentNode">
-                          <span>CBS</span>
-                          <strong>{row.cbsCode}</strong>
-                          <small>{row.costCode !== "Cost code pending" ? row.costCode : "CostCode pending"}</small>
-                        </div>
-                        <div className="wbsAlignmentNode">
-                          <span>FBS</span>
-                          <strong>{row.fbsCode}</strong>
-                          <small>{row.fbsCode !== "FBS pending" ? "Funding source linked" : "BP CBS-Fund pending"}</small>
-                        </div>
-                        <div className="wbsAlignmentNode">
-                          <span>AWP</span>
-                          <strong>{row.awpPackageTitle}</strong>
-                          <small>{row.awpPackageCode}</small>
-                        </div>
-                        <div className="wbsAlignmentNode budget">
-                          <span>Budget</span>
-                          <strong>{currency(row.budget, project.currency)}</strong>
-                          <small>{row.status}</small>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="workspaceEmpty compactEmpty">
-                    <strong>No control alignment yet</strong>
-                    <p>Create an active control account and link CBS/FBS funding to the WBS.</p>
-                  </div>
-                )}
-              </section>
-              <section aria-label="WBS Traceability Matrix" className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>WBS Traceability Matrix</h2>
-                  <span>{wbsTraceabilityRows.length} active account(s)</span>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>WBS</th>
-                      <th>Control Account</th>
-                      <th>CBS</th>
-                      <th>FBS</th>
-                      <th>AWP Package</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {wbsTraceabilityRows.map((row) => (
-                      <tr key={row.id}>
-                        <td>
-                          <strong>{row.wbsName}</strong>
-                          <span>{row.wbsCode}</span>
-                        </td>
-                        <td>
-                          <strong>{row.controlAccountCode}</strong>
-                          <span>{row.controlAccountName}</span>
-                        </td>
-                        <td>{row.cbsCode}</td>
-                        <td>{row.fbsCode}</td>
-                        <td>
-                          <strong>{row.awpPackageTitle}</strong>
-                          <span>{row.awpPackageCode}</span>
-                        </td>
-                        <td>{row.status}</td>
-                      </tr>
-                    ))}
-                    {!wbsTraceabilityRows.length && (
-                      <tr>
-                        <td colSpan={6}>
-                          <strong>No active WBS traceability yet</strong>
-                          <span>Create an active control account and link CBS/FBS funding to the WBS.</span>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </section>
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handleFbsCreate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Crear FBS</h2>
-                    <span>{fbsFundingSources.length} sources</span>
-                  </div>
-                  <label>
-                    <span>FBS Code</span>
-                    <input
-                      disabled={!canConfigure || fbsAction}
-                      onChange={(event) => setFbsDraft((current) => ({ ...current, code: event.target.value }))}
-                      placeholder="FBS-OWN-AFE002-PLT"
-                      required
-                      value={fbsDraft.code}
-                    />
-                  </label>
-                  <label>
-                    <span>Source</span>
-                    <input
-                      disabled={!canConfigure || fbsAction}
-                      onChange={(event) =>
-                        setFbsDraft((current) => ({ ...current, source_of_funds: event.target.value }))
-                      }
-                      required
-                      value={fbsDraft.source_of_funds}
-                    />
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Type</span>
-                      <select
-                        disabled={!canConfigure || fbsAction}
-                        onChange={(event) =>
-                          setFbsDraft((current) => ({ ...current, funding_type: event.target.value }))
-                        }
-                        value={fbsDraft.funding_type}
-                      >
-                        <option value="AFE">AFE</option>
-                        <option value="Debt">Debt</option>
-                        <option value="Public funding">Public funding</option>
-                        <option value="Reserve">Reserve</option>
-                      </select>
-                    </label>
-                    <label>
-                      <span>Authorization</span>
-                      <input
-                        disabled={!canConfigure || fbsAction}
-                        onChange={(event) =>
-                          setFbsDraft((current) => ({ ...current, authorization_ref: event.target.value }))
-                        }
-                        value={fbsDraft.authorization_ref}
-                      />
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Approved</span>
-                      <input
-                        disabled={!canConfigure || fbsAction}
-                        min="0"
-                        onChange={(event) =>
-                          setFbsDraft((current) => ({ ...current, approved_amount: event.target.value }))
-                        }
-                        required
-                        type="number"
-                        value={fbsDraft.approved_amount}
-                      />
-                    </label>
-                    <label>
-                      <span>Currency</span>
-                      <input
-                        disabled={!canConfigure || fbsAction}
-                        maxLength={3}
-                        onChange={(event) =>
-                          setFbsDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
-                        }
-                        value={fbsDraft.currency}
-                      />
-                    </label>
-                  </div>
-                  <button className="workflowAction primary" disabled={!canConfigure || fbsAction} type="submit">
-                    {fbsAction ? "Creating..." : "Create FBS"}
-                  </button>
-                </form>
-
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Funding Alerts</h2>
-                    <span>{fundingAlerts.length} alerts</span>
-                  </div>
-                  <div className="awpSummary">
-                    <article className={fundingAlerts.length ? "risk" : ""}>
-                      <span>Forecast Gaps</span>
-                      <strong>{fundingAlerts.length}</strong>
-                      <small>FBS below forecast</small>
-                    </article>
-                    <article>
-                      <span>Unused Balance</span>
-                      <strong>{currency(closeoutReport?.unused_balance ?? 0, project.currency)}</strong>
-                      <small>{closeoutReport?.open_commitments ?? 0} open commitments</small>
-                    </article>
-                  </div>
-                  <div className="workList compactList">
-                    {forecastFundingRows.slice(0, 6).map((row) => (
-                      <article className={row.forecast_vs_available < 0 ? "blockedPackage" : undefined} key={row.fbs_code}>
-                        <strong>
-                          {row.fbs_code} / {currency(row.funds_available, project.currency)}
-                        </strong>
-                        <span>{currency(row.forecast, project.currency)} forecast</span>
-                        <small>{currency(row.forecast_vs_available, project.currency)} vs available</small>
-                      </article>
-                    ))}
-                    {!forecastFundingRows.length && (
-                      <article>
-                        <strong>No funding rows</strong>
-                        <span>FBS records will appear after funding is configured.</span>
-                      </article>
-                    )}
-                  </div>
-                  <button
-                    className="workflowAction"
-                    disabled={!canConfigure || baselineAction}
-                    onClick={handleBaselineApproval}
-                    type="button"
-                  >
-                    {baselineAction ? "Approving..." : "Approve Baseline"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handleCbsCreate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Crear CBS</h2>
-                    <span>{cbsCatalog.length} codes / {costCodes.length} cost codes</span>
-                  </div>
-                  <label>
-                    <span>CBS Code</span>
-                    <input
-                      disabled={!canCaptureCost || priorityAction === "cbs"}
-                      onChange={(event) => setCbsDraft((current) => ({ ...current, code: event.target.value }))}
-                      placeholder={activitySheetRows[0]?.cbs_code || "CBS-PIL-PLT-CIV-EARTH"}
-                      required
-                      value={cbsDraft.code}
-                    />
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Category</span>
-                      <input
-                        disabled={!canCaptureCost || priorityAction === "cbs"}
-                        onChange={(event) => setCbsDraft((current) => ({ ...current, cost_category: event.target.value }))}
-                        required
-                        value={cbsDraft.cost_category}
-                      />
-                    </label>
-                    <label>
-                      <span>Level</span>
-                      <input
-                        disabled={!canCaptureCost || priorityAction === "cbs"}
-                        min="1"
-                        onChange={(event) => setCbsDraft((current) => ({ ...current, level: event.target.value }))}
-                        type="number"
-                        value={cbsDraft.level}
-                      />
-                    </label>
-                  </div>
-                  <label>
-                    <span>Description</span>
-                    <input
-                      disabled={!canCaptureCost || priorityAction === "cbs"}
-                      onChange={(event) => setCbsDraft((current) => ({ ...current, description: event.target.value }))}
-                      value={cbsDraft.description}
-                    />
-                  </label>
-                  <button className="workflowAction primary" disabled={!canCaptureCost || priorityAction === "cbs"} type="submit">
-                    {priorityAction === "cbs" ? "Creating..." : "Create CBS"}
-                  </button>
-                </form>
-
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Vincular WBS + CBS + FBS</h2>
-                    <span>{selectedCbs?.code || "CBS pending"}</span>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>CBS</span>
-                      <select
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        onChange={(event) => {
-                          const nextCbs = cbsCatalog.find((item) => item.id === Number(event.target.value));
-                          setPriorityDraft((current) => ({ ...current, cbs_id: event.target.value }));
-                          if (nextCbs) setRateDraft((current) => ({ ...current, cbs_code: nextCbs.code }));
-                        }}
-                        value={priorityDraft.cbs_id}
-                      >
-                        <option value="">Select CBS</option>
-                        {cbsCatalog.map((cbs) => (
-                          <option key={cbs.id} value={cbs.id}>
-                            {cbs.code}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>FBS</span>
-                      <select
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        onChange={(event) => setPriorityDraft((current) => ({ ...current, funding_source_id: event.target.value }))}
-                        value={priorityDraft.funding_source_id}
-                      >
-                        <option value="">Select FBS</option>
-                        {fbsFundingSources.map((source) => (
-                          <option key={source.id} value={source.id}>
-                            {source.code}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Control Account</span>
-                      <select
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        onChange={(event) => {
-                          const account = activeControlAccounts.find((item) => item.id === Number(event.target.value));
-                          setPriorityDraft((current) => ({
-                            ...current,
-                            control_account_id: event.target.value,
-                            wbs_id: account?.wbs_id ? String(account.wbs_id) : current.wbs_id,
-                          }));
-                        }}
-                        value={priorityDraft.control_account_id}
-                      >
-                        <option value="">Select CA</option>
-                        {activeControlAccounts.map((account) => (
-                          <option key={account.id} value={account.id}>
-                            {account.name} - {account.code}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>WBS</span>
-                      <select
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        onChange={(event) => setPriorityDraft((current) => ({ ...current, wbs_id: event.target.value }))}
-                        value={priorityDraft.wbs_id || (selectedWbsForAccount ? String(selectedWbsForAccount.id) : "")}
-                      >
-                        <option value="">Select WBS</option>
-                        {displayWbsCatalog.map((wbs) => (
-                          <option key={wbs.id} value={wbs.id}>
-                            {wbs.name} - {wbs.code}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Amount</span>
-                      <input
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        min="0"
-                        onChange={(event) => setPriorityDraft((current) => ({ ...current, amount: event.target.value }))}
-                        type="number"
-                        value={priorityDraft.amount}
-                      />
-                    </label>
-                    <label>
-                      <span>Quantity</span>
-                      <input
-                        disabled={!canCaptureCost || Boolean(priorityAction)}
-                        min="0"
-                        onChange={(event) => setPriorityDraft((current) => ({ ...current, quantity: event.target.value }))}
-                        type="number"
-                        value={priorityDraft.quantity}
-                      />
-                    </label>
-                  </div>
-                  <label>
-                    <span>Description</span>
-                    <input
-                      disabled={!canCaptureCost || Boolean(priorityAction)}
-                      onChange={(event) => setPriorityDraft((current) => ({ ...current, description: event.target.value }))}
-                      value={priorityDraft.description}
-                    />
-                  </label>
-                  <div className="actionRow">
-                    <button
-                      className="workflowAction"
-                      disabled={!canCaptureCost || !canRunPriority || Boolean(priorityAction)}
-                      onClick={() => handlePriorityBusinessProcess("fund")}
-                      type="button"
-                    >
-                      {priorityAction === "fund" ? "Creating..." : "BP CBS-Fund"}
-                    </button>
-                    <button
-                      className="workflowAction primary"
-                      disabled={!canCaptureCost || !canRunPriority || !priorityDraft.wbs_id || Boolean(priorityAction)}
-                      onClick={() => handlePriorityBusinessProcess("wbs")}
-                      type="button"
-                    >
-                      {priorityAction === "wbs" ? "Creating..." : "BP CBS-WBS"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handleSovAndFundingCreate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>SOV Funding</h2>
-                    <span>{contractRows.length} contracts</span>
-                  </div>
-                  <label>
-                    <span>Contract</span>
-                    <select
-                      disabled={!canManageContract || priorityAction === "sov"}
-                      onChange={(event) => setSovDraft((current) => ({ ...current, contract_id: event.target.value }))}
-                      required
-                      value={sovDraft.contract_id}
-                    >
-                      <option value="">Select contract</option>
-                      {contractRows.map((contract) => (
-                        <option key={contract.id} value={contract.id}>
-                          {contract.code}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Line</span>
-                      <input
-                        disabled={!canManageContract || priorityAction === "sov"}
-                        onChange={(event) => setSovDraft((current) => ({ ...current, line_no: event.target.value }))}
-                        required
-                        value={sovDraft.line_no}
-                      />
-                    </label>
-                    <label>
-                      <span>Amount</span>
-                      <input
-                        disabled={!canManageContract || priorityAction === "sov"}
-                        min="0"
-                        onChange={(event) => setSovDraft((current) => ({ ...current, amount: event.target.value }))}
-                        required
-                        type="number"
-                        value={sovDraft.amount}
-                      />
-                    </label>
-                  </div>
-                  <label>
-                    <span>Description</span>
-                    <input
-                      disabled={!canManageContract || priorityAction === "sov"}
-                      onChange={(event) => setSovDraft((current) => ({ ...current, description: event.target.value }))}
-                      value={sovDraft.description}
-                    />
-                  </label>
-                  <button
-                    className="workflowAction primary"
-                    disabled={!canManageContract || !sovDraft.contract_id || !sovDraft.amount || !canRunPriority || priorityAction === "sov"}
-                    type="submit"
-                  >
-                    {priorityAction === "sov" ? "Funding..." : "Create SOV Funding"}
-                  </button>
-                </form>
-
-                <form className="panel" onSubmit={handleRateSheetCreate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Rate / Recost</h2>
-                    <span>{rateSheets.length} sheets</span>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Rate Code</span>
-                      <input
-                        disabled={!canCaptureCost || priorityAction === "rate"}
-                        onChange={(event) => setRateDraft((current) => ({ ...current, code: event.target.value }))}
-                        required
-                        value={rateDraft.code}
-                      />
-                    </label>
-                    <label>
-                      <span>CBS Code</span>
-                      <select
-                        disabled={!canCaptureCost || priorityAction === "rate"}
-                        onChange={(event) => setRateDraft((current) => ({ ...current, cbs_code: event.target.value }))}
-                        value={rateDraft.cbs_code}
-                      >
-                        <option value="">Select CBS code</option>
-                        {rateCbsOptions.map((code) => (
-                          <option key={code} value={code}>
-                            {code}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <label>
-                    <span>Name</span>
-                    <input
-                      disabled={!canCaptureCost || priorityAction === "rate"}
-                      onChange={(event) => setRateDraft((current) => ({ ...current, name: event.target.value }))}
-                      value={rateDraft.name}
-                    />
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Multiplier</span>
-                      <input
-                        disabled={!canCaptureCost || priorityAction === "rate"}
-                        min="0.01"
-                        onChange={(event) => setRateDraft((current) => ({ ...current, multiplier: event.target.value }))}
-                        step="0.01"
-                        type="number"
-                        value={rateDraft.multiplier}
-                      />
-                    </label>
-                    <label>
-                      <span>Unit Rate</span>
-                      <input
-                        disabled={!canCaptureCost || priorityAction === "rate"}
-                        min="0"
-                        onChange={(event) => setRateDraft((current) => ({ ...current, unit_rate: event.target.value }))}
-                        type="number"
-                        value={rateDraft.unit_rate}
-                      />
-                    </label>
-                  </div>
-                  <div className="actionRow">
-                    <button className="workflowAction" disabled={!canCaptureCost || priorityAction === "rate"} type="submit">
-                      {priorityAction === "rate" ? "Creating..." : "Create Rate"}
-                    </button>
-                    <button
-                      className="workflowAction primary"
-                      disabled={!canCaptureCost || !latestActivitySheet || !rateSheets.length || priorityAction === "recost"}
-                      onClick={handleRecostLatestActivitySheet}
-                      type="button"
-                    >
-                      {priorityAction === "recost" ? "Recosting..." : "Recost Latest"}
-                    </button>
-                  </div>
-                  <div className="workList compactWorkList">
-                    {recostRuns.slice(0, 3).map((run) => (
-                      <article key={run.id}>
-                        <strong>
-                          Run {run.run_no} / {currency(run.total_planned_cost, project.currency)}
-                        </strong>
-                        <span>
-                          {run.updated_rows} rows by {run.created_by || "Project Controls"}
-                        </span>
-                      </article>
-                    ))}
-                    {!recostRuns.length && (
-                      <article>
-                        <strong>Recost History</strong>
-                        <span>No runs</span>
-                      </article>
-                    )}
-                  </div>
-                </form>
-              </div>
-
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handlePolicySubmit}>
-                  <div className="panelHeader compactHeader">
-                    <h2>BP Permissions</h2>
-                    <span>{bpPolicies.length} policies</span>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Process</span>
-                      <select
-                        disabled={!canConfigure || hardeningAction === "policy"}
-                        onChange={(event) => setPolicyDraft((current) => ({ ...current, process_code: event.target.value }))}
-                        value={policyDraft.process_code}
-                      >
-                        <option value="BP-CBS-WBS">BP CBS-WBS</option>
-                        <option value="BP-CBS-FUND">BP CBS-Fund</option>
-                      </select>
-                    </label>
-                    <label>
-                      <span>Action</span>
-                      <select
-                        disabled={!canConfigure || hardeningAction === "policy"}
-                        onChange={(event) => setPolicyDraft((current) => ({ ...current, action: event.target.value }))}
-                        value={policyDraft.action}
-                      >
-                        <option value="approve_baseline">Approve</option>
-                        <option value="reject_baseline">Reject</option>
-                        <option value="close_action">Close</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Role</span>
-                      <select
-                        disabled={!canConfigure || hardeningAction === "policy"}
-                        onChange={(event) => setPolicyDraft((current) => ({ ...current, required_role: event.target.value }))}
-                        value={policyDraft.required_role}
-                      >
-                        {policyRoleOptions.map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>Permission</span>
-                      <select
-                        disabled={!canConfigure || hardeningAction === "policy"}
-                        onChange={(event) => setPolicyDraft((current) => ({ ...current, permission_key: event.target.value }))}
-                        value={policyDraft.permission_key}
-                      >
-                        <option value="can_approve_workflow">Approve Workflow</option>
-                        <option value="can_capture_cost">Capture Cost</option>
-                        <option value="can_configure">Configure</option>
-                      </select>
-                    </label>
-                  </div>
-                  <button className="workflowAction primary" disabled={!canConfigure || hardeningAction === "policy"} type="submit">
-                    <ShieldCheck size={15} />
-                    {hardeningAction === "policy" ? "Saving..." : "Save Policy"}
-                  </button>
-                  <div className="workList compactWorkList">
-                    {bpPolicies.slice(0, 3).map((policy) => (
-                      <article key={policy.id}>
-                        <strong>
-                          {policy.process_code} / {statusLabel(policy.action)}
-                        </strong>
-                        <span>
-                          {policy.required_role || "Any role"} / v{policy.version}
-                        </span>
-                      </article>
-                    ))}
-                  </div>
-                </form>
-
-                <form className="panel" onSubmit={handleLineItemUpdate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Line Versions</h2>
-                    <span>{bpLineItems.length} items</span>
-                  </div>
-                  <label>
-                    <span>Line Item</span>
-                    <select
-                      disabled={!canCaptureCost || hardeningAction === "line" || !bpLineItems.length}
-                      onChange={(event) => {
-                        const nextLine = bpLineItems.find((line) => String(line.id) === event.target.value);
-                        if (nextLine) void handleLineItemSelect(nextLine);
-                      }}
-                      value={lineEditDraft.line_item_id}
-                    >
-                      {bpLineItems.map((line) => (
-                        <option key={line.id} value={line.id}>
-                          #{line.id} / {currency(line.amount, project.currency)} / v{line.version}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Amount</span>
-                      <input
-                        disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
-                        min="0"
-                        onChange={(event) => setLineEditDraft((current) => ({ ...current, amount: event.target.value }))}
-                        type="number"
-                        value={lineEditDraft.amount}
-                      />
-                    </label>
-                    <label>
-                      <span>Quantity</span>
-                      <input
-                        disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
-                        min="0"
-                        onChange={(event) => setLineEditDraft((current) => ({ ...current, quantity: event.target.value }))}
-                        type="number"
-                        value={lineEditDraft.quantity}
-                      />
-                    </label>
-                  </div>
-                  <label>
-                    <span>Description</span>
-                    <input
-                      disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
-                      onChange={(event) => setLineEditDraft((current) => ({ ...current, description: event.target.value }))}
-                      value={lineEditDraft.description}
-                    />
-                  </label>
-                  <label>
-                    <span>Change Note</span>
-                    <input
-                      disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
-                      onChange={(event) => setLineEditDraft((current) => ({ ...current, change_note: event.target.value }))}
-                      value={lineEditDraft.change_note}
-                    />
-                  </label>
-                  <button
-                    className="workflowAction primary"
-                    disabled={!canCaptureCost || !selectedLineItem || hardeningAction === "line"}
-                    type="submit"
-                  >
-                    <Save size={15} />
-                    {hardeningAction === "line" ? "Saving..." : "Save Version"}
-                  </button>
-                  <div className="workList compactWorkList">
-                    {bpLineItemRevisions.slice(0, 3).map((revision) => (
-                      <article key={revision.id}>
-                        <strong>
-                          v{revision.previous_version} to v{revision.new_version}
-                        </strong>
-                        <span>
-                          {currency(revision.previous_amount, project.currency)} to{" "}
-                          {currency(revision.new_amount, project.currency)}
-                        </span>
-                      </article>
-                    ))}
-                  </div>
-                </form>
-              </div>
-
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <div className="agentProfileBlock">
-                    <h2>AI Control Auditor</h2>
-                    <small>Senior AWP Packaging Advisor</small>
-                  </div>
-                  <span>{latestAgentRun ? `${latestAgentRun.score}/100` : "No run"}</span>
-                </div>
-                <div className="gateFacts">
-                  <div>
-                    <span>Mode</span>
-                    <strong>{latestAgentRun?.run_mode || "deterministic"}</strong>
-                  </div>
-                  <div>
-                    <span>Model</span>
-                    <strong>{latestAgentRun?.model_name || "low-cost audit rules"}</strong>
-                  </div>
-                  <div>
-                    <span>Findings</span>
-                    <strong>{agentFindings.length}</strong>
-                  </div>
-                </div>
-                <div className="actionRow">
-                  <button className="workflowAction primary" disabled={agentAction} onClick={handleControlAuditAgentRun} type="button">
-                    <ShieldCheck size={15} />
-                    {agentAction ? "Auditing..." : "Run Audit"}
-                  </button>
-                  <button className="workflowAction" disabled={agentAction} onClick={handleCreateAwpDraftPackages} type="button">
-                    <PackagePlus size={15} />
-                    {agentAction ? "Creating..." : "Create Draft Packages"}
-                  </button>
-                </div>
-                <div className="workList compactWorkList">
-                  {latestAgentRun && (
-                    <article>
-                      <strong>{latestAgentRun.summary}</strong>
-                      <span>
-                        {latestAgentRun.agent_name} by {latestAgentRun.created_by || "Project Controls"}
-                      </span>
-                    </article>
-                  )}
-                  {agentFindings.slice(0, 5).map((finding) => (
-                    <article key={finding.id} className={finding.severity === "high" ? "risk" : ""}>
-                      <strong>
-                        {statusLabel(finding.severity)} / {finding.title}
-                      </strong>
-                      <span>{finding.evidence}</span>
-                      <span>{finding.recommendation}</span>
-                    </article>
-                  ))}
-                  {!latestAgentRun && (
-                    <article>
-                      <strong>No agent audit yet</strong>
-                      <span>Run the read-only audit to prioritize BP policy, recost and funding checks.</span>
-                    </article>
-                  )}
-                </div>
-              </div>
-
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>Traceability</h2>
-                  <span>FBS-WBS-AWP-CA-CBS-Cost Code</span>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Project / FBS</th>
-                      <th>WBS / AWP</th>
-                      <th>Control Account / CBS</th>
-                      <th>Cost Code / Contract</th>
-                      <th>Budget</th>
-                      <th>Funding</th>
-                      <th>Forecast</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {integratedMatrix.map((row) => {
-                      const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
-                      return (
-                        <tr key={row.cost_code}>
-                          <td>
-                            <strong>{row.project_code}</strong>
-                            <span>{row.fbs_code}</span>
-                          </td>
-                          <td>
-                            <strong>{rowWbs?.name ?? row.wbs_code}</strong>
-                            <span>
-                              {row.awp_package_type || "AWP"} {row.awp_package_code || "pending"} /{" "}
-                              {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
-                            </span>
-                          </td>
-                          <td>
-                            <strong>{publicControlAccountCode(row.control_account_code, project)}</strong>
-                            <span>{row.cbs_code}</span>
-                          </td>
-                          <td>
-                            <strong>{row.cost_code}</strong>
-                            <span>{row.contract_ref || "Commitment pending"}</span>
-                          </td>
-                          <td>{currency(row.budget, project.currency)}</td>
-                          <td>
-                            <strong>{currency(row.funds_available, project.currency)}</strong>
-                            <span>{currency(row.committed, project.currency)} committed</span>
-                          </td>
-                          <td>
-                            <strong>{currency(row.forecast, project.currency)}</strong>
-                            <span>{currency(row.balance, project.currency)} balance</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {!integratedMatrix.length && (
-                      <tr>
-                        <td colSpan={7}>
-                          <strong>No integrated matrix rows</strong>
-                          <span>Create cost codes linked to FBS, WBS, control accounts and CBS.</span>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>Reconciliation</h2>
-                  <span>{reconciliationRows.length} rows</span>
-                </div>
-                <div className="actionRow">
-                  <button
-                    className="workflowAction"
-                    disabled={hardeningAction === "export-xlsx"}
-                    onClick={() => void handleReconciliationExport("xlsx")}
-                    type="button"
-                  >
-                    <Download size={15} />
-                    {hardeningAction === "export-xlsx" ? "Exporting..." : "Export XLSX"}
-                  </button>
-                  <button
-                    className="workflowAction"
-                    disabled={hardeningAction === "export-pdf"}
-                    onClick={() => void handleReconciliationExport("pdf")}
-                    type="button"
-                  >
-                    <Download size={15} />
-                    {hardeningAction === "export-pdf" ? "Exporting..." : "Export PDF"}
-                  </button>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>WBS / CBS</th>
-                      <th>FBS / CA</th>
-                      <th>Contract</th>
-                      <th>Budget</th>
-                      <th>SOV</th>
-                      <th>Funding</th>
-                      <th>Forecast</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reconciliationRows.slice(0, 8).map((row) => {
-                      const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
-                      return (
-                        <tr key={`${row.wbs_code}-${row.cbs_code}-${row.contract_ref}`}>
-                          <td>
-                            <strong>{rowWbs?.name ?? row.wbs_code ?? "WBS pending"}</strong>
-                            <span>
-                              {row.cbs_code || "CBS pending"} /{" "}
-                              {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
-                            </span>
-                          </td>
-                          <td>
-                            <strong>{row.fbs_code || "FBS pending"}</strong>
-                            <span>{publicControlAccountCode(row.control_account_code || "CA pending", project)}</span>
-                          </td>
-                          <td>{row.contract_ref || "Pending"}</td>
-                          <td>{currency(row.budget, project.currency)}</td>
-                          <td>{currency(row.sov_amount, project.currency)}</td>
-                          <td>{currency(row.funded_amount, project.currency)}</td>
-                          <td>
-                            <strong>{currency(row.forecast, project.currency)}</strong>
-                            <span>{currency(row.variance, project.currency)} variance</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {!reconciliationRows.length && (
-                      <tr>
-                        <td colSpan={7}>
-                          <strong>No reconciliation rows</strong>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              {integratedMessage && <div className="uploadMessage success">{integratedMessage}</div>}
-              {integratedError && <div className="uploadMessage error">{integratedError}</div>}
-            </>
-          )}
-          {visibleControlView === "baseline" && (
-            <>
-              <div className="panelHeader">
-                <h2>Baseline Control</h2>
-                <span>
-                  {dashboard.schedule_activity_count} activities / {dashboard.schedule_relationship_count} links
-                </span>
-              </div>
-              {guidedFlow && (
-                <CostCurrencyGate
-                  gate={guidedFlow.cost_currency_gate}
-                  projectCurrency={project.currency}
-                  pending={currencyAction}
-                  onConfirm={handleConfirmCurrency}
-                />
-              )}
-              <div className="gateFacts">
-                <div>
-                  <span>Current Baseline</span>
-                  <strong>{activeImport?.baseline_name ?? "Pending upload"}</strong>
-                </div>
-                <div>
-                  <span>Data Quality Gate</span>
-                  <strong>
-                    {activeImport ? `${activeImport.quality_score.toFixed(0)}% / ${activeImport.status}` : "Open"}
-                  </strong>
-                </div>
-                <div>
-                  <span>Data Date</span>
-                  <strong>{activeImport?.data_date ?? "Pending"}</strong>
-                </div>
-                <div>
-                  <span>Baseline Versions</span>
-                  <strong>{dashboard.baseline_versions.length}</strong>
-                </div>
-              </div>
-              <div className="panel dcmaMetricsPanel">
-                <div className="panelHeader compactHeader">
-                  <h2>DCMA Metrics</h2>
-                  <span>{scheduleQualityMetrics.length} checks</span>
-                </div>
-                <div className="dcmaMetricsTable" aria-label="DCMA schedule quality metrics">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Standard</th>
-                        <th>Metric</th>
-                        <th>Status</th>
-                        <th>Count</th>
-                        <th>Percent</th>
-                        <th>Threshold</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {scheduleQualityMetrics.length ? (
-                        scheduleQualityMetrics.map((metric) => (
-                          <tr key={metric.key}>
-                            <td>{metric.standard}</td>
-                            <td>
-                              <strong>{metric.label}</strong>
-                              <span>{metric.description}</span>
-                            </td>
-                            <td>
-                              <span className={`qualityStatus ${metric.status}`}>{statusLabel(metric.status)}</span>
-                            </td>
-                            <td>
-                              {metric.total_count ? `${metric.item_count} / ${metric.total_count}` : "N/A"}
-                            </td>
-                            <td>{metric.total_count ? `${metric.percent.toFixed(1)}%` : "N/A"}</td>
-                            <td>{metric.threshold}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={6}>
-                            <strong>No DCMA metrics</strong>
-                            <span>Load a schedule baseline to calculate quality metrics.</span>
-                          </td>
-                        </tr>
                       )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="viewSplit">
-                <div className="panel">
+                    </div>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>No WBS nodes</strong>
+                      <p>Load the schedule or create WBS nodes before mapping CBS and FBS.</p>
+                    </div>
+                  )}
+                </section>
+                <section aria-label="WBS Control Alignment" className="panel wide wbsControlAlignment">
                   <div className="panelHeader compactHeader">
-                    <h2>Baseline Versions</h2>
-                    <span>{dashboard.baseline_versions.length} records</span>
+                    <h2>WBS Control Alignment</h2>
+                    <span>{wbsTraceabilityRows.length} linked control chain(s)</span>
                   </div>
-                  <div className="workList">
-                    {dashboard.baseline_versions.length ? (
-                      dashboard.baseline_versions.map((baseline) => (
-                        <article key={baseline.id}>
-                          <strong>
-                            BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}
-                          </strong>
-                          <span>{baseline.name}</span>
-                          <small>
-                            {baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%
-                          </small>
-                        </article>
-                      ))
-                    ) : (
-                      <article>
-                        <strong>No baseline versions yet</strong>
-                        <span>Upload XML/XER to create the first controlled schedule baseline.</span>
-                      </article>
-                    )}
-                  </div>
-                </div>
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Quality Findings</h2>
-                    <span>{dashboard.schedule_findings.length} records</span>
-                  </div>
-                  <div className="qualityList">
-                    {dashboard.schedule_findings.length ? (
-                      dashboard.schedule_findings.map((finding) => (
-                        <article key={finding.id}>
-                          <div>
-                            <strong>{finding.check_code}</strong>
-                            <span className={`qualityStatus ${finding.severity.toLowerCase()}`}>
-                              {statusLabel(finding.severity)}
-                            </span>
+                  {wbsTraceabilityRows.length ? (
+                    <div className="wbsAlignmentList">
+                      {wbsTraceabilityRows.map((row) => (
+                        <article
+                          aria-label={`${row.wbsName} control alignment`}
+                          className="wbsAlignmentCard"
+                          key={row.id}
+                        >
+                          <div className="wbsAlignmentNode primary">
+                            <span>WBS</span>
+                            <strong>{row.wbsName}</strong>
+                            <small>{row.wbsCode}</small>
                           </div>
-                          <p>{finding.message}</p>
-                          <small>{finding.item_count} items</small>
+                          <div className="wbsAlignmentNode">
+                            <span>Control Account</span>
+                            <strong>{row.controlAccountName}</strong>
+                            <small>{row.controlAccountCode}</small>
+                          </div>
+                          <div className="wbsAlignmentNode">
+                            <span>CBS</span>
+                            <strong>{row.cbsCode}</strong>
+                            <small>{row.costCode !== "Cost code pending" ? row.costCode : "CostCode pending"}</small>
+                          </div>
+                          <div className="wbsAlignmentNode">
+                            <span>FBS</span>
+                            <strong>{row.fbsCode}</strong>
+                            <small>
+                              {row.fbsCode !== "FBS pending" ? "Funding source linked" : "BP CBS-Fund pending"}
+                            </small>
+                          </div>
+                          <div className="wbsAlignmentNode">
+                            <span>AWP</span>
+                            <strong>{row.awpPackageTitle}</strong>
+                            <small>{row.awpPackageCode}</small>
+                          </div>
+                          <div className="wbsAlignmentNode budget">
+                            <span>Budget</span>
+                            <strong>{currency(row.budget, project.currency)}</strong>
+                            <small>{row.status}</small>
+                          </div>
                         </article>
-                      ))
-                    ) : (
-                      <article>
-                        <div>
-                          <strong>No findings</strong>
-                          <span className="qualityStatus pass">Pass</span>
-                        </div>
-                        <p>The active schedule has no stored QA findings.</p>
-                      </article>
-                    )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="workspaceEmpty compactEmpty">
+                      <strong>No control alignment yet</strong>
+                      <p>Create an active control account and link CBS/FBS funding to the WBS.</p>
+                    </div>
+                  )}
+                </section>
+                <section aria-label="WBS Traceability Matrix" className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>WBS Traceability Matrix</h2>
+                    <span>{wbsTraceabilityRows.length} active account(s)</span>
                   </div>
-                </div>
-              </div>
-            </>
-          )}
-          {visibleControlView === "progress" && (
-            <>
-              <div className="panelHeader">
-                <h2>Progress Control</h2>
-                <span>{dashboard.latest_progress_records.length} records</span>
-              </div>
-              <div className="workList">
-                {dashboard.latest_progress_records.length ? (
-                  dashboard.latest_progress_records.map((record) => (
-                    <article key={record.id}>
-                      <strong>{controlAccountLabel(dashboard, record.control_account_id)}</strong>
-                      <span>{record.physical_percent.toFixed(1)}% physical progress</span>
-                      <small>
-                        {record.quantity_installed} installed / {record.labor_hours} hours /{" "}
-                        {record.reported_on ?? "No report date"}
-                      </small>
-                    </article>
-                  ))
-                ) : (
-                  <article>
-                    <strong>No progress captured</strong>
-                    <span>Progress records will appear here after field updates are captured.</span>
-                  </article>
-                )}
-              </div>
-            </>
-          )}
-          {visibleControlView === "costs" && (
-            <>
-              <div className="panelHeader">
-                <h2>Cost Control</h2>
-                <span>
-                  {costFundingTraceabilityRows.length} linked row(s) / {currency(totalFunding, project.currency)} funding
-                </span>
-              </div>
-              <section aria-label="Cost and Funding Traceability" className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>Cost and Funding Traceability</h2>
-                  <span>{baselineOnlyEvm ? "baseline only" : "period control"}</span>
-                </div>
-                <p className="projectHint">
-                  Esta tabla muestra la cadena operativa: WBS del cronograma, cuenta de control, CBS/cost code,
-                  presupuesto BAC, valores EVM del corte y fuente FBS. Si solo existe linea base, EV y AC quedan en cero.
-                </p>
-                {costFundingTraceabilityRows.length ? (
                   <table>
                     <thead>
                       <tr>
                         <th>WBS</th>
                         <th>Control Account</th>
-                        <th>CBS / Cost Code</th>
-                        <th>BAC</th>
-                        <th>EV</th>
-                        <th>AC</th>
-                        <th>CPI</th>
-                        <th>FBS / Funding</th>
+                        <th>CBS</th>
+                        <th>FBS</th>
+                        <th>AWP Package</th>
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {costFundingTraceabilityRows.map((row) => (
+                      {wbsTraceabilityRows.map((row) => (
                         <tr key={row.id}>
                           <td>
                             <strong>{row.wbsName}</strong>
@@ -6668,642 +5758,1824 @@ function AppShell() {
                             <strong>{row.controlAccountCode}</strong>
                             <span>{row.controlAccountName}</span>
                           </td>
+                          <td>{row.cbsCode}</td>
+                          <td>{row.fbsCode}</td>
                           <td>
-                            <strong>{row.cbsCode}</strong>
-                            <span>{row.costCode}</span>
+                            <strong>{row.awpPackageTitle}</strong>
+                            <span>{row.awpPackageCode}</span>
                           </td>
-                          <td>{currency(row.bac, project.currency)}</td>
-                          <td>{currency(row.ev, project.currency)}</td>
-                          <td>{currency(row.ac, project.currency)}</td>
-                          <td>{row.cpi === null ? "N/A" : row.cpi.toFixed(3)}</td>
-                          <td>
-                            <strong>{row.fbsCode}</strong>
+                          <td>{row.status}</td>
+                        </tr>
+                      ))}
+                      {!wbsTraceabilityRows.length && (
+                        <tr>
+                          <td colSpan={6}>
+                            <strong>No active WBS traceability yet</strong>
+                            <span>Create an active control account and link CBS/FBS funding to the WBS.</span>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </section>
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handleFbsCreate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Crear FBS</h2>
+                      <span>{fbsFundingSources.length} sources</span>
+                    </div>
+                    <label>
+                      <span>FBS Code</span>
+                      <input
+                        disabled={!canConfigure || fbsAction}
+                        onChange={(event) => setFbsDraft((current) => ({ ...current, code: event.target.value }))}
+                        placeholder="FBS-OWN-AFE002-PLT"
+                        required
+                        value={fbsDraft.code}
+                      />
+                    </label>
+                    <label>
+                      <span>Source</span>
+                      <input
+                        disabled={!canConfigure || fbsAction}
+                        onChange={(event) =>
+                          setFbsDraft((current) => ({ ...current, source_of_funds: event.target.value }))
+                        }
+                        required
+                        value={fbsDraft.source_of_funds}
+                      />
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Type</span>
+                        <select
+                          disabled={!canConfigure || fbsAction}
+                          onChange={(event) =>
+                            setFbsDraft((current) => ({ ...current, funding_type: event.target.value }))
+                          }
+                          value={fbsDraft.funding_type}
+                        >
+                          <option value="AFE">AFE</option>
+                          <option value="Debt">Debt</option>
+                          <option value="Public funding">Public funding</option>
+                          <option value="Reserve">Reserve</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>Authorization</span>
+                        <input
+                          disabled={!canConfigure || fbsAction}
+                          onChange={(event) =>
+                            setFbsDraft((current) => ({ ...current, authorization_ref: event.target.value }))
+                          }
+                          value={fbsDraft.authorization_ref}
+                        />
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Approved</span>
+                        <input
+                          disabled={!canConfigure || fbsAction}
+                          min="0"
+                          onChange={(event) =>
+                            setFbsDraft((current) => ({ ...current, approved_amount: event.target.value }))
+                          }
+                          required
+                          type="number"
+                          value={fbsDraft.approved_amount}
+                        />
+                      </label>
+                      <label>
+                        <span>Currency</span>
+                        <input
+                          disabled={!canConfigure || fbsAction}
+                          maxLength={3}
+                          onChange={(event) =>
+                            setFbsDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
+                          }
+                          value={fbsDraft.currency}
+                        />
+                      </label>
+                    </div>
+                    <button className="workflowAction primary" disabled={!canConfigure || fbsAction} type="submit">
+                      {fbsAction ? "Creating..." : "Create FBS"}
+                    </button>
+                  </form>
+
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Funding Alerts</h2>
+                      <span>{fundingAlerts.length} alerts</span>
+                    </div>
+                    <div className="awpSummary">
+                      <article className={fundingAlerts.length ? "risk" : ""}>
+                        <span>Forecast Gaps</span>
+                        <strong>{fundingAlerts.length}</strong>
+                        <small>FBS below forecast</small>
+                      </article>
+                      <article>
+                        <span>Unused Balance</span>
+                        <strong>{currency(closeoutReport?.unused_balance ?? 0, project.currency)}</strong>
+                        <small>{closeoutReport?.open_commitments ?? 0} open commitments</small>
+                      </article>
+                    </div>
+                    <div className="workList compactList">
+                      {forecastFundingRows.slice(0, 6).map((row) => (
+                        <article
+                          className={row.forecast_vs_available < 0 ? "blockedPackage" : undefined}
+                          key={row.fbs_code}
+                        >
+                          <strong>
+                            {row.fbs_code} / {currency(row.funds_available, project.currency)}
+                          </strong>
+                          <span>{currency(row.forecast, project.currency)} forecast</span>
+                          <small>{currency(row.forecast_vs_available, project.currency)} vs available</small>
+                        </article>
+                      ))}
+                      {!forecastFundingRows.length && (
+                        <article>
+                          <strong>No funding rows</strong>
+                          <span>FBS records will appear after funding is configured.</span>
+                        </article>
+                      )}
+                    </div>
+                    <button
+                      className="workflowAction"
+                      disabled={!canConfigure || baselineAction}
+                      onClick={handleBaselineApproval}
+                      type="button"
+                    >
+                      {baselineAction ? "Approving..." : "Approve Baseline"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handleCbsCreate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Crear CBS</h2>
+                      <span>
+                        {cbsCatalog.length} codes / {costCodes.length} cost codes
+                      </span>
+                    </div>
+                    <label>
+                      <span>CBS Code</span>
+                      <input
+                        disabled={!canCaptureCost || priorityAction === "cbs"}
+                        onChange={(event) => setCbsDraft((current) => ({ ...current, code: event.target.value }))}
+                        placeholder={activitySheetRows[0]?.cbs_code || "CBS-PIL-PLT-CIV-EARTH"}
+                        required
+                        value={cbsDraft.code}
+                      />
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Category</span>
+                        <input
+                          disabled={!canCaptureCost || priorityAction === "cbs"}
+                          onChange={(event) =>
+                            setCbsDraft((current) => ({ ...current, cost_category: event.target.value }))
+                          }
+                          required
+                          value={cbsDraft.cost_category}
+                        />
+                      </label>
+                      <label>
+                        <span>Level</span>
+                        <input
+                          disabled={!canCaptureCost || priorityAction === "cbs"}
+                          min="1"
+                          onChange={(event) => setCbsDraft((current) => ({ ...current, level: event.target.value }))}
+                          type="number"
+                          value={cbsDraft.level}
+                        />
+                      </label>
+                    </div>
+                    <label>
+                      <span>Description</span>
+                      <input
+                        disabled={!canCaptureCost || priorityAction === "cbs"}
+                        onChange={(event) =>
+                          setCbsDraft((current) => ({ ...current, description: event.target.value }))
+                        }
+                        value={cbsDraft.description}
+                      />
+                    </label>
+                    <button
+                      className="workflowAction primary"
+                      disabled={!canCaptureCost || priorityAction === "cbs"}
+                      type="submit"
+                    >
+                      {priorityAction === "cbs" ? "Creating..." : "Create CBS"}
+                    </button>
+                  </form>
+
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Vincular WBS + CBS + FBS</h2>
+                      <span>{selectedCbs?.code || "CBS pending"}</span>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>CBS</span>
+                        <select
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          onChange={(event) => {
+                            const nextCbs = cbsCatalog.find((item) => item.id === Number(event.target.value));
+                            setPriorityDraft((current) => ({ ...current, cbs_id: event.target.value }));
+                            if (nextCbs) setRateDraft((current) => ({ ...current, cbs_code: nextCbs.code }));
+                          }}
+                          value={priorityDraft.cbs_id}
+                        >
+                          <option value="">Select CBS</option>
+                          {cbsCatalog.map((cbs) => (
+                            <option key={cbs.id} value={cbs.id}>
+                              {cbs.code}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>FBS</span>
+                        <select
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          onChange={(event) =>
+                            setPriorityDraft((current) => ({ ...current, funding_source_id: event.target.value }))
+                          }
+                          value={priorityDraft.funding_source_id}
+                        >
+                          <option value="">Select FBS</option>
+                          {fbsFundingSources.map((source) => (
+                            <option key={source.id} value={source.id}>
+                              {source.code}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Control Account</span>
+                        <select
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          onChange={(event) => {
+                            const account = activeControlAccounts.find(
+                              (item) => item.id === Number(event.target.value)
+                            );
+                            setPriorityDraft((current) => ({
+                              ...current,
+                              control_account_id: event.target.value,
+                              wbs_id: account?.wbs_id ? String(account.wbs_id) : current.wbs_id,
+                            }));
+                          }}
+                          value={priorityDraft.control_account_id}
+                        >
+                          <option value="">Select CA</option>
+                          {activeControlAccounts.map((account) => (
+                            <option key={account.id} value={account.id}>
+                              {account.name} - {account.code}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>WBS</span>
+                        <select
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          onChange={(event) =>
+                            setPriorityDraft((current) => ({ ...current, wbs_id: event.target.value }))
+                          }
+                          value={
+                            priorityDraft.wbs_id || (selectedWbsForAccount ? String(selectedWbsForAccount.id) : "")
+                          }
+                        >
+                          <option value="">Select WBS</option>
+                          {displayWbsCatalog.map((wbs) => (
+                            <option key={wbs.id} value={wbs.id}>
+                              {wbs.name} - {wbs.code}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Amount</span>
+                        <input
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          min="0"
+                          onChange={(event) =>
+                            setPriorityDraft((current) => ({ ...current, amount: event.target.value }))
+                          }
+                          type="number"
+                          value={priorityDraft.amount}
+                        />
+                      </label>
+                      <label>
+                        <span>Quantity</span>
+                        <input
+                          disabled={!canCaptureCost || Boolean(priorityAction)}
+                          min="0"
+                          onChange={(event) =>
+                            setPriorityDraft((current) => ({ ...current, quantity: event.target.value }))
+                          }
+                          type="number"
+                          value={priorityDraft.quantity}
+                        />
+                      </label>
+                    </div>
+                    <label>
+                      <span>Description</span>
+                      <input
+                        disabled={!canCaptureCost || Boolean(priorityAction)}
+                        onChange={(event) =>
+                          setPriorityDraft((current) => ({ ...current, description: event.target.value }))
+                        }
+                        value={priorityDraft.description}
+                      />
+                    </label>
+                    <div className="actionRow">
+                      <button
+                        className="workflowAction"
+                        disabled={!canCaptureCost || !canRunPriority || Boolean(priorityAction)}
+                        onClick={() => handlePriorityBusinessProcess("fund")}
+                        type="button"
+                      >
+                        {priorityAction === "fund" ? "Creating..." : "BP CBS-Fund"}
+                      </button>
+                      <button
+                        className="workflowAction primary"
+                        disabled={
+                          !canCaptureCost || !canRunPriority || !priorityDraft.wbs_id || Boolean(priorityAction)
+                        }
+                        onClick={() => handlePriorityBusinessProcess("wbs")}
+                        type="button"
+                      >
+                        {priorityAction === "wbs" ? "Creating..." : "BP CBS-WBS"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handleSovAndFundingCreate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>SOV Funding</h2>
+                      <span>{contractRows.length} contracts</span>
+                    </div>
+                    <label>
+                      <span>Contract</span>
+                      <select
+                        disabled={!canManageContract || priorityAction === "sov"}
+                        onChange={(event) =>
+                          setSovDraft((current) => ({ ...current, contract_id: event.target.value }))
+                        }
+                        required
+                        value={sovDraft.contract_id}
+                      >
+                        <option value="">Select contract</option>
+                        {contractRows.map((contract) => (
+                          <option key={contract.id} value={contract.id}>
+                            {contract.code}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Line</span>
+                        <input
+                          disabled={!canManageContract || priorityAction === "sov"}
+                          onChange={(event) => setSovDraft((current) => ({ ...current, line_no: event.target.value }))}
+                          required
+                          value={sovDraft.line_no}
+                        />
+                      </label>
+                      <label>
+                        <span>Amount</span>
+                        <input
+                          disabled={!canManageContract || priorityAction === "sov"}
+                          min="0"
+                          onChange={(event) => setSovDraft((current) => ({ ...current, amount: event.target.value }))}
+                          required
+                          type="number"
+                          value={sovDraft.amount}
+                        />
+                      </label>
+                    </div>
+                    <label>
+                      <span>Description</span>
+                      <input
+                        disabled={!canManageContract || priorityAction === "sov"}
+                        onChange={(event) =>
+                          setSovDraft((current) => ({ ...current, description: event.target.value }))
+                        }
+                        value={sovDraft.description}
+                      />
+                    </label>
+                    <button
+                      className="workflowAction primary"
+                      disabled={
+                        !canManageContract ||
+                        !sovDraft.contract_id ||
+                        !sovDraft.amount ||
+                        !canRunPriority ||
+                        priorityAction === "sov"
+                      }
+                      type="submit"
+                    >
+                      {priorityAction === "sov" ? "Funding..." : "Create SOV Funding"}
+                    </button>
+                  </form>
+
+                  <form className="panel" onSubmit={handleRateSheetCreate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Rate / Recost</h2>
+                      <span>{rateSheets.length} sheets</span>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Rate Code</span>
+                        <input
+                          disabled={!canCaptureCost || priorityAction === "rate"}
+                          onChange={(event) => setRateDraft((current) => ({ ...current, code: event.target.value }))}
+                          required
+                          value={rateDraft.code}
+                        />
+                      </label>
+                      <label>
+                        <span>CBS Code</span>
+                        <select
+                          disabled={!canCaptureCost || priorityAction === "rate"}
+                          onChange={(event) =>
+                            setRateDraft((current) => ({ ...current, cbs_code: event.target.value }))
+                          }
+                          value={rateDraft.cbs_code}
+                        >
+                          <option value="">Select CBS code</option>
+                          {rateCbsOptions.map((code) => (
+                            <option key={code} value={code}>
+                              {code}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      <span>Name</span>
+                      <input
+                        disabled={!canCaptureCost || priorityAction === "rate"}
+                        onChange={(event) => setRateDraft((current) => ({ ...current, name: event.target.value }))}
+                        value={rateDraft.name}
+                      />
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Multiplier</span>
+                        <input
+                          disabled={!canCaptureCost || priorityAction === "rate"}
+                          min="0.01"
+                          onChange={(event) =>
+                            setRateDraft((current) => ({ ...current, multiplier: event.target.value }))
+                          }
+                          step="0.01"
+                          type="number"
+                          value={rateDraft.multiplier}
+                        />
+                      </label>
+                      <label>
+                        <span>Unit Rate</span>
+                        <input
+                          disabled={!canCaptureCost || priorityAction === "rate"}
+                          min="0"
+                          onChange={(event) =>
+                            setRateDraft((current) => ({ ...current, unit_rate: event.target.value }))
+                          }
+                          type="number"
+                          value={rateDraft.unit_rate}
+                        />
+                      </label>
+                    </div>
+                    <div className="actionRow">
+                      <button
+                        className="workflowAction"
+                        disabled={!canCaptureCost || priorityAction === "rate"}
+                        type="submit"
+                      >
+                        {priorityAction === "rate" ? "Creating..." : "Create Rate"}
+                      </button>
+                      <button
+                        className="workflowAction primary"
+                        disabled={
+                          !canCaptureCost || !latestActivitySheet || !rateSheets.length || priorityAction === "recost"
+                        }
+                        onClick={handleRecostLatestActivitySheet}
+                        type="button"
+                      >
+                        {priorityAction === "recost" ? "Recosting..." : "Recost Latest"}
+                      </button>
+                    </div>
+                    <div className="workList compactWorkList">
+                      {recostRuns.slice(0, 3).map((run) => (
+                        <article key={run.id}>
+                          <strong>
+                            Run {run.run_no} / {currency(run.total_planned_cost, project.currency)}
+                          </strong>
+                          <span>
+                            {run.updated_rows} rows by {run.created_by || "Project Controls"}
+                          </span>
+                        </article>
+                      ))}
+                      {!recostRuns.length && (
+                        <article>
+                          <strong>Recost History</strong>
+                          <span>No runs</span>
+                        </article>
+                      )}
+                    </div>
+                  </form>
+                </div>
+
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handlePolicySubmit}>
+                    <div className="panelHeader compactHeader">
+                      <h2>BP Permissions</h2>
+                      <span>{bpPolicies.length} policies</span>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Process</span>
+                        <select
+                          disabled={!canConfigure || hardeningAction === "policy"}
+                          onChange={(event) =>
+                            setPolicyDraft((current) => ({ ...current, process_code: event.target.value }))
+                          }
+                          value={policyDraft.process_code}
+                        >
+                          <option value="BP-CBS-WBS">BP CBS-WBS</option>
+                          <option value="BP-CBS-FUND">BP CBS-Fund</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>Action</span>
+                        <select
+                          disabled={!canConfigure || hardeningAction === "policy"}
+                          onChange={(event) =>
+                            setPolicyDraft((current) => ({ ...current, action: event.target.value }))
+                          }
+                          value={policyDraft.action}
+                        >
+                          <option value="approve_baseline">Approve</option>
+                          <option value="reject_baseline">Reject</option>
+                          <option value="close_action">Close</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Role</span>
+                        <select
+                          disabled={!canConfigure || hardeningAction === "policy"}
+                          onChange={(event) =>
+                            setPolicyDraft((current) => ({ ...current, required_role: event.target.value }))
+                          }
+                          value={policyDraft.required_role}
+                        >
+                          {policyRoleOptions.map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>Permission</span>
+                        <select
+                          disabled={!canConfigure || hardeningAction === "policy"}
+                          onChange={(event) =>
+                            setPolicyDraft((current) => ({ ...current, permission_key: event.target.value }))
+                          }
+                          value={policyDraft.permission_key}
+                        >
+                          <option value="can_approve_workflow">Approve Workflow</option>
+                          <option value="can_capture_cost">Capture Cost</option>
+                          <option value="can_configure">Configure</option>
+                        </select>
+                      </label>
+                    </div>
+                    <button
+                      className="workflowAction primary"
+                      disabled={!canConfigure || hardeningAction === "policy"}
+                      type="submit"
+                    >
+                      <ShieldCheck size={15} />
+                      {hardeningAction === "policy" ? "Saving..." : "Save Policy"}
+                    </button>
+                    <div className="workList compactWorkList">
+                      {bpPolicies.slice(0, 3).map((policy) => (
+                        <article key={policy.id}>
+                          <strong>
+                            {policy.process_code} / {statusLabel(policy.action)}
+                          </strong>
+                          <span>
+                            {policy.required_role || "Any role"} / v{policy.version}
+                          </span>
+                        </article>
+                      ))}
+                    </div>
+                  </form>
+
+                  <form className="panel" onSubmit={handleLineItemUpdate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Line Versions</h2>
+                      <span>{bpLineItems.length} items</span>
+                    </div>
+                    <label>
+                      <span>Line Item</span>
+                      <select
+                        disabled={!canCaptureCost || hardeningAction === "line" || !bpLineItems.length}
+                        onChange={(event) => {
+                          const nextLine = bpLineItems.find((line) => String(line.id) === event.target.value);
+                          if (nextLine) void handleLineItemSelect(nextLine);
+                        }}
+                        value={lineEditDraft.line_item_id}
+                      >
+                        {bpLineItems.map((line) => (
+                          <option key={line.id} value={line.id}>
+                            #{line.id} / {currency(line.amount, project.currency)} / v{line.version}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Amount</span>
+                        <input
+                          disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
+                          min="0"
+                          onChange={(event) =>
+                            setLineEditDraft((current) => ({ ...current, amount: event.target.value }))
+                          }
+                          type="number"
+                          value={lineEditDraft.amount}
+                        />
+                      </label>
+                      <label>
+                        <span>Quantity</span>
+                        <input
+                          disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
+                          min="0"
+                          onChange={(event) =>
+                            setLineEditDraft((current) => ({ ...current, quantity: event.target.value }))
+                          }
+                          type="number"
+                          value={lineEditDraft.quantity}
+                        />
+                      </label>
+                    </div>
+                    <label>
+                      <span>Description</span>
+                      <input
+                        disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
+                        onChange={(event) =>
+                          setLineEditDraft((current) => ({ ...current, description: event.target.value }))
+                        }
+                        value={lineEditDraft.description}
+                      />
+                    </label>
+                    <label>
+                      <span>Change Note</span>
+                      <input
+                        disabled={!canCaptureCost || hardeningAction === "line" || !selectedLineItem}
+                        onChange={(event) =>
+                          setLineEditDraft((current) => ({ ...current, change_note: event.target.value }))
+                        }
+                        value={lineEditDraft.change_note}
+                      />
+                    </label>
+                    <button
+                      className="workflowAction primary"
+                      disabled={!canCaptureCost || !selectedLineItem || hardeningAction === "line"}
+                      type="submit"
+                    >
+                      <Save size={15} />
+                      {hardeningAction === "line" ? "Saving..." : "Save Version"}
+                    </button>
+                    <div className="workList compactWorkList">
+                      {bpLineItemRevisions.slice(0, 3).map((revision) => (
+                        <article key={revision.id}>
+                          <strong>
+                            v{revision.previous_version} to v{revision.new_version}
+                          </strong>
+                          <span>
+                            {currency(revision.previous_amount, project.currency)} to{" "}
+                            {currency(revision.new_amount, project.currency)}
+                          </span>
+                        </article>
+                      ))}
+                    </div>
+                  </form>
+                </div>
+
+                <div className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <div className="agentProfileBlock">
+                      <h2>AI Control Auditor</h2>
+                      <small>Senior AWP Packaging Advisor</small>
+                    </div>
+                    <span>{latestAgentRun ? `${latestAgentRun.score}/100` : "No run"}</span>
+                  </div>
+                  <div className="gateFacts">
+                    <div>
+                      <span>Mode</span>
+                      <strong>{latestAgentRun?.run_mode || "deterministic"}</strong>
+                    </div>
+                    <div>
+                      <span>Model</span>
+                      <strong>{latestAgentRun?.model_name || "low-cost audit rules"}</strong>
+                    </div>
+                    <div>
+                      <span>Findings</span>
+                      <strong>{agentFindings.length}</strong>
+                    </div>
+                  </div>
+                  <div className="actionRow">
+                    <button
+                      className="workflowAction primary"
+                      disabled={agentAction}
+                      onClick={handleControlAuditAgentRun}
+                      type="button"
+                    >
+                      <ShieldCheck size={15} />
+                      {agentAction ? "Auditing..." : "Run Audit"}
+                    </button>
+                    <button
+                      className="workflowAction"
+                      disabled={agentAction}
+                      onClick={handleCreateAwpDraftPackages}
+                      type="button"
+                    >
+                      <PackagePlus size={15} />
+                      {agentAction ? "Creating..." : "Create Draft Packages"}
+                    </button>
+                  </div>
+                  <div className="workList compactWorkList">
+                    {latestAgentRun && (
+                      <article>
+                        <strong>{latestAgentRun.summary}</strong>
+                        <span>
+                          {latestAgentRun.agent_name} by {latestAgentRun.created_by || "Project Controls"}
+                        </span>
+                      </article>
+                    )}
+                    {agentFindings.slice(0, 5).map((finding) => (
+                      <article key={finding.id} className={finding.severity === "high" ? "risk" : ""}>
+                        <strong>
+                          {statusLabel(finding.severity)} / {finding.title}
+                        </strong>
+                        <span>{finding.evidence}</span>
+                        <span>{finding.recommendation}</span>
+                      </article>
+                    ))}
+                    {!latestAgentRun && (
+                      <article>
+                        <strong>No agent audit yet</strong>
+                        <span>Run the read-only audit to prioritize BP policy, recost and funding checks.</span>
+                      </article>
+                    )}
+                  </div>
+                </div>
+
+                <div className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>Traceability</h2>
+                    <span>FBS-WBS-AWP-CA-CBS-Cost Code</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Project / FBS</th>
+                        <th>WBS / AWP</th>
+                        <th>Control Account / CBS</th>
+                        <th>Cost Code / Contract</th>
+                        <th>Budget</th>
+                        <th>Funding</th>
+                        <th>Forecast</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {integratedMatrix.map((row) => {
+                        const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
+                        return (
+                          <tr key={row.cost_code}>
+                            <td>
+                              <strong>{row.project_code}</strong>
+                              <span>{row.fbs_code}</span>
+                            </td>
+                            <td>
+                              <strong>{rowWbs?.name ?? row.wbs_code}</strong>
+                              <span>
+                                {row.awp_package_type || "AWP"} {row.awp_package_code || "pending"} /{" "}
+                                {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
+                              </span>
+                            </td>
+                            <td>
+                              <strong>{publicControlAccountCode(row.control_account_code, project)}</strong>
+                              <span>{row.cbs_code}</span>
+                            </td>
+                            <td>
+                              <strong>{row.cost_code}</strong>
+                              <span>{row.contract_ref || "Commitment pending"}</span>
+                            </td>
+                            <td>{currency(row.budget, project.currency)}</td>
+                            <td>
+                              <strong>{currency(row.funds_available, project.currency)}</strong>
+                              <span>{currency(row.committed, project.currency)} committed</span>
+                            </td>
+                            <td>
+                              <strong>{currency(row.forecast, project.currency)}</strong>
+                              <span>{currency(row.balance, project.currency)} balance</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {!integratedMatrix.length && (
+                        <tr>
+                          <td colSpan={7}>
+                            <strong>No integrated matrix rows</strong>
+                            <span>Create cost codes linked to FBS, WBS, control accounts and CBS.</span>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>Reconciliation</h2>
+                    <span>{reconciliationRows.length} rows</span>
+                  </div>
+                  <div className="actionRow">
+                    <button
+                      className="workflowAction"
+                      disabled={hardeningAction === "export-xlsx"}
+                      onClick={() => void handleReconciliationExport("xlsx")}
+                      type="button"
+                    >
+                      <Download size={15} />
+                      {hardeningAction === "export-xlsx" ? "Exporting..." : "Export XLSX"}
+                    </button>
+                    <button
+                      className="workflowAction"
+                      disabled={hardeningAction === "export-pdf"}
+                      onClick={() => void handleReconciliationExport("pdf")}
+                      type="button"
+                    >
+                      <Download size={15} />
+                      {hardeningAction === "export-pdf" ? "Exporting..." : "Export PDF"}
+                    </button>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>WBS / CBS</th>
+                        <th>FBS / CA</th>
+                        <th>Contract</th>
+                        <th>Budget</th>
+                        <th>SOV</th>
+                        <th>Funding</th>
+                        <th>Forecast</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reconciliationRows.slice(0, 8).map((row) => {
+                        const rowWbs = displayWbsCatalog.find((node) => node.code === row.wbs_code);
+                        return (
+                          <tr key={`${row.wbs_code}-${row.cbs_code}-${row.contract_ref}`}>
+                            <td>
+                              <strong>{rowWbs?.name ?? row.wbs_code ?? "WBS pending"}</strong>
+                              <span>
+                                {row.cbs_code || "CBS pending"} / {publicWbsCode(rowWbs?.code ?? row.wbs_code, project)}
+                              </span>
+                            </td>
+                            <td>
+                              <strong>{row.fbs_code || "FBS pending"}</strong>
+                              <span>{publicControlAccountCode(row.control_account_code || "CA pending", project)}</span>
+                            </td>
+                            <td>{row.contract_ref || "Pending"}</td>
+                            <td>{currency(row.budget, project.currency)}</td>
+                            <td>{currency(row.sov_amount, project.currency)}</td>
+                            <td>{currency(row.funded_amount, project.currency)}</td>
+                            <td>
+                              <strong>{currency(row.forecast, project.currency)}</strong>
+                              <span>{currency(row.variance, project.currency)} variance</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {!reconciliationRows.length && (
+                        <tr>
+                          <td colSpan={7}>
+                            <strong>No reconciliation rows</strong>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {integratedMessage && <div className="uploadMessage success">{integratedMessage}</div>}
+                {integratedError && <div className="uploadMessage error">{integratedError}</div>}
+              </>
+            )}
+            {visibleControlView === "baseline" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Baseline Control</h2>
+                  <span>
+                    {dashboard.schedule_activity_count} activities / {dashboard.schedule_relationship_count} links
+                  </span>
+                </div>
+                {guidedFlow && (
+                  <CostCurrencyGate
+                    gate={guidedFlow.cost_currency_gate}
+                    projectCurrency={project.currency}
+                    pending={currencyAction}
+                    onConfirm={handleConfirmCurrency}
+                  />
+                )}
+                <div className="gateFacts">
+                  <div>
+                    <span>Current Baseline</span>
+                    <strong>{activeImport?.baseline_name ?? "Pending upload"}</strong>
+                  </div>
+                  <div>
+                    <span>Data Quality Gate</span>
+                    <strong>
+                      {activeImport ? `${activeImport.quality_score.toFixed(0)}% / ${activeImport.status}` : "Open"}
+                    </strong>
+                  </div>
+                  <div>
+                    <span>Data Date</span>
+                    <strong>{activeImport?.data_date ?? "Pending"}</strong>
+                  </div>
+                  <div>
+                    <span>Baseline Versions</span>
+                    <strong>{dashboard.baseline_versions.length}</strong>
+                  </div>
+                </div>
+                <div className="panel dcmaMetricsPanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>DCMA Metrics</h2>
+                    <span>{scheduleQualityMetrics.length} checks</span>
+                  </div>
+                  <div className="dcmaMetricsTable" aria-label="DCMA schedule quality metrics">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Standard</th>
+                          <th>Metric</th>
+                          <th>Status</th>
+                          <th>Count</th>
+                          <th>Percent</th>
+                          <th>Threshold</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {scheduleQualityMetrics.length ? (
+                          scheduleQualityMetrics.map((metric) => (
+                            <tr key={metric.key}>
+                              <td>{metric.standard}</td>
+                              <td>
+                                <strong>{metric.label}</strong>
+                                <span>{metric.description}</span>
+                              </td>
+                              <td>
+                                <span className={`qualityStatus ${metric.status}`}>{statusLabel(metric.status)}</span>
+                              </td>
+                              <td>{metric.total_count ? `${metric.item_count} / ${metric.total_count}` : "N/A"}</td>
+                              <td>{metric.total_count ? `${metric.percent.toFixed(1)}%` : "N/A"}</td>
+                              <td>{metric.threshold}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6}>
+                              <strong>No DCMA metrics</strong>
+                              <span>Load a schedule baseline to calculate quality metrics.</span>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="viewSplit">
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Baseline Versions</h2>
+                      <span>{dashboard.baseline_versions.length} records</span>
+                    </div>
+                    <div className="workList">
+                      {dashboard.baseline_versions.length ? (
+                        dashboard.baseline_versions.map((baseline) => (
+                          <article key={baseline.id}>
+                            <strong>
+                              BL-{baseline.version_no.toString().padStart(2, "0")} / {statusLabel(baseline.status)}
+                            </strong>
+                            <span>{baseline.name}</span>
+                            <small>
+                              {baseline.data_date ?? "No data date"} / Quality {baseline.quality_score.toFixed(0)}%
+                            </small>
+                          </article>
+                        ))
+                      ) : (
+                        <article>
+                          <strong>No baseline versions yet</strong>
+                          <span>Upload XML/XER to create the first controlled schedule baseline.</span>
+                        </article>
+                      )}
+                    </div>
+                  </div>
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Quality Findings</h2>
+                      <span>{dashboard.schedule_findings.length} records</span>
+                    </div>
+                    <div className="qualityList">
+                      {dashboard.schedule_findings.length ? (
+                        dashboard.schedule_findings.map((finding) => (
+                          <article key={finding.id}>
+                            <div>
+                              <strong>{finding.check_code}</strong>
+                              <span className={`qualityStatus ${finding.severity.toLowerCase()}`}>
+                                {statusLabel(finding.severity)}
+                              </span>
+                            </div>
+                            <p>{finding.message}</p>
+                            <small>{finding.item_count} items</small>
+                          </article>
+                        ))
+                      ) : (
+                        <article>
+                          <div>
+                            <strong>No findings</strong>
+                            <span className="qualityStatus pass">Pass</span>
+                          </div>
+                          <p>The active schedule has no stored QA findings.</p>
+                        </article>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {visibleControlView === "progress" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Progress Control</h2>
+                  <span>{dashboard.latest_progress_records.length} records</span>
+                </div>
+                <div className="workList">
+                  {dashboard.latest_progress_records.length ? (
+                    dashboard.latest_progress_records.map((record) => (
+                      <article key={record.id}>
+                        <strong>{controlAccountLabel(dashboard, record.control_account_id)}</strong>
+                        <span>{record.physical_percent.toFixed(1)}% physical progress</span>
+                        <small>
+                          {record.quantity_installed} installed / {record.labor_hours} hours /{" "}
+                          {record.reported_on ?? "No report date"}
+                        </small>
+                      </article>
+                    ))
+                  ) : (
+                    <article>
+                      <strong>No progress captured</strong>
+                      <span>Progress records will appear here after field updates are captured.</span>
+                    </article>
+                  )}
+                </div>
+              </>
+            )}
+            {visibleControlView === "costs" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Cost Control</h2>
+                  <span>
+                    {costFundingTraceabilityRows.length} linked row(s) / {currency(totalFunding, project.currency)}{" "}
+                    funding
+                  </span>
+                </div>
+                <section aria-label="Cost and Funding Traceability" className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>Cost and Funding Traceability</h2>
+                    <span>{baselineOnlyEvm ? "baseline only" : "period control"}</span>
+                  </div>
+                  <p className="projectHint">
+                    Esta tabla muestra la cadena operativa: WBS del cronograma, cuenta de control, CBS/cost code,
+                    presupuesto BAC, valores EVM del corte y fuente FBS. Si solo existe linea base, EV y AC quedan en
+                    cero.
+                  </p>
+                  {costFundingTraceabilityRows.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>WBS</th>
+                          <th>Control Account</th>
+                          <th>CBS / Cost Code</th>
+                          <th>BAC</th>
+                          <th>EV</th>
+                          <th>AC</th>
+                          <th>CPI</th>
+                          <th>FBS / Funding</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {costFundingTraceabilityRows.map((row) => (
+                          <tr key={row.id}>
+                            <td>
+                              <strong>{row.wbsName}</strong>
+                              <span>{row.wbsCode}</span>
+                            </td>
+                            <td>
+                              <strong>{row.controlAccountCode}</strong>
+                              <span>{row.controlAccountName}</span>
+                            </td>
+                            <td>
+                              <strong>{row.cbsCode}</strong>
+                              <span>{row.costCode}</span>
+                            </td>
+                            <td>{currency(row.bac, project.currency)}</td>
+                            <td>{currency(row.ev, project.currency)}</td>
+                            <td>{currency(row.ac, project.currency)}</td>
+                            <td>{row.cpi === null ? "N/A" : row.cpi.toFixed(3)}</td>
+                            <td>
+                              <strong>{row.fbsCode}</strong>
+                              <span>
+                                {row.fundingName}
+                                {row.fundingAmount ? ` / ${currency(row.fundingAmount, project.currency)}` : ""}
+                              </span>
+                            </td>
+                            <td>
+                              <strong>{row.status}</strong>
+                              <span>{row.fundingStatus}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="workspaceEmpty">
+                      <strong>No cost and funding traceability yet</strong>
+                      <p>Load cost lines and link WBS, control accounts, CBS and FBS before using this module.</p>
+                    </div>
+                  )}
+                </section>
+              </>
+            )}
+            {visibleControlView === "decisions" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Decision Register</h2>
+                  <span>{dashboard.changes.length} changes</span>
+                </div>
+                <div className="workList">
+                  {dashboard.changes.length ? (
+                    dashboard.changes.map((change) => (
+                      <article key={change.id}>
+                        <strong>{change.title}</strong>
+                        <span>{change.deviation}</span>
+                        <small>
+                          {currency(change.cost_impact, project.currency)} / {change.schedule_impact_days} days /{" "}
+                          {statusLabel(change.status)}
+                        </small>
+                      </article>
+                    ))
+                  ) : (
+                    <article>
+                      <strong>No decisions pending</strong>
+                      <span>Change and deviation decisions will be listed here.</span>
+                    </article>
+                  )}
+                </div>
+              </>
+            )}
+            {visibleControlView === "evidence" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Evidence Register</h2>
+                  <span>{dashboard.document_control_summary.controlled_document_score.toFixed(0)}% controlled</span>
+                </div>
+                <div className="awpSummary">
+                  <article>
+                    <span>Documents</span>
+                    <strong>{dashboard.document_control_summary.total_documents ?? 0}</strong>
+                    <small>{dashboard.document_control_summary.current_documents ?? 0} current</small>
+                  </article>
+                  <article className={dashboard.document_control_summary.overdue_reviews ? "risk" : ""}>
+                    <span>Reviews</span>
+                    <strong>{dashboard.document_control_summary.outstanding_reviews ?? 0}</strong>
+                    <small>{dashboard.document_control_summary.overdue_reviews ?? 0} overdue</small>
+                  </article>
+                  <article>
+                    <span>Transmittals</span>
+                    <strong>{dashboard.document_control_summary.transmittals_sent ?? 0}</strong>
+                    <small>{dashboard.document_control_summary.open_mail ?? 0} open mail</small>
+                  </article>
+                  <article>
+                    <span>Attachments</span>
+                    <strong>{dashboard.document_attachments.length}</strong>
+                    <small>Evidence files</small>
+                  </article>
+                </div>
+                <div className="workList">
+                  {dashboard.documents.length ? (
+                    dashboard.documents.slice(0, 12).map((document) => (
+                      <article key={document.id}>
+                        <strong>
+                          {document.document_number} / Rev {document.revision}
+                        </strong>
+                        <span>{document.title}</span>
+                        <small>
+                          {document.doc_type} / {statusLabel(document.review_status)} / {document.file_name}
+                        </small>
+                      </article>
+                    ))
+                  ) : (
+                    <article>
+                      <strong>No evidence documents yet</strong>
+                      <span>Controlled documents and attachments will appear here.</span>
+                    </article>
+                  )}
+                </div>
+              </>
+            )}
+            {visibleControlView === "work-packages" && (
+              <>
+                <div className="panelHeader">
+                  <h2>AWP Minimum Register</h2>
+                  <span>
+                    {dashboard.awp_summary.cwp_count} CWP / {dashboard.awp_summary.iwp_count} IWP /{" "}
+                    {dashboard.awp_summary.twp_count} TWP / {dashboard.awp_summary.top_count} TOP
+                  </span>
+                </div>
+
+                <div className="awpSummary">
+                  <article className={dashboard.awp_summary.blocking_constraints ? "risk" : ""}>
+                    <span>Open Constraints</span>
+                    <strong>{dashboard.awp_summary.open_constraints}</strong>
+                    <small>{dashboard.awp_summary.blocking_constraints} blocking</small>
+                  </article>
+                  <article className={dashboard.awp_summary.high_priority_constraints ? "risk" : ""}>
+                    <span>High Priority</span>
+                    <strong>{dashboard.awp_summary.high_priority_constraints}</strong>
+                    <small>Before release</small>
+                  </article>
+                  <article>
+                    <span>Closure Evidence</span>
+                    <strong>{dashboard.awp_summary.closure_evidence_count}</strong>
+                    <small>Closed constraints</small>
+                  </article>
+                  <article>
+                    <span>Ready Packages</span>
+                    <strong>{dashboard.awp_summary.ready_for_release}</strong>
+                    <small>{dashboard.awp_summary.blocked_packages} blocked</small>
+                  </article>
+                </div>
+
+                <section aria-label="Package coding rule" className="panel packageCodingPanel">
+                  <div className="panelHeader compactHeader">
+                    <h2>Package Coding Rule</h2>
+                    <span>Project and WBS name to CWA to CWP to IWP</span>
+                  </div>
+                  <div className="packageCodeLegend">
+                    <article>
+                      <strong>CWA-[PROJECT]-[WBS NAME]</strong>
+                      <span>Construction Work Area from the project and WBS boundary name.</span>
+                    </article>
+                    <article>
+                      <strong>CWP-[PROJECT]-[WBS NAME]-[DISC]-[NN]</strong>
+                      <span>Construction Work Package with discipline and sequence inside the WBS name.</span>
+                    </article>
+                    <article>
+                      <strong>IWP-[PROJECT]-[WBS NAME]-[DISC]-[NN]-IW##</strong>
+                      <span>
+                        Installation Work Package that inherits the CWP path and is released by workface constraints.
+                      </span>
+                    </article>
+                  </div>
+                </section>
+
+                <div className="awpVisualGrid">
+                  <section aria-label="AWP package tree" className="panel awpTreePanel">
+                    <div className="panelHeader compactHeader">
+                      <h2>
+                        <GitBranch size={18} /> AWP Package Tree
+                      </h2>
+                      <span>WBS names to CWA, CWP and IWP hierarchy</span>
+                    </div>
+                    {workPackageTree.length ? (
+                      <div className="awpPackageTree" role="tree">
+                        {workPackageTree.map((workPackage) => (
+                          <AwpPackageTreeBranch
+                            allPackages={dashboard.work_packages}
+                            constraintsByPackage={constraintsByPackage}
+                            depth={0}
+                            key={workPackage.id}
+                            node={workPackage}
+                            wbsCatalog={wbsCatalog}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="emptyState">
+                        <strong>No package hierarchy yet</strong>
+                        <span>Create AWP drafts to see CWA, CWP and IWP relationships.</span>
+                      </div>
+                    )}
+                  </section>
+
+                  <section aria-label="Path of Construction route" className="panel awpPocPanel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Path of Construction Route</h2>
+                      <span>{workPackagePocRoute.length} steps</span>
+                    </div>
+                    {workPackagePocRoute.length ? (
+                      <ol className="pocRoute">
+                        {workPackagePocRoute.map((workPackage, index) => (
+                          <li key={workPackage.id}>
+                            <strong>{index + 1}</strong>
+                            <div>
+                              <span>{workPackageDisplayLabel(wbsCatalog, workPackage)}</span>
+                              <p>
+                                {humanizePackageText(
+                                  workPackage.path_of_construction,
+                                  wbsCatalog,
+                                  dashboard.work_packages
+                                )}
+                              </p>
+                              <small>
+                                {statusLabel(workPackage.readiness_status)} /{" "}
+                                {constraintsByPackage[workPackage.id] ?? 0} blockers
+                              </small>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <div className="emptyState">
+                        <strong>No Path of Construction defined</strong>
+                        <span>Add POC text to packages to build the route.</span>
+                      </div>
+                    )}
+                  </section>
+                </div>
+
+                <div className="viewSplit">
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Package Definition Register</h2>
+                      <span>{dashboard.work_packages.length} records</span>
+                    </div>
+                    <div className="workList">
+                      {dashboard.work_packages.map((workPackage) => (
+                        <article
+                          className={constraintsByPackage[workPackage.id] ? "blockedPackage" : ""}
+                          key={workPackage.id}
+                        >
+                          <strong>{workPackageDisplayLabel(wbsCatalog, workPackage)}</strong>
+                          <span>{workPackage.title}</span>
+                          <small>{workPackageTechnicalCode(workPackage)}</small>
+                          <small>
+                            POC:{" "}
+                            {humanizePackageText(
+                              workPackage.path_of_construction,
+                              wbsCatalog,
+                              dashboard.work_packages
+                            ) || "No path defined"}
+                          </small>
+                          <div className="awpEvidence">
+                            <span>Agent evidence</span>
+                            <p>
+                              {humanizePackageText(workPackage.main_constraints, wbsCatalog, dashboard.work_packages) ||
+                                "No agent evidence recorded yet. Review package boundary, schedule, quantities and funding before release."}
+                            </p>
+                            <small>Draft generated by agent; requires human validation before release.</small>
+                          </div>
+                          <div className="packageFacts">
+                            <span>{statusLabel(workPackage.readiness_status)}</span>
+                            <span>{controlAccountLabel(dashboard, workPackage.control_account_id)}</span>
+                            <span>WBS: {workPackageWbsName(wbsCatalog, workPackage)}</span>
                             <span>
-                              {row.fundingName}
-                              {row.fundingAmount ? ` / ${currency(row.fundingAmount, project.currency)}` : ""}
+                              Release {workPackage.release_required_on ?? workPackage.planned_start ?? "Pending"}
                             </span>
-                          </td>
+                            <span>{constraintsByPackage[workPackage.id] ?? 0} blockers</span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Constraint Register</h2>
+                      <span>{dashboard.work_package_constraints.length} records</span>
+                    </div>
+                    <form className="captureForm compactForm" onSubmit={handleCreateWorkPackageConstraint}>
+                      <label>
+                        <span>Package</span>
+                        <select
+                          value={constraintDraft.work_package_id}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, work_package_id: event.target.value }))
+                          }
+                        >
+                          <option value="">Select package</option>
+                          {dashboard.work_packages.map((workPackage) => (
+                            <option key={workPackage.id} value={workPackage.id}>
+                              {workPackageDisplayLabel(wbsCatalog, workPackage)} - {workPackage.title}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>Type</span>
+                        <select
+                          value={constraintDraft.constraint_type}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, constraint_type: event.target.value }))
+                          }
+                        >
+                          <option>Engineering Documents</option>
+                          <option>Materials</option>
+                          <option>Safety / Quality</option>
+                          <option>Permits / Access</option>
+                          <option>Recost / Funding</option>
+                          <option>Field Execution</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>Owner Role</span>
+                        <input
+                          value={constraintDraft.owner_role}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, owner_role: event.target.value }))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Required</span>
+                        <input
+                          type="date"
+                          value={constraintDraft.required_by}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, required_by: event.target.value }))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Priority</span>
+                        <select
+                          value={constraintDraft.priority}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, priority: event.target.value }))
+                          }
+                        >
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="low">Low</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>Evidence</span>
+                        <input
+                          placeholder="Document, RFI or checklist reference"
+                          value={constraintDraft.evidence_ref}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, evidence_ref: event.target.value }))
+                          }
+                        />
+                      </label>
+                      <label className="checkboxLine">
+                        <input
+                          checked={constraintDraft.blocking}
+                          type="checkbox"
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, blocking: event.target.checked }))
+                          }
+                        />
+                        <span>Blocking</span>
+                      </label>
+                      <label className="fullWidth">
+                        <span>Description</span>
+                        <textarea
+                          placeholder="Describe what must be resolved before package release"
+                          value={constraintDraft.description}
+                          onChange={(event) =>
+                            setConstraintDraft((draft) => ({ ...draft, description: event.target.value }))
+                          }
+                        />
+                      </label>
+                      <button
+                        className="workflowAction primary"
+                        disabled={constraintAction || !dashboard.work_packages.length}
+                        type="submit"
+                      >
+                        {constraintAction ? "Adding..." : "Add Constraint"}
+                      </button>
+                    </form>
+                    <div className="workList">
+                      {dashboard.work_package_constraints.map((constraint) => (
+                        <article
+                          className={constraint.status === "open" && constraint.blocking ? "blockedPackage" : undefined}
+                          key={constraint.id}
+                        >
+                          <strong>
+                            {statusLabel(constraint.priority)} / {packageLabel(dashboard, constraint.work_package_id)}
+                          </strong>
+                          <span>{constraint.description}</span>
+                          <small>
+                            {constraint.constraint_type} / Required {constraint.required_by ?? "Pending"} /{" "}
+                            {statusLabel(constraint.status)}
+                          </small>
+                          <div className="packageFacts">
+                            <span>{constraint.owner_role}</span>
+                            <span>{constraint.evidence_ref || "Evidence pending"}</span>
+                            <span>{constraint.closed_on ? `Closed ${constraint.closed_on}` : "Open"}</span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {visibleControlView === "admin" && (
+              <>
+                <div className="panelHeader">
+                  <h2>Users & Roles</h2>
+                  <span>{dashboard.project_team.length} project assignments</span>
+                </div>
+                <div className="viewSplit">
+                  <form className="adminPanel" onSubmit={handleUserCreate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Create User</h2>
+                      <span>{users.length} tenant users / default password 1234</span>
+                    </div>
+                    <label>
+                      <span>Full Name</span>
+                      <input
+                        disabled={!canConfigure || userAction}
+                        onChange={(event) => setUserDraft((current) => ({ ...current, full_name: event.target.value }))}
+                        required
+                        value={userDraft.full_name}
+                      />
+                    </label>
+                    <label>
+                      <span>Login Email</span>
+                      <input
+                        disabled={!canConfigure || userAction}
+                        onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))}
+                        required
+                        type="email"
+                        value={userDraft.email}
+                      />
+                    </label>
+                    <div className="formColumns">
+                      <label>
+                        <span>Temporary Password</span>
+                        <input
+                          disabled={!canConfigure || userAction}
+                          onChange={(event) =>
+                            setUserDraft((current) => ({ ...current, password: event.target.value }))
+                          }
+                          required
+                          type="text"
+                          value={userDraft.password}
+                        />
+                      </label>
+                      <label>
+                        <span>Role Profile</span>
+                        <select
+                          disabled={!canConfigure || userAction}
+                          onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}
+                          value={userDraft.role}
+                        >
+                          {roles.map((role) => (
+                            <option key={role.role} value={role.role}>
+                              {role.role}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      <span>Title</span>
+                      <input
+                        disabled={!canConfigure || userAction}
+                        onChange={(event) => setUserDraft((current) => ({ ...current, title: event.target.value }))}
+                        value={userDraft.title}
+                      />
+                    </label>
+                    <div className="permissionStrip">
+                      {roles.find((role) => role.role === userDraft.role)?.can_capture_progress && (
+                        <span>Progress</span>
+                      )}
+                      {roles.find((role) => role.role === userDraft.role)?.can_capture_cost && <span>Cost</span>}
+                      {roles.find((role) => role.role === userDraft.role)?.can_approve_workflow && <span>Approve</span>}
+                      {roles.find((role) => role.role === userDraft.role)?.can_manage_contract && <span>Contract</span>}
+                      {roles.find((role) => role.role === userDraft.role)?.can_configure && <span>Admin</span>}
+                    </div>
+                    <button className="workflowAction primary" disabled={!canConfigure || userAction} type="submit">
+                      {userAction ? "Creating..." : "Create User & Assign Role"}
+                    </button>
+                    {userMessage && <div className="uploadMessage success">{userMessage}</div>}
+                    {userError && <div className="uploadMessage error">{userError}</div>}
+                  </form>
+
+                  <form className="adminPanel" onSubmit={handleManagedUserUpdate}>
+                    <div className="panelHeader compactHeader">
+                      <h2>Manage User Access</h2>
+                      <span>{selectedIamUserId ? "tenant user selected" : "no user selected"}</span>
+                    </div>
+                    <label>
+                      <span>Manage Tenant User</span>
+                      <select
+                        disabled={!canConfigure || iamAction !== null || users.length < 1}
+                        onChange={(event) => handleManagedUserSelect(event.target.value)}
+                        value={selectedIamUserId}
+                      >
+                        {users.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.full_name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>Managed Full Name</span>
+                      <input
+                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                        onChange={(event) =>
+                          setManagedUserDraft((current) => ({ ...current, full_name: event.target.value }))
+                        }
+                        required
+                        value={managedUserDraft.full_name}
+                      />
+                    </label>
+                    <label>
+                      <span>Managed Email</span>
+                      <input
+                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                        onChange={(event) =>
+                          setManagedUserDraft((current) => ({ ...current, email: event.target.value }))
+                        }
+                        required
+                        type="email"
+                        value={managedUserDraft.email}
+                      />
+                    </label>
+                    <label>
+                      <span>Managed Title</span>
+                      <input
+                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                        onChange={(event) =>
+                          setManagedUserDraft((current) => ({ ...current, title: event.target.value }))
+                        }
+                        value={managedUserDraft.title}
+                      />
+                    </label>
+                    <button
+                      className="workflowAction primary"
+                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                      type="submit"
+                    >
+                      {iamAction === "update" ? "Updating..." : "Update User"}
+                    </button>
+                    <div className="formColumns">
+                      <label>
+                        <span>New Temporary Password</span>
+                        <input
+                          disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                          onChange={(event) =>
+                            setManagedUserDraft((current) => ({ ...current, password: event.target.value }))
+                          }
+                          type="text"
+                          value={managedUserDraft.password}
+                        />
+                      </label>
+                      <label>
+                        <span>Assign Role</span>
+                        <select
+                          disabled={!canConfigure || iamAction !== null}
+                          onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}
+                          value={userDraft.role}
+                        >
+                          {roles.map((role) => (
+                            <option key={role.role} value={role.role}>
+                              {role.role}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <div className="actionRow">
+                      <button
+                        className="workflowAction"
+                        disabled={
+                          !canConfigure || iamAction !== null || !selectedIamUserId || !managedUserDraft.password
+                        }
+                        onClick={handleManagedPasswordReset}
+                        type="button"
+                      >
+                        {iamAction === "reset" ? "Resetting..." : "Reset Password"}
+                      </button>
+                      <button
+                        className="workflowAction"
+                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                        onClick={handleAssignExistingUser}
+                        type="button"
+                      >
+                        {iamAction === "assign" ? "Assigning..." : "Assign Existing User"}
+                      </button>
+                      <button
+                        className="workflowAction danger"
+                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
+                        onClick={handleDeactivateUser}
+                        type="button"
+                      >
+                        {iamAction === "deactivate" ? "Deactivating..." : "Deactivate User"}
+                      </button>
+                    </div>
+                  </form>
+
+                  <div className="panel">
+                    <div className="panelHeader compactHeader">
+                      <h2>Project Team</h2>
+                      <span>{dashboard.project_team.length} assigned</span>
+                    </div>
+                    <div className="workList compactList">
+                      {dashboard.project_team.map((member) => (
+                        <article key={member.membership.id}>
+                          <strong>
+                            {member.user.full_name} / {member.membership.role}
+                          </strong>
+                          <span>{member.user.email}</span>
+                          <small>{member.user.title || "No title"}</small>
+                          {canConfigure && (
+                            <button
+                              className="workflowAction danger"
+                              disabled={iamAction !== null}
+                              onClick={() => handleRemoveProjectAccess(member.user.id)}
+                              type="button"
+                            >
+                              {iamAction === "remove" ? "Removing..." : "Remove Access"}
+                            </button>
+                          )}
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="panel wide">
+                  <div className="panelHeader compactHeader">
+                    <h2>Role Profiles</h2>
+                    <span>{roles.length} profiles</span>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Role</th>
+                        <th>Description</th>
+                        <th>Permissions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {roles.map((role) => (
+                        <tr key={role.role}>
                           <td>
-                            <strong>{row.status}</strong>
-                            <span>{row.fundingStatus}</span>
+                            <strong>{role.role}</strong>
+                          </td>
+                          <td>{role.description}</td>
+                          <td>
+                            <div className="permissionStrip">
+                              {role.can_capture_progress && <span>Progress</span>}
+                              {role.can_capture_cost && <span>Cost</span>}
+                              {role.can_approve_workflow && <span>Approve</span>}
+                              {role.can_manage_contract && <span>Contract</span>}
+                              {role.can_configure && <span>Admin</span>}
+                            </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                ) : (
-                  <div className="workspaceEmpty">
-                    <strong>No cost and funding traceability yet</strong>
-                    <p>Load cost lines and link WBS, control accounts, CBS and FBS before using this module.</p>
-                  </div>
-                )}
-              </section>
-            </>
-          )}
-          {visibleControlView === "decisions" && (
-            <>
-              <div className="panelHeader">
-                <h2>Decision Register</h2>
-                <span>{dashboard.changes.length} changes</span>
-              </div>
-              <div className="workList">
-                {dashboard.changes.length ? (
-                  dashboard.changes.map((change) => (
-                    <article key={change.id}>
-                      <strong>{change.title}</strong>
-                      <span>{change.deviation}</span>
-                      <small>
-                        {currency(change.cost_impact, project.currency)} / {change.schedule_impact_days} days /{" "}
-                        {statusLabel(change.status)}
-                      </small>
-                    </article>
-                  ))
-                ) : (
-                  <article>
-                    <strong>No decisions pending</strong>
-                    <span>Change and deviation decisions will be listed here.</span>
-                  </article>
-                )}
-              </div>
-            </>
-          )}
-          {visibleControlView === "evidence" && (
-            <>
-              <div className="panelHeader">
-                <h2>Evidence Register</h2>
-                <span>{dashboard.document_control_summary.controlled_document_score.toFixed(0)}% controlled</span>
-              </div>
-              <div className="awpSummary">
-                <article>
-                  <span>Documents</span>
-                  <strong>{dashboard.document_control_summary.total_documents ?? 0}</strong>
-                  <small>{dashboard.document_control_summary.current_documents ?? 0} current</small>
-                </article>
-                <article className={dashboard.document_control_summary.overdue_reviews ? "risk" : ""}>
-                  <span>Reviews</span>
-                  <strong>{dashboard.document_control_summary.outstanding_reviews ?? 0}</strong>
-                  <small>{dashboard.document_control_summary.overdue_reviews ?? 0} overdue</small>
-                </article>
-                <article>
-                  <span>Transmittals</span>
-                  <strong>{dashboard.document_control_summary.transmittals_sent ?? 0}</strong>
-                  <small>{dashboard.document_control_summary.open_mail ?? 0} open mail</small>
-                </article>
-                <article>
-                  <span>Attachments</span>
-                  <strong>{dashboard.document_attachments.length}</strong>
-                  <small>Evidence files</small>
-                </article>
-              </div>
-              <div className="workList">
-                {dashboard.documents.length ? (
-                  dashboard.documents.slice(0, 12).map((document) => (
-                    <article key={document.id}>
-                      <strong>
-                        {document.document_number} / Rev {document.revision}
-                      </strong>
-                      <span>{document.title}</span>
-                      <small>
-                        {document.doc_type} / {statusLabel(document.review_status)} / {document.file_name}
-                      </small>
-                    </article>
-                  ))
-                ) : (
-                  <article>
-                    <strong>No evidence documents yet</strong>
-                    <span>Controlled documents and attachments will appear here.</span>
-                  </article>
-                )}
-              </div>
-            </>
-          )}
-          {visibleControlView === "work-packages" && (
-            <>
-          <div className="panelHeader">
-            <h2>AWP Minimum Register</h2>
-            <span>
-              {dashboard.awp_summary.cwp_count} CWP / {dashboard.awp_summary.iwp_count} IWP /{" "}
-              {dashboard.awp_summary.twp_count} TWP / {dashboard.awp_summary.top_count} TOP
-            </span>
-          </div>
-
-          <div className="awpSummary">
-            <article className={dashboard.awp_summary.blocking_constraints ? "risk" : ""}>
-              <span>Open Constraints</span>
-              <strong>{dashboard.awp_summary.open_constraints}</strong>
-              <small>{dashboard.awp_summary.blocking_constraints} blocking</small>
-            </article>
-            <article className={dashboard.awp_summary.high_priority_constraints ? "risk" : ""}>
-              <span>High Priority</span>
-              <strong>{dashboard.awp_summary.high_priority_constraints}</strong>
-              <small>Before release</small>
-            </article>
-            <article>
-              <span>Closure Evidence</span>
-              <strong>{dashboard.awp_summary.closure_evidence_count}</strong>
-              <small>Closed constraints</small>
-            </article>
-            <article>
-              <span>Ready Packages</span>
-              <strong>{dashboard.awp_summary.ready_for_release}</strong>
-              <small>{dashboard.awp_summary.blocked_packages} blocked</small>
-            </article>
-          </div>
-
-          <section aria-label="Package coding rule" className="panel packageCodingPanel">
-            <div className="panelHeader compactHeader">
-              <h2>Package Coding Rule</h2>
-              <span>Project and WBS name to CWA to CWP to IWP</span>
-            </div>
-            <div className="packageCodeLegend">
-              <article>
-                <strong>CWA-[PROJECT]-[WBS NAME]</strong>
-                <span>Construction Work Area from the project and WBS boundary name.</span>
-              </article>
-              <article>
-                <strong>CWP-[PROJECT]-[WBS NAME]-[DISC]-[NN]</strong>
-                <span>Construction Work Package with discipline and sequence inside the WBS name.</span>
-              </article>
-              <article>
-                <strong>IWP-[PROJECT]-[WBS NAME]-[DISC]-[NN]-IW##</strong>
-                <span>Installation Work Package that inherits the CWP path and is released by workface constraints.</span>
-              </article>
-            </div>
+                </div>
+              </>
+            )}
           </section>
-
-          <div className="awpVisualGrid">
-            <section aria-label="AWP package tree" className="panel awpTreePanel">
-              <div className="panelHeader compactHeader">
-                <h2>
-                  <GitBranch size={18} /> AWP Package Tree
-                </h2>
-                <span>WBS names to CWA, CWP and IWP hierarchy</span>
-              </div>
-              {workPackageTree.length ? (
-                <div className="awpPackageTree" role="tree">
-                  {workPackageTree.map((workPackage) => (
-                    <AwpPackageTreeBranch
-                      allPackages={dashboard.work_packages}
-                      constraintsByPackage={constraintsByPackage}
-                      depth={0}
-                      key={workPackage.id}
-                      node={workPackage}
-                      wbsCatalog={wbsCatalog}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="emptyState">
-                  <strong>No package hierarchy yet</strong>
-                  <span>Create AWP drafts to see CWA, CWP and IWP relationships.</span>
-                </div>
-              )}
-            </section>
-
-            <section aria-label="Path of Construction route" className="panel awpPocPanel">
-              <div className="panelHeader compactHeader">
-                <h2>Path of Construction Route</h2>
-                <span>{workPackagePocRoute.length} steps</span>
-              </div>
-              {workPackagePocRoute.length ? (
-                <ol className="pocRoute">
-                  {workPackagePocRoute.map((workPackage, index) => (
-                    <li key={workPackage.id}>
-                      <strong>{index + 1}</strong>
-                      <div>
-                        <span>
-                          {workPackageDisplayLabel(wbsCatalog, workPackage)}
-                        </span>
-                        <p>{humanizePackageText(workPackage.path_of_construction, wbsCatalog, dashboard.work_packages)}</p>
-                      <small>
-                        {statusLabel(workPackage.readiness_status)} / {constraintsByPackage[workPackage.id] ?? 0} blockers
-                      </small>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <div className="emptyState">
-                  <strong>No Path of Construction defined</strong>
-                  <span>Add POC text to packages to build the route.</span>
-                </div>
-              )}
-            </section>
-          </div>
-
-          <div className="viewSplit">
-            <div className="panel">
-              <div className="panelHeader compactHeader">
-                <h2>Package Definition Register</h2>
-                <span>{dashboard.work_packages.length} records</span>
-              </div>
-              <div className="workList">
-                {dashboard.work_packages.map((workPackage) => (
-                  <article
-                    className={constraintsByPackage[workPackage.id] ? "blockedPackage" : ""}
-                    key={workPackage.id}
-                  >
-                    <strong>{workPackageDisplayLabel(wbsCatalog, workPackage)}</strong>
-                    <span>{workPackage.title}</span>
-                    <small>{workPackageTechnicalCode(workPackage)}</small>
-                    <small>
-                      POC: {humanizePackageText(workPackage.path_of_construction, wbsCatalog, dashboard.work_packages) || "No path defined"}
-                    </small>
-                    <div className="awpEvidence">
-                      <span>Agent evidence</span>
-                      <p>
-                        {humanizePackageText(workPackage.main_constraints, wbsCatalog, dashboard.work_packages) ||
-                          "No agent evidence recorded yet. Review package boundary, schedule, quantities and funding before release."}
-                      </p>
-                      <small>Draft generated by agent; requires human validation before release.</small>
-                    </div>
-                    <div className="packageFacts">
-                      <span>{statusLabel(workPackage.readiness_status)}</span>
-                      <span>{controlAccountLabel(dashboard, workPackage.control_account_id)}</span>
-                      <span>WBS: {workPackageWbsName(wbsCatalog, workPackage)}</span>
-                      <span>Release {workPackage.release_required_on ?? workPackage.planned_start ?? "Pending"}</span>
-                      <span>{constraintsByPackage[workPackage.id] ?? 0} blockers</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            <div className="panel">
-              <div className="panelHeader compactHeader">
-                <h2>Constraint Register</h2>
-                <span>{dashboard.work_package_constraints.length} records</span>
-              </div>
-              <form className="captureForm compactForm" onSubmit={handleCreateWorkPackageConstraint}>
-                <label>
-                  <span>Package</span>
-                  <select
-                    value={constraintDraft.work_package_id}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, work_package_id: event.target.value }))}
-                  >
-                    <option value="">Select package</option>
-                    {dashboard.work_packages.map((workPackage) => (
-                      <option key={workPackage.id} value={workPackage.id}>
-                        {workPackageDisplayLabel(wbsCatalog, workPackage)} - {workPackage.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  <span>Type</span>
-                  <select
-                    value={constraintDraft.constraint_type}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, constraint_type: event.target.value }))}
-                  >
-                    <option>Engineering Documents</option>
-                    <option>Materials</option>
-                    <option>Safety / Quality</option>
-                    <option>Permits / Access</option>
-                    <option>Recost / Funding</option>
-                    <option>Field Execution</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Owner Role</span>
-                  <input
-                    value={constraintDraft.owner_role}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, owner_role: event.target.value }))}
-                  />
-                </label>
-                <label>
-                  <span>Required</span>
-                  <input
-                    type="date"
-                    value={constraintDraft.required_by}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, required_by: event.target.value }))}
-                  />
-                </label>
-                <label>
-                  <span>Priority</span>
-                  <select
-                    value={constraintDraft.priority}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, priority: event.target.value }))}
-                  >
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="low">Low</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Evidence</span>
-                  <input
-                    placeholder="Document, RFI or checklist reference"
-                    value={constraintDraft.evidence_ref}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, evidence_ref: event.target.value }))}
-                  />
-                </label>
-                <label className="checkboxLine">
-                  <input
-                    checked={constraintDraft.blocking}
-                    type="checkbox"
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, blocking: event.target.checked }))}
-                  />
-                  <span>Blocking</span>
-                </label>
-                <label className="fullWidth">
-                  <span>Description</span>
-                  <textarea
-                    placeholder="Describe what must be resolved before package release"
-                    value={constraintDraft.description}
-                    onChange={(event) => setConstraintDraft((draft) => ({ ...draft, description: event.target.value }))}
-                  />
-                </label>
-                <button className="workflowAction primary" disabled={constraintAction || !dashboard.work_packages.length} type="submit">
-                  {constraintAction ? "Adding..." : "Add Constraint"}
-                </button>
-              </form>
-              <div className="workList">
-                {dashboard.work_package_constraints.map((constraint) => (
-                  <article
-                    className={constraint.status === "open" && constraint.blocking ? "blockedPackage" : undefined}
-                    key={constraint.id}
-                  >
-                    <strong>
-                      {statusLabel(constraint.priority)} / {packageLabel(dashboard, constraint.work_package_id)}
-                    </strong>
-                    <span>{constraint.description}</span>
-                    <small>
-                      {constraint.constraint_type} / Required {constraint.required_by ?? "Pending"} /{" "}
-                      {statusLabel(constraint.status)}
-                    </small>
-                    <div className="packageFacts">
-                      <span>{constraint.owner_role}</span>
-                      <span>{constraint.evidence_ref || "Evidence pending"}</span>
-                      <span>{constraint.closed_on ? `Closed ${constraint.closed_on}` : "Open"}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-
-            </>
-          )}
-          {visibleControlView === "admin" && (
-            <>
-              <div className="panelHeader">
-                <h2>Users & Roles</h2>
-                <span>{dashboard.project_team.length} project assignments</span>
-              </div>
-              <div className="viewSplit">
-                <form className="adminPanel" onSubmit={handleUserCreate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Create User</h2>
-                    <span>{users.length} tenant users / default password 1234</span>
-                  </div>
-                  <label>
-                    <span>Full Name</span>
-                    <input
-                      disabled={!canConfigure || userAction}
-                      onChange={(event) => setUserDraft((current) => ({ ...current, full_name: event.target.value }))}
-                      required
-                      value={userDraft.full_name}
-                    />
-                  </label>
-                  <label>
-                    <span>Login Email</span>
-                    <input
-                      disabled={!canConfigure || userAction}
-                      onChange={(event) => setUserDraft((current) => ({ ...current, email: event.target.value }))}
-                      required
-                      type="email"
-                      value={userDraft.email}
-                    />
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Temporary Password</span>
-                      <input
-                        disabled={!canConfigure || userAction}
-                        onChange={(event) => setUserDraft((current) => ({ ...current, password: event.target.value }))}
-                        required
-                        type="text"
-                        value={userDraft.password}
-                      />
-                    </label>
-                    <label>
-                      <span>Role Profile</span>
-                      <select
-                        disabled={!canConfigure || userAction}
-                        onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}
-                        value={userDraft.role}
-                      >
-                        {roles.map((role) => (
-                          <option key={role.role} value={role.role}>
-                            {role.role}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <label>
-                    <span>Title</span>
-                    <input
-                      disabled={!canConfigure || userAction}
-                      onChange={(event) => setUserDraft((current) => ({ ...current, title: event.target.value }))}
-                      value={userDraft.title}
-                    />
-                  </label>
-                  <div className="permissionStrip">
-                    {roles.find((role) => role.role === userDraft.role)?.can_capture_progress && <span>Progress</span>}
-                    {roles.find((role) => role.role === userDraft.role)?.can_capture_cost && <span>Cost</span>}
-                    {roles.find((role) => role.role === userDraft.role)?.can_approve_workflow && <span>Approve</span>}
-                    {roles.find((role) => role.role === userDraft.role)?.can_manage_contract && <span>Contract</span>}
-                    {roles.find((role) => role.role === userDraft.role)?.can_configure && <span>Admin</span>}
-                  </div>
-                  <button className="workflowAction primary" disabled={!canConfigure || userAction} type="submit">
-                    {userAction ? "Creating..." : "Create User & Assign Role"}
-                  </button>
-                  {userMessage && <div className="uploadMessage success">{userMessage}</div>}
-                  {userError && <div className="uploadMessage error">{userError}</div>}
-                </form>
-
-                <form className="adminPanel" onSubmit={handleManagedUserUpdate}>
-                  <div className="panelHeader compactHeader">
-                    <h2>Manage User Access</h2>
-                    <span>{selectedIamUserId ? "tenant user selected" : "no user selected"}</span>
-                  </div>
-                  <label>
-                    <span>Manage Tenant User</span>
-                    <select
-                      disabled={!canConfigure || iamAction !== null || users.length < 1}
-                      onChange={(event) => handleManagedUserSelect(event.target.value)}
-                      value={selectedIamUserId}
-                    >
-                      {users.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.full_name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    <span>Managed Full Name</span>
-                    <input
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                      onChange={(event) =>
-                        setManagedUserDraft((current) => ({ ...current, full_name: event.target.value }))
-                      }
-                      required
-                      value={managedUserDraft.full_name}
-                    />
-                  </label>
-                  <label>
-                    <span>Managed Email</span>
-                    <input
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                      onChange={(event) =>
-                        setManagedUserDraft((current) => ({ ...current, email: event.target.value }))
-                      }
-                      required
-                      type="email"
-                      value={managedUserDraft.email}
-                    />
-                  </label>
-                  <label>
-                    <span>Managed Title</span>
-                    <input
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                      onChange={(event) =>
-                        setManagedUserDraft((current) => ({ ...current, title: event.target.value }))
-                      }
-                      value={managedUserDraft.title}
-                    />
-                  </label>
-                  <button
-                    className="workflowAction primary"
-                    disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                    type="submit"
-                  >
-                    {iamAction === "update" ? "Updating..." : "Update User"}
-                  </button>
-                  <div className="formColumns">
-                    <label>
-                      <span>New Temporary Password</span>
-                      <input
-                        disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                        onChange={(event) =>
-                          setManagedUserDraft((current) => ({ ...current, password: event.target.value }))
-                        }
-                        type="text"
-                        value={managedUserDraft.password}
-                      />
-                    </label>
-                    <label>
-                      <span>Assign Role</span>
-                      <select
-                        disabled={!canConfigure || iamAction !== null}
-                        onChange={(event) => setUserDraft((current) => ({ ...current, role: event.target.value }))}
-                        value={userDraft.role}
-                      >
-                        {roles.map((role) => (
-                          <option key={role.role} value={role.role}>
-                            {role.role}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div className="actionRow">
-                    <button
-                      className="workflowAction"
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId || !managedUserDraft.password}
-                      onClick={handleManagedPasswordReset}
-                      type="button"
-                    >
-                      {iamAction === "reset" ? "Resetting..." : "Reset Password"}
-                    </button>
-                    <button
-                      className="workflowAction"
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                      onClick={handleAssignExistingUser}
-                      type="button"
-                    >
-                      {iamAction === "assign" ? "Assigning..." : "Assign Existing User"}
-                    </button>
-                    <button
-                      className="workflowAction danger"
-                      disabled={!canConfigure || iamAction !== null || !selectedIamUserId}
-                      onClick={handleDeactivateUser}
-                      type="button"
-                    >
-                      {iamAction === "deactivate" ? "Deactivating..." : "Deactivate User"}
-                    </button>
-                  </div>
-                </form>
-
-                <div className="panel">
-                  <div className="panelHeader compactHeader">
-                    <h2>Project Team</h2>
-                    <span>{dashboard.project_team.length} assigned</span>
-                  </div>
-                  <div className="workList compactList">
-                    {dashboard.project_team.map((member) => (
-                      <article key={member.membership.id}>
-                        <strong>
-                          {member.user.full_name} / {member.membership.role}
-                        </strong>
-                        <span>{member.user.email}</span>
-                        <small>{member.user.title || "No title"}</small>
-                        {canConfigure && (
-                          <button
-                            className="workflowAction danger"
-                            disabled={iamAction !== null}
-                            onClick={() => handleRemoveProjectAccess(member.user.id)}
-                            type="button"
-                          >
-                            {iamAction === "remove" ? "Removing..." : "Remove Access"}
-                          </button>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="panel wide">
-                <div className="panelHeader compactHeader">
-                  <h2>Role Profiles</h2>
-                  <span>{roles.length} profiles</span>
-                </div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Role</th>
-                      <th>Description</th>
-                      <th>Permissions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {roles.map((role) => (
-                      <tr key={role.role}>
-                        <td>
-                          <strong>{role.role}</strong>
-                        </td>
-                        <td>{role.description}</td>
-                        <td>
-                          <div className="permissionStrip">
-                            {role.can_capture_progress && <span>Progress</span>}
-                            {role.can_capture_cost && <span>Cost</span>}
-                            {role.can_approve_workflow && <span>Approve</span>}
-                            {role.can_manage_contract && <span>Contract</span>}
-                            {role.can_configure && <span>Admin</span>}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-          </section>
-
         </section>
       </section>
     </main>
@@ -7337,7 +7609,7 @@ function tooltipDate(value: unknown) {
   const timestamp = typeof value === "number" || typeof value === "string" ? Number(value) : Number.NaN;
   if (!Number.isFinite(timestamp)) return "";
   return new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" }).format(
-    new Date(timestamp),
+    new Date(timestamp)
   );
 }
 
@@ -7413,8 +7685,16 @@ function apuStructureLines(item: ColombiaApuCatalogItem) {
       };
     })
     .filter(
-      (line): line is { component: string; description: string; quantity: number; unit: string; unitRate: number; amount: number } =>
-        Boolean(line),
+      (
+        line
+      ): line is {
+        component: string;
+        description: string;
+        quantity: number;
+        unit: string;
+        unitRate: number;
+        amount: number;
+      } => Boolean(line)
     );
   return lines.length
     ? lines

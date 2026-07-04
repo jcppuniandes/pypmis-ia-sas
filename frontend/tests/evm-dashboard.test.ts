@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildCumulativeEvmCurve,
-  deriveProjectEvm,
-  formatEvmRatio,
-} from "../src/lib/evm";
+import { buildCumulativeEvmCurve, deriveProjectEvm, formatEvmRatio } from "../src/lib/evm";
 import type { ActivitySheetRow, ControlSnapshot, CostSheetLine, KPI } from "../src/types";
 
 const emptyKpi: KPI = {
@@ -119,7 +115,7 @@ describe("dashboard EVM helpers", () => {
       { ...emptyKpi, bac: 2000 },
       [costLine({ bac: 2000, planned_value: 0, earned_value: 0, actual_cost: 100 })],
       [activityRow({ planned_cost: 1000, planned_start: "2026-01-01", planned_finish: "2026-01-10" })],
-      "2026-01-05",
+      "2026-01-05"
     );
 
     expect(result.pv).toBe(500);
@@ -135,7 +131,7 @@ describe("dashboard EVM helpers", () => {
       [costLine({ bac: 2000, planned_value: 0, earned_value: 0, actual_cost: 100 })],
       [activityRow({ planned_cost: 1000, planned_start: "2026-01-01", planned_finish: "2026-01-10" })],
       "2026-01-05",
-      { baselineOnly: true },
+      { baselineOnly: true }
     );
 
     expect(result.pv).toBe(0);
@@ -161,7 +157,7 @@ describe("dashboard EVM helpers", () => {
         activityRow({ id: 6, planned_cost: 2000000, planned_start: "2026-05-15", planned_finish: "2026-07-03" }),
         activityRow({ id: 7, planned_cost: 3000000, planned_start: "2026-06-04", planned_finish: "2026-08-12" }),
       ],
-      "2026-05-07",
+      "2026-05-07"
     );
 
     expect(result.bac).toBe(7700000);
@@ -195,12 +191,14 @@ describe("dashboard EVM helpers", () => {
         ev: 400,
         ac: 390,
       },
+      [],
+      "2026-07-15"
     );
 
     expect(curve.map(({ period, PV, EV, AC }) => ({ period, PV, EV, AC }))).toEqual([
       { period: "May", PV: 100, EV: 80, AC: 70 },
       { period: "Jun", PV: 300, EV: 210, AC: 190 },
-      { period: "2026-06-03", PV: 450, EV: 400, AC: 390 },
+      { period: "2026-07-15", PV: 450, EV: 400, AC: 390 },
     ]);
   });
 
@@ -222,7 +220,7 @@ describe("dashboard EVM helpers", () => {
           planned_finish: "2026-02-10",
         }),
       ],
-      "2026-01-05",
+      "2026-01-05"
     );
 
     expect(curve.map(({ period, PV, EV, AC }) => ({ period, PV, EV, AC }))).toEqual([
@@ -247,7 +245,7 @@ describe("dashboard EVM helpers", () => {
         }),
       ],
       "2026-01-05",
-      { baselineOnly: true },
+      { baselineOnly: true }
     );
 
     expect(curve.map(({ period, PV, EV, AC }) => ({ period, PV, EV, AC }))).toEqual([

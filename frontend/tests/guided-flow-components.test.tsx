@@ -77,7 +77,7 @@ describe("guided flow components", () => {
         userTitle="Tenant Administrator"
         onLogout={vi.fn()}
         onProjectChange={onProjectChange}
-      />,
+      />
     );
 
     expect(screen.getByText("Acceso de proyecto")).toBeInTheDocument();
@@ -111,13 +111,13 @@ describe("guided flow components", () => {
           ...steps,
         ]}
         onNavigate={onNavigate}
-      />,
+      />
     );
 
     expect(screen.queryByText(/Tenant workspace/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Workspace ready/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Demo Energy/i)).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /cost and currency gate/i }));
+    await userEvent.click(screen.getByRole("button", { name: /open baseline gate/i }));
     expect(onNavigate).toHaveBeenCalledWith("baseline");
   });
 
@@ -133,13 +133,19 @@ describe("guided flow components", () => {
     const onNavigate = vi.fn();
     render(
       <NextActionPanel
-        action={{ key: "cost_currency", label: "Confirm currency", target_view: "baseline", disabled: false, reason: "" }}
+        action={{
+          key: "cost_currency",
+          label: "Confirm currency",
+          target_view: "baseline",
+          disabled: false,
+          reason: "",
+        }}
         step={steps[1]}
         onNavigate={onNavigate}
-      />,
+      />
     );
 
-    await userEvent.click(screen.getByRole("button", { name: /open cost and currency gate/i }));
+    await userEvent.click(screen.getByRole("button", { name: /open baseline gate/i }));
     expect(onNavigate).toHaveBeenCalledWith("baseline");
   });
 });

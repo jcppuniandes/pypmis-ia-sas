@@ -1,7 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+type ValidationModeGlobal = typeof globalThis & { __PYPMIS_VALIDATION_MODE__?: boolean };
+
+function setValidationMode(enabled: boolean) {
+  (globalThis as ValidationModeGlobal).__PYPMIS_VALIDATION_MODE__ = enabled;
+}
 import App from "../src/App";
 import { ApiError } from "../src/api/client";
 import { useProjectStore } from "../src/store/project";
@@ -120,6 +126,17 @@ const demoDashboard = {
     },
   ],
   changes: [],
+  claims_forensic_summary: {
+    total_claims: 0,
+    notice_count: 0,
+    compliant_notices: 0,
+    late_notices: 0,
+    impact_analyses: 0,
+    quantified_claims: 0,
+    total_claimed_cost: 0,
+    total_schedule_impact_days: 0,
+    forensic_readiness_score: 0,
+  },
   document_control_summary: { controlled_document_score: 0 },
   awp_summary: {
     readiness_score: 0,
@@ -172,6 +189,17 @@ const loadActivitySheetData = vi.fn();
 const quantityTakeoffRuns = vi.fn();
 const quantityTakeoffLines = vi.fn();
 const loadQuantityTakeoff = vi.fn();
+const bimQuantityRules = vi.fn();
+const colombiaApuCatalog = vi.fn();
+const syncColombiaApuCatalog = vi.fn();
+const suggestQuantityApuItems = vi.fn();
+const approveQuantityApuItems = vi.fn();
+const assignQuantityControlCodes = vi.fn();
+const linkQuantityTakeoffBimModel = vi.fn();
+const processGeometryMeasurements = vi.fn();
+const recalculateQuantityRules = vi.fn();
+const updateBimQuantityRule = vi.fn();
+const approveControlledMeasurements = vi.fn();
 const assignTeamMember = vi.fn();
 const getDashboard = vi.fn();
 const matrix = vi.fn();
@@ -232,6 +260,17 @@ vi.mock("../src/api/projects", () => ({
     quantityTakeoffRuns: (...args: unknown[]) => quantityTakeoffRuns(...args),
     quantityTakeoffLines: (...args: unknown[]) => quantityTakeoffLines(...args),
     loadQuantityTakeoff: (...args: unknown[]) => loadQuantityTakeoff(...args),
+    bimQuantityRules: (...args: unknown[]) => bimQuantityRules(...args),
+    colombiaApuCatalog: (...args: unknown[]) => colombiaApuCatalog(...args),
+    syncColombiaApuCatalog: (...args: unknown[]) => syncColombiaApuCatalog(...args),
+    suggestQuantityApuItems: (...args: unknown[]) => suggestQuantityApuItems(...args),
+    approveQuantityApuItems: (...args: unknown[]) => approveQuantityApuItems(...args),
+    assignQuantityControlCodes: (...args: unknown[]) => assignQuantityControlCodes(...args),
+    linkQuantityTakeoffBimModel: (...args: unknown[]) => linkQuantityTakeoffBimModel(...args),
+    processGeometryMeasurements: (...args: unknown[]) => processGeometryMeasurements(...args),
+    recalculateQuantityRules: (...args: unknown[]) => recalculateQuantityRules(...args),
+    updateBimQuantityRule: (...args: unknown[]) => updateBimQuantityRule(...args),
+    approveControlledMeasurements: (...args: unknown[]) => approveControlledMeasurements(...args),
     assignTeamMember: (...args: unknown[]) => assignTeamMember(...args),
     removeTeamMember: (...args: unknown[]) => removeTeamMember(...args),
   },
@@ -253,6 +292,39 @@ vi.mock("../src/api/dashboard", () => ({
     get: (...args: unknown[]) => getDashboard(...args),
   },
 }));
+
+const bimList = vi.fn();
+const bimUpload = vi.fn();
+const bimRemove = vi.fn();
+const bimSource = vi.fn();
+const bimManifest = vi.fn();
+const bimPrepareGeometryCache = vi.fn();
+const bimGeometryCache = vi.fn();
+const bimElementProperties = vi.fn();
+
+vi.mock("../src/api/bimModels", () => ({
+  bimModels: {
+    list: (...args: unknown[]) => bimList(...args),
+    upload: (...args: unknown[]) => bimUpload(...args),
+    remove: (...args: unknown[]) => bimRemove(...args),
+    source: (...args: unknown[]) => bimSource(...args),
+    manifest: (...args: unknown[]) => bimManifest(...args),
+    prepareGeometryCache: (...args: unknown[]) => bimPrepareGeometryCache(...args),
+    geometryCache: (...args: unknown[]) => bimGeometryCache(...args),
+    elementProperties: (...args: unknown[]) => bimElementProperties(...args),
+  },
+}));
+
+const uploadedBimModel = {
+  id: 901,
+  project_id: 1,
+  source_file_name: "coordination-model.ifc",
+  revision_id: "REV-1",
+  status: "registered",
+  model_identity: {},
+  created_at: "2026-05-01T00:00:00Z",
+  updated_at: "2026-05-01T00:00:00Z",
+};
 
 vi.mock("../src/api/integratedControl", () => ({
   integratedControl: {
@@ -290,10 +362,33 @@ vi.mock("../src/api/integratedControl", () => ({
 }));
 
 describe("served project control flow", () => {
+  afterEach(() => {
+    delete (globalThis as ValidationModeGlobal).__PYPMIS_VALIDATION_MODE__;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     useProjectStore.setState({ selectedProjectId: null, dashboard: null });
     listProjects.mockResolvedValue([demoProject]);
+    bimQuantityRules.mockResolvedValue([]);
+    colombiaApuCatalog.mockResolvedValue([]);
+    bimList.mockResolvedValue([]);
+    bimUpload.mockResolvedValue(uploadedBimModel);
+    bimRemove.mockResolvedValue({});
+    bimSource.mockRejectedValue(new Error("no source in tests"));
+    bimManifest.mockResolvedValue({});
+    bimPrepareGeometryCache.mockRejectedValue(new Error("no geometry cache in tests"));
+    bimGeometryCache.mockRejectedValue(new Error("no geometry cache in tests"));
+    bimElementProperties.mockResolvedValue({});
+    syncColombiaApuCatalog.mockResolvedValue({ status: "ok", item_count: 0 });
+    suggestQuantityApuItems.mockResolvedValue([]);
+    approveQuantityApuItems.mockResolvedValue([]);
+    assignQuantityControlCodes.mockResolvedValue([]);
+    linkQuantityTakeoffBimModel.mockResolvedValue({});
+    processGeometryMeasurements.mockResolvedValue({});
+    recalculateQuantityRules.mockResolvedValue({});
+    updateBimQuantityRule.mockResolvedValue({});
+    approveControlledMeasurements.mockResolvedValue({});
     deleteProject.mockResolvedValue({ status: "deleted", project_id: demoProject.id });
     getDashboard.mockResolvedValue(demoDashboard);
     guidedFlow.mockResolvedValue({
@@ -454,7 +549,9 @@ describe("served project control flow", () => {
               owner_role: "Control Manager",
               evidence: "1 project member; 0 BP approval policies.",
               next_action: "Load client role matrix and BP approval policies",
-              acceptance_criteria: ["Client role matrix is configured for Planning, Controls, Cost/Funding, AWP, Contracts and Document Control."],
+              acceptance_criteria: [
+                "Client role matrix is configured for Planning, Controls, Cost/Funding, AWP, Contracts and Document Control.",
+              ],
               target_view: "admin",
             },
           ],
@@ -488,7 +585,9 @@ describe("served project control flow", () => {
               owner_role: "Cost / Funding",
               evidence: "1 funding code configured.",
               next_action: "Monitor available funds",
-              acceptance_criteria: ["Each fund has source, type, authorization, restrictions, approved amount, currency and status."],
+              acceptance_criteria: [
+                "Each fund has source, type, authorization, restrictions, approved amount, currency and status.",
+              ],
               target_view: "costs",
             },
           ],
@@ -505,7 +604,9 @@ describe("served project control flow", () => {
               owner_role: "BIM / Workface Planner",
               evidence: "1 run(s); 2 line(s); 1 mapped; 1 need mapping.",
               next_action: "Review unmapped BIM/IFC or Excel quantity lines",
-              acceptance_criteria: ["Controlled physical quantity items are consolidated from BIM/IFC or Excel quantities."],
+              acceptance_criteria: [
+                "Controlled physical quantity items are consolidated from BIM/IFC or Excel quantities.",
+              ],
               target_view: "quantity-takeoff",
             },
             {
@@ -515,7 +616,9 @@ describe("served project control flow", () => {
               owner_role: "Workface Planner",
               evidence: "0 packages; 0 blocking constraints.",
               next_action: "Create CWA/CWP/EWP/PWP/IWP/TWP/TOP package drafts",
-              acceptance_criteria: ["Packages are tied to WBS, control account, path of construction and responsible owner."],
+              acceptance_criteria: [
+                "Packages are tied to WBS, control account, path of construction and responsible owner.",
+              ],
               target_view: "work-packages",
             },
           ],
@@ -893,8 +996,16 @@ describe("served project control flow", () => {
     });
     createFbs.mockResolvedValue({});
     createCbs.mockResolvedValue({ id: 402, code: "CBS-NEW", cost_category: "Civil" });
-    createCbsFundBusinessProcess.mockResolvedValue({ id: 701, record_no: "BP-CBS-FUND-0001", current_step: "Control Review" });
-    createCbsWbsBusinessProcess.mockResolvedValue({ id: 700, record_no: "BP-CBS-WBS-0001", current_step: "Budget Review" });
+    createCbsFundBusinessProcess.mockResolvedValue({
+      id: 701,
+      record_no: "BP-CBS-FUND-0001",
+      current_step: "Control Review",
+    });
+    createCbsWbsBusinessProcess.mockResolvedValue({
+      id: 700,
+      record_no: "BP-CBS-WBS-0001",
+      current_step: "Budget Review",
+    });
     createSovLine.mockResolvedValue({ id: 1, line_no: "10" });
     createCommitmentFundingLine.mockResolvedValue({ id: 1 });
     createRateSheet.mockResolvedValue({ id: 1, code: "RS-001" });
@@ -953,7 +1064,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -966,7 +1077,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -997,7 +1108,7 @@ describe("served project control flow", () => {
     const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
     expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
     expect(guidedRail.compareDocumentPosition(projectAdmin) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
+      Node.DOCUMENT_POSITION_FOLLOWING
     );
     expect(screen.queryByText(/workspace views/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/shell/i)).not.toBeInTheDocument();
@@ -1010,12 +1121,13 @@ describe("served project control flow", () => {
   });
 
   it("uses a simplified project information flow instead of scattered navigation", async () => {
+    setValidationMode(true);
     const user = userEvent.setup();
 
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1027,10 +1139,7 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("region", { name: /project information flow map/i })).not.toBeInTheDocument();
 
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
-    expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
+    expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
     expect(within(validationNav).getByRole("button", { name: /cantidades bim/i })).toBeInTheDocument();
     [
       /process flow/i,
@@ -1061,7 +1170,7 @@ describe("served project control flow", () => {
 
     await user.click(within(validationNav).getByRole("button", { name: /cantidades bim/i }));
     expect(
-      await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i }),
+      await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i })
     ).toBeInTheDocument();
   });
 
@@ -1071,14 +1180,14 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
     await user.click(
       within(screen.getByRole("region", { name: /next controlled action/i })).getByRole("button", {
         name: /open baseline gate/i,
-      }),
+      })
     );
 
     expect(await screen.findByRole("heading", { name: /baseline control/i })).toBeInTheDocument();
@@ -1091,7 +1200,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1128,7 +1237,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1161,7 +1270,7 @@ describe("served project control flow", () => {
           authorization_date: "2026-05-12",
           authorization_ref: "AFE-INT-001",
           configuration: { funding_required: true, control_level: "control_account" },
-        }),
+        })
       );
     });
   });
@@ -1194,7 +1303,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(await screen.findByRole("heading", { name: /create your first project/i })).toBeInTheDocument();
@@ -1210,7 +1319,7 @@ describe("served project control flow", () => {
     await waitFor(() => {
       expect(createProject).toHaveBeenCalledWith(
         "tok",
-        expect.objectContaining({ code: "NEW-001", name: "Nuevo proyecto limpio" }),
+        expect.objectContaining({ code: "NEW-001", name: "Nuevo proyecto limpio" })
       );
     });
     await waitFor(() => {
@@ -1236,7 +1345,7 @@ describe("served project control flow", () => {
     };
     listProjects.mockResolvedValue([demoProject, nextProject]);
     getDashboard.mockImplementation((_token, projectId) =>
-      Promise.resolve(projectId === 2 ? nextDashboard : demoDashboard),
+      Promise.resolve(projectId === 2 ? nextDashboard : demoDashboard)
     );
     deleteProject.mockResolvedValue({ status: "deleted", project_id: 1 });
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
@@ -1244,7 +1353,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1286,7 +1395,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1380,20 +1489,24 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
     await user.click(
       within(screen.getByRole("complementary", { name: /project information flow/i })).getByRole("button", {
         name: /open baseline gate/i,
-      }),
+      })
     );
 
     expect(screen.getByRole("heading", { name: /dcma metrics/i })).toBeInTheDocument();
-    expect(screen.getByRole("row", { name: /dcma 01 logic .* fail 1 \/ 3 33\.3% <= 5% missing logic/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", { name: /dcma 01 logic .* fail 1 \/ 3 33\.3% <= 5% missing logic/i })
+    ).toBeInTheDocument();
     expect(screen.getByRole("row", { name: /dcma 02 leads .* pass 0 \/ 1 0\.0% 0 leads/i })).toBeInTheDocument();
-    expect(screen.getByRole("row", { name: /dcma 06 high float .* pass 0 \/ 3 0\.0% <= 5% over 44 days/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", { name: /dcma 06 high float .* pass 0 \/ 3 0\.0% <= 5% over 44 days/i })
+    ).toBeInTheDocument();
   });
 
   it("navigates between control flow views from the side rail", async () => {
@@ -1402,14 +1515,16 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
 
     expect(screen.queryByRole("button", { name: /open tenant workspace/i })).not.toBeInTheDocument();
     expect(screen.getByRole("banner", { name: /tenant command bar/i })).toHaveTextContent(/proyectos asignados/i);
-    expect(screen.getByRole("banner", { name: /tenant command bar/i })).toHaveTextContent(/cada usuario ve solo sus proyectos/i);
+    expect(screen.getByRole("banner", { name: /tenant command bar/i })).toHaveTextContent(
+      /cada usuario ve solo sus proyectos/i
+    );
     expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /costs/i }));
@@ -1424,7 +1539,7 @@ describe("served project control flow", () => {
     await user.click(
       within(screen.getByRole("complementary", { name: /project information flow/i })).getByRole("button", {
         name: /open baseline gate/i,
-      }),
+      })
     );
     expect(screen.getByRole("heading", { name: /baseline control/i })).toBeInTheDocument();
 
@@ -1453,7 +1568,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /dashboard evm/i });
@@ -1467,7 +1582,7 @@ describe("served project control flow", () => {
     expect(
       within(traceability).getByRole("row", {
         name: /obras civiles planta plt-civ ca-plt-civ control account plt-civ CBS-4000 .* \$120,000 \$0 \$0 N\/A/i,
-      }),
+      })
     ).toBeInTheDocument();
   });
 
@@ -1477,7 +1592,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app/schedule-control"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     const module = await screen.findByRole("region", {
@@ -1503,7 +1618,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1662,7 +1777,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1707,7 +1822,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1726,7 +1841,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1737,12 +1852,14 @@ describe("served project control flow", () => {
 
     await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
 
-    const quantityPanel = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const quantityPanel = await screen.findByRole("region", {
+      name: /cantidades bim module|bim quantity takeoff module/i,
+    });
     expect(within(quantityPanel).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
     expect(within(quantityPanel).getAllByText(/bim-quantities.xlsx/i).length).toBeGreaterThan(0);
     expect(within(quantityPanel).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
     await user.click(within(quantityPanel).getByRole("button", { name: /limpiar modelo/i }));
-    expect(within(quantityPanel).getByText(/loaded bim model cleared/i)).toBeInTheDocument();
+    expect(within(quantityPanel).getByText(/modelo ifc y tabla local despejados/i)).toBeInTheDocument();
     expect(within(quantityPanel).getByText(/no hay elementos candidatos/i)).toBeInTheDocument();
     expect(within(quantityPanel).queryByText(/GUID-001/i)).not.toBeInTheDocument();
     expect(quantityTakeoffRuns).toHaveBeenCalledWith("tok", 1);
@@ -1755,14 +1872,14 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
     await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
 
     const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
-    expect(within(module).getByRole("heading", { name: /cantidades bim/i })).toBeInTheDocument();
+    expect(within(module).getAllByRole("heading", { name: /cantidades bim/i }).length).toBeGreaterThan(0);
     expect(within(module).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
     expect(within(module).getAllByText(/^Ubicacion$/i).length).toBeGreaterThan(0);
     expect(within(module).getAllByText(/^Elementos$/i).length).toBeGreaterThan(0);
@@ -1776,12 +1893,14 @@ describe("served project control flow", () => {
     expect(ifcViewer).toHaveClass("ifcGeometryViewer");
     expect(within(module).queryByRole("region", { name: /bim inventory preview/i })).not.toBeInTheDocument();
     expect(within(module).queryByRole("region", { name: /bim quantity takeoff lines/i })).not.toBeInTheDocument();
-    expect(within(module).getAllByRole("table")).toHaveLength(1);
     const scopeValidation = within(module).getByRole("region", { name: /tabla de cantidades controladas/i });
+    expect(within(scopeValidation).getAllByRole("table").length).toBeGreaterThan(0);
     expect(within(scopeValidation).getByText(/ubicacion -> elemento -> codigos de control/i)).toBeInTheDocument();
     expect(within(scopeValidation).getByText(/no duplicar elementos por wbs/i)).toBeInTheDocument();
     expect(within(scopeValidation).getByText(/cantidad total menos cantidad asignada a paquete/i)).toBeInTheDocument();
-    expect(within(scopeValidation).getByRole("heading", { name: /tabla de cantidades controladas/i })).toBeInTheDocument();
+    expect(
+      within(scopeValidation).getByRole("heading", { name: /tabla de cantidades controladas/i })
+    ).toBeInTheDocument();
     expect(within(scopeValidation).getAllByText(/CBS-UNI-PLT-CIV-EARTH/i).length).toBeGreaterThan(0);
     expect(within(scopeValidation).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
     expect(within(scopeValidation).getAllByText(/falta cbs\/wbs/i).length).toBeGreaterThan(0);
@@ -1800,7 +1919,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1812,11 +1931,11 @@ describe("served project control flow", () => {
     await user.upload(input, file);
 
     await waitFor(() => {
-      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file);
+      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file, uploadedBimModel.id);
     });
-    expect(await within(module).findByText(/registered for BIM coordination/i)).toBeInTheDocument();
-    expect(within(module).getByText(/Quantity extraction did not complete/i)).toBeInTheDocument();
-    expect(within(module).getByText(/IFC registrado para coordinacion/i)).toBeInTheDocument();
+    expect(await within(module).findByText(/quedo registrado para coordinacion bim/i)).toBeInTheDocument();
+    expect(within(module).getByText(/la extraccion de cantidades no termino/i)).toBeInTheDocument();
+    expect(within(module).getByText(/el procesamiento ifc se interrumpio antes de terminar/i)).toBeInTheDocument();
     expect(within(module).queryByText(/the bim upload did not finish/i)).not.toBeInTheDocument();
   });
 
@@ -1843,7 +1962,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1857,9 +1976,11 @@ describe("served project control flow", () => {
     await user.upload(input, file);
 
     await waitFor(() => {
-      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file);
+      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file, uploadedBimModel.id);
     });
-    expect(await within(module).findByText(/quantity takeoff loaded from coordination-model.ifc/i)).toBeInTheDocument();
+    expect(
+      await within(module).findByText(/quedo registrado como modelo ifc y se cargaron 2 linea\(s\) de cantidades/i)
+    ).toBeInTheDocument();
     expect(within(module).queryByText(/larger than 8 mb/i)).not.toBeInTheDocument();
   });
 
@@ -1870,7 +1991,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1879,7 +2000,7 @@ describe("served project control flow", () => {
     const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
     await user.upload(
       within(module).getByLabelText(/load bim\/ifc or excel quantities/i),
-      new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" }),
+      new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" })
     );
 
     await waitFor(() => {
@@ -1912,7 +2033,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1932,7 +2053,7 @@ describe("served project control flow", () => {
           status: "ready",
           permissions_configured: true,
           p6_mapping_ready: true,
-        }),
+        })
       );
     });
     expect(loadActivitySheetData).toHaveBeenCalledWith("tok", 1, file);
@@ -1945,7 +2066,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -1966,7 +2087,7 @@ describe("served project control flow", () => {
           code: "WBS-MAN-001",
           name: "Manual WBS",
           responsible: "Ana Control",
-        }),
+        })
       );
     });
     expect(await screen.findByText(/WBS WBS-MAN-001 created/i)).toBeInTheDocument();
@@ -2046,7 +2167,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -2063,18 +2184,21 @@ describe("served project control flow", () => {
     expect(within(wbsTreePanel).queryByText("Legacy flat Ingenieria")).not.toBeInTheDocument();
     expect(within(wbsTreePanel).getByRole("treeitem", { name: /Proyecto Piloto CTRL-DEMO-001/i })).toHaveAttribute(
       "aria-level",
-      "1",
+      "1"
     );
-    expect(
-      within(wbsTreePanel).getByRole("treeitem", { name: /Estructura Concreto/i }),
-    ).toHaveAttribute("aria-level", "3");
+    expect(within(wbsTreePanel).getByRole("treeitem", { name: /Estructura Concreto/i })).toHaveAttribute(
+      "aria-level",
+      "3"
+    );
 
     const table = screen.getByRole("region", { name: /wbs table/i });
-    expect(within(table).getByRole("row", { name: /Proyecto Piloto CTRL-DEMO-001-1 Project 1 Active/i })).toBeInTheDocument();
+    expect(
+      within(table).getByRole("row", { name: /Proyecto Piloto CTRL-DEMO-001-1 Project 1 Active/i })
+    ).toBeInTheDocument();
     expect(
       within(table).getByRole("row", {
         name: /Estructura Concreto CTRL-DEMO-001-1-4-1 Construccion 3 Active/i,
-      }),
+      })
     ).toBeInTheDocument();
     expect(within(table).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
     expect(within(table).getByText("Estructura Concreto").closest("td")).toHaveStyle({ paddingLeft: "66px" });
@@ -2275,7 +2399,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -2284,15 +2408,13 @@ describe("served project control flow", () => {
     const structure = await screen.findByRole("region", { name: /wbs master structure/i });
     expect(within(structure).getByRole("treeitem", { name: /Proyecto Piloto CTRL-DEMO-001/i })).toHaveAttribute(
       "aria-level",
-      "1",
+      "1"
     );
-    expect(within(structure).getByRole("treeitem", { name: /Construccion/i })).toHaveAttribute(
+    expect(within(structure).getByRole("treeitem", { name: /Construccion/i })).toHaveAttribute("aria-level", "2");
+    expect(within(structure).getByRole("treeitem", { name: /Estructura Concreto/i })).toHaveAttribute(
       "aria-level",
-      "2",
+      "3"
     );
-    expect(
-      within(structure).getByRole("treeitem", { name: /Estructura Concreto/i }),
-    ).toHaveAttribute("aria-level", "3");
     expect(within(structure).getByText("CTRL-DEMO-001-1-4-1")).toBeInTheDocument();
     expect(within(structure).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
     expect(within(structure).getByRole("treeitem", { name: /Construccion/i })).toHaveTextContent("2 act / $5,000");
@@ -2319,7 +2441,7 @@ describe("served project control flow", () => {
     expect(
       within(matrixPanel).getByRole("row", {
         name: /Estructura Concreto CTRL-DEMO-001-1-4-1 CA-CTRL-DEMO-001-1-4-1 .* CBS-PY-STR FBS-OWN-AFE002 Structural package CWP-CTRL-DEMO-001-1-4-1-STR-01 Active/i,
-      }),
+      })
     ).toBeInTheDocument();
     expect(within(matrixPanel).queryByText(/CA-LEGACY-AWP-GOV/i)).not.toBeInTheDocument();
   });
@@ -2453,7 +2575,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -2468,13 +2590,13 @@ describe("served project control flow", () => {
     expect(within(packageTree).queryByText(/WBS original/i)).not.toBeInTheDocument();
     expect(within(packageTree).getByRole("treeitem", { name: /CWA \/ Construccion Plant area/i })).toHaveAttribute(
       "aria-level",
-      "1",
+      "1"
     );
     expect(
-      within(packageTree).getByRole("treeitem", { name: /CWP \/ Construccion - Civil Civil package/i }),
+      within(packageTree).getByRole("treeitem", { name: /CWP \/ Construccion - Civil Civil package/i })
     ).toHaveAttribute("aria-level", "2");
     expect(
-      within(packageTree).getByRole("treeitem", { name: /IWP \/ Construccion - Civil Civil workface/i }),
+      within(packageTree).getByRole("treeitem", { name: /IWP \/ Construccion - Civil Civil workface/i })
     ).toHaveAttribute("aria-level", "3");
     const pocRoute = screen.getByRole("region", { name: /path of construction route/i });
     expect(within(pocRoute).getByText(/Area release before civil works/i)).toBeInTheDocument();
@@ -2541,7 +2663,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -2562,7 +2684,7 @@ describe("served project control flow", () => {
           email: "nuevo.admin@demo.local",
           full_name: "Nuevo Admin",
           password: "1234",
-        }),
+        })
       );
     });
     expect(assignTeamMember).toHaveBeenCalledWith("tok", 1, { role: "Control Manager", user_id: 2 });
@@ -2574,7 +2696,7 @@ describe("served project control flow", () => {
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
         <App />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
@@ -2592,7 +2714,7 @@ describe("served project control flow", () => {
       expect(updateUser).toHaveBeenCalledWith(
         "tok",
         1,
-        expect.objectContaining({ full_name: "Carlos Planner Senior", title: "Senior Planner" }),
+        expect.objectContaining({ full_name: "Carlos Planner Senior", title: "Senior Planner" })
       );
     });
 

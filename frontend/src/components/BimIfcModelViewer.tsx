@@ -1,3 +1,7 @@
+/* eslint-disable react-refresh/only-export-components --
+ * Geometry/measurement helpers are exported for the vitest suite; they move to
+ * src/lib in the frontend refactor wave. HMR degradation is acceptable here.
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Compass, Eye, Maximize2, MousePointer2, RotateCcw, Search, ScanLine } from "lucide-react";
 import * as THREE from "three";
@@ -135,7 +139,10 @@ function constructiveLabel(line: QuantityTakeoffLine | undefined) {
 }
 
 function formatNumber(value: number) {
-  return value.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: Number.isInteger(value) ? 0 : 2 });
+  return value.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+  });
 }
 
 function formatFileSize(value: number | undefined) {
@@ -145,7 +152,11 @@ function formatFileSize(value: number | undefined) {
   return `${value} bytes`;
 }
 
-function browserCapacityForIfc(sourceSizeBytes: number | undefined): { detail: string; label: string; tone: IfcViewerTone } {
+function browserCapacityForIfc(sourceSizeBytes: number | undefined): {
+  detail: string;
+  label: string;
+  tone: IfcViewerTone;
+} {
   if (!sourceSizeBytes || !Number.isFinite(sourceSizeBytes)) {
     return {
       detail: "Carga un IFC para evaluar si conviene render directo o cache backend.",
@@ -176,7 +187,10 @@ function browserCapacityForIfc(sourceSizeBytes: number | undefined): { detail: s
 
 function formatIfcRenderDiagnostics(diagnostics: IfcRenderDiagnostics) {
   const skipped =
-    diagnostics.invalidGeometryRefs + diagnostics.invalidMemoryRefs + diagnostics.emptyGeometries + diagnostics.conversionErrors;
+    diagnostics.invalidGeometryRefs +
+    diagnostics.invalidMemoryRefs +
+    diagnostics.emptyGeometries +
+    diagnostics.conversionErrors;
   if (!diagnostics.productsScanned && !diagnostics.meshesRendered) return "Pendiente de conversion web-ifc.";
   const parts = [
     `${diagnostics.trianglesRendered.toLocaleString()} triangulo(s)`,
@@ -209,7 +223,10 @@ function formatDimensions(dimensions: IfcElementDimensions | null | undefined, u
   return `${formatNumber(dimensions.x)} x ${formatNumber(dimensions.y)} x ${formatNumber(dimensions.z)} ${modelUnitLabel(units)}`;
 }
 
-export function formatRealGeometryDimensions(dimensions: IfcElementDimensions | null | undefined, units: string | undefined) {
+export function formatRealGeometryDimensions(
+  dimensions: IfcElementDimensions | null | undefined,
+  units: string | undefined
+) {
   if (!dimensions) return "Selecciona geometria para ver L x A x H";
   const declaredScale = geometryUnitScaleToMeters(units);
   if (!declaredScale) return formatDimensions(dimensions, units);
@@ -257,7 +274,10 @@ export function modelGeoreferenceDetails(identity: Record<string, unknown>) {
       ? { label: "Este / Norte", value: `${formatNumber(eastings)}, ${formatNumber(northings)}` }
       : null,
     Number.isFinite(elevation) || Number.isFinite(orthogonalHeight)
-      ? { label: "Altura", value: `${formatNumber(Number.isFinite(orthogonalHeight) ? orthogonalHeight : elevation)} m` }
+      ? {
+          label: "Altura",
+          value: `${formatNumber(Number.isFinite(orthogonalHeight) ? orthogonalHeight : elevation)} m`,
+        }
       : null,
     Number.isFinite(scale) ? { label: "Escala mapa", value: formatNumber(scale) } : null,
   ].filter((item): item is { label: string; value: string } => Boolean(item));
@@ -271,8 +291,8 @@ function lineMatchesIfcElement(line: QuantityTakeoffLine, element: SelectedIfcEl
   const expressRef = element.expressId ? `#${element.expressId}` : "";
   return Boolean(
     (element.globalId && traceRefsForLine(line).includes(element.globalId)) ||
-      (expressRef && traceRefsForLine(line).includes(expressRef)) ||
-      (element.expressId && traceRefsForLine(line).includes(String(element.expressId))),
+    (expressRef && traceRefsForLine(line).includes(expressRef)) ||
+    (element.expressId && traceRefsForLine(line).includes(String(element.expressId)))
   );
 }
 
@@ -361,7 +381,9 @@ function reliableModelUnits(units: string | undefined) {
 }
 
 function geometryUnitScaleToMeters(units: string | undefined) {
-  const normalized = compact(units).toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const normalized = compact(units)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
   if (!normalized) return null;
   if (["mm", "milli", "millimeter", "millimeters", "millimetre", "millimetres"].includes(normalized)) return 0.001;
   if (["cm", "centi", "centimeter", "centimeters", "centimetre", "centimetres"].includes(normalized)) return 0.01;
@@ -389,7 +411,7 @@ function vertexFromGeometry(
   mesh: THREE.Mesh,
   scale: number,
   origin: THREE.Vector3,
-  target: THREE.Vector3,
+  target: THREE.Vector3
 ) {
   const vertexIndex = index ? index.getX(triangleIndex) : triangleIndex;
   target.fromBufferAttribute(position, vertexIndex);
@@ -399,7 +421,10 @@ function vertexFromGeometry(
   return target;
 }
 
-export function calculateRealGeometryQuantities(meshes: THREE.Mesh[], units: string | undefined): RealGeometryQuantities | null {
+export function calculateRealGeometryQuantities(
+  meshes: THREE.Mesh[],
+  units: string | undefined
+): RealGeometryQuantities | null {
   const declaredScale = geometryUnitScaleToMeters(units);
   if (!declaredScale || !meshes.length) return null;
 
@@ -466,11 +491,21 @@ export function calculateRealGeometryQuantities(meshes: THREE.Mesh[], units: str
 
 export function primaryRealGeometryEstimate(
   ifcClass: string,
-  quantities: RealGeometryQuantities | null | undefined,
+  quantities: RealGeometryQuantities | null | undefined
 ): RealGeometryEstimate | null {
   if (!quantities) return null;
-  const normalizedClass = compact(ifcClass).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-  const areaClasses = new Set(["IFCCURTAINWALL", "IFCPLATE", "IFCROOF", "IFCSLAB", "IFCSPACE", "IFCWALL", "IFCWALLSTANDARDCASE"]);
+  const normalizedClass = compact(ifcClass)
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase();
+  const areaClasses = new Set([
+    "IFCCURTAINWALL",
+    "IFCPLATE",
+    "IFCROOF",
+    "IFCSLAB",
+    "IFCSPACE",
+    "IFCWALL",
+    "IFCWALLSTANDARDCASE",
+  ]);
   const volumeClasses = new Set(["IFCBEAM", "IFCCOLUMN", "IFCFOOTING", "IFCPILE", "IFCSTAIR"]);
   const lengthClasses = new Set(["IFCFLOWSEGMENT", "IFCMEMBER", "IFCPIPESEGMENT", "IFCRAILING"]);
   if (areaClasses.has(normalizedClass)) return quantities.area;
@@ -482,7 +517,7 @@ export function primaryRealGeometryEstimate(
 export function buildControlledMeasurementPayloadFromRealGeometry(
   line: QuantityTakeoffLine,
   estimate: RealGeometryEstimate | null,
-  traceReference: string,
+  traceReference: string
 ): ControlledMeasurementApproval | null {
   if (!estimate || !Number.isFinite(estimate.quantity) || estimate.quantity <= 0) return null;
   return {
@@ -501,7 +536,7 @@ function colorKey(color: { x: number; y: number; z: number; w: number }) {
 
 function materialForColor(
   cache: Map<string, THREE.MeshStandardMaterial>,
-  color: { x: number; y: number; z: number; w: number },
+  color: { x: number; y: number; z: number; w: number }
 ) {
   const key = colorKey(color);
   const cached = cache.get(key);
@@ -543,7 +578,7 @@ function materialForBackendCacheProduct(cache: Map<string, THREE.MeshStandardMat
 
 export function buildBackendCacheGeometryMeshes(
   artifact: BimGeometryCacheArtifact,
-  materialCache: Map<string, THREE.MeshStandardMaterial>,
+  materialCache: Map<string, THREE.MeshStandardMaterial>
 ) {
   const diagnostics = emptyIfcRenderDiagnostics(0);
   const meshes: THREE.Mesh[] = [];
@@ -586,7 +621,11 @@ function selectionKeyForIfcData(data: IfcMeshData | undefined) {
 
 function selectionKeysForIfcData(data: IfcMeshData | undefined) {
   if (!data) return [];
-  return unique([compact(data.globalId), data.expressId ? `#${data.expressId}` : "", data.expressId ? String(data.expressId) : ""]);
+  return unique([
+    compact(data.globalId),
+    data.expressId ? `#${data.expressId}` : "",
+    data.expressId ? String(data.expressId) : "",
+  ]);
 }
 
 export function isValidIfcExpressId(value: unknown) {
@@ -738,7 +777,7 @@ export function applyIfcSelectionVisuals(meshes: THREE.Mesh[], selectedMaterial:
         depthTest: false,
         depthWrite: false,
         linewidth: 2,
-      }),
+      })
     );
     outline.userData.ifcSelectionOutline = true;
     outline.renderOrder = 60;
@@ -751,7 +790,12 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-function orbitCameraAroundTarget(camera: THREE.PerspectiveCamera, target: THREE.Vector3, deltaX: number, deltaY: number) {
+function orbitCameraAroundTarget(
+  camera: THREE.PerspectiveCamera,
+  target: THREE.Vector3,
+  deltaX: number,
+  deltaY: number
+) {
   const offset = camera.position.clone().sub(target);
   const spherical = new THREE.Spherical().setFromVector3(offset);
   spherical.theta -= deltaX * 0.006;
@@ -773,7 +817,12 @@ function panCameraTarget(camera: THREE.PerspectiveCamera, target: THREE.Vector3,
   camera.lookAt(target);
 }
 
-function lookCameraFromWalkMode(camera: THREE.PerspectiveCamera, target: THREE.Vector3, deltaX: number, deltaY: number) {
+function lookCameraFromWalkMode(
+  camera: THREE.PerspectiveCamera,
+  target: THREE.Vector3,
+  deltaX: number,
+  deltaY: number
+) {
   const offset = target.clone().sub(camera.position);
   const spherical = new THREE.Spherical().setFromVector3(offset.lengthSq() ? offset : new THREE.Vector3(0, 0, -1));
   spherical.radius = Math.max(spherical.radius, 1);
@@ -787,7 +836,7 @@ export function walkCameraStep(
   camera: THREE.PerspectiveCamera,
   target: THREE.Vector3,
   pressedKeys: Set<string>,
-  distance: number,
+  distance: number
 ) {
   const normalizedKeys = new Set(Array.from(pressedKeys, (key) => key.toLowerCase()));
   const forward = new THREE.Vector3();
@@ -830,7 +879,7 @@ export default function BimIfcModelViewer({
   const [status, setStatus] = useState("Listo para cargar geometria IFC guardada.");
   const [renderStats, setRenderStats] = useState("Sin geometria IFC cargada");
   const [renderDiagnostics, setRenderDiagnostics] = useState<IfcRenderDiagnostics>(() =>
-    emptyIfcRenderDiagnostics(model?.source_size_bytes ?? 0),
+    emptyIfcRenderDiagnostics(model?.source_size_bytes ?? 0)
   );
   const [detectedModelUnits, setDetectedModelUnits] = useState("");
   const [selectedLineId, setSelectedLineId] = useState<number | null>(null);
@@ -857,7 +906,7 @@ export default function BimIfcModelViewer({
       [group.storey, group.ifcClass, constructiveLabel(group.representative), group.traceRefs.join(" ")]
         .join(" ")
         .toLowerCase()
-        .includes(query),
+        .includes(query)
     );
   }, [treeGroups, treeSearch]);
   const selectedLine = lines.find((line) => line.id === selectedLineId);
@@ -996,7 +1045,8 @@ export default function BimIfcModelViewer({
 
         const materialCache = new Map<string, THREE.MeshStandardMaterial>();
         const meshBounds: THREE.Box3[] = [];
-        const renderSource = model && viewerManifest?.geometry_strategy === "backend_cache" ? "backend_cache" : "web_ifc";
+        const renderSource =
+          model && viewerManifest?.geometry_strategy === "backend_cache" ? "backend_cache" : "web_ifc";
         let geometryLoadError: unknown = null;
         let geometryUnits = reliableModelUnits(viewerManifest?.units || model?.units);
         let productCount = 0;
@@ -1049,8 +1099,7 @@ export default function BimIfcModelViewer({
             geometryLoadError = error;
           }
 
-          flatMeshLoop:
-          for (let index = 0; index < (flatMeshes?.size() ?? 0); index += 1) {
+          flatMeshLoop: for (let index = 0; index < (flatMeshes?.size() ?? 0); index += 1) {
             if (!flatMeshes) break;
             const flatMesh = flatMeshes.get(index);
             productCount += 1;
@@ -1075,7 +1124,13 @@ export default function BimIfcModelViewer({
                 diagnostics.invalidGeometryRefs += 1;
                 continue;
               }
-              let ifcGeometry: { GetVertexData: () => number; GetVertexDataSize: () => number; GetIndexData: () => number; GetIndexDataSize: () => number; delete: () => void };
+              let ifcGeometry: {
+                GetVertexData: () => number;
+                GetVertexDataSize: () => number;
+                GetIndexData: () => number;
+                GetIndexDataSize: () => number;
+                delete: () => void;
+              };
               try {
                 ifcGeometry = ifcApi.GetGeometry(modelId, placed.geometryExpressID);
               } catch {
@@ -1087,7 +1142,10 @@ export default function BimIfcModelViewer({
                 const vertexDataSize = ifcGeometry.GetVertexDataSize();
                 const indexDataRef = ifcGeometry.GetIndexData();
                 const indexDataSize = ifcGeometry.GetIndexDataSize();
-                if (!isValidIfcMemoryRef(vertexDataRef, vertexDataSize) || !isValidIfcMemoryRef(indexDataRef, indexDataSize)) {
+                if (
+                  !isValidIfcMemoryRef(vertexDataRef, vertexDataSize) ||
+                  !isValidIfcMemoryRef(indexDataRef, indexDataSize)
+                ) {
                   diagnostics.invalidMemoryRefs += 1;
                   continue;
                 }
@@ -1165,8 +1223,7 @@ export default function BimIfcModelViewer({
         meshBounds.forEach((bounds) => {
           const size = bounds.getSize(new THREE.Vector3());
           const isLargeFlatSite =
-            (size.x > modelSize.x * 0.45 || size.z > modelSize.z * 0.45) &&
-            size.y < Math.max(modelSize.y * 0.18, 1);
+            (size.x > modelSize.x * 0.45 || size.z > modelSize.z * 0.45) && size.y < Math.max(modelSize.y * 0.18, 1);
           if (!isLargeFlatSite) focusBox.union(bounds);
         });
         if (focusBox.isEmpty()) focusBox.copy(modelBox);
@@ -1243,7 +1300,11 @@ export default function BimIfcModelViewer({
             renderer!.localClippingEnabled = active;
             const sectionCenter = focusBox.getCenter(new THREE.Vector3());
             const sectionNormal =
-              axis === "y" ? new THREE.Vector3(0, -1, 0) : axis === "z" ? new THREE.Vector3(0, 0, -1) : new THREE.Vector3(-1, 0, 0);
+              axis === "y"
+                ? new THREE.Vector3(0, -1, 0)
+                : axis === "z"
+                  ? new THREE.Vector3(0, 0, -1)
+                  : new THREE.Vector3(-1, 0, 0);
             const sectionOffset = axis === "y" ? sectionCenter.y : axis === "z" ? sectionCenter.z : sectionCenter.x;
             clippingPlane.normal.copy(sectionNormal);
             clippingPlane.constant = sectionOffset;
@@ -1282,7 +1343,7 @@ export default function BimIfcModelViewer({
           const data = hitMesh?.userData.ifc as IfcMeshData | undefined;
           if (data && hitMesh) {
             const selectionKey = selectionKeyForIfcData(data);
-            const meshesToHighlight = selectionKey ? productMeshes.get(selectionKey) ?? [hitMesh] : [hitMesh];
+            const meshesToHighlight = selectionKey ? (productMeshes.get(selectionKey) ?? [hitMesh]) : [hitMesh];
             const selectedElement = {
               dimensions: dimensionsForMeshes(meshesToHighlight),
               expressId: data.expressId ?? null,
@@ -1353,7 +1414,22 @@ export default function BimIfcModelViewer({
         const onKeyDown = (event: KeyboardEvent) => {
           if (navigationModeRef.current !== "walk") return;
           const key = event.key.toLowerCase();
-          if (!["w", "a", "s", "d", "q", "e", "arrowup", "arrowdown", "arrowleft", "arrowright", "pageup", "pagedown"].includes(key)) {
+          if (
+            ![
+              "w",
+              "a",
+              "s",
+              "d",
+              "q",
+              "e",
+              "arrowup",
+              "arrowdown",
+              "arrowleft",
+              "arrowright",
+              "pageup",
+              "pagedown",
+            ].includes(key)
+          ) {
             return;
           }
           event.preventDefault();
@@ -1365,7 +1441,9 @@ export default function BimIfcModelViewer({
         const onContextMenu = (event: MouseEvent) => event.preventDefault();
         const onWebGlContextLost = (event: Event) => {
           event.preventDefault();
-          setStatus("El contexto WebGL se perdio por memoria o driver; el IFC queda registrado y se recomienda recargar el visor.");
+          setStatus(
+            "El contexto WebGL se perdio por memoria o driver; el IFC queda registrado y se recomienda recargar el visor."
+          );
           setRenderStats("Render suspendido por WebGL");
         };
         const onWebGlContextRestored = () => {
@@ -1417,7 +1495,7 @@ export default function BimIfcModelViewer({
           setStatus(
             renderSource === "backend_cache"
               ? "Cache backend preparado, pero no contiene mallas geometricas renderizables."
-              : "IFC registrado. No se encontraron mallas geometricas renderizables en este archivo.",
+              : "IFC registrado. No se encontraron mallas geometricas renderizables en este archivo."
           );
           setRenderStats(`${productCount.toLocaleString()} product(s) / 0 mesh(es)`);
         } else {
@@ -1425,13 +1503,13 @@ export default function BimIfcModelViewer({
             renderSource === "backend_cache"
               ? "IFC geometry rendered from backend IfcOpenShell cache."
               : diagnostics.limitReached
-              ? "IFC renderizado parcialmente por limite seguro del navegador; usa cache backend para el modelo completo."
-              : "IFC geometry rendered from stored source file.",
+                ? "IFC renderizado parcialmente por limite seguro del navegador; usa cache backend para el modelo completo."
+                : "IFC geometry rendered from stored source file."
           );
           setRenderStats(
             `${productCount.toLocaleString()} product(s) / ${meshCount.toLocaleString()} mesh(es) / ${
               renderSource === "backend_cache" ? "backend cache" : "web-ifc"
-            }`,
+            }`
           );
         }
 
@@ -1471,7 +1549,17 @@ export default function BimIfcModelViewer({
       cleanupScene?.();
       renderer?.dispose();
     };
-  }, [lines, model, projectId, run, sourceName, sourceType, token, viewerManifest?.geometry_strategy, viewerManifest?.revision_id]);
+  }, [
+    lines,
+    model,
+    projectId,
+    run,
+    sourceName,
+    sourceType,
+    token,
+    viewerManifest?.geometry_strategy,
+    viewerManifest?.revision_id,
+  ]);
 
   const displayStatus = canLoadModel
     ? status
@@ -1489,7 +1577,9 @@ export default function BimIfcModelViewer({
   const commercialBlockers = [
     !model ? "Falta modelo IFC registrado" : "",
     model && !hasRenderableGeometry ? "Geometria no renderizable en navegador" : "",
-    model && model.source_size_bytes > IFC_BROWSER_CACHE_THRESHOLD_BYTES ? "Modelo mayor a 100 MB requiere cache backend" : "",
+    model && model.source_size_bytes > IFC_BROWSER_CACHE_THRESHOLD_BYTES
+      ? "Modelo mayor a 100 MB requiere cache backend"
+      : "",
     model && !georeferenceDetails.length ? "Sin georreferenciacion publicada" : "",
     lines.length && !lines.some((line) => compact(line.element_guid) || compact(line.element_id))
       ? "Cantidades sin trazabilidad por elemento"
@@ -1512,13 +1602,16 @@ export default function BimIfcModelViewer({
         .join(" / ")
     : undefined;
   const selectedCodes = selectedLine
-    ? unique([selectedLine.cbs_code, selectedLine.wbs_code, selectedLine.fbs_code, selectedLine.package_code]).join(" / ")
+    ? unique([selectedLine.cbs_code, selectedLine.wbs_code, selectedLine.fbs_code, selectedLine.package_code]).join(
+        " / "
+      )
     : "";
   const selectedTrace = selectedLine ? traceRefsForLine(selectedLine).join(" / ") : selectedIfcElement?.globalId || "";
-  const selectedMeasurementRule = compact(selectedLine?.measurement_rule) || compact(selectedIfcElement?.ifcClass) || "Regla pendiente";
+  const selectedMeasurementRule =
+    compact(selectedLine?.measurement_rule) || compact(selectedIfcElement?.ifcClass) || "Regla pendiente";
   const selectedGeometryEstimate = primaryRealGeometryEstimate(
     compact(selectedLine?.ifc_class) || compact(selectedIfcElement?.ifcClass),
-    selectedIfcElement?.realQuantities,
+    selectedIfcElement?.realQuantities
   );
   const geometryApprovalPayload =
     selectedLine && selectedGeometryEstimate
@@ -1546,7 +1639,7 @@ export default function BimIfcModelViewer({
   const viewerEngineLabel =
     viewerManifest?.geometry_strategy === "backend_cache" ? "IfcOpenShell cache / Three.js" : "web-ifc / Three.js";
   const canPrepareGeometryCache = Boolean(
-    projectId && model && viewerManifest?.geometry_strategy !== "backend_cache" && !isPreparingGeometryCache,
+    projectId && model && viewerManifest?.geometry_strategy !== "backend_cache" && !isPreparingGeometryCache
   );
   const handlePrepareGeometryCache = async () => {
     if (!projectId || !model || isPreparingGeometryCache) return;
@@ -1555,7 +1648,7 @@ export default function BimIfcModelViewer({
     try {
       const summary = await bimModelsApi.prepareGeometryCache(token, projectId, model.id);
       setGeometryCacheStatus(
-        `Cache backend listo: ${summary.mesh_count.toLocaleString()} malla(s) / ${summary.triangle_count.toLocaleString()} triangulo(s).`,
+        `Cache backend listo: ${summary.mesh_count.toLocaleString()} malla(s) / ${summary.triangle_count.toLocaleString()} triangulo(s).`
       );
       setManifestRefreshKey((current) => current + 1);
     } catch (error) {
@@ -1585,7 +1678,12 @@ export default function BimIfcModelViewer({
           <small>{displayStatus}</small>
         </div>
         <div className="bimViewerToolbar" aria-label="IFC viewer controls">
-          <button aria-label="Fit IFC model" disabled={!canLoadModel} onClick={() => viewerCommandsRef.current?.fit()} type="button">
+          <button
+            aria-label="Fit IFC model"
+            disabled={!canLoadModel}
+            onClick={() => viewerCommandsRef.current?.fit()}
+            type="button"
+          >
             <Maximize2 size={14} /> Fit
           </button>
           <button
@@ -1783,7 +1881,9 @@ export default function BimIfcModelViewer({
         <article>
           <span>Seleccion</span>
           <strong>{selectionLabel}</strong>
-          <small>{isolatedGroup ? `Aislado: ${isolatedGroup.storey} / ${isolatedGroup.ifcClass}` : "Modelo completo visible"}</small>
+          <small>
+            {isolatedGroup ? `Aislado: ${isolatedGroup.storey} / ${isolatedGroup.ifcClass}` : "Modelo completo visible"}
+          </small>
         </article>
         <article>
           <span>Control</span>
@@ -1806,7 +1906,10 @@ export default function BimIfcModelViewer({
             <strong>Modelo registrado sin geometria renderizable</strong>
             <span>{displayStatus}</span>
             {georeferenceLabel ? <small>{georeferenceLabel}</small> : null}
-            <small>Usa este archivo como evidencia/georreferenciacion o carga un IFC con productos geometricos para ver el edificio.</small>
+            <small>
+              Usa este archivo como evidencia/georreferenciacion o carga un IFC con productos geometricos para ver el
+              edificio.
+            </small>
           </div>
         ) : null}
         <div className="bimViewerCanvasMeta" aria-label="IFC viewer data basis">
@@ -1824,7 +1927,9 @@ export default function BimIfcModelViewer({
         {(selectedLine || selectedIfcElement) && (
           <div className="bimViewerSelectionBadge" aria-label="Elemento IFC seleccionado">
             <strong>Elemento seleccionado</strong>
-            <span>{constructiveLabel(selectedLine) || selectedIfcElement?.ifcClass || selectedIfcElement?.globalId}</span>
+            <span>
+              {constructiveLabel(selectedLine) || selectedIfcElement?.ifcClass || selectedIfcElement?.globalId}
+            </span>
           </div>
         )}
       </div>
@@ -1898,8 +2003,8 @@ export default function BimIfcModelViewer({
                     <strong>{group.storey}</strong>
                     <span>{group.ifcClass}</span>
                     <small>
-                      {group.count} elemento(s) / {group.quantity.toLocaleString("en-US", { maximumFractionDigits: 2 })} {group.unit} /{" "}
-                      {group.mappedCount} codificado(s)
+                      {group.count} elemento(s) / {group.quantity.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
+                      {group.unit} / {group.mappedCount} codificado(s)
                     </small>
                   </button>
                   <button
@@ -1947,8 +2052,7 @@ export default function BimIfcModelViewer({
                     compact(selectedLine?.ifc_class),
                     compact(selectedLine?.measurement_rule),
                     compact(selectedIfcElement?.ifcClass),
-                  ]).join(" / ") ||
-                    "Clase IFC pendiente"}
+                  ]).join(" / ") || "Clase IFC pendiente"}
                 </strong>
               </article>
               <article>
@@ -1961,11 +2065,15 @@ export default function BimIfcModelViewer({
               </article>
               <article>
                 <span>Dimensiones geometricas L x A x H</span>
-                <strong>{formatRealGeometryDimensions(selectedIfcElement?.dimensions, effectiveModelUnits || model?.units)}</strong>
+                <strong>
+                  {formatRealGeometryDimensions(selectedIfcElement?.dimensions, effectiveModelUnits || model?.units)}
+                </strong>
               </article>
               <article>
                 <span>Cantidad geometrica real</span>
-                <strong title={selectedGeometryEstimate?.explanation}>{formatGeometryEstimate(selectedGeometryEstimate)}</strong>
+                <strong title={selectedGeometryEstimate?.explanation}>
+                  {formatGeometryEstimate(selectedGeometryEstimate)}
+                </strong>
                 {geometryApprovalPayload && onApproveControlledMeasurement ? (
                   <button
                     className="primaryAction geometryApprovalAction"
@@ -2005,7 +2113,9 @@ export default function BimIfcModelViewer({
                     {elementProperties.quantities.slice(0, 4).map((quantity) => (
                       <small key={`${quantity.set_name}-${quantity.name}`}>
                         {quantity.set_name} / {quantity.name}:{" "}
-                        {quantity.value === null ? "sin valor" : `${formatNumber(quantity.value)} ${quantity.unit || ""}`.trim()}
+                        {quantity.value === null
+                          ? "sin valor"
+                          : `${formatNumber(quantity.value)} ${quantity.unit || ""}`.trim()}
                       </small>
                     ))}
                     {elementProperties.property_sets.slice(0, 3).map((propertySet) => (
@@ -2028,8 +2138,7 @@ export default function BimIfcModelViewer({
                     compact(selectedLine?.building_name),
                     compact(selectedLine?.storey),
                     compact(selectedLine?.zone_name),
-                  ]).join(" / ") ||
-                    "Ubicacion pendiente"}
+                  ]).join(" / ") || "Ubicacion pendiente"}
                 </strong>
               </article>
               <article className="wideFact">

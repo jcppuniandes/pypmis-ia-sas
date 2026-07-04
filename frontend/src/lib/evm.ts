@@ -49,10 +49,6 @@ function dateKey(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-function monthKey(date: Date) {
-  return date.toISOString().slice(0, 7);
-}
-
 function previousUtcDay(date: Date) {
   return new Date(date.getTime() - 86_400_000);
 }
@@ -88,13 +84,19 @@ function plannedCurveFromActivities(
   rows: ActivitySheetRow[],
   currentEvm: Pick<ProjectEvm, "pv" | "ev" | "ac">,
   dataDate?: string | null,
-  options: EvmBuildOptions = {},
+  options: EvmBuildOptions = {}
 ) {
-  const datedRows = rows.filter((row) => activityCost(row) > 0 && parseScheduleDate(row.planned_start) && parseScheduleDate(row.planned_finish));
+  const datedRows = rows.filter(
+    (row) => activityCost(row) > 0 && parseScheduleDate(row.planned_start) && parseScheduleDate(row.planned_finish)
+  );
   if (!datedRows.length) return [];
 
-  const starts = datedRows.map((row) => parseScheduleDate(row.planned_start)).filter((date): date is Date => Boolean(date));
-  const finishes = datedRows.map((row) => parseScheduleDate(row.planned_finish)).filter((date): date is Date => Boolean(date));
+  const starts = datedRows
+    .map((row) => parseScheduleDate(row.planned_start))
+    .filter((date): date is Date => Boolean(date));
+  const finishes = datedRows
+    .map((row) => parseScheduleDate(row.planned_finish))
+    .filter((date): date is Date => Boolean(date));
   const firstStart = new Date(Math.min(...starts.map((date) => date.getTime())));
   const lastFinish = new Date(Math.max(...finishes.map((date) => date.getTime())));
   const dates = new Map<string, Date>();
@@ -128,8 +130,24 @@ function plannedCurveFromActivities(
         period: dateKey(date),
         timestamp: date.getTime(),
         PV: isInitialPoint ? 0 : round(cumulativePlannedValueAt(datedRows, date)),
-        EV: options.baselineOnly ? null : isInitialPoint ? 0 : isFuturePoint ? null : isCurrentPoint ? round(currentEvm.ev) : null,
-        AC: options.baselineOnly ? null : isInitialPoint ? 0 : isFuturePoint ? null : isCurrentPoint ? round(currentEvm.ac) : null,
+        EV: options.baselineOnly
+          ? null
+          : isInitialPoint
+            ? 0
+            : isFuturePoint
+              ? null
+              : isCurrentPoint
+                ? round(currentEvm.ev)
+                : null,
+        AC: options.baselineOnly
+          ? null
+          : isInitialPoint
+            ? 0
+            : isFuturePoint
+              ? null
+              : isCurrentPoint
+                ? round(currentEvm.ac)
+                : null,
       };
     });
 }
@@ -146,7 +164,8 @@ export function formatEvmRatio(value: EvmRatio) {
 function costSheetTotals(costLines: CostSheetLine[]) {
   return costLines.reduce(
     (totals, line) => {
-      const certificateActual = money(line.incurred_payment_certificate_value) + money(line.incurred_warehouse_receipt_value);
+      const certificateActual =
+        money(line.incurred_payment_certificate_value) + money(line.incurred_warehouse_receipt_value);
       const actual = money(line.actual_cost) || certificateActual;
       totals.pv += money(line.planned_value);
       totals.ev += money(line.earned_value);
@@ -154,7 +173,7 @@ function costSheetTotals(costLines: CostSheetLine[]) {
       totals.bac += money(line.bac);
       return totals;
     },
-    { pv: 0, ev: 0, ac: 0, bac: 0 },
+    { pv: 0, ev: 0, ac: 0, bac: 0 }
   );
 }
 
@@ -163,7 +182,7 @@ export function deriveProjectEvm(
   costLines: CostSheetLine[] = [],
   activityRows: ActivitySheetRow[] = [],
   dataDate?: string | null,
-  options: EvmBuildOptions = {},
+  options: EvmBuildOptions = {}
 ): ProjectEvm {
   const totals = costSheetTotals(costLines);
   const hasCostLineEvidence = costLines.length > 0 && Object.values(totals).some((value) => value > 0);
@@ -171,7 +190,11 @@ export function deriveProjectEvm(
   const activityBac = totalActivityBudget(activityRows);
   const activityPv = asOfDate ? cumulativePlannedValueAt(activityRows, asOfDate) : 0;
 
-  const pv = options.baselineOnly ? 0 : hasCostLineEvidence && totals.pv > 0 ? totals.pv : activityPv || money(projectKpi.pv);
+  const pv = options.baselineOnly
+    ? 0
+    : hasCostLineEvidence && totals.pv > 0
+      ? totals.pv
+      : activityPv || money(projectKpi.pv);
   const ev = options.baselineOnly ? 0 : hasCostLineEvidence && totals.ev > 0 ? totals.ev : money(projectKpi.ev);
   const ac = options.baselineOnly ? 0 : hasCostLineEvidence && totals.ac > 0 ? totals.ac : money(projectKpi.ac);
   const bac = activityBac || (hasCostLineEvidence && totals.bac > 0 ? totals.bac : money(projectKpi.bac));
@@ -217,7 +240,7 @@ export function buildCumulativeEvmCurve(
   currentEvm: Pick<ProjectEvm, "pv" | "ev" | "ac">,
   activityRows: ActivitySheetRow[] = [],
   dataDate?: string | null,
-  options: EvmBuildOptions = {},
+  options: EvmBuildOptions = {}
 ) {
   const plannedCurve = plannedCurveFromActivities(activityRows, currentEvm, dataDate, options);
   if (plannedCurve.length) return plannedCurve;

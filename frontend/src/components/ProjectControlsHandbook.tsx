@@ -1,3 +1,7 @@
+/* eslint-disable react-refresh/only-export-components --
+ * Schedule-control helpers are exported for the vitest suite; they move to
+ * src/lib in the frontend refactor wave. HMR degradation is acceptable here.
+ */
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AlertTriangle, CalendarDays, Gauge, ListChecks, RotateCcw } from "lucide-react";
 import type { ScheduleActivityMap, ScheduleRelationship, WbsNode as ImportedWbsNode } from "../types";
@@ -312,7 +316,6 @@ function firstImportedScheduleDate(activities: ScheduleActivityMap[], dataDate?:
 
 export function createScheduleControlDataFromSchedule({
   dataDate,
-  projectCode,
   projectId,
   relationships = [],
   scheduleActivities = [],
@@ -342,7 +345,7 @@ export function createScheduleControlDataFromSchedule({
       .map((relationship) => relationship.predecessor_external_id)
       .filter((id) => activityIds.has(id));
     const firstRelationship = relationships.find(
-      (relationship) => relationship.successor_external_id === activity.external_activity_id,
+      (relationship) => relationship.successor_external_id === activity.external_activity_id
     );
     const plannedStart = activity.planned_start || fallbackDate;
     const plannedFinish = activity.planned_finish || plannedStart;
@@ -396,7 +399,7 @@ export function createScheduleControlDataFromSchedule({
 
 function resolvePredecessor<TActivity extends Pick<ScheduleActivity, "code" | "id">>(
   predecessor: string,
-  activities: TActivity[],
+  activities: TActivity[]
 ): TActivity | undefined {
   return activities.find((activity) => activity.code === predecessor || activity.id === predecessor);
 }
@@ -477,11 +480,11 @@ export function calculateScheduleControlState(data: ScheduleControlData) {
   const expectedDaysRecovered = openRecovery.reduce((total, action) => total + action.expectedDaysRecovered, 0);
   const plannedFinish = activities.reduce(
     (latest, activity) => (dateValue(activity.plannedFinish) > dateValue(latest) ? activity.plannedFinish : latest),
-    activities[0]?.plannedFinish ?? data.dataDate,
+    activities[0]?.plannedFinish ?? data.dataDate
   );
   const forecastFinish = generatedDelayEvents.reduce(
     (latest, delay) => (dateValue(delay.currentFinish) > dateValue(latest) ? delay.currentFinish : latest),
-    plannedFinish,
+    plannedFinish
   );
 
   return {
@@ -571,7 +574,7 @@ export default function ProjectControlsHandbook({
         scheduleActivities,
         wbsCatalog,
       }),
-    [projectCode, projectId, scheduleActivities, scheduleDataDate, scheduleRelationships, wbsCatalog],
+    [projectCode, projectId, scheduleActivities, scheduleDataDate, scheduleRelationships, wbsCatalog]
   );
   const [localData, setData] = useState(() => loadScheduleControlData(projectId, projectCode));
   const data = hasImportedSchedule ? importedData : localData;
@@ -679,7 +682,7 @@ export default function ProjectControlsHandbook({
               percentComplete: Number(progressDraft.percentComplete),
               remainingDuration: Number(progressDraft.remainingDuration),
             }
-          : activity,
+          : activity
       ),
     }));
   }
@@ -732,7 +735,9 @@ export default function ProjectControlsHandbook({
           <h2>
             <CalendarDays size={20} /> Planning Module
           </h2>
-          <span>{hasImportedSchedule ? "Imported schedule baseline" : "Schedule planning workspace"} / {projectCode}</span>
+          <span>
+            {hasImportedSchedule ? "Imported schedule baseline" : "Schedule planning workspace"} / {projectCode}
+          </span>
         </div>
         {hasImportedSchedule ? (
           <span className="sourceBadge">Source: schedule import</span>
@@ -932,7 +937,9 @@ export default function ProjectControlsHandbook({
                 <label>
                   <span>Start</span>
                   <input
-                    onChange={(event) => setActivityDraft((current) => ({ ...current, plannedStart: event.target.value }))}
+                    onChange={(event) =>
+                      setActivityDraft((current) => ({ ...current, plannedStart: event.target.value }))
+                    }
                     type="date"
                     value={activityDraft.plannedStart}
                   />
@@ -940,7 +947,9 @@ export default function ProjectControlsHandbook({
                 <label>
                   <span>Finish</span>
                   <input
-                    onChange={(event) => setActivityDraft((current) => ({ ...current, plannedFinish: event.target.value }))}
+                    onChange={(event) =>
+                      setActivityDraft((current) => ({ ...current, plannedFinish: event.target.value }))
+                    }
                     type="date"
                     value={activityDraft.plannedFinish}
                   />
@@ -950,7 +959,9 @@ export default function ProjectControlsHandbook({
                 <label>
                   <span>Predecessor</span>
                   <select
-                    onChange={(event) => setActivityDraft((current) => ({ ...current, predecessor: event.target.value }))}
+                    onChange={(event) =>
+                      setActivityDraft((current) => ({ ...current, predecessor: event.target.value }))
+                    }
                     value={activityDraft.predecessor}
                   >
                     <option value="">None</option>
@@ -964,7 +975,9 @@ export default function ProjectControlsHandbook({
                 <label>
                   <span>Responsible</span>
                   <input
-                    onChange={(event) => setActivityDraft((current) => ({ ...current, responsible: event.target.value }))}
+                    onChange={(event) =>
+                      setActivityDraft((current) => ({ ...current, responsible: event.target.value }))
+                    }
                     value={activityDraft.responsible}
                   />
                 </label>
@@ -980,7 +993,10 @@ export default function ProjectControlsHandbook({
               </div>
               <div className="handbookGantt" aria-label="Basic Gantt">
                 {state.activities.map((activity) => {
-                  const left = Math.max(0, ((dateValue(activity.plannedStart) - ganttStart) / DAY_MS / ganttDays) * 100);
+                  const left = Math.max(
+                    0,
+                    ((dateValue(activity.plannedStart) - ganttStart) / DAY_MS / ganttDays) * 100
+                  );
                   const width = Math.max(4, (activity.duration / ganttDays) * 100);
                   return (
                     <div className="handbookGanttRow" key={activity.id}>
@@ -1037,7 +1053,9 @@ export default function ProjectControlsHandbook({
                 <input
                   max="100"
                   min="0"
-                  onChange={(event) => setProgressDraft((current) => ({ ...current, percentComplete: event.target.value }))}
+                  onChange={(event) =>
+                    setProgressDraft((current) => ({ ...current, percentComplete: event.target.value }))
+                  }
                   type="number"
                   value={progressDraft.percentComplete}
                 />
@@ -1046,7 +1064,9 @@ export default function ProjectControlsHandbook({
                 <span>Remaining Duration</span>
                 <input
                   min="0"
-                  onChange={(event) => setProgressDraft((current) => ({ ...current, remainingDuration: event.target.value }))}
+                  onChange={(event) =>
+                    setProgressDraft((current) => ({ ...current, remainingDuration: event.target.value }))
+                  }
                   type="number"
                   value={progressDraft.remainingDuration}
                 />
@@ -1064,7 +1084,9 @@ export default function ProjectControlsHandbook({
               <label>
                 <span>Actual Finish</span>
                 <input
-                  onChange={(event) => setProgressDraft((current) => ({ ...current, actualFinish: event.target.value }))}
+                  onChange={(event) =>
+                    setProgressDraft((current) => ({ ...current, actualFinish: event.target.value }))
+                  }
                   type="date"
                   value={progressDraft.actualFinish}
                 />
@@ -1083,8 +1105,13 @@ export default function ProjectControlsHandbook({
               {state.activities.map((activity) => (
                 <article key={activity.id}>
                   <strong>{activityLabel(activity)}</strong>
-                  <span>{activity.percentComplete}% complete / {activity.remainingDuration}d remaining</span>
-                  <small>{activity.actualStart || "Actual start pending"} / {activity.actualFinish || "Actual finish pending"}</small>
+                  <span>
+                    {activity.percentComplete}% complete / {activity.remainingDuration}d remaining
+                  </span>
+                  <small>
+                    {activity.actualStart || "Actual start pending"} /{" "}
+                    {activity.actualFinish || "Actual finish pending"}
+                  </small>
                 </article>
               ))}
             </div>

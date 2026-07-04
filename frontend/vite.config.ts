@@ -26,6 +26,9 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // Tests exercise the full guided control flow, not the narrowed
+    // field-validation navigation.
+    env: { VITE_FRONTEND_VALIDATION_MODE: "false" },
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
     css: true,

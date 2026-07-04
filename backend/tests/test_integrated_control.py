@@ -323,11 +323,16 @@ def test_fbs_balance_matches_available_after_executed_costs() -> None:
 
 
 def _first_project_id(client: TestClient, headers: dict[str, str]) -> int:
+    # These tests need the seeded demo project: it already has an ingested
+    # schedule, so the control-data gate (409 without source schedule) is open.
+    # Other test modules create projects whose codes sort before it, so picking
+    # projects[0] is order-dependent across the full suite.
     response = client.get("/api/v1/projects", headers=headers)
     assert response.status_code == 200
     projects = response.json()
-    assert projects
-    return int(projects[0]["id"])
+    demo = next((project for project in projects if project["code"] == "CTRL-DEMO-001"), None)
+    assert demo, "Seeded demo project CTRL-DEMO-001 not found"
+    return int(demo["id"])
 
 
 def _auth_headers(client: TestClient) -> dict[str, str]:
