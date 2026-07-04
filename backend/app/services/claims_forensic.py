@@ -134,16 +134,29 @@ class ClaimsForensicDossierService:
 
     def _detect_signal(self, text: str, source_files: list[str]) -> DossierSignal:
         normalized = _normalize(text)
-        days = max((int(value) for value in re.findall(r"(\d{1,4})\s*(?:dias|days|calendar days|working days)", normalized)), default=0)
+        days = max(
+            (int(value) for value in re.findall(r"(\d{1,4})\s*(?:dias|days|calendar days|working days)", normalized)),
+            default=0,
+        )
         amounts = [_parse_amount(value) for value in re.findall(r"(?:cop|usd|\$)\s*([0-9][0-9.,]*)", normalized)]
         percents = [
             float(value.replace(",", "."))
-            for value in re.findall(r"(\d{1,2}(?:[,.]\d+)?)\s*%\s*(?:productividad|productivity|rendimiento)", normalized)
+            for value in re.findall(
+                r"(\d{1,2}(?:[,.]\d+)?)\s*%\s*(?:productividad|productivity|rendimiento)", normalized
+            )
         ]
-        notice_detected = _contains_any(normalized, ("notice", "notificacion", "notificación", "aviso", "comunicacion contractual"))
-        delay_detected = _contains_any(normalized, ("delay", "delayed", "demora", "retraso", "prorroga", "eot", "extension of time"))
-        critical_path_detected = _contains_any(normalized, ("critical path", "ruta critica", "ruta crítica", "cpm", "cronograma"))
-        cost_detected = bool(amounts) or _contains_any(normalized, ("cost", "sobrecosto", "mayor valor", "quantum", "costo adicional"))
+        notice_detected = _contains_any(
+            normalized, ("notice", "notificacion", "notificación", "aviso", "comunicacion contractual")
+        )
+        delay_detected = _contains_any(
+            normalized, ("delay", "delayed", "demora", "retraso", "prorroga", "eot", "extension of time")
+        )
+        critical_path_detected = _contains_any(
+            normalized, ("critical path", "ruta critica", "ruta crítica", "cpm", "cronograma")
+        )
+        cost_detected = bool(amounts) or _contains_any(
+            normalized, ("cost", "sobrecosto", "mayor valor", "quantum", "costo adicional")
+        )
         evidence_detected = bool(source_files) or _contains_any(
             normalized,
             ("evidence", "soporte", "respaldo", "correspondence", "correspondencia", "bitacora", "schedule update"),
@@ -372,10 +385,7 @@ class ClaimsForensicDossierService:
 
     def _summary(self, mode: str, signal: DossierSignal, source_files: list[str]) -> str:
         labels = ", ".join(self._signal_labels(signal))
-        return (
-            f"Forensic claim dossier run in {mode} mode. "
-            f"Detected: {labels}. Sources: {len(source_files)} file(s)."
-        )
+        return f"Forensic claim dossier run in {mode} mode. Detected: {labels}. Sources: {len(source_files)} file(s)."
 
 
 def _assessment(status: str) -> str:

@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-from app.domain.models import ScheduleSource
 from app.services.schedule_ingestion import ParsedActivity, ParsedRelationship, ParsedSchedule, ScheduleIngestionService
 
 
@@ -123,7 +122,9 @@ class ForensicWindowAnalysisService:
                 continue
             status = "valid" if parsed.activities else "rejected"
             finding_code = "" if parsed.activities else "NO_ACTIVITIES"
-            message = parsed.validation_summary if parsed.activities else "No activities were parsed from this schedule."
+            message = (
+                parsed.validation_summary if parsed.activities else "No activities were parsed from this schedule."
+            )
             source_rows.append(
                 WindowScheduleSource(
                     file_name=file_name,
@@ -283,12 +284,9 @@ class ForensicWindowAnalysisService:
     ) -> str:
         if start_activity.critical_path or finish_activity.critical_path:
             return "critical"
-        if (
-            finish_slip_days > 0
-            and (
-                start_activity.total_float_days <= near_critical_threshold_days
-                or finish_activity.total_float_days <= near_critical_threshold_days
-            )
+        if finish_slip_days > 0 and (
+            start_activity.total_float_days <= near_critical_threshold_days
+            or finish_activity.total_float_days <= near_critical_threshold_days
         ):
             return "near_critical"
         if finish_slip_days > 0:
@@ -308,7 +306,9 @@ class ForensicWindowAnalysisService:
         for key in set(start_pairs).intersection(finish_pairs):
             start = start_pairs[key]
             finish = finish_pairs[key]
-            if start.relationship_type != finish.relationship_type or round(start.lag_days, 2) != round(finish.lag_days, 2):
+            if start.relationship_type != finish.relationship_type or round(start.lag_days, 2) != round(
+                finish.lag_days, 2
+            ):
                 changed += 1
         return WindowLogicDelta(
             added_relationships=len(added_keys),
@@ -332,7 +332,9 @@ class ForensicWindowAnalysisService:
         if completion_slip_days < 0:
             return f"The update recovers {-completion_slip_days} day(s) against the prior completion forecast."
         if logic_delta.added_relationships or logic_delta.removed_relationships or logic_delta.changed_relationships:
-            return "No completion slip is visible, but logic changes should be reviewed before relying on float movement."
+            return (
+                "No completion slip is visible, but logic changes should be reviewed before relying on float movement."
+            )
         return "No completion movement is visible in this window."
 
     def _completion_date(self, activities: list[ParsedActivity]) -> date | None:

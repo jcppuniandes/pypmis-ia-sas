@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any, Iterable, Mapping
-
+from typing import Any
 
 QuantityRuleStatus = str
 
@@ -40,7 +40,9 @@ CLASS_RULES: dict[str, RuleDefinition] = {
     "IFCSPACE": RuleDefinition("area o volumen", "NetFloorArea / NetVolume", ("m2", "m3")),
     "IFCSTAIR": RuleDefinition("volumen", "NetVolume", ("m3",)),
     "IFCWALL": RuleDefinition("area o volumen o longitud", "NetSideArea / NetVolume / NetLength", ("m2", "m3", "m")),
-    "IFCWALLSTANDARDCASE": RuleDefinition("area o volumen o longitud", "NetSideArea / NetVolume / NetLength", ("m2", "m3", "m")),
+    "IFCWALLSTANDARDCASE": RuleDefinition(
+        "area o volumen o longitud", "NetSideArea / NetVolume / NetLength", ("m2", "m3", "m")
+    ),
     "IFCWINDOW": RuleDefinition("conteo", "Count / ElementCount", ("ea",), allow_fallback_count=True),
 }
 
@@ -108,7 +110,11 @@ def evaluate_quantity_rule(
         )
 
     status: QuantityRuleStatus = "blocked" if findings else "valid"
-    confidence = "Alta" if status == "valid" and source in {"IFC Quantity Set publicado", "Calculo geometrico desde IFC"} else "Media"
+    confidence = (
+        "Alta"
+        if status == "valid" and source in {"IFC Quantity Set publicado", "Calculo geometrico desde IFC"}
+        else "Media"
+    )
 
     display_class = _field(line, "ifc_class") or "Clase IFC pendiente"
     measurement_rule = _field(line, "measurement_rule") or "Sin regla"
@@ -197,7 +203,8 @@ def build_quantity_rule_catalog(records: Iterable[Mapping[str, Any] | object]) -
             measure=_field(record, "expected_measure") or "cantidad controlada",
             rule_hint=_field(record, "rule_hint") or "Quantity / Unit",
             units=units,
-            element_label=_field(record, "element_label") or CLASS_LABELS.get(ifc_class, _humanize_ifc_class(ifc_class)),
+            element_label=_field(record, "element_label")
+            or CLASS_LABELS.get(ifc_class, _humanize_ifc_class(ifc_class)),
             source=_field(record, "source") or "project",
             allow_fallback_count=_bool_field(record, "allow_fallback_count", False),
         )

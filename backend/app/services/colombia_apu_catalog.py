@@ -5,7 +5,6 @@ import re
 import unicodedata
 import zipfile
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any
 from xml.etree import ElementTree as ET
 
@@ -15,7 +14,6 @@ from sqlalchemy.orm import Session
 
 from app.core.time import utc_now
 from app.domain.models import ColombiaApuCatalogItem, QuantityTakeoffLine
-
 
 DATACAUCA_SOURCE_KEY = "datacauca_public_apu"
 DATACAUCA_SOURCE_URL = "https://datacauca.gov.co/apu/apu/apu/query"
@@ -236,7 +234,10 @@ class ColombiaApuCatalogService:
             item.license_note = normalized["license_note"]
             item.update_frequency = normalized["update_frequency"]
             item.status = "review"
-            item.raw_data = {**_clean_row(_with_apu_resource_structure(raw_row, normalized)), "synced_at": synced_at.isoformat()}
+            item.raw_data = {
+                **_clean_row(_with_apu_resource_structure(raw_row, normalized)),
+                "synced_at": synced_at.isoformat(),
+            }
             item.updated_at = synced_at
         self.db.flush()
         total_count = self.db.scalar(
@@ -299,9 +300,7 @@ class ColombiaApuCatalogService:
                 )
             stmt = stmt.where(or_(*clauses))
         return list(
-            self.db.scalars(
-                stmt.order_by(ColombiaApuCatalogItem.item_code).limit(max(1, min(limit, 200)))
-            ).all()
+            self.db.scalars(stmt.order_by(ColombiaApuCatalogItem.item_code).limit(max(1, min(limit, 200)))).all()
         )
 
     def suggest_for_lines(
@@ -391,7 +390,15 @@ def _starter_rows() -> list[dict[str, Any]]:
 def _idu_starter_rows() -> list[dict[str, Any]]:
     starter_items = [
         ("IDU-ESP-PUB-001", "Anden en concreto", "m2", "Espacio publico", "Andenes", "Bogota D.C.", 0),
-        ("IDU-VIA-PAV-001", "Carpeta asfaltica en caliente", "m3", "Pavimentos", "Mezclas asfalticas", "Bogota D.C.", 0),
+        (
+            "IDU-VIA-PAV-001",
+            "Carpeta asfaltica en caliente",
+            "m3",
+            "Pavimentos",
+            "Mezclas asfalticas",
+            "Bogota D.C.",
+            0,
+        ),
         ("IDU-VIA-DEM-001", "Demolicion de placa en concreto", "m2", "Demoliciones", "Pavimentos", "Bogota D.C.", 0),
         ("IDU-RED-SUM-001", "Sumidero vial", "un", "Redes", "Drenaje", "Bogota D.C.", 0),
         ("IDU-SEN-HOR-001", "Senalizacion horizontal", "m2", "Senalizacion", "Demarcacion", "Bogota D.C.", 0),

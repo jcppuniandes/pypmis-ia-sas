@@ -27,9 +27,7 @@ def test_marks_published_ifc_wall_area_quantities_as_authoritative() -> None:
 
 
 def test_accepts_wall_length_when_the_budget_measurement_is_linear() -> None:
-    result = evaluate_quantity_rule(
-        _line(quantity=12, unit="m", measurement_rule="NetLength")
-    )
+    result = evaluate_quantity_rule(_line(quantity=12, unit="m", measurement_rule="NetLength"))
 
     assert result["status"] == "valid"
     assert result["expected_units"] == ["m2", "m3", "m"]
@@ -119,7 +117,12 @@ def test_summarizes_quantity_rule_quality() -> None:
     summary = summarize_quantity_rules(
         [
             _line(),
-            _line(ifc_class="IfcSlab", unit="ea", measurement_rule="ElementCount", validation_notes="No published IFC quantity found"),
+            _line(
+                ifc_class="IfcSlab",
+                unit="ea",
+                measurement_rule="ElementCount",
+                validation_notes="No published IFC quantity found",
+            ),
             _line(ifc_class="IfcPipeSegment", unit="m3", measurement_rule="NetLength"),
         ]
     )

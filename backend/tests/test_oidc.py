@@ -4,7 +4,6 @@ import pytest
 
 from app.core.oidc import OIDCValidationError, OIDCValidator
 
-
 MOCK_ISSUER = "https://accounts.example.com"
 MOCK_CLIENT_ID = "pypmis-client"
 
@@ -37,9 +36,7 @@ def test_validate_claims_rejects_wrong_audience_string() -> None:
 
 
 def test_validate_claims_accepts_audience_list_with_client_id() -> None:
-    OIDCValidator(MOCK_ISSUER, MOCK_CLIENT_ID).validate_claims(
-        _claims(aud=["other-client", MOCK_CLIENT_ID])
-    )
+    OIDCValidator(MOCK_ISSUER, MOCK_CLIENT_ID).validate_claims(_claims(aud=["other-client", MOCK_CLIENT_ID]))
 
 
 def test_validate_claims_rejects_audience_list_without_client_id() -> None:

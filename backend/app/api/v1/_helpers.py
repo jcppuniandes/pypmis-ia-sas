@@ -45,9 +45,7 @@ def require_active_user(db: Session, tenant_id: int, user_id: int) -> UserAccoun
     return user
 
 
-def require_membership(
-    db: Session, tenant_id: int, project_id: int, user_id: int
-) -> ProjectMembership:
+def require_membership(db: Session, tenant_id: int, project_id: int, user_id: int) -> ProjectMembership:
     require_project(db, tenant_id, project_id)
     require_active_user(db, tenant_id, user_id)
     membership = db.scalar(

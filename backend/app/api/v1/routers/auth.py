@@ -24,6 +24,7 @@ class OIDCTokenExchange(BaseModel):
     tenant_slug: str | None = None
     tenant_id: int | None = None
 
+
 router = APIRouter()
 
 

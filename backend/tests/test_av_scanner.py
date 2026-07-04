@@ -4,7 +4,6 @@ import pytest
 
 from app.services.document_scanner import ScanResult, ScanStatus, scan_bytes
 
-
 CLEAN_BYTES = b"This is a perfectly clean file."
 FAKE_MALWARE_MARKER = b"<<simulated-malicious-payload-marker>>"
 

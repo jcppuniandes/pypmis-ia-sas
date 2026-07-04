@@ -4,7 +4,6 @@ import pytest
 
 from app.services.ai_insights import AIInsightsError, generate_control_agent_synthesis, generate_evm_insights
 
-
 SAMPLE_EVM_CONTEXT = {
     "project_code": "PRJ-001",
     "period": "2024-Q1",

@@ -15,7 +15,6 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_tenant_id, get_user_id
-from app.core.time import utc_now
 from app.api.v1._helpers import (
     require_active_user as _require_user,
 )
@@ -40,6 +39,7 @@ from app.api.v1._helpers import (
 from app.api.v1._helpers import (
     write_audit_log as _audit,
 )
+from app.core.time import utc_now
 from app.database.session import get_db
 from app.domain.models import (
     WBS,
@@ -67,9 +67,9 @@ from app.domain.schemas import (
     ActivitySheetOut,
     ActivitySheetRowOut,
     ActivitySheetWbsRowOut,
-    BimModelOut,
     BimGeometryMeasurementBatchIn,
     BimGeometryMeasurementBatchOut,
+    BimModelOut,
     BimQuantityRuleOut,
     BimQuantityRuleUpdate,
     ColombiaApuCatalogItemOut,
@@ -84,25 +84,25 @@ from app.domain.schemas import (
     ProjectMembershipOut,
     ProjectOperationalSetupOut,
     ProjectOperationalSetupUpdate,
-    QuantityControlCodeAssignmentIn,
+    ProjectOut,
+    ProjectRoleMatrixOut,
+    ProjectTeamMemberOut,
     QuantityApuApprovalIn,
     QuantityApuSuggestionIn,
     QuantityApuSuggestionOut,
-    ProjectOut,
+    QuantityControlCodeAssignmentIn,
     QuantityRuleRecalculationOut,
     QuantityTakeoffLineOut,
     QuantityTakeoffModelLinkIn,
     QuantityTakeoffRunOut,
-    ProjectRoleMatrixOut,
-    ProjectTeamMemberOut,
     RoleMatrixEntryOut,
     RoleMatrixPolicyOut,
     ScheduleCurrencyConfirmIn,
     ScheduleImportOut,
     UserOut,
 )
-from app.services.bim_models import BimModelService
 from app.services.bim_geometry_quantities import BimGeometryQuantityService
+from app.services.bim_models import BimModelService
 from app.services.bim_quantity_rule_catalog import (
     ensure_project_quantity_rules,
     normalize_expected_units,
@@ -636,7 +636,9 @@ async def get_activity_sheet_data(
     if not content:
         raise HTTPException(status_code=400, detail="Activity source file is empty")
 
-    schedule_import = ScheduleIngestionService(db).ingest(tenant_id, project_id, file.filename or "activity-data.xml", content)
+    schedule_import = ScheduleIngestionService(db).ingest(
+        tenant_id, project_id, file.filename or "activity-data.xml", content
+    )
     rows = list(
         db.scalars(
             select(ScheduleActivityMap)
@@ -753,9 +755,7 @@ def get_activity_sheet_wbs_sheet(
 
     wbs_nodes = list(
         db.scalars(
-            select(WBS)
-            .where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)
-            .order_by(WBS.level, WBS.code)
+            select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id).order_by(WBS.level, WBS.code)
         ).all()
     )
     wbs_by_code = {wbs.code: wbs for wbs in wbs_nodes}
@@ -1983,16 +1983,20 @@ def _activity_sheet_enriched_rows(
     )
     mapping_by_schedule_row_id = {mapping.schedule_activity_map_id: mapping for mapping in mappings}
     account_ids = {mapping.control_account_id for mapping in mappings if mapping.control_account_id}
-    accounts_by_id = {
-        account.id: account
-        for account in db.scalars(
-            select(ControlAccount).where(
-                ControlAccount.tenant_id == tenant_id,
-                ControlAccount.project_id == project_id,
-                ControlAccount.id.in_(account_ids),
-            )
-        ).all()
-    } if account_ids else {}
+    accounts_by_id = (
+        {
+            account.id: account
+            for account in db.scalars(
+                select(ControlAccount).where(
+                    ControlAccount.tenant_id == tenant_id,
+                    ControlAccount.project_id == project_id,
+                    ControlAccount.id.in_(account_ids),
+                )
+            ).all()
+        }
+        if account_ids
+        else {}
+    )
 
     enriched: list[dict[str, object]] = []
     for row in activity_rows:
@@ -2024,9 +2028,7 @@ def _activity_sheet_enriched_rows(
     return enriched
 
 
-def _get_project_operational_setup(
-    db: Session, tenant_id: int, project_id: int
-) -> ProjectOperationalSetup | None:
+def _get_project_operational_setup(db: Session, tenant_id: int, project_id: int) -> ProjectOperationalSetup | None:
     return db.scalar(
         select(ProjectOperationalSetup).where(
             ProjectOperationalSetup.tenant_id == tenant_id,
@@ -2063,9 +2065,7 @@ def _require_quantity_assignment_catalog_codes(
     for message, value in required.items():
         if not value:
             raise HTTPException(status_code=400, detail=message)
-    wbs = db.scalar(
-        select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.code == wbs_code)
-    )
+    wbs = db.scalar(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.code == wbs_code))
     if not wbs:
         raise HTTPException(status_code=404, detail="WBS code not found")
     cbs = db.scalar(

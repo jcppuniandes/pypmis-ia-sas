@@ -1,28 +1,28 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.domain.models import (
+    WBS,
     ActivitySheet,
     ActivitySheetRecostRun,
     ActivitySheetRow,
     BusinessProcessInstance,
     BusinessProcessLineItemRevision,
     BusinessProcessPolicy,
-    ControlAgentFinding,
-    ControlAgentRun,
     ControlAccount,
     ControlAccountFundingAllocation,
+    ControlAgentFinding,
+    ControlAgentRun,
     CostCode,
     Project,
     QuantityTakeoffLine,
     RateSheet,
-    WBS,
     WorkPackage,
     WorkPackageConstraint,
 )
@@ -347,7 +347,7 @@ class ControlAuditAgentService:
         parent_id: int | None,
         findings: list[FindingDraft],
         main_constraints: str | None = None,
-    ) -> "_PackageResult":
+    ) -> _PackageResult:
         normalized_code = code[:80]
         existing = existing_packages.get(normalized_code)
         if existing:
@@ -526,13 +526,22 @@ class ControlAuditAgentService:
 
     def _create_default_iwp_constraints(self, tenant_id: int, project_id: int, package: WorkPackage) -> int:
         rows = [
-            ("Path of Construction", "Confirm CWA boundary, construction sequence, access, logistics and interface limits."),
+            (
+                "Path of Construction",
+                "Confirm CWA boundary, construction sequence, access, logistics and interface limits.",
+            ),
             ("Engineering Documents", "Confirm IFC drawings, EWP references, terminal points and latest revisions."),
             ("Materials", "Confirm BOM, bag-and-tag readiness, warehouse allocation and long-lead item availability."),
-            ("Quantities / Workface", "Confirm physical quantities, workface limits and measurement basis from BIM/Excel evidence."),
+            (
+                "Quantities / Workface",
+                "Confirm physical quantities, workface limits and measurement basis from BIM/Excel evidence.",
+            ),
             ("Safety / Quality", "Confirm JHA/FLHA, inspection points, ITP and quality hold points for the workface."),
             ("Permits / Access", "Confirm permits, access, scaffolding, lifting and work-front prerequisites."),
-            ("Recost / Funding", "Confirm recost, CBS/FBS funding alignment and commitment availability before release."),
+            (
+                "Recost / Funding",
+                "Confirm recost, CBS/FBS funding alignment and commitment availability before release.",
+            ),
         ]
         for constraint_type, description in rows:
             self.db.add(

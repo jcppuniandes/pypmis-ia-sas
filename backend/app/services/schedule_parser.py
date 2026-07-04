@@ -64,9 +64,7 @@ class ParsedSchedule:
         result.missing_logic_pct = (result.missing_logic_count / result.total_activities) * 100
 
         result.passed = (
-            result.missing_logic_pct <= 5.0
-            and result.hard_constraint_count == 0
-            and result.negative_float_count == 0
+            result.missing_logic_pct <= 5.0 and result.hard_constraint_count == 0 and result.negative_float_count == 0
         )
         return result
 

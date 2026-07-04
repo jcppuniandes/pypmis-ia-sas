@@ -19,7 +19,6 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_tenant_id, get_user_id
-from app.core.time import utc_now
 from app.api.v1._helpers import (
     require_active_user as _require_user,
 )
@@ -47,6 +46,7 @@ from app.api.v1.routers import health as health_router
 from app.api.v1.routers import projects as projects_router
 from app.core.config import get_settings
 from app.core.security import TokenError, decode_access_token
+from app.core.time import utc_now
 from app.database.session import get_db
 from app.domain.models import (
     KPI,
@@ -77,11 +77,11 @@ from app.domain.models import (
     Contract,
     ContractCommunication,
     ContractNotice,
-    ControlAgentFinding,
-    ControlAgentRun,
     ControlAccount,
     ControlAccountFundingAllocation,
     ControlAccountMapping,
+    ControlAgentFinding,
+    ControlAgentRun,
     ControlPeriod,
     ControlSnapshot,
     CostBreakdownStructure,
@@ -105,13 +105,13 @@ from app.domain.models import (
     ProjectMail,
     ProjectMembership,
     PurchaseOrder,
-    RFQBid,
-    RFQPackage,
     RateSheet,
     RateSheetLine,
-    ScheduleOfValueLine,
+    RFQBid,
+    RFQPackage,
     ScheduleActivityMap,
     ScheduleImport,
+    ScheduleOfValueLine,
     ScheduleValidationFinding,
     UserAccount,
     WarehouseReceipt,
@@ -124,15 +124,16 @@ from app.domain.process_catalog import DEFAULT_PROCESS_TEMPLATES
 from app.domain.schemas import (
     ActivityCreate,
     ActivityOut,
-    AlertOut,
-    AuditLogOut,
-    AWPReadinessSummary,
-    BaselineVersionOut,
-    BaselineApprovalOut,
+    ActivityRelationshipOut,
     ActivitySheetRecostIn,
     ActivitySheetRecostOut,
     ActivitySheetRecostRunLineOut,
     ActivitySheetRecostRunOut,
+    AlertOut,
+    AuditLogOut,
+    AWPReadinessSummary,
+    BaselineApprovalOut,
+    BaselineVersionOut,
     BusinessProcessCreate,
     BusinessProcessInstanceOut,
     BusinessProcessLineItemOut,
@@ -164,8 +165,6 @@ from app.domain.schemas import (
     ContractNoticeCreate,
     ContractNoticeOut,
     ContractOut,
-    ControlAgentFindingOut,
-    ControlAgentRunOut,
     ControlAccountCreate,
     ControlAccountFundingAllocationCreate,
     ControlAccountFundingAllocationOut,
@@ -173,14 +172,16 @@ from app.domain.schemas import (
     ControlAccountMappingSummary,
     ControlAccountOut,
     ControlAccountUpdate,
+    ControlAgentFindingOut,
+    ControlAgentRunOut,
     ControlCoreLoop,
     ControlPeriodOut,
     ControlSnapshotOut,
-    CostManagerSummaryOut,
     CostBreakdownStructureCreate,
     CostBreakdownStructureOut,
     CostCodeCreate,
     CostCodeOut,
+    CostManagerSummaryOut,
     CostRecordCreate,
     CostRecordOut,
     CostSheetLineOut,
@@ -197,22 +198,22 @@ from app.domain.schemas import (
     DocumentTransmittalItemOut,
     DocumentTransmittalOut,
     DocumentUpdate,
-    ForecastScenarioOut,
     ForecastFundingReport,
+    ForecastScenarioOut,
     ForensicDossierAnalysisOut,
-    ForensicWindowAnalysisOut,
     ForensicRagSourceOut,
-    FundingSourceCreate,
+    ForensicWindowAnalysisOut,
     FundingAvailabilityOut,
+    FundingSourceCreate,
     FundingSourceOut,
     FundingSourceUpdate,
+    IntegratedControlMatrixRow,
     IntegrationExportLogOut,
     IntegrationTokenAlertOut,
     IntegrationTokenAlertSummary,
     IntegrationTokenCreate,
     IntegrationTokenCreated,
     IntegrationTokenOut,
-    IntegratedControlMatrixRow,
     KPIOut,
     PaymentCertificateCreate,
     PaymentCertificateOut,
@@ -235,6 +236,11 @@ from app.domain.schemas import (
     PurchaseOrderCreate,
     PurchaseOrderOut,
     PurchaseOrderUpdate,
+    RateSheetCreate,
+    RateSheetLineOut,
+    RateSheetOut,
+    ReconciliationReportOut,
+    ReconciliationReportRow,
     RFQBidCreate,
     RFQBidOut,
     RFQBidUpdate,
@@ -242,17 +248,11 @@ from app.domain.schemas import (
     RFQPackageOut,
     RFQPackageUpdate,
     RFQSummary,
-    RateSheetCreate,
-    RateSheetLineOut,
-    RateSheetOut,
-    ReconciliationReportOut,
-    ReconciliationReportRow,
     RoleProfileOut,
-    ActivityRelationshipOut,
-    ScheduleOfValueLineCreate,
-    ScheduleOfValueLineOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
+    ScheduleOfValueLineCreate,
+    ScheduleOfValueLineOut,
     ScheduleQualityMetricOut,
     ScheduleValidationFindingOut,
     TCMFlowStep,
@@ -260,8 +260,8 @@ from app.domain.schemas import (
     WarehouseReceiptCreate,
     WarehouseReceiptOut,
     WarehouseReceiptUpdate,
-    WBSOut,
     WBSCreate,
+    WBSOut,
     WorkflowActionIn,
     WorkflowStepInstanceOut,
     WorkPackageConstraintCreate,
@@ -273,8 +273,8 @@ from app.domain.schemas import (
 )
 from app.services.ai_insights import AIInsightService
 from app.services.claims_forensic import ClaimsForensicDossierService
-from app.services.control_core import ControlCoreService
 from app.services.control_audit_agent import ControlAuditAgentService
+from app.services.control_core import ControlCoreService
 from app.services.forensic_window_analysis import ForensicWindowAnalysisService
 from app.services.integrated_control import IntegratedControlService
 from app.services.schedule_ingestion import ScheduleIngestionService
@@ -452,7 +452,9 @@ def create_wbs(
     )
     db.add(wbs)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_wbs", "WBS", wbs.id, json.dumps({"code": wbs.code}), current_user.full_name)
+    _audit(
+        db, tenant_id, project_id, "create_wbs", "WBS", wbs.id, json.dumps({"code": wbs.code}), current_user.full_name
+    )
     db.commit()
     db.refresh(wbs)
     return wbs
@@ -596,7 +598,9 @@ def update_control_account(
         if field == "lifecycle_status" and value is not None:
             value = value.strip().lower()
         if field == "wbs_id" and value is not None:
-            wbs = db.scalar(select(WBS).where(WBS.id == value, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
+            wbs = db.scalar(
+                select(WBS).where(WBS.id == value, WBS.tenant_id == tenant_id, WBS.project_id == project_id)
+            )
             if not wbs:
                 raise HTTPException(status_code=404, detail="WBS not found")
         if field == "awp_package_id" and value is not None:
@@ -1180,7 +1184,16 @@ def create_cbs(
     )
     db.add(cbs)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_cbs", "CostBreakdownStructure", cbs.id, json.dumps({"code": cbs.code}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_cbs",
+        "CostBreakdownStructure",
+        cbs.id,
+        json.dumps({"code": cbs.code}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(cbs)
     return cbs
@@ -1216,7 +1229,9 @@ def create_cost_code(
     membership = _require_membership(db, tenant_id, project_id, user_id)
     _require_permission(membership, "can_capture_cost", "Current role cannot configure cost codes")
     current_user = _require_user(db, tenant_id, user_id)
-    wbs = db.scalar(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.id == payload.wbs_id))
+    wbs = db.scalar(
+        select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.id == payload.wbs_id)
+    )
     if not wbs:
         raise HTTPException(status_code=404, detail="WBS not found")
     account = _require_control_account(db, tenant_id, project_id, payload.control_account_id)
@@ -1236,7 +1251,9 @@ def create_cost_code(
     if not code:
         raise HTTPException(status_code=400, detail="Cost code is required")
     existing = db.scalar(
-        select(CostCode).where(CostCode.tenant_id == tenant_id, CostCode.project_id == project_id, CostCode.code == code)
+        select(CostCode).where(
+            CostCode.tenant_id == tenant_id, CostCode.project_id == project_id, CostCode.code == code
+        )
     )
     if existing:
         raise HTTPException(status_code=409, detail="Cost code already exists in this project")
@@ -1258,7 +1275,16 @@ def create_cost_code(
     )
     db.add(cost_code)
     db.flush()
-    _audit(db, tenant_id, project_id, "create_cost_code", "CostCode", cost_code.id, json.dumps({"code": cost_code.code}), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_cost_code",
+        "CostCode",
+        cost_code.id,
+        json.dumps({"code": cost_code.code}),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(cost_code)
     return cost_code
@@ -1315,8 +1341,20 @@ def create_cbs_fund_business_process(
         current_step="Control Review",
         ball_in_court="Project Controls",
         steps=[
-            ("Creation", "CBS funding lines were captured from the cost form.", "Cost Engineer", "Complete", "complete"),
-            ("Control Review", "Validate FBS availability and control account funding split.", "Project Controls", "Active", "active"),
+            (
+                "Creation",
+                "CBS funding lines were captured from the cost form.",
+                "Cost Engineer",
+                "Complete",
+                "complete",
+            ),
+            (
+                "Control Review",
+                "Validate FBS availability and control account funding split.",
+                "Project Controls",
+                "Active",
+                "active",
+            ),
             ("Approval", "Approve the funding allocation for execution.", "Control Manager", "Queued", "queued"),
         ],
     )
@@ -1432,7 +1470,13 @@ def create_cbs_wbs_business_process(
         ball_in_court="Project Controls",
         steps=[
             ("Creation", "Cost-scope line items were captured.", "Cost Engineer", "Complete", "complete"),
-            ("Budget Review", "Validate WBS, CBS, FBS and control account alignment.", "Project Controls", "Active", "active"),
+            (
+                "Budget Review",
+                "Validate WBS, CBS, FBS and control account alignment.",
+                "Project Controls",
+                "Active",
+                "active",
+            ),
             ("Approval", "Approve dual WBS/CBS roll-up to cost codes.", "Control Manager", "Queued", "queued"),
         ],
     )
@@ -1595,7 +1639,16 @@ def upsert_business_process_policy(
         db.add(policy)
         db.flush()
         action_name = "create_business_process_policy"
-    _audit(db, tenant_id, project_id, action_name, "BusinessProcessPolicy", policy.id, json.dumps(details), current_user.full_name)
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        action_name,
+        "BusinessProcessPolicy",
+        policy.id,
+        json.dumps(details),
+        current_user.full_name,
+    )
     db.commit()
     db.refresh(policy)
     return policy
@@ -1846,7 +1899,9 @@ def approve_integrated_baseline(
     membership = _require_membership(db, tenant_id, project_id, user_id)
     _require_permission(membership, "can_approve_workflow", "Current role cannot approve the integrated baseline")
     result = IntegratedControlService(db).approve_baseline(tenant_id, project_id)
-    _audit(db, tenant_id, project_id, "approve_integrated_baseline", "Project", project_id, json.dumps(result.model_dump()))
+    _audit(
+        db, tenant_id, project_id, "approve_integrated_baseline", "Project", project_id, json.dumps(result.model_dump())
+    )
     db.commit()
     return result
 
@@ -1875,7 +1930,15 @@ def close_financial_funding(
     membership = _require_membership(db, tenant_id, project_id, user_id)
     _require_permission(membership, "can_capture_cost", "Current role cannot close financial funding")
     result = IntegratedControlService(db).financial_closeout(tenant_id, project_id, funding_source_id)
-    _audit(db, tenant_id, project_id, "financial_closeout", "FundingSource", funding_source_id, json.dumps(result.model_dump()))
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "financial_closeout",
+        "FundingSource",
+        funding_source_id,
+        json.dumps(result.model_dump()),
+    )
     db.commit()
     return result
 
@@ -1917,7 +1980,9 @@ def create_rate_sheet(
     if not payload.line_items:
         raise HTTPException(status_code=400, detail="At least one rate sheet line is required")
     existing = db.scalar(
-        select(RateSheet).where(RateSheet.tenant_id == tenant_id, RateSheet.project_id == project_id, RateSheet.code == code)
+        select(RateSheet).where(
+            RateSheet.tenant_id == tenant_id, RateSheet.project_id == project_id, RateSheet.code == code
+        )
     )
     if existing:
         raise HTTPException(status_code=409, detail="Rate sheet code already exists in this project")
@@ -2013,16 +2078,19 @@ def recost_activity_sheet(
             .order_by(ActivitySheetRow.external_activity_id)
         ).all()
     )
-    next_run_no = int(
-        db.scalar(
-            select(func.coalesce(func.max(ActivitySheetRecostRun.run_no), 0)).where(
-                ActivitySheetRecostRun.tenant_id == tenant_id,
-                ActivitySheetRecostRun.project_id == project_id,
-                ActivitySheetRecostRun.activity_sheet_id == activity_sheet.id,
+    next_run_no = (
+        int(
+            db.scalar(
+                select(func.coalesce(func.max(ActivitySheetRecostRun.run_no), 0)).where(
+                    ActivitySheetRecostRun.tenant_id == tenant_id,
+                    ActivitySheetRecostRun.project_id == project_id,
+                    ActivitySheetRecostRun.activity_sheet_id == activity_sheet.id,
+                )
             )
+            or 0
         )
-        or 0
-    ) + 1
+        + 1
+    )
     recost_run = ActivitySheetRecostRun(
         tenant_id=tenant_id,
         project_id=project_id,
@@ -2412,14 +2480,17 @@ def create_commitment_funding_line(
         )
         if not sov_line:
             raise HTTPException(status_code=404, detail="SOV line not found for this contract")
-        allocated = db.scalar(
-            select(func.coalesce(func.sum(CommitmentFundingLine.amount), 0)).where(
-                CommitmentFundingLine.tenant_id == tenant_id,
-                CommitmentFundingLine.project_id == project_id,
-                CommitmentFundingLine.sov_line_id == sov_line.id,
-                CommitmentFundingLine.status != "cancelled",
+        allocated = (
+            db.scalar(
+                select(func.coalesce(func.sum(CommitmentFundingLine.amount), 0)).where(
+                    CommitmentFundingLine.tenant_id == tenant_id,
+                    CommitmentFundingLine.project_id == project_id,
+                    CommitmentFundingLine.sov_line_id == sov_line.id,
+                    CommitmentFundingLine.status != "cancelled",
+                )
             )
-        ) or 0
+            or 0
+        )
         if allocated + payload.amount > sov_line.amount:
             raise HTTPException(status_code=409, detail="Commitment funding exceeds the SOV line amount")
     line = CommitmentFundingLine(
@@ -2593,7 +2664,9 @@ def update_purchase_order(
         contract = _require_contract(db, tenant_id, project_id, payload.contract_id)
     if payload.committed_amount is not None and payload.committed_amount <= 0:
         raise HTTPException(status_code=400, detail="Purchase order committed amount must be greater than zero")
-    funding_source_id = payload.funding_source_id or (contract.funding_source_id if contract else order.funding_source_id)
+    funding_source_id = payload.funding_source_id or (
+        contract.funding_source_id if contract else order.funding_source_id
+    )
     funding = IntegratedControlService(db).resolve_commitment_funding(
         tenant_id, project_id, funding_source_id, payload.control_account_id or order.control_account_id
     )
@@ -3333,9 +3406,7 @@ def list_claims(
     _require_membership(db, tenant_id, project_id, user_id)
     return list(
         db.scalars(
-            select(Claim)
-            .where(Claim.project_id == project_id, Claim.tenant_id == tenant_id)
-            .order_by(Claim.id.desc())
+            select(Claim).where(Claim.project_id == project_id, Claim.tenant_id == tenant_id).order_by(Claim.id.desc())
         ).all()
     )
 
@@ -3451,8 +3522,12 @@ async def create_claims_forensic_run(
         readiness_score=result.readiness_score,
         created_claims=[ClaimOut.model_validate(claim) for claim in result.created_claims],
         created_notices=[ContractNoticeOut.model_validate(notice) for notice in result.created_notices],
-        created_entitlement_items=[ClaimEntitlementItemOut.model_validate(item) for item in result.created_entitlement_items],
-        created_impact_analyses=[ClaimImpactAnalysisOut.model_validate(analysis) for analysis in result.created_impact_analyses],
+        created_entitlement_items=[
+            ClaimEntitlementItemOut.model_validate(item) for item in result.created_entitlement_items
+        ],
+        created_impact_analyses=[
+            ClaimImpactAnalysisOut.model_validate(analysis) for analysis in result.created_impact_analyses
+        ],
     )
 
 
@@ -3464,10 +3539,7 @@ def list_window_analysis_37_rag_sources(
     user_id: int = Depends(get_user_id),
 ) -> list[ForensicRagSourceOut]:
     _require_membership(db, tenant_id, project_id, user_id)
-    return [
-        ForensicRagSourceOut.model_validate(source)
-        for source in ForensicWindowAnalysisService().rag_sources()
-    ]
+    return [ForensicRagSourceOut.model_validate(source) for source in ForensicWindowAnalysisService().rag_sources()]
 
 
 @router.post("/projects/{project_id}/claims/window-analysis-37", response_model=ForensicWindowAnalysisOut)
@@ -4365,7 +4437,9 @@ def create_work_package(
     if package_type not in AWP_PACKAGE_TYPES:
         raise HTTPException(status_code=400, detail="Unsupported AWP package type")
     if payload.wbs_id is not None:
-        wbs = db.scalar(select(WBS).where(WBS.id == payload.wbs_id, WBS.tenant_id == tenant_id, WBS.project_id == project_id))
+        wbs = db.scalar(
+            select(WBS).where(WBS.id == payload.wbs_id, WBS.tenant_id == tenant_id, WBS.project_id == project_id)
+        )
         if not wbs:
             raise HTTPException(status_code=404, detail="WBS not found")
     if payload.control_account_id is not None:
@@ -4880,9 +4954,13 @@ def apply_workflow_action(
     else:
         transition_permission = _workflow_transition_permission(db, tenant_id, process_id, payload.action)
         if transition_permission:
-            _require_permission(membership, transition_permission, "Current role cannot execute this workflow transition")
+            _require_permission(
+                membership, transition_permission, "Current role cannot execute this workflow transition"
+            )
         elif payload.action in {"approve_baseline", "reject_baseline", "close_action"}:
-            _require_permission(membership, "can_approve_workflow", "Current role cannot approve or close workflow actions")
+            _require_permission(
+                membership, "can_approve_workflow", "Current role cannot approve or close workflow actions"
+            )
     _require_current_version(process, payload.expected_version)
     try:
         return WorkflowRoutingService(db).apply_action(
@@ -7656,9 +7734,7 @@ def _require_control_account(db: Session, tenant_id: int, project_id: int, accou
 
 
 def _require_wbs(db: Session, tenant_id: int, project_id: int, wbs_id: int) -> WBS:
-    wbs = db.scalar(
-        select(WBS).where(WBS.id == wbs_id, WBS.project_id == project_id, WBS.tenant_id == tenant_id)
-    )
+    wbs = db.scalar(select(WBS).where(WBS.id == wbs_id, WBS.project_id == project_id, WBS.tenant_id == tenant_id))
     if not wbs:
         raise HTTPException(status_code=404, detail="WBS not found")
     return wbs
@@ -7677,9 +7753,7 @@ def _require_cbs(db: Session, tenant_id: int, project_id: int, cbs_id: int) -> C
     return cbs
 
 
-def _require_activity_sheet(
-    db: Session, tenant_id: int, project_id: int, activity_sheet_id: int
-) -> ActivitySheet:
+def _require_activity_sheet(db: Session, tenant_id: int, project_id: int, activity_sheet_id: int) -> ActivitySheet:
     activity_sheet = db.scalar(
         select(ActivitySheet).where(
             ActivitySheet.id == activity_sheet_id,
@@ -7883,7 +7957,8 @@ def _reconciliation_report_rows(db: Session, tenant_id: int, project_id: int) ->
         ).all()
     )
     wbs_by_id = {
-        row.id: row for row in db.scalars(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)).all()
+        row.id: row
+        for row in db.scalars(select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id)).all()
     }
     account_by_id = {
         row.id: row
@@ -7908,7 +7983,9 @@ def _reconciliation_report_rows(db: Session, tenant_id: int, project_id: int) ->
     }
     contracts_by_code = {
         row.code: row
-        for row in db.scalars(select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)).all()
+        for row in db.scalars(
+            select(Contract).where(Contract.tenant_id == tenant_id, Contract.project_id == project_id)
+        ).all()
     }
     rows: list[ReconciliationReportRow] = []
     for cost_code in cost_codes:
@@ -8167,7 +8244,9 @@ def _validate_awp_package_hierarchy(parent: WorkPackage | None, package_type: st
     if parent_type not in AWP_PACKAGE_LEVELS:
         raise HTTPException(status_code=400, detail="Parent AWP package type is not supported")
     if AWP_PACKAGE_LEVELS[package_type] <= AWP_PACKAGE_LEVELS[parent_type]:
-        raise HTTPException(status_code=400, detail="AWP package hierarchy must move from area to more detailed package")
+        raise HTTPException(
+            status_code=400, detail="AWP package hierarchy must move from area to more detailed package"
+        )
 
 
 def _normalize_awp_constraint_priority(priority: str) -> str:
@@ -8384,7 +8463,9 @@ def _schedule_quality_metrics(
     high_duration = sum(
         1
         for activity in activities
-        if activity.planned_start and activity.planned_finish and (activity.planned_finish - activity.planned_start).days > 44
+        if activity.planned_start
+        and activity.planned_finish
+        and (activity.planned_finish - activity.planned_start).days > 44
     )
     invalid_dates = sum(
         1

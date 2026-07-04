@@ -16,12 +16,12 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.time import utc_now
 from app.domain.models import (
-    CostBreakdownStructure,
+    WBS,
     BimModel,
+    CostBreakdownStructure,
     FundingSource,
     QuantityTakeoffLine,
     QuantityTakeoffRun,
-    WBS,
     WorkPackage,
 )
 from app.services.bim_quantity_rule_catalog import project_quantity_rule_catalog
@@ -54,7 +54,12 @@ HEADER_ALIASES = {
     "zone_name": {"zone", "zone_name", "zona"},
     "assembly_name": {"assembly", "assembly_name", "ensamble", "conjunto"},
     "classification_system": {"classification_system", "classification system", "sistema clasificacion"},
-    "classification_code": {"classification_code", "classification code", "codigo clasificacion", "código clasificación"},
+    "classification_code": {
+        "classification_code",
+        "classification code",
+        "codigo clasificacion",
+        "código clasificación",
+    },
     "quantity": {"quantity", "qty", "cantidad"},
     "unit": {"unit", "uom", "unidad"},
     "measurement_rule": {"measurement_rule", "measurement rule", "regla medicion", "regla medición", "quantity name"},
@@ -146,7 +151,9 @@ IFC_TAKEOFF_RELATION_CLASSES = {
     "IFCSITE",
 }
 
-IFC_TAKEOFF_ENTITY_CLASSES = IFC_PRODUCT_CLASSES | IFC_TYPE_CLASSES | set(IFC_QUANTITY_UNITS) | IFC_TAKEOFF_RELATION_CLASSES
+IFC_TAKEOFF_ENTITY_CLASSES = (
+    IFC_PRODUCT_CLASSES | IFC_TYPE_CLASSES | set(IFC_QUANTITY_UNITS) | IFC_TAKEOFF_RELATION_CLASSES
+)
 
 IFC_CLASS_DISPLAY_NAMES = {
     "IFCBUILDINGELEMENTPROXY": "IfcBuildingElementProxy",
@@ -613,7 +620,9 @@ class QuantityTakeoffService:
         headers = [str(value).strip() for value in values[0]]
         rows: list[dict[str, str]] = []
         for row in values[1:]:
-            row_dict = {headers[index]: str(row[index]).strip() if index < len(row) else "" for index in range(len(headers))}
+            row_dict = {
+                headers[index]: str(row[index]).strip() if index < len(row) else "" for index in range(len(headers))
+            }
             if any(row_dict.values()):
                 rows.append(row_dict)
         return rows
@@ -721,7 +730,9 @@ class QuantityTakeoffService:
         for ref, (entity_name, args) in entities.items():
             if entity_name in IFC_QUANTITY_UNITS:
                 name = _clean_ifc_arg(args[0]) if args else entity_name
-                quantity_sets[ref] = [(name, _parse_float(args[3] if len(args) > 3 else "0"), IFC_QUANTITY_UNITS[entity_name])]
+                quantity_sets[ref] = [
+                    (name, _parse_float(args[3] if len(args) > 3 else "0"), IFC_QUANTITY_UNITS[entity_name])
+                ]
             elif entity_name == "IFCELEMENTQUANTITY":
                 refs = _arg_refs(_last_list_arg(args))
                 quantities: list[tuple[str, float, str]] = []
@@ -984,7 +995,9 @@ def _constructive_category(entity_name: str, type_label: str, predefined_type: s
             return "Viga / miembro estructural"
         return "Miembro estructural a revisar"
     if normalized_entity == "IFCPLATE":
-        if normalized_predefined == "CURTAIN_PANEL" or any(token in normalized_type for token in ("CURTAIN", "PANEL", "GLAZED")):
+        if normalized_predefined == "CURTAIN_PANEL" or any(
+            token in normalized_type for token in ("CURTAIN", "PANEL", "GLAZED")
+        ):
             return "Panel de fachada"
         return "Placa"
     if normalized_entity == "IFCSLAB":

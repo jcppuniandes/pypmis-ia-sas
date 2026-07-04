@@ -84,4 +84,3 @@ def test_ifc_geometry_converter_writes_backend_cache_artifact(tmp_path: Path, mo
     assert artifact["products"][0]["name"] == "Concrete Column"
     assert artifact["products"][0]["mesh"]["vertices"] == [0.0, 0.0, 0.0, 1.234568, 0.0, 0.0, 0.0, 2.0, 0.0]
     assert artifact["products"][0]["mesh"]["indices"] == [0, 1, 2]
-

@@ -14,8 +14,11 @@ from app.core.time import utc_now
 from app.domain.models import BimModel, QuantityTakeoffLine, QuantityTakeoffRun
 from app.services.bim_models import BimModelService
 from app.services.bim_quantity_rule_catalog import project_quantity_rule_catalog
-from app.services.bim_quantity_rules import evaluate_effective_quantity_rule, evaluate_quantity_rule, normalize_ifc_class
-
+from app.services.bim_quantity_rules import (
+    evaluate_effective_quantity_rule,
+    evaluate_quantity_rule,
+    normalize_ifc_class,
+)
 
 AREA_CLASSES = {
     "IFCCURTAINWALL",
@@ -135,7 +138,9 @@ class BimGeometryQuantityService:
                 "reason": "",
             }
             if not product:
-                results.append({**base, "status": "unmatched", "reason": "No se encontro una malla IFC para la referencia."})
+                results.append(
+                    {**base, "status": "unmatched", "reason": "No se encontro una malla IFC para la referencia."}
+                )
                 continue
 
             quantities = _mesh_quantities(product.get("mesh"), units)
@@ -320,8 +325,7 @@ def _mesh_quantities(mesh: Any, units: str) -> dict[str, float]:
     if not points:
         return {}
     raw_max_dimension = max(
-        max(point[axis] for point in points) - min(point[axis] for point in points)
-        for axis in range(3)
+        max(point[axis] for point in points) - min(point[axis] for point in points) for axis in range(3)
     )
     scale = _coordinate_scale(units, raw_max_dimension)
     points = [(x * scale, y * scale, z * scale) for x, y, z in points]

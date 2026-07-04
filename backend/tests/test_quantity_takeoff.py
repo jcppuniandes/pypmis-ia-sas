@@ -706,15 +706,15 @@ def _quantity_xlsx(rows: list[list[str]]) -> bytes:
         )
         archive.writestr(
             "xl/sharedStrings.xml",
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            "<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
             + "".join(f"<si><t>{value}</t></si>" for value in shared_strings)
             + "</sst>",
         )
         archive.writestr(
             "xl/worksheets/sheet1.xml",
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
             f"<sheetData>{''.join(sheet_rows)}</sheetData></worksheet>",
         )
     return content.getvalue()

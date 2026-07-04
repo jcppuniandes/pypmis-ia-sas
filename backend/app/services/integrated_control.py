@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.domain.models import (
+    WBS,
     Contract,
     ControlAccount,
     ControlAccountFundingAllocation,
@@ -16,7 +17,6 @@ from app.domain.models import (
     PaymentCertificate,
     Project,
     PurchaseOrder,
-    WBS,
     WarehouseReceipt,
     WorkPackage,
 )
@@ -28,7 +28,6 @@ from app.domain.schemas import (
     FundingAvailabilityOut,
     IntegratedControlMatrixRow,
 )
-
 
 INACTIVE_COMMITMENT_STATUSES = {"cancelled", "rejected", "void", "draft"}
 ACTIVE_FUNDING_STATUSES = {"approved", "partially_committed", "fully_committed", "planned"}
@@ -205,7 +204,9 @@ class IntegratedControlService:
         )
         fbs_by_id = _by_id(
             self.db.scalars(
-                select(FundingSource).where(FundingSource.tenant_id == tenant_id, FundingSource.project_id == project_id)
+                select(FundingSource).where(
+                    FundingSource.tenant_id == tenant_id, FundingSource.project_id == project_id
+                )
             ).all()
         )
         packages_by_account: dict[int, WorkPackage] = {}
@@ -222,7 +223,9 @@ class IntegratedControlService:
             fbs = fbs_by_id.get(cost_code.fbs_id)
             wbs = wbs_by_id.get(cost_code.wbs_id)
             cbs = cbs_by_id.get(cost_code.cbs_id)
-            balance = _money(cost_code.funds_available or ((fbs.funds_available if fbs else 0) - cost_code.actual_costs))
+            balance = _money(
+                cost_code.funds_available or ((fbs.funds_available if fbs else 0) - cost_code.actual_costs)
+            )
             rows.append(
                 IntegratedControlMatrixRow(
                     project_id=project.id,
@@ -301,7 +304,9 @@ class IntegratedControlService:
         project.status = "baseline_approved"
         return BaselineApprovalOut(project_id=project_id, project_status=project.status, **counts)
 
-    def closeout_report(self, tenant_id: int, project_id: int, funding_source_id: int | None = None) -> CloseoutReportOut:
+    def closeout_report(
+        self, tenant_id: int, project_id: int, funding_source_id: int | None = None
+    ) -> CloseoutReportOut:
         funding_sources = self._target_funding_sources(tenant_id, project_id, funding_source_id)
         approved = committed = actual = forecast = unused = 0.0
         open_commitments = 0
@@ -429,7 +434,8 @@ class IntegratedControlService:
             .where(
                 WarehouseReceipt.tenant_id == tenant_id,
                 WarehouseReceipt.project_id == project_id,
-                (PurchaseOrder.funding_source_id == funding_source_id) | (Contract.funding_source_id == funding_source_id),
+                (PurchaseOrder.funding_source_id == funding_source_id)
+                | (Contract.funding_source_id == funding_source_id),
                 ~WarehouseReceipt.status.in_(INACTIVE_COMMITMENT_STATUSES),
             )
         )

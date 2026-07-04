@@ -105,8 +105,7 @@ class Settings(BaseSettings):
             raise RuntimeError("OIDC_ISSUER_URL and OIDC_CLIENT_ID are required when OIDC is enabled")
         if self.auto_create_schema:
             raise RuntimeError(
-                "AUTO_CREATE_SCHEMA must be false in production. "
-                "Run 'alembic upgrade head' to manage schema changes."
+                "AUTO_CREATE_SCHEMA must be false in production. Run 'alembic upgrade head' to manage schema changes."
             )
         if self.metrics_enabled and not self.metrics_token:
             raise RuntimeError("METRICS_TOKEN is required when METRICS_ENABLED=true in production")

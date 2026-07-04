@@ -2,6 +2,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.domain.models import (
+    WBS,
     BaselineVersion,
     BusinessProcessInstance,
     ControlAccount,
@@ -15,7 +16,6 @@ from app.domain.models import (
     ScheduleActivityMap,
     ScheduleImport,
     Tenant,
-    WBS,
     WorkPackage,
     WorkPackageConstraint,
 )
@@ -67,7 +67,9 @@ class GuidedFlowService:
                 "project_setup",
                 "Project setup",
                 "complete" if setup_ready else "blocked",
-                "Operational setup ready" if setup_ready else "Complete permissions, modules, cost sheet, funding sheet and P6 mapping",
+                "Operational setup ready"
+                if setup_ready
+                else "Complete permissions, modules, cost sheet, funding sheet and P6 mapping",
                 "Complete setup" if not setup_ready else "Load XER/XML schedule",
                 "Control Manager",
                 "setup",
@@ -178,7 +180,9 @@ class GuidedFlowService:
     def _count(self, model: type, tenant_id: int, project_id: int) -> int:
         return int(
             self.db.scalar(
-                select(func.count()).select_from(model).where(model.tenant_id == tenant_id, model.project_id == project_id)
+                select(func.count())
+                .select_from(model)
+                .where(model.tenant_id == tenant_id, model.project_id == project_id)
             )
             or 0
         )

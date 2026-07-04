@@ -14,10 +14,10 @@ def test_forensic_dossier_import_creates_claim_analysis_records() -> None:
         project_id = _create_project(client, headers, uuid4().hex[:8])
 
         dossier = (
-            "Contract notice issued for delayed access to work fronts. "
-            "The event caused 18 days of delay on the critical path and COP 25000000 additional cost. "
-            "Evidence includes correspondence, schedule update and cost backup."
-        ).encode("utf-8")
+            b"Contract notice issued for delayed access to work fronts. "
+            b"The event caused 18 days of delay on the critical path and COP 25000000 additional cost. "
+            b"Evidence includes correspondence, schedule update and cost backup."
+        )
         response = client.post(
             f"/api/v1/projects/{project_id}/claims/forensic-runs",
             headers=headers,

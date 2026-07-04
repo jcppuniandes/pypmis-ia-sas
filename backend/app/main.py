@@ -36,8 +36,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     if settings.auto_create_schema:
         if settings.is_production:
             raise RuntimeError(
-                "AUTO_CREATE_SCHEMA=true is not allowed in production. "
-                "Use Alembic migrations ('alembic upgrade head')."
+                "AUTO_CREATE_SCHEMA=true is not allowed in production. Use Alembic migrations ('alembic upgrade head')."
             )
         _create_schema_for_local_runtime()
     if settings.seed_demo_data:

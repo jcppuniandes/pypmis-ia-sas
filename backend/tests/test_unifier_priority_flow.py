@@ -1,6 +1,6 @@
 from types import SimpleNamespace
-from uuid import uuid4
 from unittest.mock import MagicMock, patch
+from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
@@ -473,7 +473,9 @@ def test_control_audit_agent_appends_optional_low_cost_synthesis() -> None:
         )
     ]
 
-    with patch("app.services.control_audit_agent.generate_control_agent_synthesis", return_value="Close BP policy first."):
+    with patch(
+        "app.services.control_audit_agent.generate_control_agent_synthesis", return_value="Close BP policy first."
+    ):
         summary = service._summary_with_optional_synthesis("Control Audit Agent found 1 finding.", findings)
 
     assert "Control Audit Agent found 1 finding." in summary

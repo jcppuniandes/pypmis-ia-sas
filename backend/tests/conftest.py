@@ -10,7 +10,6 @@ from tempfile import gettempdir
 
 from app.core.config import get_settings
 
-
 test_db_path = Path(os.getenv("PYPMIS_TEST_DB_PATH", Path(gettempdir()) / "pypmis_pytest.sqlite"))
 if test_db_path.exists():
     test_db_path.unlink()

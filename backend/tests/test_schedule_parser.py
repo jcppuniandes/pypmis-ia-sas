@@ -7,7 +7,6 @@ from app.services.schedule_parser import (
     parse_xer,
 )
 
-
 MINIMAL_XER = """%FMT:19
 %ER  project
 proj_id\tproj_short_name\tplan_start_date
@@ -52,11 +51,7 @@ def test_dcma_flags_missing_logic() -> None:
 def test_dcma_passes_with_full_logic() -> None:
     xer_with_rel = MINIMAL_XER.replace(
         "%E\n",
-        "%ER  taskpred\n"
-        "pred_task_id\ttask_id\tpred_type\tlag_hr_cnt\n"
-        "1001\t1002\tFS\t0\n"
-        "%TR  taskpred\n"
-        "%E\n",
+        "%ER  taskpred\npred_task_id\ttask_id\tpred_type\tlag_hr_cnt\n1001\t1002\tFS\t0\n%TR  taskpred\n%E\n",
     )
     result = parse_xer(xer_with_rel)
     report = result.dcma_validate()
