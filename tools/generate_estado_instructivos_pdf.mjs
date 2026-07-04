@@ -2,13 +2,31 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const SOURCE = path.join(ROOT, "docs", "23-resumen-estado-instructivos-2026-05-14.md");
-const OUTPUTS = [
+function resolveFromRoot(value) {
+  if (!value) return value;
+  return path.isAbsolute(value) ? value : path.join(ROOT, value);
+}
+
+const DEFAULT_SOURCE = path.join(ROOT, "docs", "23-resumen-estado-instructivos-2026-05-14.md");
+const DEFAULT_OUTPUTS = [
   path.join(ROOT, "docs", "Resumen_Estado_Instructivos_2026-05-14.pdf"),
   path.join(ROOT, "docs", "Resumen_Estado_Instructivos_Prioridades_Implementadas_2026-05-14.pdf"),
   path.join(ROOT, "docs", "Resumen_Estado_Instructivos_Agente_Auditor_2026-05-14.pdf"),
   path.join(ROOT, "docs", "Resumen_Estado_Instructivos_Agente_Auditor_Propuesta_2026-05-14.pdf"),
 ];
+const SOURCE = resolveFromRoot(process.argv[2]) || DEFAULT_SOURCE;
+const OUTPUTS = process.argv[3]
+  ? process.argv.slice(3).map(resolveFromRoot)
+  : DEFAULT_OUTPUTS;
+const COVER = {
+  title: process.env.PDF_TITLE || "Resumen de estado actual",
+  subtitle: process.env.PDF_SUBTITLE || "P&Pmis Ai SaaS frente a instructivos Unifier 26",
+  date: process.env.PDF_DATE || "Fecha: 14 de mayo de 2026",
+  intro:
+    process.env.PDF_INTRO ||
+    "Informe generado con base en los tres instructivos compartidos y en el estado actual de la app levantada localmente.",
+  footer: process.env.PDF_FOOTER || "P&Pmis Ai SaaS - Estado frente a instructivos",
+};
 
 const PAGE_W = 595;
 const PAGE_H = 842;
@@ -65,7 +83,7 @@ class PdfDoc {
 
   footer() {
     const pageNo = this.pages.length + 1;
-    this.current.push({ type: "text", x: 42, y: 34, size: 7, font: "F1", text: "P&Pmis Ai SaaS - Estado frente a instructivos", gray: 0 });
+    this.current.push({ type: "text", x: 42, y: 34, size: 7, font: "F1", text: COVER.footer, gray: 0 });
     this.current.push({ type: "text", x: 510, y: 34, size: 7, font: "F1", text: `Pagina ${pageNo}`, gray: 0 });
   }
 
@@ -172,13 +190,13 @@ class PdfDoc {
   cover() {
     this.newPage();
     this.y = 700;
-    this.current.push({ type: "text", x: 70, y: this.y, size: 22, font: "F2", text: "Resumen de estado actual", gray: 0 });
+    this.current.push({ type: "text", x: 70, y: this.y, size: 22, font: "F2", text: COVER.title, gray: 0 });
     this.y -= 32;
-    this.current.push({ type: "text", x: 70, y: this.y, size: 14, font: "F2", text: "P&Pmis Ai SaaS frente a instructivos Unifier 26", gray: 0 });
+    this.current.push({ type: "text", x: 70, y: this.y, size: 14, font: "F2", text: COVER.subtitle, gray: 0 });
     this.y -= 24;
-    this.current.push({ type: "text", x: 70, y: this.y, size: 10, font: "F1", text: "Fecha: 14 de mayo de 2026", gray: 0 });
+    this.current.push({ type: "text", x: 70, y: this.y, size: 10, font: "F1", text: COVER.date, gray: 0 });
     this.y -= 34;
-    this.paragraph("Informe generado con base en los tres instructivos compartidos y en el estado actual de la app levantada localmente.");
+    this.paragraph(COVER.intro);
     this.newPage();
   }
 

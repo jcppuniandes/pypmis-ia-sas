@@ -1,0 +1,4731 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 597 >>
+stream
+BT
+0 g
+/F2 22 Tf
+70 700 Td (Manual de Uso de la App) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+70 668 Td (Pypmis AI SaaS - Guia operativa con enfasis en Cantidades BIM) Tj
+ET
+BT
+0 g
+/F1 10 Tf
+70 644 Td (Fecha: 04 de junio de 2026) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 610 Td (Manual operativo para usar la app local y especialmente el modulo BIM: visor IFC real, seleccion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 597 Td (de elementos, calculo geometrico, aprobacion de mediciones y trazabilidad WBS/CBS/FBS/paquete.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 1) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 7589 >>
+stream
+BT
+0 g
+/F1 9 Tf
+54 787 Td (Fecha de corte: 2026-06-04) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 767 Td (Este manual explica como operar Pypmis AI SaaS en ambiente local y, con mayor detalle, como usar) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 754 Td (el modulo de Cantidades BIM. La app debe entenderse como una plataforma de Project Controls: el) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 741 Td (cronograma, la WBS, la CBS, la FBS, las cantidades BIM, los paquetes AWP y el avance se conectan) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 728 Td (para producir informacion de control, no listas sueltas.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 708 Td (1. Acceso rapido) Tj
+ET
+q 0.92 g 54 660 487 24 re f Q
+q 0.55 G 0.5 w 54 660 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 676 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 684 m 199 660 l S Q
+BT
+0 g
+/F2 7 Tf
+204 676 Td (Pantalla) Tj
+ET
+q 0.65 G 0.5 w 287 684 m 287 660 l S Q
+BT
+0 g
+/F2 7 Tf
+292 676 Td (Accion / resultado) Tj
+ET
+q 0.78 G 0.5 w 54 636 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 652 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 660 m 199 636 l S Q
+BT
+0 g
+/F2 7 Tf
+204 652 Td (Navegador) Tj
+ET
+q 0.82 G 0.5 w 287 660 m 287 636 l S Q
+BT
+0 g
+/F1 7 Tf
+292 652 Td (Abrir http://localhost:5173.) Tj
+ET
+q 0.78 G 0.5 w 54 609 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 628 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 636 m 199 609 l S Q
+BT
+0 g
+/F2 7 Tf
+204 628 Td (Login) Tj
+ET
+q 0.82 G 0.5 w 287 636 m 287 609 l S Q
+BT
+0 g
+/F1 7 Tf
+292 628 Td (Ingresar con usuario local de demostracion. En el ambiente) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 618 Td (actual se usa admin / 1234.) Tj
+ET
+q 0.78 G 0.5 w 54 582 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 601 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 609 m 199 582 l S Q
+BT
+0 g
+/F2 7 Tf
+204 601 Td (Workspace) Tj
+ET
+q 0.82 G 0.5 w 287 609 m 287 582 l S Q
+BT
+0 g
+/F1 7 Tf
+292 601 Td (Seleccionar o crear un proyecto. Cada usuario solo debe) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 591 Td (ver los proyectos donde tiene membresia.) Tj
+ET
+q 0.78 G 0.5 w 54 555 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 574 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 582 m 199 555 l S Q
+BT
+0 g
+/F2 7 Tf
+204 574 Td (Menu lateral) Tj
+ET
+q 0.82 G 0.5 w 287 582 m 287 555 l S Q
+BT
+0 g
+/F1 7 Tf
+292 574 Td (Entrar al modulo requerido: Dashboard, Process Flow,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 564 Td (Planning, Cantidades BIM, Costs, Decisions, Users & Roles.) Tj
+ET
+q 0.78 G 0.5 w 54 528 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 547 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 555 m 199 528 l S Q
+BT
+0 g
+/F2 7 Tf
+204 547 Td (Flujo guiado) Tj
+ET
+q 0.82 G 0.5 w 287 555 m 287 528 l S Q
+BT
+0 g
+/F1 7 Tf
+292 547 Td (Seguir el siguiente paso recomendado. El objetivo es) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 537 Td (reducir trabajo manual sin control.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 517 Td (2. Logica general del flujo de informacion) Tj
+ET
+q 0.92 g 54 469 487 24 re f Q
+q 0.55 G 0.5 w 54 469 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 485 Td (Orden) Tj
+ET
+q 0.65 G 0.5 w 199 493 m 199 469 l S Q
+BT
+0 g
+/F2 7 Tf
+204 485 Td (Modulo) Tj
+ET
+q 0.65 G 0.5 w 287 493 m 287 469 l S Q
+BT
+0 g
+/F2 7 Tf
+292 485 Td (Salida que alimenta el siguiente paso) Tj
+ET
+q 0.78 G 0.5 w 54 442 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 461 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 469 m 199 442 l S Q
+BT
+0 g
+/F2 7 Tf
+204 461 Td (Project) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 451 Td (Administration) Tj
+ET
+q 0.82 G 0.5 w 287 469 m 287 442 l S Q
+BT
+0 g
+/F1 7 Tf
+292 461 Td (Proyecto, usuarios, roles y membresias por proyecto.) Tj
+ET
+q 0.78 G 0.5 w 54 415 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 434 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 442 m 199 415 l S Q
+BT
+0 g
+/F2 7 Tf
+204 434 Td (Planning) Tj
+ET
+q 0.82 G 0.5 w 287 442 m 287 415 l S Q
+BT
+0 g
+/F1 7 Tf
+292 434 Td (Carga XER/XML, WBS, Activity Sheet, baseline, CPM y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 424 Td (calidad del cronograma.) Tj
+ET
+q 0.78 G 0.5 w 54 388 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 407 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 415 m 199 388 l S Q
+BT
+0 g
+/F2 7 Tf
+204 407 Td (WBS / CBS / FBS) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 397 Td (mapping) Tj
+ET
+q 0.82 G 0.5 w 287 415 m 287 388 l S Q
+BT
+0 g
+/F1 7 Tf
+292 407 Td (Estructura de alcance, estructura de costos y fuentes de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 397 Td (fondos alineadas.) Tj
+ET
+q 0.78 G 0.5 w 54 361 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 380 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 388 m 199 361 l S Q
+BT
+0 g
+/F2 7 Tf
+204 380 Td (Cantidades BIM) Tj
+ET
+q 0.82 G 0.5 w 287 388 m 287 361 l S Q
+BT
+0 g
+/F1 7 Tf
+292 380 Td (Modelo IFC, cantidades controladas, geometria real, tabla) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 370 Td (de cantidades y trazabilidad a WBS/CBS/FBS/paquetes.) Tj
+ET
+q 0.78 G 0.5 w 54 334 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 353 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 361 m 199 334 l S Q
+BT
+0 g
+/F2 7 Tf
+204 353 Td (AWP packages) Tj
+ET
+q 0.82 G 0.5 w 287 361 m 287 334 l S Q
+BT
+0 g
+/F1 7 Tf
+292 353 Td (Definicion de CWA/CWP/IWP con path of construction y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 343 Td (restricciones.) Tj
+ET
+q 0.78 G 0.5 w 54 307 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 326 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 334 m 199 307 l S Q
+BT
+0 g
+/F2 7 Tf
+204 326 Td (Progress and EVM) Tj
+ET
+q 0.82 G 0.5 w 287 334 m 287 307 l S Q
+BT
+0 g
+/F1 7 Tf
+292 326 Td (Avance fisico aprobado, PV, EV, AC, SPI, CPI, BAC, EAC y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 316 Td (variaciones.) Tj
+ET
+q 0.78 G 0.5 w 54 280 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 299 Td (7) Tj
+ET
+q 0.82 G 0.5 w 199 307 m 199 280 l S Q
+BT
+0 g
+/F2 7 Tf
+204 299 Td (Business processes) Tj
+ET
+q 0.82 G 0.5 w 287 307 m 287 280 l S Q
+BT
+0 g
+/F1 7 Tf
+292 299 Td (Aprobaciones, versiones, recost, conciliacion, decisiones) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 289 Td (y evidencias.) Tj
+ET
+q 0.78 G 0.5 w 54 256 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 272 Td (8) Tj
+ET
+q 0.82 G 0.5 w 199 280 m 199 256 l S Q
+BT
+0 g
+/F2 7 Tf
+204 272 Td (Closeout evidence) Tj
+ET
+q 0.82 G 0.5 w 287 280 m 287 256 l S Q
+BT
+0 g
+/F1 7 Tf
+292 272 Td (Documentos controlados, auditoria y soporte de cierre.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 245 Td (La regla operativa es simple: primero se crea estructura, despues se cargan datos fuente, luego) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 232 Td (se aprueban cantidades o mediciones, y finalmente se usan para costos, avance, paquetes y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 219 Td (decisiones. Si falta WBS, CBS, FBS o paquete, el dato existe pero no debe alimentar control) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 206 Td (definitivo.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 186 Td (3. Pantallas principales) Tj
+ET
+q 0.92 g 54 138 487 24 re f Q
+q 0.55 G 0.5 w 54 138 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 154 Td (Pantalla) Tj
+ET
+q 0.65 G 0.5 w 199 162 m 199 138 l S Q
+BT
+0 g
+/F2 7 Tf
+204 154 Td (Para que sirve) Tj
+ET
+q 0.65 G 0.5 w 287 162 m 287 138 l S Q
+BT
+0 g
+/F2 7 Tf
+292 154 Td (Como se usa) Tj
+ET
+q 0.78 G 0.5 w 54 101 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 130 Td (Dashboard) Tj
+ET
+q 0.82 G 0.5 w 199 138 m 199 101 l S Q
+BT
+0 g
+/F2 7 Tf
+204 130 Td (Ver estado) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 120 Td (ejecutivo del) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 110 Td (proyecto.) Tj
+ET
+q 0.82 G 0.5 w 287 138 m 287 101 l S Q
+BT
+0 g
+/F1 7 Tf
+292 130 Td (Revisar indicadores EVM, curva S, alertas, presupuesto y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 120 Td (estado general. Si no hay avance/costos reales, PV/EV/AC) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 110 Td (deben mantenerse en cero o como dato no disponible.) Tj
+ET
+q 0.78 G 0.5 w 54 74 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 93 Td (Process Flow) Tj
+ET
+q 0.82 G 0.5 w 199 101 m 199 74 l S Q
+BT
+0 g
+/F2 7 Tf
+204 93 Td (Entender el flujo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 83 Td (de proceso.) Tj
+ET
+q 0.82 G 0.5 w 287 101 m 287 74 l S Q
+BT
+0 g
+/F1 7 Tf
+292 93 Td (Revisar que paso esta abierto, que bloquea el avance y que) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 83 Td (modulo debe operar el usuario.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 8112 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Pantalla) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Para que sirve) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Como se usa) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Planning) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Controlar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (cronograma y WBS.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Cargar XER/XML, validar WBS, Activity Sheet, CPM, baseline) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (y calidad del cronograma.) Tj
+ET
+q 0.78 G 0.5 w 54 702 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Cantidades BIM) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 702 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Controlar modelo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 721 Td (IFC y cantidades) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 711 Td (fisicas.) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 702 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Cargar modelo IFC, cargar takeoff, seleccionar elementos,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 721 Td (aprobar cantidad geometrica y asignar WBS/CBS/FBS/paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 665 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 694 Td (Costs) Tj
+ET
+q 0.82 G 0.5 w 199 702 m 199 665 l S Q
+BT
+0 g
+/F2 7 Tf
+204 694 Td (Revisar CBS, FBS,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 684 Td (cuentas de control) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 674 Td (y costo.) Tj
+ET
+q 0.82 G 0.5 w 287 702 m 287 665 l S Q
+BT
+0 g
+/F1 7 Tf
+292 694 Td (Ver presupuesto, fondos, compromisos, costos reales y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 684 Td (conciliacion.) Tj
+ET
+q 0.78 G 0.5 w 54 638 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 657 Td (AWP packages) Tj
+ET
+q 0.82 G 0.5 w 199 665 m 199 638 l S Q
+BT
+0 g
+/F2 7 Tf
+204 657 Td (Preparar paquetes) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 647 Td (CWA/CWP/IWP.) Tj
+ET
+q 0.82 G 0.5 w 287 665 m 287 638 l S Q
+BT
+0 g
+/F1 7 Tf
+292 657 Td (Revisar paquetes draft, path of construction,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 647 Td (restricciones y readiness.) Tj
+ET
+q 0.78 G 0.5 w 54 611 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 630 Td (Users & Roles) Tj
+ET
+q 0.82 G 0.5 w 199 638 m 199 611 l S Q
+BT
+0 g
+/F2 7 Tf
+204 630 Td (Administrar acceso) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 620 Td (del proyecto.) Tj
+ET
+q 0.82 G 0.5 w 287 638 m 287 611 l S Q
+BT
+0 g
+/F1 7 Tf
+292 630 Td (Crear usuarios, asignar roles, remover acceso y verificar) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 620 Td (permisos.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 600 Td (4. Creacion y seleccion de proyecto) Tj
+ET
+q 0.92 g 54 552 487 24 re f Q
+q 0.55 G 0.5 w 54 552 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 568 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 576 m 199 552 l S Q
+BT
+0 g
+/F2 7 Tf
+204 568 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 576 m 287 552 l S Q
+BT
+0 g
+/F2 7 Tf
+292 568 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 515 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 544 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 552 m 199 515 l S Q
+BT
+0 g
+/F2 7 Tf
+204 544 Td (En la pantalla) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 534 Td (inicial usar New) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 524 Td (Project.) Tj
+ET
+q 0.82 G 0.5 w 287 552 m 287 515 l S Q
+BT
+0 g
+/F1 7 Tf
+292 544 Td (Se abre el formulario de proyecto sin tapar la tabla de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 534 Td (proyectos.) Tj
+ET
+q 0.78 G 0.5 w 54 478 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 507 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 515 m 199 478 l S Q
+BT
+0 g
+/F2 7 Tf
+204 507 Td (Ingresar codigo,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 497 Td (nombre, fase,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 487 Td (moneda y fechas.) Tj
+ET
+q 0.82 G 0.5 w 287 515 m 287 478 l S Q
+BT
+0 g
+/F1 7 Tf
+292 507 Td (Se crea el proyecto y el creador queda como Control) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 497 Td (Manager.) Tj
+ET
+q 0.78 G 0.5 w 54 451 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 470 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 478 m 199 451 l S Q
+BT
+0 g
+/F2 7 Tf
+204 470 Td (Asignar usuarios y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 460 Td (roles.) Tj
+ET
+q 0.82 G 0.5 w 287 478 m 287 451 l S Q
+BT
+0 g
+/F1 7 Tf
+292 470 Td (Cada usuario solo ve los proyectos a los que pertenece.) Tj
+ET
+q 0.78 G 0.5 w 54 414 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 443 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 451 m 199 414 l S Q
+BT
+0 g
+/F2 7 Tf
+204 443 Td (Completar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 433 Td (configuracion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 423 Td (operativa.) Tj
+ET
+q 0.82 G 0.5 w 287 451 m 287 414 l S Q
+BT
+0 g
+/F1 7 Tf
+292 443 Td (Quedan permisos, modulos, cost sheet, funding sheet y P6) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 433 Td (mapping listos.) Tj
+ET
+q 0.78 G 0.5 w 54 387 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 406 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 414 m 199 387 l S Q
+BT
+0 g
+/F2 7 Tf
+204 406 Td (Cargar cronograma) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 396 Td (fuente.) Tj
+ET
+q 0.82 G 0.5 w 287 414 m 287 387 l S Q
+BT
+0 g
+/F1 7 Tf
+292 406 Td (Se crea Activity Sheet, WBS Sheet y baseline para control.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 376 Td (5. Uso del modulo Planning) Tj
+ET
+q 0.92 g 54 328 487 24 re f Q
+q 0.55 G 0.5 w 54 328 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 344 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 352 m 199 328 l S Q
+BT
+0 g
+/F2 7 Tf
+204 344 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 352 m 287 328 l S Q
+BT
+0 g
+/F2 7 Tf
+292 344 Td (Validacion) Tj
+ET
+q 0.78 G 0.5 w 54 301 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 320 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 328 m 199 301 l S Q
+BT
+0 g
+/F2 7 Tf
+204 320 Td (Entrar a Planning.) Tj
+ET
+q 0.82 G 0.5 w 287 328 m 287 301 l S Q
+BT
+0 g
+/F1 7 Tf
+292 320 Td (Debe mostrar WBS, Baseline Schedule, CPM, Progress Update,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 310 Td (Lookahead, Delay, Recovery y Dashboard del modulo.) Tj
+ET
+q 0.78 G 0.5 w 54 274 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 293 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 301 m 199 274 l S Q
+BT
+0 g
+/F2 7 Tf
+204 293 Td (Cargar XER/XML.) Tj
+ET
+q 0.82 G 0.5 w 287 301 m 287 274 l S Q
+BT
+0 g
+/F1 7 Tf
+292 293 Td (La app extrae actividades, relaciones, WBS, fechas,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 283 Td (duraciones, costos si existen y data date.) Tj
+ET
+q 0.78 G 0.5 w 54 247 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 266 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 274 m 199 247 l S Q
+BT
+0 g
+/F2 7 Tf
+204 266 Td (Revisar WBS Master) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 256 Td (Structure.) Tj
+ET
+q 0.82 G 0.5 w 287 274 m 287 247 l S Q
+BT
+0 g
+/F1 7 Tf
+292 266 Td (La jerarquia debe respetar padre/hijo, indentacion y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 256 Td (rollup de actividades/costos.) Tj
+ET
+q 0.78 G 0.5 w 54 210 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 239 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 247 m 199 210 l S Q
+BT
+0 g
+/F2 7 Tf
+204 239 Td (Revisar Activity) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 229 Td (Sheet.) Tj
+ET
+q 0.82 G 0.5 w 287 247 m 287 210 l S Q
+BT
+0 g
+/F1 7 Tf
+292 239 Td (Cada actividad debe tener Activity ID, WBS, nombre,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 229 Td (fechas, duracion, float y costo planeado si el archivo lo) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 219 Td (trae.) Tj
+ET
+q 0.78 G 0.5 w 54 183 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 202 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 210 m 199 183 l S Q
+BT
+0 g
+/F2 7 Tf
+204 202 Td (Validar baseline.) Tj
+ET
+q 0.82 G 0.5 w 287 210 m 287 183 l S Q
+BT
+0 g
+/F1 7 Tf
+292 202 Td (La baseline no debe aprobarse si falta moneda, costo) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 192 Td (cargado o estructura minima de control.) Tj
+ET
+q 0.78 G 0.5 w 54 156 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 175 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 183 m 199 156 l S Q
+BT
+0 g
+/F2 7 Tf
+204 175 Td (Revisar CPM.) Tj
+ET
+q 0.82 G 0.5 w 287 183 m 287 156 l S Q
+BT
+0 g
+/F1 7 Tf
+292 175 Td (Actividades criticas y float deben venir del cronograma o) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 165 Td (del calculo CPM basico.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 145 Td (6. CBS, FBS y relacion con WBS) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 121 Td (CBS y FBS no deben ser listas aisladas. Deben servir para controlar costo y fondos dentro de la) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 108 Td (WBS.) Tj
+ET
+q 0.92 g 54 64 487 24 re f Q
+q 0.55 G 0.5 w 54 64 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 80 Td (Elemento) Tj
+ET
+q 0.65 G 0.5 w 199 88 m 199 64 l S Q
+BT
+0 g
+/F2 7 Tf
+204 80 Td (Definicion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 70 Td (operativa) Tj
+ET
+q 0.65 G 0.5 w 287 88 m 287 64 l S Q
+BT
+0 g
+/F2 7 Tf
+292 80 Td (Relacion esperada) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 3) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 7342 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Elemento) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Definicion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 772 Td (operativa) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Relacion esperada) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (WBS) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Estructura de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (alcance y trabajo.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Es la base de agrupacion: Ingenieria, Procura,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (Construccion, Pruebas, etc.) Tj
+ET
+q 0.78 G 0.5 w 54 712 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (CBS) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 712 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Estructura de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 721 Td (costos.) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 712 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Se relaciona con WBS y familias de costo. Ejemplo:) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 721 Td (CBS-{Proyecto}-{WBS}-{FamiliaCosto}.) Tj
+ET
+q 0.78 G 0.5 w 54 685 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 704 Td (FBS) Tj
+ET
+q 0.82 G 0.5 w 199 712 m 199 685 l S Q
+BT
+0 g
+/F2 7 Tf
+204 704 Td (Estructura de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 694 Td (fondos.) Tj
+ET
+q 0.82 G 0.5 w 287 712 m 287 685 l S Q
+BT
+0 g
+/F1 7 Tf
+292 704 Td (Se relaciona con fuente de financiacion, autorizacion y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 694 Td (control de disponibilidad.) Tj
+ET
+q 0.78 G 0.5 w 54 658 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 677 Td (Control Account) Tj
+ET
+q 0.82 G 0.5 w 199 685 m 199 658 l S Q
+BT
+0 g
+/F2 7 Tf
+204 677 Td (Punto de control) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 667 Td (costo/alcance/avance.) Tj
+ET
+q 0.82 G 0.5 w 287 685 m 287 658 l S Q
+BT
+0 g
+/F1 7 Tf
+292 677 Td (Conecta WBS, CBS, paquete AWP, presupuesto y medicion.) Tj
+ET
+q 0.78 G 0.5 w 54 631 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 650 Td (Quantity Takeoff Line) Tj
+ET
+q 0.82 G 0.5 w 199 658 m 199 631 l S Q
+BT
+0 g
+/F2 7 Tf
+204 650 Td (Cantidad fisica) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 640 Td (BIM/Excel/IFC.) Tj
+ET
+q 0.82 G 0.5 w 287 658 m 287 631 l S Q
+BT
+0 g
+/F1 7 Tf
+292 650 Td (Debe tener WBS, CBS, FBS y paquete antes de alimentar) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 640 Td (rollup de control.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 620 Td (En la version actual las lineas BIM guardan codigos visibles y tambien IDs reales: wbs_id,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 607 Td (cbs_id, fbs_id y work_package_id. Esto mejora trazabilidad y evita depender solo de texto.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 587 Td (7. Modulo Cantidades BIM: objetivo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 563 Td (El modulo Cantidades BIM sirve para convertir informacion de un modelo BIM/IFC o de un takeoff) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 550 Td (Excel/CSV en cantidades controladas para Project Controls. El modulo no debe usarse como visor) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 537 Td (3D aislado; debe usarse para conectar geometria, cantidad, WBS, CBS, FBS y paquete AWP.) Tj
+ET
+q 0.92 g 54 493 487 24 re f Q
+q 0.55 G 0.5 w 54 493 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 509 Td (Funcion) Tj
+ET
+q 0.65 G 0.5 w 297.5 517 m 297.5 493 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 509 Td (Resultado) Tj
+ET
+q 0.78 G 0.5 w 54 466 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 485 Td (Cargar modelo IFC) Tj
+ET
+q 0.82 G 0.5 w 297.5 493 m 297.5 466 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 485 Td (El visor muestra geometria real del edificio/modelo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 475 Td (usando web-ifc en navegador.) Tj
+ET
+q 0.78 G 0.5 w 54 439 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 458 Td (Leer propiedades IFC) Tj
+ET
+q 0.82 G 0.5 w 297.5 466 m 297.5 439 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 458 Td (El usuario puede seleccionar elementos y ver clase IFC,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 448 Td (GUID, nombre, nivel, tipo y propiedades disponibles.) Tj
+ET
+q 0.78 G 0.5 w 54 412 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 431 Td (Calcular geometria real) Tj
+ET
+q 0.82 G 0.5 w 297.5 439 m 297.5 412 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 431 Td (La app estima dimensiones y cantidades geometricas) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 421 Td (reales desde la malla seleccionada cuando es posible.) Tj
+ET
+q 0.78 G 0.5 w 54 385 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 404 Td (Cargar takeoff) Tj
+ET
+q 0.82 G 0.5 w 297.5 412 m 297.5 385 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 404 Td (La tabla de cantidades recibe datos desde IFC Quantity) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 394 Td (Sets, Excel o CSV.) Tj
+ET
+q 0.78 G 0.5 w 54 358 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 377 Td (Aprobar medicion) Tj
+ET
+q 0.82 G 0.5 w 297.5 385 m 297.5 358 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 377 Td (El usuario aprueba una cantidad controlada desde) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 367 Td (geometria o tabla.) Tj
+ET
+q 0.78 G 0.5 w 54 334 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 350 Td (Asignar codigos) Tj
+ET
+q 0.82 G 0.5 w 297.5 358 m 297.5 334 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 350 Td (Cada linea queda conectada a WBS, CBS, FBS y paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 307 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 326 Td (Preparar control) Tj
+ET
+q 0.82 G 0.5 w 297.5 334 m 297.5 307 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 326 Td (Las cantidades quedan listas para costos, avance fisico,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 316 Td (paquetes AWP y conciliacion.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 296 Td (8. BIM: requisitos antes de cargar) Tj
+ET
+q 0.92 g 54 248 487 24 re f Q
+q 0.55 G 0.5 w 54 248 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 264 Td (Requisito) Tj
+ET
+q 0.65 G 0.5 w 297.5 272 m 297.5 248 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 264 Td (Recomendacion) Tj
+ET
+q 0.78 G 0.5 w 54 221 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 240 Td (Proyecto creado) Tj
+ET
+q 0.82 G 0.5 w 297.5 248 m 297.5 221 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 240 Td (Trabajar dentro del proyecto correcto. No cargar modelos) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 230 Td (en proyectos de prueba si se usaran para control.) Tj
+ET
+q 0.78 G 0.5 w 54 194 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 213 Td (WBS activa) Tj
+ET
+q 0.82 G 0.5 w 297.5 221 m 297.5 194 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 213 Td (La WBS debe existir y representar el alcance real del) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 203 Td (proyecto.) Tj
+ET
+q 0.78 G 0.5 w 54 167 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 186 Td (CBS / FBS) Tj
+ET
+q 0.82 G 0.5 w 297.5 194 m 297.5 167 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 186 Td (Deben existir codigos de costo y fondos para poder) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 176 Td (mapear cantidades.) Tj
+ET
+q 0.78 G 0.5 w 54 140 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 159 Td (Paquetes AWP) Tj
+ET
+q 0.82 G 0.5 w 297.5 167 m 297.5 140 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 159 Td (Deben existir CWA/CWP/IWP si se quiere conectar la) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 149 Td (cantidad al paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 113 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 132 Td (Archivo IFC) Tj
+ET
+q 0.82 G 0.5 w 297.5 140 m 297.5 113 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 132 Td (Usar IFC coordinado. Para modelos muy pesados, preferir) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 122 Td (modelo optimizado o exportacion de cantidades.) Tj
+ET
+q 0.78 G 0.5 w 54 76 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 105 Td (Excel/CSV takeoff) Tj
+ET
+q 0.82 G 0.5 w 297.5 113 m 297.5 76 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 105 Td (Usar plantilla controlada con columnas de elemento,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 95 Td (clase IFC, cantidad, unidad, WBS/CBS/FBS/paquete si ya) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 85 Td (existen.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 4) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 7000 >>
+stream
+BT
+0 g
+/F2 13 Tf
+54 790 Td (9. BIM: cargar un modelo IFC) Tj
+ET
+q 0.92 g 54 742 487 24 re f Q
+q 0.55 G 0.5 w 54 742 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 758 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 766 m 199 742 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 766 m 287 742 l S Q
+BT
+0 g
+/F2 7 Tf
+292 758 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 715 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 734 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 742 m 199 715 l S Q
+BT
+0 g
+/F2 7 Tf
+204 734 Td (Ir a Cantidades) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 724 Td (BIM.) Tj
+ET
+q 0.82 G 0.5 w 287 742 m 287 715 l S Q
+BT
+0 g
+/F1 7 Tf
+292 734 Td (Aparece el modulo BIM, el visor IFC y la tabla de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 724 Td (cantidades controladas.) Tj
+ET
+q 0.78 G 0.5 w 54 688 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 707 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 715 m 199 688 l S Q
+BT
+0 g
+/F2 7 Tf
+204 707 Td (Usar el boton para) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 697 Td (cargar modelo.) Tj
+ET
+q 0.82 G 0.5 w 287 715 m 287 688 l S Q
+BT
+0 g
+/F1 7 Tf
+292 707 Td (Seleccionar archivo .ifc.) Tj
+ET
+q 0.78 G 0.5 w 54 661 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 680 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 688 m 199 661 l S Q
+BT
+0 g
+/F2 7 Tf
+204 680 Td (Esperar lectura.) Tj
+ET
+q 0.82 G 0.5 w 287 688 m 287 661 l S Q
+BT
+0 g
+/F1 7 Tf
+292 680 Td (El backend registra el modelo y el frontend intenta abrir) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 670 Td (la geometria real.) Tj
+ET
+q 0.78 G 0.5 w 54 634 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 653 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 661 m 199 634 l S Q
+BT
+0 g
+/F2 7 Tf
+204 653 Td (Verificar visor.) Tj
+ET
+q 0.82 G 0.5 w 287 661 m 287 634 l S Q
+BT
+0 g
+/F1 7 Tf
+292 653 Td (Debe verse el modelo real, no una nube de bloques) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 643 Td (simbolicos.) Tj
+ET
+q 0.78 G 0.5 w 54 607 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 626 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 634 m 199 607 l S Q
+BT
+0 g
+/F2 7 Tf
+204 626 Td (Revisar metadatos.) Tj
+ET
+q 0.82 G 0.5 w 287 634 m 287 607 l S Q
+BT
+0 g
+/F1 7 Tf
+292 626 Td (Debe mostrarse archivo, esquema IFC, unidades, niveles,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 616 Td (proyecto, edificio y georreferenciacion si existe.) Tj
+ET
+q 0.78 G 0.5 w 54 580 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 599 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 607 m 199 580 l S Q
+BT
+0 g
+/F2 7 Tf
+204 599 Td (Si se carga otro) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 589 Td (modelo) Tj
+ET
+q 0.82 G 0.5 w 287 607 m 287 580 l S Q
+BT
+0 g
+/F1 7 Tf
+292 599 Td (Usar limpiar modelo cargado y despues cargar el nuevo IFC.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 569 Td (Notas importantes:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 549 Td (- El visor actual es el visor IFC real, no el inventario simbolico anterior.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 536 Td (- En modelos grandes, la carga puede consumir memoria o tardar. Si el navegador se vuelve) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 523 Td (  lento, usar un IFC optimizado para coordinacion y un takeoff Excel/CSV para cantidades.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 510 Td (- La cantidad no queda automaticamente aprobada por ver el modelo. El usuario debe aprobar o) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 497 Td (  mapear la medicion.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 481 Td (10. BIM: seleccionar elementos en el 3D) Tj
+ET
+q 0.92 g 54 433 487 24 re f Q
+q 0.55 G 0.5 w 54 433 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 449 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 457 m 199 433 l S Q
+BT
+0 g
+/F2 7 Tf
+204 449 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 457 m 287 433 l S Q
+BT
+0 g
+/F2 7 Tf
+292 449 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 396 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 425 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 433 m 199 396 l S Q
+BT
+0 g
+/F2 7 Tf
+204 425 Td (Hacer click sobre) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 415 Td (un elemento del) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 405 Td (modelo.) Tj
+ET
+q 0.82 G 0.5 w 287 433 m 287 396 l S Q
+BT
+0 g
+/F1 7 Tf
+292 425 Td (El elemento queda resaltado visualmente.) Tj
+ET
+q 0.78 G 0.5 w 54 369 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 388 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 396 m 199 369 l S Q
+BT
+0 g
+/F2 7 Tf
+204 388 Td (Revisar panel de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 378 Td (propiedades.) Tj
+ET
+q 0.82 G 0.5 w 287 396 m 287 369 l S Q
+BT
+0 g
+/F1 7 Tf
+292 388 Td (Debe mostrar elemento seleccionado, clase IFC, GUID,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 378 Td (nombre, tipo, nivel y trazas BIM.) Tj
+ET
+q 0.78 G 0.5 w 54 332 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 361 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 369 m 199 332 l S Q
+BT
+0 g
+/F2 7 Tf
+204 361 Td (Revisar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 351 Td (dimensiones) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 341 Td (geometricas.) Tj
+ET
+q 0.82 G 0.5 w 287 369 m 287 332 l S Q
+BT
+0 g
+/F1 7 Tf
+292 361 Td (Se muestran dimensiones de la caja geometrica y unidad) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 351 Td (detectada.) Tj
+ET
+q 0.78 G 0.5 w 54 305 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 324 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 332 m 199 305 l S Q
+BT
+0 g
+/F2 7 Tf
+204 324 Td (Revisar cantidad) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 314 Td (geometrica real.) Tj
+ET
+q 0.82 G 0.5 w 287 332 m 287 305 l S Q
+BT
+0 g
+/F1 7 Tf
+292 324 Td (Se muestra area, volumen o longitud estimada si la) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 314 Td (geometria permite calcularla.) Tj
+ET
+q 0.78 G 0.5 w 54 278 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 297 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 305 m 199 278 l S Q
+BT
+0 g
+/F2 7 Tf
+204 297 Td (Comparar con tabla) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 287 Td (de cantidades.) Tj
+ET
+q 0.82 G 0.5 w 287 305 m 287 278 l S Q
+BT
+0 g
+/F1 7 Tf
+292 297 Td (Si existe una linea de takeoff vinculada al GUID, el panel) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 287 Td (muestra cantidad controlada y regla.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 267 Td (Si al hacer click no aparece seleccion, revisar:) Tj
+ET
+q 0.92 g 54 223 487 24 re f Q
+q 0.55 G 0.5 w 54 223 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 239 Td (Caso) Tj
+ET
+q 0.65 G 0.5 w 297.5 247 m 297.5 223 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 239 Td (Que hacer) Tj
+ET
+q 0.78 G 0.5 w 54 199 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 215 Td (Modelo no renderizo) Tj
+ET
+q 0.82 G 0.5 w 297.5 223 m 297.5 199 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 215 Td (Esperar lectura completa o recargar.) Tj
+ET
+q 0.78 G 0.5 w 54 175 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 191 Td (Click en zona vacia) Tj
+ET
+q 0.82 G 0.5 w 297.5 199 m 297.5 175 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 191 Td (Usar zoom/orbita y seleccionar una cara visible.) Tj
+ET
+q 0.78 G 0.5 w 54 151 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 167 Td (Elemento sin propiedades) Tj
+ET
+q 0.82 G 0.5 w 297.5 175 m 297.5 151 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 167 Td (Revisar si el IFC exporto GUID y datos de producto.) Tj
+ET
+q 0.78 G 0.5 w 54 127 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 143 Td (Modelo muy pesado) Tj
+ET
+q 0.82 G 0.5 w 297.5 151 m 297.5 127 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 143 Td (Usar version optimizada del IFC.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 116 Td (11. BIM: entender que es el tipo de elemento) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 92 Td (En IFC el tipo constructivo puede venir de la clase IFC y de la definicion de tipo. La app debe) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 79 Td (mostrar primero el nombre constructivo comprensible y despues la clase tecnica IFC.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 5) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Length 7009 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Dato) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Ejemplo) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Uso) Tj
+ET
+q 0.78 G 0.5 w 54 719 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Elemento constructivo) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 719 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Muro) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (arquitectonico,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 738 Td (columna, viga,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 728 Td (losa, puerta.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 719 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Lo entiende el usuario final.) Tj
+ET
+q 0.78 G 0.5 w 54 682 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 711 Td (Clase IFC) Tj
+ET
+q 0.82 G 0.5 w 199 719 m 199 682 l S Q
+BT
+0 g
+/F2 7 Tf
+204 711 Td (IfcWallStandardCase,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 701 Td (IfcColumn,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 691 Td (IfcBeam, IfcSlab.) Tj
+ET
+q 0.82 G 0.5 w 287 719 m 287 682 l S Q
+BT
+0 g
+/F1 7 Tf
+292 711 Td (Lo usa el motor IFC.) Tj
+ET
+q 0.78 G 0.5 w 54 655 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 674 Td (Familia / tipo) Tj
+ET
+q 0.82 G 0.5 w 199 682 m 199 655 l S Q
+BT
+0 g
+/F2 7 Tf
+204 674 Td (Basic Wall /) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 664 Td (Exterior 200mm.) Tj
+ET
+q 0.82 G 0.5 w 287 682 m 287 655 l S Q
+BT
+0 g
+/F1 7 Tf
+292 674 Td (Ayuda a diferenciar dimensiones y materiales.) Tj
+ET
+q 0.78 G 0.5 w 54 628 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 647 Td (Instancia) Tj
+ET
+q 0.82 G 0.5 w 199 655 m 199 628 l S Q
+BT
+0 g
+/F2 7 Tf
+204 647 Td (Wall 10, Column) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 637 Td (A-01.) Tj
+ET
+q 0.82 G 0.5 w 287 655 m 287 628 l S Q
+BT
+0 g
+/F1 7 Tf
+292 647 Td (Identifica el objeto exacto.) Tj
+ET
+q 0.78 G 0.5 w 54 604 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 620 Td (GUID) Tj
+ET
+q 0.82 G 0.5 w 199 628 m 199 604 l S Q
+BT
+0 g
+/F2 7 Tf
+204 620 Td (2IRu...) Tj
+ET
+q 0.82 G 0.5 w 287 628 m 287 604 l S Q
+BT
+0 g
+/F1 7 Tf
+292 620 Td (Traza unica del elemento BIM.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 593 Td (Si el modelo no trae IFC Quantity Sets, la app puede generar ElementCount o estimar geometria.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 580 Td (Esa cantidad debe revisarse antes de usarla para costos o avance.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 560 Td (12. BIM: cargar cantidades desde IFC, Excel o CSV) Tj
+ET
+q 0.92 g 54 512 487 24 re f Q
+q 0.55 G 0.5 w 54 512 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 528 Td (Fuente) Tj
+ET
+q 0.65 G 0.5 w 199 536 m 199 512 l S Q
+BT
+0 g
+/F2 7 Tf
+204 528 Td (Cuando usarla) Tj
+ET
+q 0.65 G 0.5 w 287 536 m 287 512 l S Q
+BT
+0 g
+/F2 7 Tf
+292 528 Td (Resultado) Tj
+ET
+q 0.78 G 0.5 w 54 465 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 504 Td (IFC Quantity Sets) Tj
+ET
+q 0.82 G 0.5 w 199 512 m 199 465 l S Q
+BT
+0 g
+/F2 7 Tf
+204 504 Td (Cuando el modelo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 494 Td (trae cantidades) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 484 Td (publicadas) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 474 Td (confiables.) Tj
+ET
+q 0.82 G 0.5 w 287 512 m 287 465 l S Q
+BT
+0 g
+/F1 7 Tf
+292 504 Td (Se importan medidas como NetSideArea, NetVolume,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 494 Td (GrossArea, etc.) Tj
+ET
+q 0.78 G 0.5 w 54 408 487 57 re S Q
+BT
+0 g
+/F1 7 Tf
+59 457 Td (Excel/CSV takeoff) Tj
+ET
+q 0.82 G 0.5 w 199 465 m 199 408 l S Q
+BT
+0 g
+/F2 7 Tf
+204 457 Td (Cuando el modelo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 447 Td (es pesado o el) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 437 Td (takeoff ya fue) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 427 Td (preparado por) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 417 Td (disciplina.) Tj
+ET
+q 0.82 G 0.5 w 287 465 m 287 408 l S Q
+BT
+0 g
+/F1 7 Tf
+292 457 Td (Se cargan cantidades controladas con columnas auditables.) Tj
+ET
+q 0.78 G 0.5 w 54 351 487 57 re S Q
+BT
+0 g
+/F1 7 Tf
+59 400 Td (Geometria real del visor) Tj
+ET
+q 0.82 G 0.5 w 199 408 m 199 351 l S Q
+BT
+0 g
+/F2 7 Tf
+204 400 Td (Cuando se necesita) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 390 Td (validar una) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 380 Td (medicion desde el) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 370 Td (elemento) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 360 Td (seleccionado.) Tj
+ET
+q 0.82 G 0.5 w 287 408 m 287 351 l S Q
+BT
+0 g
+/F1 7 Tf
+292 400 Td (Se calcula una cantidad geometrica y el usuario puede) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 390 Td (aprobarla.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 340 Td (Columnas recomendadas para Excel/CSV:) Tj
+ET
+q 0.92 g 54 296 487 24 re f Q
+q 0.55 G 0.5 w 54 296 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 312 Td (Campo) Tj
+ET
+q 0.65 G 0.5 w 199 320 m 199 296 l S Q
+BT
+0 g
+/F2 7 Tf
+204 312 Td (Ejemplo) Tj
+ET
+q 0.65 G 0.5 w 287 320 m 287 296 l S Q
+BT
+0 g
+/F2 7 Tf
+292 312 Td (Comentario) Tj
+ET
+q 0.78 G 0.5 w 54 272 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 288 Td (element_guid) Tj
+ET
+q 0.82 G 0.5 w 199 296 m 199 272 l S Q
+BT
+0 g
+/F2 7 Tf
+204 288 Td (2IRuU8...) Tj
+ET
+q 0.82 G 0.5 w 287 296 m 287 272 l S Q
+BT
+0 g
+/F1 7 Tf
+292 288 Td (Mantiene trazabilidad con el modelo.) Tj
+ET
+q 0.78 G 0.5 w 54 248 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 264 Td (ifc_class) Tj
+ET
+q 0.82 G 0.5 w 199 272 m 199 248 l S Q
+BT
+0 g
+/F2 7 Tf
+204 264 Td (IfcWallStandardCase) Tj
+ET
+q 0.82 G 0.5 w 287 272 m 287 248 l S Q
+BT
+0 g
+/F1 7 Tf
+292 264 Td (Clase tecnica IFC.) Tj
+ET
+q 0.78 G 0.5 w 54 221 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 240 Td (category / family / type) Tj
+ET
+q 0.82 G 0.5 w 199 248 m 199 221 l S Q
+BT
+0 g
+/F2 7 Tf
+204 240 Td (Muros / Basic Wall) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 230 Td (/ Exterior 200mm) Tj
+ET
+q 0.82 G 0.5 w 287 248 m 287 221 l S Q
+BT
+0 g
+/F1 7 Tf
+292 240 Td (Nombre constructivo para usuario.) Tj
+ET
+q 0.78 G 0.5 w 54 197 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 213 Td (storey) Tj
+ET
+q 0.82 G 0.5 w 199 221 m 199 197 l S Q
+BT
+0 g
+/F2 7 Tf
+204 213 Td (Ground floor) Tj
+ET
+q 0.82 G 0.5 w 287 221 m 287 197 l S Q
+BT
+0 g
+/F1 7 Tf
+292 213 Td (Nivel o piso.) Tj
+ET
+q 0.78 G 0.5 w 54 173 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 189 Td (quantity / unit) Tj
+ET
+q 0.82 G 0.5 w 199 197 m 199 173 l S Q
+BT
+0 g
+/F2 7 Tf
+204 189 Td (14.25 / m2) Tj
+ET
+q 0.82 G 0.5 w 287 197 m 287 173 l S Q
+BT
+0 g
+/F1 7 Tf
+292 189 Td (Cantidad y unidad.) Tj
+ET
+q 0.78 G 0.5 w 54 149 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 165 Td (measurement_rule) Tj
+ET
+q 0.82 G 0.5 w 199 173 m 199 149 l S Q
+BT
+0 g
+/F2 7 Tf
+204 165 Td (NetSideArea) Tj
+ET
+q 0.82 G 0.5 w 287 173 m 287 149 l S Q
+BT
+0 g
+/F1 7 Tf
+292 165 Td (Regla de medicion.) Tj
+ET
+q 0.78 G 0.5 w 54 125 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 141 Td (wbs_code) Tj
+ET
+q 0.82 G 0.5 w 199 149 m 199 125 l S Q
+BT
+0 g
+/F2 7 Tf
+204 141 Td (01-04-01) Tj
+ET
+q 0.82 G 0.5 w 287 149 m 287 125 l S Q
+BT
+0 g
+/F1 7 Tf
+292 141 Td (Alcance.) Tj
+ET
+q 0.78 G 0.5 w 54 101 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 117 Td (cbs_code) Tj
+ET
+q 0.82 G 0.5 w 199 125 m 199 101 l S Q
+BT
+0 g
+/F2 7 Tf
+204 117 Td (CBS-PRJ-01-04-01-CONC) Tj
+ET
+q 0.82 G 0.5 w 287 125 m 287 101 l S Q
+BT
+0 g
+/F1 7 Tf
+292 117 Td (Costo.) Tj
+ET
+q 0.78 G 0.5 w 54 77 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 93 Td (fbs_code) Tj
+ET
+q 0.82 G 0.5 w 199 101 m 199 77 l S Q
+BT
+0 g
+/F2 7 Tf
+204 93 Td (FBS-AFE-001) Tj
+ET
+q 0.82 G 0.5 w 287 101 m 287 77 l S Q
+BT
+0 g
+/F1 7 Tf
+292 93 Td (Fondo.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 6) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Length 6908 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Campo) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Ejemplo) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Comentario) Tj
+ET
+q 0.78 G 0.5 w 54 742 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (package_code) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 742 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (IWP-01-04-01-CIV-01) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 742 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Paquete AWP.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 731 Td (13. BIM: aprobar cantidad geometrica) Tj
+ET
+q 0.92 g 54 683 487 24 re f Q
+q 0.55 G 0.5 w 54 683 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 699 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 707 m 199 683 l S Q
+BT
+0 g
+/F2 7 Tf
+204 699 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 707 m 287 683 l S Q
+BT
+0 g
+/F2 7 Tf
+292 699 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 646 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 675 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 683 m 199 646 l S Q
+BT
+0 g
+/F2 7 Tf
+204 675 Td (Seleccionar un) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 665 Td (elemento en el) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 655 Td (visor IFC.) Tj
+ET
+q 0.82 G 0.5 w 287 683 m 287 646 l S Q
+BT
+0 g
+/F1 7 Tf
+292 675 Td (Aparece el panel de propiedades con cantidad geometrica) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 665 Td (real si puede calcularse.) Tj
+ET
+q 0.78 G 0.5 w 54 609 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 638 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 646 m 199 609 l S Q
+BT
+0 g
+/F2 7 Tf
+204 638 Td (Revisar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 628 Td (dimensiones y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 618 Td (unidad.) Tj
+ET
+q 0.82 G 0.5 w 287 646 m 287 609 l S Q
+BT
+0 g
+/F1 7 Tf
+292 638 Td (Validar que metros, milimetros u otra unidad se) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 628 Td (interpreten correctamente.) Tj
+ET
+q 0.78 G 0.5 w 54 572 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 601 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 609 m 199 572 l S Q
+BT
+0 g
+/F2 7 Tf
+204 601 Td (Comparar con) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 591 Td (cantidad publicada) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 581 Td (o tabla.) Tj
+ET
+q 0.82 G 0.5 w 287 609 m 287 572 l S Q
+BT
+0 g
+/F1 7 Tf
+292 601 Td (Identificar diferencias entre Quantity Set, Excel y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 591 Td (geometria.) Tj
+ET
+q 0.78 G 0.5 w 54 535 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 564 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 572 m 199 535 l S Q
+BT
+0 g
+/F2 7 Tf
+204 564 Td (Click en Usar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 554 Td (cantidad) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 544 Td (geometrica.) Tj
+ET
+q 0.82 G 0.5 w 287 572 m 287 535 l S Q
+BT
+0 g
+/F1 7 Tf
+292 564 Td (La linea queda con medicion controlada aprobada.) Tj
+ET
+q 0.78 G 0.5 w 54 508 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 527 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 535 m 199 508 l S Q
+BT
+0 g
+/F2 7 Tf
+204 527 Td (Revisar la tabla.) Tj
+ET
+q 0.82 G 0.5 w 287 535 m 287 508 l S Q
+BT
+0 g
+/F1 7 Tf
+292 527 Td (Debe verse Medicion: Aprobada vN y la regla geometrica) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 517 Td (usada.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 497 Td (La aprobacion no significa que el modelo sea perfecto. Significa que un usuario responsable) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 484 Td (acepto esa cantidad como base controlada para una linea o grupo de lineas.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 464 Td (14. BIM: asignar WBS, CBS, FBS y paquete) Tj
+ET
+q 0.92 g 54 416 487 24 re f Q
+q 0.55 G 0.5 w 54 416 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 432 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 440 m 199 416 l S Q
+BT
+0 g
+/F2 7 Tf
+204 432 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 440 m 287 416 l S Q
+BT
+0 g
+/F2 7 Tf
+292 432 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 379 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 408 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 416 m 199 379 l S Q
+BT
+0 g
+/F2 7 Tf
+204 408 Td (En la tabla de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 398 Td (cantidades, buscar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 388 Td (la linea o grupo.) Tj
+ET
+q 0.82 G 0.5 w 287 416 m 287 379 l S Q
+BT
+0 g
+/F1 7 Tf
+292 408 Td (Ver elemento constructivo, cantidad, regla y trazabilidad) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 398 Td (BIM.) Tj
+ET
+q 0.78 G 0.5 w 54 355 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 371 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 379 m 199 355 l S Q
+BT
+0 g
+/F2 7 Tf
+204 371 Td (Seleccionar WBS.) Tj
+ET
+q 0.82 G 0.5 w 287 379 m 287 355 l S Q
+BT
+0 g
+/F1 7 Tf
+292 371 Td (La cantidad queda ubicada en el alcance correcto.) Tj
+ET
+q 0.78 G 0.5 w 54 331 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 347 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 355 m 199 331 l S Q
+BT
+0 g
+/F2 7 Tf
+204 347 Td (Seleccionar CBS.) Tj
+ET
+q 0.82 G 0.5 w 287 355 m 287 331 l S Q
+BT
+0 g
+/F1 7 Tf
+292 347 Td (La cantidad queda asociada a familia/codigo de costo.) Tj
+ET
+q 0.78 G 0.5 w 54 307 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 323 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 331 m 199 307 l S Q
+BT
+0 g
+/F2 7 Tf
+204 323 Td (Seleccionar FBS.) Tj
+ET
+q 0.82 G 0.5 w 287 331 m 287 307 l S Q
+BT
+0 g
+/F1 7 Tf
+292 323 Td (La cantidad queda asociada a fuente de fondos.) Tj
+ET
+q 0.78 G 0.5 w 54 280 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 299 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 307 m 199 280 l S Q
+BT
+0 g
+/F2 7 Tf
+204 299 Td (Seleccionar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 289 Td (paquete.) Tj
+ET
+q 0.82 G 0.5 w 287 307 m 287 280 l S Q
+BT
+0 g
+/F1 7 Tf
+292 299 Td (La cantidad queda asociada a CWA/CWP/IWP.) Tj
+ET
+q 0.78 G 0.5 w 54 253 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 272 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 280 m 199 253 l S Q
+BT
+0 g
+/F2 7 Tf
+204 272 Td (Guardar codigos.) Tj
+ET
+q 0.82 G 0.5 w 287 280 m 287 253 l S Q
+BT
+0 g
+/F1 7 Tf
+292 272 Td (La app valida que los codigos existan y guarda codigos mas) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 262 Td (IDs reales.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 242 Td (Resultado tecnico esperado:) Tj
+ET
+q 0.92 g 54 198 487 24 re f Q
+q 0.55 G 0.5 w 54 198 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 214 Td (Campo) Tj
+ET
+q 0.65 G 0.5 w 297.5 222 m 297.5 198 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 214 Td (Uso) Tj
+ET
+q 0.78 G 0.5 w 54 174 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 190 Td (wbs_code / wbs_id) Tj
+ET
+q 0.82 G 0.5 w 297.5 198 m 297.5 174 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 190 Td (Trazabilidad a estructura de alcance.) Tj
+ET
+q 0.78 G 0.5 w 54 150 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 166 Td (cbs_code / cbs_id) Tj
+ET
+q 0.82 G 0.5 w 297.5 174 m 297.5 150 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 166 Td (Trazabilidad a estructura de costo.) Tj
+ET
+q 0.78 G 0.5 w 54 126 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 142 Td (fbs_code / fbs_id) Tj
+ET
+q 0.82 G 0.5 w 297.5 150 m 297.5 126 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 142 Td (Trazabilidad a fuente de fondos.) Tj
+ET
+q 0.78 G 0.5 w 54 102 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 118 Td (package_code / work_package_id) Tj
+ET
+q 0.82 G 0.5 w 297.5 126 m 297.5 102 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 118 Td (Trazabilidad a paquete AWP.) Tj
+ET
+q 0.78 G 0.5 w 54 75 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 94 Td (mapping_status) Tj
+ET
+q 0.82 G 0.5 w 297.5 102 m 297.5 75 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 94 Td (mapped si la cantidad esta lista; needs_mapping si falta) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 84 Td (algo.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 7) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Length 6155 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Campo) Tj
+ET
+q 0.65 G 0.5 w 297.5 790 m 297.5 766 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 782 Td (Uso) Tj
+ET
+q 0.78 G 0.5 w 54 742 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (raw_data.control_code_assignment) Tj
+ET
+q 0.82 G 0.5 w 297.5 766 m 297.5 742 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 758 Td (Auditoria de quien asigno, cuando y con que nota.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 731 Td (15. BIM: interpretar la tabla de cantidades controladas) Tj
+ET
+q 0.92 g 54 683 487 24 re f Q
+q 0.55 G 0.5 w 54 683 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 699 Td (Columna) Tj
+ET
+q 0.65 G 0.5 w 297.5 707 m 297.5 683 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 699 Td (Significado) Tj
+ET
+q 0.78 G 0.5 w 54 656 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 675 Td (Elemento constructivo) Tj
+ET
+q 0.82 G 0.5 w 297.5 683 m 297.5 656 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 675 Td (Nombre legible: muro, losa, viga, columna, puerta,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 665 Td (sistema, familia y tipo.) Tj
+ET
+q 0.78 G 0.5 w 54 629 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 648 Td (Regla de cantidad) Tj
+ET
+q 0.82 G 0.5 w 297.5 656 m 297.5 629 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 648 Td (NetVolume, NetSideArea, ElementCount, GeometryMeshArea,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 638 Td (GeometryMeshVolume, etc.) Tj
+ET
+q 0.78 G 0.5 w 54 605 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 621 Td (Cantidad) Tj
+ET
+q 0.82 G 0.5 w 297.5 629 m 297.5 605 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 621 Td (Valor numerico y unidad aprobada o cargada.) Tj
+ET
+q 0.78 G 0.5 w 54 581 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 597 Td (BIM Trace) Tj
+ET
+q 0.82 G 0.5 w 297.5 605 m 297.5 581 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 597 Td (GUID, elemento IFC y referencia de origen.) Tj
+ET
+q 0.78 G 0.5 w 54 554 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 573 Td (WBS / CBS / FBS / Package) Tj
+ET
+q 0.82 G 0.5 w 297.5 581 m 297.5 554 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 573 Td (Mapeo de control para usar la cantidad en costos, fondos) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 563 Td (y paquetes.) Tj
+ET
+q 0.78 G 0.5 w 54 527 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 546 Td (Estado) Tj
+ET
+q 0.82 G 0.5 w 297.5 554 m 297.5 527 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 546 Td (mapped, needs_mapping o review segun calidad y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 536 Td (completitud.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 516 Td (Una linea sin WBS/CBS/FBS/paquete puede servir para revision tecnica, pero no deberia usarse) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 503 Td (para rollup de control de costos o avance.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 483 Td (16. BIM: como saber si la cantidad es confiable) Tj
+ET
+q 0.92 g 54 435 487 24 re f Q
+q 0.55 G 0.5 w 54 435 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 451 Td (Senal) Tj
+ET
+q 0.65 G 0.5 w 297.5 459 m 297.5 435 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 451 Td (Interpretacion) Tj
+ET
+q 0.78 G 0.5 w 54 411 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 427 Td (Fuente IFC Quantity Set publicado) Tj
+ET
+q 0.82 G 0.5 w 297.5 435 m 297.5 411 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 427 Td (Alta confianza si el modelo fue bien exportado.) Tj
+ET
+q 0.78 G 0.5 w 54 384 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 403 Td (Fuente Excel/CSV controlado) Tj
+ET
+q 0.82 G 0.5 w 297.5 411 m 297.5 384 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 403 Td (Confianza media/alta si el archivo tiene responsable y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 393 Td (plantilla auditada.) Tj
+ET
+q 0.78 G 0.5 w 54 360 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 376 Td (Fuente geometria real del visor) Tj
+ET
+q 0.82 G 0.5 w 297.5 384 m 297.5 360 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 376 Td (Util para validar, pero requiere aprobacion humana.) Tj
+ET
+q 0.78 G 0.5 w 54 336 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 352 Td (ElementCount) Tj
+ET
+q 0.82 G 0.5 w 297.5 360 m 297.5 336 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 352 Td (Solo conteo; no reemplaza area, volumen o longitud.) Tj
+ET
+q 0.78 G 0.5 w 54 312 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 328 Td (Sin GUID) Tj
+ET
+q 0.82 G 0.5 w 297.5 336 m 297.5 312 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 328 Td (Baja trazabilidad con el modelo.) Tj
+ET
+q 0.78 G 0.5 w 54 288 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 304 Td (Sin WBS/CBS/FBS/paquete) Tj
+ET
+q 0.82 G 0.5 w 297.5 312 m 297.5 288 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 304 Td (No esta listo para control integrado.) Tj
+ET
+q 0.78 G 0.5 w 54 264 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 280 Td (Unidad desconocida) Tj
+ET
+q 0.82 G 0.5 w 297.5 288 m 297.5 264 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 280 Td (Revisar antes de aprobar medicion.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 253 Td (17. BIM: limpiar modelo y cargar otro) Tj
+ET
+q 0.92 g 54 205 487 24 re f Q
+q 0.55 G 0.5 w 54 205 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 221 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 229 m 199 205 l S Q
+BT
+0 g
+/F2 7 Tf
+204 221 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 229 m 287 205 l S Q
+BT
+0 g
+/F2 7 Tf
+292 221 Td (Resultado) Tj
+ET
+q 0.78 G 0.5 w 54 178 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 197 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 205 m 199 178 l S Q
+BT
+0 g
+/F2 7 Tf
+204 197 Td (Entrar a) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 187 Td (Cantidades BIM.) Tj
+ET
+q 0.82 G 0.5 w 287 205 m 287 178 l S Q
+BT
+0 g
+/F1 7 Tf
+292 197 Td (Ver modelo cargado actual.) Tj
+ET
+q 0.78 G 0.5 w 54 151 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 170 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 178 m 199 151 l S Q
+BT
+0 g
+/F2 7 Tf
+204 170 Td (Click en limpiar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 160 Td (modelo cargado.) Tj
+ET
+q 0.82 G 0.5 w 287 178 m 287 151 l S Q
+BT
+0 g
+/F1 7 Tf
+292 170 Td (Se elimina el registro del modelo seleccionado.) Tj
+ET
+q 0.78 G 0.5 w 54 104 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 143 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 151 m 199 104 l S Q
+BT
+0 g
+/F2 7 Tf
+204 143 Td (Confirmar que el) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 133 Td (visor queda vacio) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 123 Td (o en estado) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 113 Td (pendiente.) Tj
+ET
+q 0.82 G 0.5 w 287 151 m 287 104 l S Q
+BT
+0 g
+/F1 7 Tf
+292 143 Td (El proyecto queda listo para otro modelo.) Tj
+ET
+q 0.78 G 0.5 w 54 77 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 96 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 104 m 199 77 l S Q
+BT
+0 g
+/F2 7 Tf
+204 96 Td (Cargar nuevo IFC.) Tj
+ET
+q 0.82 G 0.5 w 287 104 m 287 77 l S Q
+BT
+0 g
+/F1 7 Tf
+292 96 Td (Se registra nuevo modelo y se intenta renderizar geometria) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 86 Td (real.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 8) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Length 6886 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Resultado) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Revisar cantidades) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (existentes.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Las cantidades de takeoff pueden pertenecer a otro modelo;) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (verificar GUID y fuente antes de mezclar.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 728 Td (Buenas practicas:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 708 Td (- No mezclar cantidades de un IFC viejo con un modelo nuevo sin validar GUIDs.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 695 Td (- Si el modelo cambia de revision, documentar la revision del IFC.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 682 Td (- Si se usa Excel/CSV, incluir nombre de archivo, fecha y responsable.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 666 Td (18. AWP y BIM) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 642 Td (El modulo BIM alimenta AWP cuando las cantidades se asignan a paquetes. La paquetizacion debe) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 629 Td (respetar una jerarquia clara.) Tj
+ET
+q 0.92 g 54 585 487 24 re f Q
+q 0.55 G 0.5 w 54 585 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 601 Td (Nivel AWP) Tj
+ET
+q 0.65 G 0.5 w 199 609 m 199 585 l S Q
+BT
+0 g
+/F2 7 Tf
+204 601 Td (Funcion) Tj
+ET
+q 0.65 G 0.5 w 287 609 m 287 585 l S Q
+BT
+0 g
+/F2 7 Tf
+292 601 Td (Relacion BIM) Tj
+ET
+q 0.78 G 0.5 w 54 558 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 577 Td (CWA) Tj
+ET
+q 0.82 G 0.5 w 199 585 m 199 558 l S Q
+BT
+0 g
+/F2 7 Tf
+204 577 Td (Area de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 567 Td (construccion.) Tj
+ET
+q 0.82 G 0.5 w 287 585 m 287 558 l S Q
+BT
+0 g
+/F1 7 Tf
+292 577 Td (Agrupa zonas, niveles o frentes principales.) Tj
+ET
+q 0.78 G 0.5 w 54 531 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 550 Td (CWP) Tj
+ET
+q 0.82 G 0.5 w 199 558 m 199 531 l S Q
+BT
+0 g
+/F2 7 Tf
+204 550 Td (Paquete de trabajo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 540 Td (de construccion.) Tj
+ET
+q 0.82 G 0.5 w 287 558 m 287 531 l S Q
+BT
+0 g
+/F1 7 Tf
+292 550 Td (Agrupa alcance por disciplina, WBS y secuencia.) Tj
+ET
+q 0.78 G 0.5 w 54 504 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 523 Td (IWP) Tj
+ET
+q 0.82 G 0.5 w 199 531 m 199 504 l S Q
+BT
+0 g
+/F2 7 Tf
+204 523 Td (Paquete instalable) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 513 Td (de frente.) Tj
+ET
+q 0.82 G 0.5 w 287 531 m 287 504 l S Q
+BT
+0 g
+/F1 7 Tf
+292 523 Td (Debe tener cantidades, restricciones cerradas y readiness) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 513 Td (para campo.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 493 Td (El path of construction no es solo un texto. Debe representar la secuencia logica de ejecucion y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 480 Td (debe estar soportado por WBS, actividades, paquetes y cantidades fisicas.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 460 Td (19. Dashboard y EVM) Tj
+ET
+q 0.92 g 54 412 487 24 re f Q
+q 0.55 G 0.5 w 54 412 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 428 Td (Indicador) Tj
+ET
+q 0.65 G 0.5 w 199 436 m 199 412 l S Q
+BT
+0 g
+/F2 7 Tf
+204 428 Td (Formula base) Tj
+ET
+q 0.65 G 0.5 w 287 436 m 287 412 l S Q
+BT
+0 g
+/F2 7 Tf
+292 428 Td (Uso correcto) Tj
+ET
+q 0.78 G 0.5 w 54 375 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 404 Td (BAC) Tj
+ET
+q 0.82 G 0.5 w 199 412 m 199 375 l S Q
+BT
+0 g
+/F2 7 Tf
+204 404 Td (Presupuesto) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 394 Td (aprobado al) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 384 Td (completar.) Tj
+ET
+q 0.82 G 0.5 w 287 412 m 287 375 l S Q
+BT
+0 g
+/F1 7 Tf
+292 404 Td (Viene de baseline/cost loading aprobado.) Tj
+ET
+q 0.78 G 0.5 w 54 348 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 367 Td (PV) Tj
+ET
+q 0.82 G 0.5 w 199 375 m 199 348 l S Q
+BT
+0 g
+/F2 7 Tf
+204 367 Td (Valor planeado a) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 357 Td (fecha de corte.) Tj
+ET
+q 0.82 G 0.5 w 287 375 m 287 348 l S Q
+BT
+0 g
+/F1 7 Tf
+292 367 Td (Solo se calcula si hay curva planificada por tiempo.) Tj
+ET
+q 0.78 G 0.5 w 54 311 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 340 Td (EV) Tj
+ET
+q 0.82 G 0.5 w 199 348 m 199 311 l S Q
+BT
+0 g
+/F2 7 Tf
+204 340 Td (Valor ganado por) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 330 Td (avance fisico) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 320 Td (aprobado.) Tj
+ET
+q 0.82 G 0.5 w 287 348 m 287 311 l S Q
+BT
+0 g
+/F1 7 Tf
+292 340 Td (Solo se calcula cuando hay avance aprobado.) Tj
+ET
+q 0.78 G 0.5 w 54 274 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 303 Td (AC) Tj
+ET
+q 0.82 G 0.5 w 199 311 m 199 274 l S Q
+BT
+0 g
+/F2 7 Tf
+204 303 Td (Costo real) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 293 Td (certificado o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 283 Td (incurrido.) Tj
+ET
+q 0.82 G 0.5 w 287 311 m 287 274 l S Q
+BT
+0 g
+/F1 7 Tf
+292 303 Td (Solo se calcula cuando hay costos reales.) Tj
+ET
+q 0.78 G 0.5 w 54 250 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 266 Td (SPI) Tj
+ET
+q 0.82 G 0.5 w 199 274 m 199 250 l S Q
+BT
+0 g
+/F2 7 Tf
+204 266 Td (EV / PV.) Tj
+ET
+q 0.82 G 0.5 w 287 274 m 287 250 l S Q
+BT
+0 g
+/F1 7 Tf
+292 266 Td (No debe interpretarse si PV es cero o no hay datos.) Tj
+ET
+q 0.78 G 0.5 w 54 223 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 242 Td (CPI) Tj
+ET
+q 0.82 G 0.5 w 199 250 m 199 223 l S Q
+BT
+0 g
+/F2 7 Tf
+204 242 Td (EV / AC.) Tj
+ET
+q 0.82 G 0.5 w 287 250 m 287 223 l S Q
+BT
+0 g
+/F1 7 Tf
+292 242 Td (No debe interpretarse si AC es cero o no hay costos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 232 Td (reales.) Tj
+ET
+q 0.78 G 0.5 w 54 196 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 215 Td (EAC) Tj
+ET
+q 0.82 G 0.5 w 199 223 m 199 196 l S Q
+BT
+0 g
+/F2 7 Tf
+204 215 Td (Estimado al) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 205 Td (completar.) Tj
+ET
+q 0.82 G 0.5 w 287 223 m 287 196 l S Q
+BT
+0 g
+/F1 7 Tf
+292 215 Td (Debe calcularse con una regla definida, no como copia) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 205 Td (automatica si faltan datos.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 185 Td (Si solo existe baseline y no hay avance ni costos reales, PV, EV y AC no deben inventarse. La) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 172 Td (curva S debe tener tiempo en el eje X y dinero acumulado en el eje Y.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 152 Td (20. Errores frecuentes y solucion) Tj
+ET
+q 0.92 g 54 104 487 24 re f Q
+q 0.55 G 0.5 w 54 104 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 120 Td (Problema) Tj
+ET
+q 0.65 G 0.5 w 199 128 m 199 104 l S Q
+BT
+0 g
+/F2 7 Tf
+204 120 Td (Causa probable) Tj
+ET
+q 0.65 G 0.5 w 287 128 m 287 104 l S Q
+BT
+0 g
+/F2 7 Tf
+292 120 Td (Accion) Tj
+ET
+q 0.78 G 0.5 w 54 57 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 96 Td (No carga el modelo) Tj
+ET
+q 0.82 G 0.5 w 199 104 m 199 57 l S Q
+BT
+0 g
+/F2 7 Tf
+204 96 Td (IFC muy pesado,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 86 Td (navegador saturado) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 76 Td (o archivo no) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 66 Td (compatible.) Tj
+ET
+q 0.82 G 0.5 w 287 104 m 287 57 l S Q
+BT
+0 g
+/F1 7 Tf
+292 96 Td (Usar IFC optimizado, recargar pagina o cargar takeoff) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 86 Td (Excel/CSV para cantidades.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 9) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Length 7455 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Problema) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Causa probable) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Accion) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (El visor muestra geometria lenta) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Modelo grande o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (muchas mallas.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Cerrar otras pestanas, usar modelo federado reducido o) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (esperar la carga.) Tj
+ET
+q 0.78 G 0.5 w 54 702 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Selecciono elemento y no veo) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 721 Td (cantidad) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 702 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (No hay Quantity) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 721 Td (Set ni linea de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 711 Td (takeoff vinculada.) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 702 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Revisar propiedades, usar cantidad geometrica o cargar) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 721 Td (Excel/CSV.) Tj
+ET
+q 0.78 G 0.5 w 54 665 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 694 Td (La cantidad aparece como) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 684 Td (ElementCount) Tj
+ET
+q 0.82 G 0.5 w 199 702 m 199 665 l S Q
+BT
+0 g
+/F2 7 Tf
+204 694 Td (El IFC no trae) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 684 Td (cantidades) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 674 Td (publicadas.) Tj
+ET
+q 0.82 G 0.5 w 287 702 m 287 665 l S Q
+BT
+0 g
+/F1 7 Tf
+292 694 Td (Tratar como revision, no como cantidad final.) Tj
+ET
+q 0.78 G 0.5 w 54 628 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 657 Td (No puedo guardar codigos) Tj
+ET
+q 0.82 G 0.5 w 199 665 m 199 628 l S Q
+BT
+0 g
+/F2 7 Tf
+204 657 Td (Falta WBS, CBS,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 647 Td (FBS o paquete) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 637 Td (existente.) Tj
+ET
+q 0.82 G 0.5 w 287 665 m 287 628 l S Q
+BT
+0 g
+/F1 7 Tf
+292 657 Td (Crear los catalogos antes de asignar.) Tj
+ET
+q 0.78 G 0.5 w 54 604 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 620 Td (Sale token invalido) Tj
+ET
+q 0.82 G 0.5 w 199 628 m 199 604 l S Q
+BT
+0 g
+/F2 7 Tf
+204 620 Td (Sesion expirada.) Tj
+ET
+q 0.82 G 0.5 w 287 628 m 287 604 l S Q
+BT
+0 g
+/F1 7 Tf
+292 620 Td (Cerrar sesion e ingresar nuevamente.) Tj
+ET
+q 0.78 G 0.5 w 54 567 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 596 Td (El proyecto no aparece) Tj
+ET
+q 0.82 G 0.5 w 199 604 m 199 567 l S Q
+BT
+0 g
+/F2 7 Tf
+204 596 Td (Usuario sin) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 586 Td (membresia en ese) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 576 Td (proyecto.) Tj
+ET
+q 0.82 G 0.5 w 287 604 m 287 567 l S Q
+BT
+0 g
+/F1 7 Tf
+292 596 Td (Asignar usuario desde Users & Roles con rol correcto.) Tj
+ET
+q 0.78 G 0.5 w 54 520 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 559 Td (El dashboard muestra EVM raro) Tj
+ET
+q 0.82 G 0.5 w 199 567 m 199 520 l S Q
+BT
+0 g
+/F2 7 Tf
+204 559 Td (Faltan datos de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 549 Td (avance/costo o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 539 Td (baseline) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 529 Td (incompleta.) Tj
+ET
+q 0.82 G 0.5 w 287 567 m 287 520 l S Q
+BT
+0 g
+/F1 7 Tf
+292 559 Td (Revisar Activity Sheet, cost loading, progreso y costos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 549 Td (reales.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 509 Td (21. Checklist operativo del modulo BIM) Tj
+ET
+q 0.92 g 54 461 487 24 re f Q
+q 0.55 G 0.5 w 54 461 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 477 Td (Control) Tj
+ET
+q 0.65 G 0.5 w 297.5 485 m 297.5 461 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 477 Td (OK esperado) Tj
+ET
+q 0.78 G 0.5 w 54 437 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 453 Td (Proyecto correcto seleccionado) Tj
+ET
+q 0.82 G 0.5 w 297.5 461 m 297.5 437 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 453 Td (El nombre/codigo coinciden con el proyecto real.) Tj
+ET
+q 0.78 G 0.5 w 54 413 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 429 Td (IFC cargado) Tj
+ET
+q 0.82 G 0.5 w 297.5 437 m 297.5 413 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 429 Td (El visor muestra geometria real.) Tj
+ET
+q 0.78 G 0.5 w 54 386 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 405 Td (Metadatos revisados) Tj
+ET
+q 0.82 G 0.5 w 297.5 413 m 297.5 386 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 405 Td (Esquema, unidades, niveles y georreferenciacion si) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 395 Td (existe.) Tj
+ET
+q 0.78 G 0.5 w 54 362 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 378 Td (Elementos seleccionables) Tj
+ET
+q 0.82 G 0.5 w 297.5 386 m 297.5 362 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 378 Td (Click en el 3D resalta elemento y muestra propiedades.) Tj
+ET
+q 0.78 G 0.5 w 54 338 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 354 Td (Cantidades cargadas) Tj
+ET
+q 0.82 G 0.5 w 297.5 362 m 297.5 338 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 354 Td (La tabla muestra lineas controladas.) Tj
+ET
+q 0.78 G 0.5 w 54 311 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 330 Td (Tipo constructivo claro) Tj
+ET
+q 0.82 G 0.5 w 297.5 338 m 297.5 311 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 330 Td (El usuario ve muro/losa/viga/columna antes de la clase) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 320 Td (IFC.) Tj
+ET
+q 0.78 G 0.5 w 54 287 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 303 Td (Medicion aprobada) Tj
+ET
+q 0.82 G 0.5 w 297.5 311 m 297.5 287 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 303 Td (La tabla muestra aprobacion y version.) Tj
+ET
+q 0.78 G 0.5 w 54 263 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 279 Td (WBS/CBS/FBS/paquete asignados) Tj
+ET
+q 0.82 G 0.5 w 297.5 287 m 297.5 263 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 279 Td (Estado mapped y sin bloqueos de mapping.) Tj
+ET
+q 0.78 G 0.5 w 54 236 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 255 Td (Trazabilidad guardada) Tj
+ET
+q 0.82 G 0.5 w 297.5 263 m 297.5 236 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 255 Td (Existen codigos e IDs reales para WBS, CBS, FBS y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 245 Td (paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 209 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 228 Td (Listo para control) Tj
+ET
+q 0.82 G 0.5 w 297.5 236 m 297.5 209 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 228 Td (La cantidad puede alimentar costos, avance o paquete) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 218 Td (AWP.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 198 Td (22. Recomendacion de uso para piloto) Tj
+ET
+q 0.92 g 54 150 487 24 re f Q
+q 0.55 G 0.5 w 54 150 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 166 Td (Dia / sesion) Tj
+ET
+q 0.65 G 0.5 w 199 174 m 199 150 l S Q
+BT
+0 g
+/F2 7 Tf
+204 166 Td (Objetivo) Tj
+ET
+q 0.65 G 0.5 w 287 174 m 287 150 l S Q
+BT
+0 g
+/F2 7 Tf
+292 166 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 113 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 142 Td (Sesion 1) Tj
+ET
+q 0.82 G 0.5 w 199 150 m 199 113 l S Q
+BT
+0 g
+/F2 7 Tf
+204 142 Td (Crear proyecto,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 132 Td (usuarios, WBS,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 122 Td (CBS, FBS.) Tj
+ET
+q 0.82 G 0.5 w 287 150 m 287 113 l S Q
+BT
+0 g
+/F1 7 Tf
+292 142 Td (Proyecto gobernado y roles claros.) Tj
+ET
+q 0.78 G 0.5 w 54 86 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 105 Td (Sesion 2) Tj
+ET
+q 0.82 G 0.5 w 199 113 m 199 86 l S Q
+BT
+0 g
+/F2 7 Tf
+204 105 Td (Cargar XER/XML y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 95 Td (validar Planning.) Tj
+ET
+q 0.82 G 0.5 w 287 113 m 287 86 l S Q
+BT
+0 g
+/F1 7 Tf
+292 105 Td (Activity Sheet, WBS Sheet, baseline y CPM revisados.) Tj
+ET
+q 0.78 G 0.5 w 54 59 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 78 Td (Sesion 3) Tj
+ET
+q 0.82 G 0.5 w 199 86 m 199 59 l S Q
+BT
+0 g
+/F2 7 Tf
+204 78 Td (Cargar IFC y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 68 Td (takeoff.) Tj
+ET
+q 0.82 G 0.5 w 287 86 m 287 59 l S Q
+BT
+0 g
+/F1 7 Tf
+292 78 Td (Modelo visible, cantidades cargadas y propiedades) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 68 Td (revisadas.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 10) Tj
+ET
+endstream
+endobj
+13 0 obj
+<< /Length 4676 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Dia / sesion) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Objetivo) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Sesion 4) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Aprobar mediciones) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (y mapear codigos.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Cantidades mapped con WBS/CBS/FBS/paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 715 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Sesion 5) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 715 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Revisar AWP y EVM.) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 715 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Paquetes, restricciones y dashboard coherentes.) Tj
+ET
+q 0.78 G 0.5 w 54 688 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 707 Td (Sesion 6) Tj
+ET
+q 0.82 G 0.5 w 199 715 m 199 688 l S Q
+BT
+0 g
+/F2 7 Tf
+204 707 Td (Generar evidencia) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 697 Td (y decisiones.) Tj
+ET
+q 0.82 G 0.5 w 287 715 m 287 688 l S Q
+BT
+0 g
+/F1 7 Tf
+292 707 Td (Hallazgos, aprobaciones y acciones trazadas.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 677 Td (23. Estado actual de la parte BIM) Tj
+ET
+q 0.92 g 54 629 487 24 re f Q
+q 0.55 G 0.5 w 54 629 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 645 Td (Componente) Tj
+ET
+q 0.65 G 0.5 w 297.5 653 m 297.5 629 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 645 Td (Estado actual) Tj
+ET
+q 0.78 G 0.5 w 54 605 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 621 Td (Visor IFC real) Tj
+ET
+q 0.82 G 0.5 w 297.5 629 m 297.5 605 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 621 Td (Implementado con web-ifc en navegador.) Tj
+ET
+q 0.78 G 0.5 w 54 581 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 597 Td (Seleccion 3D) Tj
+ET
+q 0.82 G 0.5 w 297.5 605 m 297.5 581 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 597 Td (Implementada con resaltado visual del elemento.) Tj
+ET
+q 0.78 G 0.5 w 54 554 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 573 Td (Propiedades del elemento) Tj
+ET
+q 0.82 G 0.5 w 297.5 581 m 297.5 554 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 573 Td (Implementadas con clase IFC, GUID, nombre, nivel y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 563 Td (propiedades relevantes.) Tj
+ET
+q 0.78 G 0.5 w 54 527 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 546 Td (Calculo de geometria real) Tj
+ET
+q 0.82 G 0.5 w 297.5 554 m 297.5 527 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 546 Td (Implementado para dimensiones y estimaciones por malla) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 536 Td (cuando aplica.) Tj
+ET
+q 0.78 G 0.5 w 54 503 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 519 Td (Aprobacion de cantidad geometrica) Tj
+ET
+q 0.82 G 0.5 w 297.5 527 m 297.5 503 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 519 Td (Implementada con versionado de medicion controlada.) Tj
+ET
+q 0.78 G 0.5 w 54 479 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 495 Td (Tabla unica de cantidades) Tj
+ET
+q 0.82 G 0.5 w 297.5 503 m 297.5 479 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 495 Td (Implementada como tabla principal de control.) Tj
+ET
+q 0.78 G 0.5 w 54 452 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 471 Td (Inventario simbolico anterior) Tj
+ET
+q 0.82 G 0.5 w 297.5 479 m 297.5 452 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 471 Td (Retirado como vista principal porque no representaba) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 461 Td (geometria real.) Tj
+ET
+q 0.78 G 0.5 w 54 428 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 444 Td (Asignacion WBS/CBS/FBS/paquete) Tj
+ET
+q 0.82 G 0.5 w 297.5 452 m 297.5 428 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 444 Td (Implementada y validada contra catalogos existentes.) Tj
+ET
+q 0.78 G 0.5 w 54 404 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 420 Td (Relaciones fuertes) Tj
+ET
+q 0.82 G 0.5 w 297.5 428 m 297.5 404 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 420 Td (Implementadas: wbs_id, cbs_id, fbs_id, work_package_id.) Tj
+ET
+q 0.78 G 0.5 w 54 377 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 396 Td (E2E navegador real) Tj
+ET
+q 0.82 G 0.5 w 297.5 404 m 297.5 377 l S Q
+BT
+0 g
+/F2 7 Tf
+302.5 396 Td (Verificado con Playwright para visor, seleccion,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+302.5 386 Td (aprobacion y asignacion.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 366 Td (24. Cierre) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 342 Td (La parte BIM ya no debe evaluarse como un visor aislado. Su utilidad esta en convertir el modelo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 329 Td (y las cantidades en datos controlables para WBS, CBS, FBS, AWP y EVM. El flujo correcto es) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 316 Td (cargar modelo, validar geometria, cargar o calcular cantidades, aprobar mediciones, asignar) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 303 Td (estructuras de control y usar esas cantidades solo cuando tengan trazabilidad completa.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Manual de uso y modulo BIM) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 11) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+15 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+16 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+17 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+18 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 7 0 R >>
+endobj
+19 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 8 0 R >>
+endobj
+20 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 9 0 R >>
+endobj
+21 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 10 0 R >>
+endobj
+22 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 11 0 R >>
+endobj
+23 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 12 0 R >>
+endobj
+24 0 obj
+<< /Type /Page /Parent 25 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 13 0 R >>
+endobj
+25 0 obj
+<< /Type /Pages /Kids [14 0 R 15 0 R 16 0 R 17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R] /Count 11 >>
+endobj
+26 0 obj
+<< /Type /Catalog /Pages 25 0 R >>
+endobj
+xref
+0 27
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000000808 00000 n 
+0000008449 00000 n 
+0000016613 00000 n 
+0000024007 00000 n 
+0000031059 00000 n 
+0000038120 00000 n 
+0000045080 00000 n 
+0000051288 00000 n 
+0000058227 00000 n 
+0000065735 00000 n 
+0000070464 00000 n 
+0000070602 00000 n 
+0000070740 00000 n 
+0000070878 00000 n 
+0000071016 00000 n 
+0000071154 00000 n 
+0000071292 00000 n 
+0000071430 00000 n 
+0000071569 00000 n 
+0000071708 00000 n 
+0000071847 00000 n 
+0000071986 00000 n 
+0000072116 00000 n 
+trailer
+<< /Size 27 /Root 26 0 R >>
+startxref
+72167
+%%EOF

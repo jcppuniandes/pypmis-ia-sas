@@ -29,8 +29,19 @@ def main() -> None:
     assert (ROOT / "frontend/e2e/production-readiness.spec.ts").exists(), "Production E2E spec is required"
 
     assert_contains("deploy/vps/deploy.sh", "alembic current")
+    assert_contains("deploy/vps/deploy.sh", 'assert_not_placeholder "AUTH_SECRET_KEY"')
+    assert_contains("deploy/vps/deploy.sh", 'assert_not_placeholder "POSTGRES_PASSWORD"')
+    assert_contains("deploy/vps/deploy.sh", 'assert_not_placeholder "REDIS_PASSWORD"')
+    assert_contains("deploy/vps/deploy.sh", 'assert_not_placeholder "METRICS_TOKEN"')
+    assert_contains("deploy/vps/deploy.sh", "ALLOWED_HOSTS must be explicit")
+    assert_contains("deploy/vps/deploy.sh", "CORS_ORIGINS must be explicit")
     assert_contains("deploy/vps/backup.sh", "BACKUP_KEEP")
     assert_contains("deploy/vps/backup.sh", "sha256sum")
+    assert_contains("deploy/vps/backup.sh", 'rm -f "$old_backup" "$old_backup.sha256"')
+    assert_contains("deploy/vps/restore.sh", 'CHECKSUM_FILE="${BACKUP_FILE}.sha256"')
+    assert_contains("deploy/vps/restore.sh", 'sha256sum -c "$CHECKSUM_FILE"')
+    assert_contains("deploy/vps/restore.sh", "Checksum verification failed")
+    assert_contains("tools/vps_preflight.ps1", "at least 64 characters")
     assert (ROOT / "docs/24-operacion-productiva-formal.md").exists(), "Production operations runbook is required"
 
 

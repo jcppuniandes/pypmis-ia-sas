@@ -36,8 +36,8 @@ foreach ($key in $required) {
   }
 }
 
-if ($values["AUTH_SECRET_KEY"].Length -lt 32) {
-  throw "AUTH_SECRET_KEY must have at least 32 characters."
+if ($values["AUTH_SECRET_KEY"].Length -lt 64) {
+  throw "AUTH_SECRET_KEY must have at least 64 characters."
 }
 
 foreach ($key in @("POSTGRES_PASSWORD", "REDIS_PASSWORD")) {

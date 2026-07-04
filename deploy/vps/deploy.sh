@@ -35,6 +35,15 @@ fi
 
 source "$ENV_FILE"
 
+assert_not_placeholder() {
+  local var="$1"
+  local val="${!var:-}"
+  if [[ "$val" == *"change_this"* || "$val" == "change-me-before-production" ]]; then
+    echo "ERROR: $var still has a placeholder value."
+    exit 1
+  fi
+}
+
 REQUIRED_VARS=(
   POSTGRES_PASSWORD REDIS_PASSWORD AUTH_SECRET_KEY
   METRICS_TOKEN CORS_ORIGINS ALLOWED_HOSTS SITE_ADDRESS
@@ -47,14 +56,27 @@ for var in "${REQUIRED_VARS[@]}"; do
   fi
 done
 
-# Check for placeholder values
-if [[ "$AUTH_SECRET_KEY" == *"change_this"* ]]; then
-  echo "ERROR: AUTH_SECRET_KEY still has a placeholder value. Generate a real secret:"
+# Check production hardening values
+assert_not_placeholder "AUTH_SECRET_KEY"
+assert_not_placeholder "POSTGRES_PASSWORD"
+assert_not_placeholder "REDIS_PASSWORD"
+assert_not_placeholder "METRICS_TOKEN"
+
+if [ "${#AUTH_SECRET_KEY}" -lt 64 ]; then
+  echo "ERROR: AUTH_SECRET_KEY must have at least 64 characters. Generate a real secret:"
   echo "  openssl rand -hex 32"
   exit 1
 fi
-if [[ "$POSTGRES_PASSWORD" == *"change_this"* ]]; then
-  echo "ERROR: POSTGRES_PASSWORD still has a placeholder value."
+if [[ "$ALLOWED_HOSTS" == *"*"* ]]; then
+  echo "ERROR: ALLOWED_HOSTS must be explicit for production."
+  exit 1
+fi
+if [[ "$CORS_ORIGINS" == *"*"* ]]; then
+  echo "ERROR: CORS_ORIGINS must be explicit for production."
+  exit 1
+fi
+if [[ "${LOG_FORMAT:-json}" != "json" ]]; then
+  echo "ERROR: LOG_FORMAT must be json for production."
   exit 1
 fi
 

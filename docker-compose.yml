@@ -40,13 +40,13 @@ services:
       CORS_ORIGINS: http://localhost:5173
       ALLOWED_HOSTS: "${ALLOWED_HOSTS:-*}"
       AUTO_CREATE_SCHEMA: "true"
-      SEED_DEMO_DATA: "true"
+      SEED_DEMO_DATA: "${SEED_DEMO_DATA:-false}"
       AUTH_SECRET_KEY: dev-local-change-before-production
       DEMO_USER_PASSWORD: "1234"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       LOG_FORMAT: ${LOG_FORMAT:-plain}
       METRICS_ENABLED: "true"
-      MAX_REQUEST_BODY_MB: "25"
+      MAX_REQUEST_BODY_MB: "100"
       DOCUMENT_STORAGE_PATH: /app/storage/documents
       DOCUMENT_MAX_UPLOAD_MB: "50"
       DOCUMENT_MAX_ZIP_FILES: "200"
@@ -65,6 +65,11 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       AI_MAX_TOKENS: ${AI_MAX_TOKENS:-512}
       AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-30}
+      BIM_GEOMETRY_CONVERTER_COMMAND: ${BIM_GEOMETRY_CONVERTER_COMMAND:-python -m app.services.ifc_geometry_converter --source {source} --output {output}}
+      BIM_GEOMETRY_CONVERTER_TIMEOUT_SECONDS: ${BIM_GEOMETRY_CONVERTER_TIMEOUT_SECONDS:-300}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
+      GUNICORN_TIMEOUT_SECONDS: ${GUNICORN_TIMEOUT_SECONDS:-180}
+      GUNICORN_GRACEFUL_TIMEOUT_SECONDS: ${GUNICORN_GRACEFUL_TIMEOUT_SECONDS:-30}
     ports:
       - "8000:8000"
     volumes:
@@ -128,6 +133,9 @@ services:
       VITE_API_URL: http://localhost:8000
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
     depends_on:
       api:
         condition: service_healthy
@@ -135,3 +143,4 @@ services:
 volumes:
   postgres_data:
   document_storage:
+  frontend_node_modules:

@@ -42,5 +42,7 @@ COUNT=$(ls -1 "$BACKUP_DIR"/pypmis_*.sql.gz 2>/dev/null | wc -l)
 if [ "$COUNT" -gt "$KEEP" ]; then
   REMOVE=$((COUNT - KEEP))
   echo "Rotating: removing $REMOVE old backup(s)..."
-  ls -1t "$BACKUP_DIR"/pypmis_*.sql.gz | tail -n "$REMOVE" | xargs rm -f
+  ls -1t "$BACKUP_DIR"/pypmis_*.sql.gz | tail -n "$REMOVE" | while IFS= read -r old_backup; do
+    rm -f "$old_backup" "$old_backup.sha256"
+  done
 fi

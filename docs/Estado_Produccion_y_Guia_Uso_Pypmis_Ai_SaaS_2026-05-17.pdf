@@ -1,0 +1,3199 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 538 >>
+stream
+BT
+0 g
+/F2 22 Tf
+70 700 Td (Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+70 668 Td (Pypmis AI SaaS - estado actual, readiness y paso a paso) Tj
+ET
+BT
+0 g
+/F1 10 Tf
+70 644 Td (Fecha: 17 de mayo de 2026) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 610 Td (Informe ejecutivo con estado para piloto productivo controlado, evidencia de verificacion y guia) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 597 Td (de uso paso a paso.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 1) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 7757 >>
+stream
+BT
+0 g
+/F1 9 Tf
+54 787 Td (Fecha de corte: 2026-05-17) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 767 Td (Este informe resume el estado actual de Pypmis AI SaaS para una operacion productiva controlada,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 754 Td (la evidencia de verificacion disponible y el paso a paso de uso para operar el flujo de control) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 741 Td (integrado frente a los instructivos de Primavera Unifier 26.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 721 Td (1. Resumen ejecutivo) Tj
+ET
+q 0.92 g 54 673 487 24 re f Q
+q 0.55 G 0.5 w 54 673 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 689 Td (Tema) Tj
+ET
+q 0.65 G 0.5 w 199 697 m 199 673 l S Q
+BT
+0 g
+/F2 7 Tf
+204 689 Td (Estado) Tj
+ET
+q 0.65 G 0.5 w 287 697 m 287 673 l S Q
+BT
+0 g
+/F2 7 Tf
+292 689 Td (Detalle) Tj
+ET
+q 0.78 G 0.5 w 54 636 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 665 Td (Estado general) Tj
+ET
+q 0.82 G 0.5 w 199 673 m 199 636 l S Q
+BT
+0 g
+/F2 7 Tf
+204 665 Td (Listo para piloto) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 655 Td (productivo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 645 Td (controlado) Tj
+ET
+q 0.82 G 0.5 w 287 673 m 287 636 l S Q
+BT
+0 g
+/F1 7 Tf
+292 665 Td (La app esta levantada, probada y con flujo guiado) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 655 Td (multi-tenant implementado.) Tj
+ET
+q 0.78 G 0.5 w 54 599 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 628 Td (Produccion formal) Tj
+ET
+q 0.82 G 0.5 w 199 636 m 199 599 l S Q
+BT
+0 g
+/F2 7 Tf
+204 628 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 636 m 287 599 l S Q
+BT
+0 g
+/F1 7 Tf
+292 628 Td (Puede pasar a ambiente objetivo si se aplican migraciones,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 618 Td (secretos reales, backups, monitoreo y matriz de roles por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 608 Td (cliente.) Tj
+ET
+q 0.78 G 0.5 w 54 572 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 591 Td (Frontend) Tj
+ET
+q 0.82 G 0.5 w 199 599 m 199 572 l S Q
+BT
+0 g
+/F2 7 Tf
+204 591 Td (Operativo) Tj
+ET
+q 0.82 G 0.5 w 287 599 m 287 572 l S Q
+BT
+0 g
+/F1 7 Tf
+292 591 Td (Disponible en http://localhost:5173; marca restaurada como) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 581 Td (Pypmis AI SaaS con logo arriba.) Tj
+ET
+q 0.78 G 0.5 w 54 545 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 564 Td (API) Tj
+ET
+q 0.82 G 0.5 w 199 572 m 199 545 l S Q
+BT
+0 g
+/F2 7 Tf
+204 564 Td (Operativa) Tj
+ET
+q 0.82 G 0.5 w 287 572 m 287 545 l S Q
+BT
+0 g
+/F1 7 Tf
+292 564 Td (Disponible en http://localhost:8000; readiness responde) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 554 Td (OK.) Tj
+ET
+q 0.78 G 0.5 w 54 521 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 537 Td (Base de datos) Tj
+ET
+q 0.82 G 0.5 w 199 545 m 199 521 l S Q
+BT
+0 g
+/F2 7 Tf
+204 537 Td (Operativa) Tj
+ET
+q 0.82 G 0.5 w 287 545 m 287 521 l S Q
+BT
+0 g
+/F1 7 Tf
+292 537 Td (Postgres healthy; Alembic en 20260515_0018 \(head\).) Tj
+ET
+q 0.78 G 0.5 w 54 497 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 513 Td (Redis) Tj
+ET
+q 0.82 G 0.5 w 199 521 m 199 497 l S Q
+BT
+0 g
+/F2 7 Tf
+204 513 Td (Operativo) Tj
+ET
+q 0.82 G 0.5 w 287 521 m 287 497 l S Q
+BT
+0 g
+/F1 7 Tf
+292 513 Td (Servicio healthy para cache y colas.) Tj
+ET
+q 0.78 G 0.5 w 54 470 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 489 Td (Flujo guiado) Tj
+ET
+q 0.82 G 0.5 w 199 497 m 199 470 l S Q
+BT
+0 g
+/F2 7 Tf
+204 489 Td (Implementado) Tj
+ET
+q 0.82 G 0.5 w 287 497 m 287 470 l S Q
+BT
+0 g
+/F1 7 Tf
+292 489 Td (Tenant, proyecto, pasos de control, bloqueos, siguiente) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 479 Td (accion y gate costo/moneda.) Tj
+ET
+q 0.78 G 0.5 w 54 443 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 462 Td (Agente AWP) Tj
+ET
+q 0.82 G 0.5 w 199 470 m 199 443 l S Q
+BT
+0 g
+/F2 7 Tf
+204 462 Td (Implementado) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 452 Td (inicial) Tj
+ET
+q 0.82 G 0.5 w 287 470 m 287 443 l S Q
+BT
+0 g
+/F1 7 Tf
+292 462 Td (Senior AWP Packaging Advisor propone paquetes draft y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 452 Td (constraints para revision humana.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 432 Td (2. Evidencia de verificacion fresca) Tj
+ET
+q 0.92 g 54 384 487 24 re f Q
+q 0.55 G 0.5 w 54 384 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 400 Td (Verificacion) Tj
+ET
+q 0.65 G 0.5 w 199 408 m 199 384 l S Q
+BT
+0 g
+/F2 7 Tf
+204 400 Td (Resultado) Tj
+ET
+q 0.65 G 0.5 w 287 408 m 287 384 l S Q
+BT
+0 g
+/F2 7 Tf
+292 400 Td (Evidencia) Tj
+ET
+q 0.78 G 0.5 w 54 347 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 376 Td (Smoke operativo) Tj
+ET
+q 0.82 G 0.5 w 199 384 m 199 347 l S Q
+BT
+0 g
+/F2 7 Tf
+204 376 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 384 m 287 347 l S Q
+BT
+0 g
+/F1 7 Tf
+292 376 Td (Health, liveness, readiness, observabilidad, headers de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 366 Td (seguridad, login, proyectos, dashboard, Cost Manager, RFQ,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 356 Td (document control, pilot readiness y frontend HTTP 200.) Tj
+ET
+q 0.78 G 0.5 w 54 323 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 339 Td (Readiness API) Tj
+ET
+q 0.82 G 0.5 w 199 347 m 199 323 l S Q
+BT
+0 g
+/F2 7 Tf
+204 339 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 347 m 287 323 l S Q
+BT
+0 g
+/F1 7 Tf
+292 339 Td (GET /api/v1/health/ready responde ready.) Tj
+ET
+q 0.78 G 0.5 w 54 299 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 315 Td (Alembic) Tj
+ET
+q 0.82 G 0.5 w 199 323 m 199 299 l S Q
+BT
+0 g
+/F2 7 Tf
+204 315 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 323 m 287 299 l S Q
+BT
+0 g
+/F1 7 Tf
+292 315 Td (20260515_0018 \(head\).) Tj
+ET
+q 0.78 G 0.5 w 54 275 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 291 Td (Servicios Docker) Tj
+ET
+q 0.82 G 0.5 w 199 299 m 199 275 l S Q
+BT
+0 g
+/F2 7 Tf
+204 291 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 299 m 287 275 l S Q
+BT
+0 g
+/F1 7 Tf
+292 291 Td (api, frontend, db y redis arriba; api, db y redis healthy.) Tj
+ET
+q 0.78 G 0.5 w 54 251 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 267 Td (Frontend build) Tj
+ET
+q 0.82 G 0.5 w 199 275 m 199 251 l S Q
+BT
+0 g
+/F2 7 Tf
+204 267 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 275 m 287 251 l S Q
+BT
+0 g
+/F1 7 Tf
+292 267 Td (npm run build verificado despues de restaurar marca.) Tj
+ET
+q 0.78 G 0.5 w 54 227 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 243 Td (Frontend lint) Tj
+ET
+q 0.82 G 0.5 w 199 251 m 199 227 l S Q
+BT
+0 g
+/F2 7 Tf
+204 243 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 251 m 287 227 l S Q
+BT
+0 g
+/F1 7 Tf
+292 243 Td (npm run lint -- --max-warnings=0 verificado.) Tj
+ET
+q 0.78 G 0.5 w 54 203 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 219 Td (Frontend tests) Tj
+ET
+q 0.82 G 0.5 w 199 227 m 199 203 l S Q
+BT
+0 g
+/F2 7 Tf
+204 219 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 227 m 287 203 l S Q
+BT
+0 g
+/F1 7 Tf
+292 219 Td (AppFlow y LoginView: 13 tests passed.) Tj
+ET
+q 0.78 G 0.5 w 54 176 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 195 Td (Verificacion visual) Tj
+ET
+q 0.82 G 0.5 w 199 203 m 199 176 l S Q
+BT
+0 g
+/F2 7 Tf
+204 195 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 203 m 287 176 l S Q
+BT
+0 g
+/F1 7 Tf
+292 195 Td (Navegador integrado mostro logo, nombre Pypmis AI SaaS y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 185 Td (workspace sin errores de consola.) Tj
+ET
+q 0.78 G 0.5 w 54 149 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 168 Td (Ultimos commits) Tj
+ET
+q 0.82 G 0.5 w 199 176 m 199 149 l S Q
+BT
+0 g
+/F2 7 Tf
+204 168 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 176 m 287 149 l S Q
+BT
+0 g
+/F1 7 Tf
+292 168 Td (6c7136b marca restaurada; 5bcbc5e flujo guiado) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 158 Td (multi-tenant.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 138 Td (3. Estado por capacidad) Tj
+ET
+q 0.92 g 54 90 487 24 re f Q
+q 0.55 G 0.5 w 54 90 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 106 Td (Capacidad) Tj
+ET
+q 0.65 G 0.5 w 199 114 m 199 90 l S Q
+BT
+0 g
+/F2 7 Tf
+204 106 Td (Estado para) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 96 Td (produccion) Tj
+ET
+q 0.65 G 0.5 w 287 114 m 287 90 l S Q
+BT
+0 g
+/F2 7 Tf
+292 106 Td (Observacion) Tj
+ET
+q 0.78 G 0.5 w 54 63 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 82 Td (Autenticacion y tenant) Tj
+ET
+q 0.82 G 0.5 w 199 90 m 199 63 l S Q
+BT
+0 g
+/F2 7 Tf
+204 82 Td (Piloto controlado) Tj
+ET
+q 0.82 G 0.5 w 287 90 m 287 63 l S Q
+BT
+0 g
+/F1 7 Tf
+292 82 Td (JWT operativo; antes de produccion usar usuarios reales,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 72 Td (claves fuertes y politicas de sesion.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 9056 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Capacidad) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Estado para) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 772 Td (produccion) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Observacion) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Multi-tenant) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Contexto de tenant visible y endpoints filtrados por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (tenant.) Tj
+ET
+q 0.78 G 0.5 w 54 712 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Proyecto) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 712 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 712 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Proyecto seleccionado desde command bar; drawer para crear) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 721 Td (proyecto sin tapar la operacion principal.) Tj
+ET
+q 0.78 G 0.5 w 54 685 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 704 Td (Operational setup) Tj
+ET
+q 0.82 G 0.5 w 199 712 m 199 685 l S Q
+BT
+0 g
+/F2 7 Tf
+204 704 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 712 m 287 685 l S Q
+BT
+0 g
+/F1 7 Tf
+292 704 Td (Permisos, modulos, cost sheet, funding sheet y P6 mapping) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 694 Td (controlados.) Tj
+ET
+q 0.78 G 0.5 w 54 658 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 677 Td (XML/XER) Tj
+ET
+q 0.82 G 0.5 w 199 685 m 199 658 l S Q
+BT
+0 g
+/F2 7 Tf
+204 677 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 685 m 287 658 l S Q
+BT
+0 g
+/F1 7 Tf
+292 677 Td (Ingesta cronograma, actividades, WBS, costos, moneda y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 667 Td (quality findings.) Tj
+ET
+q 0.78 G 0.5 w 54 634 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 650 Td (Gate costo/moneda) Tj
+ET
+q 0.82 G 0.5 w 199 658 m 199 634 l S Q
+BT
+0 g
+/F2 7 Tf
+204 650 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 658 m 287 634 l S Q
+BT
+0 g
+/F1 7 Tf
+292 650 Td (Bloquea baseline si falta costo o moneda confirmada.) Tj
+ET
+q 0.78 G 0.5 w 54 607 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 626 Td (Activity Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 634 m 199 607 l S Q
+BT
+0 g
+/F2 7 Tf
+204 626 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 634 m 287 607 l S Q
+BT
+0 g
+/F1 7 Tf
+292 626 Td (Filas de actividades, costo planeado y trazabilidad a) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 616 Td (WBS/CBS/control account.) Tj
+ET
+q 0.78 G 0.5 w 54 580 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 599 Td (WBS Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 607 m 199 580 l S Q
+BT
+0 g
+/F2 7 Tf
+204 599 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 607 m 287 580 l S Q
+BT
+0 g
+/F1 7 Tf
+292 599 Td (Roll-up WBS con actividad, planned value y brechas de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 589 Td (mapping.) Tj
+ET
+q 0.78 G 0.5 w 54 553 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 572 Td (CBS/FBS) Tj
+ET
+q 0.82 G 0.5 w 199 580 m 199 553 l S Q
+BT
+0 g
+/F2 7 Tf
+204 572 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 580 m 287 553 l S Q
+BT
+0 g
+/F1 7 Tf
+292 572 Td (CBS, cost codes, funding sources, FBS y cuentas de control) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 562 Td (integradas.) Tj
+ET
+q 0.78 G 0.5 w 54 526 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 545 Td (Business Processes) Tj
+ET
+q 0.82 G 0.5 w 199 553 m 199 526 l S Q
+BT
+0 g
+/F2 7 Tf
+204 545 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 553 m 287 526 l S Q
+BT
+0 g
+/F1 7 Tf
+292 545 Td (BP CBS-WBS, BP CBS-Fund, permisos por BP, aprobaciones por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 535 Td (rol y auditoria.) Tj
+ET
+q 0.78 G 0.5 w 54 502 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 518 Td (Line items) Tj
+ET
+q 0.82 G 0.5 w 199 526 m 199 502 l S Q
+BT
+0 g
+/F2 7 Tf
+204 518 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 526 m 287 502 l S Q
+BT
+0 g
+/F1 7 Tf
+292 518 Td (Edicion con versionado, expected_version e historial.) Tj
+ET
+q 0.78 G 0.5 w 54 475 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 494 Td (Recost) Tj
+ET
+q 0.82 G 0.5 w 199 502 m 199 475 l S Q
+BT
+0 g
+/F2 7 Tf
+204 494 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 502 m 287 475 l S Q
+BT
+0 g
+/F1 7 Tf
+292 494 Td (Rate Sheet, recost de Activity Sheet e historico de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 484 Td (corridas.) Tj
+ET
+q 0.78 G 0.5 w 54 451 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 467 Td (Conciliacion) Tj
+ET
+q 0.82 G 0.5 w 199 475 m 199 451 l S Q
+BT
+0 g
+/F2 7 Tf
+204 467 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 475 m 287 451 l S Q
+BT
+0 g
+/F1 7 Tf
+292 467 Td (Reporte integrado y export XLSX/PDF.) Tj
+ET
+q 0.78 G 0.5 w 54 424 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 443 Td (AWP) Tj
+ET
+q 0.82 G 0.5 w 199 451 m 199 424 l S Q
+BT
+0 g
+/F2 7 Tf
+204 443 Td (Preparado inicial) Tj
+ET
+q 0.82 G 0.5 w 287 451 m 287 424 l S Q
+BT
+0 g
+/F1 7 Tf
+292 443 Td (Paquetes CWA/CWP/IWP, readiness, constraints y propuesta) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 433 Td (draft del agente.) Tj
+ET
+q 0.78 G 0.5 w 54 397 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 416 Td (Observabilidad) Tj
+ET
+q 0.82 G 0.5 w 199 424 m 199 397 l S Q
+BT
+0 g
+/F2 7 Tf
+204 416 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 424 m 287 397 l S Q
+BT
+0 g
+/F1 7 Tf
+292 416 Td (Health, readiness, logs JSON, metricas protegidas y smoke) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 406 Td (operativo.) Tj
+ET
+q 0.78 G 0.5 w 54 370 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 389 Td (Backups) Tj
+ET
+q 0.82 G 0.5 w 199 397 m 199 370 l S Q
+BT
+0 g
+/F2 7 Tf
+204 389 Td (Preparado) Tj
+ET
+q 0.82 G 0.5 w 287 397 m 287 370 l S Q
+BT
+0 g
+/F1 7 Tf
+292 389 Td (Scripts disponibles; falta programar ejecucion y prueba de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 379 Td (restore en ambiente objetivo.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 359 Td (4. Criterio de produccion) Tj
+ET
+q 0.92 g 54 311 487 24 re f Q
+q 0.55 G 0.5 w 54 311 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 327 Td (Criterio) Tj
+ET
+q 0.65 G 0.5 w 199 335 m 199 311 l S Q
+BT
+0 g
+/F2 7 Tf
+204 327 Td (Estado) Tj
+ET
+q 0.65 G 0.5 w 287 335 m 287 311 l S Q
+BT
+0 g
+/F2 7 Tf
+292 327 Td (Decision) Tj
+ET
+q 0.78 G 0.5 w 54 284 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 303 Td (Funcionalidad core) Tj
+ET
+q 0.82 G 0.5 w 199 311 m 199 284 l S Q
+BT
+0 g
+/F2 7 Tf
+204 303 Td (Cumple) Tj
+ET
+q 0.82 G 0.5 w 287 311 m 287 284 l S Q
+BT
+0 g
+/F1 7 Tf
+292 303 Td (El flujo central de instructivos esta implementado y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 293 Td (probado.) Tj
+ET
+q 0.78 G 0.5 w 54 257 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 276 Td (Pruebas automaticas) Tj
+ET
+q 0.82 G 0.5 w 199 284 m 199 257 l S Q
+BT
+0 g
+/F2 7 Tf
+204 276 Td (Cumple) Tj
+ET
+q 0.82 G 0.5 w 287 284 m 287 257 l S Q
+BT
+0 g
+/F1 7 Tf
+292 276 Td (Backend, frontend y E2E fueron verificados en esta rama;) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 266 Td (smoke fresco OK.) Tj
+ET
+q 0.78 G 0.5 w 54 230 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 249 Td (Migraciones) Tj
+ET
+q 0.82 G 0.5 w 199 257 m 199 230 l S Q
+BT
+0 g
+/F2 7 Tf
+204 249 Td (Cumple local) Tj
+ET
+q 0.82 G 0.5 w 287 257 m 287 230 l S Q
+BT
+0 g
+/F1 7 Tf
+292 249 Td (Head en 20260515_0018; aplicar en ambiente objetivo antes) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 239 Td (de abrir usuarios.) Tj
+ET
+q 0.78 G 0.5 w 54 203 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 222 Td (Seguridad) Tj
+ET
+q 0.82 G 0.5 w 199 230 m 199 203 l S Q
+BT
+0 g
+/F2 7 Tf
+204 222 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 230 m 287 203 l S Q
+BT
+0 g
+/F1 7 Tf
+292 222 Td (Requiere secretos reales, bloqueo de credenciales demo,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 212 Td (CORS/hosts definitivos y politica de rotacion.) Tj
+ET
+q 0.78 G 0.5 w 54 176 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 195 Td (Datos productivos) Tj
+ET
+q 0.82 G 0.5 w 199 203 m 199 176 l S Q
+BT
+0 g
+/F2 7 Tf
+204 195 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 203 m 287 176 l S Q
+BT
+0 g
+/F1 7 Tf
+292 195 Td (Requiere tenant/cliente real, matriz de roles y carga de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 185 Td (catalogos base.) Tj
+ET
+q 0.78 G 0.5 w 54 149 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 168 Td (Backups) Tj
+ET
+q 0.82 G 0.5 w 199 176 m 199 149 l S Q
+BT
+0 g
+/F2 7 Tf
+204 168 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 176 m 287 149 l S Q
+BT
+0 g
+/F1 7 Tf
+292 168 Td (Requiere job programado, retencion, checksum y restore) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 158 Td (probado.) Tj
+ET
+q 0.78 G 0.5 w 54 122 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 141 Td (Observabilidad) Tj
+ET
+q 0.82 G 0.5 w 199 149 m 199 122 l S Q
+BT
+0 g
+/F2 7 Tf
+204 141 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 149 m 287 122 l S Q
+BT
+0 g
+/F1 7 Tf
+292 141 Td (Requiere destino de logs, alertas, metricas y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 131 Td (Sentry/opcional por cliente.) Tj
+ET
+q 0.78 G 0.5 w 54 95 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 114 Td (AI externo) Tj
+ET
+q 0.82 G 0.5 w 199 122 m 199 95 l S Q
+BT
+0 g
+/F2 7 Tf
+204 114 Td (Opcional) Tj
+ET
+q 0.82 G 0.5 w 287 122 m 287 95 l S Q
+BT
+0 g
+/F1 7 Tf
+292 114 Td (Mantener deshabilitado o usar modelo economico solo para) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 104 Td (sintesis; no para aprobaciones.) Tj
+ET
+q 0.78 G 0.5 w 54 68 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 87 Td (Decision final) Tj
+ET
+q 0.82 G 0.5 w 199 95 m 199 68 l S Q
+BT
+0 g
+/F2 7 Tf
+204 87 Td (Go controlado) Tj
+ET
+q 0.82 G 0.5 w 287 95 m 287 68 l S Q
+BT
+0 g
+/F1 7 Tf
+292 87 Td (Recomendado para piloto productivo controlado, no para) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 77 Td (liberacion masiva sin hardening final.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 3) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 8311 >>
+stream
+BT
+0 g
+/F2 13 Tf
+54 790 Td (5. Paso a paso de uso principal) Tj
+ET
+q 0.92 g 54 742 487 24 re f Q
+q 0.55 G 0.5 w 54 742 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 758 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 766 m 199 742 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 766 m 287 742 l S Q
+BT
+0 g
+/F2 7 Tf
+292 758 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 715 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 734 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 742 m 199 715 l S Q
+BT
+0 g
+/F2 7 Tf
+204 734 Td (Abrir) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 724 Td (http://localhost:5173.) Tj
+ET
+q 0.82 G 0.5 w 287 742 m 287 715 l S Q
+BT
+0 g
+/F1 7 Tf
+292 734 Td (Se muestra login con logo y nombre Pypmis AI SaaS.) Tj
+ET
+q 0.78 G 0.5 w 54 678 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 707 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 715 m 199 678 l S Q
+BT
+0 g
+/F2 7 Tf
+204 707 Td (Ingresar usuario) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 697 Td (demo admin o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 687 Td (usuario asignado.) Tj
+ET
+q 0.82 G 0.5 w 287 715 m 287 678 l S Q
+BT
+0 g
+/F1 7 Tf
+292 707 Td (Entra al workspace del tenant.) Tj
+ET
+q 0.78 G 0.5 w 54 651 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 670 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 678 m 199 651 l S Q
+BT
+0 g
+/F2 7 Tf
+204 670 Td (Revisar la barra) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 660 Td (superior.) Tj
+ET
+q 0.82 G 0.5 w 287 678 m 287 651 l S Q
+BT
+0 g
+/F1 7 Tf
+292 670 Td (Se ve marca, tenant, proyecto activo, usuario y boton New) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 660 Td (Project.) Tj
+ET
+q 0.78 G 0.5 w 54 614 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 643 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 651 m 199 614 l S Q
+BT
+0 g
+/F2 7 Tf
+204 643 Td (Seleccionar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 633 Td (proyecto en el) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 623 Td (command bar.) Tj
+ET
+q 0.82 G 0.5 w 287 651 m 287 614 l S Q
+BT
+0 g
+/F1 7 Tf
+292 643 Td (El dashboard y el flujo guiado cambian al proyecto activo.) Tj
+ET
+q 0.78 G 0.5 w 54 577 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 606 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 614 m 199 577 l S Q
+BT
+0 g
+/F2 7 Tf
+204 606 Td (Si se requiere,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 596 Td (crear proyecto con) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 586 Td (New Project.) Tj
+ET
+q 0.82 G 0.5 w 287 614 m 287 577 l S Q
+BT
+0 g
+/F1 7 Tf
+292 606 Td (Se abre drawer lateral sin tapar el tablero.) Tj
+ET
+q 0.78 G 0.5 w 54 550 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 569 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 577 m 199 550 l S Q
+BT
+0 g
+/F2 7 Tf
+204 569 Td (Completar Project) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 559 Td (Setup.) Tj
+ET
+q 0.82 G 0.5 w 287 577 m 287 550 l S Q
+BT
+0 g
+/F1 7 Tf
+292 569 Td (Quedan definidos permisos, modulos, cost sheet, funding) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 559 Td (sheet y P6 mapping.) Tj
+ET
+q 0.78 G 0.5 w 54 513 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 542 Td (7) Tj
+ET
+q 0.82 G 0.5 w 199 550 m 199 513 l S Q
+BT
+0 g
+/F2 7 Tf
+204 542 Td (Ir al paso) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 532 Td (Schedule intake o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 522 Td (Baseline.) Tj
+ET
+q 0.82 G 0.5 w 287 550 m 287 513 l S Q
+BT
+0 g
+/F1 7 Tf
+292 542 Td (Se prepara carga XML/XER.) Tj
+ET
+q 0.78 G 0.5 w 54 486 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 505 Td (8) Tj
+ET
+q 0.82 G 0.5 w 199 513 m 199 486 l S Q
+BT
+0 g
+/F2 7 Tf
+204 505 Td (Cargar cronograma) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 495 Td (XML/XER.) Tj
+ET
+q 0.82 G 0.5 w 287 513 m 287 486 l S Q
+BT
+0 g
+/F1 7 Tf
+292 505 Td (Se crea Schedule Import, Activity Sheet, WBS Sheet y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 495 Td (baseline version.) Tj
+ET
+q 0.78 G 0.5 w 54 459 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 478 Td (9) Tj
+ET
+q 0.82 G 0.5 w 199 486 m 199 459 l S Q
+BT
+0 g
+/F2 7 Tf
+204 478 Td (Revisar el gate) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 468 Td (Cost and currency.) Tj
+ET
+q 0.82 G 0.5 w 287 486 m 287 459 l S Q
+BT
+0 g
+/F1 7 Tf
+292 478 Td (La app muestra moneda detectada, fuente, costo total y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 468 Td (porcentaje cost-loaded.) Tj
+ET
+q 0.78 G 0.5 w 54 432 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 451 Td (10) Tj
+ET
+q 0.82 G 0.5 w 199 459 m 199 432 l S Q
+BT
+0 g
+/F2 7 Tf
+204 451 Td (Confirmar moneda) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 441 Td (cuando aplique.) Tj
+ET
+q 0.82 G 0.5 w 287 459 m 287 432 l S Q
+BT
+0 g
+/F1 7 Tf
+292 451 Td (Baseline deja de estar bloqueado por moneda.) Tj
+ET
+q 0.78 G 0.5 w 54 395 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 424 Td (11) Tj
+ET
+q 0.82 G 0.5 w 199 432 m 199 395 l S Q
+BT
+0 g
+/F2 7 Tf
+204 424 Td (Revisar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 414 Td (WBS/CBS/FBS) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 404 Td (mapping.) Tj
+ET
+q 0.82 G 0.5 w 287 432 m 287 395 l S Q
+BT
+0 g
+/F1 7 Tf
+292 424 Td (Se identifican brechas entre WBS, CBS, FBS y cuentas de) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 414 Td (control.) Tj
+ET
+q 0.78 G 0.5 w 54 358 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 387 Td (12) Tj
+ET
+q 0.82 G 0.5 w 199 395 m 199 358 l S Q
+BT
+0 g
+/F2 7 Tf
+204 387 Td (Crear o ajustar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 377 Td (CBS, FBS y Control) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 367 Td (Accounts.) Tj
+ET
+q 0.82 G 0.5 w 287 395 m 287 358 l S Q
+BT
+0 g
+/F1 7 Tf
+292 387 Td (La matriz integrada queda trazable.) Tj
+ET
+q 0.78 G 0.5 w 54 331 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 350 Td (13) Tj
+ET
+q 0.82 G 0.5 w 199 358 m 199 331 l S Q
+BT
+0 g
+/F2 7 Tf
+204 350 Td (Configurar BP) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 340 Td (permissions.) Tj
+ET
+q 0.82 G 0.5 w 287 358 m 287 331 l S Q
+BT
+0 g
+/F1 7 Tf
+292 350 Td (Las acciones quedan controladas por rol y por Business) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 340 Td (Process.) Tj
+ET
+q 0.78 G 0.5 w 54 294 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 323 Td (14) Tj
+ET
+q 0.82 G 0.5 w 199 331 m 199 294 l S Q
+BT
+0 g
+/F2 7 Tf
+204 323 Td (Aprobar baseline) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 313 Td (solo si no hay) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 303 Td (bloqueos.) Tj
+ET
+q 0.82 G 0.5 w 287 331 m 287 294 l S Q
+BT
+0 g
+/F1 7 Tf
+292 323 Td (Se registra aprobacion con auditoria.) Tj
+ET
+q 0.78 G 0.5 w 54 267 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 286 Td (15) Tj
+ET
+q 0.82 G 0.5 w 199 294 m 199 267 l S Q
+BT
+0 g
+/F2 7 Tf
+204 286 Td (Capturar progreso) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 276 Td (y costos reales.) Tj
+ET
+q 0.82 G 0.5 w 287 294 m 287 267 l S Q
+BT
+0 g
+/F1 7 Tf
+292 286 Td (Se alimentan EV, AC, CPI, SPI y alertas.) Tj
+ET
+q 0.78 G 0.5 w 54 230 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 259 Td (16) Tj
+ET
+q 0.82 G 0.5 w 199 267 m 199 230 l S Q
+BT
+0 g
+/F2 7 Tf
+204 259 Td (Ejecutar Rate) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 249 Td (Sheet y Recost) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 239 Td (Latest.) Tj
+ET
+q 0.82 G 0.5 w 287 267 m 287 230 l S Q
+BT
+0 g
+/F1 7 Tf
+292 259 Td (Se recalcula costo del Activity Sheet y queda historico.) Tj
+ET
+q 0.78 G 0.5 w 54 193 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 222 Td (17) Tj
+ET
+q 0.82 G 0.5 w 199 230 m 199 193 l S Q
+BT
+0 g
+/F2 7 Tf
+204 222 Td (Exportar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 212 Td (conciliacion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 202 Td (XLSX/PDF.) Tj
+ET
+q 0.82 G 0.5 w 287 230 m 287 193 l S Q
+BT
+0 g
+/F1 7 Tf
+292 222 Td (Se obtiene evidencia para comite o revision.) Tj
+ET
+q 0.78 G 0.5 w 54 166 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 185 Td (18) Tj
+ET
+q 0.82 G 0.5 w 199 193 m 199 166 l S Q
+BT
+0 g
+/F2 7 Tf
+204 185 Td (Ejecutar Run) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 175 Td (Audit.) Tj
+ET
+q 0.82 G 0.5 w 287 193 m 287 166 l S Q
+BT
+0 g
+/F1 7 Tf
+292 185 Td (El auditor muestra score, hallazgos y recomendaciones.) Tj
+ET
+q 0.78 G 0.5 w 54 139 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 158 Td (19) Tj
+ET
+q 0.82 G 0.5 w 199 166 m 199 139 l S Q
+BT
+0 g
+/F2 7 Tf
+204 158 Td (Ejecutar Create) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 148 Td (Draft Packages.) Tj
+ET
+q 0.82 G 0.5 w 287 166 m 287 139 l S Q
+BT
+0 g
+/F1 7 Tf
+292 158 Td (El agente propone paquetes draft AWP cuando detecta) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 148 Td (brechas.) Tj
+ET
+q 0.78 G 0.5 w 54 112 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 131 Td (20) Tj
+ET
+q 0.82 G 0.5 w 199 139 m 199 112 l S Q
+BT
+0 g
+/F2 7 Tf
+204 131 Td (Abrir Work) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 121 Td (Packages.) Tj
+ET
+q 0.82 G 0.5 w 287 139 m 287 112 l S Q
+BT
+0 g
+/F1 7 Tf
+292 131 Td (Se ven paquetes CWA/CWP/IWP, readiness, POC y constraints.) Tj
+ET
+q 0.78 G 0.5 w 54 75 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 104 Td (21) Tj
+ET
+q 0.82 G 0.5 w 199 112 m 199 75 l S Q
+BT
+0 g
+/F2 7 Tf
+204 104 Td (Registrar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 94 Td (constraints) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 84 Td (manuales.) Tj
+ET
+q 0.82 G 0.5 w 287 112 m 287 75 l S Q
+BT
+0 g
+/F1 7 Tf
+292 104 Td (El usuario ingresa restricciones, owner, prioridad, fecha) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 94 Td (y evidencia.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 4) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 7932 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Resultado esperado) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (22) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Cerrar constraints) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (con evidencia.) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (El paquete puede avanzar en readiness.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 728 Td (6. Uso del flujo guiado) Tj
+ET
+q 0.92 g 54 680 487 24 re f Q
+q 0.55 G 0.5 w 54 680 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 696 Td (Elemento) Tj
+ET
+q 0.65 G 0.5 w 199 704 m 199 680 l S Q
+BT
+0 g
+/F2 7 Tf
+204 696 Td (Donde se ve) Tj
+ET
+q 0.65 G 0.5 w 287 704 m 287 680 l S Q
+BT
+0 g
+/F2 7 Tf
+292 696 Td (Como se usa) Tj
+ET
+q 0.78 G 0.5 w 54 653 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 672 Td (Marca de app) Tj
+ET
+q 0.82 G 0.5 w 199 680 m 199 653 l S Q
+BT
+0 g
+/F2 7 Tf
+204 672 Td (Barra superior) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 662 Td (blanca) Tj
+ET
+q 0.82 G 0.5 w 287 680 m 287 653 l S Q
+BT
+0 g
+/F1 7 Tf
+292 672 Td (Confirma que se esta en Pypmis AI SaaS.) Tj
+ET
+q 0.78 G 0.5 w 54 626 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 645 Td (Tenant command bar) Tj
+ET
+q 0.82 G 0.5 w 199 653 m 199 626 l S Q
+BT
+0 g
+/F2 7 Tf
+204 645 Td (Barra oscura) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 635 Td (superior) Tj
+ET
+q 0.82 G 0.5 w 287 653 m 287 626 l S Q
+BT
+0 g
+/F1 7 Tf
+292 645 Td (Cambia proyecto, crea proyecto y muestra tenant/usuario.) Tj
+ET
+q 0.78 G 0.5 w 54 602 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 618 Td (Guided Flow) Tj
+ET
+q 0.82 G 0.5 w 199 626 m 199 602 l S Q
+BT
+0 g
+/F2 7 Tf
+204 618 Td (Columna izquierda) Tj
+ET
+q 0.82 G 0.5 w 287 626 m 287 602 l S Q
+BT
+0 g
+/F1 7 Tf
+292 618 Td (Muestra pasos, estado y bloqueos.) Tj
+ET
+q 0.78 G 0.5 w 54 578 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 594 Td (Next action) Tj
+ET
+q 0.82 G 0.5 w 199 602 m 199 578 l S Q
+BT
+0 g
+/F2 7 Tf
+204 594 Td (Panel derecho) Tj
+ET
+q 0.82 G 0.5 w 287 602 m 287 578 l S Q
+BT
+0 g
+/F1 7 Tf
+292 594 Td (Sugiere la proxima accion operativa.) Tj
+ET
+q 0.78 G 0.5 w 54 554 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 570 Td (Cost and currency gate) Tj
+ET
+q 0.82 G 0.5 w 199 578 m 199 554 l S Q
+BT
+0 g
+/F2 7 Tf
+204 570 Td (Baseline) Tj
+ET
+q 0.82 G 0.5 w 287 578 m 287 554 l S Q
+BT
+0 g
+/F1 7 Tf
+292 570 Td (Bloquea baseline si falta costo o moneda confirmada.) Tj
+ET
+q 0.78 G 0.5 w 54 530 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 546 Td (Project Setup) Tj
+ET
+q 0.82 G 0.5 w 199 554 m 199 530 l S Q
+BT
+0 g
+/F2 7 Tf
+204 546 Td (Rail guiado) Tj
+ET
+q 0.82 G 0.5 w 287 554 m 287 530 l S Q
+BT
+0 g
+/F1 7 Tf
+292 546 Td (Configura prerequisitos operativos.) Tj
+ET
+q 0.78 G 0.5 w 54 506 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 522 Td (Integrated Control) Tj
+ET
+q 0.82 G 0.5 w 199 530 m 199 506 l S Q
+BT
+0 g
+/F2 7 Tf
+204 522 Td (Rail guiado) Tj
+ET
+q 0.82 G 0.5 w 287 530 m 287 506 l S Q
+BT
+0 g
+/F1 7 Tf
+292 522 Td (Opera matriz WBS-CBS-FBS-AWP-control account.) Tj
+ET
+q 0.78 G 0.5 w 54 482 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 498 Td (Work Packages) Tj
+ET
+q 0.82 G 0.5 w 199 506 m 199 482 l S Q
+BT
+0 g
+/F2 7 Tf
+204 498 Td (Rail guiado) Tj
+ET
+q 0.82 G 0.5 w 287 506 m 287 482 l S Q
+BT
+0 g
+/F1 7 Tf
+292 498 Td (Gestiona paquetes AWP y restricciones.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 471 Td (7. Uso de paquetes draft AWP) Tj
+ET
+q 0.92 g 54 423 487 24 re f Q
+q 0.55 G 0.5 w 54 423 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 439 Td (Elemento) Tj
+ET
+q 0.65 G 0.5 w 199 447 m 199 423 l S Q
+BT
+0 g
+/F2 7 Tf
+204 439 Td (Ubicacion) Tj
+ET
+q 0.65 G 0.5 w 287 447 m 287 423 l S Q
+BT
+0 g
+/F2 7 Tf
+292 439 Td (Regla) Tj
+ET
+q 0.78 G 0.5 w 54 386 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 415 Td (Boton Create Draft Packages) Tj
+ET
+q 0.82 G 0.5 w 199 423 m 199 386 l S Q
+BT
+0 g
+/F2 7 Tf
+204 415 Td (Integrated) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 405 Td (Control, panel AI) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 395 Td (Control Auditor) Tj
+ET
+q 0.82 G 0.5 w 287 423 m 287 386 l S Q
+BT
+0 g
+/F1 7 Tf
+292 415 Td (Ejecuta propuesta del agente Senior AWP Packaging Advisor.) Tj
+ET
+q 0.78 G 0.5 w 54 359 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 378 Td (Paquetes draft) Tj
+ET
+q 0.82 G 0.5 w 199 386 m 199 359 l S Q
+BT
+0 g
+/F2 7 Tf
+204 378 Td (Vista Work) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 368 Td (Packages) Tj
+ET
+q 0.82 G 0.5 w 287 386 m 287 359 l S Q
+BT
+0 g
+/F1 7 Tf
+292 378 Td (Aparecen como CWA/CWP/IWP con estado inicial de revision.) Tj
+ET
+q 0.78 G 0.5 w 54 322 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 351 Td (POC del paquete) Tj
+ET
+q 0.82 G 0.5 w 199 359 m 199 322 l S Q
+BT
+0 g
+/F2 7 Tf
+204 351 Td (Tarjetas o) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 341 Td (registro de Work) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 331 Td (Packages) Tj
+ET
+q 0.82 G 0.5 w 287 359 m 287 322 l S Q
+BT
+0 g
+/F1 7 Tf
+292 351 Td (Indica persona responsable o punto de contacto del) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 341 Td (paquete.) Tj
+ET
+q 0.78 G 0.5 w 54 295 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 314 Td (Constraints generadas) Tj
+ET
+q 0.82 G 0.5 w 199 322 m 199 295 l S Q
+BT
+0 g
+/F2 7 Tf
+204 314 Td (Work Packages) Tj
+ET
+q 0.82 G 0.5 w 287 322 m 287 295 l S Q
+BT
+0 g
+/F1 7 Tf
+292 314 Td (El agente crea restricciones iniciales de documentos,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 304 Td (materiales, permisos, seguridad/calidad y readiness.) Tj
+ET
+q 0.78 G 0.5 w 54 268 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 287 Td (Constraints manuales) Tj
+ET
+q 0.82 G 0.5 w 199 295 m 199 268 l S Q
+BT
+0 g
+/F2 7 Tf
+204 287 Td (Formulario de Work) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 277 Td (Packages) Tj
+ET
+q 0.82 G 0.5 w 287 295 m 287 268 l S Q
+BT
+0 g
+/F1 7 Tf
+292 287 Td (El usuario las ingresa y mantiene; el agente no reemplaza) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 277 Td (la revision humana.) Tj
+ET
+q 0.78 G 0.5 w 54 241 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 260 Td (Historial) Tj
+ET
+q 0.82 G 0.5 w 199 268 m 199 241 l S Q
+BT
+0 g
+/F2 7 Tf
+204 260 Td (AI Control Auditor) Tj
+ET
+q 0.82 G 0.5 w 287 268 m 287 241 l S Q
+BT
+0 g
+/F1 7 Tf
+292 260 Td (Se registra si creo paquetes, si omitio duplicados y que) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 250 Td (hallazgos quedaron.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 230 Td (8. Roles y responsabilidades) Tj
+ET
+q 0.92 g 54 182 487 24 re f Q
+q 0.55 G 0.5 w 54 182 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 198 Td (Rol) Tj
+ET
+q 0.65 G 0.5 w 199 206 m 199 182 l S Q
+BT
+0 g
+/F2 7 Tf
+204 198 Td (Funcion principal) Tj
+ET
+q 0.65 G 0.5 w 287 206 m 287 182 l S Q
+BT
+0 g
+/F2 7 Tf
+292 198 Td (Uso en la app) Tj
+ET
+q 0.78 G 0.5 w 54 145 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 174 Td (Administrator) Tj
+ET
+q 0.82 G 0.5 w 199 182 m 199 145 l S Q
+BT
+0 g
+/F2 7 Tf
+204 174 Td (Configuracion de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 164 Td (tenant, usuarios y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 154 Td (roles) Tj
+ET
+q 0.82 G 0.5 w 287 182 m 287 145 l S Q
+BT
+0 g
+/F1 7 Tf
+292 174 Td (Mantiene matriz de roles y permisos por cliente.) Tj
+ET
+q 0.78 G 0.5 w 54 118 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 137 Td (Control Manager) Tj
+ET
+q 0.82 G 0.5 w 199 145 m 199 118 l S Q
+BT
+0 g
+/F2 7 Tf
+204 137 Td (Gobierno del flujo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 127 Td (integrado) Tj
+ET
+q 0.82 G 0.5 w 287 145 m 287 118 l S Q
+BT
+0 g
+/F1 7 Tf
+292 137 Td (Aprueba baseline y revisa bloqueos.) Tj
+ET
+q 0.78 G 0.5 w 54 94 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 110 Td (Planner) Tj
+ET
+q 0.82 G 0.5 w 199 118 m 199 94 l S Q
+BT
+0 g
+/F2 7 Tf
+204 110 Td (Cronograma y P6) Tj
+ET
+q 0.82 G 0.5 w 287 118 m 287 94 l S Q
+BT
+0 g
+/F1 7 Tf
+292 110 Td (Carga XML/XER y valida Activity/WBS Sheet.) Tj
+ET
+q 0.78 G 0.5 w 54 67 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 86 Td (Cost Controller) Tj
+ET
+q 0.82 G 0.5 w 199 94 m 199 67 l S Q
+BT
+0 g
+/F2 7 Tf
+204 86 Td (Costos, recost y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 76 Td (conciliacion) Tj
+ET
+q 0.82 G 0.5 w 287 94 m 287 67 l S Q
+BT
+0 g
+/F1 7 Tf
+292 86 Td (Gestiona CBS, cost codes, rate sheet, recost y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 76 Td (exportaciones.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 5) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Length 8173 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Rol) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Funcion principal) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Uso en la app) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Contract Manager) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Contratos, SOV y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (funding) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Mantiene compromisos, SOV y funding lines.) Tj
+ET
+q 0.78 G 0.5 w 54 712 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Workface Planner) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 712 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (AWP packaging y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 721 Td (constraints) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 712 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Revisa paquetes draft, readiness y restricciones.) Tj
+ET
+q 0.78 G 0.5 w 54 685 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 704 Td (Field Engineer) Tj
+ET
+q 0.82 G 0.5 w 199 712 m 199 685 l S Q
+BT
+0 g
+/F2 7 Tf
+204 704 Td (Avance y evidencia) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 694 Td (de campo) Tj
+ET
+q 0.82 G 0.5 w 287 712 m 287 685 l S Q
+BT
+0 g
+/F1 7 Tf
+292 704 Td (Registra progreso, soportes y restricciones operativas.) Tj
+ET
+q 0.78 G 0.5 w 54 658 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 677 Td (Document Controller) Tj
+ET
+q 0.82 G 0.5 w 199 685 m 199 658 l S Q
+BT
+0 g
+/F2 7 Tf
+204 677 Td (Evidencia) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 667 Td (documental) Tj
+ET
+q 0.82 G 0.5 w 287 685 m 287 658 l S Q
+BT
+0 g
+/F1 7 Tf
+292 677 Td (Mantiene document control, referencias y cierre.) Tj
+ET
+q 0.78 G 0.5 w 54 631 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 650 Td (Executive) Tj
+ET
+q 0.82 G 0.5 w 199 658 m 199 631 l S Q
+BT
+0 g
+/F2 7 Tf
+204 650 Td (Seguimiento) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 640 Td (ejecutivo) Tj
+ET
+q 0.82 G 0.5 w 287 658 m 287 631 l S Q
+BT
+0 g
+/F1 7 Tf
+292 650 Td (Consulta KPI, alertas y estado de readiness.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 620 Td (9. Checklist antes de ambiente productivo objetivo) Tj
+ET
+q 0.92 g 54 572 487 24 re f Q
+q 0.55 G 0.5 w 54 572 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 588 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 596 m 199 572 l S Q
+BT
+0 g
+/F2 7 Tf
+204 588 Td (Accion tecnica) Tj
+ET
+q 0.65 G 0.5 w 287 596 m 287 572 l S Q
+BT
+0 g
+/F2 7 Tf
+292 588 Td (Criterio de aceptacion) Tj
+ET
+q 0.78 G 0.5 w 54 535 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 564 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 572 m 199 535 l S Q
+BT
+0 g
+/F2 7 Tf
+204 564 Td (Configurar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 554 Td (variables) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 544 Td (productivas.) Tj
+ET
+q 0.82 G 0.5 w 287 572 m 287 535 l S Q
+BT
+0 g
+/F1 7 Tf
+292 564 Td (No hay secretos demo ni wildcard hosts.) Tj
+ET
+q 0.78 G 0.5 w 54 508 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 527 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 535 m 199 508 l S Q
+BT
+0 g
+/F2 7 Tf
+204 527 Td (Ejecutar alembic) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 517 Td (upgrade head.) Tj
+ET
+q 0.82 G 0.5 w 287 535 m 287 508 l S Q
+BT
+0 g
+/F1 7 Tf
+292 527 Td (alembic current muestra 20260515_0018 \(head\) o superior.) Tj
+ET
+q 0.78 G 0.5 w 54 471 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 500 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 508 m 199 471 l S Q
+BT
+0 g
+/F2 7 Tf
+204 500 Td (Cargar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 490 Td (tenant/cliente) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 480 Td (real.) Tj
+ET
+q 0.82 G 0.5 w 287 508 m 287 471 l S Q
+BT
+0 g
+/F1 7 Tf
+292 500 Td (Tenant, usuarios y proyecto base existen.) Tj
+ET
+q 0.78 G 0.5 w 54 444 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 463 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 471 m 199 444 l S Q
+BT
+0 g
+/F2 7 Tf
+204 463 Td (Definir matriz de) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 453 Td (roles.) Tj
+ET
+q 0.82 G 0.5 w 287 471 m 287 444 l S Q
+BT
+0 g
+/F1 7 Tf
+292 463 Td (Cada rol tiene permisos, BP y owner claro.) Tj
+ET
+q 0.78 G 0.5 w 54 420 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 436 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 444 m 199 420 l S Q
+BT
+0 g
+/F2 7 Tf
+204 436 Td (Probar login real.) Tj
+ET
+q 0.82 G 0.5 w 287 444 m 287 420 l S Q
+BT
+0 g
+/F1 7 Tf
+292 436 Td (Usuario real entra y solo ve su tenant/proyecto.) Tj
+ET
+q 0.78 G 0.5 w 54 393 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 412 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 420 m 199 393 l S Q
+BT
+0 g
+/F2 7 Tf
+204 412 Td (Cargar cronograma) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 402 Td (real de prueba.) Tj
+ET
+q 0.82 G 0.5 w 287 420 m 287 393 l S Q
+BT
+0 g
+/F1 7 Tf
+292 412 Td (XML/XER genera Activity Sheet y WBS Sheet sin errores) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 402 Td (criticos.) Tj
+ET
+q 0.78 G 0.5 w 54 366 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 385 Td (7) Tj
+ET
+q 0.82 G 0.5 w 199 393 m 199 366 l S Q
+BT
+0 g
+/F2 7 Tf
+204 385 Td (Confirmar gate) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 375 Td (costo/moneda.) Tj
+ET
+q 0.82 G 0.5 w 287 393 m 287 366 l S Q
+BT
+0 g
+/F1 7 Tf
+292 385 Td (Baseline solo avanza con moneda y costos validos.) Tj
+ET
+q 0.78 G 0.5 w 54 339 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 358 Td (8) Tj
+ET
+q 0.82 G 0.5 w 199 366 m 199 339 l S Q
+BT
+0 g
+/F2 7 Tf
+204 358 Td (Configurar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 348 Td (backups.) Tj
+ET
+q 0.82 G 0.5 w 287 366 m 287 339 l S Q
+BT
+0 g
+/F1 7 Tf
+292 358 Td (Backup, checksum, retencion y restore probado.) Tj
+ET
+q 0.78 G 0.5 w 54 312 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 331 Td (9) Tj
+ET
+q 0.82 G 0.5 w 199 339 m 199 312 l S Q
+BT
+0 g
+/F2 7 Tf
+204 331 Td (Activar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 321 Td (observabilidad.) Tj
+ET
+q 0.82 G 0.5 w 287 339 m 287 312 l S Q
+BT
+0 g
+/F1 7 Tf
+292 331 Td (Logs, metricas, readiness y alertas disponibles.) Tj
+ET
+q 0.78 G 0.5 w 54 285 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 304 Td (10) Tj
+ET
+q 0.82 G 0.5 w 199 312 m 199 285 l S Q
+BT
+0 g
+/F2 7 Tf
+204 304 Td (Ejecutar E2E) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 294 Td (pipeline.) Tj
+ET
+q 0.82 G 0.5 w 287 312 m 287 285 l S Q
+BT
+0 g
+/F1 7 Tf
+292 304 Td (Login, Integrated Control, AWP y Work Packages pasan con) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 294 Td (navegador real.) Tj
+ET
+q 0.78 G 0.5 w 54 258 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 277 Td (11) Tj
+ET
+q 0.82 G 0.5 w 199 285 m 199 258 l S Q
+BT
+0 g
+/F2 7 Tf
+204 277 Td (Ejecutar smoke) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 267 Td (post-deploy.) Tj
+ET
+q 0.82 G 0.5 w 287 285 m 287 258 l S Q
+BT
+0 g
+/F1 7 Tf
+292 277 Td (Health, readiness, frontend, proyectos y dashboard OK.) Tj
+ET
+q 0.78 G 0.5 w 54 231 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 250 Td (12) Tj
+ET
+q 0.82 G 0.5 w 199 258 m 199 231 l S Q
+BT
+0 g
+/F2 7 Tf
+204 250 Td (Documentar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 240 Td (criterio Go/No-Go.) Tj
+ET
+q 0.82 G 0.5 w 287 258 m 287 231 l S Q
+BT
+0 g
+/F1 7 Tf
+292 250 Td (Responsable de operacion aprueba salida controlada.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 220 Td (10. Riesgos residuales) Tj
+ET
+q 0.92 g 54 172 487 24 re f Q
+q 0.55 G 0.5 w 54 172 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 188 Td (Riesgo) Tj
+ET
+q 0.65 G 0.5 w 199 196 m 199 172 l S Q
+BT
+0 g
+/F2 7 Tf
+204 188 Td (Impacto) Tj
+ET
+q 0.65 G 0.5 w 287 196 m 287 172 l S Q
+BT
+0 g
+/F2 7 Tf
+292 188 Td (Mitigacion) Tj
+ET
+q 0.78 G 0.5 w 54 148 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 164 Td (Credenciales demo) Tj
+ET
+q 0.82 G 0.5 w 199 172 m 199 148 l S Q
+BT
+0 g
+/F2 7 Tf
+204 164 Td (Alto) Tj
+ET
+q 0.82 G 0.5 w 287 172 m 287 148 l S Q
+BT
+0 g
+/F1 7 Tf
+292 164 Td (No usar 1234 en produccion; rotar claves y usuarios.) Tj
+ET
+q 0.78 G 0.5 w 54 124 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 140 Td (Secretos y CORS) Tj
+ET
+q 0.82 G 0.5 w 199 148 m 199 124 l S Q
+BT
+0 g
+/F2 7 Tf
+204 140 Td (Alto) Tj
+ET
+q 0.82 G 0.5 w 287 148 m 287 124 l S Q
+BT
+0 g
+/F1 7 Tf
+292 140 Td (Definir dominios, allowed hosts y secretos fuertes.) Tj
+ET
+q 0.78 G 0.5 w 54 100 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 116 Td (Backup no probado) Tj
+ET
+q 0.82 G 0.5 w 199 124 m 199 100 l S Q
+BT
+0 g
+/F2 7 Tf
+204 116 Td (Alto) Tj
+ET
+q 0.82 G 0.5 w 287 124 m 287 100 l S Q
+BT
+0 g
+/F1 7 Tf
+292 116 Td (Ejecutar restore real antes de abrir operacion.) Tj
+ET
+q 0.78 G 0.5 w 54 73 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 92 Td (Datos reales mal mapeados) Tj
+ET
+q 0.82 G 0.5 w 199 100 m 199 73 l S Q
+BT
+0 g
+/F2 7 Tf
+204 92 Td (Medio/alto) Tj
+ET
+q 0.82 G 0.5 w 287 100 m 287 73 l S Q
+BT
+0 g
+/F1 7 Tf
+292 92 Td (Usar carga piloto y revisar WBS/CBS/FBS antes de aprobar) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 82 Td (baseline.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 6) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Length 4206 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Riesgo) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Impacto) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Mitigacion) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (AI externo sin control) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Medio) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (Mantener modelo deshabilitado o economico para sintesis,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (no para decisiones.) Tj
+ET
+q 0.78 G 0.5 w 54 715 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (Dependencias npm) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 715 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Medio) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 715 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Revisar npm audit y actualizar con regresion controlada.) Tj
+ET
+q 0.78 G 0.5 w 54 688 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 707 Td (Performance con muchos proyectos) Tj
+ET
+q 0.82 G 0.5 w 199 715 m 199 688 l S Q
+BT
+0 g
+/F2 7 Tf
+204 707 Td (Medio) Tj
+ET
+q 0.82 G 0.5 w 287 715 m 287 688 l S Q
+BT
+0 g
+/F1 7 Tf
+292 707 Td (Medir payloads, paginar listas y aplicar cache si crece el) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 697 Td (volumen.) Tj
+ET
+q 0.78 G 0.5 w 54 664 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 680 Td (Cambio de proceso por cliente) Tj
+ET
+q 0.82 G 0.5 w 199 688 m 199 664 l S Q
+BT
+0 g
+/F2 7 Tf
+204 680 Td (Medio) Tj
+ET
+q 0.82 G 0.5 w 287 688 m 287 664 l S Q
+BT
+0 g
+/F1 7 Tf
+292 680 Td (Mantener role matrix y BP policies por tenant/proyecto.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 653 Td (11. Estado final recomendado) Tj
+ET
+q 0.92 g 54 605 487 24 re f Q
+q 0.55 G 0.5 w 54 605 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 621 Td (Decision) Tj
+ET
+q 0.65 G 0.5 w 199 629 m 199 605 l S Q
+BT
+0 g
+/F2 7 Tf
+204 621 Td (Recomendacion) Tj
+ET
+q 0.65 G 0.5 w 287 629 m 287 605 l S Q
+BT
+0 g
+/F2 7 Tf
+292 621 Td (Motivo) Tj
+ET
+q 0.78 G 0.5 w 54 581 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 597 Td (Usar en demo ejecutiva) Tj
+ET
+q 0.82 G 0.5 w 199 605 m 199 581 l S Q
+BT
+0 g
+/F2 7 Tf
+204 597 Td (Si) Tj
+ET
+q 0.82 G 0.5 w 287 605 m 287 581 l S Q
+BT
+0 g
+/F1 7 Tf
+292 597 Td (La app esta estable, guiada y visualmente identificada.) Tj
+ET
+q 0.78 G 0.5 w 54 554 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 573 Td (Usar en piloto productivo) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 563 Td (controlado) Tj
+ET
+q 0.82 G 0.5 w 199 581 m 199 554 l S Q
+BT
+0 g
+/F2 7 Tf
+204 573 Td (Si, con) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 563 Td (condiciones) Tj
+ET
+q 0.82 G 0.5 w 287 581 m 287 554 l S Q
+BT
+0 g
+/F1 7 Tf
+292 573 Td (Requiere secretos reales, backups, matriz de roles y smoke) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 563 Td (post-deploy.) Tj
+ET
+q 0.78 G 0.5 w 54 527 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 546 Td (Usar como produccion masiva) Tj
+ET
+q 0.82 G 0.5 w 199 554 m 199 527 l S Q
+BT
+0 g
+/F2 7 Tf
+204 546 Td (Todavia no) Tj
+ET
+q 0.82 G 0.5 w 287 554 m 287 527 l S Q
+BT
+0 g
+/F1 7 Tf
+292 546 Td (Falta hardening final de seguridad, observabilidad,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 536 Td (despliegue y datos por cliente.) Tj
+ET
+q 0.78 G 0.5 w 54 500 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 519 Td (Siguiente salto) Tj
+ET
+q 0.82 G 0.5 w 199 527 m 199 500 l S Q
+BT
+0 g
+/F2 7 Tf
+204 519 Td (Preparar ambiente) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 509 Td (objetivo) Tj
+ET
+q 0.82 G 0.5 w 287 527 m 287 500 l S Q
+BT
+0 g
+/F1 7 Tf
+292 519 Td (Aplicar migraciones, roles, backups, E2E pipeline y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 509 Td (control de cambios.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 489 Td (12. Conclusion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 465 Td (Pypmis AI SaaS esta en estado de MVP avanzado listo para piloto productivo controlado. El flujo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 452 Td (guiado multi-tenant ya reduce friccion operativa: muestra tenant, proyecto, bloqueos, gate de) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 439 Td (costo/moneda, siguiente accion y paquetes AWP draft. La app no debe considerarse produccion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 426 Td (masiva hasta completar secretos, backups, restore, observabilidad y role matrix del cliente) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 413 Td (objetivo.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Estado para produccion y guia de uso) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 7) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+11 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+12 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+13 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 7 0 R >>
+endobj
+15 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 8 0 R >>
+endobj
+16 0 obj
+<< /Type /Page /Parent 17 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 9 0 R >>
+endobj
+17 0 obj
+<< /Type /Pages /Kids [10 0 R 11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R] /Count 7 >>
+endobj
+18 0 obj
+<< /Type /Catalog /Pages 17 0 R >>
+endobj
+xref
+0 19
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000000749 00000 n 
+0000008558 00000 n 
+0000017666 00000 n 
+0000026029 00000 n 
+0000034013 00000 n 
+0000042238 00000 n 
+0000046496 00000 n 
+0000046634 00000 n 
+0000046772 00000 n 
+0000046910 00000 n 
+0000047048 00000 n 
+0000047186 00000 n 
+0000047324 00000 n 
+0000047462 00000 n 
+0000047563 00000 n 
+trailer
+<< /Size 19 /Root 18 0 R >>
+startxref
+47614
+%%EOF

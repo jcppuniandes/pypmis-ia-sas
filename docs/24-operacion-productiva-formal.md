@@ -14,7 +14,7 @@ Formalizar el paso de piloto funcional a operacion productiva controlada para P&
 | Roles por cliente | Revisar matriz de roles por proyecto/tenant | `GET /api/v1/projects/{project_id}/role-matrix` |
 | Pruebas E2E | Ejecutar navegador real en pipeline | GitHub Actions corre `npm run test:e2e` con Playwright |
 | Backups | Generar respaldo comprimido con checksum y retencion | `deploy/vps/backup.sh` crea `.sql.gz` y `.sha256` |
-| Restore | Validar procedimiento antes de cambios mayores | `deploy/vps/restore.sh <backup.sql.gz>` |
+| Restore | Validar checksum antes de reemplazar la base | `deploy/vps/restore.sh <backup.sql.gz>` ejecuta `sha256sum -c` |
 | Seguridad | Prohibir secretos debiles, wildcard hosts, docs y schema auto-create | `Settings.validate_for_runtime()` |
 | Observabilidad | Logs JSON, metricas protegidas, health/readiness y Sentry opcional | `/api/v1/health/ready`, `/api/v1/ops/metrics` |
 | Agente | Mantener reglas deterministicas y habilitar sintesis low-cost opcional | `AI_PROVIDER=disabled` por defecto |
@@ -45,7 +45,20 @@ Formalizar el paso de piloto funcional a operacion productiva controlada para P&
 4. Confirmar salud: `curl https://<dominio>/api/v1/health/ready`.
 5. Revisar matriz de roles del proyecto desde `/api/v1/projects/{project_id}/role-matrix`.
 6. Revisar metricas y logs JSON.
-7. Ejecutar rollback solo con backup validado y aprobacion operativa.
+7. Ejecutar restore solo con archivo `.sha256` presente y validado.
+8. Ejecutar rollback solo con backup validado y aprobacion operativa.
+
+## Cierre de hardening 2026-05-17
+
+| Control | Cierre aplicado | Evidencia |
+|---|---|---|
+| Secreto productivo | `AUTH_SECRET_KEY` requiere minimo 64 caracteres | `Settings.validate_for_runtime()` y `tools/vps_preflight.ps1` |
+| Deploy VPS | Rechaza placeholders en DB, Redis, JWT y metricas | `deploy/vps/deploy.sh` |
+| Hosts/CORS | Bloquea comodines antes del despliegue | `deploy/vps/deploy.sh` |
+| Logs | Exige `LOG_FORMAT=json` en produccion | `deploy/vps/deploy.sh` |
+| Backup | Rota respaldo y checksum como par auditable | `deploy/vps/backup.sh` |
+| Restore | Verifica checksum antes de pedir confirmacion humana | `deploy/vps/restore.sh` |
+| Gate repo | Verifica CI, E2E, migraciones, backup, restore y runbook | `tools/verify_production_ops.py` |
 
 ## Flujo guiado multi-tenant
 

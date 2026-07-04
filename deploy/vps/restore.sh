@@ -31,6 +31,17 @@ fi
 
 source "$ENV_FILE"
 
+CHECKSUM_FILE="${BACKUP_FILE}.sha256"
+if [ ! -f "$CHECKSUM_FILE" ]; then
+  echo "ERROR: Checksum file not found: $CHECKSUM_FILE"
+  exit 1
+fi
+if ! sha256sum -c "$CHECKSUM_FILE"; then
+  echo "ERROR: Checksum verification failed for $BACKUP_FILE"
+  exit 1
+fi
+echo "Checksum verified: $CHECKSUM_FILE"
+
 echo "⚠ This will REPLACE the current database with: $BACKUP_FILE"
 read -rp "Continue? [y/N] " confirm
 if [[ ! "$confirm" =~ ^[yY]$ ]]; then

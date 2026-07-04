@@ -1,0 +1,1623 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 567 >>
+stream
+BT
+0 g
+/F2 22 Tf
+70 700 Td (Cierre de hardening de produccion) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+70 668 Td (Pypmis AI SaaS - controles endurecidos, evidencia y paso a paso) Tj
+ET
+BT
+0 g
+/F1 10 Tf
+70 644 Td (Fecha: 17 de mayo de 2026) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 610 Td (Informe de cierre operativo para piloto productivo controlado, con controles de seguridad,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 597 Td (backup, restore, observabilidad y salida controlada.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Cierre de hardening de produccion) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 1) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 7294 >>
+stream
+BT
+0 g
+/F1 9 Tf
+54 787 Td (Fecha: 2026-05-17) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 767 Td (Estado de cierre) Tj
+ET
+q 0.92 g 54 719 487 24 re f Q
+q 0.55 G 0.5 w 54 719 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 735 Td (Dimension) Tj
+ET
+q 0.65 G 0.5 w 199 743 m 199 719 l S Q
+BT
+0 g
+/F2 7 Tf
+204 735 Td (Resultado) Tj
+ET
+q 0.65 G 0.5 w 287 743 m 287 719 l S Q
+BT
+0 g
+/F2 7 Tf
+292 735 Td (Evidencia) Tj
+ET
+q 0.78 G 0.5 w 54 682 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 711 Td (Estado operativo) Tj
+ET
+q 0.82 G 0.5 w 199 719 m 199 682 l S Q
+BT
+0 g
+/F2 7 Tf
+204 711 Td (Cerrado para) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 701 Td (piloto productivo) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 691 Td (controlado) Tj
+ET
+q 0.82 G 0.5 w 287 719 m 287 682 l S Q
+BT
+0 g
+/F1 7 Tf
+292 711 Td (Smoke, health, readiness, migraciones y frontend) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 701 Td (verificados) Tj
+ET
+q 0.78 G 0.5 w 54 655 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 674 Td (Estado de produccion masiva) Tj
+ET
+q 0.82 G 0.5 w 199 682 m 199 655 l S Q
+BT
+0 g
+/F2 7 Tf
+204 674 Td (Condicionado) Tj
+ET
+q 0.82 G 0.5 w 287 682 m 287 655 l S Q
+BT
+0 g
+/F1 7 Tf
+292 674 Td (Requiere ejecutar el mismo gate en el ambiente objetivo) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 664 Td (del cliente) Tj
+ET
+q 0.78 G 0.5 w 54 618 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 647 Td (Riesgo residual) Tj
+ET
+q 0.82 G 0.5 w 199 655 m 199 618 l S Q
+BT
+0 g
+/F2 7 Tf
+204 647 Td (Bajo para piloto,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 637 Td (medio para salida) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 627 Td (masiva) Tj
+ET
+q 0.82 G 0.5 w 287 655 m 287 618 l S Q
+BT
+0 g
+/F1 7 Tf
+292 647 Td (Depende de secretos reales, dominio, backups externos y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 637 Td (matriz final por cliente) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 607 Td (Controles endurecidos) Tj
+ET
+q 0.92 g 54 559 487 24 re f Q
+q 0.55 G 0.5 w 54 559 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 575 Td (Control) Tj
+ET
+q 0.65 G 0.5 w 199 583 m 199 559 l S Q
+BT
+0 g
+/F2 7 Tf
+204 575 Td (Antes) Tj
+ET
+q 0.65 G 0.5 w 287 583 m 287 559 l S Q
+BT
+0 g
+/F2 7 Tf
+292 575 Td (Cierre aplicado) Tj
+ET
+q 0.78 G 0.5 w 54 522 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 551 Td (Secreto JWT) Tj
+ET
+q 0.82 G 0.5 w 199 559 m 199 522 l S Q
+BT
+0 g
+/F2 7 Tf
+204 551 Td (Produccion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 541 Td (aceptaba minimo 32) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 531 Td (caracteres) Tj
+ET
+q 0.82 G 0.5 w 287 559 m 287 522 l S Q
+BT
+0 g
+/F1 7 Tf
+292 551 Td (Ahora exige 64 caracteres en runtime, preflight y deploy) Tj
+ET
+q 0.78 G 0.5 w 54 485 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 514 Td (Deploy VPS) Tj
+ET
+q 0.82 G 0.5 w 199 522 m 199 485 l S Q
+BT
+0 g
+/F2 7 Tf
+204 514 Td (Validaba) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 504 Td (placeholders) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 494 Td (parciales) Tj
+ET
+q 0.82 G 0.5 w 287 522 m 287 485 l S Q
+BT
+0 g
+/F1 7 Tf
+292 514 Td (Ahora valida DB, Redis, JWT y token de metricas) Tj
+ET
+q 0.78 G 0.5 w 54 438 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 477 Td (Hosts y CORS) Tj
+ET
+q 0.82 G 0.5 w 199 485 m 199 438 l S Q
+BT
+0 g
+/F2 7 Tf
+204 477 Td (Runtime los) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 467 Td (bloqueaba; deploy) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 457 Td (no frenaba) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 447 Td (temprano) Tj
+ET
+q 0.82 G 0.5 w 287 485 m 287 438 l S Q
+BT
+0 g
+/F1 7 Tf
+292 477 Td (Deploy bloquea * antes de levantar servicios) Tj
+ET
+q 0.78 G 0.5 w 54 411 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 430 Td (Logs) Tj
+ET
+q 0.82 G 0.5 w 199 438 m 199 411 l S Q
+BT
+0 g
+/F2 7 Tf
+204 430 Td (Runtime exigia) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 420 Td (JSON) Tj
+ET
+q 0.82 G 0.5 w 287 438 m 287 411 l S Q
+BT
+0 g
+/F1 7 Tf
+292 430 Td (Deploy tambien exige LOG_FORMAT=json) Tj
+ET
+q 0.78 G 0.5 w 54 384 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 403 Td (Backup) Tj
+ET
+q 0.82 G 0.5 w 199 411 m 199 384 l S Q
+BT
+0 g
+/F2 7 Tf
+204 403 Td (Creaba .sql.gz y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 393 Td (.sha256) Tj
+ET
+q 0.82 G 0.5 w 287 411 m 287 384 l S Q
+BT
+0 g
+/F1 7 Tf
+292 403 Td (Rotacion elimina respaldo y checksum como par) Tj
+ET
+q 0.78 G 0.5 w 54 357 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 376 Td (Restore) Tj
+ET
+q 0.82 G 0.5 w 199 384 m 199 357 l S Q
+BT
+0 g
+/F2 7 Tf
+204 376 Td (Pedia confirmacion) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 366 Td (humana) Tj
+ET
+q 0.82 G 0.5 w 287 384 m 287 357 l S Q
+BT
+0 g
+/F1 7 Tf
+292 376 Td (Primero exige .sha256 y ejecuta sha256sum -c) Tj
+ET
+q 0.78 G 0.5 w 54 330 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 349 Td (Gate repo) Tj
+ET
+q 0.82 G 0.5 w 199 357 m 199 330 l S Q
+BT
+0 g
+/F2 7 Tf
+204 349 Td (Validaba base) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 339 Td (operativa) Tj
+ET
+q 0.82 G 0.5 w 287 357 m 287 330 l S Q
+BT
+0 g
+/F1 7 Tf
+292 349 Td (Ahora valida restore, rotacion, secretos y preflight) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 319 Td (Matriz de produccion) Tj
+ET
+q 0.92 g 54 271 487 24 re f Q
+q 0.55 G 0.5 w 54 271 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 287 Td (Area) Tj
+ET
+q 0.65 G 0.5 w 199 295 m 199 271 l S Q
+BT
+0 g
+/F2 7 Tf
+204 287 Td (Estado) Tj
+ET
+q 0.65 G 0.5 w 287 295 m 287 271 l S Q
+BT
+0 g
+/F2 7 Tf
+292 287 Td (Uso operativo) Tj
+ET
+q 0.78 G 0.5 w 54 247 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 263 Td (Migraciones) Tj
+ET
+q 0.82 G 0.5 w 199 271 m 199 247 l S Q
+BT
+0 g
+/F2 7 Tf
+204 263 Td (Listas) Tj
+ET
+q 0.82 G 0.5 w 287 271 m 287 247 l S Q
+BT
+0 g
+/F1 7 Tf
+292 263 Td (alembic upgrade head y alembic current en deploy) Tj
+ET
+q 0.78 G 0.5 w 54 223 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 239 Td (Roles por cliente) Tj
+ET
+q 0.82 G 0.5 w 199 247 m 199 223 l S Q
+BT
+0 g
+/F2 7 Tf
+204 239 Td (Listos) Tj
+ET
+q 0.82 G 0.5 w 287 247 m 287 223 l S Q
+BT
+0 g
+/F1 7 Tf
+292 239 Td (/api/v1/projects/{project_id}/role-matrix) Tj
+ET
+q 0.78 G 0.5 w 54 199 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 215 Td (Pruebas E2E) Tj
+ET
+q 0.82 G 0.5 w 199 223 m 199 199 l S Q
+BT
+0 g
+/F2 7 Tf
+204 215 Td (Listas en CI) Tj
+ET
+q 0.82 G 0.5 w 287 223 m 287 199 l S Q
+BT
+0 g
+/F1 7 Tf
+292 215 Td (npm run test:e2e con Playwright) Tj
+ET
+q 0.78 G 0.5 w 54 172 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 191 Td (Seguridad API) Tj
+ET
+q 0.82 G 0.5 w 199 199 m 199 172 l S Q
+BT
+0 g
+/F2 7 Tf
+204 191 Td (Endurecida) Tj
+ET
+q 0.82 G 0.5 w 287 199 m 287 172 l S Q
+BT
+0 g
+/F1 7 Tf
+292 191 Td (secretos, CORS, allowed hosts, docs off, rate limit y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 181 Td (headers) Tj
+ET
+q 0.78 G 0.5 w 54 148 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 164 Td (Observabilidad) Tj
+ET
+q 0.82 G 0.5 w 199 172 m 199 148 l S Q
+BT
+0 g
+/F2 7 Tf
+204 164 Td (Lista) Tj
+ET
+q 0.82 G 0.5 w 287 172 m 287 148 l S Q
+BT
+0 g
+/F1 7 Tf
+292 164 Td (/health/live, /health/ready, /ops/metrics con token) Tj
+ET
+q 0.78 G 0.5 w 54 124 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 140 Td (Backups) Tj
+ET
+q 0.82 G 0.5 w 199 148 m 199 124 l S Q
+BT
+0 g
+/F2 7 Tf
+204 140 Td (Endurecidos) Tj
+ET
+q 0.82 G 0.5 w 287 148 m 287 124 l S Q
+BT
+0 g
+/F1 7 Tf
+292 140 Td (backup comprimido, checksum y retencion) Tj
+ET
+q 0.78 G 0.5 w 54 100 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 116 Td (Restore) Tj
+ET
+q 0.82 G 0.5 w 199 124 m 199 100 l S Q
+BT
+0 g
+/F2 7 Tf
+204 116 Td (Endurecido) Tj
+ET
+q 0.82 G 0.5 w 287 124 m 287 100 l S Q
+BT
+0 g
+/F1 7 Tf
+292 116 Td (checksum obligatorio antes de reemplazar base) Tj
+ET
+q 0.78 G 0.5 w 54 76 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 92 Td (Agente AWP) Tj
+ET
+q 0.82 G 0.5 w 199 100 m 199 76 l S Q
+BT
+0 g
+/F2 7 Tf
+204 92 Td (Controlado) Tj
+ET
+q 0.82 G 0.5 w 287 100 m 287 76 l S Q
+BT
+0 g
+/F1 7 Tf
+292 92 Td (deterministico por defecto; sintesis low-cost opcional) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Cierre de hardening de produccion) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 7485 >>
+stream
+BT
+0 g
+/F2 13 Tf
+54 790 Td (Paso a paso de salida controlada) Tj
+ET
+q 0.92 g 54 742 487 24 re f Q
+q 0.55 G 0.5 w 54 742 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 758 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 766 m 199 742 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 766 m 287 742 l S Q
+BT
+0 g
+/F2 7 Tf
+292 758 Td (Comando o pantalla) Tj
+ET
+q 0.78 G 0.5 w 54 715 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 734 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 742 m 199 715 l S Q
+BT
+0 g
+/F2 7 Tf
+204 734 Td (Preparar .env) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 724 Td (productivo) Tj
+ET
+q 0.82 G 0.5 w 287 742 m 287 715 l S Q
+BT
+0 g
+/F1 7 Tf
+292 734 Td (Copiar deploy/vps/.env.example y reemplazar secretos) Tj
+ET
+q 0.78 G 0.5 w 54 688 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 707 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 715 m 199 688 l S Q
+BT
+0 g
+/F2 7 Tf
+204 707 Td (Validar preflight) Tj
+ET
+q 0.82 G 0.5 w 287 715 m 287 688 l S Q
+BT
+0 g
+/F1 7 Tf
+292 707 Td (powershell -ExecutionPolicy Bypass -File) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 697 Td (tools/vps_preflight.ps1 -EnvFile deploy/vps/.env) Tj
+ET
+q 0.78 G 0.5 w 54 661 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 680 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 688 m 199 661 l S Q
+BT
+0 g
+/F2 7 Tf
+204 680 Td (Validar artefactos) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 670 Td (de operacion) Tj
+ET
+q 0.82 G 0.5 w 287 688 m 287 661 l S Q
+BT
+0 g
+/F1 7 Tf
+292 680 Td (python tools/verify_production_ops.py) Tj
+ET
+q 0.78 G 0.5 w 54 634 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 653 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 661 m 199 634 l S Q
+BT
+0 g
+/F2 7 Tf
+204 653 Td (Tomar backup) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 643 Td (previo) Tj
+ET
+q 0.82 G 0.5 w 287 661 m 287 634 l S Q
+BT
+0 g
+/F1 7 Tf
+292 653 Td (bash deploy/vps/backup.sh) Tj
+ET
+q 0.78 G 0.5 w 54 610 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 626 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 634 m 199 610 l S Q
+BT
+0 g
+/F2 7 Tf
+204 626 Td (Desplegar) Tj
+ET
+q 0.82 G 0.5 w 287 634 m 287 610 l S Q
+BT
+0 g
+/F1 7 Tf
+292 626 Td (bash deploy/vps/deploy.sh) Tj
+ET
+q 0.78 G 0.5 w 54 583 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 602 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 610 m 199 583 l S Q
+BT
+0 g
+/F2 7 Tf
+204 602 Td (Confirmar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 592 Td (migracion) Tj
+ET
+q 0.82 G 0.5 w 287 610 m 287 583 l S Q
+BT
+0 g
+/F1 7 Tf
+292 602 Td (Revisar salida de alembic current) Tj
+ET
+q 0.78 G 0.5 w 54 559 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 575 Td (7) Tj
+ET
+q 0.82 G 0.5 w 199 583 m 199 559 l S Q
+BT
+0 g
+/F2 7 Tf
+204 575 Td (Confirmar API) Tj
+ET
+q 0.82 G 0.5 w 287 583 m 287 559 l S Q
+BT
+0 g
+/F1 7 Tf
+292 575 Td (curl https://<dominio>/api/v1/health/ready) Tj
+ET
+q 0.78 G 0.5 w 54 535 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 551 Td (8) Tj
+ET
+q 0.82 G 0.5 w 199 559 m 199 535 l S Q
+BT
+0 g
+/F2 7 Tf
+204 551 Td (Confirmar frontend) Tj
+ET
+q 0.82 G 0.5 w 287 559 m 287 535 l S Q
+BT
+0 g
+/F1 7 Tf
+292 551 Td (Abrir https://<dominio>) Tj
+ET
+q 0.78 G 0.5 w 54 511 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 527 Td (9) Tj
+ET
+q 0.82 G 0.5 w 199 535 m 199 511 l S Q
+BT
+0 g
+/F2 7 Tf
+204 527 Td (Confirmar roles) Tj
+ET
+q 0.82 G 0.5 w 287 535 m 287 511 l S Q
+BT
+0 g
+/F1 7 Tf
+292 527 Td (Abrir matriz de roles del proyecto) Tj
+ET
+q 0.78 G 0.5 w 54 484 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 503 Td (10) Tj
+ET
+q 0.82 G 0.5 w 199 511 m 199 484 l S Q
+BT
+0 g
+/F2 7 Tf
+204 503 Td (Confirmar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 493 Td (observabilidad) Tj
+ET
+q 0.82 G 0.5 w 287 511 m 287 484 l S Q
+BT
+0 g
+/F1 7 Tf
+292 503 Td (Consultar metricas con X-Metrics-Token) Tj
+ET
+q 0.78 G 0.5 w 54 457 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 476 Td (11) Tj
+ET
+q 0.82 G 0.5 w 199 484 m 199 457 l S Q
+BT
+0 g
+/F2 7 Tf
+204 476 Td (Validar backup) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 466 Td (nuevo) Tj
+ET
+q 0.82 G 0.5 w 287 484 m 287 457 l S Q
+BT
+0 g
+/F1 7 Tf
+292 476 Td (Revisar archivo .sql.gz y .sha256) Tj
+ET
+q 0.78 G 0.5 w 54 430 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 449 Td (12) Tj
+ET
+q 0.82 G 0.5 w 199 457 m 199 430 l S Q
+BT
+0 g
+/F2 7 Tf
+204 449 Td (Documentar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 439 Td (aprobacion) Tj
+ET
+q 0.82 G 0.5 w 287 457 m 287 430 l S Q
+BT
+0 g
+/F1 7 Tf
+292 449 Td (Registrar fecha, commit, responsable y evidencia) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 419 Td (Paso a paso de restore) Tj
+ET
+q 0.92 g 54 371 487 24 re f Q
+q 0.55 G 0.5 w 54 371 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 387 Td (Paso) Tj
+ET
+q 0.65 G 0.5 w 199 395 m 199 371 l S Q
+BT
+0 g
+/F2 7 Tf
+204 387 Td (Accion) Tj
+ET
+q 0.65 G 0.5 w 287 395 m 287 371 l S Q
+BT
+0 g
+/F2 7 Tf
+292 387 Td (Criterio) Tj
+ET
+q 0.78 G 0.5 w 54 347 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 363 Td (1) Tj
+ET
+q 0.82 G 0.5 w 199 371 m 199 347 l S Q
+BT
+0 g
+/F2 7 Tf
+204 363 Td (Seleccionar backup) Tj
+ET
+q 0.82 G 0.5 w 287 371 m 287 347 l S Q
+BT
+0 g
+/F1 7 Tf
+292 363 Td (Debe existir pypmis_*.sql.gz) Tj
+ET
+q 0.78 G 0.5 w 54 323 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 339 Td (2) Tj
+ET
+q 0.82 G 0.5 w 199 347 m 199 323 l S Q
+BT
+0 g
+/F2 7 Tf
+204 339 Td (Validar checksum) Tj
+ET
+q 0.82 G 0.5 w 287 347 m 287 323 l S Q
+BT
+0 g
+/F1 7 Tf
+292 339 Td (Debe existir pypmis_*.sql.gz.sha256) Tj
+ET
+q 0.78 G 0.5 w 54 296 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 315 Td (3) Tj
+ET
+q 0.82 G 0.5 w 199 323 m 199 296 l S Q
+BT
+0 g
+/F2 7 Tf
+204 315 Td (Ejecutar restore) Tj
+ET
+q 0.82 G 0.5 w 287 323 m 287 296 l S Q
+BT
+0 g
+/F1 7 Tf
+292 315 Td (bash deploy/vps/restore.sh) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 305 Td (backups/pypmis_YYYYMMDD_HHMMSS.sql.gz) Tj
+ET
+q 0.78 G 0.5 w 54 269 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 288 Td (4) Tj
+ET
+q 0.82 G 0.5 w 199 296 m 199 269 l S Q
+BT
+0 g
+/F2 7 Tf
+204 288 Td (Confirmar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 278 Td (reemplazo) Tj
+ET
+q 0.82 G 0.5 w 287 296 m 287 269 l S Q
+BT
+0 g
+/F1 7 Tf
+292 288 Td (Responder y solo con aprobacion operativa) Tj
+ET
+q 0.78 G 0.5 w 54 245 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 261 Td (5) Tj
+ET
+q 0.82 G 0.5 w 199 269 m 199 245 l S Q
+BT
+0 g
+/F2 7 Tf
+204 261 Td (Migrar a head) Tj
+ET
+q 0.82 G 0.5 w 287 269 m 287 245 l S Q
+BT
+0 g
+/F1 7 Tf
+292 261 Td (Script ejecuta alembic upgrade head) Tj
+ET
+q 0.78 G 0.5 w 54 218 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 237 Td (6) Tj
+ET
+q 0.82 G 0.5 w 199 245 m 199 218 l S Q
+BT
+0 g
+/F2 7 Tf
+204 237 Td (Reiniciar) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 227 Td (servicios) Tj
+ET
+q 0.82 G 0.5 w 287 245 m 287 218 l S Q
+BT
+0 g
+/F1 7 Tf
+292 237 Td (Script levanta API, worker y beat) Tj
+ET
+q 0.78 G 0.5 w 54 194 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 210 Td (7) Tj
+ET
+q 0.82 G 0.5 w 199 218 m 199 194 l S Q
+BT
+0 g
+/F2 7 Tf
+204 210 Td (Validar salud) Tj
+ET
+q 0.82 G 0.5 w 287 218 m 287 194 l S Q
+BT
+0 g
+/F1 7 Tf
+292 210 Td (health/ready debe responder ready) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 183 Td (Evidencia tecnica esperada) Tj
+ET
+q 0.92 g 54 135 487 24 re f Q
+q 0.55 G 0.5 w 54 135 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 151 Td (Evidencia) Tj
+ET
+q 0.65 G 0.5 w 199 159 m 199 135 l S Q
+BT
+0 g
+/F2 7 Tf
+204 151 Td (Resultado esperado) Tj
+ET
+q 0.65 G 0.5 w 287 159 m 287 135 l S Q
+BT
+0 g
+/F2 7 Tf
+292 151 Td (Responsable) Tj
+ET
+q 0.78 G 0.5 w 54 98 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 127 Td (docker compose ps) Tj
+ET
+q 0.82 G 0.5 w 199 135 m 199 98 l S Q
+BT
+0 g
+/F2 7 Tf
+204 127 Td (API, DB y Redis) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 117 Td (healthy; frontend) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 107 Td (up) Tj
+ET
+q 0.82 G 0.5 w 287 135 m 287 98 l S Q
+BT
+0 g
+/F1 7 Tf
+292 127 Td (DevOps) Tj
+ET
+q 0.78 G 0.5 w 54 71 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 90 Td (alembic current) Tj
+ET
+q 0.82 G 0.5 w 199 98 m 199 71 l S Q
+BT
+0 g
+/F2 7 Tf
+204 90 Td (Revision head) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 80 Td (actual) Tj
+ET
+q 0.82 G 0.5 w 287 98 m 287 71 l S Q
+BT
+0 g
+/F1 7 Tf
+292 90 Td (Backend) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Cierre de hardening de produccion) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 3) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 7193 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Evidencia) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Resultado esperado) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Responsable) Tj
+ET
+q 0.78 G 0.5 w 54 729 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Smoke funcional) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 729 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Login, proyectos,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 748 Td (dashboard, costos,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 738 Td (RFQ y frontend OK) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 729 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (QA) Tj
+ET
+q 0.78 G 0.5 w 54 682 487 47 re S Q
+BT
+0 g
+/F1 7 Tf
+59 721 Td (Gate seguridad) Tj
+ET
+q 0.82 G 0.5 w 199 729 m 199 682 l S Q
+BT
+0 g
+/F2 7 Tf
+204 721 Td (Adjuntos,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 711 Td (auditoria y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 701 Td (aislamiento por) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 691 Td (proyecto OK) Tj
+ET
+q 0.82 G 0.5 w 287 729 m 287 682 l S Q
+BT
+0 g
+/F1 7 Tf
+292 721 Td (QA/SecOps) Tj
+ET
+q 0.78 G 0.5 w 54 645 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 674 Td (Gate integracion) Tj
+ET
+q 0.82 G 0.5 w 199 682 m 199 645 l S Q
+BT
+0 g
+/F2 7 Tf
+204 674 Td (Exports, workbook,) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 664 Td (tokens y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 654 Td (restricciones OK) Tj
+ET
+q 0.82 G 0.5 w 287 682 m 287 645 l S Q
+BT
+0 g
+/F1 7 Tf
+292 674 Td (QA/Data) Tj
+ET
+q 0.78 G 0.5 w 54 618 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 637 Td (Backup verify) Tj
+ET
+q 0.82 G 0.5 w 199 645 m 199 618 l S Q
+BT
+0 g
+/F2 7 Tf
+204 637 Td (Dump legible y) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 627 Td (documentos validos) Tj
+ET
+q 0.82 G 0.5 w 287 645 m 287 618 l S Q
+BT
+0 g
+/F1 7 Tf
+292 637 Td (DevOps) Tj
+ET
+q 0.78 G 0.5 w 54 581 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 610 Td (Restore rehearsal) Tj
+ET
+q 0.82 G 0.5 w 199 618 m 199 581 l S Q
+BT
+0 g
+/F2 7 Tf
+204 610 Td (Restore probado en) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 600 Td (contenedor) Tj
+ET
+BT
+0 g
+/F2 7 Tf
+204 590 Td (temporal) Tj
+ET
+q 0.82 G 0.5 w 287 618 m 287 581 l S Q
+BT
+0 g
+/F1 7 Tf
+292 610 Td (DevOps) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 570 Td (Evidencia ejecutada el 2026-05-17) Tj
+ET
+q 0.92 g 54 522 487 24 re f Q
+q 0.55 G 0.5 w 54 522 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 538 Td (Verificacion) Tj
+ET
+q 0.65 G 0.5 w 199 546 m 199 522 l S Q
+BT
+0 g
+/F2 7 Tf
+204 538 Td (Resultado) Tj
+ET
+q 0.65 G 0.5 w 287 546 m 287 522 l S Q
+BT
+0 g
+/F2 7 Tf
+292 538 Td (Evidencia) Tj
+ET
+q 0.78 G 0.5 w 54 498 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 514 Td (Suite backend completo) Tj
+ET
+q 0.82 G 0.5 w 199 522 m 199 498 l S Q
+BT
+0 g
+/F2 7 Tf
+204 514 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 522 m 287 498 l S Q
+BT
+0 g
+/F1 7 Tf
+292 514 Td (116 passed in 65.23s) Tj
+ET
+q 0.78 G 0.5 w 54 474 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 490 Td (Gate repo de operacion) Tj
+ET
+q 0.82 G 0.5 w 199 498 m 199 474 l S Q
+BT
+0 g
+/F2 7 Tf
+204 490 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 498 m 287 474 l S Q
+BT
+0 g
+/F1 7 Tf
+292 490 Td (tools/verify_production_ops.py sin errores) Tj
+ET
+q 0.78 G 0.5 w 54 450 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 466 Td (Migracion actual) Tj
+ET
+q 0.82 G 0.5 w 199 474 m 199 450 l S Q
+BT
+0 g
+/F2 7 Tf
+204 466 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 474 m 287 450 l S Q
+BT
+0 g
+/F1 7 Tf
+292 466 Td (20260515_0018 \(head\)) Tj
+ET
+q 0.78 G 0.5 w 54 426 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 442 Td (Servicios Docker) Tj
+ET
+q 0.82 G 0.5 w 199 450 m 199 426 l S Q
+BT
+0 g
+/F2 7 Tf
+204 442 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 450 m 287 426 l S Q
+BT
+0 g
+/F1 7 Tf
+292 442 Td (API healthy; DB y Redis healthy; frontend up) Tj
+ET
+q 0.78 G 0.5 w 54 402 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 418 Td (Gate seguridad/integracion) Tj
+ET
+q 0.82 G 0.5 w 199 426 m 199 402 l S Q
+BT
+0 g
+/F2 7 Tf
+204 418 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 426 m 287 402 l S Q
+BT
+0 g
+/F1 7 Tf
+292 418 Td (tools/pilot_integration_gate.ps1 completo) Tj
+ET
+q 0.78 G 0.5 w 54 378 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 394 Td (API readiness) Tj
+ET
+q 0.82 G 0.5 w 199 402 m 199 378 l S Q
+BT
+0 g
+/F2 7 Tf
+204 394 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 402 m 287 378 l S Q
+BT
+0 g
+/F1 7 Tf
+292 394 Td (health/ready respondio ready) Tj
+ET
+q 0.78 G 0.5 w 54 354 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 370 Td (Observabilidad) Tj
+ET
+q 0.82 G 0.5 w 199 378 m 199 354 l S Q
+BT
+0 g
+/F2 7 Tf
+204 370 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 378 m 287 354 l S Q
+BT
+0 g
+/F1 7 Tf
+292 370 Td (metricas Prometheus expuestas) Tj
+ET
+q 0.78 G 0.5 w 54 330 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 346 Td (Seguridad funcional) Tj
+ET
+q 0.82 G 0.5 w 199 354 m 199 330 l S Q
+BT
+0 g
+/F2 7 Tf
+204 346 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 354 m 287 330 l S Q
+BT
+0 g
+/F1 7 Tf
+292 346 Td (descarga anonima 401; no miembro 403) Tj
+ET
+q 0.78 G 0.5 w 54 306 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 322 Td (Integraciones) Tj
+ET
+q 0.82 G 0.5 w 199 330 m 199 306 l S Q
+BT
+0 g
+/F2 7 Tf
+204 322 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 330 m 287 306 l S Q
+BT
+0 g
+/F1 7 Tf
+292 322 Td (CSV, JSON, ZIP, XLSX, token scope y revocacion validados) Tj
+ET
+q 0.78 G 0.5 w 54 282 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 298 Td (PDF de cierre) Tj
+ET
+q 0.82 G 0.5 w 199 306 m 199 282 l S Q
+BT
+0 g
+/F2 7 Tf
+204 298 Td (OK) Tj
+ET
+q 0.82 G 0.5 w 287 306 m 287 282 l S Q
+BT
+0 g
+/F1 7 Tf
+292 298 Td (Cierre_Hardening_Produccion_Pypmis_Ai_SaaS_2026-05-17.pdf) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 271 Td (Decision) Tj
+ET
+q 0.92 g 54 223 487 24 re f Q
+q 0.55 G 0.5 w 54 223 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 239 Td (Decision) Tj
+ET
+q 0.65 G 0.5 w 199 247 m 199 223 l S Q
+BT
+0 g
+/F2 7 Tf
+204 239 Td (Estado) Tj
+ET
+q 0.65 G 0.5 w 287 247 m 287 223 l S Q
+BT
+0 g
+/F2 7 Tf
+292 239 Td (Nota) Tj
+ET
+q 0.78 G 0.5 w 54 199 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 215 Td (Piloto productivo controlado) Tj
+ET
+q 0.82 G 0.5 w 199 223 m 199 199 l S Q
+BT
+0 g
+/F2 7 Tf
+204 215 Td (Aprobable) Tj
+ET
+q 0.82 G 0.5 w 287 223 m 287 199 l S Q
+BT
+0 g
+/F1 7 Tf
+292 215 Td (Con ambiente objetivo validado y respaldo ejecutado) Tj
+ET
+q 0.78 G 0.5 w 54 172 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 191 Td (Produccion masiva) Tj
+ET
+q 0.82 G 0.5 w 199 199 m 199 172 l S Q
+BT
+0 g
+/F2 7 Tf
+204 191 Td (No automatica) Tj
+ET
+q 0.82 G 0.5 w 287 199 m 287 172 l S Q
+BT
+0 g
+/F1 7 Tf
+292 191 Td (Requiere runbook ejecutado con secretos reales y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 181 Td (aprobacion del cliente) Tj
+ET
+q 0.78 G 0.5 w 54 145 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 164 Td (Agente con modelo economico) Tj
+ET
+q 0.82 G 0.5 w 199 172 m 199 145 l S Q
+BT
+0 g
+/F2 7 Tf
+204 164 Td (Opcional) Tj
+ET
+q 0.82 G 0.5 w 287 172 m 287 145 l S Q
+BT
+0 g
+/F1 7 Tf
+292 164 Td (Activar solo para sintesis; no reemplaza reglas) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 154 Td (deterministicas) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 134 Td (Cierre ejecutivo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 110 Td (El hardening queda cerrado para operar un piloto productivo controlado. La aplicacion ya cuenta) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 97 Td (con controles de configuracion, despliegue, backup, restore, observabilidad, roles, E2E y agente) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 84 Td (gobernado. La salida a produccion formal debe repetir este mismo gate en el ambiente objetivo y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 71 Td (conservar la evidencia de fecha, commit, backup y responsables.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (Pypmis AI SaaS - Cierre de hardening de produccion) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 4) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+11 0 obj
+<< /Type /Pages /Kids [7 0 R 8 0 R 9 0 R 10 0 R] /Count 4 >>
+endobj
+12 0 obj
+<< /Type /Catalog /Pages 11 0 R >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000000778 00000 n 
+0000008124 00000 n 
+0000015661 00000 n 
+0000022906 00000 n 
+0000023043 00000 n 
+0000023180 00000 n 
+0000023317 00000 n 
+0000023455 00000 n 
+0000023532 00000 n 
+trailer
+<< /Size 13 /Root 12 0 R >>
+startxref
+23583
+%%EOF
