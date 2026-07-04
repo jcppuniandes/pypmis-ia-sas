@@ -1,7 +1,6 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-collect_ignore = ["tests/test_document_scanner.py"]
-addopts = "--cov=app --cov-report=term-missing --cov-fail-under=30"
+addopts = "--cov=app --cov-report=term-missing --cov-fail-under=75 --ignore=tests/test_document_scanner.py"
 
 [tool.coverage.run]
 source = ["app"]
