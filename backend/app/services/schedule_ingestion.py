@@ -460,12 +460,12 @@ class ScheduleIngestionService:
                         return currency, "detected", f"{table_name}.{field_name}"
         for table_name, rows in rows_by_table.items():
             for row in rows:
-                for field, value in row.items():
-                    if "currency" not in field and "curr" not in field:
+                for field_name, value in row.items():
+                    if "currency" not in field_name and "curr" not in field_name:
                         continue
                     currency = self._normalize_currency(value)
                     if currency:
-                        return currency, "detected", f"{table_name}.{field}"
+                        return currency, "detected", f"{table_name}.{field_name}"
         return "", "unknown", ""
 
     def _detect_xml_currency(self, content: bytes) -> tuple[str, str, str]:
