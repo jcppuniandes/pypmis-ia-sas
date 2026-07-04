@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+// The seeded demo tenant has no IFC model on disk, so this walkthrough needs a
+// manually prepared environment (model uploaded in Cantidades BIM). CI runs the
+// production-readiness smoke instead; set E2E_BIM_DATA=true to run this one.
+test.skip(process.env.E2E_BIM_DATA !== "true", "Requires an environment with a loaded IFC model (E2E_BIM_DATA=true)");
+
 test("BIM quantities module keeps one IFC viewer and one controlled quantity table", async ({ page }) => {
   test.setTimeout(300_000);
 
@@ -47,7 +52,12 @@ test("BIM quantities module keeps one IFC viewer and one controlled quantity tab
   let hasGeometryQuantity = false;
   for (const [xRatio, yRatio] of clickPoints) {
     await page.mouse.click(canvasBox.x + canvasBox.width * xRatio, canvasBox.y + canvasBox.height * yRatio);
-    if (await page.locator(".bimViewerSelectionBadge").isVisible().catch(() => false)) {
+    if (
+      await page
+        .locator(".bimViewerSelectionBadge")
+        .isVisible()
+        .catch(() => false)
+    ) {
       await expect(properties).toContainText(/elemento seleccionado/i);
       const propertyText = await properties.textContent();
       const geometryApprovalButton = properties.getByRole("button", { name: /usar cantidad geometrica/i });

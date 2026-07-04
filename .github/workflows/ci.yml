@@ -81,6 +81,11 @@ jobs:
       - run: cd frontend && npm ci
       - run: cd frontend && npx playwright install --with-deps chromium
       - name: Start stack
+        # The E2E smoke logs in with the seeded demo tenant and walks the full
+        # guided control flow, so seed data goes on and validation mode off.
+        env:
+          SEED_DEMO_DATA: "true"
+          VITE_FRONTEND_VALIDATION_MODE: "false"
         run: docker compose up -d --build
       - name: Wait for app
         run: |
