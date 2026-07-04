@@ -44,6 +44,7 @@ from app.api.v1.routers import admin as admin_router
 from app.api.v1.routers import auth as auth_router
 from app.api.v1.routers import health as health_router
 from app.api.v1.routers import projects as projects_router
+from app.api.v1.routers import rfq as rfq_domain
 from app.core.config import get_settings
 from app.core.security import TokenError, decode_access_token
 from app.core.time import utc_now
@@ -241,13 +242,8 @@ from app.domain.schemas import (
     RateSheetOut,
     ReconciliationReportOut,
     ReconciliationReportRow,
-    RFQBidCreate,
     RFQBidOut,
-    RFQBidUpdate,
-    RFQPackageCreate,
     RFQPackageOut,
-    RFQPackageUpdate,
-    RFQSummary,
     RoleProfileOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
@@ -286,6 +282,7 @@ router.include_router(health_router.router, tags=["health"])
 router.include_router(auth_router.router, tags=["auth"])
 router.include_router(admin_router.router, tags=["admin"])
 router.include_router(projects_router.router, tags=["projects"])
+router.include_router(rfq_domain.router, tags=["rfq"])
 
 
 INTEGRATION_TOKEN_PREFIX = "pypmis_it_"
@@ -2990,262 +2987,6 @@ def update_warehouse_receipt(
     return receipt
 
 
-@router.get("/projects/{project_id}/rfq-packages", response_model=list[RFQPackageOut])
-def list_rfq_packages(
-    project_id: int,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> list[RFQPackage]:
-    _require_membership(db, tenant_id, project_id, user_id)
-    return _rfq_packages(db, tenant_id, project_id)
-
-
-@router.post("/projects/{project_id}/rfq-packages", response_model=RFQPackageOut)
-def create_rfq_package(
-    project_id: int,
-    payload: RFQPackageCreate,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> RFQPackage:
-    membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_manage_contract", "Current role cannot create RFQ packages")
-    current_user = _require_user(db, tenant_id, user_id)
-    if payload.control_account_id is not None:
-        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
-    if payload.budget_amount < 0:
-        raise HTTPException(status_code=400, detail="RFQ budget cannot be negative")
-    package_no = payload.package_no.strip()
-    if not package_no:
-        raise HTTPException(status_code=400, detail="RFQ package number is required")
-    existing = db.scalar(
-        select(RFQPackage).where(
-            RFQPackage.tenant_id == tenant_id,
-            RFQPackage.project_id == project_id,
-            RFQPackage.package_no == package_no,
-        )
-    )
-    if existing:
-        raise HTTPException(status_code=409, detail="RFQ package number already exists in this project")
-    package = RFQPackage(
-        tenant_id=tenant_id,
-        project_id=project_id,
-        control_account_id=payload.control_account_id,
-        package_no=package_no,
-        title=payload.title.strip(),
-        scope_summary=payload.scope_summary.strip(),
-        procurement_method=payload.procurement_method.strip() or "RFQ",
-        status=payload.status.strip() or "draft",
-        budget_amount=payload.budget_amount,
-        issue_date=payload.issue_date,
-        due_date=payload.due_date,
-    )
-    db.add(package)
-    db.flush()
-    _audit(
-        db,
-        tenant_id,
-        project_id,
-        "create_rfq_package",
-        "RFQPackage",
-        package.id,
-        json.dumps({"package_no": package.package_no, "budget_amount": package.budget_amount}),
-        current_user.full_name,
-    )
-    db.commit()
-    db.refresh(package)
-    return package
-
-
-@router.patch("/projects/{project_id}/rfq-packages/{rfq_package_id}", response_model=RFQPackageOut)
-def update_rfq_package(
-    project_id: int,
-    rfq_package_id: int,
-    payload: RFQPackageUpdate,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> RFQPackage:
-    membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_manage_contract", "Current role cannot update RFQ packages")
-    current_user = _require_user(db, tenant_id, user_id)
-    package = _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
-    _require_current_version(package, payload.expected_version)
-    if payload.control_account_id is not None:
-        _require_control_account(db, tenant_id, project_id, payload.control_account_id)
-    if payload.budget_amount is not None and payload.budget_amount < 0:
-        raise HTTPException(status_code=400, detail="RFQ budget cannot be negative")
-    for field in (
-        "control_account_id",
-        "title",
-        "scope_summary",
-        "procurement_method",
-        "status",
-        "budget_amount",
-        "issue_date",
-        "due_date",
-    ):
-        value = getattr(payload, field)
-        if value is not None:
-            setattr(package, field, value.strip() if isinstance(value, str) else value)
-    _touch_collaborative_record(package)
-    _audit(
-        db,
-        tenant_id,
-        project_id,
-        "update_rfq_package",
-        "RFQPackage",
-        package.id,
-        json.dumps({"status": package.status, "version": package.version}),
-        current_user.full_name,
-    )
-    db.commit()
-    db.refresh(package)
-    return package
-
-
-@router.get("/projects/{project_id}/rfq-packages/{rfq_package_id}/bids", response_model=list[RFQBidOut])
-def list_rfq_bids(
-    project_id: int,
-    rfq_package_id: int,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> list[RFQBid]:
-    _require_membership(db, tenant_id, project_id, user_id)
-    _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
-    return _rfq_bids(db, tenant_id, project_id, rfq_package_id)
-
-
-@router.post("/projects/{project_id}/rfq-packages/{rfq_package_id}/bids", response_model=RFQBidOut)
-def create_rfq_bid(
-    project_id: int,
-    rfq_package_id: int,
-    payload: RFQBidCreate,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> RFQBid:
-    membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_manage_contract", "Current role cannot create RFQ bids")
-    current_user = _require_user(db, tenant_id, user_id)
-    _require_rfq_package(db, tenant_id, project_id, rfq_package_id)
-    _validate_rfq_bid_values(
-        payload.bid_amount,
-        payload.technical_score,
-        payload.commercial_score,
-        payload.schedule_score,
-        payload.risk_score,
-    )
-    bidder_name = payload.bidder_name.strip()
-    if not bidder_name:
-        raise HTTPException(status_code=400, detail="Bidder name is required")
-    existing = db.scalar(
-        select(RFQBid).where(
-            RFQBid.tenant_id == tenant_id,
-            RFQBid.project_id == project_id,
-            RFQBid.rfq_package_id == rfq_package_id,
-            RFQBid.bidder_name == bidder_name,
-        )
-    )
-    if existing:
-        raise HTTPException(status_code=409, detail="Bidder already exists for this RFQ package")
-    bid = RFQBid(
-        tenant_id=tenant_id,
-        project_id=project_id,
-        rfq_package_id=rfq_package_id,
-        bidder_name=bidder_name,
-        bid_amount=payload.bid_amount,
-        technical_score=payload.technical_score,
-        commercial_score=payload.commercial_score,
-        schedule_score=payload.schedule_score,
-        risk_score=payload.risk_score,
-        weighted_score=_rfq_weighted_score(
-            payload.technical_score, payload.commercial_score, payload.schedule_score, payload.risk_score
-        ),
-        status=payload.status.strip() or "received",
-        submitted_on=payload.submitted_on or utc_now().date(),
-        notes=payload.notes.strip(),
-    )
-    db.add(bid)
-    db.flush()
-    _audit(
-        db,
-        tenant_id,
-        project_id,
-        "create_rfq_bid",
-        "RFQBid",
-        bid.id,
-        json.dumps({"bidder_name": bid.bidder_name, "weighted_score": bid.weighted_score}),
-        current_user.full_name,
-    )
-    db.commit()
-    db.refresh(bid)
-    return bid
-
-
-@router.patch("/projects/{project_id}/rfq-bids/{bid_id}", response_model=RFQBidOut)
-def update_rfq_bid(
-    project_id: int,
-    bid_id: int,
-    payload: RFQBidUpdate,
-    db: Session = Depends(get_db),
-    tenant_id: int = Depends(get_tenant_id),
-    user_id: int = Depends(get_user_id),
-) -> RFQBid:
-    membership = _require_membership(db, tenant_id, project_id, user_id)
-    _require_permission(membership, "can_manage_contract", "Current role cannot update RFQ bids")
-    current_user = _require_user(db, tenant_id, user_id)
-    bid = db.scalar(
-        select(RFQBid).where(
-            RFQBid.tenant_id == tenant_id,
-            RFQBid.project_id == project_id,
-            RFQBid.id == bid_id,
-        )
-    )
-    if not bid:
-        raise HTTPException(status_code=404, detail="RFQ bid not found")
-    _require_current_version(bid, payload.expected_version)
-    bid_amount = payload.bid_amount if payload.bid_amount is not None else bid.bid_amount
-    technical_score = payload.technical_score if payload.technical_score is not None else bid.technical_score
-    commercial_score = payload.commercial_score if payload.commercial_score is not None else bid.commercial_score
-    schedule_score = payload.schedule_score if payload.schedule_score is not None else bid.schedule_score
-    risk_score = payload.risk_score if payload.risk_score is not None else bid.risk_score
-    _validate_rfq_bid_values(bid_amount, technical_score, commercial_score, schedule_score, risk_score)
-    for field in (
-        "bidder_name",
-        "bid_amount",
-        "technical_score",
-        "commercial_score",
-        "schedule_score",
-        "risk_score",
-        "status",
-        "submitted_on",
-        "notes",
-    ):
-        value = getattr(payload, field)
-        if value is not None:
-            setattr(bid, field, value.strip() if isinstance(value, str) else value)
-    bid.weighted_score = _rfq_weighted_score(
-        bid.technical_score, bid.commercial_score, bid.schedule_score, bid.risk_score
-    )
-    _touch_collaborative_record(bid)
-    _audit(
-        db,
-        tenant_id,
-        project_id,
-        "update_rfq_bid",
-        "RFQBid",
-        bid.id,
-        json.dumps({"status": bid.status, "weighted_score": bid.weighted_score}),
-        current_user.full_name,
-    )
-    db.commit()
-    db.refresh(bid)
-    return bid
-
-
 @router.get("/projects/{project_id}/communications", response_model=list[ContractCommunicationOut])
 def list_contract_communications(
     project_id: int,
@@ -5073,8 +4814,8 @@ def get_dashboard(
     purchase_orders = _purchase_orders(db, tenant_id, project_id)
     payment_certificates = _payment_certificates(db, tenant_id, project_id)
     warehouse_receipts = _warehouse_receipts(db, tenant_id, project_id)
-    rfq_packages = _rfq_packages(db, tenant_id, project_id)
-    rfq_bids = _rfq_bids(db, tenant_id, project_id)
+    rfq_packages = rfq_domain.rfq_packages(db, tenant_id, project_id)
+    rfq_bids = rfq_domain.rfq_bids(db, tenant_id, project_id)
     communications = list(
         db.scalars(
             select(ContractCommunication)
@@ -5349,7 +5090,7 @@ def get_dashboard(
         warehouse_receipts=[WarehouseReceiptOut.model_validate(receipt) for receipt in warehouse_receipts],
         rfq_packages=[RFQPackageOut.model_validate(package) for package in rfq_packages],
         rfq_bids=[RFQBidOut.model_validate(bid) for bid in rfq_bids],
-        rfq_summary=_rfq_summary(rfq_packages, rfq_bids),
+        rfq_summary=rfq_domain.rfq_summary(rfq_packages, rfq_bids),
         communications=[ContractCommunicationOut.model_validate(communication) for communication in communications[:6]],
         documents=[DocumentOut.model_validate(document) for document in documents],
         document_attachments=[DocumentAttachmentOut.model_validate(attachment) for attachment in document_attachments],
@@ -6674,74 +6415,6 @@ def _validate_warehouse_receipt_values(received_quantity: float, unit_cost: floa
 
 def _warehouse_received_value(received_quantity: float, unit_cost: float, received_value: float) -> float:
     return _money(received_value if received_value > 0 else received_quantity * unit_cost)
-
-
-def _rfq_packages(db: Session, tenant_id: int, project_id: int) -> list[RFQPackage]:
-    return list(
-        db.scalars(
-            select(RFQPackage)
-            .where(RFQPackage.tenant_id == tenant_id, RFQPackage.project_id == project_id)
-            .order_by(RFQPackage.due_date, RFQPackage.package_no)
-        ).all()
-    )
-
-
-def _rfq_bids(db: Session, tenant_id: int, project_id: int, rfq_package_id: int | None = None) -> list[RFQBid]:
-    query = select(RFQBid).where(RFQBid.tenant_id == tenant_id, RFQBid.project_id == project_id)
-    if rfq_package_id is not None:
-        query = query.where(RFQBid.rfq_package_id == rfq_package_id)
-    return list(db.scalars(query.order_by(RFQBid.weighted_score.desc(), RFQBid.bid_amount, RFQBid.bidder_name)).all())
-
-
-def _require_rfq_package(db: Session, tenant_id: int, project_id: int, rfq_package_id: int) -> RFQPackage:
-    package = db.scalar(
-        select(RFQPackage).where(
-            RFQPackage.tenant_id == tenant_id,
-            RFQPackage.project_id == project_id,
-            RFQPackage.id == rfq_package_id,
-        )
-    )
-    if not package:
-        raise HTTPException(status_code=404, detail="RFQ package not found")
-    return package
-
-
-def _validate_rfq_bid_values(
-    bid_amount: float, technical_score: float, commercial_score: float, schedule_score: float, risk_score: float
-) -> None:
-    if bid_amount <= 0:
-        raise HTTPException(status_code=400, detail="Bid amount must be greater than zero")
-    for field, value in {
-        "technical_score": technical_score,
-        "commercial_score": commercial_score,
-        "schedule_score": schedule_score,
-        "risk_score": risk_score,
-    }.items():
-        if value < 0 or value > 100:
-            raise HTTPException(status_code=400, detail=f"{field} must be between 0 and 100")
-
-
-def _rfq_weighted_score(
-    technical_score: float, commercial_score: float, schedule_score: float, risk_score: float
-) -> float:
-    return round(technical_score * 0.35 + commercial_score * 0.35 + schedule_score * 0.15 + risk_score * 0.15, 1)
-
-
-def _rfq_summary(packages: list[RFQPackage], bids: list[RFQBid]) -> RFQSummary:
-    scored_bids = [bid for bid in bids if bid.status not in {"withdrawn", "disqualified", "void"}]
-    recommended = max(scored_bids, key=lambda bid: (bid.weighted_score, -bid.bid_amount), default=None)
-    return RFQSummary(
-        total_packages=len(packages),
-        issued_packages=sum(
-            1 for package in packages if package.status in {"issued", "open", "under_evaluation", "awarded"}
-        ),
-        bids_received=len(scored_bids),
-        average_weighted_score=round(sum(bid.weighted_score for bid in scored_bids) / len(scored_bids), 1)
-        if scored_bids
-        else 0,
-        recommended_bidder=recommended.bidder_name if recommended else "",
-        recommended_bid_amount=_money(recommended.bid_amount) if recommended else 0,
-    )
 
 
 def _cost_manager_summary(db: Session, tenant_id: int, project_id: int) -> CostManagerSummaryOut:
