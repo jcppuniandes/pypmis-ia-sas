@@ -3,16 +3,13 @@ const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 export class ApiError extends Error {
   constructor(
     public status: number,
-    message: string,
+    message: string
   ) {
     super(message);
   }
 }
 
-export async function apiFetch<T>(
-  path: string,
-  options: RequestInit & { token?: string } = {},
-): Promise<T> {
+export async function apiFetch<T>(path: string, options: RequestInit & { token?: string } = {}): Promise<T> {
   const { token, ...init } = options;
   const headers: Record<string, string> = {
     ...(init.headers as Record<string, string>),
@@ -32,10 +29,7 @@ export async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
-export async function apiFetchFile(
-  path: string,
-  options: RequestInit & { token?: string } = {},
-): Promise<Blob> {
+export async function apiFetchFile(path: string, options: RequestInit & { token?: string } = {}): Promise<Blob> {
   const { token, ...init } = options;
   const headers: Record<string, string> = {
     ...(init.headers as Record<string, string>),

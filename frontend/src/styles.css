@@ -3216,13 +3216,7 @@ td span {
 }
 
 .handbookGantt {
-  background: repeating-linear-gradient(
-    to right,
-    #f8fafb,
-    #f8fafb 58px,
-    #edf1f4 59px,
-    #f8fafb 60px
-  );
+  background: repeating-linear-gradient(to right, #f8fafb, #f8fafb 58px, #edf1f4 59px, #f8fafb 60px);
   border: 1px solid #d8dee5;
   border-radius: 8px;
   display: grid;

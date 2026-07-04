@@ -88,7 +88,11 @@ export default function ProjectCreateDrawer<TDraft extends ProjectDrawerDraft>({
         <div className="formColumns">
           <label>
             <span>Phase</span>
-            <select disabled={!canConfigure || pending} onChange={(event) => setField("phase", event.target.value)} value={draft.phase}>
+            <select
+              disabled={!canConfigure || pending}
+              onChange={(event) => setField("phase", event.target.value)}
+              value={draft.phase}
+            >
               <option value="Planning">Planning</option>
               <option value="Execution">Execution</option>
               <option value="Closeout">Closeout</option>
@@ -96,7 +100,11 @@ export default function ProjectCreateDrawer<TDraft extends ProjectDrawerDraft>({
           </label>
           <label>
             <span>Owner</span>
-            <input disabled={!canConfigure || pending} onChange={(event) => setField("owner", event.target.value)} value={draft.owner} />
+            <input
+              disabled={!canConfigure || pending}
+              onChange={(event) => setField("owner", event.target.value)}
+              value={draft.owner}
+            />
           </label>
         </div>
         <div className="formColumns">
@@ -125,7 +133,11 @@ export default function ProjectCreateDrawer<TDraft extends ProjectDrawerDraft>({
             <div className="formColumns">
               <label>
                 <span>Status</span>
-                <select disabled={!canConfigure || pending} onChange={(event) => setField("status", event.target.value)} value={draft.status}>
+                <select
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("status", event.target.value)}
+                  value={draft.status}
+                >
                   <option value="draft">Draft</option>
                   <option value="authorized">Authorized</option>
                   <option value="baseline_approved">Baseline Approved</option>

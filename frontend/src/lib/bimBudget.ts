@@ -123,12 +123,9 @@ export function buildBimBudget(lines: QuantityTakeoffLine[], defaultCurrency = "
     }
 
     const elementRef = sourceElementRef(line);
-    const duplicateKey = [
-      elementRef,
-      line.measurement_rule || "measurement",
-      code || name,
-      unit.toLowerCase(),
-    ].join("|");
+    const duplicateKey = [elementRef, line.measurement_rule || "measurement", code || name, unit.toLowerCase()].join(
+      "|"
+    );
     if (duplicateKeys.has(duplicateKey)) {
       duplicateLineCount += 1;
       continue;
@@ -183,7 +180,7 @@ export function buildBimBudget(lines: QuantityTakeoffLine[], defaultCurrency = "
     (left, right) =>
       left.wbsCode.localeCompare(right.wbsCode, undefined, { numeric: true }) ||
       left.code.localeCompare(right.code, undefined, { numeric: true }) ||
-      left.unit.localeCompare(right.unit),
+      left.unit.localeCompare(right.unit)
   );
   const unitConflictCount = Array.from(itemUnits.values()).filter((units) => units.size > 1).length;
   const totals = new Map<string, number>();
@@ -196,7 +193,9 @@ export function buildBimBudget(lines: QuantityTakeoffLine[], defaultCurrency = "
   const gate: BimBudgetGate =
     duplicateLineCount > 0 || unitConflictCount > 0
       ? "blocked"
-      : !consolidatedRows.length || missingAssignmentCount > 0 || consolidatedRows.some((row) => row.status !== "assigned")
+      : !consolidatedRows.length ||
+          missingAssignmentCount > 0 ||
+          consolidatedRows.some((row) => row.status !== "assigned")
         ? "review"
         : "ready";
 
@@ -263,7 +262,7 @@ export function buildBimBudgetExcelXml(summary: BimBudgetSummary, project: Workb
         row.elementRefs.join(", "),
         row.lineIds.join(", "),
         row.status,
-      ]),
+      ])
     ),
   ].join("");
   const resourceRows = [
@@ -279,8 +278,8 @@ export function buildBimBudgetExcelXml(summary: BimBudgetSummary, project: Workb
           resource.unit,
           resource.unit_rate,
           resource.amount,
-        ]),
-      ),
+        ])
+      )
     ),
   ].join("");
   const controlRows = [

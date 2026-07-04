@@ -70,7 +70,7 @@ describe("BimApuReviewPanel", () => {
         onApproveLines={onApproveLines}
         onOpenBudget={onOpenBudget}
         onSuggestLines={vi.fn()}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /revisi.n masiva de apu/i });
@@ -96,7 +96,7 @@ describe("BimApuReviewPanel", () => {
         onApproveLines={vi.fn()}
         onOpenBudget={vi.fn()}
         onSuggestLines={onSuggestLines}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /revisi.n masiva de apu/i });

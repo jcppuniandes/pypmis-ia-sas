@@ -33,7 +33,9 @@ export default function OpcGapReadinessPanel({ analysis }: OpcGapReadinessPanelP
         <article className={`opcGapScore ${analysis.overallStatus}`}>
           <span>Readiness</span>
           <strong>{analysis.readinessScore}%</strong>
-          <small>{statusLabel(analysis.overallStatus)} / {analysis.criticalGapCount} critical gap(s)</small>
+          <small>
+            {statusLabel(analysis.overallStatus)} / {analysis.criticalGapCount} critical gap(s)
+          </small>
         </article>
         <article>
           <span>Posición del producto</span>

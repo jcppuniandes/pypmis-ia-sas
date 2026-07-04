@@ -14,9 +14,7 @@ export default function AwpView({ ctx }: { ctx: AppShellCtx }) {
     handleConstraintClose,
   } = ctx;
   return (
-    <section
-      className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "awp" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>Work Package Readiness</h2>
         <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
@@ -72,9 +70,7 @@ export default function AwpView({ ctx }: { ctx: AppShellCtx }) {
                   </small>
                   <div className="packageFacts">
                     <span>
-                      {workPackage.control_account_id
-                        ? accountLabel(workPackage.control_account_id)
-                        : "Area level"}
+                      {workPackage.control_account_id ? accountLabel(workPackage.control_account_id) : "Area level"}
                     </span>
                     <span>
                       {workPackage.planned_start ?? "Pending"} to {workPackage.planned_finish ?? "Pending"}

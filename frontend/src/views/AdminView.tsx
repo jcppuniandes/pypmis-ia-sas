@@ -80,9 +80,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
               <span>Start</span>
               <input
                 disabled={!canConfigure}
-                onChange={(event) =>
-                  setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
-                }
+                onChange={(event) => setProjectDraft((current) => ({ ...current, start_date: event.target.value }))}
                 type="date"
                 value={projectDraft.start_date}
               />
@@ -91,19 +89,13 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
               <span>Finish</span>
               <input
                 disabled={!canConfigure}
-                onChange={(event) =>
-                  setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
-                }
+                onChange={(event) => setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))}
                 type="date"
                 value={projectDraft.finish_date}
               />
             </label>
           </div>
-          <button
-            className="workflowAction primary"
-            disabled={!canConfigure || captureAction !== null}
-            type="submit"
-          >
+          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
             {captureAction === "project" ? "Creating..." : "Create Project"}
           </button>
         </form>
@@ -142,11 +134,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
               value={userDraft.title}
             />
           </label>
-          <button
-            className="workflowAction primary"
-            disabled={!canConfigure || captureAction !== null}
-            type="submit"
-          >
+          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
             {captureAction === "user" ? "Creating..." : "Create User"}
           </button>
         </form>
@@ -195,11 +183,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             {roles.find((role) => role.role === teamDraft.role)?.can_manage_contract && <span>Contract</span>}
             {roles.find((role) => role.role === teamDraft.role)?.can_configure && <span>Admin</span>}
           </div>
-          <button
-            className="workflowAction primary"
-            disabled={!canConfigure || captureAction !== null}
-            type="submit"
-          >
+          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
             {captureAction === "team" ? "Assigning..." : "Assign Role"}
           </button>
         </form>
@@ -247,9 +231,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             <span>Description</span>
             <textarea
               disabled={!canConfigure}
-              onChange={(event) =>
-                setProcessDraft((current) => ({ ...current, description: event.target.value }))
-              }
+              onChange={(event) => setProcessDraft((current) => ({ ...current, description: event.target.value }))}
               placeholder="Control purpose and decision point"
               value={processDraft.description}
             />
@@ -258,9 +240,7 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             <span>Form Fields</span>
             <textarea
               disabled={!canConfigure}
-              onChange={(event) =>
-                setProcessDraft((current) => ({ ...current, form_schema: event.target.value }))
-              }
+              onChange={(event) => setProcessDraft((current) => ({ ...current, form_schema: event.target.value }))}
               value={processDraft.form_schema}
             />
           </label>
@@ -276,17 +256,11 @@ export default function AdminView({ ctx }: { ctx: AppShellCtx }) {
             <span>Transitions: action | from | to | ball in court | status</span>
             <textarea
               disabled={!canConfigure}
-              onChange={(event) =>
-                setProcessDraft((current) => ({ ...current, transitions: event.target.value }))
-              }
+              onChange={(event) => setProcessDraft((current) => ({ ...current, transitions: event.target.value }))}
               value={processDraft.transitions}
             />
           </label>
-          <button
-            className="workflowAction primary"
-            disabled={!canConfigure || captureAction !== null}
-            type="submit"
-          >
+          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
             {captureAction === "process-template" ? "Saving..." : "Create BP Template"}
           </button>
         </form>

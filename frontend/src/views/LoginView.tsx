@@ -44,13 +44,7 @@ export default function LoginView() {
           )}
           <div className="fieldStack">
             <label htmlFor="email">User</label>
-            <input
-              id="email"
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <input id="email" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="fieldStack">
             <label htmlFor="password">Password</label>

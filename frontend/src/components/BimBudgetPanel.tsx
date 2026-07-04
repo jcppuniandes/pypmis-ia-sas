@@ -53,18 +53,10 @@ export default function BimBudgetPanel({
   const normalizedSearch = search.trim().toLowerCase();
   const visibleRows = normalizedSearch
     ? summary.rows.filter((row) =>
-        [
-          row.code,
-          row.name,
-          row.wbsCode,
-          row.cbsCode,
-          row.fbsCode,
-          row.packageCode,
-          row.elementRefs.join(" "),
-        ]
+        [row.code, row.name, row.wbsCode, row.cbsCode, row.fbsCode, row.packageCode, row.elementRefs.join(" ")]
           .join(" ")
           .toLowerCase()
-          .includes(normalizedSearch),
+          .includes(normalizedSearch)
       )
     : summary.rows;
 
@@ -138,7 +130,7 @@ export default function BimBudgetPanel({
               },
             ],
           }
-        : current,
+        : current
     );
   }
 
@@ -184,7 +176,12 @@ export default function BimBudgetPanel({
           <button className="workflowAction" onClick={onOpenQuantities} type="button">
             Ver cantidades fuente
           </button>
-          <button className="workflowAction primary" disabled={!summary.rows.length} onClick={exportExcel} type="button">
+          <button
+            className="workflowAction primary"
+            disabled={!summary.rows.length}
+            onClick={exportExcel}
+            type="button"
+          >
             <Download size={16} /> Exportar Excel
           </button>
         </div>
@@ -194,7 +191,9 @@ export default function BimBudgetPanel({
         <article>
           <span>Partidas consolidadas</span>
           <strong>{summary.rows.length}</strong>
-          <small>{summary.assignedLineCount}/{summary.sourceLineCount} líneas con precio</small>
+          <small>
+            {summary.assignedLineCount}/{summary.sourceLineCount} líneas con precio
+          </small>
         </article>
         <article>
           <span>Total presupuesto</span>
@@ -202,10 +201,12 @@ export default function BimBudgetPanel({
             {!summary.currencyTotals.length
               ? "Sin valor"
               : summary.currencyTotals.length === 1
-              ? currency(summary.currencyTotals[0].amount, summary.currencyTotals[0].currency)
-              : `${summary.currencyTotals.length} monedas`}
+                ? currency(summary.currencyTotals[0].amount, summary.currencyTotals[0].currency)
+                : `${summary.currencyTotals.length} monedas`}
           </strong>
-          <small>{summary.currencyTotals.map((total) => currency(total.amount, total.currency)).join(" / ") || "Sin valor"}</small>
+          <small>
+            {summary.currencyTotals.map((total) => currency(total.amount, total.currency)).join(" / ") || "Sin valor"}
+          </small>
         </article>
         <article className={summary.missingAssignmentCount ? "risk" : ""}>
           <span>Sin partida/APU</span>
@@ -215,7 +216,9 @@ export default function BimBudgetPanel({
         <article className={summary.duplicateLineCount || summary.unitConflictCount ? "risk" : ""}>
           <span>Control de calidad</span>
           <strong>{summary.duplicateLineCount + summary.unitConflictCount}</strong>
-          <small>{summary.duplicateLineCount} duplicados / {summary.unitConflictCount} conflictos de unidad</small>
+          <small>
+            {summary.duplicateLineCount} duplicados / {summary.unitConflictCount} conflictos de unidad
+          </small>
         </article>
       </div>
 
@@ -262,8 +265,8 @@ export default function BimBudgetPanel({
                           <strong>{resource.component}</strong>
                           <span>{resource.description}</span>
                           <small>
-                            {quantity(resource.quantity, resource.unit)} × {currency(resource.unit_rate, row.currency)} ={" "}
-                            {currency(resource.amount, row.currency)}
+                            {quantity(resource.quantity, resource.unit)} × {currency(resource.unit_rate, row.currency)}{" "}
+                            = {currency(resource.amount, row.currency)}
                           </small>
                         </div>
                       ))}
@@ -348,7 +351,9 @@ export default function BimBudgetPanel({
                   <td>
                     <strong>{row.wbsCode || "WBS pendiente"}</strong>
                     <span>{row.cbsCode || "CBS pendiente"}</span>
-                    <small>{row.fbsCode || "FBS pendiente"} / {row.packageCode || "Paquete pendiente"}</small>
+                    <small>
+                      {row.fbsCode || "FBS pendiente"} / {row.packageCode || "Paquete pendiente"}
+                    </small>
                   </td>
                   <td>
                     <strong>{quantity(row.quantity, row.unit)}</strong>

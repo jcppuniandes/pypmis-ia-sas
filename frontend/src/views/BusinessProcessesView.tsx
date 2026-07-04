@@ -21,9 +21,7 @@ export default function BusinessProcessesView({ ctx }: { ctx: AppShellCtx }) {
   return (
     <section
       className={
-        activeView === "business-processes"
-          ? "workflowShell workspaceSection"
-          : "workflowShell workspaceSection hidden"
+        activeView === "business-processes" ? "workflowShell workspaceSection" : "workflowShell workspaceSection hidden"
       }
       id="workflow-record"
     >
@@ -113,16 +111,9 @@ export default function BusinessProcessesView({ ctx }: { ctx: AppShellCtx }) {
             </thead>
             <tbody>
               {bpRecords.map((record) => (
-                <tr
-                  className={selectedBpRecord?.record === record.record ? "selectedRecord" : ""}
-                  key={record.record}
-                >
+                <tr className={selectedBpRecord?.record === record.record ? "selectedRecord" : ""} key={record.record}>
                   <td>
-                    <button
-                      className="recordLink"
-                      onClick={() => setSelectedBpRecordNo(record.record)}
-                      type="button"
-                    >
+                    <button className="recordLink" onClick={() => setSelectedBpRecordNo(record.record)} type="button">
                       {record.record}
                     </button>
                   </td>

@@ -16,9 +16,7 @@ export default function RoadmapView({ ctx }: { ctx: AppShellCtx }) {
     handleControlPlanSubmit,
   } = ctx;
   return (
-    <section
-      className={activeView === "roadmap" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "roadmap" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>Roadmap Maturity Assessment</h2>
         <span>Estado global {overallRoadmapScore}%</span>
@@ -26,9 +24,7 @@ export default function RoadmapView({ ctx }: { ctx: AppShellCtx }) {
       <div className="appAssessment">
         <article>
           <span>Calificacion actual</span>
-          <strong>
-            {pilotReadiness ? `${pilotReadiness.score.toFixed(1)}/100` : `${overallRoadmapScore}/100`}
-          </strong>
+          <strong>{pilotReadiness ? `${pilotReadiness.score.toFixed(1)}/100` : `${overallRoadmapScore}/100`}</strong>
           <small>
             {pilotReadiness
               ? statusLabel(pilotReadiness.status)
@@ -76,9 +72,7 @@ export default function RoadmapView({ ctx }: { ctx: AppShellCtx }) {
               <span>Status</span>
               <select
                 disabled={!canConfigure}
-                onChange={(event) =>
-                  setControlPlanDraft((current) => ({ ...current, status: event.target.value }))
-                }
+                onChange={(event) => setControlPlanDraft((current) => ({ ...current, status: event.target.value }))}
                 value={controlPlanDraft.status}
               >
                 <option value="draft">Draft</option>
@@ -185,11 +179,7 @@ export default function RoadmapView({ ctx }: { ctx: AppShellCtx }) {
               />
             </label>
           </div>
-          <button
-            className="workflowAction primary"
-            disabled={!canConfigure || captureAction !== null}
-            type="submit"
-          >
+          <button className="workflowAction primary" disabled={!canConfigure || captureAction !== null} type="submit">
             {captureAction === "control-plan" ? "Saving..." : "Save Control Plan"}
           </button>
         </form>

@@ -25,8 +25,8 @@ export default function ContractsView({ ctx }: { ctx: AppShellCtx }) {
                 <span>{contract.title}</span>
                 <small>
                   {currency(contract.value, project.currency)} /{" "}
-                  {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"}{" "}
-                  / {statusLabel(contract.status)}
+                  {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} /{" "}
+                  {statusLabel(contract.status)}
                 </small>
               </article>
             ))}
@@ -59,9 +59,7 @@ export default function ContractsView({ ctx }: { ctx: AppShellCtx }) {
                 </strong>
                 <span>{certificate.period_label || "No period"}</span>
                 <small>
-                  {certificate.control_account_id
-                    ? accountLabel(certificate.control_account_id)
-                    : "No control account"}{" "}
+                  {certificate.control_account_id ? accountLabel(certificate.control_account_id) : "No control account"}{" "}
                   / {statusLabel(certificate.status)}
                 </small>
               </article>

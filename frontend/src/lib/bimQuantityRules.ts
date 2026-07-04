@@ -12,7 +12,11 @@ export type QuantityRuleResult = {
   policyVersion: number;
   preferredMeasure: string;
   preferredUnit: string;
-  source: "IFC Quantity Set publicado" | "Plantilla Excel/CSV controlada" | "Conteo fallback" | "Calculo geometrico desde IFC";
+  source:
+    | "IFC Quantity Set publicado"
+    | "Plantilla Excel/CSV controlada"
+    | "Conteo fallback"
+    | "Calculo geometrico desde IFC";
   status: QuantityRuleStatus;
 };
 
@@ -48,17 +52,37 @@ type RuleDefinition = {
 
 const CLASS_RULES: Record<string, RuleDefinition> = {
   IFCBEAM: { measure: "volumen o longitud", ruleHint: "NetVolume / NetLength", units: ["m3", "m"] },
-  IFCBUILDINGELEMENTPROXY: { allowFallbackCount: true, measure: "conteo validado", ruleHint: "ElementCount", units: ["ea", "und"] },
+  IFCBUILDINGELEMENTPROXY: {
+    allowFallbackCount: true,
+    measure: "conteo validado",
+    ruleHint: "ElementCount",
+    units: ["ea", "und"],
+  },
   IFCCOLUMN: { measure: "volumen o longitud", ruleHint: "NetVolume / NetLength", units: ["m3", "m"] },
   IFCCURTAINWALL: { measure: "area", ruleHint: "NetSideArea / GrossSideArea", units: ["m2"] },
   IFCDOOR: { allowFallbackCount: true, measure: "conteo", ruleHint: "Count / ElementCount", units: ["ea", "und"] },
-  IFCFLOWFITTING: { allowFallbackCount: true, measure: "conteo", ruleHint: "Count / ElementCount", units: ["ea", "und"] },
+  IFCFLOWFITTING: {
+    allowFallbackCount: true,
+    measure: "conteo",
+    ruleHint: "Count / ElementCount",
+    units: ["ea", "und"],
+  },
   IFCFLOWSEGMENT: { measure: "longitud", ruleHint: "NetLength", units: ["m"] },
-  IFCFLOWTERMINAL: { allowFallbackCount: true, measure: "conteo", ruleHint: "Count / ElementCount", units: ["ea", "und"] },
+  IFCFLOWTERMINAL: {
+    allowFallbackCount: true,
+    measure: "conteo",
+    ruleHint: "Count / ElementCount",
+    units: ["ea", "und"],
+  },
   IFCFOOTING: { measure: "volumen", ruleHint: "NetVolume", units: ["m3"] },
   IFCMEMBER: { measure: "longitud", ruleHint: "NetLength", units: ["m"] },
   IFCPILE: { measure: "longitud o volumen", ruleHint: "NetLength / NetVolume", units: ["m", "m3"] },
-  IFCPIPEFITTING: { allowFallbackCount: true, measure: "conteo", ruleHint: "Count / ElementCount", units: ["ea", "und"] },
+  IFCPIPEFITTING: {
+    allowFallbackCount: true,
+    measure: "conteo",
+    ruleHint: "Count / ElementCount",
+    units: ["ea", "und"],
+  },
   IFCPIPESEGMENT: { measure: "longitud", ruleHint: "NetLength", units: ["m"] },
   IFCPLATE: { measure: "area", ruleHint: "NetArea / GrossArea", units: ["m2"] },
   IFCRAILING: { measure: "longitud", ruleHint: "NetLength", units: ["m"] },
@@ -66,8 +90,16 @@ const CLASS_RULES: Record<string, RuleDefinition> = {
   IFCSLAB: { measure: "area o volumen", ruleHint: "NetArea / NetVolume", units: ["m2", "m3"] },
   IFCSPACE: { measure: "area o volumen", ruleHint: "NetFloorArea / NetVolume", units: ["m2", "m3"] },
   IFCSTAIR: { measure: "volumen", ruleHint: "NetVolume", units: ["m3"] },
-  IFCWALL: { measure: "area o volumen o longitud", ruleHint: "NetSideArea / NetVolume / NetLength", units: ["m2", "m3", "m"] },
-  IFCWALLSTANDARDCASE: { measure: "area o volumen o longitud", ruleHint: "NetSideArea / NetVolume / NetLength", units: ["m2", "m3", "m"] },
+  IFCWALL: {
+    measure: "area o volumen o longitud",
+    ruleHint: "NetSideArea / NetVolume / NetLength",
+    units: ["m2", "m3", "m"],
+  },
+  IFCWALLSTANDARDCASE: {
+    measure: "area o volumen o longitud",
+    ruleHint: "NetSideArea / NetVolume / NetLength",
+    units: ["m2", "m3", "m"],
+  },
   IFCWINDOW: { allowFallbackCount: true, measure: "conteo", ruleHint: "Count / ElementCount", units: ["ea", "und"] },
 };
 
@@ -76,11 +108,15 @@ function compact(value: string | null | undefined) {
 }
 
 function normalizeIfcClass(value: string) {
-  return compact(value).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  return compact(value)
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase();
 }
 
 function normalizeLengthScaleToMeters(value: string | null | undefined) {
-  const text = compact(value).toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const text = compact(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
   if (!text) return null;
   if (["mm", "milli", "millimeter", "millimeters", "millimetre", "millimetres"].includes(text)) return 0.001;
   if (["cm", "centi", "centimeter", "centimeters", "centimetre", "centimetres"].includes(text)) return 0.01;
@@ -117,13 +153,21 @@ function metricDimensions(dimensions: IfcGeometryDimensions | null | undefined, 
 export function estimateQuantityFromGeometry(
   ifcClass: string,
   dimensions: IfcGeometryDimensions | null | undefined,
-  modelUnits?: string | null,
+  modelUnits?: string | null
 ): GeometricQuantityEstimate | null {
   const normalizedClass = normalizeIfcClass(ifcClass);
   const dims = metricDimensions(dimensions, modelUnits);
   if (!normalizedClass || !dims) return null;
 
-  const areaClasses = new Set(["IFCCURTAINWALL", "IFCPLATE", "IFCROOF", "IFCSLAB", "IFCSPACE", "IFCWALL", "IFCWALLSTANDARDCASE"]);
+  const areaClasses = new Set([
+    "IFCCURTAINWALL",
+    "IFCPLATE",
+    "IFCROOF",
+    "IFCSLAB",
+    "IFCSPACE",
+    "IFCWALL",
+    "IFCWALLSTANDARDCASE",
+  ]);
   const volumeClasses = new Set(["IFCBEAM", "IFCCOLUMN", "IFCFOOTING", "IFCPILE", "IFCSTAIR"]);
   const lengthClasses = new Set(["IFCFLOWSEGMENT", "IFCMEMBER", "IFCPIPESEGMENT", "IFCRAILING"]);
 
@@ -201,7 +245,13 @@ function sourceFor(line: QuantityTakeoffLine) {
 
 function ruleFor(line: QuantityTakeoffLine) {
   const ifcClass = normalizeIfcClass(line.ifc_class || line.category);
-  return CLASS_RULES[ifcClass] ?? { measure: "cantidad controlada", ruleHint: "Quantity / Unit", units: [normalizeUnit(line.unit)].filter(Boolean) };
+  return (
+    CLASS_RULES[ifcClass] ?? {
+      measure: "cantidad controlada",
+      ruleHint: "Quantity / Unit",
+      units: [normalizeUnit(line.unit)].filter(Boolean),
+    }
+  );
 }
 
 function preferredMeasure(definition: RuleDefinition) {
@@ -227,7 +277,15 @@ function auditedRuleFor(line: QuantityTakeoffLine): QuantityRuleResult | null {
   const source = String(rule.source ?? "");
   if (!["valid", "review", "blocked"].includes(status)) return null;
   if (!["Alta", "Media", "Baja"].includes(confidence)) return null;
-  if (!["IFC Quantity Set publicado", "Plantilla Excel/CSV controlada", "Conteo fallback", "Calculo geometrico desde IFC"].includes(source)) return null;
+  if (
+    ![
+      "IFC Quantity Set publicado",
+      "Plantilla Excel/CSV controlada",
+      "Conteo fallback",
+      "Calculo geometrico desde IFC",
+    ].includes(source)
+  )
+    return null;
 
   return {
     allowFallbackCount: Boolean(rule.allow_fallback_count),
@@ -258,7 +316,9 @@ export function evaluateQuantityRule(line: QuantityTakeoffLine): QuantityRuleRes
   const findings: string[] = [];
   const normalizedUnit = normalizeUnit(effective.unit);
   const expectedUnits = definition.units;
-  const allowFallbackCount = Boolean(definition.allowFallbackCount && expectedUnits.some((unit) => normalizeUnit(unit) === "ea"));
+  const allowFallbackCount = Boolean(
+    definition.allowFallbackCount && expectedUnits.some((unit) => normalizeUnit(unit) === "ea")
+  );
   const preferredUnit = normalizeUnit(expectedUnits[0] ?? "");
   const inferredRuleUnit = measurementUnit(effective.measurementRule);
 
@@ -272,7 +332,7 @@ export function evaluateQuantityRule(line: QuantityTakeoffLine): QuantityRuleRes
   }
   if (source === "Conteo fallback" && !allowFallbackCount) {
     findings.push(
-      `Medicion dimensional requerida: ${compact(line.ifc_class) || "la clase IFC"} debe medirse por ${preferredMeasure(definition)} (${preferredUnit}).`,
+      `Medicion dimensional requerida: ${compact(line.ifc_class) || "la clase IFC"} debe medirse por ${preferredMeasure(definition)} (${preferredUnit}).`
     );
   }
 
@@ -285,9 +345,9 @@ export function evaluateQuantityRule(line: QuantityTakeoffLine): QuantityRuleRes
         ? "Alta"
         : source === "Calculo geometrico desde IFC"
           ? "Alta"
-        : source === "Plantilla Excel/CSV controlada"
-          ? "Media"
-          : "Media";
+          : source === "Plantilla Excel/CSV controlada"
+            ? "Media"
+            : "Media";
   const ifcClass = compact(line.ifc_class) || "Clase IFC pendiente";
   const sourceText = source === "Conteo fallback" ? "conteo de elementos sin Quantity Set" : source;
 
@@ -317,6 +377,6 @@ export function summarizeQuantityRules(lines: QuantityTakeoffLine[]): QuantityRu
       if (result.source === "IFC Quantity Set publicado" && result.status === "valid") summary.authoritative += 1;
       return summary;
     },
-    { authoritative: 0, blocked: 0, review: 0, total: 0, valid: 0 },
+    { authoritative: 0, blocked: 0, review: 0, total: 0, valid: 0 }
   );
 }

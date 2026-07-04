@@ -41,13 +41,13 @@ export default function BimApuReviewPanel({
   const analysis = useMemo(() => buildBimApuReview(lines), [lines]);
   const [selectedGroupKeys, setSelectedGroupKeys] = useState<string[]>([]);
   const selectedGroups = analysis.groups.filter(
-    (group) => group.status === "ready" && selectedGroupKeys.includes(group.groupKey),
+    (group) => group.status === "ready" && selectedGroupKeys.includes(group.groupKey)
   );
   const selectedLineIds = Array.from(new Set(selectedGroups.flatMap((group) => group.lineIds)));
 
   function toggleGroup(groupKey: string) {
     setSelectedGroupKeys((current) =>
-      current.includes(groupKey) ? current.filter((key) => key !== groupKey) : [...current, groupKey],
+      current.includes(groupKey) ? current.filter((key) => key !== groupKey) : [...current, groupKey]
     );
   }
 
@@ -153,7 +153,9 @@ export default function BimApuReviewPanel({
                   <td>
                     <strong>{group.elementName}</strong>
                     <span>{group.ifcClasses.join(" / ")}</span>
-                    <small>{group.lineIds.length} línea(s) / {group.lineIds.length} referencia(s)</small>
+                    <small>
+                      {group.lineIds.length} línea(s) / {group.lineIds.length} referencia(s)
+                    </small>
                   </td>
                   <td>
                     <strong>{quantity(group.ifcQuantity, group.unit)}</strong>
@@ -163,7 +165,9 @@ export default function BimApuReviewPanel({
                     <strong>{group.costItemCode || "Partida pendiente"}</strong>
                     <span>{group.costItemName || "Ejecuta la sugerencia automática"}</span>
                     {group.unitRate > 0 && (
-                      <small>{currency(group.unitRate, group.currency)} / {group.budgetUnit}</small>
+                      <small>
+                        {currency(group.unitRate, group.currency)} / {group.budgetUnit}
+                      </small>
                     )}
                   </td>
                   <td>
@@ -189,10 +193,10 @@ export default function BimApuReviewPanel({
                       {group.blockReason
                         ? group.blockReason
                         : group.status === "pending"
-                        ? "Esperando sugerencia"
-                        : group.unitCompatible
-                          ? "Unidad compatible"
-                          : `${group.unit} ≠ ${group.budgetUnit}`}
+                          ? "Esperando sugerencia"
+                          : group.unitCompatible
+                            ? "Unidad compatible"
+                            : `${group.unit} ≠ ${group.budgetUnit}`}
                     </span>
                   </td>
                 </tr>

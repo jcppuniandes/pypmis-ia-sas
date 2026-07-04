@@ -4,7 +4,7 @@ import type { QuantityTakeoffLine } from "../src/types";
 function quantityLine(
   id: number,
   overrides: Partial<QuantityTakeoffLine> = {},
-  budgetAssignment: Record<string, unknown> | null = null,
+  budgetAssignment: Record<string, unknown> | null = null
 ): QuantityTakeoffLine {
   return {
     id,
@@ -118,7 +118,7 @@ describe("BIM budget consolidation", () => {
       quantityLine(
         3,
         { unit: "m3", measurement_rule: "NetVolume", quantity: 2 },
-        { ...baseAssignment, budget_amount: 240_000, budget_unit: "m3", quantity: 2, unit_rate: 120_000 },
+        { ...baseAssignment, budget_amount: 240_000, budget_unit: "m3", quantity: 2, unit_rate: 120_000 }
       ),
       quantityLine(4, { raw_data: {} }),
     ]);
@@ -140,26 +140,30 @@ describe("BIM budget consolidation", () => {
 
   it("generates an Excel-compatible workbook with traceability and APU structure", () => {
     const result = buildBimBudget([
-      quantityLine(1, {}, {
-        apu_structure: [
-          {
-            amount: 100000,
-            component: "Costo directo",
-            description: "Muro",
-            quantity: 1,
-            unit: "m2",
-            unit_rate: 100000,
-          },
-        ],
-        budget_amount: 1_000_000,
-        budget_unit: "m2",
-        cost_item_code: "APU-MUR-01",
-        cost_item_name: "Muro en concreto",
-        currency: "COP",
-        quantity: 10,
-        status: "assigned",
-        unit_rate: 100_000,
-      }),
+      quantityLine(
+        1,
+        {},
+        {
+          apu_structure: [
+            {
+              amount: 100000,
+              component: "Costo directo",
+              description: "Muro",
+              quantity: 1,
+              unit: "m2",
+              unit_rate: 100000,
+            },
+          ],
+          budget_amount: 1_000_000,
+          budget_unit: "m2",
+          cost_item_code: "APU-MUR-01",
+          cost_item_name: "Muro en concreto",
+          currency: "COP",
+          quantity: 10,
+          status: "assigned",
+          unit_rate: 100_000,
+        }
+      ),
     ]);
 
     const workbook = buildBimBudgetExcelXml(result, {

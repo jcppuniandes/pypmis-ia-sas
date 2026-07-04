@@ -114,11 +114,15 @@ export function buildOpcGapAnalysis(input: OpcGapInput): OpcGapAnalysis {
     },
     {
       appEvidence: `${input.costLoadedActivityPercent.toFixed(0)}% cost-loaded, ${input.costSheetLineCount} cost line(s), ${input.fundingSourceCount} fund(s)`,
-      controlReference: "Costos, recursos y financiacion deben estar trazados a WBS/CBS/FBS para flujo de caja controlable.",
+      controlReference:
+        "Costos, recursos y financiacion deben estar trazados a WBS/CBS/FBS para flujo de caja controlable.",
       id: "cost-resource-cashflow",
       nextAction: "Completar cost loading por actividad/WBS y conectar CBS/FBS para cash flow controlable.",
       priority: "P1",
-      status: statusFrom(hasCostLoadedSchedule && hasControlledCostFunding, input.hasCostBaseline || input.costSheetLineCount > 0),
+      status: statusFrom(
+        hasCostLoadedSchedule && hasControlledCostFunding,
+        input.hasCostBaseline || input.costSheetLineCount > 0
+      ),
       title: "Cost/resource loading and cash flow",
     },
     {
@@ -138,13 +142,14 @@ export function buildOpcGapAnalysis(input: OpcGapInput): OpcGapAnalysis {
       priority: "P2",
       status: statusFrom(
         hasBimBudgetBridge && input.quantityMappedLineCount >= Math.max(1, Math.floor(input.quantityLineCount * 0.8)),
-        hasBimQuantityEvidence,
+        hasBimQuantityEvidence
       ),
       title: "BIM -> APU -> controlled budget bridge",
     },
     {
       appEvidence: `${input.workPackageCount} package(s), ${input.workPackageReadyCount} ready, ${input.blockingConstraintCount} blocking constraint(s)`,
-      controlReference: "El make-ready debe validar restricciones, compromisos semanales, ruta constructiva y liberacion por paquete.",
+      controlReference:
+        "El make-ready debe validar restricciones, compromisos semanales, ruta constructiva y liberacion por paquete.",
       id: "make-ready-awp",
       nextAction: "Convertir paquetes AWP en flujo make-ready: restricciones, weekly work plan, compromisos y PPC.",
       priority: "P2",
@@ -153,20 +158,29 @@ export function buildOpcGapAnalysis(input: OpcGapInput): OpcGapAnalysis {
     },
     {
       appEvidence: `${input.latestProgressRecordCount} progress record(s), ${input.latestCostRecordCount} cost record(s), ${input.controlSnapshotCount} control snapshot(s)`,
-      controlReference: "PV, EV y AC deben salir de linea base, avance fisico aprobado y costos certificados por periodo.",
+      controlReference:
+        "PV, EV y AC deben salir de linea base, avance fisico aprobado y costos certificados por periodo.",
       id: "evm-control",
       nextAction: "Capturar avance fisico aprobado y AC certificado por periodo para que PV/EV/AC sean auditables.",
       priority: "P1",
-      status: statusFrom(hasEvmOperations, input.hasCostBaseline || input.latestProgressRecordCount > 0 || input.latestCostRecordCount > 0),
+      status: statusFrom(
+        hasEvmOperations,
+        input.hasCostBaseline || input.latestProgressRecordCount > 0 || input.latestCostRecordCount > 0
+      ),
       title: "EVM period control and S-curve evidence",
     },
     {
       appEvidence: `${input.processFlowCompletion.toFixed(0)}% process flow, ${input.teamRoleCount} role(s), ${input.evidenceScore.toFixed(0)}% evidence score`,
-      controlReference: "Tableros por rol y evidencia de aprobacion deben mantener la trazabilidad ejecutiva y operativa.",
+      controlReference:
+        "Tableros por rol y evidencia de aprobacion deben mantener la trazabilidad ejecutiva y operativa.",
       id: "role-dashboard-governance",
-      nextAction: "Configurar vistas por rol y evidencia de aprobacion para direccion, control, BIM/costos y planeacion.",
+      nextAction:
+        "Configurar vistas por rol y evidencia de aprobacion para direccion, control, BIM/costos y planeacion.",
       priority: "P3",
-      status: statusFrom(hasDashboardGovernance && hasEvidence, input.processFlowCompletion > 0 || input.teamRoleCount > 1),
+      status: statusFrom(
+        hasDashboardGovernance && hasEvidence,
+        input.processFlowCompletion > 0 || input.teamRoleCount > 1
+      ),
       title: "Role dashboards, governance and evidence",
     },
   ];

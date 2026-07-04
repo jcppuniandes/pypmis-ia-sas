@@ -37,11 +37,9 @@ export type ProjectOperationalSetupInput = Omit<
 };
 
 export const projects = {
-  list: (token: string) =>
-    apiFetch<Project[]>("/api/v1/projects", { token }),
+  list: (token: string) => apiFetch<Project[]>("/api/v1/projects", { token }),
 
-  get: (token: string, id: number) =>
-    apiFetch<Project>(`/api/v1/projects/${id}`, { token }),
+  get: (token: string, id: number) => apiFetch<Project>(`/api/v1/projects/${id}`, { token }),
 
   create: (token: string, data: Omit<Project, "id">) =>
     apiFetch<Project>("/api/v1/projects", {
@@ -126,23 +124,34 @@ export const projects = {
     apiFetchFile(`/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/ifc-file`, { token }),
 
   recalculateQuantityRules: (token: string, projectId: number, runId: number) =>
-    apiFetch<QuantityRuleRecalculation>(`/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/recalculate-rules`, {
-      method: "POST",
-      token,
-    }),
+    apiFetch<QuantityRuleRecalculation>(
+      `/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/recalculate-rules`,
+      {
+        method: "POST",
+        token,
+      }
+    ),
 
-  approveControlledMeasurements: (token: string, projectId: number, runId: number, data: ControlledMeasurementApproval) =>
-    apiFetch<QuantityTakeoffLine[]>(`/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/controlled-measurements`, {
-      method: "POST",
-      token,
-      body: JSON.stringify(data),
-    }),
+  approveControlledMeasurements: (
+    token: string,
+    projectId: number,
+    runId: number,
+    data: ControlledMeasurementApproval
+  ) =>
+    apiFetch<QuantityTakeoffLine[]>(
+      `/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/controlled-measurements`,
+      {
+        method: "POST",
+        token,
+        body: JSON.stringify(data),
+      }
+    ),
 
   processGeometryMeasurements: (
     token: string,
     projectId: number,
     runId: number,
-    data: BimGeometryMeasurementBatchInput,
+    data: BimGeometryMeasurementBatchInput
   ) =>
     apiFetch<BimGeometryMeasurementBatch>(
       `/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/geometry-measurements`,
@@ -150,21 +159,24 @@ export const projects = {
         method: "POST",
         token,
         body: JSON.stringify(data),
-      },
+      }
     ),
 
   assignQuantityControlCodes: (token: string, projectId: number, runId: number, data: QuantityControlCodeAssignment) =>
-    apiFetch<QuantityTakeoffLine[]>(`/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/control-code-assignments`, {
-      method: "POST",
-      token,
-      body: JSON.stringify(data),
-    }),
+    apiFetch<QuantityTakeoffLine[]>(
+      `/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/control-code-assignments`,
+      {
+        method: "POST",
+        token,
+        body: JSON.stringify(data),
+      }
+    ),
 
   linkQuantityTakeoffBimModel: (
     token: string,
     projectId: number,
     runId: number,
-    data: { model_id: number; expected_version?: number },
+    data: { model_id: number; expected_version?: number }
   ) =>
     apiFetch<QuantityTakeoffRun>(`/api/v1/projects/${projectId}/quantity-takeoff-runs/${runId}/bim-model`, {
       method: "PUT",
@@ -185,7 +197,7 @@ export const projects = {
     const query = params.toString();
     return apiFetch<ColombiaApuCatalogItem[]>(
       `/api/v1/projects/${projectId}/colombia-apu-catalog${query ? `?${query}` : ""}`,
-      { token },
+      { token }
     );
   },
 
@@ -243,6 +255,5 @@ export const projects = {
       token,
     }),
 
-  roleProfiles: (token: string) =>
-    apiFetch<RoleProfile[]>("/api/v1/projects/role-profiles", { token }),
+  roleProfiles: (token: string) => apiFetch<RoleProfile[]>("/api/v1/projects/role-profiles", { token }),
 };

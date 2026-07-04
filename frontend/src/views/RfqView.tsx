@@ -4,9 +4,7 @@ import { currency, statusLabel } from "../components/utils";
 export default function RfqView({ ctx }: { ctx: AppShellCtx }) {
   const { activeView, dashboard, project, setActiveView, bidsByRfq, rfqPackageLabel, accountLabel } = ctx;
   return (
-    <section
-      className={activeView === "rfq" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "rfq" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>RFQ / Bid Evaluation</h2>
         <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
@@ -44,10 +42,8 @@ export default function RfqView({ ctx }: { ctx: AppShellCtx }) {
                 </strong>
                 <span>{rfqPackage.title}</span>
                 <small>
-                  {rfqPackage.control_account_id
-                    ? accountLabel(rfqPackage.control_account_id)
-                    : "No control account"}{" "}
-                  / {statusLabel(rfqPackage.status)} / {bidsByRfq[rfqPackage.id]?.length ?? 0} bids / due{" "}
+                  {rfqPackage.control_account_id ? accountLabel(rfqPackage.control_account_id) : "No control account"} /{" "}
+                  {statusLabel(rfqPackage.status)} / {bidsByRfq[rfqPackage.id]?.length ?? 0} bids / due{" "}
                   {rfqPackage.due_date ?? "Open"}
                 </small>
               </article>

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { estimateQuantityFromGeometry, evaluateQuantityRule, summarizeQuantityRules } from "../src/lib/bimQuantityRules";
+import {
+  estimateQuantityFromGeometry,
+  evaluateQuantityRule,
+  summarizeQuantityRules,
+} from "../src/lib/bimQuantityRules";
 import type { QuantityTakeoffLine } from "../src/types";
 
 function line(overrides: Partial<QuantityTakeoffLine>): QuantityTakeoffLine {
@@ -82,7 +86,7 @@ describe("bim quantity rules", () => {
         measurement_rule: "NetLength",
         quantity: 12,
         unit: "m",
-      }),
+      })
     );
 
     expect(result.status).toBe("valid");
@@ -99,7 +103,7 @@ describe("bim quantity rules", () => {
         quantity: 1,
         unit: "ea",
         validation_notes: "No published IFC quantity found",
-      }),
+      })
     );
 
     expect(result.status).toBe("valid");
@@ -117,7 +121,7 @@ describe("bim quantity rules", () => {
         quantity: 1,
         unit: "ea",
         validation_notes: "No published IFC quantity found",
-      }),
+      })
     );
 
     expect(result.status).toBe("blocked");
@@ -144,7 +148,7 @@ describe("bim quantity rules", () => {
             unit: "m3",
           },
         },
-      }),
+      })
     );
 
     expect(result.status).toBe("valid");
@@ -160,7 +164,7 @@ describe("bim quantity rules", () => {
         measurement_rule: "NetLength",
         quantity: 20,
         unit: "m3",
-      }),
+      })
     );
 
     expect(result.status).toBe("blocked");
@@ -184,7 +188,7 @@ describe("bim quantity rules", () => {
             status: "valid",
           },
         },
-      }),
+      })
     );
 
     expect(result.explanation).toBe("Backend audited rule");
@@ -195,7 +199,13 @@ describe("bim quantity rules", () => {
   it("summarizes valid, review and blocked quantity lines", () => {
     const summary = summarizeQuantityRules([
       line({}),
-      line({ id: 2, ifc_class: "IfcSlab", measurement_rule: "ElementCount", unit: "ea", validation_notes: "No published IFC quantity found" }),
+      line({
+        id: 2,
+        ifc_class: "IfcSlab",
+        measurement_rule: "ElementCount",
+        unit: "ea",
+        validation_notes: "No published IFC quantity found",
+      }),
       line({ id: 3, ifc_class: "IfcPipeSegment", measurement_rule: "NetLength", unit: "m3" }),
     ]);
 

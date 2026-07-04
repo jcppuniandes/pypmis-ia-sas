@@ -28,8 +28,8 @@ describe("bim model registry api", () => {
               updated_at: "2026-06-03T10:00:00Z",
             },
           ]),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
       )
       .mockResolvedValueOnce(
         new Response(
@@ -48,8 +48,8 @@ describe("bim model registry api", () => {
             created_at: "2026-06-03T10:00:00Z",
             updated_at: "2026-06-03T10:00:00Z",
           }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
       );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -104,8 +104,8 @@ describe("bim model registry api", () => {
             limits: { direct_browser_bytes: 10, backend_cache_required_bytes: 20 },
             warnings: [],
           }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
       )
       .mockResolvedValueOnce(
         new Response(
@@ -121,13 +121,28 @@ describe("bim model registry api", () => {
             name: "Column A",
             type_name: "Column 40x40",
             predefined_type: "USERDEFINED",
-            property_sets: [{ name: "Pset_Column", properties: [{ name: "Reference", value: "C-01", type: "IfcPropertySingleValue" }], step_id: "#30" }],
-            quantities: [{ name: "GrossVolume", set_name: "Qto_Column", source: "IFCELEMENTQUANTITY", step_id: "#41", unit: "m3", value: 12.5 }],
+            property_sets: [
+              {
+                name: "Pset_Column",
+                properties: [{ name: "Reference", value: "C-01", type: "IfcPropertySingleValue" }],
+                step_id: "#30",
+              },
+            ],
+            quantities: [
+              {
+                name: "GrossVolume",
+                set_name: "Qto_Column",
+                source: "IFCELEMENTQUANTITY",
+                step_id: "#41",
+                unit: "m3",
+                value: 12.5,
+              },
+            ],
             materials: ["Concrete C30"],
             classifications: [],
           }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
       );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -151,8 +166,8 @@ describe("bim model registry api", () => {
           mesh_count: 1,
           triangle_count: 12,
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      ),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
     );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -186,8 +201,8 @@ describe("bim model registry api", () => {
             },
           ],
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      ),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
     );
     vi.stubGlobal("fetch", fetchMock);
 

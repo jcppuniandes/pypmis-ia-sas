@@ -76,9 +76,14 @@ export function normalizedBudgetUnit(unit: string) {
 }
 
 function pbsBasis(line: QuantityTakeoffLine) {
-  return unique([line.project_name, line.site_name, line.building_name, line.storey, line.zone_name, line.system_name]).join(
-    " / ",
-  );
+  return unique([
+    line.project_name,
+    line.site_name,
+    line.building_name,
+    line.storey,
+    line.zone_name,
+    line.system_name,
+  ]).join(" / ");
 }
 
 function elementName(line: QuantityTakeoffLine) {
@@ -142,7 +147,7 @@ export function buildBimApuReview(lines: QuantityTakeoffLine[]): BimApuReview {
     const ifcQuantity = groupLines.reduce((total, line) => total + controlledQuantity(line), 0);
     const budgetQuantity = groupLines.reduce((total, line, index) => {
       const source = sources[index];
-      return total + (source ? number(source.record, "quantity") ?? controlledQuantity(line) : 0);
+      return total + (source ? (number(source.record, "quantity") ?? controlledQuantity(line)) : 0);
     }, 0);
     const unit = compact(controlledUnit(groupLines[0])) || "und";
     const budgetUnit = budgetUnits[0] || unit;
@@ -155,12 +160,15 @@ export function buildBimApuReview(lines: QuantityTakeoffLine[]): BimApuReview {
       groupLines.every((line, index) => {
         const source = sources[index];
         return source
-          ? normalizedBudgetUnit(controlledUnit(line)) === normalizedBudgetUnit(text(source.record, "budget_unit") || controlledUnit(line))
+          ? normalizedBudgetUnit(controlledUnit(line)) ===
+              normalizedBudgetUnit(text(source.record, "budget_unit") || controlledUnit(line))
           : true;
       });
     const allAssigned = records.length === groupLines.length && records.every((source) => source.kind === "assignment");
-    const allSuggested = records.length === groupLines.length && records.every((source) => source.kind === "suggestion");
-    const consistentItem = costItemCodes.length === 1 && budgetUnits.length === 1 && unitRates.every((rate) => rate > 0);
+    const allSuggested =
+      records.length === groupLines.length && records.every((source) => source.kind === "suggestion");
+    const consistentItem =
+      costItemCodes.length === 1 && budgetUnits.length === 1 && unitRates.every((rate) => rate > 0);
     const confidence = confidences.length ? Math.min(...confidences) : allAssigned && consistentItem ? 100 : 0;
     const hasBudgetComparison = records.length === groupLines.length && consistentItem;
     let status: BimApuReviewStatus = "pending";

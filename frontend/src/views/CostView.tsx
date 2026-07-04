@@ -19,9 +19,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
     handleCashFlowSubmit,
   } = ctx;
   return (
-    <section
-      className={activeView === "cost" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "cost" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>Cost Manager</h2>
         <button className="linkButton" onClick={() => setActiveView("bp-entry-forms")} type="button">
@@ -233,11 +231,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
               <option value="planned">Planned</option>
               <option value="on_hold">On Hold</option>
             </select>
-            <button
-              className="workflowAction primary"
-              disabled={costDisabled || captureAction !== null}
-              type="submit"
-            >
+            <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
               {captureAction === "funding" ? "Saving..." : "Add Funding"}
             </button>
           </form>
@@ -268,9 +262,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
           <form className="inlineCostForm cashFlowForm" onSubmit={handleCashFlowSubmit}>
             <input
               disabled={costDisabled}
-              onChange={(event) =>
-                setCashFlowDraft((current) => ({ ...current, period_label: event.target.value }))
-              }
+              onChange={(event) => setCashFlowDraft((current) => ({ ...current, period_label: event.target.value }))}
               placeholder="YYYY-MM"
               required
               value={cashFlowDraft.period_label}
@@ -278,9 +270,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
             <input
               disabled={costDisabled}
               min="0"
-              onChange={(event) =>
-                setCashFlowDraft((current) => ({ ...current, planned_inflow: event.target.value }))
-              }
+              onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_inflow: event.target.value }))}
               placeholder="Planned in"
               type="number"
               value={cashFlowDraft.planned_inflow}
@@ -288,9 +278,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
             <input
               disabled={costDisabled}
               min="0"
-              onChange={(event) =>
-                setCashFlowDraft((current) => ({ ...current, planned_outflow: event.target.value }))
-              }
+              onChange={(event) => setCashFlowDraft((current) => ({ ...current, planned_outflow: event.target.value }))}
               placeholder="Planned out"
               type="number"
               value={cashFlowDraft.planned_outflow}
@@ -298,9 +286,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
             <input
               disabled={costDisabled}
               min="0"
-              onChange={(event) =>
-                setCashFlowDraft((current) => ({ ...current, actual_inflow: event.target.value }))
-              }
+              onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_inflow: event.target.value }))}
               placeholder="Actual in"
               type="number"
               value={cashFlowDraft.actual_inflow}
@@ -308,9 +294,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
             <input
               disabled={costDisabled}
               min="0"
-              onChange={(event) =>
-                setCashFlowDraft((current) => ({ ...current, actual_outflow: event.target.value }))
-              }
+              onChange={(event) => setCashFlowDraft((current) => ({ ...current, actual_outflow: event.target.value }))}
               placeholder="Actual out"
               type="number"
               value={cashFlowDraft.actual_outflow}
@@ -325,11 +309,7 @@ export default function CostView({ ctx }: { ctx: AppShellCtx }) {
               type="number"
               value={cashFlowDraft.forecast_outflow}
             />
-            <button
-              className="workflowAction primary"
-              disabled={costDisabled || captureAction !== null}
-              type="submit"
-            >
+            <button className="workflowAction primary" disabled={costDisabled || captureAction !== null} type="submit">
               {captureAction === "cash-flow" ? "Saving..." : "Add Period"}
             </button>
           </form>

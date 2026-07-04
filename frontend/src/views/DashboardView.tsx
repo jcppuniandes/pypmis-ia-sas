@@ -7,23 +7,13 @@ import { currency, neutralProjectText, neutralScheduleText, statusLabel } from "
 import { formatEvmRatio, safeEvmRatio } from "../lib/evm";
 
 export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
-  const {
-    activeView,
-    dashboard,
-    project,
-    kpi,
-    redAlerts,
-    chartData,
-    accountLabel,
-  } = ctx;
+  const { activeView, dashboard, project, kpi, redAlerts, chartData, accountLabel } = ctx;
   const spi = safeEvmRatio(kpi.ev, kpi.pv);
   const cpi = safeEvmRatio(kpi.ev, kpi.ac);
   return (
     <>
       <section
-        className={
-          activeView === "control-dashboard" ? "kpiGrid workspaceSection" : "kpiGrid workspaceSection hidden"
-        }
+        className={activeView === "control-dashboard" ? "kpiGrid workspaceSection" : "kpiGrid workspaceSection hidden"}
       >
         <article className="metric">
           <div>
@@ -283,10 +273,7 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
             </div>
             <div>
               <strong>
-                {
-                  dashboard.process_templates.filter((template) => template.status.toLowerCase() === "active")
-                    .length
-                }
+                {dashboard.process_templates.filter((template) => template.status.toLowerCase() === "active").length}
               </strong>
               <span>active BP definitions</span>
             </div>
@@ -302,7 +289,7 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
                 </div>
                 <p>
                   {neutralProjectText(
-                    template.description || "Business process controlled by the configurable workflow engine.",
+                    template.description || "Business process controlled by the configurable workflow engine."
                   )}
                 </p>
                 <small>Form: {template.form_schema.join(", ")}</small>
@@ -407,10 +394,8 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
                     <span>{contract.title}</span>
                     <small>
                       {currency(contract.value, project.currency)} /{" "}
-                      {contract.control_account_id
-                        ? accountLabel(contract.control_account_id)
-                        : "No control account"}{" "}
-                      / {statusLabel(contract.status)}
+                      {contract.control_account_id ? accountLabel(contract.control_account_id) : "No control account"} /{" "}
+                      {statusLabel(contract.status)}
                     </small>
                   </article>
                 ))}
@@ -462,8 +447,8 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
                     </strong>
                     <span>{receipt.description || "Warehouse receipt"}</span>
                     <small>
-                      {receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"}{" "}
-                      / {statusLabel(receipt.status)}
+                      {receipt.control_account_id ? accountLabel(receipt.control_account_id) : "No control account"} /{" "}
+                      {statusLabel(receipt.status)}
                     </small>
                   </article>
                 ))}

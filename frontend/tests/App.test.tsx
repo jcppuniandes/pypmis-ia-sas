@@ -45,7 +45,10 @@ describe("App routing", () => {
   });
 
   it("redirects / to /app", () => {
-    vi.mocked(useAuthStore).mockReturnValue({ token: "tok", user: { id: 1, email: "a@b.com", name: "A", role: "admin", company_id: 1 } } as ReturnType<typeof useAuthStore>);
+    vi.mocked(useAuthStore).mockReturnValue({
+      token: "tok",
+      user: { id: 1, email: "a@b.com", name: "A", role: "admin", company_id: 1 },
+    } as ReturnType<typeof useAuthStore>);
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/"]}>
         <App />

@@ -4,7 +4,7 @@ import type { QuantityTakeoffLine } from "../src/types";
 function line(
   id: number,
   overrides: Partial<QuantityTakeoffLine> = {},
-  suggestion: Record<string, unknown> | null = null,
+  suggestion: Record<string, unknown> | null = null
 ): QuantityTakeoffLine {
   return {
     id,
@@ -101,7 +101,7 @@ describe("BIM APU group review", () => {
           unit: "ea",
           quantity: 1,
         },
-        countSuggestion,
+        countSuggestion
       ),
       line(2, {}, incompatibleSuggestion),
     ]);
@@ -123,7 +123,7 @@ describe("BIM APU group review", () => {
           unit: "ea",
           validation_notes: "No published IFC quantity found",
         },
-        { ...wallSuggestion, budget_unit: "ea", quantity: 1 },
+        { ...wallSuggestion, budget_unit: "ea", quantity: 1 }
       ),
     ]);
 

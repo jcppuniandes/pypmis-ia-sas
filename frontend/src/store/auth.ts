@@ -20,6 +20,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "pypmis_auth",
       partialize: (state) => ({ token: state.token, user: state.user }),
-    },
-  ),
+    }
+  )
 );

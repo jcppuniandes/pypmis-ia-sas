@@ -207,10 +207,13 @@ function buildScopeCandidates(lines: QuantityTakeoffLine[]) {
 
   return Array.from(groups.values()).map<ScopeCandidate>((candidateLines, index) => {
     const first = candidateLines[0];
-    const quantity = candidateLines.reduce((total, line) => total + (Number.isFinite(line.quantity) ? line.quantity : 0), 0);
+    const quantity = candidateLines.reduce(
+      (total, line) => total + (Number.isFinite(line.quantity) ? line.quantity : 0),
+      0
+    );
     const assignedQuantity = candidateLines.reduce(
       (total, line) => total + (compact(line.package_code) ? line.quantity || 0 : 0),
-      0,
+      0
     );
     const cbsCodes = unique(candidateLines.map((line) => line.cbs_code));
     const fbsCodes = unique(candidateLines.map((line) => line.fbs_code));
@@ -218,7 +221,8 @@ function buildScopeCandidates(lines: QuantityTakeoffLine[]) {
     const packageCodes = unique(candidateLines.map((line) => line.package_code));
     const measurementLabel = controlledMeasurementLabel(candidateLines);
     const { blockers, status } = candidateStatus(candidateLines);
-    const codeSeed = cbsCodes[0] || first.classification_code || first.ifc_class || first.category || `ROW-${index + 1}`;
+    const codeSeed =
+      cbsCodes[0] || first.classification_code || first.ifc_class || first.category || `ROW-${index + 1}`;
     const quantityRule = evaluateQuantityRule(first);
     const budgetAssignments = candidateLines
       .map(budgetAssignmentFor)
@@ -263,13 +267,20 @@ function formatQuantity(value: number, unit: string) {
 }
 
 function formatCurrency(value: number, currency = "USD") {
-  return value.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: Number.isInteger(value) ? 0 : 2, style: "currency", currency });
+  return value.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    style: "currency",
+    currency,
+  });
 }
 
 function catalogStatusLabel(value: string) {
-  return compact(value)
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase()) || "Review";
+  return (
+    compact(value)
+      .replace(/[_-]+/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase()) || "Review"
+  );
 }
 
 function normalizeUnitDraft(value: string) {
@@ -362,7 +373,11 @@ function apuStructureLinesFromRecord(record: Record<string, unknown>, fallbackUn
       ];
 }
 
-function normalizeApuResourceLine(rawLine: unknown, fallbackUnit: string, fallbackRate: number): ApuResourceLine | null {
+function normalizeApuResourceLine(
+  rawLine: unknown,
+  fallbackUnit: string,
+  fallbackRate: number
+): ApuResourceLine | null {
   if (!rawLine || typeof rawLine !== "object") return null;
   const line = rawLine as Record<string, unknown>;
   return {
@@ -402,7 +417,8 @@ function quantityCalculationSummary(lines: QuantityTakeoffLine[]): QuantityCalcu
   return {
     confidence: rawText(calculation, "confidence"),
     fallbackLabel: fallbackRule ? `${fallbackRule}${fallbackUnit ? ` / ${fallbackUnit}` : ""}` : "",
-    recommendedLabel: recommendedQuantity !== null ? formatQuantity(recommendedQuantity, recommendedUnit || sourceUnit) : "",
+    recommendedLabel:
+      recommendedQuantity !== null ? formatQuantity(recommendedQuantity, recommendedUnit || sourceUnit) : "",
     source: rawText(calculation, "source"),
     sourceLabel: formatQuantity(sourceQuantity, sourceUnit),
     status: rawText(calculation, "status"),
@@ -447,11 +463,14 @@ export default function BimScopeValidationPanel({
   const pbsLocatedLines = lines.filter((line) => pbsBasisFor(line) !== "Ubicacion pendiente").length;
   const tracedLines = lines.filter((line) => compact(line.element_guid) || compact(line.element_id)).length;
   const missingControlCodes = candidates.filter(
-    (candidate) => candidate.blockers.includes("Falta CBS/WBS") || candidate.blockers.includes("Falta FBS"),
+    (candidate) => candidate.blockers.includes("Falta CBS/WBS") || candidate.blockers.includes("Falta FBS")
   ).length;
   const pendingAssignment = candidates.reduce((total, candidate) => total + candidate.pendingQuantity, 0);
   const budgetedCandidates = candidates.filter((candidate) => candidate.budgetItem);
-  const bimBudgetAmount = budgetedCandidates.reduce((total, candidate) => total + (candidate.budgetItem?.budgetAmount ?? 0), 0);
+  const bimBudgetAmount = budgetedCandidates.reduce(
+    (total, candidate) => total + (candidate.budgetItem?.budgetAmount ?? 0),
+    0
+  );
   const bimBudgetCurrency = budgetedCandidates[0]?.budgetItem?.currency ?? "USD";
   const [editingRuleId, setEditingRuleId] = useState<number | null>(null);
   const [quantityDrafts, setQuantityDrafts] = useState<Record<string, QuantityApprovalDraft>>({});
@@ -533,7 +552,8 @@ export default function BimScopeValidationPanel({
     if (!onApproveControlledMeasurement) return;
     const draft = quantityDraftFor(candidate);
     const controlledQuantity = Number(draft.quantity);
-    const quantity = Number.isFinite(controlledQuantity) && controlledQuantity > 0 ? controlledQuantity : candidate.quantity;
+    const quantity =
+      Number.isFinite(controlledQuantity) && controlledQuantity > 0 ? controlledQuantity : candidate.quantity;
     const unit = compact(draft.unit) || candidate.unit;
     onApproveControlledMeasurement({
       line_ids: candidate.lineIds,
@@ -673,7 +693,12 @@ export default function BimScopeValidationPanel({
             </div>
             <div className="apuBridgeActions">
               {onSyncColombiaApuCatalog ? (
-                <button className="secondaryAction" disabled={apuActionDisabled} onClick={onSyncColombiaApuCatalog} type="button">
+                <button
+                  className="secondaryAction"
+                  disabled={apuActionDisabled}
+                  onClick={onSyncColombiaApuCatalog}
+                  type="button"
+                >
                   Actualizar base gratis
                 </button>
               ) : null}
@@ -697,13 +722,21 @@ export default function BimScopeValidationPanel({
             </article>
             <article>
               <span>Ultima sincronizacion</span>
-              <strong>{colombiaApuSync ? `${colombiaApuSync.created_count} nuevas / ${colombiaApuSync.updated_count} actualizadas` : "Pendiente"}</strong>
+              <strong>
+                {colombiaApuSync
+                  ? `${colombiaApuSync.created_count} nuevas / ${colombiaApuSync.updated_count} actualizadas`
+                  : "Pendiente"}
+              </strong>
               <small>{colombiaApuSync?.source_key ?? "DataCauca/public source"}</small>
             </article>
             <article>
               <span>Uso permitido</span>
               <strong>Revision</strong>
-              <small>{colombiaApuSync?.license_note ?? colombiaApuCatalog[0]?.license_note ?? "Validar vigencia, region, AIU y alcance."}</small>
+              <small>
+                {colombiaApuSync?.license_note ??
+                  colombiaApuCatalog[0]?.license_note ??
+                  "Validar vigencia, region, AIU y alcance."}
+              </small>
             </article>
           </div>
           {colombiaApuCatalog.length ? (
@@ -950,7 +983,9 @@ export default function BimScopeValidationPanel({
             {candidates.slice(0, 4).map((candidate) => (
               <article className={candidate.quantityRule.status} key={candidate.id}>
                 <span>{candidate.id}</span>
-                <strong>{candidate.quantityRule.status === "review" ? "Requiere validacion" : candidate.quantityRule.source}</strong>
+                <strong>
+                  {candidate.quantityRule.status === "review" ? "Requiere validacion" : candidate.quantityRule.source}
+                </strong>
                 <small>{candidate.quantityRule.explanation}</small>
                 {candidate.quantityRule.findings.length ? (
                   <em>Corrige o aprueba la medicion geometrica antes de usarla para costo o paquete.</em>
@@ -990,271 +1025,300 @@ export default function BimScopeValidationPanel({
                 const assignmentDraft = assignmentDraftFor(candidate);
                 const showAssignmentControls = Boolean(
                   onAssignControlCodes &&
-                    wbsCatalog.length &&
-                    cbsCatalog.length &&
-                    fbsFundingSources.length &&
-                    workPackages.length,
+                  wbsCatalog.length &&
+                  cbsCatalog.length &&
+                  fbsFundingSources.length &&
+                  workPackages.length
                 );
                 return (
-                <tr key={candidate.id}>
-                  <td data-label="Item ID">
-                    <strong>{candidate.id}</strong>
-                    <span>{candidate.sourceCount} linea(s) fuente</span>
-                  </td>
-                  <td data-label="Ubicacion">{candidate.pbsBasis}</td>
-                  <td data-label="Elemento constructivo">
-                    <strong>{candidate.name}</strong>
-                    <span>
-                      {[candidate.ifcClasses.join(" / ") || "Clase IFC pendiente", candidate.measurementRules.join(" / ") || "Regla de medicion pendiente"]
-                        .filter(Boolean)
-                        .join(" / ")}
-                    </span>
-                  </td>
-                  <td data-label="Cantidad">
-                    <strong>{formatQuantity(candidate.quantity, candidate.unit)}</strong>
-                    <span>
-                      Asignado {formatQuantity(candidate.assignedQuantity, candidate.unit)} / Pendiente{" "}
-                      {formatQuantity(candidate.pendingQuantity, candidate.unit)}
-                    </span>
-                    {onApproveControlledMeasurement ? (
-                      <div className="quantityApprovalInputs">
-                        <input
-                          aria-label={`Cantidad controlada ${candidate.id}`}
-                          disabled={approvalDisabled}
-                          min="0"
-                          onChange={(event) => updateQuantityDraft(candidate.id, { quantity: event.target.value })}
-                          step="0.01"
-                          type="number"
-                          value={quantityDraftFor(candidate).quantity}
-                        />
-                        <input
-                          aria-label={`Unidad controlada ${candidate.id}`}
-                          disabled={approvalDisabled}
-                          onChange={(event) => updateQuantityDraft(candidate.id, { unit: event.target.value })}
-                          type="text"
-                          value={quantityDraftFor(candidate).unit}
-                        />
-                      </div>
-                    ) : null}
-                  </td>
-                  <td data-label="Partida / APU">
-                    {candidate.budgetItem ? (
-                      <>
-                        <strong>
-                          {[candidate.budgetItem.code, candidate.budgetItem.name].filter(Boolean).join(" / ")}
-                        </strong>
-                        <span>
-                          {formatQuantity(candidate.budgetItem.quantity, candidate.budgetItem.budgetUnit)} x{" "}
-                          {formatCurrency(candidate.budgetItem.unitRate, candidate.budgetItem.currency)} ={" "}
-                          {formatCurrency(candidate.budgetItem.budgetAmount, candidate.budgetItem.currency)}
-                        </span>
-                        {candidate.budgetItem.isSuggestion ? (
-                          <span className="apuSuggestionBadge">
-                            Sugerido / {candidate.budgetItem.matchScore ?? 0}% / validar APU, AIU y region
-                          </span>
-                        ) : null}
-                        {candidate.budgetItem.sourceKey ? (
-                          <span>{candidate.budgetItem.sourceKey}</span>
-                        ) : null}
-                        <div className="apuStructureStack compactApuStructure">
-                          {candidate.budgetItem.apuStructure.slice(0, 4).map((line, index) => (
-                            <span key={`${candidate.id}-${line.component}-${index}`}>
-                              <strong>{line.component}</strong>
-                              <small>{line.description}</small>
-                              <em>
-                                {line.quantity} {line.unit} x {formatCurrency(line.unit_rate, candidate.budgetItem?.currency)}
-                                {line.amount ? ` = ${formatCurrency(line.amount, candidate.budgetItem?.currency)}` : ""}
-                              </em>
-                            </span>
-                          ))}
-                          <small>
-                            {candidate.budgetItem.structureNote ||
-                              "Estructura APU visible para revision; validar recursos, rendimiento, AIU y vigencia."}
-                          </small>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <strong>Partida pendiente</strong>
-                        <span>Asigna partida/APU y precio unitario para llevar esta cantidad a presupuesto.</span>
-                        {onSuggestApuForLines ? (
-                          <button
-                            className="secondaryAction apuSuggestRowAction"
-                            disabled={apuActionDisabled}
-                            onClick={() => suggestCandidateApu(candidate)}
-                            type="button"
-                          >
-                            Sugerir APU Colombia
-                          </button>
-                        ) : null}
-                      </>
-                    )}
-                    {showAssignmentControls ? (
-                      <div className="quantityBudgetGrid">
-                        <label>
-                          <span>Codigo partida</span>
+                  <tr key={candidate.id}>
+                    <td data-label="Item ID">
+                      <strong>{candidate.id}</strong>
+                      <span>{candidate.sourceCount} linea(s) fuente</span>
+                    </td>
+                    <td data-label="Ubicacion">{candidate.pbsBasis}</td>
+                    <td data-label="Elemento constructivo">
+                      <strong>{candidate.name}</strong>
+                      <span>
+                        {[
+                          candidate.ifcClasses.join(" / ") || "Clase IFC pendiente",
+                          candidate.measurementRules.join(" / ") || "Regla de medicion pendiente",
+                        ]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </span>
+                    </td>
+                    <td data-label="Cantidad">
+                      <strong>{formatQuantity(candidate.quantity, candidate.unit)}</strong>
+                      <span>
+                        Asignado {formatQuantity(candidate.assignedQuantity, candidate.unit)} / Pendiente{" "}
+                        {formatQuantity(candidate.pendingQuantity, candidate.unit)}
+                      </span>
+                      {onApproveControlledMeasurement ? (
+                        <div className="quantityApprovalInputs">
                           <input
-                            aria-label={`Codigo de partida para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { cost_item_code: event.target.value })}
-                            type="text"
-                            value={assignmentDraft.cost_item_code}
-                          />
-                        </label>
-                        <label>
-                          <span>Partida APU</span>
-                          <input
-                            aria-label={`Partida APU para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { cost_item_name: event.target.value })}
-                            type="text"
-                            value={assignmentDraft.cost_item_name}
-                          />
-                        </label>
-                        <label>
-                          <span>Unidad</span>
-                          <input
-                            aria-label={`Unidad de presupuesto para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { budget_unit: event.target.value })}
-                            type="text"
-                            value={assignmentDraft.budget_unit}
-                          />
-                        </label>
-                        <label>
-                          <span>Precio unitario</span>
-                          <input
-                            aria-label={`Precio unitario para ${candidate.id}`}
-                            disabled={assignmentDisabled}
+                            aria-label={`Cantidad controlada ${candidate.id}`}
+                            disabled={approvalDisabled}
                             min="0"
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { unit_rate: event.target.value })}
+                            onChange={(event) => updateQuantityDraft(candidate.id, { quantity: event.target.value })}
                             step="0.01"
                             type="number"
-                            value={assignmentDraft.unit_rate}
+                            value={quantityDraftFor(candidate).quantity}
                           />
-                        </label>
-                      </div>
-                    ) : null}
-                  </td>
-                  <td data-label="Regla de cantidad">
-                    <strong>{candidate.quantityRule.source}</strong>
-                    <span>
-                      {candidate.quantityRule.confidence} / {candidate.quantityRule.expectedUnits.join(" / ") || "unidad esperada pendiente"}
-                    </span>
-                    <span>Fuente: {candidate.calculation.sourceLabel}</span>
-                    {candidate.calculation.confidence ? <span>Confianza {candidate.calculation.confidence}</span> : null}
-                    {candidate.calculation.recommendedLabel ? <span>Recomendada: {candidate.calculation.recommendedLabel}</span> : null}
-                    {candidate.calculation.fallbackLabel ? <span>Fallback sugerido: {candidate.calculation.fallbackLabel}</span> : null}
-                    <span>{candidate.quantityRule.findings[0] || candidate.quantityRule.expectedMeasure}</span>
-                  </td>
-                  <td data-label="WBS / CBS / FBS / Package">
-                    <strong>{candidate.cbsCodes.join(" / ") || "CBS pendiente"}</strong>
-                    <span>
-                      {[
-                        candidate.wbsCodes.join(" / ") || "WBS pendiente",
-                        candidate.fbsCodes.join(" / ") || "FBS pendiente",
-                        candidate.packageCodes.join(" / ") || "Paquete pendiente",
-                      ]
-                        .filter(Boolean)
-                        .join(" / ")}
-                    </span>
-                    {showAssignmentControls ? (
-                      <div className="quantityAssignmentGrid">
-                        <label>
-                          <span>WBS</span>
-                          <select
-                            aria-label={`WBS para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { wbs_code: event.target.value })}
-                            value={assignmentDraft.wbs_code}
-                          >
-                            <option value="">Selecciona WBS</option>
-                            {wbsCatalog.map((node) => (
-                              <option key={node.id} value={node.code}>
-                                {node.code} - {node.name}
-                              </option>
+                          <input
+                            aria-label={`Unidad controlada ${candidate.id}`}
+                            disabled={approvalDisabled}
+                            onChange={(event) => updateQuantityDraft(candidate.id, { unit: event.target.value })}
+                            type="text"
+                            value={quantityDraftFor(candidate).unit}
+                          />
+                        </div>
+                      ) : null}
+                    </td>
+                    <td data-label="Partida / APU">
+                      {candidate.budgetItem ? (
+                        <>
+                          <strong>
+                            {[candidate.budgetItem.code, candidate.budgetItem.name].filter(Boolean).join(" / ")}
+                          </strong>
+                          <span>
+                            {formatQuantity(candidate.budgetItem.quantity, candidate.budgetItem.budgetUnit)} x{" "}
+                            {formatCurrency(candidate.budgetItem.unitRate, candidate.budgetItem.currency)} ={" "}
+                            {formatCurrency(candidate.budgetItem.budgetAmount, candidate.budgetItem.currency)}
+                          </span>
+                          {candidate.budgetItem.isSuggestion ? (
+                            <span className="apuSuggestionBadge">
+                              Sugerido / {candidate.budgetItem.matchScore ?? 0}% / validar APU, AIU y region
+                            </span>
+                          ) : null}
+                          {candidate.budgetItem.sourceKey ? <span>{candidate.budgetItem.sourceKey}</span> : null}
+                          <div className="apuStructureStack compactApuStructure">
+                            {candidate.budgetItem.apuStructure.slice(0, 4).map((line, index) => (
+                              <span key={`${candidate.id}-${line.component}-${index}`}>
+                                <strong>{line.component}</strong>
+                                <small>{line.description}</small>
+                                <em>
+                                  {line.quantity} {line.unit} x{" "}
+                                  {formatCurrency(line.unit_rate, candidate.budgetItem?.currency)}
+                                  {line.amount
+                                    ? ` = ${formatCurrency(line.amount, candidate.budgetItem?.currency)}`
+                                    : ""}
+                                </em>
+                              </span>
                             ))}
-                          </select>
-                        </label>
-                        <label>
-                          <span>CBS</span>
-                          <select
-                            aria-label={`CBS para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { cbs_code: event.target.value })}
-                            value={assignmentDraft.cbs_code}
+                            <small>
+                              {candidate.budgetItem.structureNote ||
+                                "Estructura APU visible para revision; validar recursos, rendimiento, AIU y vigencia."}
+                            </small>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <strong>Partida pendiente</strong>
+                          <span>Asigna partida/APU y precio unitario para llevar esta cantidad a presupuesto.</span>
+                          {onSuggestApuForLines ? (
+                            <button
+                              className="secondaryAction apuSuggestRowAction"
+                              disabled={apuActionDisabled}
+                              onClick={() => suggestCandidateApu(candidate)}
+                              type="button"
+                            >
+                              Sugerir APU Colombia
+                            </button>
+                          ) : null}
+                        </>
+                      )}
+                      {showAssignmentControls ? (
+                        <div className="quantityBudgetGrid">
+                          <label>
+                            <span>Codigo partida</span>
+                            <input
+                              aria-label={`Codigo de partida para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { cost_item_code: event.target.value })
+                              }
+                              type="text"
+                              value={assignmentDraft.cost_item_code}
+                            />
+                          </label>
+                          <label>
+                            <span>Partida APU</span>
+                            <input
+                              aria-label={`Partida APU para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { cost_item_name: event.target.value })
+                              }
+                              type="text"
+                              value={assignmentDraft.cost_item_name}
+                            />
+                          </label>
+                          <label>
+                            <span>Unidad</span>
+                            <input
+                              aria-label={`Unidad de presupuesto para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { budget_unit: event.target.value })
+                              }
+                              type="text"
+                              value={assignmentDraft.budget_unit}
+                            />
+                          </label>
+                          <label>
+                            <span>Precio unitario</span>
+                            <input
+                              aria-label={`Precio unitario para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              min="0"
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { unit_rate: event.target.value })
+                              }
+                              step="0.01"
+                              type="number"
+                              value={assignmentDraft.unit_rate}
+                            />
+                          </label>
+                        </div>
+                      ) : null}
+                    </td>
+                    <td data-label="Regla de cantidad">
+                      <strong>{candidate.quantityRule.source}</strong>
+                      <span>
+                        {candidate.quantityRule.confidence} /{" "}
+                        {candidate.quantityRule.expectedUnits.join(" / ") || "unidad esperada pendiente"}
+                      </span>
+                      <span>Fuente: {candidate.calculation.sourceLabel}</span>
+                      {candidate.calculation.confidence ? (
+                        <span>Confianza {candidate.calculation.confidence}</span>
+                      ) : null}
+                      {candidate.calculation.recommendedLabel ? (
+                        <span>Recomendada: {candidate.calculation.recommendedLabel}</span>
+                      ) : null}
+                      {candidate.calculation.fallbackLabel ? (
+                        <span>Fallback sugerido: {candidate.calculation.fallbackLabel}</span>
+                      ) : null}
+                      <span>{candidate.quantityRule.findings[0] || candidate.quantityRule.expectedMeasure}</span>
+                    </td>
+                    <td data-label="WBS / CBS / FBS / Package">
+                      <strong>{candidate.cbsCodes.join(" / ") || "CBS pendiente"}</strong>
+                      <span>
+                        {[
+                          candidate.wbsCodes.join(" / ") || "WBS pendiente",
+                          candidate.fbsCodes.join(" / ") || "FBS pendiente",
+                          candidate.packageCodes.join(" / ") || "Paquete pendiente",
+                        ]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </span>
+                      {showAssignmentControls ? (
+                        <div className="quantityAssignmentGrid">
+                          <label>
+                            <span>WBS</span>
+                            <select
+                              aria-label={`WBS para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { wbs_code: event.target.value })
+                              }
+                              value={assignmentDraft.wbs_code}
+                            >
+                              <option value="">Selecciona WBS</option>
+                              {wbsCatalog.map((node) => (
+                                <option key={node.id} value={node.code}>
+                                  {node.code} - {node.name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label>
+                            <span>CBS</span>
+                            <select
+                              aria-label={`CBS para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { cbs_code: event.target.value })
+                              }
+                              value={assignmentDraft.cbs_code}
+                            >
+                              <option value="">Selecciona CBS</option>
+                              {cbsCatalog.map((cbs) => (
+                                <option key={cbs.id} value={cbs.code}>
+                                  {cbs.code} - {cbs.cost_category}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label>
+                            <span>FBS</span>
+                            <select
+                              aria-label={`FBS para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { fbs_code: event.target.value })
+                              }
+                              value={assignmentDraft.fbs_code}
+                            >
+                              <option value="">Selecciona FBS</option>
+                              {fbsFundingSources.map((source) => (
+                                <option key={source.id} value={source.code}>
+                                  {source.code} - {source.name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Paquete</span>
+                            <select
+                              aria-label={`Paquete para ${candidate.id}`}
+                              disabled={assignmentDisabled}
+                              onChange={(event) =>
+                                updateAssignmentDraft(candidate.id, { package_code: event.target.value })
+                              }
+                              value={assignmentDraft.package_code}
+                            >
+                              <option value="">Selecciona paquete</option>
+                              {workPackages.map((workPackage) => (
+                                <option key={workPackage.id} value={workPackage.code}>
+                                  {workPackage.code} - {workPackage.title}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <button
+                            className="secondaryAction quantityAssignmentAction"
+                            disabled={assignmentDisabled || !canAssignCandidate(candidate)}
+                            onClick={() => assignCandidate(candidate)}
+                            type="button"
                           >
-                            <option value="">Selecciona CBS</option>
-                            {cbsCatalog.map((cbs) => (
-                              <option key={cbs.id} value={cbs.code}>
-                                {cbs.code} - {cbs.cost_category}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label>
-                          <span>FBS</span>
-                          <select
-                            aria-label={`FBS para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { fbs_code: event.target.value })}
-                            value={assignmentDraft.fbs_code}
-                          >
-                            <option value="">Selecciona FBS</option>
-                            {fbsFundingSources.map((source) => (
-                              <option key={source.id} value={source.code}>
-                                {source.code} - {source.name}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label>
-                          <span>Paquete</span>
-                          <select
-                            aria-label={`Paquete para ${candidate.id}`}
-                            disabled={assignmentDisabled}
-                            onChange={(event) => updateAssignmentDraft(candidate.id, { package_code: event.target.value })}
-                            value={assignmentDraft.package_code}
-                          >
-                            <option value="">Selecciona paquete</option>
-                            {workPackages.map((workPackage) => (
-                              <option key={workPackage.id} value={workPackage.code}>
-                                {workPackage.code} - {workPackage.title}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
+                            Guardar codigos
+                          </button>
+                        </div>
+                      ) : null}
+                    </td>
+                    <td data-label="Trazabilidad BIM">
+                      <strong>{candidate.elementRefs.slice(0, 2).join(" / ") || "Trazabilidad pendiente"}</strong>
+                      <span>{candidate.elementRefs.length} referencia(s) BIM</span>
+                    </td>
+                    <td data-label="Estado">
+                      <strong>{candidate.status}</strong>
+                      <span>{candidate.blockers.join(" / ") || "Validacion completa"}</span>
+                      <span>Medicion: {candidate.controlledMeasurementLabel}</span>
+                      {onApproveControlledMeasurement ? (
                         <button
-                          className="secondaryAction quantityAssignmentAction"
-                          disabled={assignmentDisabled || !canAssignCandidate(candidate)}
-                          onClick={() => assignCandidate(candidate)}
+                          className="secondaryAction quantityApprovalAction"
+                          disabled={approvalDisabled}
+                          onClick={() => approveCandidate(candidate)}
                           type="button"
                         >
-                          Guardar codigos
+                          {candidate.controlledMeasurementLabel === "Pendiente"
+                            ? "Aprobar medicion"
+                            : "Reaprobar medicion"}
                         </button>
-                      </div>
-                    ) : null}
-                  </td>
-                  <td data-label="Trazabilidad BIM">
-                    <strong>{candidate.elementRefs.slice(0, 2).join(" / ") || "Trazabilidad pendiente"}</strong>
-                    <span>{candidate.elementRefs.length} referencia(s) BIM</span>
-                  </td>
-                  <td data-label="Estado">
-                    <strong>{candidate.status}</strong>
-                    <span>{candidate.blockers.join(" / ") || "Validacion completa"}</span>
-                    <span>Medicion: {candidate.controlledMeasurementLabel}</span>
-                    {onApproveControlledMeasurement ? (
-                      <button
-                        className="secondaryAction quantityApprovalAction"
-                        disabled={approvalDisabled}
-                        onClick={() => approveCandidate(candidate)}
-                        type="button"
-                      >
-                        {candidate.controlledMeasurementLabel === "Pendiente" ? "Aprobar medicion" : "Reaprobar medicion"}
-                      </button>
-                    ) : null}
-                  </td>
-                </tr>
+                      ) : null}
+                    </td>
+                  </tr>
                 );
               })}
             </tbody>

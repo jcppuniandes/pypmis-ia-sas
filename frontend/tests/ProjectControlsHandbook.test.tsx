@@ -55,7 +55,7 @@ describe("ProjectControlsHandbook", () => {
         projectId={88}
         scheduleActivities={importedActivities}
         wbsCatalog={importedWbs}
-      />,
+      />
     );
 
     const module = screen.getByRole("region", { name: /planning module/i });
@@ -139,7 +139,7 @@ describe("ProjectControlsHandbook", () => {
       expect.arrayContaining([
         expect.objectContaining({ activityId: "a110", delayDays: 2, criticalPathImpact: true }),
         expect.objectContaining({ activityId: "a120", delayDays: 5, criticalPathImpact: false }),
-      ]),
+      ])
     );
     expect(state.dashboard.criticalActivities).toBe(2);
     expect(state.dashboard.delayedActivities).toBe(2);

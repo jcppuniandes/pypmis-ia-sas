@@ -2,18 +2,9 @@ import type { AppShellCtx } from "../components/AppShellCtx";
 import { currency, statusLabel } from "../components/utils";
 
 export default function ClaimsView({ ctx }: { ctx: AppShellCtx }) {
-  const {
-    activeView,
-    dashboard,
-    project,
-    entitlementByClaim,
-    noticesByClaim,
-    impactByClaim,
-  } = ctx;
+  const { activeView, dashboard, project, entitlementByClaim, noticesByClaim, impactByClaim } = ctx;
   return (
-    <section
-      className={activeView === "claims" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "claims" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>Claims / Forensic Entitlement</h2>
         <span>Notice / causation / impact / quantum / evidence</span>

@@ -72,7 +72,7 @@ describe("BimGeometryBatchPanel", () => {
         onAnalyze={onAnalyze}
         onApply={onApply}
         preview={preview}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /medicion geometrica masiva/i });
@@ -95,7 +95,7 @@ describe("BimGeometryBatchPanel", () => {
         onAnalyze={vi.fn()}
         onApply={vi.fn()}
         preview={null}
-      />,
+      />
     );
 
     expect(screen.getByText(/archivos IFC distintos/i)).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe("BimGeometryBatchPanel", () => {
           created_at: "2026-06-19T00:00:00",
           updated_at: "2026-06-19T00:00:00",
         }}
-      />,
+      />
     );
 
     await user.selectOptions(screen.getByLabelText(/modelo \/ revision ifc/i), "14");

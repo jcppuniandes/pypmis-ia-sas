@@ -101,7 +101,7 @@ describe("BimScopeValidationPanel", () => {
           },
         ]}
         onUpdateQuantityRule={onUpdateQuantityRule}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
@@ -160,7 +160,7 @@ describe("BimScopeValidationPanel", () => {
             },
           ],
         }}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
@@ -180,7 +180,7 @@ describe("BimScopeValidationPanel", () => {
       <BimScopeValidationPanel
         lines={[typedMemberLine]}
         onApproveControlledMeasurement={onApproveControlledMeasurement}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
@@ -287,7 +287,7 @@ describe("BimScopeValidationPanel", () => {
           },
         ]}
         onAssignControlCodes={onAssignControlCodes}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
@@ -336,7 +336,7 @@ describe("BimScopeValidationPanel", () => {
             },
           },
         ]}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
@@ -466,7 +466,7 @@ describe("BimScopeValidationPanel", () => {
         }}
         onSuggestApuForLines={onSuggestApuForLines}
         onSyncColombiaApuCatalog={onSyncColombiaApuCatalog}
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });

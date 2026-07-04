@@ -13,9 +13,7 @@ export default function ScheduleView({ ctx }: { ctx: AppShellCtx }) {
     handleControlBaselineApprove,
   } = ctx;
   return (
-    <section
-      className={activeView === "schedule" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
-    >
+    <section className={activeView === "schedule" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}>
       <div className="panelHeader">
         <h2>Planning Baseline</h2>
         <button
@@ -62,9 +60,7 @@ export default function ScheduleView({ ctx }: { ctx: AppShellCtx }) {
         <div className="workList">
           <article>
             <strong>
-              {dashboard.schedule_import
-                ? neutralScheduleText(dashboard.schedule_import.baseline_name)
-                : "No baseline"}
+              {dashboard.schedule_import ? neutralScheduleText(dashboard.schedule_import.baseline_name) : "No baseline"}
             </strong>
             <span>
               {dashboard.schedule_import?.validation_summary ??

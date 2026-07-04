@@ -244,7 +244,12 @@ export type BimViewerManifest = {
   revision_id: string;
   engine: string;
   cache_status: string;
-  geometry_strategy: "backend_cache" | "backend_cache_required" | "browser_limited_cache_recommended" | "direct_browser" | string;
+  geometry_strategy:
+    | "backend_cache"
+    | "backend_cache_required"
+    | "browser_limited_cache_recommended"
+    | "direct_browser"
+    | string;
   geometry_cache?: BimGeometryCacheSummary | Record<string, unknown>;
   schema: string;
   units: string;

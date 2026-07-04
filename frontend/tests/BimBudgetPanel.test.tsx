@@ -73,7 +73,7 @@ describe("BimBudgetPanel", () => {
         onOpenQuantities={vi.fn()}
         projectCode="01"
         projectName="Proyecto Piloto"
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /presupuesto bim/i });
@@ -92,7 +92,7 @@ describe("BimBudgetPanel", () => {
         onOpenQuantities={onOpenQuantities}
         projectCode="01"
         projectName="Proyecto Piloto"
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /presupuesto bim/i });
@@ -119,7 +119,7 @@ describe("BimBudgetPanel", () => {
         onUpdateBudgetItem={onUpdateBudgetItem}
         projectCode="01"
         projectName="Proyecto Piloto"
-      />,
+      />
     );
 
     const panel = screen.getByRole("region", { name: /presupuesto bim/i });
@@ -149,7 +149,7 @@ describe("BimBudgetPanel", () => {
             unit_rate: 100000,
           }),
         ],
-      }),
+      })
     );
   });
 });

@@ -21,7 +21,8 @@ function actionPhaseLabel(step: GuidedFlowStep) {
   }
   if (descriptor.includes("baseline")) return "Baseline approval";
   if (descriptor.includes("progress")) return "Progress and EVM";
-  if (descriptor.includes("integrated_control") || descriptor.includes("integrated control")) return "Business processes";
+  if (descriptor.includes("integrated_control") || descriptor.includes("integrated control"))
+    return "Business processes";
   if (descriptor.includes("awp") || descriptor.includes("package")) return "AWP packages";
   if (descriptor.includes("evidence") || descriptor.includes("closeout")) return "Closeout evidence";
   if (step.key === "cost_currency") return "Baseline gate";

@@ -41,7 +41,7 @@ export const bimModels = {
   elementProperties: (token: string, projectId: number, modelId: number, elementKey: string) =>
     apiFetch<BimElementProperties>(
       `/api/v1/projects/${projectId}/bim-models/${modelId}/element-properties?element_key=${encodeURIComponent(elementKey)}`,
-      { token },
+      { token }
     ),
 
   remove: (token: string, projectId: number, modelId: number) =>

@@ -151,10 +151,7 @@ export default function DocumentsView({ ctx }: { ctx: AppShellCtx }) {
             {dashboard.document_reviews.map((review) => {
               const document = dashboard.documents.find((item) => item.id === review.document_id);
               return (
-                <article
-                  className={review.review_status === "outstanding" ? "blockedPackage" : ""}
-                  key={review.id}
-                >
+                <article className={review.review_status === "outstanding" ? "blockedPackage" : ""} key={review.id}>
                   <strong>
                     {document?.document_number ?? `Document ${review.document_id}`} / {review.reviewer_role}
                   </strong>

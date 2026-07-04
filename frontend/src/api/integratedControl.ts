@@ -133,8 +133,7 @@ export const integratedControl = {
   matrix: (token: string, projectId: number) =>
     apiFetch<IntegratedControlMatrixRow[]>(`/api/v1/projects/${projectId}/integrated-control-matrix`, { token }),
 
-  wbs: (token: string, projectId: number) =>
-    apiFetch<WbsNode[]>(`/api/v1/projects/${projectId}/wbs`, { token }),
+  wbs: (token: string, projectId: number) => apiFetch<WbsNode[]>(`/api/v1/projects/${projectId}/wbs`, { token }),
 
   createWbs: (token: string, projectId: number, data: WbsCreatePayload) =>
     apiFetch<WbsNode>(`/api/v1/projects/${projectId}/wbs`, {
@@ -197,16 +196,15 @@ export const integratedControl = {
     }),
 
   businessProcessLineItems: (token: string, projectId: number, processId: number) =>
-    apiFetch<BusinessProcessLineItem[]>(
-      `/api/v1/projects/${projectId}/business-processes/${processId}/line-items`,
-      { token },
-    ),
+    apiFetch<BusinessProcessLineItem[]>(`/api/v1/projects/${projectId}/business-processes/${processId}/line-items`, {
+      token,
+    }),
 
   updateBusinessProcessLineItem: (
     token: string,
     projectId: number,
     lineItemId: number,
-    data: BusinessProcessLineItemUpdatePayload,
+    data: BusinessProcessLineItemUpdatePayload
   ) =>
     apiFetch<BusinessProcessLineItem>(`/api/v1/projects/${projectId}/business-process-line-items/${lineItemId}`, {
       method: "PATCH",
@@ -217,7 +215,7 @@ export const integratedControl = {
   businessProcessLineItemRevisions: (token: string, projectId: number, lineItemId: number) =>
     apiFetch<BusinessProcessLineItemRevision[]>(
       `/api/v1/projects/${projectId}/business-process-line-items/${lineItemId}/revisions`,
-      { token },
+      { token }
     ),
 
   createSovLine: (token: string, projectId: number, contractId: number, data: SovLinePayload) =>
@@ -252,10 +250,9 @@ export const integratedControl = {
     }),
 
   recostRuns: (token: string, projectId: number, activitySheetId: number) =>
-    apiFetch<ActivitySheetRecostRun[]>(
-      `/api/v1/projects/${projectId}/activity-sheets/${activitySheetId}/recost-runs`,
-      { token },
-    ),
+    apiFetch<ActivitySheetRecostRun[]>(`/api/v1/projects/${projectId}/activity-sheets/${activitySheetId}/recost-runs`, {
+      token,
+    }),
 
   reconciliationReport: (token: string, projectId: number) =>
     apiFetch<ReconciliationReport>(`/api/v1/projects/${projectId}/reconciliation-report`, { token }),
@@ -307,7 +304,7 @@ export const integratedControl = {
     token: string,
     projectId: number,
     packageId: number,
-    data: WorkPackageConstraintPayload,
+    data: WorkPackageConstraintPayload
   ) =>
     apiFetch<WorkPackageConstraint>(`/api/v1/projects/${projectId}/work-packages/${packageId}/constraints`, {
       method: "POST",

@@ -147,7 +147,7 @@ describe("BimIfcModelViewer", () => {
           },
         ],
       },
-      materialCache,
+      materialCache
     );
 
     expect(result.meshes).toHaveLength(1);
@@ -166,7 +166,7 @@ describe("BimIfcModelViewer", () => {
 
   it("translates web-ifc invalid geometry references into an operational status", () => {
     const status = friendlyIfcRenderStatus(
-      new Error('Passing a number "-1" from JS side to C/C++ side to an argument of type "unsigned int"'),
+      new Error('Passing a number "-1" from JS side to C/C++ side to an argument of type "unsigned int"')
     );
 
     expect(status).toMatch(/IFC registrado/i);
@@ -280,8 +280,8 @@ describe("BimIfcModelViewer", () => {
               mesh_count: 2,
               triangle_count: 24,
             }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+          )
         );
       }
       if (String(url).includes("viewer-manifest")) {
@@ -302,8 +302,8 @@ describe("BimIfcModelViewer", () => {
                   }
                 : {},
             }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+          )
         );
       }
       return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }));
@@ -321,7 +321,7 @@ describe("BimIfcModelViewer", () => {
     await waitFor(() => expect(within(viewerHealth).getByText(/Cache backend listo/i)).toBeInTheDocument());
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/api/v1/projects/1/bim-models/77/viewer-cache"),
-      expect.objectContaining({ method: "POST" }),
+      expect.objectContaining({ method: "POST" })
     );
   });
 
@@ -437,8 +437,8 @@ describe("BimIfcModelViewer", () => {
               limits: { direct_browser_bytes: 10, backend_cache_required_bytes: 20 },
               warnings: [],
             }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+          )
         );
       }
       if (String(url).includes("element-properties")) {
@@ -476,8 +476,8 @@ describe("BimIfcModelViewer", () => {
               materials: ["Concrete C30"],
               classifications: [],
             }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          ),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+          )
         );
       }
       return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }));
@@ -492,7 +492,7 @@ describe("BimIfcModelViewer", () => {
     fireEvent.click(
       within(within(viewer).getByRole("region", { name: /arbol ifc/i })).getByRole("button", {
         name: /^Ground floor IfcWallStandardCase 1 elemento/i,
-      }),
+      })
     );
 
     const properties = within(viewer).getByRole("region", { name: /propiedades del elemento ifc/i });
@@ -574,7 +574,6 @@ describe("BimIfcModelViewer", () => {
     expect(dimensions).toBe("4.67 x 0.45 x 25.31 m");
   });
 
-
   it("uses real mesh area as the primary geometry quantity for walls", () => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshStandardMaterial());
     const quantities = calculateRealGeometryQuantities([mesh], "meters");
@@ -591,7 +590,11 @@ describe("BimIfcModelViewer", () => {
     const quantities = calculateRealGeometryQuantities([mesh], "meters");
     const primary = primaryRealGeometryEstimate("IfcWallStandardCase", quantities);
 
-    const payload = buildControlledMeasurementPayloadFromRealGeometry(tracedLines[0], primary, "2IRuU8Tqz92AICLQuWall01");
+    const payload = buildControlledMeasurementPayloadFromRealGeometry(
+      tracedLines[0],
+      primary,
+      "2IRuU8Tqz92AICLQuWall01"
+    );
 
     expect(payload).toEqual({
       line_ids: [301],

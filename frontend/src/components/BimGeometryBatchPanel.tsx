@@ -26,9 +26,7 @@ function differenceLabel(result: BimGeometryMeasurementResult) {
   if (result.difference === null) return "Unidades no comparables";
   const sign = result.difference > 0 ? "+" : "";
   const percent =
-    result.difference_percent === null
-      ? ""
-      : ` / ${sign}${quantityFormatter.format(result.difference_percent)}%`;
+    result.difference_percent === null ? "" : ` / ${sign}${quantityFormatter.format(result.difference_percent)}%`;
   return `${sign}${quantityFormatter.format(result.difference)}${percent}`;
 }
 
@@ -129,12 +127,7 @@ export default function BimGeometryBatchPanel({
         </label>
         <button
           className="secondaryAction workflowAction"
-          disabled={
-            actionDisabled ||
-            !onLinkModel ||
-            !selectedModel ||
-            selectedModel.id === run?.bim_model_id
-          }
+          disabled={actionDisabled || !onLinkModel || !selectedModel || selectedModel.id === run?.bim_model_id}
           onClick={() => selectedModel && onLinkModel?.(selectedModel.id)}
           type="button"
         >
@@ -144,7 +137,8 @@ export default function BimGeometryBatchPanel({
 
       {!modelAvailable ? (
         <div className="bimGeometryBatchEmpty">
-          {modelStatusMessage || "Carga un modelo IFC con geometria renderizable para calcular cantidades dimensionales."}
+          {modelStatusMessage ||
+            "Carga un modelo IFC con geometria renderizable para calcular cantidades dimensionales."}
         </div>
       ) : !preview ? (
         <div className="bimGeometryBatchEmpty">
