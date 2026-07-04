@@ -12,18 +12,22 @@ def _login(client: TestClient, email: str, password: str) -> dict:
     return response.json()
 
 
-def test_user_sees_only_their_tenant_projects() -> None:
+def test_user_sees_only_their_assigned_projects() -> None:
     with TestClient(app) as client:
-        session = _login(client, "ana.control@demo.local", "1234")
-        tenant_id = session["tenant_id"]
-        headers = {"Authorization": f"Bearer {session['access_token']}"}
+        admin_session = _login(client, "admin", "1234")
+        control_headers = {"Authorization": f"Bearer {admin_session['access_token']}"}
+        all_visible_projects = client.get("/api/v1/projects", headers=control_headers).json()
 
+        session = _login(client, "laura.contracts@demo.local", "1234")
+        headers = {"Authorization": f"Bearer {session['access_token']}"}
         projects = client.get("/api/v1/projects", headers=headers).json()
+        laura_project_ids = {project["id"] for project in projects}
+        restricted_project = next(project for project in all_visible_projects if project["id"] not in laura_project_ids)
+        restricted_dashboard = client.get(f"/api/v1/projects/{restricted_project['id']}/dashboard", headers=headers)
+
         assert isinstance(projects, list)
-        # Every returned project must belong to the same tenant the user authenticated against.
-        for project in projects:
-            if "tenant_id" in project:
-                assert project["tenant_id"] == tenant_id
+        assert all(project["id"] != restricted_project["id"] for project in projects)
+        assert restricted_dashboard.status_code == 403
 
 
 def test_user_cannot_access_project_from_another_tenant() -> None:

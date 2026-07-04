@@ -169,6 +169,147 @@ class ActivitySheetRow(Base):
     planned_cost: Mapped[float] = mapped_column(Float, default=0)
 
 
+class QuantityTakeoffRun(Base):
+    __tablename__ = "quantity_takeoff_runs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    bim_model_id: Mapped[int | None] = mapped_column(
+        ForeignKey("bim_models.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
+    source_file_name: Mapped[str] = mapped_column(String(260))
+    source_type: Mapped[str] = mapped_column(String(40), default="")
+    source_sha256: Mapped[str] = mapped_column(String(64), default="")
+    bim_revision_id: Mapped[str] = mapped_column(String(120), default="")
+    model_linked_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    status: Mapped[str] = mapped_column(String(40), default="needs_mapping")
+    row_count: Mapped[int] = mapped_column(Integer, default=0)
+    mapped_line_count: Mapped[int] = mapped_column(Integer, default=0)
+    unmapped_line_count: Mapped[int] = mapped_column(Integer, default=0)
+    total_quantity: Mapped[float] = mapped_column(Float, default=0)
+    validation_summary: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+
+class BimModel(Base):
+    __tablename__ = "bim_models"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    source_file_name: Mapped[str] = mapped_column(String(260))
+    source_type: Mapped[str] = mapped_column(String(40), default="ifc")
+    source_sha256: Mapped[str] = mapped_column(String(64), default="", index=True)
+    revision_id: Mapped[str] = mapped_column(String(120), default="")
+    source_size_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    source_storage_path: Mapped[str] = mapped_column(String(500), default="")
+    viewer_artifact_path: Mapped[str] = mapped_column(String(500), default="")
+    status: Mapped[str] = mapped_column(String(40), default="uploaded")
+    schema: Mapped[str] = mapped_column(String(40), default="")
+    units: Mapped[str] = mapped_column(String(80), default="")
+    element_count: Mapped[int] = mapped_column(Integer, default=0)
+    storey_count: Mapped[int] = mapped_column(Integer, default=0)
+    model_identity: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+
+class BimQuantityRule(Base):
+    __tablename__ = "bim_quantity_rules"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    ifc_class: Mapped[str] = mapped_column(String(120), index=True)
+    element_label: Mapped[str] = mapped_column(String(160), default="")
+    expected_measure: Mapped[str] = mapped_column(String(160), default="")
+    rule_hint: Mapped[str] = mapped_column(String(220), default="")
+    expected_units: Mapped[list] = mapped_column(JSON, default=list)
+    allow_fallback_count: Mapped[bool] = mapped_column(default=True)
+    source: Mapped[str] = mapped_column(String(40), default="system_default")
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "ifc_class"),)
+
+
+class ColombiaApuCatalogItem(Base):
+    __tablename__ = "colombia_apu_catalog_items"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    source_key: Mapped[str] = mapped_column(String(80), default="datacauca_public_apu", index=True)
+    external_id: Mapped[str] = mapped_column(String(160), default="", index=True)
+    item_code: Mapped[str] = mapped_column(String(80), index=True)
+    item_name: Mapped[str] = mapped_column(Text, default="", index=True)
+    unit: Mapped[str] = mapped_column(String(40), default="")
+    unit_rate: Mapped[float] = mapped_column(Float, default=0)
+    currency: Mapped[str] = mapped_column(String(8), default="COP")
+    group_name: Mapped[str] = mapped_column(String(160), default="")
+    chapter: Mapped[str] = mapped_column(String(220), default="")
+    region: Mapped[str] = mapped_column(String(160), default="")
+    source_url: Mapped[str] = mapped_column(String(500), default="")
+    license_note: Mapped[str] = mapped_column(Text, default="")
+    update_frequency: Mapped[str] = mapped_column(String(80), default="")
+    status: Mapped[str] = mapped_column(String(40), default="review")
+    raw_data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "project_id", "source_key", "external_id"),)
+
+
+class QuantityTakeoffLine(Base):
+    __tablename__ = "quantity_takeoff_lines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("quantity_takeoff_runs.id"), index=True)
+    source_row_id: Mapped[str] = mapped_column(String(120), default="")
+    element_id: Mapped[str] = mapped_column(String(120), default="")
+    element_guid: Mapped[str] = mapped_column(String(120), default="", index=True)
+    ifc_class: Mapped[str] = mapped_column(String(120), default="")
+    category: Mapped[str] = mapped_column(String(120), default="")
+    family: Mapped[str] = mapped_column(String(160), default="")
+    type_name: Mapped[str] = mapped_column(String(160), default="")
+    instance_name: Mapped[str] = mapped_column(String(220), default="")
+    project_name: Mapped[str] = mapped_column(String(160), default="")
+    site_name: Mapped[str] = mapped_column(String(160), default="")
+    building_name: Mapped[str] = mapped_column(String(160), default="")
+    storey: Mapped[str] = mapped_column(String(160), default="")
+    system_name: Mapped[str] = mapped_column(String(160), default="")
+    zone_name: Mapped[str] = mapped_column(String(160), default="")
+    assembly_name: Mapped[str] = mapped_column(String(160), default="")
+    classification_system: Mapped[str] = mapped_column(String(120), default="")
+    classification_code: Mapped[str] = mapped_column(String(120), default="")
+    quantity: Mapped[float] = mapped_column(Float, default=0)
+    unit: Mapped[str] = mapped_column(String(40), default="")
+    measurement_rule: Mapped[str] = mapped_column(String(160), default="")
+    wbs_code: Mapped[str] = mapped_column(String(120), default="", index=True)
+    cbs_code: Mapped[str] = mapped_column(String(120), default="", index=True)
+    fbs_code: Mapped[str] = mapped_column(String(120), default="", index=True)
+    package_code: Mapped[str] = mapped_column(String(120), default="", index=True)
+    wbs_id: Mapped[int | None] = mapped_column(ForeignKey("wbs.id"), index=True)
+    cbs_id: Mapped[int | None] = mapped_column(ForeignKey("cost_breakdown_structures.id"), index=True)
+    fbs_id: Mapped[int | None] = mapped_column(ForeignKey("funding_sources.id"), index=True)
+    work_package_id: Mapped[int | None] = mapped_column(ForeignKey("work_packages.id"), index=True)
+    mapping_status: Mapped[str] = mapped_column(String(40), default="needs_mapping")
+    validation_notes: Mapped[str] = mapped_column(Text, default="")
+    raw_data: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+
 class UserAccount(Base):
     __tablename__ = "user_accounts"
 

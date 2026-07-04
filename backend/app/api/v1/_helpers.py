@@ -84,9 +84,12 @@ def require_tenant_configurator(db: Session, tenant_id: int, user_id: int) -> Us
             ProjectMembership.can_configure.is_(True),
         )
     ).first()
-    if not membership:
-        raise HTTPException(status_code=403, detail="Current user cannot configure tenant projects or users")
-    return user
+    if membership:
+        return user
+    has_projects = db.scalar(select(Project.id).where(Project.tenant_id == tenant_id).limit(1))
+    if has_projects is None:
+        return user
+    raise HTTPException(status_code=403, detail="Current user cannot configure tenant projects or users")
 
 
 def require_current_version(entity: object, expected_version: int | None) -> None:

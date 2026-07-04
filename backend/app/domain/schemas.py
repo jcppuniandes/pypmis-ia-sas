@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -79,6 +80,31 @@ class GuidedFlowOut(BaseModel):
     steps: list[GuidedFlowStepOut]
     next_action: GuidedNextActionOut
     cost_currency_gate: CostCurrencyGateOut
+
+
+class ProcessFlowItemOut(BaseModel):
+    key: str
+    label: str
+    status: str
+    owner_role: str
+    evidence: str
+    next_action: str
+    acceptance_criteria: list[str] = Field(default_factory=list)
+    target_view: str = ""
+
+
+class ProcessFlowLaneOut(BaseModel):
+    key: str
+    label: str
+    owner_role: str
+    items: list[ProcessFlowItemOut]
+
+
+class ProcessFlowBoardOut(BaseModel):
+    project_id: int
+    overall_status: str
+    completion_percent: float
+    lanes: list[ProcessFlowLaneOut]
 
 
 class ScheduleCurrencyConfirmIn(BaseModel):
@@ -219,6 +245,287 @@ class ActivitySheetWbsRowOut(BaseModel):
     needs_review_count: int
 
 
+class QuantityTakeoffRunOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    bim_model_id: int | None = None
+    source_file_name: str
+    source_type: str
+    source_sha256: str = ""
+    bim_revision_id: str = ""
+    model_linked_at: datetime | None = None
+    status: str
+    row_count: int
+    mapped_line_count: int
+    unmapped_line_count: int
+    total_quantity: float
+    validation_summary: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class QuantityTakeoffModelLinkIn(BaseModel):
+    model_id: int
+    expected_version: int | None = None
+
+
+class QuantityTakeoffLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    run_id: int
+    source_row_id: str
+    element_id: str
+    element_guid: str
+    ifc_class: str
+    category: str
+    family: str
+    type_name: str
+    instance_name: str
+    project_name: str
+    site_name: str
+    building_name: str
+    storey: str
+    system_name: str
+    zone_name: str
+    assembly_name: str
+    classification_system: str
+    classification_code: str
+    quantity: float
+    unit: str
+    measurement_rule: str
+    wbs_code: str
+    cbs_code: str
+    fbs_code: str
+    package_code: str
+    wbs_id: int | None = None
+    cbs_id: int | None = None
+    fbs_id: int | None = None
+    work_package_id: int | None = None
+    mapping_status: str
+    validation_notes: str
+    raw_data: dict
+    created_at: datetime
+    updated_at: datetime
+
+
+class ControlledMeasurementApprovalIn(BaseModel):
+    line_ids: list[int] = Field(min_length=1)
+    measurement_rule: str
+    quantity: float | None = None
+    source: str = "Quantity table review"
+    note: str = ""
+    unit: str | None = None
+
+
+class BimGeometryMeasurementBatchIn(BaseModel):
+    model_id: int
+    line_ids: list[int] = Field(default_factory=list)
+    apply: bool = False
+    replace_valid: bool = False
+
+
+class BimGeometryMeasurementResultOut(BaseModel):
+    line_id: int
+    element_guid: str = ""
+    ifc_class: str = ""
+    element_name: str = ""
+    status: str
+    current_quantity: float
+    current_unit: str
+    source_quantity: float
+    source_unit: str
+    approved_quantity: float | None = None
+    approved_unit: str = ""
+    geometry_quantity: float
+    geometry_unit: str
+    measurement_rule: str
+    difference: float | None = None
+    difference_percent: float | None = None
+    confidence: str
+    reason: str
+
+
+class BimGeometryMeasurementBatchOut(BaseModel):
+    model_id: int
+    run_id: int
+    revision_id: str = ""
+    total_count: int
+    matched_count: int
+    ready_count: int
+    compare_count: int
+    applied_count: int
+    unmatched_count: int
+    invalid_count: int
+    results: list[BimGeometryMeasurementResultOut] = Field(default_factory=list)
+
+
+class QuantityControlCodeAssignmentIn(BaseModel):
+    line_ids: list[int] = Field(min_length=1)
+    wbs_code: str
+    cbs_code: str
+    fbs_code: str
+    package_code: str
+    cost_item_code: str = ""
+    cost_item_name: str = ""
+    budget_unit: str = ""
+    unit_rate: float | None = None
+    catalog_item_id: int | None = None
+    currency: str = ""
+    source_key: str = ""
+    source_url: str = ""
+    license_note: str = ""
+    apu_structure: list[dict[str, Any]] = Field(default_factory=list)
+    structure_note: str = ""
+    structure_status: str = ""
+    note: str = ""
+
+
+class ColombiaApuCatalogItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    source_key: str
+    external_id: str
+    item_code: str
+    item_name: str
+    unit: str
+    unit_rate: float
+    currency: str
+    group_name: str
+    chapter: str
+    region: str
+    source_url: str
+    license_note: str
+    update_frequency: str
+    status: str
+    raw_data: dict
+    created_at: datetime
+    updated_at: datetime
+
+
+class ColombiaApuCatalogSyncOut(BaseModel):
+    project_id: int
+    source_key: str
+    source_url: str
+    created_count: int
+    updated_count: int
+    skipped_count: int
+    total_count: int
+    license_note: str
+    update_frequency: str
+    synced_at: datetime
+
+
+class QuantityApuSuggestionIn(BaseModel):
+    line_ids: list[int] = Field(min_length=1)
+    apply_best: bool = False
+    limit_per_line: int = Field(default=3, ge=1, le=10)
+
+
+class QuantityApuApprovalIn(BaseModel):
+    line_ids: list[int] = Field(min_length=1)
+
+
+class QuantityApuSuggestionOut(BaseModel):
+    line_id: int
+    catalog_item_id: int
+    source_key: str
+    cost_item_code: str
+    cost_item_name: str
+    budget_unit: str
+    unit_rate: float
+    currency: str
+    quantity: float
+    budget_amount: float
+    match_score: float
+    review_note: str
+    source_url: str
+    license_note: str
+    apu_structure: list[dict[str, Any]] = Field(default_factory=list)
+    structure_note: str = ""
+    structure_status: str = "review_required"
+
+
+class QuantityRuleRecalculationImpactOut(BaseModel):
+    line_id: int
+    element_guid: str = ""
+    ifc_class: str = ""
+    previous_status: str = ""
+    new_status: str = ""
+    previous_measure: str = ""
+    new_measure: str = ""
+    previous_units: list[str] = Field(default_factory=list)
+    new_units: list[str] = Field(default_factory=list)
+    mapping_status: str = ""
+
+
+class QuantityRuleRecalculationOut(BaseModel):
+    project_id: int
+    run_id: int
+    total_lines: int
+    changed_line_count: int
+    valid_count: int
+    review_count: int
+    blocked_count: int
+    cost_rollup_gate: str
+    affected_classes: list[str] = Field(default_factory=list)
+    impacts: list[QuantityRuleRecalculationImpactOut] = Field(default_factory=list)
+
+
+class BimQuantityRuleOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    ifc_class: str
+    element_label: str
+    expected_measure: str
+    rule_hint: str
+    expected_units: list[str] = Field(default_factory=list)
+    allow_fallback_count: bool
+    source: str
+    status: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class BimQuantityRuleUpdate(BaseModel):
+    element_label: str | None = None
+    expected_measure: str | None = None
+    rule_hint: str | None = None
+    expected_units: list[str] | None = None
+    allow_fallback_count: bool | None = None
+    status: str | None = None
+    expected_version: int | None = None
+
+
+class BimModelOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    source_file_name: str
+    source_type: str
+    source_sha256: str = ""
+    revision_id: str = ""
+    source_size_bytes: int
+    status: str
+    ifc_schema: str = Field(alias="schema", serialization_alias="schema")
+    units: str
+    element_count: int
+    storey_count: int
+    model_identity: dict
+    created_at: datetime
+    updated_at: datetime
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -234,6 +541,16 @@ class UserCreate(BaseModel):
     full_name: str
     title: str = ""
     password: str | None = None
+
+
+class UserUpdate(BaseModel):
+    email: str | None = None
+    full_name: str | None = None
+    title: str | None = None
+
+
+class UserPasswordReset(BaseModel):
+    password: str
 
 
 class LoginRequest(BaseModel):
@@ -1047,6 +1364,17 @@ class ScheduleActivityMapOut(BaseModel):
     critical_path: bool
 
 
+class ActivityRelationshipOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    schedule_import_id: int
+    predecessor_external_id: str
+    successor_external_id: str
+    relationship_type: str
+    lag_days: float
+
+
 class ControlAccountMappingOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -1089,6 +1417,18 @@ class ScheduleValidationFindingOut(BaseModel):
     message: str
     item_count: int
     weight: float
+
+
+class ScheduleQualityMetricOut(BaseModel):
+    key: str
+    standard: str
+    label: str
+    status: str
+    item_count: int
+    total_count: int
+    percent: float
+    threshold: str
+    description: str
 
 
 class BaselineVersionOut(BaseModel):
@@ -1275,6 +1615,15 @@ class ClaimOut(BaseModel):
     status: str
 
 
+class ClaimCreate(BaseModel):
+    control_account_id: int | None = None
+    title: str
+    causality: str = ""
+    impact: str = ""
+    evidence_summary: str = ""
+    status: str = "analyzing"
+
+
 class ClaimEntitlementItemOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -1414,6 +1763,103 @@ class ClaimsForensicSummary(BaseModel):
     total_claimed_cost: float
     total_schedule_impact_days: int
     forensic_readiness_score: float
+
+
+class ForensicDossierAnalysisOut(BaseModel):
+    mode: str
+    summary: str
+    source_files: list[str] = Field(default_factory=list)
+    signals: list[str] = Field(default_factory=list)
+    readiness_score: float
+    created_claims: list[ClaimOut] = Field(default_factory=list)
+    created_notices: list[ContractNoticeOut] = Field(default_factory=list)
+    created_entitlement_items: list[ClaimEntitlementItemOut] = Field(default_factory=list)
+    created_impact_analyses: list[ClaimImpactAnalysisOut] = Field(default_factory=list)
+
+
+class ForensicRagSourceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    title: str
+    file_name: str
+    source_type: str
+    relevance: str
+    tags: list[str] = Field(default_factory=list)
+
+
+class ForensicWindowScheduleSourceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    file_name: str
+    source: str
+    status: str
+    data_date: date | None = None
+    baseline_name: str = ""
+    activity_count: int = 0
+    relationship_count: int = 0
+    quality_score: float = 0
+    finding_code: str = ""
+    message: str = ""
+
+
+class ForensicWindowActivityDeltaOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    activity_id: str
+    activity_name: str
+    wbs_code: str
+    wbs_name: str
+    start_slip_days: int
+    finish_slip_days: int
+    total_float_delta_days: float
+    critical_in_start: bool
+    critical_in_finish: bool
+    classification: str
+
+
+class ForensicWindowLogicDeltaOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    added_relationships: int
+    removed_relationships: int
+    changed_relationships: int
+
+
+class ForensicWindowResultOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    window_no: int
+    start_schedule: str
+    finish_schedule: str
+    start_data_date: date | None = None
+    finish_data_date: date | None = None
+    start_completion: date | None = None
+    finish_completion: date | None = None
+    completion_slip_days: int
+    critical_delay_days: int
+    mitigation_days: int
+    common_activity_count: int
+    added_activity_count: int
+    removed_activity_count: int
+    delayed_activity_count: int
+    critical_or_near_critical_delay_count: int
+    logic_delta: ForensicWindowLogicDeltaOut
+    top_delay_events: list[ForensicWindowActivityDeltaOut] = Field(default_factory=list)
+    interpretation: str = ""
+
+
+class ForensicWindowAnalysisOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    method_id: str
+    method_name: str
+    standard_reference: str
+    methodology_note: str
+    schedule_sources: list[ForensicWindowScheduleSourceOut] = Field(default_factory=list)
+    windows: list[ForensicWindowResultOut] = Field(default_factory=list)
+    rag_sources: list[ForensicRagSourceOut] = Field(default_factory=list)
+    summary: dict[str, int | float | str] = Field(default_factory=dict)
+    limitations: list[str] = Field(default_factory=list)
 
 
 class ContractOut(BaseModel):
@@ -2236,6 +2682,7 @@ class DashboardOut(BaseModel):
     schedule_activity_count: int
     schedule_relationship_count: int
     schedule_findings: list[ScheduleValidationFindingOut]
+    schedule_quality_metrics: list[ScheduleQualityMetricOut]
     baseline_versions: list[BaselineVersionOut]
     control_periods: list[ControlPeriodOut]
     workflow_instance: BusinessProcessInstanceOut | None

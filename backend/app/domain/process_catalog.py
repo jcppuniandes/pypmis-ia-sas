@@ -286,7 +286,7 @@ DEFAULT_PROCESS_TEMPLATES = [
         "description": "Controls RFQ package issue, bid receipt, commercial/technical leveling and award recommendation.",
         "form_schema": [
             "RFQ package",
-            "Scope",
+            "Work description",
             "Budget",
             "Bidder",
             "Bid amount",
@@ -300,7 +300,7 @@ DEFAULT_PROCESS_TEMPLATES = [
         "steps": [
             {
                 "name": "Package Setup",
-                "detail": "Scope, budget, control account and due date are defined.",
+                "detail": "Work description, budget, control account and due date are defined.",
                 "owner_role": "Contract Manager",
                 "status": "Active",
                 "tone": "active",
@@ -434,7 +434,7 @@ DEFAULT_PROCESS_TEMPLATES = [
         "code": "AWP-READY",
         "name": "AWP Readiness",
         "category": "Advanced Work Packaging",
-        "description": "Controls path of construction, package scope, constraints and release readiness for workface execution.",
+        "description": "Controls path of construction, package work content, constraints and release readiness for workface execution.",
         "form_schema": ["Package type", "Path of construction", "Control account", "Constraints", "Release status"],
         "status": "Active",
         "version_no": 1,
@@ -447,8 +447,8 @@ DEFAULT_PROCESS_TEMPLATES = [
                 "tone": "complete",
             },
             {
-                "name": "Package Scope",
-                "detail": "CWA/CWP/EWP/PWP/IWP scope is tied to control accounts and deliverables.",
+                "name": "Package Definition",
+                "detail": "CWA/CWP/EWP/PWP/IWP work content is tied to control accounts and deliverables.",
                 "owner_role": "Workface Planner",
                 "status": "Complete",
                 "tone": "complete",

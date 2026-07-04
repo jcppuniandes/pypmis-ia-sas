@@ -15,21 +15,11 @@ def test_unifier_priority_flow_covers_bp_sov_commitment_funding_and_recost() -> 
         project_id = _create_ready_project(client, headers, suffix)
         activity_sheet = _load_activity_sheet(client, headers, project_id)
         activity_sheet_id = activity_sheet["id"]
+        generated_cbs_code, cbs = _generated_activity_cbs(client, headers, project_id, activity_sheet_id)
 
         account = client.get(f"/api/v1/projects/{project_id}/control-accounts", headers=headers).json()[0]
         wbs_rows = client.get(f"/api/v1/projects/{project_id}/wbs", headers=headers).json()
         wbs = next(row for row in wbs_rows if row["id"] == account["wbs_id"])
-        cbs = client.post(
-            f"/api/v1/projects/{project_id}/cbs",
-            headers=headers,
-            json={
-                "code": "CBS-PLT-CIV-A100",
-                "level": 3,
-                "cost_category": "Civil",
-                "description": "Imported activity CBS",
-                "status": "active",
-            },
-        ).json()
         fbs = client.post(
             f"/api/v1/projects/{project_id}/fbs",
             headers=headers,
@@ -144,7 +134,7 @@ def test_unifier_priority_flow_covers_bp_sov_commitment_funding_and_recost() -> 
                 "code": f"RS-{suffix}",
                 "name": "Controlled rate sheet",
                 "status": "active",
-                "line_items": [{"cbs_code": "CBS-PLT-CIV-A100", "multiplier": 1.2, "unit_rate": 120}],
+                "line_items": [{"cbs_code": generated_cbs_code, "multiplier": 1.2, "unit_rate": 120}],
             },
         )
         recost_response = client.post(
@@ -186,20 +176,10 @@ def test_unifier_hardening_covers_policies_versioned_lines_exports_and_recost_hi
         suffix = uuid4().hex[:8]
         project_id = _create_ready_project(client, headers, suffix)
         activity_sheet = _load_activity_sheet(client, headers, project_id)
+        generated_cbs_code, cbs = _generated_activity_cbs(client, headers, project_id, activity_sheet["id"])
         account = client.get(f"/api/v1/projects/{project_id}/control-accounts", headers=headers).json()[0]
         wbs_rows = client.get(f"/api/v1/projects/{project_id}/wbs", headers=headers).json()
         wbs = next(row for row in wbs_rows if row["id"] == account["wbs_id"])
-        cbs = client.post(
-            f"/api/v1/projects/{project_id}/cbs",
-            headers=headers,
-            json={
-                "code": f"CBS-PLT-CIV-A100-{suffix}",
-                "level": 3,
-                "cost_category": "Civil",
-                "description": "Hardening CBS",
-                "status": "active",
-            },
-        ).json()
         fbs = client.post(
             f"/api/v1/projects/{project_id}/fbs",
             headers=headers,
@@ -292,7 +272,7 @@ def test_unifier_hardening_covers_policies_versioned_lines_exports_and_recost_hi
                 "code": f"RS-HARD-{suffix}",
                 "name": "Hardening rate sheet",
                 "status": "active",
-                "line_items": [{"cbs_code": "CBS-PLT-CIV-A100", "multiplier": 1.1, "unit_rate": 100}],
+                "line_items": [{"cbs_code": generated_cbs_code, "multiplier": 1.1, "unit_rate": 100}],
             },
         ).json()
         recost_response = client.post(
@@ -451,10 +431,24 @@ def test_control_audit_agent_creates_awp_draft_packages_from_control_accounts() 
     assert all(package["readiness_status"] == "constraint_review" for package in created_packages)
     cwp_ids = {package["id"] for package in created_packages if package["package_type"] == "CWP"}
     assert any(package["package_type"] == "IWP" and package["parent_id"] in cwp_ids for package in created_packages)
+    cwp = next(package for package in created_packages if package["package_type"] == "CWP")
+    cwa = next(package for package in created_packages if package["package_type"] == "CWA")
+    iwp = next(package for package in created_packages if package["package_type"] == "IWP")
+    assert cwa["code"] == "CWA-UNI-OBRAS-CIVILES-PLANTA"
+    assert cwp["code"] == "CWP-UNI-OBRAS-CIVILES-PLANTA-CIV-01"
+    assert iwp["code"] == "IWP-UNI-OBRAS-CIVILES-PLANTA-CIV-01-IW01"
+    assert iwp["path_of_construction"].startswith("Inherits POC from CWP-UNI-OBRAS-CIVILES-PLANTA-CIV-01")
+    assert "AWP confidence:" in cwp["main_constraints"]
+    assert "Evidence: WBS Obras civiles planta" in cwp["main_constraints"]
+    assert "schedule activities" in cwp["main_constraints"].lower()
+    finding_titles = {finding["title"] for finding in run["findings"]}
+    assert "Path of Construction requires user validation before AWP release" in finding_titles
     assert constraints_response.status_code == 200
     constraints = constraints_response.json()
+    assert any(constraint["constraint_type"] == "Path of Construction" for constraint in constraints)
     assert any(constraint["constraint_type"] == "Engineering Documents" for constraint in constraints)
     assert any(constraint["constraint_type"] == "Materials" for constraint in constraints)
+    assert any(constraint["constraint_type"] == "Quantities / Workface" for constraint in constraints)
     assert repeat_response.status_code == 200
     assert len(final_packages_response.json()) == len(after_packages)
 
@@ -539,6 +533,25 @@ def _load_activity_sheet(client: TestClient, headers: dict[str, str], project_id
     )
     assert response.status_code == 200
     return response.json()
+
+
+def _generated_activity_cbs(
+    client: TestClient, headers: dict[str, str], project_id: int, activity_sheet_id: int
+) -> tuple[str, dict[str, object]]:
+    rows_response = client.get(
+        f"/api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/rows",
+        headers=headers,
+    )
+    assert rows_response.status_code == 200
+    activity_rows = rows_response.json()
+    assert activity_rows
+    cbs_code = activity_rows[0]["cbs_code"]
+    cbs_response = client.get(f"/api/v1/projects/{project_id}/cbs", headers=headers)
+    assert cbs_response.status_code == 200
+    generated_cbs = next((row for row in cbs_response.json() if row["code"] == cbs_code), None)
+    assert generated_cbs is not None
+    assert generated_cbs["status"] == "draft"
+    return cbs_code, generated_cbs
 
 
 def _p6_xml() -> bytes:

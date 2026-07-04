@@ -10,6 +10,8 @@ from fastapi.testclient import TestClient
 from app.core.config import Settings
 from app.main import app
 
+SECURE_PROD_SECRET = "s" * 64
+
 
 def test_health_returns_ok() -> None:
     with TestClient(app) as client:
@@ -49,7 +51,7 @@ def test_production_settings_reject_insecure_defaults() -> None:
 def test_production_settings_require_explicit_hosts_and_closed_docs() -> None:
     settings = Settings(
         app_environment="production",
-        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        auth_secret_key=SECURE_PROD_SECRET,
         allowed_hosts="*",
         cors_origins="https://pypmis.example.com",
         docs_enabled=True,
@@ -62,7 +64,7 @@ def test_production_settings_require_explicit_hosts_and_closed_docs() -> None:
 def test_production_settings_require_oidc_metadata_when_enabled() -> None:
     settings = Settings(
         app_environment="production",
-        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        auth_secret_key=SECURE_PROD_SECRET,
         allowed_hosts="pypmis.example.com",
         cors_origins="https://pypmis.example.com",
         docs_enabled=False,
@@ -78,7 +80,7 @@ def test_production_settings_require_oidc_metadata_when_enabled() -> None:
 def test_production_settings_reject_auto_create_schema() -> None:
     settings = Settings(
         app_environment="production",
-        auth_secret_key="a-secure-production-secret-with-more-than-32-chars",
+        auth_secret_key=SECURE_PROD_SECRET,
         allowed_hosts="pypmis.example.com",
         cors_origins="https://pypmis.example.com",
         docs_enabled=False,
@@ -109,7 +111,8 @@ def test_login_returns_bearer_token() -> None:
     payload = response.json()
     assert payload["token_type"] == "bearer"
     assert payload["access_token"]
-    assert payload["user"]["email"] == "ana.control@demo.local"
+    assert payload["user"]["email"] == "admin@demo.local"
+    assert payload["user"]["full_name"] == "Pypmis Admin"
     assert providers_response.status_code == 200
     assert providers_response.json()["local"]["enabled"] is True
     assert providers_response.json()["oidc"]["enabled"] is False
@@ -1086,7 +1089,7 @@ def _first_project_id(client: TestClient, headers: dict[str, str]) -> int:
 
 
 def _login(client: TestClient):
-    return _login_as(client, "ana.control@demo.local")
+    return _login_as(client, "admin")
 
 
 def _login_as(client: TestClient, email: str):

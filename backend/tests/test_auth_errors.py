@@ -73,7 +73,8 @@ def test_login_accepts_admin_alias_with_demo_password() -> None:
         )
     assert response.status_code == 200, response.text
     payload = response.json()
-    assert payload["user"]["email"] == "ana.control@demo.local"
+    assert payload["user"]["email"] == "admin@demo.local"
+    assert payload["user"]["full_name"] == "Pypmis Admin"
 
 
 def test_accessing_nonexistent_project_returns_403_or_404() -> None:

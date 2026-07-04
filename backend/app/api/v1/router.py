@@ -13,7 +13,7 @@ from uuid import uuid4
 from xml.sax.saxutils import escape
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
-from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
@@ -115,6 +115,7 @@ from app.domain.models import (
     ScheduleValidationFinding,
     UserAccount,
     WarehouseReceipt,
+    WorkflowStatus,
     WorkflowStepInstance,
     WorkPackage,
     WorkPackageConstraint,
@@ -144,6 +145,7 @@ from app.domain.schemas import (
     CashFlowPeriodUpdate,
     ChangeRequestCreate,
     ChangeRequestOut,
+    ClaimCreate,
     ClaimEntitlementItemCreate,
     ClaimEntitlementItemOut,
     ClaimEntitlementItemUpdate,
@@ -197,6 +199,9 @@ from app.domain.schemas import (
     DocumentUpdate,
     ForecastScenarioOut,
     ForecastFundingReport,
+    ForensicDossierAnalysisOut,
+    ForensicWindowAnalysisOut,
+    ForensicRagSourceOut,
     FundingSourceCreate,
     FundingAvailabilityOut,
     FundingSourceOut,
@@ -243,10 +248,12 @@ from app.domain.schemas import (
     ReconciliationReportOut,
     ReconciliationReportRow,
     RoleProfileOut,
+    ActivityRelationshipOut,
     ScheduleOfValueLineCreate,
     ScheduleOfValueLineOut,
     ScheduleActivityMapOut,
     ScheduleImportOut,
+    ScheduleQualityMetricOut,
     ScheduleValidationFindingOut,
     TCMFlowStep,
     UserOut,
@@ -265,8 +272,10 @@ from app.domain.schemas import (
     WorkPackageReadinessUpdate,
 )
 from app.services.ai_insights import AIInsightService
+from app.services.claims_forensic import ClaimsForensicDossierService
 from app.services.control_core import ControlCoreService
 from app.services.control_audit_agent import ControlAuditAgentService
+from app.services.forensic_window_analysis import ForensicWindowAnalysisService
 from app.services.integrated_control import IntegratedControlService
 from app.services.schedule_ingestion import ScheduleIngestionService
 from app.services.workflow_routing import WorkflowRoutingService
@@ -3314,6 +3323,197 @@ def create_contract_notice(
     return notice
 
 
+@router.get("/projects/{project_id}/claims", response_model=list[ClaimOut])
+def list_claims(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[Claim]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return list(
+        db.scalars(
+            select(Claim)
+            .where(Claim.project_id == project_id, Claim.tenant_id == tenant_id)
+            .order_by(Claim.id.desc())
+        ).all()
+    )
+
+
+@router.post("/projects/{project_id}/claims", response_model=ClaimOut)
+def create_claim(
+    project_id: int,
+    payload: ClaimCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> Claim:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot create claims")
+    current_user = _require_user(db, tenant_id, user_id)
+    if payload.control_account_id is not None:
+        account = db.scalar(
+            select(ControlAccount).where(
+                ControlAccount.id == payload.control_account_id,
+                ControlAccount.tenant_id == tenant_id,
+                ControlAccount.project_id == project_id,
+            )
+        )
+        if not account:
+            raise HTTPException(status_code=404, detail="Control account not found")
+    try:
+        status = WorkflowStatus(payload.status)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Unsupported claim status") from exc
+    claim = Claim(
+        tenant_id=tenant_id,
+        project_id=project_id,
+        control_account_id=payload.control_account_id,
+        title=payload.title,
+        causality=payload.causality,
+        impact=payload.impact,
+        evidence_summary=payload.evidence_summary,
+        status=status,
+    )
+    db.add(claim)
+    db.flush()
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "create_claim",
+        "Claim",
+        claim.id,
+        json.dumps({"title": claim.title, "status": str(claim.status)}),
+        current_user.full_name,
+    )
+    db.commit()
+    db.refresh(claim)
+    return claim
+
+
+@router.post("/projects/{project_id}/claims/forensic-runs", response_model=ForensicDossierAnalysisOut)
+async def create_claims_forensic_run(
+    project_id: int,
+    mode: str = Form("review"),
+    files: list[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ForensicDossierAnalysisOut:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot run forensic claims analysis")
+    current_user = _require_user(db, tenant_id, user_id)
+    uploads: list[tuple[str, bytes]] = []
+    for upload in files:
+        payload = await upload.read()
+        if payload:
+            uploads.append((upload.filename or "dossier", payload))
+    if not uploads:
+        raise HTTPException(status_code=400, detail="Upload at least one dossier file")
+    service = ClaimsForensicDossierService(db)
+    try:
+        result = service.analyze(tenant_id=tenant_id, project_id=project_id, mode=mode, uploads=uploads)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    primary_claim_id = result.created_claims[0].id if result.created_claims else None
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "run_claims_forensic_dossier",
+        "Claim",
+        primary_claim_id,
+        json.dumps(
+            {
+                "mode": mode,
+                "source_files": result.source_files,
+                "signals": result.signals,
+                "readiness_score": result.readiness_score,
+            }
+        ),
+        current_user.full_name,
+    )
+    db.commit()
+    created_objects = (
+        result.created_claims
+        + result.created_notices
+        + result.created_entitlement_items
+        + result.created_impact_analyses
+    )
+    for created in created_objects:
+        db.refresh(created)
+    return ForensicDossierAnalysisOut(
+        mode=mode if mode in ClaimsForensicDossierService.modes else "review",
+        summary=result.summary,
+        source_files=result.source_files,
+        signals=result.signals,
+        readiness_score=result.readiness_score,
+        created_claims=[ClaimOut.model_validate(claim) for claim in result.created_claims],
+        created_notices=[ContractNoticeOut.model_validate(notice) for notice in result.created_notices],
+        created_entitlement_items=[ClaimEntitlementItemOut.model_validate(item) for item in result.created_entitlement_items],
+        created_impact_analyses=[ClaimImpactAnalysisOut.model_validate(analysis) for analysis in result.created_impact_analyses],
+    )
+
+
+@router.get("/projects/{project_id}/claims/window-analysis-37/rag-sources", response_model=list[ForensicRagSourceOut])
+def list_window_analysis_37_rag_sources(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ForensicRagSourceOut]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    return [
+        ForensicRagSourceOut.model_validate(source)
+        for source in ForensicWindowAnalysisService().rag_sources()
+    ]
+
+
+@router.post("/projects/{project_id}/claims/window-analysis-37", response_model=ForensicWindowAnalysisOut)
+async def create_window_analysis_37_run(
+    project_id: int,
+    near_critical_threshold_days: float = Form(10),
+    files: list[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ForensicWindowAnalysisOut:
+    membership = _require_membership(db, tenant_id, project_id, user_id)
+    _require_permission(membership, "can_manage_contract", "Current role cannot run forensic schedule analysis")
+    current_user = _require_user(db, tenant_id, user_id)
+    uploads: list[tuple[str, bytes]] = []
+    for upload in files:
+        payload = await upload.read()
+        if payload:
+            uploads.append((upload.filename or "schedule", payload))
+    if not uploads:
+        raise HTTPException(status_code=400, detail="Upload at least one schedule file")
+
+    result = ForensicWindowAnalysisService().analyze(
+        uploads=uploads,
+        near_critical_threshold_days=near_critical_threshold_days,
+    )
+    _audit(
+        db,
+        tenant_id,
+        project_id,
+        "run_window_analysis_37",
+        "ClaimImpactAnalysis",
+        None,
+        json.dumps(
+            {
+                "method_id": result.method_id,
+                "source_files": [row.file_name for row in result.schedule_sources],
+                "summary": result.summary,
+            }
+        ),
+        current_user.full_name,
+    )
+    db.commit()
+    return ForensicWindowAnalysisOut.model_validate(result)
+
+
 @router.post("/projects/{project_id}/changes", response_model=ChangeRequestOut)
 def create_change_request(
     project_id: int,
@@ -4471,6 +4671,30 @@ def list_schedule_activities(
     )
 
 
+@router.get("/projects/{project_id}/schedule-relationships", response_model=list[ActivityRelationshipOut])
+def list_schedule_relationships(
+    project_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> list[ActivityRelationship]:
+    _require_membership(db, tenant_id, project_id, user_id)
+    latest_import = _latest_schedule_import(db, tenant_id, project_id)
+    if not latest_import:
+        return []
+    return list(
+        db.scalars(
+            select(ActivityRelationship)
+            .where(
+                ActivityRelationship.tenant_id == tenant_id,
+                ActivityRelationship.project_id == project_id,
+                ActivityRelationship.schedule_import_id == latest_import.id,
+            )
+            .order_by(ActivityRelationship.id)
+        ).all()
+    )
+
+
 @router.get("/projects/{project_id}/schedule-findings", response_model=list[ScheduleValidationFindingOut])
 def list_schedule_findings(
     project_id: int,
@@ -4821,28 +5045,38 @@ def get_dashboard(
         if schedule_import
         else []
     )
-    schedule_activity_count = (
-        db.scalar(
-            select(func.count(ScheduleActivityMap.id)).where(
-                ScheduleActivityMap.tenant_id == tenant_id,
-                ScheduleActivityMap.project_id == project_id,
-                ScheduleActivityMap.schedule_import_id == schedule_import.id if schedule_import else False,
-            )
+    schedule_activities = (
+        list(
+            db.scalars(
+                select(ScheduleActivityMap)
+                .where(
+                    ScheduleActivityMap.tenant_id == tenant_id,
+                    ScheduleActivityMap.project_id == project_id,
+                    ScheduleActivityMap.schedule_import_id == schedule_import.id,
+                )
+                .order_by(ScheduleActivityMap.external_activity_id)
+            ).all()
         )
         if schedule_import
-        else 0
+        else []
     )
-    schedule_relationship_count = (
-        db.scalar(
-            select(func.count(ActivityRelationship.id)).where(
-                ActivityRelationship.tenant_id == tenant_id,
-                ActivityRelationship.project_id == project_id,
-                ActivityRelationship.schedule_import_id == schedule_import.id if schedule_import else False,
-            )
+    schedule_relationships = (
+        list(
+            db.scalars(
+                select(ActivityRelationship)
+                .where(
+                    ActivityRelationship.tenant_id == tenant_id,
+                    ActivityRelationship.project_id == project_id,
+                    ActivityRelationship.schedule_import_id == schedule_import.id,
+                )
+                .order_by(ActivityRelationship.id)
+            ).all()
         )
         if schedule_import
-        else 0
+        else []
     )
+    schedule_activity_count = len(schedule_activities)
+    schedule_relationship_count = len(schedule_relationships)
     schedule_findings = (
         list(
             db.scalars(
@@ -4986,6 +5220,9 @@ def get_dashboard(
         schedule_activity_count=schedule_activity_count or 0,
         schedule_relationship_count=schedule_relationship_count or 0,
         schedule_findings=[ScheduleValidationFindingOut.model_validate(finding) for finding in schedule_findings],
+        schedule_quality_metrics=_schedule_quality_metrics(
+            schedule_import, schedule_activities, schedule_relationships
+        ),
         baseline_versions=[BaselineVersionOut.model_validate(baseline) for baseline in baseline_versions[:6]],
         control_periods=[ControlPeriodOut.model_validate(period) for period in control_periods[:6]],
         workflow_instance=BusinessProcessInstanceOut.model_validate(workflow_instance) if workflow_instance else None,
@@ -5859,7 +6096,7 @@ def _integration_rows_to_csv(rows: list[dict[str, object]], fields: list[str]) -
 def _integration_workbook_bytes(project: Project, generated_at: str, datasets: list[dict[str, object]]) -> bytes:
     sheets: list[dict[str, object]] = []
     summary_rows = [
-        ["Pypmis Ai SaaS Integration Workbook"],
+        ["Pypmis AI SaaS Integration Workbook"],
         ["Project code", project.code],
         ["Project name", project.name],
         ["Generated at", generated_at],
@@ -6008,7 +6245,7 @@ def _xlsx_app_properties(sheet_names: list[str]) -> str:
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" '
         'xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'
-        "<Application>Pypmis Ai SaaS</Application>"
+        "<Application>Pypmis AI SaaS</Application>"
         '<HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant>'
         f"<vt:variant><vt:i4>{len(sheet_names)}</vt:i4></vt:variant></vt:vector></HeadingPairs>"
         f'<TitlesOfParts><vt:vector size="{len(sheet_names)}" baseType="lpstr">{titles}</vt:vector></TitlesOfParts>'
@@ -8119,6 +8356,199 @@ def _default_wbs(db: Session, tenant_id: int, project_id: int) -> WBS:
     db.add(wbs)
     db.flush()
     return wbs
+
+
+def _schedule_quality_metrics(
+    schedule_import: ScheduleImport | None,
+    activities: list[ScheduleActivityMap],
+    relationships: list[ActivityRelationship],
+) -> list[ScheduleQualityMetricOut]:
+    if not schedule_import:
+        return []
+
+    total_activities = len(activities)
+    total_relationships = len(relationships)
+    activity_ids = {activity.external_activity_id for activity in activities if activity.external_activity_id}
+    logic_ids = {
+        external_id
+        for relationship in relationships
+        for external_id in (relationship.predecessor_external_id, relationship.successor_external_id)
+        if external_id
+    }
+    missing_logic = len(activity_ids - logic_ids) if total_activities else 0
+    leads = sum(1 for relationship in relationships if relationship.lag_days < 0)
+    lags = sum(1 for relationship in relationships if relationship.lag_days > 0)
+    non_finish_start = sum(1 for relationship in relationships if _relationship_type_value(relationship) != "FS")
+    high_float = sum(1 for activity in activities if activity.total_float_days > 44)
+    negative_float = sum(1 for activity in activities if activity.total_float_days < 0)
+    high_duration = sum(
+        1
+        for activity in activities
+        if activity.planned_start and activity.planned_finish and (activity.planned_finish - activity.planned_start).days > 44
+    )
+    invalid_dates = sum(
+        1
+        for activity in activities
+        if not activity.planned_start
+        or not activity.planned_finish
+        or (activity.planned_start and activity.planned_finish and activity.planned_finish < activity.planned_start)
+    )
+    cost_loaded = schedule_import.cost_loaded_activity_count or 0
+    cost_missing = max(total_activities - cost_loaded, 0)
+
+    return [
+        _quality_metric(
+            "dcma_logic",
+            "DCMA 01",
+            "Logic",
+            missing_logic,
+            total_activities,
+            "<= 5% missing logic",
+            "Activities not connected by predecessor or successor logic.",
+            _threshold_status(_percent(missing_logic, total_activities), 5, 10),
+        ),
+        _quality_metric(
+            "dcma_leads",
+            "DCMA 02",
+            "Leads",
+            leads,
+            total_relationships,
+            "0 leads",
+            "Relationships with negative lag.",
+            "pass" if leads == 0 else "fail",
+        ),
+        _quality_metric(
+            "dcma_lags",
+            "DCMA 03",
+            "Lags",
+            lags,
+            total_relationships,
+            "<= 5% lagged relationships",
+            "Relationships with positive lag.",
+            _threshold_status(_percent(lags, total_relationships), 5, 10),
+        ),
+        _quality_metric(
+            "dcma_relationship_types",
+            "DCMA 04",
+            "Relationship Types",
+            non_finish_start,
+            total_relationships,
+            "<= 10% non-FS relationships",
+            "Relationships that are not finish-to-start.",
+            _threshold_status(_percent(non_finish_start, total_relationships), 10, 20),
+        ),
+        ScheduleQualityMetricOut(
+            key="dcma_hard_constraints",
+            standard="DCMA 05",
+            label="Hard Constraints",
+            status="not_available",
+            item_count=0,
+            total_count=0,
+            percent=0,
+            threshold="Requires constraint fields in source export",
+            description="Hard constraint dates are not exposed by the current XER/XML mapper.",
+        ),
+        _quality_metric(
+            "dcma_high_float",
+            "DCMA 06",
+            "High Float",
+            high_float,
+            total_activities,
+            "<= 5% over 44 days",
+            "Activities with total float greater than 44 days.",
+            _threshold_status(_percent(high_float, total_activities), 5, 10),
+        ),
+        _quality_metric(
+            "dcma_negative_float",
+            "DCMA 07",
+            "Negative Float",
+            negative_float,
+            total_activities,
+            "0 activities",
+            "Activities with negative total float.",
+            "pass" if negative_float == 0 else "fail",
+        ),
+        _quality_metric(
+            "dcma_high_duration",
+            "DCMA 08",
+            "High Duration",
+            high_duration,
+            total_activities,
+            "<= 5% over 44 days",
+            "Activities with baseline duration greater than 44 calendar days.",
+            _threshold_status(_percent(high_duration, total_activities), 5, 10),
+        ),
+        _quality_metric(
+            "dcma_invalid_dates",
+            "DCMA 09",
+            "Invalid Dates",
+            invalid_dates,
+            total_activities,
+            "0 missing or invalid dates",
+            "Activities missing start/finish dates or with finish before start.",
+            "pass" if invalid_dates == 0 else "fail",
+        ),
+        _quality_metric(
+            "dcma_cost_loading",
+            "DCMA 10",
+            "Cost / Resource Loading",
+            cost_missing,
+            total_activities,
+            ">= 80% activities cost-loaded",
+            "Activities without cost-loaded values from the schedule import.",
+            _coverage_status(schedule_import.cost_loaded_activity_percent),
+            percent=round(100 - schedule_import.cost_loaded_activity_percent, 2),
+        ),
+    ]
+
+
+def _quality_metric(
+    key: str,
+    standard: str,
+    label: str,
+    item_count: int,
+    total_count: int,
+    threshold: str,
+    description: str,
+    status: str,
+    percent: float | None = None,
+) -> ScheduleQualityMetricOut:
+    return ScheduleQualityMetricOut(
+        key=key,
+        standard=standard,
+        label=label,
+        status=status,
+        item_count=item_count,
+        total_count=total_count,
+        percent=_percent(item_count, total_count) if percent is None else percent,
+        threshold=threshold,
+        description=description,
+    )
+
+
+def _percent(item_count: int, total_count: int) -> float:
+    return round(item_count / total_count * 100, 2) if total_count else 0
+
+
+def _threshold_status(percent: float, pass_threshold: float, review_threshold: float) -> str:
+    if percent <= pass_threshold:
+        return "pass"
+    if percent <= review_threshold:
+        return "review"
+    return "fail"
+
+
+def _coverage_status(percent: float) -> str:
+    if percent >= 80:
+        return "pass"
+    if percent >= 50:
+        return "review"
+    return "fail"
+
+
+def _relationship_type_value(relationship: ActivityRelationship) -> str:
+    value = getattr(relationship.relationship_type, "value", relationship.relationship_type)
+    return str(value or "").upper()
 
 
 def _data_quality_gates(

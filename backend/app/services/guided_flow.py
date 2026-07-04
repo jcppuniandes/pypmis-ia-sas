@@ -40,7 +40,7 @@ class GuidedFlowService:
             raise ValueError("Project not found")
 
         latest_import = self._latest_import(tenant_id, project_id)
-        activity_count = self._count(ScheduleActivityMap, tenant_id, project_id)
+        activity_count = self._schedule_import_activity_count(tenant_id, project_id, latest_import)
         baseline_count = self._count(BaselineVersion, tenant_id, project_id)
         mapping_count = self._count(ControlAccountMapping, tenant_id, project_id)
         account_count = self._count(ControlAccount, tenant_id, project_id)
@@ -63,7 +63,6 @@ class GuidedFlowService:
         cost_ready = cost_gate.state == "ready"
 
         steps = [
-            self._step("tenant", "Tenant workspace", "complete", f"{tenant.name} / {tenant.base_currency}", "Select project", "Admin", "dashboard"),
             self._step(
                 "project_setup",
                 "Project setup",
@@ -81,7 +80,7 @@ class GuidedFlowService:
                 f"{activity_count} activities imported" if latest_import else "No XER/XML schedule loaded",
                 "Review cost and currency gate" if latest_import else "Load XER/XML schedule",
                 "Planner",
-                "baseline",
+                "schedule-intake",
                 0 if latest_import else 1,
             ),
             self._step(
@@ -180,6 +179,27 @@ class GuidedFlowService:
         return int(
             self.db.scalar(
                 select(func.count()).select_from(model).where(model.tenant_id == tenant_id, model.project_id == project_id)
+            )
+            or 0
+        )
+
+    def _schedule_import_activity_count(
+        self,
+        tenant_id: int,
+        project_id: int,
+        schedule_import: ScheduleImport | None,
+    ) -> int:
+        if not schedule_import:
+            return 0
+        return int(
+            self.db.scalar(
+                select(func.count())
+                .select_from(ScheduleActivityMap)
+                .where(
+                    ScheduleActivityMap.tenant_id == tenant_id,
+                    ScheduleActivityMap.project_id == project_id,
+                    ScheduleActivityMap.schedule_import_id == schedule_import.id,
+                )
             )
             or 0
         )

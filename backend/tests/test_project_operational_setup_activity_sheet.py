@@ -62,6 +62,8 @@ def test_activity_sheet_get_data_requires_ready_project_operational_setup() -> N
             f"/api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/wbs-sheet",
             headers=headers,
         )
+        wbs_response = client.get(f"/api/v1/projects/{project_id}/wbs", headers=headers)
+        cbs_response = client.get(f"/api/v1/projects/{project_id}/cbs", headers=headers)
 
     assert project_response.status_code == 200
     assert blocked_response.status_code == 409
@@ -82,17 +84,33 @@ def test_activity_sheet_get_data_requires_ready_project_operational_setup() -> N
     assert row["planned_cost"] == 2500
     assert row["planned_value"] == 1250
     assert row["planned_percent"] == 50
-    assert row["cbs_code"] == "CBS-PLT-CIV-A100"
-    assert row["control_account_code"] == "CA-PLT-CIV"
+    assert row["cbs_code"] == "CBS-OPS-OBRAS-CIVILES-PLANTA-EARTH"
+    assert "A100" not in row["cbs_code"]
+    assert row["control_account_code"] == "CA-OPS-OBRAS-CIVILES-PLANTA"
     assert row["mapping_status"] == "mapped"
+    assert cbs_response.status_code == 200
+    cbs_by_code = {item["code"]: item for item in cbs_response.json()}
+    assert cbs_by_code["CBS-OPS-OBRAS-CIVILES-PLANTA-EARTH"]["cost_category"] == "Earthworks"
+    assert cbs_by_code["CBS-OPS-OBRAS-CIVILES-PLANTA-EARTH"]["status"] == "draft"
     assert wbs_sheet_response.status_code == 200
-    wbs_row = wbs_sheet_response.json()[0]
-    assert wbs_row["wbs_code"] == "PLT-CIV"
-    assert wbs_row["activity_count"] == 1
-    assert wbs_row["control_account_count"] == 1
-    assert wbs_row["planned_cost"] == 2500
-    assert wbs_row["planned_value"] == 1250
-    assert wbs_row["needs_review_count"] == 0
+    wbs_rows_by_code = {item["wbs_code"]: item for item in wbs_sheet_response.json()}
+    assert wbs_rows_by_code["PLT"]["wbs_name"] == "Proyecto Piloto"
+    assert wbs_rows_by_code["PLT"]["activity_count"] == 1
+    assert wbs_rows_by_code["PLT"]["control_account_count"] == 1
+    assert wbs_rows_by_code["PLT"]["planned_cost"] == 2500
+    assert wbs_rows_by_code["PLT"]["planned_value"] == 1250
+    assert wbs_rows_by_code["PLT"]["needs_review_count"] == 0
+    assert wbs_rows_by_code["PLT-CIV"]["wbs_name"] == "Obras civiles planta"
+    assert wbs_rows_by_code["PLT-CIV"]["activity_count"] == 1
+    assert wbs_rows_by_code["PLT-CIV"]["control_account_count"] == 1
+    assert wbs_rows_by_code["PLT-CIV"]["planned_cost"] == 2500
+    assert wbs_rows_by_code["PLT-CIV"]["planned_value"] == 1250
+    assert wbs_rows_by_code["PLT-CIV"]["needs_review_count"] == 0
+    assert wbs_response.status_code == 200
+    wbs_by_code = {row["code"]: row for row in wbs_response.json()}
+    assert "PLT" in wbs_by_code
+    assert wbs_by_code["PLT-CIV"]["parent_id"] == wbs_by_code["PLT"]["id"]
+    assert wbs_by_code["PLT-CIV"]["level"] == wbs_by_code["PLT"]["level"] + 1
 
 
 def _auth_headers(client: TestClient) -> dict[str, str]:
@@ -109,7 +127,13 @@ def _p6_xml() -> bytes:
 <Project xmlns="http://xmlns.oracle.com/Primavera/P6/V19/API/BusinessObjects">
   <DataDate>2026-03-11T17:00:00</DataDate>
   <WBS>
+    <ObjectId>9</ObjectId>
+    <Code>PLT</Code>
+    <Name>Proyecto Piloto</Name>
+  </WBS>
+  <WBS>
     <ObjectId>10</ObjectId>
+    <ParentObjectId>9</ParentObjectId>
     <Code>PLT-CIV</Code>
     <Name>Obras civiles planta</Name>
   </WBS>

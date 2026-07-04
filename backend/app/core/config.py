@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "P&Pmis Ai SaaS"
+    app_name: str = "Pypmis AI SaaS"
     app_environment: str = "local"
     app_version: str = "0.1.0"
     commit_sha: str = "dev"
@@ -13,17 +13,17 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     allowed_hosts: str = "*"
     auto_create_schema: bool = True
-    seed_demo_data: bool = True
+    seed_demo_data: bool = False
     auth_secret_key: str = "change-me-before-production"
     access_token_expire_minutes: int = 480
     demo_user_password: str = "1234"
     demo_admin_username: str = "admin"
-    demo_admin_email: str = "ana.control@demo.local"
+    demo_admin_email: str = "admin@demo.local"
     docs_enabled: bool = True
     security_headers_enabled: bool = True
     hsts_enabled: bool = False
     hsts_max_age_seconds: int = 31_536_000
-    max_request_body_mb: int = 25
+    max_request_body_mb: int = 100
     document_storage_path: str = "/app/storage/documents"
     document_allowed_extensions: str = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.jpg,.jpeg,.png,.csv,.txt,.xml,.xer"
     document_max_upload_mb: int = 50
@@ -54,6 +54,8 @@ class Settings(BaseSettings):
     ai_model: str = "claude-haiku-4-5-20251001"
     ai_max_tokens: int = 1024
     ai_timeout_seconds: int = 30
+    bim_geometry_converter_command: str = ""
+    bim_geometry_converter_timeout_seconds: int = 120
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -91,8 +93,8 @@ class Settings(BaseSettings):
         if not self.is_production or self.allow_insecure_production:
             return
         insecure_secrets = {"change-me-before-production", "dev-local-change-before-production"}
-        if self.auth_secret_key in insecure_secrets or len(self.auth_secret_key) < 32:
-            raise RuntimeError("AUTH_SECRET_KEY must be a non-default value with at least 32 characters in production")
+        if self.auth_secret_key in insecure_secrets or len(self.auth_secret_key) < 64:
+            raise RuntimeError("AUTH_SECRET_KEY must be a non-default value with at least 64 characters in production")
         if "*" in self.allowed_host_list:
             raise RuntimeError("ALLOWED_HOSTS must be explicit in production")
         if any(origin == "*" for origin in self.cors_origin_list):

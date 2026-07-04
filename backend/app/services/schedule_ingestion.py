@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from xml.etree import ElementTree
@@ -18,7 +18,9 @@ from app.domain.models import (
     ControlAccount,
     ControlAccountMapping,
     ControlPeriod,
+    CostBreakdownStructure,
     ImportStatus,
+    Project,
     RelationshipType,
     ScheduleActivityMap,
     ScheduleImport,
@@ -39,6 +41,7 @@ XER_COST_FIELDS = [
     "total_cost",
     "remain_cost",
     "remaining_cost",
+    "act_cost",
     "actual_cost",
     "act_reg_cost",
     "act_ot_cost",
@@ -103,6 +106,15 @@ class ParsedRelationship:
 
 
 @dataclass(frozen=True)
+class ParsedWbsNode:
+    source_id: str
+    code: str
+    name: str
+    parent_source_id: str = ""
+    level: int = 1
+
+
+@dataclass(frozen=True)
 class ValidationFinding:
     check_code: str
     severity: str
@@ -121,6 +133,7 @@ class ParsedSchedule:
     validation_summary: str
     quality_score: float
     findings: list[ValidationFinding]
+    wbs_nodes: list[ParsedWbsNode] = field(default_factory=list)
     detected_currency: str = ""
     currency_confidence: str = "unknown"
     currency_source: str = ""
@@ -209,7 +222,7 @@ class ScheduleIngestionService:
 
         self.db.flush()
         if status == ImportStatus.validated:
-            self._materialize_control_structure(tenant_id, project_id, schedule_import, schedule_rows)
+            self._materialize_control_structure(tenant_id, project_id, schedule_import, schedule_rows, parsed.wbs_nodes)
 
         self._create_baseline_version(tenant_id, project_id, schedule_import)
         self._ensure_control_period(tenant_id, project_id, parsed.data_date)
@@ -380,10 +393,11 @@ class ScheduleIngestionService:
     def parse(self, file_name: str, content: bytes) -> ParsedSchedule:
         source = self.detect_source(file_name, content)
         data_date: date | None = None
+        wbs_nodes: list[ParsedWbsNode] = []
         if source == ScheduleSource.p6_xer:
-            activities, relationships, data_date = self._parse_xer(content)
+            activities, relationships, data_date, wbs_nodes = self._parse_xer(content)
         elif source in {ScheduleSource.p6_xml, ScheduleSource.ms_project_xml}:
-            activities, relationships, data_date = self._parse_xml(content, source)
+            activities, relationships, data_date, wbs_nodes = self._parse_xml(content, source)
         else:
             activities, relationships = [], []
 
@@ -403,6 +417,7 @@ class ScheduleIngestionService:
             validation_summary=validation_summary,
             quality_score=quality_score,
             findings=findings,
+            wbs_nodes=wbs_nodes,
             detected_currency=detected_currency,
             currency_confidence=currency_confidence,
             currency_source=currency_source,
@@ -469,7 +484,7 @@ class ScheduleIngestionService:
 
     def _xer_cost_source_summary(self, rows_by_table: dict[str, list[dict[str, str]]]) -> dict[str, int]:
         summary: dict[str, int] = {}
-        for table_name in ("TASK", "TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT"):
+        for table_name in ("TASK", "TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT", "PROJCOST"):
             for row in rows_by_table.get(table_name, []):
                 for field in [*XER_COST_FIELDS, *XER_COMPONENT_COST_FIELDS]:
                     if self._money_to_float(row.get(field)) > 0:
@@ -514,15 +529,113 @@ class ScheduleIngestionService:
             return cleaned
         return ""
 
-    def _parse_xer(self, content: bytes) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    def _parse_xer(
+        self, content: bytes
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None, list[ParsedWbsNode]]:
         rows_by_table = self._xer_rows(content)
+        project_rows = rows_by_table.get("PROJECT", [])
+        project_row = project_rows[0] if project_rows else {}
+        project_id = project_row.get("proj_id") or project_row.get("project_id") or ""
+        project_code = (
+            project_row.get("proj_short_name")
+            or project_row.get("project_short_name")
+            or project_row.get("proj_code")
+            or project_row.get("project_code")
+            or ""
+        ).strip()
+        project_name = (
+            project_row.get("proj_name")
+            or project_row.get("project_name")
+            or project_row.get("project_name_short")
+            or ""
+        ).strip()
+        synthetic_project_source_id = f"PROJECT:{project_id or project_code}" if project_code else ""
         wbs_rows = rows_by_table.get("PROJWBS", []) or rows_by_table.get("WBS", [])
-        wbs_by_id = {
-            row.get("wbs_id", ""): {
-                "code": row.get("wbs_short_name") or row.get("wbs_code") or row.get("wbs_id") or "",
-                "name": row.get("wbs_name") or row.get("wbs_short_name") or row.get("wbs_id") or "",
+        explicit_project_source_id = next(
+            (
+                row.get("wbs_id", "")
+                for row in wbs_rows
+                if row.get("wbs_id")
+                and (
+                    (row.get("proj_node_flag") or "").upper() == "Y"
+                    or (project_code and (row.get("wbs_short_name") or row.get("wbs_code") or "").strip() == project_code)
+                )
+            ),
+            "",
+        )
+        project_source_id = explicit_project_source_id or synthetic_project_source_id
+
+        raw_wbs_specs: dict[str, dict[str, str]] = {}
+        if project_code and not explicit_project_source_id:
+            raw_wbs_specs[project_source_id] = {
+                "raw_code": project_code,
+                "name": project_name or project_code,
+                "parent_source_id": "",
+                "is_project_node": "Y",
             }
-            for row in wbs_rows
+        for row in wbs_rows:
+            source_id = row.get("wbs_id", "")
+            raw_code = row.get("wbs_short_name") or row.get("wbs_code") or source_id
+            raw_name = row.get("wbs_name") or row.get("wbs_short_name") or source_id
+            if not source_id or not (raw_code or raw_name):
+                continue
+            is_project_node = source_id == explicit_project_source_id
+            parent_source_id = "" if is_project_node else (
+                row.get("parent_wbs_id")
+                or row.get("parent_wbs_object_id")
+                or row.get("parent_id")
+                or ""
+            )
+            if not parent_source_id and project_source_id and not is_project_node:
+                parent_source_id = project_source_id
+            raw_wbs_specs[source_id] = {
+                "raw_code": project_code if is_project_node and project_code else raw_code,
+                "name": project_name if is_project_node and project_name else raw_name,
+                "parent_source_id": parent_source_id,
+                "is_project_node": "Y" if is_project_node else "N",
+            }
+
+        def display_code_for(source_id: str, visiting: set[str] | None = None) -> str:
+            spec = raw_wbs_specs.get(source_id, {})
+            raw_code = (spec.get("raw_code") or source_id).strip()
+            if not raw_code:
+                return source_id
+            if spec.get("is_project_node") == "Y" or not project_code:
+                return raw_code
+            if raw_code.startswith(f"{project_code}-") or raw_code.startswith(f"{project_code}.") or raw_code == project_code:
+                return raw_code
+            visiting = visiting or set()
+            if source_id in visiting:
+                return f"{project_code}-{raw_code}" if project_code else raw_code
+            visiting.add(source_id)
+            parent_source_id = spec.get("parent_source_id") or ""
+            parent_spec = raw_wbs_specs.get(parent_source_id)
+            if parent_spec:
+                parent_code = display_code_for(parent_source_id, visiting)
+                parent_raw_code = (parent_spec.get("raw_code") or "").strip()
+                if parent_raw_code and any(
+                    raw_code.startswith(f"{parent_raw_code}{separator}") for separator in ("-", ".", "_", "/")
+                ):
+                    return f"{project_code}-{raw_code}" if project_code else raw_code
+                return f"{parent_code}-{raw_code}" if parent_code else raw_code
+            return f"{project_code}-{raw_code}" if project_code else raw_code
+
+        raw_wbs_nodes = [
+            ParsedWbsNode(
+                source_id=source_id,
+                code=display_code_for(source_id),
+                name=spec["name"],
+                parent_source_id=spec["parent_source_id"],
+            )
+            for source_id, spec in raw_wbs_specs.items()
+        ]
+        wbs_nodes = self._with_wbs_levels(raw_wbs_nodes)
+        wbs_by_id = {
+            node.source_id: {
+                "code": node.code,
+                "name": node.name,
+            }
+            for node in wbs_nodes
         }
         task_rows = rows_by_table.get("TASK", [])
         task_id_to_code = {
@@ -576,29 +689,33 @@ class ScheduleIngestionService:
             )
 
         data_date = None
-        project_rows = rows_by_table.get("PROJECT", [])
         if project_rows:
             data_date = self._parse_date(
                 project_rows[0].get("last_recalc_date") or project_rows[0].get("plan_start_date")
             )
-        return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date
+        return (
+            activities,
+            [rel for rel in relationships if rel.predecessor and rel.successor],
+            data_date,
+            self._with_wbs_levels(wbs_nodes),
+        )
 
     def _parse_xml(
         self,
         content: bytes,
         source: ScheduleSource,
-    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None, list[ParsedWbsNode]]:
         try:
             root = ElementTree.fromstring(content)
         except ElementTree.ParseError:
-            return [], [], None
+            return [], [], None, []
         if source == ScheduleSource.p6_xml:
             return self._parse_p6_xml(root)
         return self._parse_project_xml(root)
 
     def _parse_project_xml(
         self, root: ElementTree.Element
-    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None, list[ParsedWbsNode]]:
         activities: list[ParsedActivity] = []
         relationships: list[ParsedRelationship] = []
         tasks = [element for element in root.iter() if self._local_name(element.tag) == "Task"]
@@ -634,14 +751,33 @@ class ScheduleIngestionService:
                 )
 
         data_date = self._parse_date(self._first_deep_text(root, ["StatusDate", "CurrentDate", "StartDate"]))
-        return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date
+        return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date, []
 
     def _parse_p6_xml(
         self, root: ElementTree.Element
-    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None]:
+    ) -> tuple[list[ParsedActivity], list[ParsedRelationship], date | None, list[ParsedWbsNode]]:
         activity_elements = [element for element in root.iter() if self._local_name(element.tag) == "Activity"]
         activity_by_object_id: dict[str, str] = {}
         activity_refs: list[tuple[ElementTree.Element, int, str, str]] = []
+        wbs_elements = [
+            element
+            for element in root.iter()
+            if self._local_name(element.tag) in {"WBS", "WBSNode"} and self._child_text(element, "ObjectId")
+        ]
+        wbs_nodes = [
+            ParsedWbsNode(
+                source_id=self._child_text(element, "ObjectId"),
+                code=self._child_text(element, "Code")
+                or self._child_text(element, "Id")
+                or self._child_text(element, "ObjectId"),
+                name=self._child_text(element, "Name") or self._child_text(element, "Code") or "WBS",
+                parent_source_id=self._first_child_text(
+                    element,
+                    ["ParentObjectId", "ParentWBSObjectId", "ParentWbsObjectId", "ParentId", "ParentWBSId"],
+                ),
+            )
+            for element in wbs_elements
+        ]
         wbs_by_object_id = {
             self._child_text(element, "ObjectId"): {
                 "code": self._child_text(element, "Code")
@@ -649,8 +785,7 @@ class ScheduleIngestionService:
                 or self._child_text(element, "ObjectId"),
                 "name": self._child_text(element, "Name") or self._child_text(element, "Code") or "WBS",
             }
-            for element in root.iter()
-            if self._local_name(element.tag) in {"WBS", "WBSNode"} and self._child_text(element, "ObjectId")
+            for element in wbs_elements
         }
 
         for index, activity in enumerate(activity_elements, start=1):
@@ -720,7 +855,7 @@ class ScheduleIngestionService:
             )
 
         data_date = self._parse_date(self._first_deep_text(root, ["DataDate", "CurrentDataDate", "MustFinishByDate"]))
-        return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date
+        return activities, [rel for rel in relationships if rel.predecessor and rel.successor], data_date, wbs_nodes
 
     def _validate_schedule(
         self,
@@ -817,9 +952,13 @@ class ScheduleIngestionService:
         project_id: int,
         schedule_import: ScheduleImport,
         schedule_rows: list[tuple[ScheduleActivityMap, ParsedActivity]],
+        parsed_wbs_nodes: list[ParsedWbsNode],
     ) -> None:
-        wbs_cache: dict[str, WBS] = {}
+        wbs_cache = self._materialize_wbs_nodes(tenant_id, project_id, parsed_wbs_nodes)
+        project = self.db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
+        project_key = self._project_cbs_key(project)
         account_cache: dict[str, ControlAccount] = {}
+        ensured_cbs_codes: set[str] = set()
         planned_cost_by_account: dict[int, float] = {}
         planned_value_by_account: dict[int, float] = {}
         cbs_by_account: dict[int, str] = {}
@@ -834,14 +973,18 @@ class ScheduleIngestionService:
             )
             wbs_cache[wbs_code] = wbs
 
-            account_code = f"CA-{wbs_code}"[:80]
-            cbs_code = self._cbs_code(wbs_code, parsed_activity)
+            wbs_identity = self._wbs_control_identity(wbs, parsed_activity)
+            account_code = self._bounded_control_code(f"CA-{project_key}-{wbs_identity}")
+            cbs_code, cost_category = self._cbs_identity(project_key, wbs, parsed_activity)
+            if cbs_code not in ensured_cbs_codes:
+                self._ensure_cbs_catalog(tenant_id, project_id, wbs, cbs_code, cost_category)
+                ensured_cbs_codes.add(cbs_code)
             account = account_cache.get(account_code) or self._get_or_create_control_account(
                 tenant_id,
                 project_id,
                 wbs.id,
                 account_code,
-                f"Control Account {wbs_code}",
+                f"Control Account - {wbs.name or wbs_code}",
             )
             account_cache[account_code] = account
             planned_percent = self._planned_percent(parsed_activity, schedule_import.data_date)
@@ -903,6 +1046,74 @@ class ScheduleIngestionService:
                     )
                 )
 
+    def _materialize_wbs_nodes(
+        self, tenant_id: int, project_id: int, parsed_wbs_nodes: list[ParsedWbsNode]
+    ) -> dict[str, WBS]:
+        nodes_by_source_id = {
+            node.source_id: node for node in parsed_wbs_nodes if node.source_id and self._clean_code(node.code)
+        }
+        wbs_cache: dict[str, WBS] = {}
+        resolving: set[str] = set()
+
+        def ensure_node(node: ParsedWbsNode) -> WBS:
+            code = self._clean_code(node.code)
+            cached = wbs_cache.get(code)
+            if cached:
+                return cached
+            if node.source_id in resolving:
+                return self._get_or_create_wbs(tenant_id, project_id, code, node.name or f"WBS {code}")
+            resolving.add(node.source_id)
+            parent = (
+                ensure_node(nodes_by_source_id[node.parent_source_id])
+                if node.parent_source_id and node.parent_source_id in nodes_by_source_id
+                else None
+            )
+            level = parent.level + 1 if parent else max(node.level, 1)
+            wbs = self._get_or_create_wbs(
+                tenant_id,
+                project_id,
+                code,
+                node.name or f"WBS {code}",
+                parent_id=parent.id if parent else None,
+                level=level,
+                update_parent=True,
+            )
+            resolving.discard(node.source_id)
+            wbs_cache[code] = wbs
+            return wbs
+
+        for node in parsed_wbs_nodes:
+            if node.source_id in nodes_by_source_id:
+                ensure_node(node)
+        return wbs_cache
+
+    def _with_wbs_levels(self, parsed_wbs_nodes: list[ParsedWbsNode]) -> list[ParsedWbsNode]:
+        nodes_by_source_id = {node.source_id: node for node in parsed_wbs_nodes if node.source_id}
+        level_cache: dict[str, int] = {}
+
+        def level_for(node: ParsedWbsNode, visiting: set[str] | None = None) -> int:
+            if node.source_id in level_cache:
+                return level_cache[node.source_id]
+            visiting = visiting or set()
+            if node.source_id in visiting:
+                return max(node.level, 1)
+            visiting.add(node.source_id)
+            parent = nodes_by_source_id.get(node.parent_source_id)
+            level = level_for(parent, visiting) + 1 if parent else max(node.level, 1)
+            level_cache[node.source_id] = level
+            return level
+
+        return [
+            ParsedWbsNode(
+                source_id=node.source_id,
+                code=node.code,
+                name=node.name,
+                parent_source_id=node.parent_source_id,
+                level=level_for(node),
+            )
+            for node in parsed_wbs_nodes
+        ]
+
     def _upsert_control_account_mapping(
         self,
         tenant_id: int,
@@ -946,12 +1157,147 @@ class ScheduleIngestionService:
         mapping.status = status
         mapping.review_note = review_note
 
-    def _cbs_code(self, wbs_code: str, parsed_activity: ParsedActivity) -> str:
-        clean_wbs = self._clean_code(wbs_code or parsed_activity.wbs_code or "UNMAPPED")
-        activity_prefix = self._clean_code(
-            parsed_activity.external_id.split("-")[0] if parsed_activity.external_id else clean_wbs
+    def _cbs_identity(self, project_key: str, wbs: WBS, parsed_activity: ParsedActivity) -> tuple[str, str]:
+        family_code, cost_category = self._cost_family(parsed_activity, wbs)
+        clean_wbs = self._wbs_control_identity(wbs, parsed_activity)
+        prefix = f"CBS-{project_key}-"
+        suffix = f"-{family_code}"
+        max_wbs_length = max(8, 80 - len(prefix) - len(suffix))
+        cbs_code = f"{prefix}{clean_wbs[:max_wbs_length]}{suffix}".rstrip("-")
+        return cbs_code, cost_category
+
+    def _wbs_control_identity(self, wbs: WBS, parsed_activity: ParsedActivity | None = None) -> str:
+        name_token = self._slug_key(wbs.name)
+        if name_token:
+            return name_token
+        parsed_name_token = self._slug_key(parsed_activity.wbs_name if parsed_activity else "")
+        if parsed_name_token:
+            return parsed_name_token
+        return self._clean_code(wbs.code or (parsed_activity.wbs_code if parsed_activity else "") or "UNMAPPED").upper()
+
+    def _bounded_control_code(self, code: str, max_length: int = 80) -> str:
+        return self._clean_code(code).upper()[:max_length].rstrip("-")
+
+    def _ensure_cbs_catalog(
+        self,
+        tenant_id: int,
+        project_id: int,
+        wbs: WBS,
+        cbs_code: str,
+        cost_category: str,
+    ) -> None:
+        existing = self.db.scalar(
+            select(CostBreakdownStructure).where(
+                CostBreakdownStructure.tenant_id == tenant_id,
+                CostBreakdownStructure.project_id == project_id,
+                CostBreakdownStructure.code == cbs_code,
+            )
         )
-        return f"CBS-{clean_wbs}-{activity_prefix}"[:120]
+        if existing:
+            return
+        self.db.add(
+            CostBreakdownStructure(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                parent_id=None,
+                code=cbs_code,
+                level=max((wbs.level or 1) + 1, 2),
+                cost_category=cost_category,
+                description=f"{cost_category} CBS for WBS {wbs.name} ({wbs.code}).",
+                status="draft",
+            )
+        )
+        self.db.flush()
+
+    def _project_cbs_key(self, project: Project | None) -> str:
+        if project:
+            code_key = self._first_alpha_token(project.code, max_length=8)
+            if code_key:
+                return code_key
+            name_key = self._name_key(project.name)
+            if name_key:
+                return name_key
+        return "PRJ"
+
+    def _first_alpha_token(self, value: str, max_length: int = 8) -> str:
+        generic = {"P", "PY", "PMIS", "PYP", "PYPMIS", "PROJECT", "PROYECTO", "DEMO"}
+        cleaned = self._clean_code(value).upper()
+        tokens: list[str] = []
+        current = ""
+        for char in cleaned:
+            if char.isalnum():
+                current += char
+            elif current:
+                tokens.append(current)
+                current = ""
+        if current:
+            tokens.append(current)
+        for token in tokens:
+            if len(token) > 1 and token not in generic and any(char.isalpha() for char in token):
+                return token[:max_length]
+        return ""
+
+    def _name_key(self, value: str) -> str:
+        generic = {"PROJECT", "PROYECTO", "DEMO", "THE", "EL", "LA", "LOS", "LAS"}
+        tokens: list[str] = []
+        current = ""
+        for char in self._clean_code(value).upper():
+            if char.isalpha():
+                current += char
+            elif current:
+                if current not in generic:
+                    tokens.append(current)
+                current = ""
+        if current and current not in generic:
+            tokens.append(current)
+        if not tokens:
+            return ""
+        if len(tokens) == 1:
+            return tokens[0][:6]
+        return "".join(token[0] for token in tokens[:6])
+
+    def _slug_key(self, value: str, max_length: int = 44) -> str:
+        generic = {"PROJECT", "PROYECTO", "DEMO", "THE", "EL", "LA", "LOS", "LAS"}
+        tokens: list[str] = []
+        current = ""
+        for char in self._clean_code(value).upper():
+            if char.isalnum():
+                current += char
+            elif current:
+                if current not in generic:
+                    tokens.append(current)
+                current = ""
+        if current and current not in generic:
+            tokens.append(current)
+        return "-".join(tokens)[:max_length].strip("-")
+
+    def _cost_family(self, parsed_activity: ParsedActivity, wbs: WBS) -> tuple[str, str]:
+        text = " ".join(
+            [
+                parsed_activity.name,
+                parsed_activity.wbs_name,
+                parsed_activity.wbs_code,
+                wbs.name,
+                wbs.code,
+            ]
+        ).lower()
+        families: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+            ("EARTH", "Earthworks", ("excav", "earth", "grading", "corte", "relleno", "terracer")),
+            ("CONC", "Concrete", ("concrete", "concreto", "hormigon", "slab", "losa", "ciment", "foundation")),
+            ("STEEL", "Steel", ("steel", "acero", "metalica", "metalico", "rebar")),
+            ("MEP", "Mechanical and piping", ("mep", "mechanical", "mecan", "piping", "pipe", "tuber", "hvac", "hidraul")),
+            ("ELEC", "Electrical", ("electr", "cable", "power", "energia")),
+            ("INST", "Instrumentation", ("instrument", "automat", "control")),
+            ("PROC", "Procurement", ("procura", "procurement", "purchase", "compra", "suministro")),
+            ("ENG", "Engineering", ("ingenier", "engineering", "design", "diseno")),
+            ("COMM", "Commissioning and tests", ("prueba", "test", "commission", "puesta")),
+            ("RISK", "Risks and constraints", ("riesgo", "risk", "restric", "constraint")),
+            ("CIV", "Civil works", ("civil", "obra civil", "sitework")),
+        )
+        for code, label, keywords in families:
+            if any(keyword in text for keyword in keywords):
+                return code, label
+        return "GEN", "General"
 
     def _create_baseline_version(self, tenant_id: int, project_id: int, schedule_import: ScheduleImport) -> None:
         existing = self.db.scalar(
@@ -1010,14 +1356,34 @@ class ScheduleIngestionService:
             )
         )
 
-    def _get_or_create_wbs(self, tenant_id: int, project_id: int, code: str, name: str) -> WBS:
+    def _get_or_create_wbs(
+        self,
+        tenant_id: int,
+        project_id: int,
+        code: str,
+        name: str,
+        parent_id: int | None = None,
+        level: int | None = None,
+        update_parent: bool = False,
+    ) -> WBS:
         wbs = self.db.scalar(
             select(WBS).where(WBS.tenant_id == tenant_id, WBS.project_id == project_id, WBS.code == code)
         )
         if wbs:
             wbs.name = name or wbs.name
+            if update_parent:
+                wbs.parent_id = parent_id
+            if level:
+                wbs.level = level
             return wbs
-        wbs = WBS(tenant_id=tenant_id, project_id=project_id, parent_id=None, code=code, name=name or f"WBS {code}")
+        wbs = WBS(
+            tenant_id=tenant_id,
+            project_id=project_id,
+            parent_id=parent_id,
+            code=code,
+            name=name or f"WBS {code}",
+            level=level or 1,
+        )
         self.db.add(wbs)
         self.db.flush()
         return wbs
@@ -1111,7 +1477,7 @@ class ScheduleIngestionService:
 
     def _xer_resource_cost_by_task(self, rows_by_table: dict[str, list[dict[str, str]]]) -> dict[str, float]:
         costs: dict[str, float] = {}
-        for table_name in ("TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT"):
+        for table_name in ("TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT", "PROJCOST"):
             for row in rows_by_table.get(table_name, []):
                 task_id = row.get("task_id") or row.get("activity_id") or row.get("task_code")
                 if not task_id:
@@ -1167,7 +1533,7 @@ class ScheduleIngestionService:
             findings.append(ValidationFinding(check_code, severity, message, count, weight))
 
     def _clean_code(self, value: str) -> str:
-        cleaned = "".join(char if char.isalnum() or char in {"-", "_", "."} else "-" for char in value.strip())
+        cleaned = "".join(char if char.isalnum() or char in {"-", "_", ".", "&"} else "-" for char in value.strip())
         return (cleaned or "UNMAPPED")[:60]
 
     def _relationship(self, value: str | None) -> RelationshipType:
@@ -1268,6 +1634,7 @@ class ScheduleIngestionService:
                 "total_cost",
                 "remain_cost",
                 "remaining_cost",
+                "act_cost",
                 "actual_cost",
                 "act_reg_cost",
                 "act_ot_cost",

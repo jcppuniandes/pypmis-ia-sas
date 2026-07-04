@@ -32,6 +32,14 @@ def test_document_extension_set():
     assert s.document_allowed_extension_set == {".pdf", ".doc", ".xls"}
 
 
+def test_seed_demo_data_is_opt_in(monkeypatch):
+    monkeypatch.delenv("SEED_DEMO_DATA", raising=False)
+
+    s = Settings()
+
+    assert s.seed_demo_data is False
+
+
 def test_validate_for_runtime_rejects_weak_secret():
     s = Settings(
         app_environment="production",
@@ -42,6 +50,23 @@ def test_validate_for_runtime_rejects_weak_secret():
         auto_create_schema=False,
     )
     with pytest.raises(RuntimeError, match="AUTH_SECRET_KEY"):
+        s.validate_for_runtime()
+
+
+def test_validate_for_runtime_requires_64_character_secret_in_prod():
+    s = Settings(
+        app_environment="production",
+        auth_secret_key="a" * 63,
+        allowed_hosts="a.com",
+        cors_origins="http://a.com",
+        docs_enabled=False,
+        auto_create_schema=False,
+        metrics_token="m" * 32,
+        rate_limit_enabled=True,
+        security_headers_enabled=True,
+        log_format="json",
+    )
+    with pytest.raises(RuntimeError, match="64 characters"):
         s.validate_for_runtime()
 
 

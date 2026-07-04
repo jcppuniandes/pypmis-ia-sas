@@ -15,7 +15,7 @@ from app.core.config import get_settings
 from app.core.oidc import OIDCValidationError, get_oidc_validator
 from app.core.security import create_access_token, verify_password
 from app.database.session import get_db
-from app.domain.models import AuthCredential, Tenant, UserAccount
+from app.domain.models import AuthCredential, ProjectMembership, Tenant, UserAccount
 from app.domain.schemas import AuthSessionOut, LoginRequest, UserOut
 
 
@@ -43,6 +43,8 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOu
             UserAccount.status == "active",
         )
     )
+    if not user and login_name == settings.demo_admin_username and not settings.is_production:
+        user = _ensure_local_demo_admin(db, tenant, settings.demo_admin_email, settings.demo_user_password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     credential = db.scalar(
@@ -67,6 +69,53 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOu
         tenant_id=tenant.id,
         user=UserOut.model_validate(user),
     )
+
+
+def _ensure_local_demo_admin(
+    db: Session,
+    tenant: Tenant,
+    admin_email: str,
+    password: str,
+) -> UserAccount:
+    from app.database.seed import ensure_local_credential, ensure_membership
+
+    user = db.scalar(
+        select(UserAccount).where(
+            UserAccount.tenant_id == tenant.id,
+            UserAccount.email == admin_email,
+        )
+    )
+    if not user:
+        user = UserAccount(
+            tenant_id=tenant.id,
+            email=admin_email,
+            full_name="Pypmis Admin",
+            title="Tenant Administrator",
+            status="active",
+        )
+        db.add(user)
+        db.flush()
+    else:
+        user.status = "active"
+        user.full_name = user.full_name or "Pypmis Admin"
+        user.title = user.title or "Tenant Administrator"
+
+    ensure_local_credential(db, tenant.id, user.id, password)
+    configurable_memberships = db.scalars(
+        select(ProjectMembership).where(
+            ProjectMembership.tenant_id == tenant.id,
+            ProjectMembership.can_configure.is_(True),
+        )
+    ).all()
+    seen_projects: set[int] = set()
+    for membership in configurable_memberships:
+        if membership.project_id in seen_projects:
+            continue
+        ensure_membership(db, tenant.id, membership.project_id, user.id, "Control Manager")
+        seen_projects.add(membership.project_id)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 @router.get("/auth/me", response_model=UserOut)

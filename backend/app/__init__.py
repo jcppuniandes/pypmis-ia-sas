@@ -1,1 +1,1 @@
-"""P&Pmis Ai SaaS backend."""
+"""Pypmis AI SaaS backend."""

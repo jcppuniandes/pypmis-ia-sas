@@ -1033,7 +1033,9 @@ def ensure_integrated_control_examples(db: Session, tenant_id: int) -> None:
 
 def ensure_demo_users(db: Session, tenant_id: int) -> None:
     demo_password = get_settings().demo_user_password
+    demo_admin_email = get_settings().demo_admin_email
     users_seed = [
+        (demo_admin_email, "Pypmis Admin", "Tenant Administrator"),
         ("ana.control@demo.local", "Ana Martinez", "Project Controls Manager"),
         ("pablo.planner@demo.local", "Pablo Rojas", "Lead Planner"),
         ("camila.cost@demo.local", "Camila Torres", "Cost Controller"),
@@ -1056,6 +1058,7 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
     projects = list(db.scalars(select(Project).where(Project.tenant_id == tenant_id)).all())
     for project in projects:
         project_roles = [
+            (demo_admin_email, "Control Manager"),
             ("ana.control@demo.local", "Control Manager"),
             ("direccion@demo.local", "Executive"),
             ("camila.cost@demo.local", "Cost Controller"),

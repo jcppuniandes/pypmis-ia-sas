@@ -39,7 +39,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
                 "AUTO_CREATE_SCHEMA=true is not allowed in production. "
                 "Use Alembic migrations ('alembic upgrade head')."
             )
-        Base.metadata.create_all(bind=engine)
+        _create_schema_for_local_runtime()
     if settings.seed_demo_data:
         db = SessionLocal()
         try:
@@ -47,6 +47,15 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         finally:
             db.close()
     yield
+
+
+def _create_schema_for_local_runtime() -> None:
+    if engine.dialect.name == "postgresql":
+        with engine.begin() as connection:
+            connection.exec_driver_sql("SELECT pg_advisory_xact_lock(202606030021)")
+            Base.metadata.create_all(bind=connection)
+        return
+    Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(

@@ -10,6 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY alembic.ini ./
+COPY gunicorn.conf.py ./
 COPY alembic ./alembic
 COPY app ./app
 COPY tests ./tests
@@ -21,4 +22,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]
+CMD ["gunicorn", "app.main:app", "-c", "gunicorn.conf.py"]
