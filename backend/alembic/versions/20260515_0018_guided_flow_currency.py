@@ -18,30 +18,50 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column("tenants", sa.Column("base_currency", sa.String(length=8), nullable=False, server_default="COP"))
-    op.add_column("schedule_imports", sa.Column("detected_currency", sa.String(length=8), nullable=False, server_default=""))
-    op.add_column(
-        "schedule_imports",
-        sa.Column("currency_confidence", sa.String(length=40), nullable=False, server_default="unknown"),
-    )
-    op.add_column("schedule_imports", sa.Column("currency_source", sa.String(length=160), nullable=False, server_default=""))
-    op.add_column(
-        "schedule_imports",
-        sa.Column("currency_confirmed", sa.Boolean(), nullable=False, server_default=sa.false()),
-    )
-    op.add_column("schedule_imports", sa.Column("total_imported_cost", sa.Float(), nullable=False, server_default="0"))
-    op.add_column(
-        "schedule_imports",
-        sa.Column("cost_loaded_activity_count", sa.Integer(), nullable=False, server_default="0"),
-    )
-    op.add_column(
-        "schedule_imports",
-        sa.Column("cost_loaded_activity_percent", sa.Float(), nullable=False, server_default="0"),
-    )
-    op.add_column(
-        "schedule_imports",
-        sa.Column("cost_source_summary", sa.JSON(), nullable=False, server_default=sa.text("'{}'")),
-    )
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    tenant_columns = {column["name"] for column in inspector.get_columns("tenants")}
+    import_columns = {column["name"] for column in inspector.get_columns("schedule_imports")}
+
+    if "base_currency" not in tenant_columns:
+        op.add_column("tenants", sa.Column("base_currency", sa.String(length=8), nullable=False, server_default="COP"))
+    if "detected_currency" not in import_columns:
+        op.add_column(
+            "schedule_imports", sa.Column("detected_currency", sa.String(length=8), nullable=False, server_default="")
+        )
+    if "currency_confidence" not in import_columns:
+        op.add_column(
+            "schedule_imports",
+            sa.Column("currency_confidence", sa.String(length=40), nullable=False, server_default="unknown"),
+        )
+    if "currency_source" not in import_columns:
+        op.add_column(
+            "schedule_imports", sa.Column("currency_source", sa.String(length=160), nullable=False, server_default="")
+        )
+    if "currency_confirmed" not in import_columns:
+        op.add_column(
+            "schedule_imports",
+            sa.Column("currency_confirmed", sa.Boolean(), nullable=False, server_default=sa.false()),
+        )
+    if "total_imported_cost" not in import_columns:
+        op.add_column(
+            "schedule_imports", sa.Column("total_imported_cost", sa.Float(), nullable=False, server_default="0")
+        )
+    if "cost_loaded_activity_count" not in import_columns:
+        op.add_column(
+            "schedule_imports",
+            sa.Column("cost_loaded_activity_count", sa.Integer(), nullable=False, server_default="0"),
+        )
+    if "cost_loaded_activity_percent" not in import_columns:
+        op.add_column(
+            "schedule_imports",
+            sa.Column("cost_loaded_activity_percent", sa.Float(), nullable=False, server_default="0"),
+        )
+    if "cost_source_summary" not in import_columns:
+        op.add_column(
+            "schedule_imports",
+            sa.Column("cost_source_summary", sa.JSON(), nullable=False, server_default=sa.text("'{}'")),
+        )
 
 
 def downgrade() -> None:

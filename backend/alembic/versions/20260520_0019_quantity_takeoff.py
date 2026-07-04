@@ -18,6 +18,17 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    table_names = set(inspector.get_table_names())
+
+    if "quantity_takeoff_runs" not in table_names:
+        _create_runs_table()
+    if "quantity_takeoff_lines" not in table_names:
+        _create_lines_table()
+
+
+def _create_runs_table() -> None:
     op.create_table(
         "quantity_takeoff_runs",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -41,6 +52,8 @@ def upgrade() -> None:
     op.create_index("ix_quantity_takeoff_runs_project_id", "quantity_takeoff_runs", ["project_id"])
     op.create_index("ix_quantity_takeoff_runs_tenant_id", "quantity_takeoff_runs", ["tenant_id"])
 
+
+def _create_lines_table() -> None:
     op.create_table(
         "quantity_takeoff_lines",
         sa.Column("id", sa.Integer(), nullable=False),

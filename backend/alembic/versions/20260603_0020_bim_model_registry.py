@@ -16,6 +16,10 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if "bim_models" in set(inspector.get_table_names()):
+        return
     op.create_table(
         "bim_models",
         sa.Column("id", sa.Integer(), primary_key=True),

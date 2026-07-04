@@ -16,6 +16,14 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    model_columns = {column["name"] for column in inspector.get_columns("bim_models")}
+    run_columns = {column["name"] for column in inspector.get_columns("quantity_takeoff_runs")}
+    if "source_sha256" in model_columns and "bim_model_id" in run_columns:
+        # Schema was already created from the models (AUTO_CREATE_SCHEMA); the
+        # link columns exist and there is no legacy data to backfill.
+        return
     op.add_column("bim_models", sa.Column("source_sha256", sa.String(length=64), nullable=False, server_default=""))
     op.add_column("bim_models", sa.Column("revision_id", sa.String(length=120), nullable=False, server_default=""))
     op.create_index("ix_bim_models_source_sha256", "bim_models", ["source_sha256"])

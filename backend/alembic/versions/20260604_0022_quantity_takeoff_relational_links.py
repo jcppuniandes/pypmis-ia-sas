@@ -16,6 +16,14 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    line_columns = {column["name"] for column in inspector.get_columns("quantity_takeoff_lines")}
+    if "wbs_id" in line_columns:
+        # Schema was already created from the models (AUTO_CREATE_SCHEMA), so
+        # the relational links, indexes and FKs exist and there is no legacy
+        # data to backfill.
+        return
     op.add_column("quantity_takeoff_lines", sa.Column("wbs_id", sa.Integer(), nullable=True))
     op.add_column("quantity_takeoff_lines", sa.Column("cbs_id", sa.Integer(), nullable=True))
     op.add_column("quantity_takeoff_lines", sa.Column("fbs_id", sa.Integer(), nullable=True))
