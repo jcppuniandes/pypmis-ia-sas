@@ -405,9 +405,7 @@ class ScheduleIngestionService:
         detected_currency, currency_confidence, currency_source = self._detect_currency(source, content)
         total_imported_cost = round(sum(activity.planned_cost for activity in activities), 2)
         cost_loaded_activity_count = sum(1 for activity in activities if activity.planned_cost > 0)
-        cost_loaded_activity_percent = (
-            round(cost_loaded_activity_count / len(activities) * 100, 2) if activities else 0
-        )
+        cost_loaded_activity_percent = round(cost_loaded_activity_count / len(activities) * 100, 2) if activities else 0
         return ParsedSchedule(
             source=source,
             activities=activities,
@@ -449,10 +447,17 @@ class ScheduleIngestionService:
     def _detect_xer_currency(self, rows_by_table: dict[str, list[dict[str, str]]]) -> tuple[str, str, str]:
         for table_name in ("PROJECT", "CURRTYPE", "CURRENCY"):
             for row in rows_by_table.get(table_name, []):
-                for field in ("currency_id", "base_currency_id", "curr_id", "currency", "curr_short_name", "curr_symbol"):
-                    currency = self._normalize_currency(row.get(field, ""))
+                for field_name in (
+                    "currency_id",
+                    "base_currency_id",
+                    "curr_id",
+                    "currency",
+                    "curr_short_name",
+                    "curr_symbol",
+                ):
+                    currency = self._normalize_currency(row.get(field_name, ""))
                     if currency:
-                        return currency, "detected", f"{table_name}.{field}"
+                        return currency, "detected", f"{table_name}.{field_name}"
         for table_name, rows in rows_by_table.items():
             for row in rows:
                 for field, value in row.items():
@@ -486,9 +491,9 @@ class ScheduleIngestionService:
         summary: dict[str, int] = {}
         for table_name in ("TASK", "TASKRSRC", "RSRCASSIGN", "RESOURCEASSIGNMENT", "PROJCOST"):
             for row in rows_by_table.get(table_name, []):
-                for field in [*XER_COST_FIELDS, *XER_COMPONENT_COST_FIELDS]:
-                    if self._money_to_float(row.get(field)) > 0:
-                        key = f"{table_name}.{field}"
+                for field_name in [*XER_COST_FIELDS, *XER_COMPONENT_COST_FIELDS]:
+                    if self._money_to_float(row.get(field_name)) > 0:
+                        key = f"{table_name}.{field_name}"
                         summary[key] = summary.get(key, 0) + 1
                 if self._money_to_float(row.get("target_qty")) and self._money_to_float(row.get("cost_per_qty")):
                     key = f"{table_name}.target_qty*cost_per_qty"
@@ -558,7 +563,10 @@ class ScheduleIngestionService:
                 if row.get("wbs_id")
                 and (
                     (row.get("proj_node_flag") or "").upper() == "Y"
-                    or (project_code and (row.get("wbs_short_name") or row.get("wbs_code") or "").strip() == project_code)
+                    or (
+                        project_code
+                        and (row.get("wbs_short_name") or row.get("wbs_code") or "").strip() == project_code
+                    )
                 )
             ),
             "",
@@ -580,11 +588,10 @@ class ScheduleIngestionService:
             if not source_id or not (raw_code or raw_name):
                 continue
             is_project_node = source_id == explicit_project_source_id
-            parent_source_id = "" if is_project_node else (
-                row.get("parent_wbs_id")
-                or row.get("parent_wbs_object_id")
-                or row.get("parent_id")
-                or ""
+            parent_source_id = (
+                ""
+                if is_project_node
+                else (row.get("parent_wbs_id") or row.get("parent_wbs_object_id") or row.get("parent_id") or "")
             )
             if not parent_source_id and project_source_id and not is_project_node:
                 parent_source_id = project_source_id
@@ -602,7 +609,11 @@ class ScheduleIngestionService:
                 return source_id
             if spec.get("is_project_node") == "Y" or not project_code:
                 return raw_code
-            if raw_code.startswith(f"{project_code}-") or raw_code.startswith(f"{project_code}.") or raw_code == project_code:
+            if (
+                raw_code.startswith(f"{project_code}-")
+                or raw_code.startswith(f"{project_code}.")
+                or raw_code == project_code
+            ):
                 return raw_code
             visiting = visiting or set()
             if source_id in visiting:
@@ -1285,7 +1296,11 @@ class ScheduleIngestionService:
             ("EARTH", "Earthworks", ("excav", "earth", "grading", "corte", "relleno", "terracer")),
             ("CONC", "Concrete", ("concrete", "concreto", "hormigon", "slab", "losa", "ciment", "foundation")),
             ("STEEL", "Steel", ("steel", "acero", "metalica", "metalico", "rebar")),
-            ("MEP", "Mechanical and piping", ("mep", "mechanical", "mecan", "piping", "pipe", "tuber", "hvac", "hidraul")),
+            (
+                "MEP",
+                "Mechanical and piping",
+                ("mep", "mechanical", "mecan", "piping", "pipe", "tuber", "hvac", "hidraul"),
+            ),
             ("ELEC", "Electrical", ("electr", "cable", "power", "energia")),
             ("INST", "Instrumentation", ("instrument", "automat", "control")),
             ("PROC", "Procurement", ("procura", "procurement", "purchase", "compra", "suministro")),

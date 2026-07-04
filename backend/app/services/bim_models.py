@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -352,7 +353,7 @@ def _ifc_metadata(content: bytes) -> dict[str, object]:
         "site_name": site_name,
         "storey_count": storey_count,
         "units": unit_name,
-}
+    }
 
 
 def _ifc_viewer_manifest(content: bytes, model: BimModel, metadata: dict[str, object]) -> dict[str, Any]:
@@ -433,7 +434,9 @@ def _run_geometry_converter(
         model_id=model.id,
         project_id=model.project_id,
     )
-    args = shlex.split(rendered_command)
+    # POSIX splitting eats Windows path backslashes (C:\a\b -> C:ab), so the
+    # converter subprocess never finds its script when running on Windows.
+    args = shlex.split(rendered_command, posix=os.name != "nt")
     if not args:
         raise HTTPException(status_code=409, detail="BIM geometry converter command is empty")
     try:
@@ -445,7 +448,9 @@ def _run_geometry_converter(
             timeout=max(timeout_seconds, 1),
         )
     except FileNotFoundError as exc:
-        raise HTTPException(status_code=409, detail=f"BIM geometry converter executable was not found: {args[0]}") from exc
+        raise HTTPException(
+            status_code=409, detail=f"BIM geometry converter executable was not found: {args[0]}"
+        ) from exc
     except subprocess.TimeoutExpired as exc:
         raise HTTPException(status_code=504, detail="BIM geometry converter timed out") from exc
     if completed.returncode != 0:
@@ -748,7 +753,9 @@ def _ifc_material_names(
     return names
 
 
-def _ifc_classifications_for_product(entities: dict[str, tuple[str, list[str]]], product_ref: str) -> list[dict[str, str]]:
+def _ifc_classifications_for_product(
+    entities: dict[str, tuple[str, list[str]]], product_ref: str
+) -> list[dict[str, str]]:
     classifications: list[dict[str, str]] = []
     for entity, args in entities.values():
         if entity.upper() != "IFCRELASSOCIATESCLASSIFICATION" or len(args) < 6:
