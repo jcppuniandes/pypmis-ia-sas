@@ -5205,6 +5205,22 @@ function AppShell() {
                       </article>
                     ))}
                   </div>
+                  {windowAnalysisResult?.source_validation?.length ? (
+                    <div className="apuCatalogSources" role="region" aria-label="Validacion de fuentes SVP">
+                      {windowAnalysisResult.source_validation.map((check) => (
+                        <article
+                          className={check.status === "warn" ? "risk" : ""}
+                          key={`${check.protocol}-${check.check}-${check.detail}`}
+                        >
+                          <strong>
+                            {check.protocol} / {check.status === "warn" ? "Revisar" : "OK"}
+                          </strong>
+                          <span>{check.check}</span>
+                          <small>{check.detail}</small>
+                        </article>
+                      ))}
+                    </div>
+                  ) : null}
                   {windowAnalysisResult?.limitations.length ? (
                     <div className="uploadMessage success">{windowAnalysisResult.limitations.join(" ")}</div>
                   ) : null}

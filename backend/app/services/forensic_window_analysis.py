@@ -43,6 +43,17 @@ class WindowActivityDelta:
     critical_in_start: bool
     critical_in_finish: bool
     classification: str
+    # Tipo de variacion a nivel de actividad (ALV) segun SVP 2.4:
+    # extended_duration, delayed_start, finish_slip o float_change.
+    alv_type: str = ""
+
+
+@dataclass(frozen=True)
+class SourceValidationCheck:
+    protocol: str
+    check: str
+    status: str
+    detail: str
 
 
 @dataclass(frozen=True)
@@ -85,13 +96,17 @@ class ForensicWindowAnalysisResult:
     rag_sources: list[ForensicRagSource]
     summary: dict[str, int | float | str]
     limitations: list[str] = field(default_factory=list)
+    source_validation: list[SourceValidationCheck] = field(default_factory=list)
 
 
 class ForensicWindowAnalysisService:
     """AACE RP29R-03 MIP 3.7 screening over multiple schedule snapshots."""
 
     method_id = "AACE-RP29R-MIP-3.7"
-    method_name = "Analisis de Ventanas 3.7 - Multiple Base Additive"
+    # El servicio compara updates de forma observacional; la simulacion aditiva
+    # con fragnets del MIP 3.7 completo es una etapa posterior, por eso el
+    # resultado se presenta como screening y no como el metodo terminado.
+    method_name = "Screening de Ventanas 3.7 (paso previo al MIP 3.7 Multiple Base Additive)"
     standard_reference = "AACE RP29R-03 Forensic Schedule Analysis, Method Implementation Protocol 3.7"
 
     def __init__(self, schedule_service: ScheduleIngestionService | None = None) -> None:
@@ -160,6 +175,13 @@ class ForensicWindowAnalysisService:
         total_delay = sum(window.critical_delay_days for window in windows)
         total_mitigation = sum(window.mitigation_days for window in windows)
         valid_schedules = len(parsed_sources)
+        actual_dated_activities = sum(
+            1
+            for _, _, parsed in parsed_sources
+            for activity in parsed.activities
+            if activity.actual_start is not None or activity.actual_finish is not None
+        )
+        source_validation = self._source_validation(parsed_sources, actual_dated_activities)
         return ForensicWindowAnalysisResult(
             method_id=self.method_id,
             method_name=self.method_name,
@@ -179,12 +201,116 @@ class ForensicWindowAnalysisService:
                 "total_critical_delay_days": total_delay,
                 "total_mitigation_days": total_mitigation,
                 "net_delay_days": total_delay - total_mitigation,
+                "actual_dated_activity_count": actual_dated_activities,
             },
             limitations=self._limitations(valid_schedules),
+            source_validation=source_validation,
         )
 
     def rag_sources(self) -> list[ForensicRagSource]:
         return self._rag_sources()
+
+    def _source_validation(
+        self,
+        parsed_sources: list[tuple[int, str, ParsedSchedule]],
+        actual_dated_activities: int,
+    ) -> list[SourceValidationCheck]:
+        """Checklist proporcional de los SVP de la RP 29R-03 sobre las fuentes cargadas."""
+
+        checks: list[SourceValidationCheck] = []
+        if not parsed_sources:
+            return checks
+
+        # SVP 2.1 - la primera base debe ser un modelo CPM funcional.
+        _, base_name, base_schedule = parsed_sources[0]
+        predecessor_ids = {relationship.predecessor for relationship in base_schedule.relationships}
+        successor_ids = {relationship.successor for relationship in base_schedule.relationships}
+        open_starts = [
+            activity.external_id for activity in base_schedule.activities if activity.external_id not in successor_ids
+        ]
+        open_finishes = [
+            activity.external_id for activity in base_schedule.activities if activity.external_id not in predecessor_ids
+        ]
+        open_ends = len(open_starts) + len(open_finishes)
+        checks.append(
+            SourceValidationCheck(
+                protocol="SVP 2.1",
+                check="Extremos abiertos en la base inicial",
+                status="warn" if open_ends > 2 else "pass",
+                detail=(
+                    f"{base_name}: {len(open_starts)} actividad(es) sin predecesor y "
+                    f"{len(open_finishes)} sin sucesor. La RP 29R espera lógica CPM continua "
+                    "(un inicio y un fin abiertos son normales)."
+                ),
+            )
+        )
+        has_critical_path = any(activity.critical_path for activity in base_schedule.activities)
+        checks.append(
+            SourceValidationCheck(
+                protocol="SVP 2.1",
+                check="Ruta crítica presente en la base inicial",
+                status="pass" if has_critical_path else "warn",
+                detail=(
+                    f"{base_name}: la base {'contiene' if has_critical_path else 'no contiene'} "
+                    "actividades marcadas como críticas."
+                ),
+            )
+        )
+
+        # SVP 2.2 - contraste as-built: sin fechas reales no hay validacion de
+        # la izquierda del data date.
+        checks.append(
+            SourceValidationCheck(
+                protocol="SVP 2.2",
+                check="Fechas reales disponibles para contraste as-built",
+                status="pass" if actual_dated_activities else "warn",
+                detail=(
+                    f"{actual_dated_activities} actividad(es) con fechas reales parseadas. "
+                    + (
+                        "El contraste as-built de la izquierda del data date es posible."
+                        if actual_dated_activities
+                        else "Sin fechas reales el avance reportado no puede contrastarse con evidencia as-built."
+                    )
+                ),
+            )
+        )
+
+        # SVP 2.3 - cadena de updates: data dates presentes y sin gaps largos.
+        missing_data_dates = [name for _, name, parsed in parsed_sources if parsed.data_date is None]
+        if missing_data_dates:
+            checks.append(
+                SourceValidationCheck(
+                    protocol="SVP 2.3",
+                    check="Data dates presentes en la cadena",
+                    status="warn",
+                    detail=f"Sin data date: {', '.join(missing_data_dates)}.",
+                )
+            )
+        dated = [(name, parsed.data_date) for _, name, parsed in parsed_sources if parsed.data_date is not None]
+        for (prior_name, prior_date), (next_name, next_date) in zip(dated, dated[1:], strict=False):
+            gap_days = (next_date - prior_date).days
+            if gap_days > 45:
+                checks.append(
+                    SourceValidationCheck(
+                        protocol="SVP 2.3",
+                        check="Continuidad de la cadena de updates",
+                        status="warn",
+                        detail=(
+                            f"Gap de {gap_days} día(s) entre {prior_name} ({prior_date}) y "
+                            f"{next_name} ({next_date}); la ventana pierde resolución contemporánea."
+                        ),
+                    )
+                )
+        if len(dated) >= 2 and not any(check.protocol == "SVP 2.3" for check in checks):
+            checks.append(
+                SourceValidationCheck(
+                    protocol="SVP 2.3",
+                    check="Continuidad de la cadena de updates",
+                    status="pass",
+                    detail="Data dates consecutivos sin gaps mayores a 45 días.",
+                )
+            )
+        return checks
 
     def _parse_supported_source(self, file_name: str, content: bytes) -> ParsedSchedule | None:
         suffix = Path(file_name).suffix.lower()
@@ -236,6 +362,7 @@ class ForensicWindowAnalysisService:
                     critical_in_start=start_activity.critical_path,
                     critical_in_finish=finish_activity.critical_path,
                     classification=classification,
+                    alv_type=self._alv_type(start_activity, finish_activity, start_slip, finish_slip),
                 )
             )
 
@@ -274,6 +401,29 @@ class ForensicWindowAnalysisService:
             top_delay_events=top_delay_events,
             interpretation=self._interpret_window(completion_slip, top_delay_events, logic_delta),
         )
+
+    def _alv_type(
+        self,
+        start_activity: ParsedActivity,
+        finish_activity: ParsedActivity,
+        start_slip_days: int,
+        finish_slip_days: int,
+    ) -> str:
+        """Tipifica la Activity-Level Variance (SVP 2.4) entre dos updates.
+
+        La duración se compara entre updates (no contra la línea base) para no
+        acumular atrasos de predecesoras en la lectura de la variación.
+        """
+
+        start_span = self._days_between(start_activity.planned_start, start_activity.planned_finish)
+        finish_span = self._days_between(finish_activity.planned_start, finish_activity.planned_finish)
+        if finish_span > start_span:
+            return "extended_duration"
+        if start_slip_days > 0:
+            return "delayed_start"
+        if finish_slip_days > 0:
+            return "finish_slip"
+        return "float_change"
 
     def _classify_delta(
         self,

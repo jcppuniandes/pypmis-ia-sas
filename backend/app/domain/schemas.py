@@ -1815,6 +1815,16 @@ class ForensicWindowActivityDeltaOut(BaseModel):
     critical_in_start: bool
     critical_in_finish: bool
     classification: str
+    alv_type: str = ""
+
+
+class ForensicSourceValidationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    protocol: str
+    check: str
+    status: str
+    detail: str
 
 
 class ForensicWindowLogicDeltaOut(BaseModel):
@@ -1860,6 +1870,7 @@ class ForensicWindowAnalysisOut(BaseModel):
     rag_sources: list[ForensicRagSourceOut] = Field(default_factory=list)
     summary: dict[str, int | float | str] = Field(default_factory=dict)
     limitations: list[str] = Field(default_factory=list)
+    source_validation: list[ForensicSourceValidationOut] = Field(default_factory=list)
 
 
 class ContractOut(BaseModel):

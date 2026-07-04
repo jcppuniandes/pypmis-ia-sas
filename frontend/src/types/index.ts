@@ -1472,6 +1472,14 @@ export type ForensicWindowActivityDelta = {
   critical_in_start: boolean;
   critical_in_finish: boolean;
   classification: string;
+  alv_type?: string;
+};
+
+export type ForensicSourceValidation = {
+  protocol: string;
+  check: string;
+  status: string;
+  detail: string;
 };
 
 export type ForensicWindowLogicDelta = {
@@ -1511,6 +1519,7 @@ export type ForensicWindowAnalysis = {
   rag_sources: ForensicRagSource[];
   summary: Record<string, number | string>;
   limitations: string[];
+  source_validation?: ForensicSourceValidation[];
 };
 
 export type Contract = {

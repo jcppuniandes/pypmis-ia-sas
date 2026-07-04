@@ -92,6 +92,8 @@ class ParsedActivity:
     wbs_name: str = ""
     planned_start: date | None = None
     planned_finish: date | None = None
+    actual_start: date | None = None
+    actual_finish: date | None = None
     total_float_days: float = 0
     critical_path: bool = False
     planned_cost: float = 0
@@ -680,6 +682,8 @@ class ScheduleIngestionService:
                         or row.get("act_end_date")
                         or row.get("reend_date")
                     ),
+                    actual_start=self._parse_date(row.get("act_start_date")),
+                    actual_finish=self._parse_date(row.get("act_end_date")),
                     total_float_days=total_float,
                     critical_path=(row.get("critical_flag") or "").upper() == "Y" or total_float <= 0,
                     planned_cost=task_cost,
@@ -744,6 +748,8 @@ class ScheduleIngestionService:
                     wbs_name=self._child_text(task, "OutlineNumber") or self._child_text(task, "WBS") or "Unmapped WBS",
                     planned_start=self._parse_date(self._child_text(task, "Start")),
                     planned_finish=self._parse_date(self._child_text(task, "Finish")),
+                    actual_start=self._parse_date(self._child_text(task, "ActualStart")),
+                    actual_finish=self._parse_date(self._child_text(task, "ActualFinish")),
                     total_float_days=self._duration_to_days(self._child_text(task, "TotalSlack")),
                     critical_path=(self._child_text(task, "Critical") or "0") in {"1", "true", "True"},
                     planned_cost=self._money_to_float(
@@ -839,6 +845,8 @@ class ScheduleIngestionService:
                         or self._child_text(activity, "FinishDate")
                         or self._child_text(activity, "RemainingEarlyFinishDate")
                     ),
+                    actual_start=self._parse_date(self._child_text(activity, "ActualStartDate")),
+                    actual_finish=self._parse_date(self._child_text(activity, "ActualFinishDate")),
                     total_float_days=total_float,
                     critical_path=(self._child_text(activity, "IsCritical") or "").lower() in {"true", "1"}
                     or total_float <= 0,
