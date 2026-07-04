@@ -88,6 +88,31 @@ export type GuidedFlow = {
   cost_currency_gate: CostCurrencyGate;
 };
 
+export type ProcessFlowItem = {
+  key: string;
+  label: string;
+  status: string;
+  owner_role: string;
+  evidence: string;
+  next_action: string;
+  acceptance_criteria: string[];
+  target_view: string;
+};
+
+export type ProcessFlowLane = {
+  key: string;
+  label: string;
+  owner_role: string;
+  items: ProcessFlowItem[];
+};
+
+export type ProcessFlowBoard = {
+  project_id: number;
+  overall_status: string;
+  completion_percent: number;
+  lanes: ProcessFlowLane[];
+};
+
 export type ProjectControlPlan = {
   id: number;
   project_id: number;
@@ -170,6 +195,402 @@ export type ActivitySheetWbsRow = {
   planned_value: number;
   unmapped_activity_count: number;
   needs_review_count: number;
+};
+
+export type QuantityTakeoffRun = {
+  id: number;
+  project_id: number;
+  bim_model_id?: number | null;
+  source_file_name: string;
+  source_type: string;
+  source_sha256?: string;
+  bim_revision_id?: string;
+  model_linked_at?: string | null;
+  status: string;
+  row_count: number;
+  mapped_line_count: number;
+  unmapped_line_count: number;
+  total_quantity: number;
+  validation_summary: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BimModel = {
+  id: number;
+  project_id: number;
+  source_file_name: string;
+  source_type: string;
+  source_sha256?: string;
+  revision_id?: string;
+  source_size_bytes: number;
+  status: string;
+  schema: string;
+  units: string;
+  element_count: number;
+  storey_count: number;
+  model_identity: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BimViewerManifest = {
+  model_id: number;
+  project_id: number;
+  source_file_name: string;
+  source_size_bytes: number;
+  source_sha256: string;
+  revision_id: string;
+  engine: string;
+  cache_status: string;
+  geometry_strategy: "backend_cache" | "backend_cache_required" | "browser_limited_cache_recommended" | "direct_browser" | string;
+  geometry_cache?: BimGeometryCacheSummary | Record<string, unknown>;
+  schema: string;
+  units: string;
+  project_name: string;
+  site_name: string;
+  building_name: string;
+  georeferencing: Record<string, unknown>;
+  product_count: number;
+  storey_count: number;
+  class_summary: Array<{ ifc_class: string; count: number }>;
+  property_index: {
+    scan_status: "complete" | "partial" | string;
+    scan_limit_bytes: number;
+    indexed_products: number;
+    property_sets: number;
+    quantity_sets: number;
+    type_relations: number;
+  };
+  limits: {
+    direct_browser_bytes: number;
+    backend_cache_required_bytes: number;
+  };
+  warnings: string[];
+};
+
+export type BimGeometryCacheSummary = {
+  status: string;
+  model_id: number;
+  project_id: number;
+  source_sha256?: string;
+  revision_id: string;
+  engine: string;
+  storage_path?: string;
+  product_count?: number;
+  mesh_count: number;
+  triangle_count: number;
+  generated_at?: string;
+};
+
+export type BimGeometryCacheProduct = {
+  express_id: number;
+  global_id: string;
+  ifc_class: string;
+  name: string;
+  mesh: {
+    vertices: number[];
+    indices: number[];
+  };
+};
+
+export type BimGeometryCacheArtifact = {
+  version: number;
+  model_id: number;
+  project_id: number;
+  source_file_name?: string;
+  source_sha256?: string;
+  revision_id?: string;
+  engine: string;
+  schema?: string;
+  units?: string;
+  generated_at?: string;
+  stats: {
+    product_count: number;
+    mesh_count: number;
+    triangle_count: number;
+  };
+  products: BimGeometryCacheProduct[];
+};
+
+export type BimElementPropertyValue = {
+  name: string;
+  type: string;
+  value: string;
+};
+
+export type BimElementQuantityValue = {
+  name: string;
+  set_name: string;
+  source: string;
+  step_id: string;
+  unit: string;
+  value: number | null;
+};
+
+export type BimElementProperties = {
+  model_id: number;
+  lookup_key: string;
+  found: boolean;
+  scan_status: "complete" | "partial" | string;
+  scan_limit_bytes: number;
+  step_id: string;
+  global_id: string;
+  ifc_class: string;
+  name: string;
+  type_name: string;
+  predefined_type: string;
+  property_sets: Array<{
+    name: string;
+    properties: BimElementPropertyValue[];
+    step_id: string;
+  }>;
+  quantities: BimElementQuantityValue[];
+  materials: string[];
+  classifications: Array<{ code: string; name: string; step_id: string; type: string }>;
+};
+
+export type QuantityTakeoffLine = {
+  id: number;
+  project_id: number;
+  run_id: number;
+  source_row_id: string;
+  element_id: string;
+  element_guid: string;
+  ifc_class: string;
+  category: string;
+  family: string;
+  type_name: string;
+  instance_name: string;
+  project_name: string;
+  site_name: string;
+  building_name: string;
+  storey: string;
+  system_name: string;
+  zone_name: string;
+  assembly_name: string;
+  classification_system: string;
+  classification_code: string;
+  quantity: number;
+  unit: string;
+  measurement_rule: string;
+  wbs_code: string;
+  cbs_code: string;
+  fbs_code: string;
+  package_code: string;
+  wbs_id: number | null;
+  cbs_id: number | null;
+  fbs_id: number | null;
+  work_package_id: number | null;
+  mapping_status: string;
+  validation_notes: string;
+  raw_data: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ControlledMeasurementApproval = {
+  line_ids: number[];
+  measurement_rule: string;
+  quantity?: number;
+  source: string;
+  note: string;
+  unit?: string;
+};
+
+export type BimGeometryMeasurementResult = {
+  line_id: number;
+  element_guid: string;
+  ifc_class: string;
+  element_name: string;
+  status: string;
+  current_quantity: number;
+  current_unit: string;
+  source_quantity: number;
+  source_unit: string;
+  approved_quantity: number | null;
+  approved_unit: string;
+  geometry_quantity: number;
+  geometry_unit: string;
+  measurement_rule: string;
+  difference: number | null;
+  difference_percent: number | null;
+  confidence: string;
+  reason: string;
+};
+
+export type BimGeometryMeasurementBatch = {
+  model_id: number;
+  run_id: number;
+  revision_id: string;
+  total_count: number;
+  matched_count: number;
+  ready_count: number;
+  compare_count: number;
+  applied_count: number;
+  unmatched_count: number;
+  invalid_count: number;
+  results: BimGeometryMeasurementResult[];
+};
+
+export type BimGeometryMeasurementBatchInput = {
+  model_id: number;
+  line_ids?: number[];
+  apply?: boolean;
+  replace_valid?: boolean;
+};
+
+export type QuantityControlCodeAssignment = {
+  line_ids: number[];
+  wbs_code: string;
+  cbs_code: string;
+  fbs_code: string;
+  package_code: string;
+  cost_item_code?: string;
+  cost_item_name?: string;
+  budget_unit?: string;
+  unit_rate?: number;
+  catalog_item_id?: number;
+  currency?: string;
+  source_key?: string;
+  source_url?: string;
+  license_note?: string;
+  apu_structure?: ApuResourceLine[];
+  structure_note?: string;
+  structure_status?: string;
+  note: string;
+};
+
+export type ColombiaApuCatalogItem = {
+  id: number;
+  tenant_id: number;
+  project_id: number;
+  source_key: string;
+  external_id: string;
+  item_code: string;
+  item_name: string;
+  unit: string;
+  unit_rate: number;
+  currency: string;
+  group_name: string;
+  chapter: string;
+  region: string;
+  source_url: string;
+  license_note: string;
+  update_frequency: string;
+  status: string;
+  raw_data: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ColombiaApuCatalogSync = {
+  project_id: number;
+  source_key: string;
+  source_url: string;
+  created_count: number;
+  updated_count: number;
+  skipped_count: number;
+  total_count: number;
+  license_note: string;
+  update_frequency: string;
+  synced_at: string;
+};
+
+export type ApuResourceLine = {
+  amount: number;
+  code?: string;
+  component: string;
+  component_type?: string;
+  description: string;
+  quantity: number;
+  source?: string;
+  status?: string;
+  unit: string;
+  unit_rate: number;
+};
+
+export type QuantityApuSuggestionInput = {
+  line_ids: number[];
+  apply_best: boolean;
+  limit_per_line?: number;
+};
+
+export type QuantityApuApprovalInput = {
+  line_ids: number[];
+};
+
+export type QuantityApuSuggestion = {
+  line_id: number;
+  catalog_item_id: number;
+  source_key: string;
+  cost_item_code: string;
+  cost_item_name: string;
+  budget_unit: string;
+  unit_rate: number;
+  currency: string;
+  quantity: number;
+  budget_amount: number;
+  match_score: number;
+  review_note: string;
+  source_url: string;
+  license_note: string;
+  apu_structure?: ApuResourceLine[];
+  structure_note?: string;
+  structure_status?: string;
+};
+
+export type BimQuantityRule = {
+  id: number;
+  project_id: number;
+  ifc_class: string;
+  element_label: string;
+  expected_measure: string;
+  rule_hint: string;
+  expected_units: string[];
+  allow_fallback_count: boolean;
+  source: string;
+  status: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BimQuantityRuleUpdate = {
+  element_label: string;
+  expected_measure: string;
+  rule_hint: string;
+  expected_units: string[];
+  allow_fallback_count: boolean;
+  status: string;
+  expected_version: number;
+};
+
+export type QuantityRuleRecalculationImpact = {
+  line_id: number;
+  element_guid: string;
+  ifc_class: string;
+  previous_status: string;
+  new_status: string;
+  previous_measure: string;
+  new_measure: string;
+  previous_units: string[];
+  new_units: string[];
+  mapping_status: string;
+};
+
+export type QuantityRuleRecalculation = {
+  project_id: number;
+  run_id: number;
+  total_lines: number;
+  changed_line_count: number;
+  valid_count: number;
+  review_count: number;
+  blocked_count: number;
+  cost_rollup_gate: string;
+  affected_classes: string[];
+  impacts: QuantityRuleRecalculationImpact[];
 };
 
 export type User = {
@@ -303,6 +724,29 @@ export type ScheduleImport = {
   imported_at: string;
 };
 
+export type ScheduleActivityMap = {
+  id: number;
+  schedule_import_id: number;
+  activity_id: number | null;
+  external_activity_id: string;
+  wbs_code: string;
+  activity_name: string;
+  planned_start: string | null;
+  planned_finish: string | null;
+  total_float_days: number;
+  critical_path: boolean;
+};
+
+export type ScheduleRelationship = {
+  id: number;
+  schedule_import_id: number;
+  predecessor_external_id: string;
+  successor_external_id: string;
+  relationship_type: string;
+  days_lag?: number;
+  lag_days?: number;
+};
+
 export type ScheduleFinding = {
   id: number;
   schedule_import_id: number;
@@ -311,6 +755,18 @@ export type ScheduleFinding = {
   message: string;
   item_count: number;
   weight: number;
+};
+
+export type ScheduleQualityMetric = {
+  key: string;
+  standard: string;
+  label: string;
+  status: string;
+  item_count: number;
+  total_count: number;
+  percent: number;
+  threshold: string;
+  description: string;
 };
 
 export type BaselineVersion = {
@@ -967,6 +1423,91 @@ export type ClaimsForensicSummary = {
   forensic_readiness_score: number;
 };
 
+export type ForensicDossierAnalysis = {
+  mode: string;
+  summary: string;
+  source_files: string[];
+  signals: string[];
+  readiness_score: number;
+  created_claims: ClaimItem[];
+  created_notices: ContractNotice[];
+  created_entitlement_items: ClaimEntitlementItem[];
+  created_impact_analyses: ClaimImpactAnalysis[];
+};
+
+export type ForensicRagSource = {
+  title: string;
+  file_name: string;
+  source_type: string;
+  relevance: string;
+  tags: string[];
+};
+
+export type ForensicWindowScheduleSource = {
+  file_name: string;
+  source: string;
+  status: string;
+  data_date: string | null;
+  baseline_name: string;
+  activity_count: number;
+  relationship_count: number;
+  quality_score: number;
+  finding_code: string;
+  message: string;
+};
+
+export type ForensicWindowActivityDelta = {
+  activity_id: string;
+  activity_name: string;
+  wbs_code: string;
+  wbs_name: string;
+  start_slip_days: number;
+  finish_slip_days: number;
+  total_float_delta_days: number;
+  critical_in_start: boolean;
+  critical_in_finish: boolean;
+  classification: string;
+};
+
+export type ForensicWindowLogicDelta = {
+  added_relationships: number;
+  removed_relationships: number;
+  changed_relationships: number;
+};
+
+export type ForensicWindowResult = {
+  window_no: number;
+  start_schedule: string;
+  finish_schedule: string;
+  start_data_date: string | null;
+  finish_data_date: string | null;
+  start_completion: string | null;
+  finish_completion: string | null;
+  completion_slip_days: number;
+  critical_delay_days: number;
+  mitigation_days: number;
+  common_activity_count: number;
+  added_activity_count: number;
+  removed_activity_count: number;
+  delayed_activity_count: number;
+  critical_or_near_critical_delay_count: number;
+  logic_delta: ForensicWindowLogicDelta;
+  top_delay_events: ForensicWindowActivityDelta[];
+  interpretation: string;
+};
+
+export type ForensicWindowAnalysis = {
+  method_id: string;
+  method_name: string;
+  standard_reference: string;
+  methodology_note: string;
+  schedule_sources: ForensicWindowScheduleSource[];
+  windows: ForensicWindowResult[];
+  rag_sources: ForensicRagSource[];
+  summary: Record<string, number | string>;
+  limitations: string[];
+};
+
 export type Contract = {
   id: number;
   funding_source_id?: number | null;
@@ -1193,19 +1734,23 @@ export type DocumentControlSummary = {
 
 export type WorkPackage = {
   id: number;
+  wbs_id: number | null;
   control_account_id: number | null;
   parent_id: number | null;
   package_type: string;
   code: string;
   title: string;
+  description: string;
   discipline: string;
   sequence_no: number;
   path_of_construction: string;
   owner_role: string;
   readiness_status: string;
+  planned_release_date: string | null;
   planned_start: string | null;
   planned_finish: string | null;
   release_required_on: string | null;
+  main_constraints: string;
   progress_percent: number;
   version: number;
   updated_at: string;
@@ -1273,6 +1818,7 @@ export type Dashboard = {
   schedule_activity_count: number;
   schedule_relationship_count: number;
   schedule_findings: ScheduleFinding[];
+  schedule_quality_metrics: ScheduleQualityMetric[];
   baseline_versions: BaselineVersion[];
   control_periods: ControlPeriod[];
   workflow_instance: WorkflowInstance | null;

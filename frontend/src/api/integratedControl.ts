@@ -13,6 +13,9 @@ import type {
   CostBreakdownStructure,
   CostCode,
   ForecastFundingReport,
+  ForensicDossierAnalysis,
+  ForensicRagSource,
+  ForensicWindowAnalysis,
   FundingSource,
   IntegratedControlMatrixRow,
   RateSheet,
@@ -41,6 +44,17 @@ export type CbsCreatePayload = {
   level?: number;
   cost_category: string;
   description?: string;
+  status?: string;
+};
+
+export type WbsCreatePayload = {
+  parent_id?: number | null;
+  code: string;
+  name: string;
+  level?: number;
+  description?: string;
+  dictionary?: string;
+  responsible?: string;
   status?: string;
 };
 
@@ -121,6 +135,13 @@ export const integratedControl = {
 
   wbs: (token: string, projectId: number) =>
     apiFetch<WbsNode[]>(`/api/v1/projects/${projectId}/wbs`, { token }),
+
+  createWbs: (token: string, projectId: number, data: WbsCreatePayload) =>
+    apiFetch<WbsNode>(`/api/v1/projects/${projectId}/wbs`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    }),
 
   controlAccounts: (token: string, projectId: number) =>
     apiFetch<ControlAccount[]>(`/api/v1/projects/${projectId}/control-accounts`, { token }),
@@ -256,6 +277,31 @@ export const integratedControl = {
       method: "POST",
       token,
     }),
+
+  runClaimsForensicDossier: (token: string, projectId: number, mode: string, files: File[]) => {
+    const formData = new FormData();
+    formData.append("mode", mode);
+    files.forEach((file) => formData.append("files", file));
+    return apiFetch<ForensicDossierAnalysis>(`/api/v1/projects/${projectId}/claims/forensic-runs`, {
+      method: "POST",
+      token,
+      body: formData,
+    });
+  },
+
+  windowAnalysis37RagSources: (token: string, projectId: number) =>
+    apiFetch<ForensicRagSource[]>(`/api/v1/projects/${projectId}/claims/window-analysis-37/rag-sources`, { token }),
+
+  runWindowAnalysis37: (token: string, projectId: number, nearCriticalThresholdDays: number, files: File[]) => {
+    const formData = new FormData();
+    formData.append("near_critical_threshold_days", String(nearCriticalThresholdDays));
+    files.forEach((file) => formData.append("files", file));
+    return apiFetch<ForensicWindowAnalysis>(`/api/v1/projects/${projectId}/claims/window-analysis-37`, {
+      method: "POST",
+      token,
+      body: formData,
+    });
+  },
 
   createWorkPackageConstraint: (
     token: string,

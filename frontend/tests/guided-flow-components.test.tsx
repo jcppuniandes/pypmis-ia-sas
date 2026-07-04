@@ -69,26 +69,54 @@ describe("guided flow components", () => {
     const onProjectChange = vi.fn();
     render(
       <TenantCommandBar
-        tenant={{ id: 1, name: "Demo Energy", slug: "demo-energy", base_currency: "COP" }}
         project={{ id: 1, code: "CTRL-DEMO-001", name: "Demo", status: "authorized", currency: "USD" }}
         projects={projects}
         selectedProjectId={1}
-        userEmail="ana.control@demo.local"
-        onCreateProject={vi.fn()}
+        userEmail="admin@demo.local"
+        userName="Pypmis Admin"
+        userTitle="Tenant Administrator"
         onLogout={vi.fn()}
         onProjectChange={onProjectChange}
       />,
     );
 
-    expect(screen.getByText("Demo Energy")).toBeInTheDocument();
+    expect(screen.getByText("Acceso de proyecto")).toBeInTheDocument();
+    expect(screen.getByText("Proyectos asignados")).toBeInTheDocument();
+    expect(screen.getByText("Cada usuario ve solo sus proyectos")).toBeInTheDocument();
+    expect(screen.getByText("Pypmis Admin")).toBeInTheDocument();
+    expect(screen.getByText(/Tenant Administrator \/ admin@demo.local/i)).toBeInTheDocument();
+    expect(screen.queryByText("Demo Energy")).not.toBeInTheDocument();
+    expect(screen.queryByText(/base currency/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/demo-energy/i)).not.toBeInTheDocument();
     await userEvent.selectOptions(screen.getByLabelText(/project/i), "1");
     expect(onProjectChange).toHaveBeenCalledWith(1);
   });
 
   it("renders guided rail step state and next action", async () => {
     const onNavigate = vi.fn();
-    render(<GuidedProcessRail activeKey="dashboard" steps={steps} onNavigate={onNavigate} />);
+    render(
+      <GuidedProcessRail
+        activeKey="dashboard"
+        steps={[
+          {
+            key: "tenant",
+            label: "Tenant workspace",
+            state: "complete",
+            summary: "Demo Energy Infrastructure / COP",
+            next_action: "Select project",
+            owner_role: "Admin",
+            target_view: "dashboard",
+            blocking_count: 0,
+          },
+          ...steps,
+        ]}
+        onNavigate={onNavigate}
+      />,
+    );
 
+    expect(screen.queryByText(/Tenant workspace/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Workspace ready/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Demo Energy/i)).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /cost and currency gate/i }));
     expect(onNavigate).toHaveBeenCalledWith("baseline");
   });
@@ -111,7 +139,7 @@ describe("guided flow components", () => {
       />,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: /go/i }));
+    await userEvent.click(screen.getByRole("button", { name: /open cost and currency gate/i }));
     expect(onNavigate).toHaveBeenCalledWith("baseline");
   });
 });

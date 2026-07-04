@@ -17,7 +17,7 @@ export default function ScheduleView({ ctx }: { ctx: AppShellCtx }) {
       className={activeView === "schedule" ? "viewPanel workspaceSection" : "viewPanel workspaceSection hidden"}
     >
       <div className="panelHeader">
-        <h2>Schedule Control</h2>
+        <h2>Planning Baseline</h2>
         <button
           className="linkButton"
           disabled={!canApproveControlBaseline || captureAction !== null}

@@ -62,6 +62,7 @@ const demoDashboard = {
   schedule_activity_count: 0,
   schedule_relationship_count: 0,
   schedule_findings: [],
+  schedule_quality_metrics: [],
   baseline_versions: [],
   latest_progress_records: [],
   cost_sheet: [
@@ -155,18 +156,27 @@ vi.mock("../src/store/auth", () => ({
 
 const listProjects = vi.fn();
 const createProject = vi.fn();
+const deleteProject = vi.fn();
 const uploadSchedule = vi.fn();
 const guidedFlow = vi.fn();
+const processFlowBoard = vi.fn();
 const confirmScheduleCurrency = vi.fn();
 const operationalSetup = vi.fn();
+const updateOperationalSetup = vi.fn();
 const activitySheets = vi.fn();
 const activitySheetRows = vi.fn();
 const activitySheetWbsRows = vi.fn();
+const scheduleActivities = vi.fn();
+const scheduleRelationships = vi.fn();
 const loadActivitySheetData = vi.fn();
+const quantityTakeoffRuns = vi.fn();
+const quantityTakeoffLines = vi.fn();
+const loadQuantityTakeoff = vi.fn();
 const assignTeamMember = vi.fn();
 const getDashboard = vi.fn();
 const matrix = vi.fn();
 const wbs = vi.fn();
+const createWbs = vi.fn();
 const controlAccounts = vi.fn();
 const cbs = vi.fn();
 const costCodes = vi.fn();
@@ -196,21 +206,34 @@ const recostActivitySheet = vi.fn();
 const approveBaseline = vi.fn();
 const listUsers = vi.fn();
 const createUser = vi.fn();
+const updateUser = vi.fn();
+const resetUserPassword = vi.fn();
+const deactivateUser = vi.fn();
 const listRoles = vi.fn();
+const removeTeamMember = vi.fn();
 
 vi.mock("../src/api/projects", () => ({
   projects: {
     list: (...args: unknown[]) => listProjects(...args),
     create: (...args: unknown[]) => createProject(...args),
+    deleteProject: (...args: unknown[]) => deleteProject(...args),
     uploadSchedule: (...args: unknown[]) => uploadSchedule(...args),
     guidedFlow: (...args: unknown[]) => guidedFlow(...args),
+    processFlowBoard: (...args: unknown[]) => processFlowBoard(...args),
     confirmScheduleCurrency: (...args: unknown[]) => confirmScheduleCurrency(...args),
     operationalSetup: (...args: unknown[]) => operationalSetup(...args),
+    updateOperationalSetup: (...args: unknown[]) => updateOperationalSetup(...args),
     activitySheets: (...args: unknown[]) => activitySheets(...args),
     activitySheetRows: (...args: unknown[]) => activitySheetRows(...args),
     activitySheetWbsRows: (...args: unknown[]) => activitySheetWbsRows(...args),
+    scheduleActivities: (...args: unknown[]) => scheduleActivities(...args),
+    scheduleRelationships: (...args: unknown[]) => scheduleRelationships(...args),
     loadActivitySheetData: (...args: unknown[]) => loadActivitySheetData(...args),
+    quantityTakeoffRuns: (...args: unknown[]) => quantityTakeoffRuns(...args),
+    quantityTakeoffLines: (...args: unknown[]) => quantityTakeoffLines(...args),
+    loadQuantityTakeoff: (...args: unknown[]) => loadQuantityTakeoff(...args),
     assignTeamMember: (...args: unknown[]) => assignTeamMember(...args),
+    removeTeamMember: (...args: unknown[]) => removeTeamMember(...args),
   },
 }));
 
@@ -218,6 +241,9 @@ vi.mock("../src/api/admin", () => ({
   admin: {
     listUsers: (...args: unknown[]) => listUsers(...args),
     createUser: (...args: unknown[]) => createUser(...args),
+    updateUser: (...args: unknown[]) => updateUser(...args),
+    resetUserPassword: (...args: unknown[]) => resetUserPassword(...args),
+    deactivateUser: (...args: unknown[]) => deactivateUser(...args),
     listRoles: (...args: unknown[]) => listRoles(...args),
   },
 }));
@@ -232,6 +258,7 @@ vi.mock("../src/api/integratedControl", () => ({
   integratedControl: {
     matrix: (...args: unknown[]) => matrix(...args),
     wbs: (...args: unknown[]) => wbs(...args),
+    createWbs: (...args: unknown[]) => createWbs(...args),
     controlAccounts: (...args: unknown[]) => controlAccounts(...args),
     cbs: (...args: unknown[]) => cbs(...args),
     costCodes: (...args: unknown[]) => costCodes(...args),
@@ -267,6 +294,7 @@ describe("served project control flow", () => {
     vi.clearAllMocks();
     useProjectStore.setState({ selectedProjectId: null, dashboard: null });
     listProjects.mockResolvedValue([demoProject]);
+    deleteProject.mockResolvedValue({ status: "deleted", project_id: demoProject.id });
     getDashboard.mockResolvedValue(demoDashboard);
     guidedFlow.mockResolvedValue({
       tenant: { id: 1, name: "Demo Energy Infrastructure", slug: "demo-energy", base_currency: "COP" },
@@ -279,12 +307,12 @@ describe("served project control flow", () => {
       },
       steps: [
         {
-          key: "dashboard",
-          label: "Dashboard",
+          key: "tenant",
+          label: "Tenant workspace",
           state: "complete",
-          summary: "Control dashboard ready",
-          next_action: "Review dashboard",
-          owner_role: "Project Controls",
+          summary: "Demo Energy Infrastructure / COP",
+          next_action: "Select project",
+          owner_role: "Admin",
           target_view: "dashboard",
           blocking_count: 0,
         },
@@ -295,7 +323,7 @@ describe("served project control flow", () => {
           summary: "0 activities imported",
           next_action: "Load XER/XML schedule",
           owner_role: "Planner",
-          target_view: "baseline",
+          target_view: "schedule-intake",
           blocking_count: 0,
         },
         {
@@ -339,16 +367,6 @@ describe("served project control flow", () => {
           blocking_count: 0,
         },
         {
-          key: "costs",
-          label: "Costs",
-          state: "review_required",
-          summary: "Cost control review",
-          next_action: "Review costs",
-          owner_role: "Cost Controller",
-          target_view: "costs",
-          blocking_count: 0,
-        },
-        {
           key: "integrated_control",
           label: "Integrated Control",
           state: "review_required",
@@ -356,16 +374,6 @@ describe("served project control flow", () => {
           next_action: "Review integrated control",
           owner_role: "Project Controls",
           target_view: "integrated-control",
-          blocking_count: 0,
-        },
-        {
-          key: "decisions",
-          label: "Decisions",
-          state: "review_required",
-          summary: "Decision records pending review",
-          next_action: "Review decisions",
-          owner_role: "Project Manager",
-          target_view: "decisions",
           blocking_count: 0,
         },
         {
@@ -386,16 +394,6 @@ describe("served project control flow", () => {
           next_action: "Review Work Packages",
           owner_role: "Workface Planner",
           target_view: "work-packages",
-          blocking_count: 0,
-        },
-        {
-          key: "admin",
-          label: "Users & Roles",
-          state: "review_required",
-          summary: "Role matrix and user assignments ready",
-          next_action: "Review users and roles",
-          owner_role: "Administrator",
-          target_view: "admin",
           blocking_count: 0,
         },
       ],
@@ -421,6 +419,108 @@ describe("served project control flow", () => {
         state: "review_required",
         message: "Confirm detected currency before baseline approval.",
       },
+    });
+    processFlowBoard.mockResolvedValue({
+      project_id: 1,
+      overall_status: "blocked",
+      completion_percent: 42.3,
+      lanes: [
+        {
+          key: "owner",
+          label: "Owner / Direction",
+          owner_role: "Owner / Control Manager",
+          items: [
+            {
+              key: "project_authorization",
+              label: "Project authorization",
+              status: "complete",
+              owner_role: "Owner / Direction",
+              evidence: "authorized; authorization reference AFE-DEMO-001.",
+              next_action: "Maintain approval evidence",
+              acceptance_criteria: ["Project code, sponsor, phase, currency and authorization reference are approved."],
+              target_view: "setup",
+            },
+          ],
+        },
+        {
+          key: "project_controls",
+          label: "Project Controls",
+          owner_role: "Control Manager",
+          items: [
+            {
+              key: "role_matrix",
+              label: "Role matrix and approvals",
+              status: "review_required",
+              owner_role: "Control Manager",
+              evidence: "1 project member; 0 BP approval policies.",
+              next_action: "Load client role matrix and BP approval policies",
+              acceptance_criteria: ["Client role matrix is configured for Planning, Controls, Cost/Funding, AWP, Contracts and Document Control."],
+              target_view: "admin",
+            },
+          ],
+        },
+        {
+          key: "planning",
+          label: "Planning / P6",
+          owner_role: "Planner",
+          items: [
+            {
+              key: "activity_sheet",
+              label: "System Activity Sheet",
+              status: "complete",
+              owner_role: "Planner",
+              evidence: "1 activity sheet; latest import baseline.xml.",
+              next_action: "Review Activity Sheet rows",
+              acceptance_criteria: ["Activity Sheet is created from the controlled P6 XML/XER source."],
+              target_view: "setup",
+            },
+          ],
+        },
+        {
+          key: "cost_funding",
+          label: "Cost / Funding",
+          owner_role: "Cost Controller",
+          items: [
+            {
+              key: "fbs_funding",
+              label: "FBS / Funding codes",
+              status: "complete",
+              owner_role: "Cost / Funding",
+              evidence: "1 funding code configured.",
+              next_action: "Monitor available funds",
+              acceptance_criteria: ["Each fund has source, type, authorization, restrictions, approved amount, currency and status."],
+              target_view: "costs",
+            },
+          ],
+        },
+        {
+          key: "awp_construction",
+          label: "AWP / Construction",
+          owner_role: "Workface Planner",
+          items: [
+            {
+              key: "bim_quantity_takeoff",
+              label: "Cantidades BIM",
+              status: "review_required",
+              owner_role: "BIM / Workface Planner",
+              evidence: "1 run(s); 2 line(s); 1 mapped; 1 need mapping.",
+              next_action: "Review unmapped BIM/IFC or Excel quantity lines",
+              acceptance_criteria: ["Controlled physical quantity items are consolidated from BIM/IFC or Excel quantities."],
+              target_view: "quantity-takeoff",
+            },
+            {
+              key: "awp_packages",
+              label: "AWP package chain",
+              status: "blocked",
+              owner_role: "Workface Planner",
+              evidence: "0 packages; 0 blocking constraints.",
+              next_action: "Create CWA/CWP/EWP/PWP/IWP/TWP/TOP package drafts",
+              acceptance_criteria: ["Packages are tied to WBS, control account, path of construction and responsible owner."],
+              target_view: "work-packages",
+            },
+          ],
+        },
+      ],
     });
     confirmScheduleCurrency.mockResolvedValue({
       id: 20,
@@ -502,11 +602,121 @@ describe("served project control flow", () => {
         planned_cost: 2500,
         planned_value: 1250,
         planned_percent: 50,
-        cbs_code: "CBS-PLT-CIV-A100",
+        cbs_code: "CBS-UNI-PLT-CIV-EARTH",
         control_account_id: 101,
         control_account_code: "CA-PLT-CIV",
         mapping_status: "mapped",
         review_note: "",
+      },
+    ]);
+    scheduleActivities.mockResolvedValue([
+      {
+        activity_id: null,
+        activity_name: "Excavacion area planta",
+        critical_path: false,
+        external_activity_id: "A100",
+        id: 21,
+        planned_finish: "2026-03-21",
+        planned_start: "2026-03-01",
+        schedule_import_id: 20,
+        total_float_days: 2,
+        wbs_code: "PLT-CIV",
+      },
+    ]);
+    scheduleRelationships.mockResolvedValue([]);
+    quantityTakeoffRuns.mockResolvedValue([
+      {
+        id: 61,
+        project_id: 1,
+        source_file_name: "bim-quantities.xlsx",
+        source_type: "xlsx",
+        status: "needs_mapping",
+        row_count: 2,
+        mapped_line_count: 1,
+        unmapped_line_count: 1,
+        total_quantity: 15.5,
+        validation_summary: "2 quantity line(s): 1 mapped, 1 need mapping.",
+        version: 1,
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+    ]);
+    quantityTakeoffLines.mockResolvedValue([
+      {
+        id: 71,
+        project_id: 1,
+        run_id: 61,
+        source_row_id: "1",
+        element_id: "#20",
+        element_guid: "GUID-001",
+        ifc_class: "IfcWall",
+        category: "Muros",
+        family: "Muro concreto",
+        type_name: "20 cm",
+        instance_name: "Muro eje A",
+        project_name: "Proyecto Piloto",
+        site_name: "Site A",
+        building_name: "Building A",
+        storey: "Nivel 1",
+        system_name: "",
+        zone_name: "Zona A",
+        assembly_name: "Modulo Civil",
+        classification_system: "MasterFormat",
+        classification_code: "03 30 00",
+        quantity: 12.5,
+        unit: "m3",
+        measurement_rule: "NetVolume",
+        wbs_code: "PLT-CIV",
+        cbs_code: "CBS-UNI-PLT-CIV-EARTH",
+        fbs_code: "FUND-VIA-GOV-OBR-2027",
+        package_code: "CWP-CIV-001",
+        wbs_id: 1,
+        cbs_id: 401,
+        fbs_id: 501,
+        work_package_id: 601,
+        mapping_status: "mapped",
+        validation_notes: "",
+        raw_data: {},
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+      {
+        id: 72,
+        project_id: 1,
+        run_id: 61,
+        source_row_id: "2",
+        element_id: "#21",
+        element_guid: "GUID-002",
+        ifc_class: "IfcDoor",
+        category: "Puertas",
+        family: "Puerta madera",
+        type_name: "90x210",
+        instance_name: "Puerta oficina",
+        project_name: "Proyecto Piloto",
+        site_name: "Site A",
+        building_name: "Building A",
+        storey: "Nivel 1",
+        system_name: "",
+        zone_name: "Zona A",
+        assembly_name: "Modulo Arquitectura",
+        classification_system: "MasterFormat",
+        classification_code: "08 11 00",
+        quantity: 3,
+        unit: "und",
+        measurement_rule: "Count",
+        wbs_code: "UNKNOWN-WBS",
+        cbs_code: "",
+        fbs_code: "FUND-VIA-GOV-OBR-2027",
+        package_code: "CWP-ARQ-001",
+        wbs_id: null,
+        cbs_id: null,
+        fbs_id: 501,
+        work_package_id: null,
+        mapping_status: "needs_mapping",
+        validation_notes: "Unknown WBS UNKNOWN-WBS; Missing CBS",
+        raw_data: {},
+        created_at: "2026-05-01T00:00:00Z",
+        updated_at: "2026-05-01T00:00:00Z",
       },
     ]);
     matrix.mockResolvedValue([]);
@@ -536,7 +746,7 @@ describe("served project control flow", () => {
         budget: 0,
         start_date: null,
         finish_date: null,
-        cbs_code: "CBS-PLT-CIV-A100",
+        cbs_code: "CBS-UNI-PLT-CIV-EARTH",
         contract_ref: "",
         measurement_rule: "",
         earned_value: 0,
@@ -554,7 +764,7 @@ describe("served project control flow", () => {
         id: 401,
         project_id: 1,
         parent_id: null,
-        code: "CBS-PLT-CIV-A100",
+        code: "CBS-UNI-PLT-CIV-EARTH",
         level: 3,
         cost_category: "Civil",
         description: "",
@@ -652,6 +862,35 @@ describe("served project control flow", () => {
       version: 1,
       updated_at: "2026-05-01T00:00:00Z",
     });
+    updateOperationalSetup.mockResolvedValue({
+      id: 1,
+      project_id: 1,
+      project_number: "CTRL-DEMO-001",
+      setup_template: "Capital Project Controls Template",
+      attribute_form: "Project Attribute Form",
+      permissions_configured: true,
+      modules_configured: true,
+      cost_sheet_ready: true,
+      funding_sheet_ready: true,
+      p6_mapping_ready: true,
+      status: "ready",
+      readiness_status: "ready",
+      readiness_notes: "Ready for controlled data loading.",
+      version: 1,
+      created_at: "2026-05-01T00:00:00Z",
+      updated_at: "2026-05-01T00:00:00Z",
+    });
+    createWbs.mockResolvedValue({
+      id: 2,
+      parent_id: null,
+      code: "WBS-MAN-001",
+      name: "Manual WBS",
+      level: 1,
+      description: "Manual scope",
+      dictionary: "",
+      responsible: "Ana Control",
+      status: "active",
+    });
     createFbs.mockResolvedValue({});
     createCbs.mockResolvedValue({ id: 402, code: "CBS-NEW", cost_category: "Civil" });
     createCbsFundBusinessProcess.mockResolvedValue({ id: 701, record_no: "BP-CBS-FUND-0001", current_step: "Control Review" });
@@ -690,6 +929,22 @@ describe("served project control flow", () => {
         can_configure: false,
       },
     ] satisfies RoleProfile[]);
+    updateUser.mockImplementation((_token, _id, payload) => Promise.resolve({ id: 1, status: "active", ...payload }));
+    resetUserPassword.mockResolvedValue({
+      id: 1,
+      email: "carlos.planner@demo.local",
+      full_name: "Carlos Planner",
+      title: "Planner",
+      status: "active",
+    });
+    deactivateUser.mockResolvedValue({
+      id: 1,
+      email: "carlos.planner@demo.local",
+      full_name: "Carlos Planner",
+      title: "Planner",
+      status: "inactive",
+    });
+    removeTeamMember.mockResolvedValue({ status: "removed" });
   });
 
   it("clears expired sessions instead of rendering the workspace as unavailable", async () => {
@@ -724,27 +979,110 @@ describe("served project control flow", () => {
     expect(within(appBrand).getByText("Pypmis AI SaaS", { selector: "strong" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /project workspace and control flow/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /control dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /control dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /dashboard overview/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /control mix/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /workload by area/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /evm s-curve/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /cbs cost codes/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /fbs funding codes/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /^project$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /new project/i })).toBeInTheDocument();
-    const controlFlowRail = screen.getByRole("complementary", { name: /control flow/i });
-    const projectCreatePanel = screen.getByRole("region", { name: /^project$/i });
-    expect(controlFlowRail.compareDocumentPosition(projectCreatePanel) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+    expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
+    expect(screen.getByText(/earned value management/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /resumen evm/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/^BAC$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^EAC$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^VAC$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^SV$/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^CV$/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: /curva s acumulada/i })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /control mix/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /workload by area/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /cbs cost codes/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /fbs funding codes/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /costs/i })).toBeInTheDocument();
+    const guidedRail = screen.getByRole("complementary", { name: /project information flow/i });
+    const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
+    expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
+    expect(guidedRail.compareDocumentPosition(projectAdmin) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
+    expect(screen.queryByText(/workspace views/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/shell/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("region", { name: /shell/i })).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText(/shell/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /create project/i })).not.toBeInTheDocument();
-    expect(screen.getAllByText(/xml\/xer/i).length).toBeGreaterThan(0);
-    expect(screen.getByLabelText(/schedule xml or xer/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/data quality gate/i).length).toBeGreaterThan(0);
+    expect(within(guidedRail).getAllByRole("button", { name: /open load schedule/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByLabelText(/schedule xml or xer/i)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/baseline gate/i).length).toBeGreaterThan(0);
+  });
+
+  it("uses a simplified project information flow instead of scattered navigation", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+
+    expect(screen.queryByText(/workspace views/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^guided flow$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/review & admin/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: /project information flow/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: /project information flow map/i })).not.toBeInTheDocument();
+
+    const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
+    expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(within(validationNav).getByRole("button", { name: /cantidades bim/i })).toBeInTheDocument();
+    [
+      /process flow/i,
+      /planning/i,
+      /costs/i,
+      /decisions/i,
+      /users & roles/i,
+      /work packages/i,
+      /baseline/i,
+      /schedule intake/i,
+    ].forEach((hiddenLabel) => {
+      expect(within(validationNav).queryByRole("button", { name: hiddenLabel })).not.toBeInTheDocument();
+    });
+
+    const commandBar = screen.getByRole("banner", { name: /tenant command bar/i });
+    expect(within(commandBar).getByText(/proyectos asignados/i)).toBeInTheDocument();
+    expect(within(commandBar).getByText(/cada usuario ve solo sus proyectos/i)).toBeInTheDocument();
+    expect(within(commandBar).queryByText(/demo energy/i)).not.toBeInTheDocument();
+    expect(within(commandBar).queryByRole("button", { name: /new project/i })).not.toBeInTheDocument();
+    expect(within(commandBar).queryByRole("button", { name: /delete project/i })).not.toBeInTheDocument();
+
+    expect(screen.queryByRole("region", { name: /next controlled action/i })).not.toBeInTheDocument();
+
+    const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
+    expect(within(projectAdmin).getByText(/^Proyecto$/i)).toBeInTheDocument();
+    expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
+    expect(within(projectAdmin).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
+
+    await user.click(within(validationNav).getByRole("button", { name: /cantidades bim/i }));
+    expect(
+      await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the blocking cost and currency gate from the next controlled action", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(
+      within(screen.getByRole("region", { name: /next controlled action/i })).getByRole("button", {
+        name: /open baseline gate/i,
+      }),
+    );
+
+    expect(await screen.findByRole("heading", { name: /baseline control/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /cost and currency gate/i })).toBeInTheDocument();
   });
 
   it("expands project creation only when requested", async () => {
@@ -828,6 +1166,101 @@ describe("served project control flow", () => {
     });
   });
 
+  it("lets users create the first project when the workspace is empty", async () => {
+    const user = userEvent.setup();
+    const createdProject: Project = {
+      id: 77,
+      code: "NEW-001",
+      name: "Nuevo proyecto limpio",
+      phase: "Planning",
+      currency: "USD",
+      calendar_base: "5x8",
+      owner: "Owner PMO",
+      status: "draft",
+      authorization_date: null,
+      authorization_ref: "",
+      configuration: { funding_required: true, control_level: "control_account" },
+      start_date: null,
+      finish_date: null,
+    };
+    let projectCreated = false;
+    listProjects.mockImplementation(() => Promise.resolve(projectCreated ? [createdProject] : []));
+    createProject.mockImplementation(() => {
+      projectCreated = true;
+      return Promise.resolve(createdProject);
+    });
+    useProjectStore.setState({ selectedProjectId: 999, dashboard: null });
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole("heading", { name: /create your first project/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /new project/i }));
+    const projectPanel = screen.getByRole("complementary", { name: /create project/i });
+
+    fireEvent.change(within(projectPanel).getByLabelText(/^code$/i), { target: { value: "NEW-001" } });
+    fireEvent.change(within(projectPanel).getByPlaceholderText(/project control name/i), {
+      target: { value: "Nuevo proyecto limpio" },
+    });
+    await user.click(screen.getByRole("button", { name: /^create project$/i }));
+
+    await waitFor(() => {
+      expect(createProject).toHaveBeenCalledWith(
+        "tok",
+        expect.objectContaining({ code: "NEW-001", name: "Nuevo proyecto limpio" }),
+      );
+    });
+    await waitFor(() => {
+      expect(useProjectStore.getState().selectedProjectId).toBe(77);
+    });
+  });
+
+  it("deletes the selected project after confirmation and selects the next project", async () => {
+    const user = userEvent.setup();
+    const nextProject: Project = {
+      ...demoProject,
+      id: 2,
+      code: "NEXT-002",
+      name: "Next controlled project",
+    };
+    const nextDashboard: Dashboard = {
+      ...demoDashboard,
+      project: nextProject,
+      project_team: demoDashboard.project_team.map((member) => ({
+        ...member,
+        membership: { ...member.membership, project_id: 2 },
+      })),
+    };
+    listProjects.mockResolvedValue([demoProject, nextProject]);
+    getDashboard.mockImplementation((_token, projectId) =>
+      Promise.resolve(projectId === 2 ? nextDashboard : demoDashboard),
+    );
+    deleteProject.mockResolvedValue({ status: "deleted", project_id: 1 });
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
+    await user.click(within(projectAdmin).getByRole("button", { name: /delete project/i }));
+
+    await waitFor(() => {
+      expect(deleteProject).toHaveBeenCalledWith("tok", 1);
+    });
+    await waitFor(() => {
+      expect(useProjectStore.getState().selectedProjectId).toBe(2);
+    });
+    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining("CTRL-DEMO-001"));
+    confirmSpy.mockRestore();
+  });
+
   it("uploads the selected XML/XER file to the active project", async () => {
     uploadSchedule.mockResolvedValue({
       id: 20,
@@ -857,6 +1290,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open load schedule/i }));
     const input = screen.getByLabelText(/schedule xml or xer/i);
     const file = new File(["%T\tTASK"], "baseline.xer", { type: "application/octet-stream" });
 
@@ -866,6 +1300,100 @@ describe("served project control flow", () => {
       expect(uploadSchedule).toHaveBeenCalledWith("tok", 1, file);
     });
     expect(await screen.findByText(/baseline.xer uploaded/i)).toBeInTheDocument();
+  });
+
+  it("renders DCMA schedule quality metrics in baseline control", async () => {
+    const user = userEvent.setup();
+    wbs.mockResolvedValue([
+      {
+        id: 1,
+        parent_id: null,
+        code: "P&Pmis-PY-1-4",
+        name: "Construccion",
+        level: 2,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+    ]);
+    getDashboard.mockResolvedValue({
+      ...demoDashboard,
+      schedule_import: {
+        id: 20,
+        source: "p6_xer",
+        file_name: "baseline.xer",
+        status: "validated",
+        data_date: "2026-03-11",
+        baseline_name: "baseline",
+        quality_score: 84,
+        validation_summary: "3 activities, 1 relationships, 1 open logic checks.",
+        detected_currency: "USD",
+        currency_confidence: "detected",
+        currency_source: "PROJECT.currency_id",
+        currency_confirmed: true,
+        total_imported_cost: 5000,
+        cost_loaded_activity_count: 2,
+        cost_loaded_activity_percent: 66.67,
+        cost_source_summary: {},
+        imported_at: "2026-05-01T00:00:00Z",
+      },
+      schedule_activity_count: 3,
+      schedule_relationship_count: 1,
+      schedule_quality_metrics: [
+        {
+          key: "dcma_logic",
+          standard: "DCMA 01",
+          label: "Logic",
+          status: "fail",
+          item_count: 1,
+          total_count: 3,
+          percent: 33.33,
+          threshold: "<= 5% missing logic",
+          description: "Activities missing predecessor or successor logic.",
+        },
+        {
+          key: "dcma_leads",
+          standard: "DCMA 02",
+          label: "Leads",
+          status: "pass",
+          item_count: 0,
+          total_count: 1,
+          percent: 0,
+          threshold: "0 leads",
+          description: "Relationships with negative lag.",
+        },
+        {
+          key: "dcma_high_float",
+          standard: "DCMA 06",
+          label: "High Float",
+          status: "pass",
+          item_count: 0,
+          total_count: 3,
+          percent: 0,
+          threshold: "<= 5% over 44 days",
+          description: "Activities with total float greater than 44 days.",
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(
+      within(screen.getByRole("complementary", { name: /project information flow/i })).getByRole("button", {
+        name: /open baseline gate/i,
+      }),
+    );
+
+    expect(screen.getByRole("heading", { name: /dcma metrics/i })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /dcma 01 logic .* fail 1 \/ 3 33\.3% <= 5% missing logic/i })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /dcma 02 leads .* pass 0 \/ 1 0\.0% 0 leads/i })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: /dcma 06 high float .* pass 0 \/ 3 0\.0% <= 5% over 44 days/i })).toBeInTheDocument();
   });
 
   it("navigates between control flow views from the side rail", async () => {
@@ -879,20 +1407,117 @@ describe("served project control flow", () => {
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
 
-    expect(screen.getByRole("button", { name: /dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /control dashboard/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /open tenant workspace/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("banner", { name: /tenant command bar/i })).toHaveTextContent(/proyectos asignados/i);
+    expect(screen.getByRole("banner", { name: /tenant command bar/i })).toHaveTextContent(/cada usuario ve solo sus proyectos/i);
+    expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /costs/i }));
     expect(screen.getByRole("heading", { name: /cost control/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /dashboard/i }));
-    expect(screen.getByRole("heading", { name: /control dashboard/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /decisions/i }));
+    expect(screen.getByRole("heading", { name: /decision register/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /baseline/i }));
+    await user.click(screen.getByRole("button", { name: /dashboard/i }));
+    expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
+
+    await user.click(
+      within(screen.getByRole("complementary", { name: /project information flow/i })).getByRole("button", {
+        name: /open baseline gate/i,
+      }),
+    );
     expect(screen.getByRole("heading", { name: /baseline control/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /work packages/i }));
+    await user.click(screen.getByRole("button", { name: /open awp packages/i }));
     expect(screen.getByRole("heading", { name: /awp minimum register/i })).toBeInTheDocument();
+  });
+
+  it("keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability", async () => {
+    const user = userEvent.setup();
+    getDashboard.mockResolvedValue({
+      ...demoDashboard,
+      cost_sheet: [
+        {
+          ...demoDashboard.cost_sheet[0],
+          control_account_code: "CA-PLT-CIV",
+          control_account_name: "Control Account PLT-CIV",
+          cbs_code: "CBS-4000",
+          bac: 120000,
+          earned_value: 0,
+          actual_cost: 0,
+          cpi: 0,
+        },
+      ],
+    } as Dashboard);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /dashboard evm/i });
+    expect(screen.queryByRole("heading", { name: /cbs cost codes/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /fbs funding codes/i })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /costs/i }));
+
+    const traceability = await screen.findByRole("region", { name: /cost and funding traceability/i });
+    expect(within(traceability).getByRole("heading", { name: /cost and funding traceability/i })).toBeInTheDocument();
+    expect(
+      within(traceability).getByRole("row", {
+        name: /obras civiles planta plt-civ ca-plt-civ control account plt-civ CBS-4000 .* \$120,000 \$0 \$0 N\/A/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("registers the schedule control handbook module in navigation and route", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app/schedule-control"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    const module = await screen.findByRole("region", {
+      name: /planning module/i,
+    });
+    expect(within(module).getByRole("heading", { name: /planning module/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /wbs/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /baseline schedule/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /cpm \/ critical path/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /progress update/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /lookahead planning/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /delay identification/i })).toBeInTheDocument();
+    expect(within(module).getByRole("tab", { name: /recovery planning/i })).toBeInTheDocument();
+
+    await user.click(within(module).getByRole("tab", { name: /cpm \/ critical path/i }));
+    expect(within(module).getByRole("heading", { name: /cpm \/ critical path/i })).toBeInTheDocument();
+    expect(within(module).getByText(/critical path:/i)).toBeInTheDocument();
+  });
+
+  it("renders the BPM process flow board by role lane", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /process flow/i }));
+
+    expect(await screen.findByRole("heading", { name: /bpm process flow/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /owner \/ direction/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /project controls/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /planning \/ p6/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /cost \/ funding/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /awp \/ construction/i })).toBeInTheDocument();
+    expect(screen.getByText(/role matrix and approvals/i)).toBeInTheDocument();
+    expect(screen.getByText(/client role matrix is configured/i)).toBeInTheDocument();
+    expect(processFlowBoard).toHaveBeenCalledWith("tok", 1);
   });
 
   it("renders production hardening controls for BP policies, line versions, exports and recost history", async () => {
@@ -1020,7 +1645,7 @@ describe("served project control flow", () => {
       rows: [
         {
           wbs_code: "PLT-CIV",
-          cbs_code: "CBS-PLT-CIV-A100",
+          cbs_code: "CBS-UNI-PLT-CIV-EARTH",
           fbs_code: "FUND-VIA-GOV-OBR-2027",
           control_account_code: "CA-PLT-CIV",
           contract_ref: "CTR-001",
@@ -1041,8 +1666,11 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /integrated control/i }));
+    await user.click(screen.getByRole("button", { name: /open business processes/i }));
 
+    expect(screen.getByText(/vincula wbs, cbs y fbs/i)).toBeInTheDocument();
+    expect(screen.getByText(/fbs es fuente de financiacion/i)).toBeInTheDocument();
+    expect(screen.getByText(/convencion: cbs-\{proyecto\}-\{wbs\}-\{familia de costo\}/i)).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: /bp permissions/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /line versions/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /ai control auditor/i })).toBeInTheDocument();
@@ -1083,37 +1711,708 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /project setup/i }));
+    await user.click(screen.getByRole("button", { name: /open project and wbs/i }));
 
     expect(await screen.findByRole("heading", { name: /wbs sheet/i })).toBeInTheDocument();
     expect(screen.getAllByText("PLT-CIV").length).toBeGreaterThan(0);
-    expect(screen.getByText("Obras civiles planta")).toBeInTheDocument();
+    expect(screen.getAllByText("Obras civiles planta").length).toBeGreaterThan(0);
     expect(screen.getAllByText("$1,250").length).toBeGreaterThan(0);
     expect(activitySheetWbsRows).toHaveBeenCalledWith("tok", 1, 11);
   });
 
+  it("keeps BIM and Excel quantity takeoff in the BIM module instead of Project Setup", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open project and wbs/i }));
+
+    expect(screen.queryByRole("region", { name: /^quantity takeoff$/i })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/load bim\/ifc or excel quantities/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+
+    const quantityPanel = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    expect(within(quantityPanel).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
+    expect(within(quantityPanel).getAllByText(/bim-quantities.xlsx/i).length).toBeGreaterThan(0);
+    expect(within(quantityPanel).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
+    await user.click(within(quantityPanel).getByRole("button", { name: /limpiar modelo/i }));
+    expect(within(quantityPanel).getByText(/loaded bim model cleared/i)).toBeInTheDocument();
+    expect(within(quantityPanel).getByText(/no hay elementos candidatos/i)).toBeInTheDocument();
+    expect(within(quantityPanel).queryByText(/GUID-001/i)).not.toBeInTheDocument();
+    expect(quantityTakeoffRuns).toHaveBeenCalledWith("tok", 1);
+    expect(quantityTakeoffLines).toHaveBeenCalledWith("tok", 1, 61);
+  });
+
+  it("opens the BIM quantity takeoff module with AWP validation and 3D viewer", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+
+    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    expect(within(module).getByRole("heading", { name: /cantidades bim/i })).toBeInTheDocument();
+    expect(within(module).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
+    expect(within(module).getAllByText(/^Ubicacion$/i).length).toBeGreaterThan(0);
+    expect(within(module).getAllByText(/^Elementos$/i).length).toBeGreaterThan(0);
+    expect(within(module).getAllByText(/^Paquetes$/i).length).toBeGreaterThan(0);
+    const provenance = within(module).getByRole("region", { name: /quantity provenance/i });
+    expect(within(provenance).getByText(/bim-quantities.xlsx/i)).toBeInTheDocument();
+    expect(within(provenance).getByText(/run #61 \/ v1 \/ xlsx/i)).toBeInTheDocument();
+    expect(within(provenance).getByText(/tabla unica de cantidades/i)).toBeInTheDocument();
+    expect(await within(module).findByText(/geometria real del archivo ifc guardado/i)).toBeInTheDocument();
+    const ifcViewer = within(module).getByRole("region", { name: /modelo ifc/i });
+    expect(ifcViewer).toHaveClass("ifcGeometryViewer");
+    expect(within(module).queryByRole("region", { name: /bim inventory preview/i })).not.toBeInTheDocument();
+    expect(within(module).queryByRole("region", { name: /bim quantity takeoff lines/i })).not.toBeInTheDocument();
+    expect(within(module).getAllByRole("table")).toHaveLength(1);
+    const scopeValidation = within(module).getByRole("region", { name: /tabla de cantidades controladas/i });
+    expect(within(scopeValidation).getByText(/ubicacion -> elemento -> codigos de control/i)).toBeInTheDocument();
+    expect(within(scopeValidation).getByText(/no duplicar elementos por wbs/i)).toBeInTheDocument();
+    expect(within(scopeValidation).getByText(/cantidad total menos cantidad asignada a paquete/i)).toBeInTheDocument();
+    expect(within(scopeValidation).getByRole("heading", { name: /tabla de cantidades controladas/i })).toBeInTheDocument();
+    expect(within(scopeValidation).getAllByText(/CBS-UNI-PLT-CIV-EARTH/i).length).toBeGreaterThan(0);
+    expect(within(scopeValidation).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
+    expect(within(scopeValidation).getAllByText(/falta cbs\/wbs/i).length).toBeGreaterThan(0);
+    expect(within(module).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
+    expect(within(module).getAllByText(/IfcWall/i).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("region", { name: /schedule intake/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /schedule xml or xer/i })).not.toBeInTheDocument();
+    expect(quantityTakeoffRuns).toHaveBeenCalledWith("tok", 1);
+    expect(quantityTakeoffLines).toHaveBeenCalledWith("tok", 1, 61);
+  });
+
+  it("keeps heavy IFC models visible when quantity extraction times out", async () => {
+    const user = userEvent.setup();
+    loadQuantityTakeoff.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+
+    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
+    const file = new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" });
+    await user.upload(input, file);
+
+    await waitFor(() => {
+      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file);
+    });
+    expect(await within(module).findByText(/registered for BIM coordination/i)).toBeInTheDocument();
+    expect(within(module).getByText(/Quantity extraction did not complete/i)).toBeInTheDocument();
+    expect(within(module).getByText(/IFC registrado para coordinacion/i)).toBeInTheDocument();
+    expect(within(module).queryByText(/the bim upload did not finish/i)).not.toBeInTheDocument();
+  });
+
+  it("loads IFC models larger than the old 8 MB guard instead of doing nothing", async () => {
+    const user = userEvent.setup();
+    const createdRun = {
+      id: 62,
+      project_id: 1,
+      source_file_name: "coordination-model.ifc",
+      source_type: "ifc",
+      status: "needs_mapping",
+      row_count: 2,
+      mapped_line_count: 0,
+      unmapped_line_count: 2,
+      total_quantity: 15.25,
+      validation_summary: "2 quantity line(s): 0 mapped, 2 need mapping.",
+      version: 1,
+      created_at: "2026-05-01T00:00:00Z",
+      updated_at: "2026-05-01T00:00:00Z",
+    };
+    loadQuantityTakeoff.mockResolvedValueOnce(createdRun);
+    quantityTakeoffRuns.mockResolvedValueOnce([createdRun]);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+
+    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
+    const file = new File([new Uint8Array(9 * 1024 * 1024)], "coordination-model.ifc", {
+      type: "application/octet-stream",
+    });
+    await user.upload(input, file);
+
+    await waitFor(() => {
+      expect(loadQuantityTakeoff).toHaveBeenCalledWith("tok", 1, file);
+    });
+    expect(await within(module).findByText(/quantity takeoff loaded from coordination-model.ifc/i)).toBeInTheDocument();
+    expect(within(module).queryByText(/larger than 8 mb/i)).not.toBeInTheDocument();
+  });
+
+  it("clears expired sessions when BIM model upload receives a 401", async () => {
+    const user = userEvent.setup();
+    loadQuantityTakeoff.mockRejectedValueOnce(new ApiError(401, '{"detail":"Invalid or expired token"}'));
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+
+    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    await user.upload(
+      within(module).getByLabelText(/load bim\/ifc or excel quantities/i),
+      new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" }),
+    );
+
+    await waitFor(() => {
+      expect(authLogout).toHaveBeenCalledTimes(1);
+    });
+    expect(within(module).queryByText(/invalid or expired token/i)).not.toBeInTheDocument();
+  });
+
+  it("auto-saves ready setup before loading the first Activity Sheet", async () => {
+    const user = userEvent.setup();
+    const createdSheet = {
+      id: 12,
+      project_id: 1,
+      schedule_import_id: 21,
+      source_file_name: "activity.xer",
+      source: "p6_xer",
+      status: "validated",
+      row_count: 1,
+      data_date: "2026-03-11",
+      baseline_name: "activity",
+      validation_summary: "1 activities, 0 relationships.",
+      version: 1,
+      created_at: "2026-05-01T00:00:00Z",
+      updated_at: "2026-05-01T00:00:00Z",
+    };
+    operationalSetup.mockRejectedValueOnce(new ApiError(404, '{"detail":"Project operational setup not found"}'));
+    activitySheets.mockResolvedValueOnce([]).mockResolvedValue([createdSheet]);
+    loadActivitySheetData.mockResolvedValue(createdSheet);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open project and wbs/i }));
+    const input = screen.getByLabelText(/load xml\/xer/i);
+    expect(input).toBeEnabled();
+
+    const file = new File(["%T\tTASK"], "activity.xer", { type: "application/octet-stream" });
+    await user.upload(input, file);
+
+    await waitFor(() => {
+      expect(updateOperationalSetup).toHaveBeenCalledWith(
+        "tok",
+        1,
+        expect.objectContaining({
+          project_number: "CTRL-DEMO-001",
+          status: "ready",
+          permissions_configured: true,
+          p6_mapping_ready: true,
+        }),
+      );
+    });
+    expect(loadActivitySheetData).toHaveBeenCalledWith("tok", 1, file);
+    expect(await screen.findByText(/Activity data loaded from activity.xer/i)).toBeInTheDocument();
+  });
+
+  it("creates a WBS node from Project Setup", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open project and wbs/i }));
+
+    const wbsCatalogPanel = await screen.findByRole("region", { name: /wbs catalog/i });
+    fireEvent.change(within(wbsCatalogPanel).getByLabelText(/^wbs code$/i), { target: { value: "WBS-MAN-001" } });
+    fireEvent.change(within(wbsCatalogPanel).getByLabelText(/^wbs name$/i), { target: { value: "Manual WBS" } });
+    fireEvent.change(within(wbsCatalogPanel).getByLabelText(/^responsible$/i), { target: { value: "Ana Control" } });
+
+    await user.click(within(wbsCatalogPanel).getByRole("button", { name: /create wbs/i }));
+
+    await waitFor(() => {
+      expect(createWbs).toHaveBeenCalledWith(
+        "tok",
+        1,
+        expect.objectContaining({
+          code: "WBS-MAN-001",
+          name: "Manual WBS",
+          responsible: "Ana Control",
+        }),
+      );
+    });
+    expect(await screen.findByText(/WBS WBS-MAN-001 created/i)).toBeInTheDocument();
+  });
+
+  it("shows WBS as a hierarchy and as a table in Project Setup", async () => {
+    const user = userEvent.setup();
+    wbs.mockResolvedValue([
+      {
+        id: 9,
+        parent_id: null,
+        code: "1.0",
+        name: "Project Control Baseline",
+        level: 1,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "draft",
+      },
+      {
+        id: 10,
+        parent_id: null,
+        code: "P&Pmis-PY-1",
+        name: "Proyecto Piloto",
+        level: 1,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 14,
+        parent_id: null,
+        code: "1",
+        name: "Legacy flat Ingenieria",
+        level: 1,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "draft",
+      },
+      {
+        id: 11,
+        parent_id: null,
+        code: "P&Pmis-PY-1-1",
+        name: "Ingenieria",
+        level: 2,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 12,
+        parent_id: null,
+        code: "P&Pmis-PY-1-4",
+        name: "Construccion",
+        level: 2,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 13,
+        parent_id: null,
+        code: "P&Pmis-PY-1-4-1",
+        name: "Estructura Concreto",
+        level: 3,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+    ]);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open project and wbs/i }));
+
+    const structure = await screen.findByRole("region", { name: /wbs structure/i });
+    const wbsTreePanel = within(structure).getByRole("tree");
+    expect(within(wbsTreePanel).getAllByText(/Project CTRL-DEMO-001/i).length).toBeGreaterThan(0);
+    expect(within(wbsTreePanel).getAllByText("Proyecto Piloto").length).toBeGreaterThan(0);
+    expect(within(wbsTreePanel).getAllByText("Estructura Concreto").length).toBeGreaterThan(0);
+    expect(within(wbsTreePanel).getByText("CTRL-DEMO-001-1-4-1")).toBeInTheDocument();
+    expect(within(wbsTreePanel).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
+    expect(within(wbsTreePanel).queryByText("Project Control Baseline")).not.toBeInTheDocument();
+    expect(within(wbsTreePanel).queryByText("Legacy flat Ingenieria")).not.toBeInTheDocument();
+    expect(within(wbsTreePanel).getByRole("treeitem", { name: /Proyecto Piloto CTRL-DEMO-001/i })).toHaveAttribute(
+      "aria-level",
+      "1",
+    );
+    expect(
+      within(wbsTreePanel).getByRole("treeitem", { name: /Estructura Concreto/i }),
+    ).toHaveAttribute("aria-level", "3");
+
+    const table = screen.getByRole("region", { name: /wbs table/i });
+    expect(within(table).getByRole("row", { name: /Proyecto Piloto CTRL-DEMO-001-1 Project 1 Active/i })).toBeInTheDocument();
+    expect(
+      within(table).getByRole("row", {
+        name: /Estructura Concreto CTRL-DEMO-001-1-4-1 Construccion 3 Active/i,
+      }),
+    ).toBeInTheDocument();
+    expect(within(table).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
+    expect(within(table).getByText("Estructura Concreto").closest("td")).toHaveStyle({ paddingLeft: "66px" });
+  });
+
+  it("anchors WBS CBS FBS mapping on the WBS hierarchy and active traceability", async () => {
+    const user = userEvent.setup();
+    wbs.mockResolvedValue([
+      {
+        id: 9,
+        parent_id: null,
+        code: "1",
+        name: "Legacy flat Ingenieria",
+        level: 1,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "draft",
+      },
+      {
+        id: 10,
+        parent_id: null,
+        code: "P&Pmis-PY-1",
+        name: "Proyecto Piloto",
+        level: 1,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 11,
+        parent_id: 10,
+        code: "P&Pmis-PY-1-4",
+        name: "Construccion",
+        level: 2,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 12,
+        parent_id: 11,
+        code: "P&Pmis-PY-1-4-1",
+        name: "Estructura Concreto",
+        level: 3,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+      {
+        id: 13,
+        parent_id: 11,
+        code: "P&Pmis-PY-1-4-2",
+        name: "Instalaciones Mecanicas, Electricas, Hidraulicas",
+        level: 3,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+    ]);
+    controlAccounts.mockResolvedValue([
+      {
+        id: 101,
+        wbs_id: 12,
+        awp_package_id: null,
+        code: "CA-P&Pmis-PY-1-4-1",
+        name: "Control Account P&Pmis-PY-1-4-1",
+        responsible: "Project Controls",
+        discipline: "Structural",
+        scope: "",
+        budget: 0,
+        start_date: null,
+        finish_date: null,
+        cbs_code: "CBS-PY-STR",
+        contract_ref: "CTR-STR-01",
+        measurement_rule: "Physical progress by installed concrete quantities.",
+        earned_value: 0,
+        actual_cost: 0,
+        forecast: 0,
+        lifecycle_status: "active",
+        risk_ref: "",
+        closure_note: "",
+        version: 1,
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+      {
+        id: 102,
+        wbs_id: 9,
+        awp_package_id: null,
+        code: "CA-LEGACY-AWP-GOV",
+        name: "Legacy AWP governance account",
+        responsible: "Project Controls",
+        discipline: "Construction",
+        scope: "",
+        budget: 0,
+        start_date: null,
+        finish_date: null,
+        cbs_code: "CBS-LEGACY-AWP-GOV",
+        contract_ref: "",
+        measurement_rule: "",
+        earned_value: 0,
+        actual_cost: 0,
+        forecast: 0,
+        lifecycle_status: "closed",
+        risk_ref: "",
+        closure_note: "",
+        version: 1,
+        updated_at: "2026-05-01T00:00:00Z",
+      },
+    ]);
+    activitySheetWbsRows.mockResolvedValue([
+      {
+        wbs_code: "P&Pmis-PY-1-1",
+        wbs_name: "Ingenieria",
+        activity_count: 1,
+        control_account_count: 1,
+        planned_cost: 500,
+        planned_value: 500,
+        unmapped_activity_count: 0,
+        needs_review_count: 0,
+      },
+      {
+        wbs_code: "P&Pmis-PY-1-4-1",
+        wbs_name: "Estructura Concreto",
+        activity_count: 1,
+        control_account_count: 1,
+        planned_cost: 2000,
+        planned_value: 2000,
+        unmapped_activity_count: 0,
+        needs_review_count: 0,
+      },
+      {
+        wbs_code: "P&Pmis-PY-1-4-2",
+        wbs_name: "Instalaciones Mecanicas, Electricas, Hidraulicas",
+        activity_count: 1,
+        control_account_count: 1,
+        planned_cost: 3000,
+        planned_value: 3000,
+        unmapped_activity_count: 0,
+        needs_review_count: 0,
+      },
+    ]);
+    matrix.mockResolvedValue([
+      {
+        project_id: 1,
+        project_code: "CTRL-DEMO-001",
+        project_name: "Piloto vial AWP",
+        fbs_code: "FBS-OWN-AFE002",
+        wbs_code: "P&Pmis-PY-1-4-1",
+        awp_package_code: "CWP-P-PMIS-PY-1-4-1-STR-01",
+        awp_package_type: "CWP",
+        control_account_code: "CA-P&Pmis-PY-1-4-1",
+        cbs_code: "CBS-PY-STR",
+        cost_code: "CC-PY-STR-001",
+        contract_ref: "CTR-STR-01",
+        budget: 1500,
+        funds_available: 2000,
+        committed: 500,
+        actual: 0,
+        forecast: 1500,
+        balance: 500,
+        status: "active",
+      },
+    ]);
+    getDashboard.mockResolvedValue({
+      ...demoDashboard,
+      work_packages: [
+        {
+          id: 501,
+          wbs_id: 12,
+          control_account_id: 101,
+          parent_id: null,
+          package_type: "CWP",
+          code: "CWP-P-PMIS-PY-1-4-1-STR-01",
+          title: "Structural package",
+          description: "Concrete structure construction package.",
+          discipline: "Structural",
+          sequence_no: 1,
+          path_of_construction: "Estructura Concreto sequence before architectural closeout.",
+          owner_role: "Workface Planner",
+          readiness_status: "constraint_review",
+          main_constraints: "Evidence: WBS P&Pmis-PY-1-4-1; CBS CBS-PY-STR.",
+          planned_release_date: null,
+          planned_start: null,
+          planned_finish: null,
+          release_required_on: null,
+          progress_percent: 0,
+          version: 1,
+          updated_at: "2026-05-01T00:00:00Z",
+        },
+      ],
+    } satisfies Dashboard);
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /open business processes/i }));
+
+    const structure = await screen.findByRole("region", { name: /wbs master structure/i });
+    expect(within(structure).getByRole("treeitem", { name: /Proyecto Piloto CTRL-DEMO-001/i })).toHaveAttribute(
+      "aria-level",
+      "1",
+    );
+    expect(within(structure).getByRole("treeitem", { name: /Construccion/i })).toHaveAttribute(
+      "aria-level",
+      "2",
+    );
+    expect(
+      within(structure).getByRole("treeitem", { name: /Estructura Concreto/i }),
+    ).toHaveAttribute("aria-level", "3");
+    expect(within(structure).getByText("CTRL-DEMO-001-1-4-1")).toBeInTheDocument();
+    expect(within(structure).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
+    expect(within(structure).getByRole("treeitem", { name: /Construccion/i })).toHaveTextContent("2 act / $5,000");
+    expect(within(structure).queryByText("Legacy flat Ingenieria")).not.toBeInTheDocument();
+
+    const alignmentPanel = screen.getByRole("region", { name: /wbs control alignment/i });
+    const concreteAlignment = within(alignmentPanel).getByRole("article", {
+      name: /Estructura Concreto control alignment/i,
+    });
+    expect(within(concreteAlignment).getByText("WBS")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("Estructura Concreto")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("Control Account")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("Control Account - Estructura Concreto")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("CA-CTRL-DEMO-001-1-4-1")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("CBS-PY-STR")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("CC-PY-STR-001")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("FBS-OWN-AFE002")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("Structural package")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("CWP-CTRL-DEMO-001-1-4-1-STR-01")).toBeInTheDocument();
+    expect(within(concreteAlignment).getByText("$1,500")).toBeInTheDocument();
+    expect(within(alignmentPanel).queryByText(/P&Pmis/i)).not.toBeInTheDocument();
+
+    const matrixPanel = screen.getByRole("region", { name: /wbs traceability matrix/i });
+    expect(
+      within(matrixPanel).getByRole("row", {
+        name: /Estructura Concreto CTRL-DEMO-001-1-4-1 CA-CTRL-DEMO-001-1-4-1 .* CBS-PY-STR FBS-OWN-AFE002 Structural package CWP-CTRL-DEMO-001-1-4-1-STR-01 Active/i,
+      }),
+    ).toBeInTheDocument();
+    expect(within(matrixPanel).queryByText(/CA-LEGACY-AWP-GOV/i)).not.toBeInTheDocument();
+  });
+
   it("shows package POC and lets users add manual constraints", async () => {
     const user = userEvent.setup();
+    wbs.mockResolvedValueOnce([
+      {
+        id: 1,
+        parent_id: null,
+        code: "P&Pmis-PY-1-4",
+        name: "Construccion",
+        level: 2,
+        description: "",
+        dictionary: "",
+        responsible: "",
+        status: "active",
+      },
+    ]);
     getDashboard.mockResolvedValue({
       ...demoDashboard,
       awp_summary: {
         ...demoDashboard.awp_summary,
-        total_packages: 1,
+        total_packages: 3,
         cwp_count: 1,
+        iwp_count: 1,
       },
       work_packages: [
         {
-          id: 501,
-          control_account_id: 101,
+          id: 500,
+          wbs_id: 1,
+          control_account_id: null,
           parent_id: null,
+          package_type: "CWA",
+          code: "CWA-P-PMIS-PY-1-4",
+          title: "Plant area",
+          description: "Construction work area for plant civil works.",
+          discipline: "Multi-discipline",
+          sequence_no: 1,
+          path_of_construction: "Area release before civil works",
+          owner_role: "AWP Champion",
+          readiness_status: "constraint_review",
+          main_constraints:
+            "AWP confidence: Medium. Evidence: WBS P&Pmis-PY-1; control account CA-PLT-CIV; CBS CBS-UNI-PLT-CIV-EARTH; 7 schedule activities; 12 quantity lines; 1 funding allocations.",
+          planned_release_date: null,
+          planned_start: null,
+          planned_finish: null,
+          release_required_on: null,
+          progress_percent: 0,
+          version: 1,
+          updated_at: "2026-05-01T00:00:00Z",
+        },
+        {
+          id: 501,
+          wbs_id: 1,
+          control_account_id: 101,
+          parent_id: 500,
           package_type: "CWP",
-          code: "CWP-PLT-CIV",
+          code: "CWP-P-PMIS-PY-1-4-CIV-01",
           title: "Civil package",
+          description: "Draft construction package for civil workface planning.",
           discipline: "Civil",
           sequence_no: 1,
           path_of_construction: "North-to-south civil path",
           owner_role: "Workface Planner",
           readiness_status: "constraint_review",
+          main_constraints:
+            "AWP confidence: Medium. Evidence: WBS P&Pmis-PY-1-4; control account CA-PLT-CIV; CBS CBS-UNI-PLT-CIV-EARTH; 7 schedule activities; 12 quantity lines; 1 funding allocations. Gate: confirm CWA boundary, CWP sequence, EWP/PWP support, CBS/FBS/control-account alignment and open constraints before field release.",
+          planned_release_date: null,
+          planned_start: null,
+          planned_finish: null,
+          release_required_on: null,
+          progress_percent: 0,
+          version: 1,
+          updated_at: "2026-05-01T00:00:00Z",
+        },
+        {
+          id: 502,
+          wbs_id: 1,
+          control_account_id: 101,
+          parent_id: 501,
+          package_type: "IWP",
+          code: "IWP-P-PMIS-PY-1-4-CIV-01-IW01",
+          title: "Civil workface",
+          description: "Install workface package for civil execution.",
+          discipline: "Civil",
+          sequence_no: 3,
+          path_of_construction: "Inherits POC from CWP-P-PMIS-PY-1-4-CIV-01; release by workface constraints.",
+          owner_role: "Workface Planner",
+          readiness_status: "constraint_review",
+          main_constraints:
+            "AWP confidence: Medium. Evidence: WBS P&Pmis-PY-1-4; control account CA-PLT-CIV; CBS CBS-UNI-PLT-CIV-EARTH; 7 schedule activities; 12 quantity lines; 1 funding allocations.",
+          planned_release_date: null,
           planned_start: null,
           planned_finish: null,
           release_required_on: null,
@@ -1136,7 +2435,7 @@ describe("served project control flow", () => {
           budget: 0,
           start_date: null,
           finish_date: null,
-          cbs_code: "CBS-PLT-CIV-A100",
+          cbs_code: "CBS-UNI-PLT-CIV-EARTH",
           contract_ref: "",
           measurement_rule: "",
           earned_value: 0,
@@ -1158,9 +2457,37 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /work packages/i }));
+    await user.click(screen.getByRole("button", { name: /open awp packages/i }));
 
+    const codingLegend = await screen.findByRole("region", { name: /package coding rule/i });
+    expect(within(codingLegend).getByText(/CWA-\[PROJECT\]-\[WBS NAME\]/i)).toBeInTheDocument();
+    expect(within(codingLegend).getByText(/CWP-\[PROJECT\]-\[WBS NAME\]-\[DISC\]-\[NN\]/i)).toBeInTheDocument();
+    expect(within(codingLegend).getByText(/IWP-\[PROJECT\]-\[WBS NAME\]-\[DISC\]-\[NN\]-IW##/i)).toBeInTheDocument();
+    const packageTree = await screen.findByRole("region", { name: /awp package tree/i });
+    expect(within(packageTree).getAllByText(/WBS: Construccion/i)).toHaveLength(3);
+    expect(within(packageTree).queryByText(/WBS original/i)).not.toBeInTheDocument();
+    expect(within(packageTree).getByRole("treeitem", { name: /CWA \/ Construccion Plant area/i })).toHaveAttribute(
+      "aria-level",
+      "1",
+    );
+    expect(
+      within(packageTree).getByRole("treeitem", { name: /CWP \/ Construccion - Civil Civil package/i }),
+    ).toHaveAttribute("aria-level", "2");
+    expect(
+      within(packageTree).getByRole("treeitem", { name: /IWP \/ Construccion - Civil Civil workface/i }),
+    ).toHaveAttribute("aria-level", "3");
+    const pocRoute = screen.getByRole("region", { name: /path of construction route/i });
+    expect(within(pocRoute).getByText(/Area release before civil works/i)).toBeInTheDocument();
+    expect(within(pocRoute).getByText(/North-to-south civil path/i)).toBeInTheDocument();
+    expect(within(pocRoute).queryByText(/release by workface constraints/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Inherits POC from Civil package/i)).toBeInTheDocument();
+    expect(screen.getByText(/Workface release constraints/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/WBS: Construccion/i).length).toBeGreaterThanOrEqual(3);
     expect(await screen.findByText(/POC: North-to-south civil path/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/AWP confidence: Medium/i)).toHaveLength(3);
+    expect(screen.getAllByText(/WBS Construccion/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/Draft generated by agent; requires human validation before release/i)).toHaveLength(3);
+    expect(screen.queryByRole("heading", { name: /^Control Accounts$/i })).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Package"), { target: { value: "501" } });
     fireEvent.change(screen.getByLabelText("Type"), { target: { value: "Materials" } });
@@ -1218,13 +2545,14 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await screen.findByRole("button", { name: /open awp packages/i });
     await user.click(screen.getByRole("button", { name: /users & roles/i }));
 
     expect(screen.getByRole("heading", { name: /users & roles/i })).toBeInTheDocument();
-    await user.type(screen.getByLabelText(/full name/i), "Nuevo Admin");
+    await user.type(screen.getAllByLabelText(/^full name$/i)[0], "Nuevo Admin");
     await user.type(screen.getByLabelText(/login email/i), "nuevo.admin@demo.local");
-    await user.clear(screen.getByLabelText(/temporary password/i));
-    await user.type(screen.getByLabelText(/temporary password/i), "1234");
+    await user.clear(screen.getByLabelText(/^temporary password$/i));
+    await user.type(screen.getByLabelText(/^temporary password$/i), "1234");
     await user.click(screen.getByRole("button", { name: /create user & assign role/i }));
 
     await waitFor(() => {
@@ -1238,5 +2566,48 @@ describe("served project control flow", () => {
       );
     });
     expect(assignTeamMember).toHaveBeenCalledWith("tok", 1, { role: "Control Manager", user_id: 2 });
+  });
+
+  it("manages existing tenant users and project access from the dashboard", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await screen.findByRole("button", { name: /open awp packages/i });
+    await user.click(screen.getByRole("button", { name: /users & roles/i }));
+
+    fireEvent.change(screen.getByLabelText(/manage tenant user/i), { target: { value: "1" } });
+    await user.clear(screen.getByLabelText(/managed full name/i));
+    await user.type(screen.getByLabelText(/managed full name/i), "Carlos Planner Senior");
+    await user.clear(screen.getByLabelText(/managed title/i));
+    await user.type(screen.getByLabelText(/managed title/i), "Senior Planner");
+    await user.click(screen.getByRole("button", { name: /^update user$/i }));
+
+    await waitFor(() => {
+      expect(updateUser).toHaveBeenCalledWith(
+        "tok",
+        1,
+        expect.objectContaining({ full_name: "Carlos Planner Senior", title: "Senior Planner" }),
+      );
+    });
+
+    await user.clear(screen.getByLabelText(/new temporary password/i));
+    await user.type(screen.getByLabelText(/new temporary password/i), "5678");
+    await user.click(screen.getByRole("button", { name: /reset password/i }));
+    expect(resetUserPassword).toHaveBeenCalledWith("tok", 1, "5678");
+
+    await user.click(screen.getByRole("button", { name: /assign existing user/i }));
+    expect(assignTeamMember).toHaveBeenCalledWith("tok", 1, { role: "Control Manager", user_id: 1 });
+
+    await user.click(screen.getByRole("button", { name: /remove access/i }));
+    expect(removeTeamMember).toHaveBeenCalledWith("tok", 1, 1);
+
+    await user.click(screen.getByRole("button", { name: /deactivate user/i }));
+    expect(deactivateUser).toHaveBeenCalledWith("tok", 1);
   });
 });

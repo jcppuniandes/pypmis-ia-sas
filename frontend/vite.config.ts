@@ -7,10 +7,15 @@ export default defineConfig({
     allowedHosts: ["frontend", "host.docker.internal"],
   },
   build: {
+    // web-ifc is isolated behind the BIM module lazy import; this limit keeps
+    // the intentional geometry engine chunk from hiding real initial-bundle risk.
+    chunkSizeWarningLimit: 3600,
     rolldownOptions: {
       output: {
         codeSplitting: {
           groups: [
+            { name: "bim-ifc-engine", test: /[\\/]node_modules[\\/]web-ifc[\\/]/ },
+            { name: "bim-three", test: /[\\/]node_modules[\\/]three[\\/]/ },
             { name: "vendor-react", test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom|zustand)[\\/]/ },
             { name: "vendor-charts", test: /[\\/]node_modules[\\/](recharts|d3-|victory-vendor)[\\/]/ },
             { name: "vendor-icons", test: /[\\/]node_modules[\\/]lucide-react[\\/]/ },

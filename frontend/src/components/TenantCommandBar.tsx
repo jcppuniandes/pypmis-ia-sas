@@ -1,24 +1,24 @@
-import { LogOut, Plus, Workflow } from "lucide-react";
-import type { Project, GuidedProjectContext, TenantContext } from "../types";
+import { LogOut, Workflow } from "lucide-react";
+import type { Project, GuidedProjectContext } from "../types";
 
 type Props = {
-  tenant: TenantContext;
   project: GuidedProjectContext;
   projects: Project[];
   selectedProjectId: number;
   userEmail: string;
-  onCreateProject: () => void;
+  userName: string;
+  userTitle: string;
   onLogout: () => void;
   onProjectChange: (projectId: number) => void;
 };
 
 export default function TenantCommandBar({
-  tenant,
   project,
   projects,
   selectedProjectId,
   userEmail,
-  onCreateProject,
+  userName,
+  userTitle,
   onLogout,
   onProjectChange,
 }: Props) {
@@ -27,10 +27,9 @@ export default function TenantCommandBar({
       <div className="tenantCommandIdentity">
         <Workflow size={20} />
         <div>
-          <strong>{tenant.name}</strong>
-          <span>
-            {tenant.slug} / {tenant.base_currency}
-          </span>
+          <span className="tenantCommandEyebrow">Acceso de proyecto</span>
+          <strong>Proyectos asignados</strong>
+          <span>Cada usuario ve solo sus proyectos</span>
         </div>
       </div>
       <label>
@@ -49,11 +48,10 @@ export default function TenantCommandBar({
           {project.code} / {project.status} / {project.currency}
         </span>
       </div>
-      <span className="tenantCommandUser">{userEmail}</span>
-      <button className="iconTextButton" onClick={onCreateProject} type="button">
-        <Plus size={16} />
-        <span>New Project</span>
-      </button>
+      <span className="tenantCommandUser">
+        <strong>{userName || userEmail}</strong>
+        <small>{userTitle ? `${userTitle} / ${userEmail}` : userEmail}</small>
+      </span>
       <button className="iconButton" onClick={onLogout} type="button" aria-label="Logout">
         <LogOut size={16} />
       </button>

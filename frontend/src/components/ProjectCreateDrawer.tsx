@@ -95,45 +95,8 @@ export default function ProjectCreateDrawer<TDraft extends ProjectDrawerDraft>({
             </select>
           </label>
           <label>
-            <span>Status</span>
-            <select disabled={!canConfigure || pending} onChange={(event) => setField("status", event.target.value)} value={draft.status}>
-              <option value="draft">Draft</option>
-              <option value="authorized">Authorized</option>
-              <option value="baseline_approved">Baseline Approved</option>
-              <option value="in_execution">In Execution</option>
-              <option value="closed">Closed</option>
-            </select>
-          </label>
-        </div>
-        <label>
-          <span>Owner</span>
-          <input disabled={!canConfigure || pending} onChange={(event) => setField("owner", event.target.value)} value={draft.owner} />
-        </label>
-        <label>
-          <span>Base Calendar</span>
-          <input
-            disabled={!canConfigure || pending}
-            onChange={(event) => setField("calendar_base", event.target.value)}
-            value={draft.calendar_base}
-          />
-        </label>
-        <div className="formColumns">
-          <label>
-            <span>Authorization Reference</span>
-            <input
-              disabled={!canConfigure || pending}
-              onChange={(event) => setField("authorization_ref", event.target.value)}
-              value={draft.authorization_ref}
-            />
-          </label>
-          <label>
-            <span>Authorization Date</span>
-            <input
-              disabled={!canConfigure || pending}
-              onChange={(event) => setField("authorization_date", event.target.value)}
-              type="date"
-              value={draft.authorization_date}
-            />
+            <span>Owner</span>
+            <input disabled={!canConfigure || pending} onChange={(event) => setField("owner", event.target.value)} value={draft.owner} />
           </label>
         </div>
         <div className="formColumns">
@@ -156,29 +119,73 @@ export default function ProjectCreateDrawer<TDraft extends ProjectDrawerDraft>({
             />
           </label>
         </div>
-        <div className="formColumns">
-          <label>
-            <span>Control Level</span>
-            <select
-              disabled={!canConfigure || pending}
-              onChange={(event) => setField("control_level", event.target.value)}
-              value={draft.control_level}
-            >
-              <option value="control_account">Control Account</option>
-              <option value="cost_code">Cost Code</option>
-              <option value="awp_package">AWP Package</option>
-            </select>
-          </label>
-          <label className="checkboxLine">
-            <input
-              checked={draft.funding_required}
-              disabled={!canConfigure || pending}
-              onChange={(event) => setField("funding_required", event.target.checked)}
-              type="checkbox"
-            />
-            <span>Funding Required</span>
-          </label>
-        </div>
+        <details className="advancedFields">
+          <summary>Advanced project controls</summary>
+          <div className="advancedFieldsBody">
+            <div className="formColumns">
+              <label>
+                <span>Status</span>
+                <select disabled={!canConfigure || pending} onChange={(event) => setField("status", event.target.value)} value={draft.status}>
+                  <option value="draft">Draft</option>
+                  <option value="authorized">Authorized</option>
+                  <option value="baseline_approved">Baseline Approved</option>
+                  <option value="in_execution">In Execution</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </label>
+              <label>
+                <span>Base Calendar</span>
+                <input
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("calendar_base", event.target.value)}
+                  value={draft.calendar_base}
+                />
+              </label>
+            </div>
+            <div className="formColumns">
+              <label>
+                <span>Authorization Reference</span>
+                <input
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("authorization_ref", event.target.value)}
+                  value={draft.authorization_ref}
+                />
+              </label>
+              <label>
+                <span>Authorization Date</span>
+                <input
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("authorization_date", event.target.value)}
+                  type="date"
+                  value={draft.authorization_date}
+                />
+              </label>
+            </div>
+            <div className="formColumns">
+              <label>
+                <span>Control Level</span>
+                <select
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("control_level", event.target.value)}
+                  value={draft.control_level}
+                >
+                  <option value="control_account">Control Account</option>
+                  <option value="cost_code">Cost Code</option>
+                  <option value="awp_package">AWP Package</option>
+                </select>
+              </label>
+              <label className="checkboxLine">
+                <input
+                  checked={draft.funding_required}
+                  disabled={!canConfigure || pending}
+                  onChange={(event) => setField("funding_required", event.target.checked)}
+                  type="checkbox"
+                />
+                <span>Funding Required</span>
+              </label>
+            </div>
+          </div>
+        </details>
         <button className="workflowAction primary" disabled={!canConfigure || pending} type="submit">
           {pending ? "Creating..." : "Create Project"}
         </button>

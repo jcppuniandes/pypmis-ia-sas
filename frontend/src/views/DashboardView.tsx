@@ -4,6 +4,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import type { AppShellCtx } from "../components/AppShellCtx";
 import StatusLight from "../components/StatusLight";
 import { currency, neutralProjectText, neutralScheduleText, statusLabel } from "../components/utils";
+import { formatEvmRatio, safeEvmRatio } from "../lib/evm";
 
 export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
   const {
@@ -15,6 +16,8 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
     chartData,
     accountLabel,
   } = ctx;
+  const spi = safeEvmRatio(kpi.ev, kpi.pv);
+  const cpi = safeEvmRatio(kpi.ev, kpi.ac);
   return (
     <>
       <section
@@ -27,18 +30,18 @@ export default function DashboardView({ ctx }: { ctx: AppShellCtx }) {
             <Gauge size={18} />
             <span>SPI</span>
           </div>
-          <strong>{kpi.spi.toFixed(3)}</strong>
+          <strong>{formatEvmRatio(spi)}</strong>
           <small>Schedule performance</small>
-          <StatusLight value={kpi.spi} />
+          <StatusLight value={spi ?? 0} />
         </article>
         <article className="metric">
           <div>
             <ShieldCheck size={18} />
             <span>CPI</span>
           </div>
-          <strong>{kpi.cpi.toFixed(3)}</strong>
+          <strong>{formatEvmRatio(cpi)}</strong>
           <small>Cost performance</small>
-          <StatusLight value={kpi.cpi} />
+          <StatusLight value={cpi ?? 0} />
         </article>
         <article className="metric">
           <div>
