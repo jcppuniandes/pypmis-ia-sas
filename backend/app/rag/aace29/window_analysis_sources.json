@@ -1,0 +1,79 @@
+[
+  {
+    "title": "AACE RP29R-03 Forensic Schedule Analysis",
+    "file_name": "RP29R-03 Forensic Schedule Analysis.pdf",
+    "source_type": "standard",
+    "relevance": "Defines MIP 3.7 modeled/additive/multiple-base forensic schedule analysis.",
+    "tags": ["AACE", "MIP 3.7", "windows", "forensic schedule analysis"]
+  },
+  {
+    "title": "Analisis de Ventanas",
+    "file_name": "Analisis de Ventanas.pdf",
+    "source_type": "user_rag",
+    "relevance": "User-provided guide for structuring windows analysis and practical review outputs.",
+    "tags": ["windows analysis", "schedule delay", "RAG"]
+  },
+  {
+    "title": "Instructivo Relacion Causa Efecto Modelado CPM",
+    "file_name": "Instructivo_Relacion_Causa_Efecto_Modelado_CPM_AACE29R_120R_130R.docx",
+    "source_type": "user_rag",
+    "relevance": "Supports the cause-effect model and CPM impact traceability.",
+    "tags": ["cause-effect", "CPM", "AACE"]
+  },
+  {
+    "title": "Metodologia Implementacion AACE RP29R Propuesta",
+    "file_name": "Metodologia_Implementacion_AACE_RP29R_Propuesta.docx",
+    "source_type": "user_rag",
+    "relevance": "Supports implementation criteria for choosing and documenting forensic delay methods.",
+    "tags": ["AACE", "implementation", "method selection"]
+  },
+  {
+    "title": "Procedimiento Modelacion Mayor Duracion Actividad",
+    "file_name": "Procedimiento_Modelacion_Mayor_Duracion_Actividad_AACE29R.docx",
+    "source_type": "user_rag",
+    "relevance": "Supports activity-duration impact modeling and candidate fragnet preparation.",
+    "tags": ["duration impact", "fragnet", "CPM"]
+  },
+  {
+    "title": "Guia Practica para la Aplicacion del SVP 2.4",
+    "file_name": "Gua Prctica para la Aplicacin del SVP 2.4.docx",
+    "source_type": "user_rag",
+    "relevance": "Supports schedule source validation protocol criteria before using updates in a windows analysis.",
+    "tags": ["SVP 2.4", "schedule validation", "AACE"]
+  },
+  {
+    "title": "Guia practica para protocolos SVP 2.1, 2.2 y 2.3",
+    "file_name": "Gua prctica para el uso de los protocolos SVP 2.1, 2.2 y 2.3.docx",
+    "source_type": "user_rag",
+    "relevance": "Supports baseline and update validation before comparing CPM windows.",
+    "tags": ["SVP 2.1", "SVP 2.2", "SVP 2.3", "baseline validation"]
+  },
+  {
+    "title": "Extension of Time Requests",
+    "file_name": "Extension of Time Requests.pdf",
+    "source_type": "user_rag",
+    "relevance": "Supports extension-of-time claim framing, entitlement and delay substantiation checks.",
+    "tags": ["EOT", "claims", "delay substantiation"]
+  },
+  {
+    "title": "HKA Time Slice Analysis Article",
+    "file_name": "HKA_TSA-article_April-2023_V2 (1).pdf",
+    "source_type": "user_rag",
+    "relevance": "Supports comparison with time-slice analysis practice and update-period interpretation.",
+    "tags": ["time slice", "windows", "HKA"]
+  },
+  {
+    "title": "Hybrid Windows Analysis",
+    "file_name": "Hybrid Windows Analysis .pdf",
+    "source_type": "user_rag",
+    "relevance": "Supports hybrid window interpretation when updates and modeled impacts coexist.",
+    "tags": ["hybrid windows", "delay analysis"]
+  },
+  {
+    "title": "Society of Construction Law Delay and Disruption Protocol",
+    "file_name": "SOCIETY OF CONSTRUCTION LAW DELAY AND DISRUPTION PROTOCOL.pdf",
+    "source_type": "repository_rag",
+    "relevance": "Supports delay and disruption protocol cross-checks, causation and concurrency review.",
+    "tags": ["delay protocol", "concurrency", "claims"]
+  }
+]

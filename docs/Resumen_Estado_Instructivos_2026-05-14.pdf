@@ -1,0 +1,2048 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 510 >>
+stream
+BT
+0 g
+/F2 22 Tf
+70 700 Td (Resumen de estado actual) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+70 668 Td (P&Pmis Ai SaaS frente a instructivos Unifier 26) Tj
+ET
+BT
+0 g
+/F1 10 Tf
+70 644 Td (Fecha: 14 de mayo de 2026) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 610 Td (Informe generado con base en los tres instructivos compartidos y en el estado actual de la app) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 597 Td (levantada localmente.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 1) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 5670 >>
+stream
+BT
+0 g
+/F1 9 Tf
+54 787 Td (Fecha: 14 de mayo de 2026) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 767 Td (Aplicacion evaluada: P&Pmis Ai SaaS) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 747 Td (Fuentes base:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 727 Td (- Analisis consultivo Oracle Primavera Unifier Version 26.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 714 Td (- Instructivo de configuracion Activity Sheet y WBS Sheet desde P6.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 701 Td (- Instructivo de alineacion CBS, WBS y FBS/Fund Codes.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 685 Td (1. Resumen ejecutivo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 661 Td (La app ya tiene una base funcional alineada con los instructivos de control de proyectos:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 648 Td (proyecto autorizado, configuracion operativa, carga controlada de cronogramas P6 XML/XER,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 635 Td (Activity Sheet, WBS, CBS, FBS/Funding, cuentas de control, matriz integrada, procesos BP, SOV) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 622 Td (contractual, Commitment Funding, Rate Sheet, Recost, reportes de funding, baseline y cierre) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 609 Td (financiero.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 589 Td (Ademas, el bloque recomendado de endurecimiento productivo ya quedo implementado: aprobaciones) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 576 Td (configurables por rol, permisos por BP, edicion versionada de line items, exportacion XLSX/PDF) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 563 Td (de conciliacion, historico de recost y cobertura visual/frontend focalizada. En esta etapa) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 550 Td (tambien se agrego un AI Control Auditor read-only, de bajo costo, que prioriza hallazgos sobre) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 537 Td (politicas BP, recost, funding y conciliacion sin modificar datos automaticamente.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 517 Td (2. Estado actual de la app) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 493 Td (La app esta levantada localmente con Docker.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 473 Td (- Frontend: http://localhost:5173) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 460 Td (- API health: http://localhost:8000/api/v1/health/ready) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 447 Td (- Login demo recomendado: ana.control@demo.local / 1234) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 431 Td (Servicios activos:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 411 Td (- frontend) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 398 Td (- api) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 385 Td (- worker) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 372 Td (- beat) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 359 Td (- db) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 346 Td (- redis) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 330 Td (La API responde correctamente en health check y el frontend carga HTML desde el puerto 5173.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 310 Td (3. Cobertura frente a los instructivos) Tj
+ET
+q 0.92 g 54 262 487 24 re f Q
+q 0.55 G 0.5 w 54 262 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 278 Td (Area del instructivo) Tj
+ET
+q 0.65 G 0.5 w 199 286 m 199 262 l S Q
+BT
+0 g
+/F2 7 Tf
+204 278 Td (Estado actual) Tj
+ET
+q 0.65 G 0.5 w 287 286 m 287 262 l S Q
+BT
+0 g
+/F2 7 Tf
+292 278 Td (Comentario) Tj
+ET
+q 0.78 G 0.5 w 54 235 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 254 Td (Proyecto/Shell antes de Activity) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 244 Td (Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 262 m 199 235 l S Q
+BT
+0 g
+/F2 7 Tf
+204 254 Td (Cubierto) Tj
+ET
+q 0.82 G 0.5 w 287 262 m 287 235 l S Q
+BT
+0 g
+/F1 7 Tf
+292 254 Td (La app usa Project Operational Setup como compuerta antes) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 244 Td (de cargar Activity Sheet.) Tj
+ET
+q 0.78 G 0.5 w 54 208 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 227 Td (Permisos, modulos, Cost Sheet,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 217 Td (Funding Sheet y mapeo P6) Tj
+ET
+q 0.82 G 0.5 w 199 235 m 199 208 l S Q
+BT
+0 g
+/F2 7 Tf
+204 227 Td (Cubierto parcial) Tj
+ET
+q 0.82 G 0.5 w 287 235 m 287 208 l S Q
+BT
+0 g
+/F1 7 Tf
+292 227 Td (La compuerta valida flags de readiness; todavia falta una) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 217 Td (administracion visual mas granular por modulo.) Tj
+ET
+q 0.78 G 0.5 w 54 181 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 200 Td (Activity Sheet desde P6) Tj
+ET
+q 0.82 G 0.5 w 199 208 m 199 181 l S Q
+BT
+0 g
+/F2 7 Tf
+204 200 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 208 m 287 181 l S Q
+BT
+0 g
+/F1 7 Tf
+292 200 Td (Se cargan XML/XER, se crea Activity Sheet y se mantiene) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 190 Td (trazabilidad con Schedule Import.) Tj
+ET
+q 0.78 G 0.5 w 54 144 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 173 Td (WBS Sheet asociado a Activity) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 163 Td (Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 181 m 199 144 l S Q
+BT
+0 g
+/F2 7 Tf
+204 173 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 181 m 287 144 l S Q
+BT
+0 g
+/F1 7 Tf
+292 173 Td (Se agrego vista de WBS Sheet por Activity Sheet con) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 163 Td (roll-up de actividades, cuentas de control, costo planeado) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 153 Td (y PV.) Tj
+ET
+q 0.78 G 0.5 w 54 107 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 136 Td (CBS como eje de costos) Tj
+ET
+q 0.82 G 0.5 w 199 144 m 199 107 l S Q
+BT
+0 g
+/F2 7 Tf
+204 136 Td (Cubierto parcial) Tj
+ET
+q 0.82 G 0.5 w 287 144 m 287 107 l S Q
+BT
+0 g
+/F1 7 Tf
+292 136 Td (Hay Cost Breakdown Structure, Cost Codes y Cost Sheet por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 126 Td (cuenta de control. Falta Cost Sheet tipo Unifier con) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 116 Td (columnas configurables completas.) Tj
+ET
+q 0.78 G 0.5 w 54 70 487 37 re S Q
+BT
+0 g
+/F1 7 Tf
+59 99 Td (FBS/Funding Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 107 m 199 70 l S Q
+BT
+0 g
+/F2 7 Tf
+204 99 Td (Cubierto parcial) Tj
+ET
+q 0.82 G 0.5 w 287 107 m 287 70 l S Q
+BT
+0 g
+/F1 7 Tf
+292 99 Td (Hay Funding Sources/FBS, saldos, disponibilidad y forecast) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 89 Td (vs funding. Falta Funding Sheet transaccional mas) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 79 Td (detallada.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 7185 >>
+stream
+q 0.92 g 54 766 487 24 re f Q
+q 0.55 G 0.5 w 54 766 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 782 Td (Area del instructivo) Tj
+ET
+q 0.65 G 0.5 w 199 790 m 199 766 l S Q
+BT
+0 g
+/F2 7 Tf
+204 782 Td (Estado actual) Tj
+ET
+q 0.65 G 0.5 w 287 790 m 287 766 l S Q
+BT
+0 g
+/F2 7 Tf
+292 782 Td (Comentario) Tj
+ET
+q 0.78 G 0.5 w 54 739 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 758 Td (Cuentas de control) Tj
+ET
+q 0.82 G 0.5 w 199 766 m 199 739 l S Q
+BT
+0 g
+/F2 7 Tf
+204 758 Td (Cubierto) Tj
+ET
+q 0.82 G 0.5 w 287 766 m 287 739 l S Q
+BT
+0 g
+/F1 7 Tf
+292 758 Td (La cuenta de control integra WBS, CBS, actividad, funding,) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 748 Td (contrato, responsable y forecast.) Tj
+ET
+q 0.78 G 0.5 w 54 712 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 731 Td (BP CBS + Fund Code) Tj
+ET
+q 0.82 G 0.5 w 199 739 m 199 712 l S Q
+BT
+0 g
+/F2 7 Tf
+204 731 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 739 m 287 712 l S Q
+BT
+0 g
+/F1 7 Tf
+292 731 Td (Se agrego proceso BP-CBS-FUND con line items, workflow y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 721 Td (validacion de disponibilidad FBS.) Tj
+ET
+q 0.78 G 0.5 w 54 685 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 704 Td (BP CBS + WBS Code) Tj
+ET
+q 0.82 G 0.5 w 199 712 m 199 685 l S Q
+BT
+0 g
+/F2 7 Tf
+204 704 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 712 m 287 685 l S Q
+BT
+0 g
+/F1 7 Tf
+292 704 Td (Se agrego proceso BP-CBS-WBS con roll-up a Cost Code y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 694 Td (Budget por cuenta de control.) Tj
+ET
+q 0.78 G 0.5 w 54 658 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 677 Td (Base Commit, Change Commit y SOV) Tj
+ET
+q 0.82 G 0.5 w 199 685 m 199 658 l S Q
+BT
+0 g
+/F2 7 Tf
+204 677 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 685 m 287 658 l S Q
+BT
+0 g
+/F1 7 Tf
+292 677 Td (Contratos y SOV por linea validan CBS obligatorio y cuenta) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 667 Td (de control cuando aplica.) Tj
+ET
+q 0.78 G 0.5 w 54 631 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 650 Td (Commitment Funding Sheet) Tj
+ET
+q 0.82 G 0.5 w 199 658 m 199 631 l S Q
+BT
+0 g
+/F2 7 Tf
+204 650 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 658 m 287 631 l S Q
+BT
+0 g
+/F1 7 Tf
+292 650 Td (Se agregaron lineas de asignacion de fondos por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 640 Td (contrato/SOV/FBS.) Tj
+ET
+q 0.78 G 0.5 w 54 604 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 623 Td (Rate Sheet y Recost) Tj
+ET
+q 0.82 G 0.5 w 199 631 m 199 604 l S Q
+BT
+0 g
+/F2 7 Tf
+204 623 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 631 m 287 604 l S Q
+BT
+0 g
+/F1 7 Tf
+292 623 Td (Se agrego Rate Sheet por CBS y recost de Activity Sheet) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 613 Td (con actualizacion de planned cost/PV.) Tj
+ET
+q 0.78 G 0.5 w 54 577 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 596 Td (Reportes de conciliacion) Tj
+ET
+q 0.82 G 0.5 w 199 604 m 199 577 l S Q
+BT
+0 g
+/F2 7 Tf
+204 596 Td (Cubierto MVP) Tj
+ET
+q 0.82 G 0.5 w 287 604 m 287 577 l S Q
+BT
+0 g
+/F1 7 Tf
+292 596 Td (Se agrego reporte WBS-CBS-FBS-contrato-cuenta de control) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 586 Td (con budget, SOV, funding y forecast.) Tj
+ET
+q 0.78 G 0.5 w 54 550 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 569 Td (Aprobaciones configurables por) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 559 Td (rol) Tj
+ET
+q 0.82 G 0.5 w 199 577 m 199 550 l S Q
+BT
+0 g
+/F2 7 Tf
+204 569 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 577 m 287 550 l S Q
+BT
+0 g
+/F1 7 Tf
+292 569 Td (Se agregaron politicas por BP/proceso/accion con rol) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 559 Td (requerido y permission key.) Tj
+ET
+q 0.78 G 0.5 w 54 523 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 542 Td (Edicion y versionado de line) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+59 532 Td (items) Tj
+ET
+q 0.82 G 0.5 w 199 550 m 199 523 l S Q
+BT
+0 g
+/F2 7 Tf
+204 542 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 550 m 287 523 l S Q
+BT
+0 g
+/F1 7 Tf
+292 542 Td (Los BP line items se consultan, editan con) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 532 Td (expected_version y guardan revisiones historicas.) Tj
+ET
+q 0.78 G 0.5 w 54 496 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 515 Td (Exportacion conciliacion) Tj
+ET
+q 0.82 G 0.5 w 199 523 m 199 496 l S Q
+BT
+0 g
+/F2 7 Tf
+204 515 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 523 m 287 496 l S Q
+BT
+0 g
+/F1 7 Tf
+292 515 Td (El reporte de conciliacion exporta XLSX y PDF desde API y) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 505 Td (UI.) Tj
+ET
+q 0.78 G 0.5 w 54 472 487 24 re S Q
+BT
+0 g
+/F1 7 Tf
+59 488 Td (Historico de recost) Tj
+ET
+q 0.82 G 0.5 w 199 496 m 199 472 l S Q
+BT
+0 g
+/F2 7 Tf
+204 488 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 496 m 287 472 l S Q
+BT
+0 g
+/F1 7 Tf
+292 488 Td (Cada recost crea run y lineas de delta por actividad.) Tj
+ET
+q 0.78 G 0.5 w 54 445 487 27 re S Q
+BT
+0 g
+/F1 7 Tf
+59 464 Td (Agente auditor de control) Tj
+ET
+q 0.82 G 0.5 w 199 472 m 199 445 l S Q
+BT
+0 g
+/F2 7 Tf
+204 464 Td (Cubierto inicial) Tj
+ET
+q 0.82 G 0.5 w 287 472 m 287 445 l S Q
+BT
+0 g
+/F1 7 Tf
+292 464 Td (AI Control Auditor ejecuta revision read-only, persiste) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+292 454 Td (corridas y hallazgos priorizados.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 434 Td (4. Trabajo realizado hoy) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 410 Td (Se revisaron los tres instructivos y se contrastaron contra el repositorio. La conclusion fue) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 397 Td (que el sistema ya tenia una base fuerte de control integrado, pero faltaba hacer mas visible y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 384 Td (operacional el tramo Activity Sheet - WBS Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 364 Td (Se implemento el siguiente salto funcional:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 344 Td (- Enriquecimiento de filas de Activity Sheet con costo planeado, valor planeado, porcentaje) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 331 Td (  planeado, CBS, cuenta de control, estado de mapeo y nota de revision.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 318 Td (- Nuevo endpoint de WBS Sheet por Activity Sheet:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 305 Td (- GET /api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/wbs-sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 292 Td (- Vista frontend en Project Setup para mostrar WBS Sheet con:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 279 Td (- WBS Code) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 266 Td (- nombre WBS) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 253 Td (- numero de actividades) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 240 Td (- numero de cuentas de control) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 227 Td (- costo planeado) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 214 Td (- valor planeado) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 201 Td (- actividades sin mapeo o por revisar) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 188 Td (- Prueba backend focalizada pasando para Activity Sheet enriquecida y WBS Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 175 Td (- App levantada localmente y validada por HTTP.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 159 Td (Luego se implementaron las tres prioridades recomendadas:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 139 Td (- Prioridad 1:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 126 Td (- BP CBS + Fund Code con line items, workflow, auditoria y bloqueo por fondos insuficientes.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 113 Td (- BP CBS + WBS Code con line items, workflow, creacion/actualizacion de Cost Codes, Budget y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 100 Td (  roll-up por WBS/CBS.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 87 Td (- UI con detalle de filas Activity Sheet: actividad, WBS, cuenta de control, CBS, planned) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 74 Td (  cost, planned value y estado de mapeo.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 3) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 4383 >>
+stream
+BT
+0 g
+/F1 9 Tf
+64 790 Td (- Prioridad 2:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 777 Td (- SOV por contrato con CBS obligatorio y validacion de cuenta de control cuando aplica.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 764 Td (- Commitment Funding Lines para asignar fondos a contrato/SOV/FBS.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 751 Td (- Vista operacional en Integrated Control para crear CBS, revisar Cost Codes y ejecutar BP) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 738 Td (  de asignacion.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 725 Td (- Prioridad 3:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 712 Td (- Rate Sheet por CBS y recost del ultimo Activity Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 699 Td (- Reporte de conciliacion por WBS, CBS, FBS, contrato y cuenta de control.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 686 Td (- Pruebas frontend estables en Docker, suite backend completa y build frontend verificados.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 670 Td (Finalmente se implemento el bloque de endurecimiento productivo solicitado:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 650 Td (- Aprobaciones configurables por rol:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 637 Td (- Politicas por process_code y action para BP CBS-WBS y BP CBS-Fund.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 624 Td (- Validacion de required_role y permission_key antes de ejecutar acciones de workflow.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 611 Td (- Permisos por BP:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 598 Td (- Los endpoints de configuracion requieren can_configure.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 585 Td (- La edicion de line items y recost requiere can_capture_cost.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 572 Td (- Las acciones de workflow respetan la politica especifica del BP cuando existe.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 559 Td (- Edicion y versionado de line items:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 546 Td (- Consulta de line items por proceso.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 533 Td (- Edicion con control optimista por expected_version.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 520 Td (- Revision historica con monto, cantidad, descripcion, estado, usuario y nota de cambio.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 507 Td (- Exportacion de conciliacion:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 494 Td (- Export XLSX.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 481 Td (- Export PDF.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 468 Td (- Botones en UI Integrated Control.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 455 Td (- Historico de recost:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 442 Td (- Run incremental por Activity Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 429 Td (- Total de filas actualizadas, planned cost y planned value.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 416 Td (- Lineas historicas con costo/PV anterior y nuevo.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 403 Td (- Mayor cobertura visual:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 390 Td (- Prueba frontend que renderiza BP Permissions, Line Versions, Export XLSX/PDF y Recost) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 377 Td (  History.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 361 Td (Despues se agrego un agente auditor de bajo costo:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 341 Td (- AI Control Auditor:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 328 Td (- Modo read-only.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 315 Td (- Motor deterministico deterministic-control-audit-v1, sin costo de modelo externo en el) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 302 Td (  MVP.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 289 Td (- Persistencia de corridas y hallazgos.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 276 Td (- Score de control de 0 a 100.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 263 Td (- Hallazgos por severidad, categoria, evidencia, recomendacion y rol responsable.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 250 Td (- Checks iniciales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 237 Td (- BP CBS-WBS/BP CBS-Fund activos sin politica approve_baseline.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 224 Td (- Activity Sheet con Rate Sheet activa pero sin corrida de recost.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 211 Td (- Forecast superior a funding disponible.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 198 Td (- Diferencias budget vs forecast en conciliacion.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 185 Td (- Revisiones de line items para visibilidad de auditoria.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 172 Td (- UI:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 159 Td (- Panel AI Control Auditor dentro de Integrated Control.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 146 Td (- Boton Run Audit.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 133 Td (- Resumen, score, modelo usado y top findings.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 117 Td (5. Como se usa actualmente) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 93 Td (5.1 Ingreso) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 69 Td (- Abrir http://localhost:5173) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 4) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 3826 >>
+stream
+BT
+0 g
+/F1 9 Tf
+64 790 Td (- Iniciar sesion con:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 777 Td (- usuario: ana.control@demo.local) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 764 Td (- password: 1234) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 751 Td (- Seleccionar o revisar el proyecto demo disponible.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 735 Td (5.2 Revisar configuracion operativa) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 711 Td (- Entrar al flujo Project Setup.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 698 Td (- Revisar Operational Readiness.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 685 Td (- Validar que esten marcados:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 672 Td (- Permissions) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 659 Td (- Modules) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 646 Td (- Cost Sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 633 Td (- Funding Sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 620 Td (- P6 Mapping) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 607 Td (- Si la configuracion no esta lista, la app bloquea la carga controlada de Activity Sheet.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 591 Td (5.3 Cargar Activity Sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 567 Td (- En Project Setup, ubicar Activity Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 554 Td (- Cargar archivo P6 XML o XER.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 541 Td (- La app ejecuta la ingesta, valida calidad del cronograma y crea Activity Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 528 Td (- Si el setup operativo no esta listo, el sistema devuelve bloqueo por readiness.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 512 Td (5.4 Revisar WBS Sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 488 Td (- Despues de cargar Activity Sheet, revisar el panel WBS Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 475 Td (- Confirmar que aparezcan las WBS importadas.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 462 Td (- Revisar:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 449 Td (- actividades por WBS) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 436 Td (- cuentas de control asociadas) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 423 Td (- costo planeado) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 410 Td (- planned value) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 397 Td (- filas que requieren revision) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 381 Td (5.5 Revisar control integrado) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 357 Td (- Entrar a Integrated Control.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 344 Td (- Revisar Initial FBS para fuentes de financiacion.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 331 Td (- Revisar Funding Alerts para brechas forecast vs fondos disponibles.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 318 Td (- Revisar Traceability para ver la matriz FBS - WBS - AWP - Control Account - CBS - Cost) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 305 Td (  Code.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 292 Td (- Crear CBS operativos cuando se necesite completar la estructura de costos.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 279 Td (- Seleccionar CBS, FBS, cuenta de control, WBS y monto.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 266 Td (- Ejecutar BP CBS-Fund para asignacion de fondos por CBS.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 253 Td (- Ejecutar BP CBS-WBS para crear la transaccion costo-alcance y el Cost Code.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 240 Td (- Usar Approve Baseline cuando la base integrada este completa.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 224 Td (5.6 Revisar costos y funding) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 200 Td (- Entrar a Costs o Dashboard.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 187 Td (- Revisar CBS Cost Codes.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 174 Td (- Revisar FBS Funding Codes.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 161 Td (- Confirmar que compromisos, forecast y fondos disponibles esten alineados.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 145 Td (5.7 Crear SOV y Commitment Funding) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 121 Td (- En Integrated Control, seleccionar contrato, CBS, FBS, cuenta de control y WBS.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 108 Td (- Diligenciar numero de linea SOV, descripcion y monto.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 95 Td (- Usar Create SOV Funding.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 82 Td (- La app crea la linea SOV y la asignacion de Commitment Funding contra el FBS seleccionado.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 5) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Length 3597 >>
+stream
+BT
+0 g
+/F2 13 Tf
+54 790 Td (5.8 Crear Rate Sheet y ejecutar Recost) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 766 Td (- En Integrated Control, ubicar Rate / Recost.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 753 Td (- Crear una Rate Sheet con codigo, CBS, multiplicador y rate unitario.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 740 Td (- Usar Recost Latest para recalcular el ultimo Activity Sheet.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 727 Td (- Revisar Activity Rows y Reconciliation para confirmar planned cost, planned value y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 714 Td (  forecast.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 698 Td (5.9 Configurar politicas BP por rol) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 674 Td (- En Integrated Control, ubicar BP Permissions.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 661 Td (- Seleccionar proceso:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 648 Td (- BP CBS-WBS) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 635 Td (- BP CBS-Fund) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 622 Td (- Seleccionar accion:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 609 Td (- Approve) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 596 Td (- Reject) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 583 Td (- Close) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 570 Td (- Seleccionar rol requerido y permission key.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 557 Td (- Usar Save Policy.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 544 Td (- La siguiente accion de workflow para ese BP valida primero la politica configurada.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 528 Td (5.10 Editar line items con version) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 504 Td (- En Integrated Control, ubicar Line Versions.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 491 Td (- Seleccionar el line item del BP reciente.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 478 Td (- Ajustar monto, cantidad o descripcion.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 465 Td (- Registrar Change Note.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 452 Td (- Usar Save Version.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 439 Td (- La app rechaza ediciones con version obsoleta y guarda la revision historica.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 423 Td (5.11 Exportar conciliacion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 399 Td (- En Integrated Control, ubicar Reconciliation.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 386 Td (- Usar Export XLSX para entregar archivo Excel.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 373 Td (- Usar Export PDF para entregar resumen PDF.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 360 Td (- Ambos archivos salen desde la API autenticada.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 344 Td (5.12 Ejecutar AI Control Auditor) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 320 Td (- En Integrated Control, ubicar AI Control Auditor.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 307 Td (- Revisar el ultimo score y resumen si ya existe una corrida.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 294 Td (- Usar Run Audit.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 281 Td (- Revisar los hallazgos:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 268 Td (- severidad) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 255 Td (- categoria) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 242 Td (- evidencia) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 229 Td (- recomendacion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 216 Td (- rol responsable) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 203 Td (- El agente no cambia datos; solo recomienda acciones para el equipo de control.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 187 Td (6. Prioridades implementadas) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 163 Td (Prioridad 1:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 143 Td (- Implementada.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 130 Td (- Endpoints principales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 117 Td (- POST /api/v1/projects/{project_id}/business-processes/cbs-fund) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 104 Td (- POST /api/v1/projects/{project_id}/business-processes/cbs-wbs) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 91 Td (- GET /api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/rows) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 75 Td (Prioridad 2:) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 6) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Length 4413 >>
+stream
+BT
+0 g
+/F1 9 Tf
+64 790 Td (- Implementada.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 777 Td (- Endpoints principales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 764 Td (- POST /api/v1/projects/{project_id}/contracts/{contract_id}/sov-lines) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 751 Td (- GET /api/v1/projects/{project_id}/contracts/{contract_id}/sov-lines) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 738 Td (- POST /api/v1/projects/{project_id}/commitment-funding-lines) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 725 Td (- GET /api/v1/projects/{project_id}/contracts/{contract_id}/commitment-funding-lines) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 712 Td (- GET/POST /api/v1/projects/{project_id}/cbs) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 696 Td (Prioridad 3:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 676 Td (- Implementada.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 663 Td (- Endpoints principales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 650 Td (- GET/POST /api/v1/projects/{project_id}/rate-sheets) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 637 Td (- POST /api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/recost) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 624 Td (- GET /api/v1/projects/{project_id}/reconciliation-report) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 608 Td (Endurecimiento productivo:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 588 Td (- Implementado.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 575 Td (- Endpoints principales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 562 Td (- GET/POST /api/v1/projects/{project_id}/business-process-policies) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 549 Td (- GET /api/v1/projects/{project_id}/business-processes/{process_id}/line-items) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 536 Td (- PATCH /api/v1/projects/{project_id}/business-process-line-items/{line_item_id}) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 523 Td (- GET /api/v1/projects/{project_id}/business-process-line-items/{line_item_id}/revisions) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 510 Td (- GET /api/v1/projects/{project_id}/reconciliation-report/export?format=xlsx) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 497 Td (- GET /api/v1/projects/{project_id}/reconciliation-report/export?format=pdf) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 484 Td (- GET /api/v1/projects/{project_id}/activity-sheets/{activity_sheet_id}/recost-runs) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 468 Td (Agente auditor:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 448 Td (- Implementado.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 435 Td (- Endpoints principales:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 422 Td (- POST /api/v1/projects/{project_id}/agents/control-audit/run) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 409 Td (- GET /api/v1/projects/{project_id}/agents/control-audit/runs) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 396 Td (- Modelo/costo:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 383 Td (- MVP con reglas deterministicas locales.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 370 Td (- No consume tokens externos.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 357 Td (- Se puede evolucionar a modelo mini/haiku solo para redactar sintesis, manteniendo los) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 344 Td (  hallazgos calculados por reglas.) Tj
+ET
+BT
+0 g
+/F2 13 Tf
+54 328 Td (7. Verificacion tecnica) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 304 Td (- Backend: docker compose run --rm api pytest -q) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 291 Td (- Resultado: 105 pruebas pasando.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 278 Td (- Frontend: docker compose run --rm frontend npm test -- --run) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 265 Td (- Resultado: 25 pruebas pasando.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 252 Td (- Frontend build: docker compose run --rm frontend npm run build) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 239 Td (- Resultado: TypeScript y Vite compilan correctamente.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 226 Td (- Prueba focalizada nueva:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 213 Td (- backend/tests/test_unifier_priority_flow.py) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 200 Td (- Cubre BP CBS-Fund, BP CBS-WBS, SOV, Commitment Funding, Rate Sheet, Recost,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 187 Td (  Reconciliation, policies, versionado, exports y recost history.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 174 Td (- Prueba visual/frontend nueva:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 161 Td (- frontend/tests/AppFlow.test.tsx) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 148 Td (- Cubre render de BP Permissions, Line Versions, Export XLSX/PDF, Recost History y AI) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 135 Td (  Control Auditor.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 122 Td (- Prueba backend del agente:) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 109 Td (- backend/tests/test_unifier_priority_flow.py) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 96 Td (- Cubre corrida del agente, persistencia de historial y deteccion de BP sin politica y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+64 83 Td (  recost pendiente.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 7) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Length 1233 >>
+stream
+BT
+0 g
+/F2 13 Tf
+54 790 Td (8. Conclusion) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 766 Td (La app esta en un punto funcional de MVP tecnico avanzado para el flujo de instructivos. Ya) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 753 Td (puede demostrar el orden correcto: proyecto configurado, cronograma cargado, Activity Sheet) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 740 Td (creada, WBS Sheet y filas detalladas, CBS/FBS/cuenta de control integradas, procesos BP, SOV,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 727 Td (Commitment Funding, Rate Sheet, Recost, conciliacion, politicas por rol, line items versionados,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 714 Td (exports, recost history y agente auditor read-only.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 694 Td (El siguiente bloque recomendado seria preparar operacion productiva formal: migraciones) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 681 Td (aplicadas en ambiente objetivo, matriz completa de roles por cliente, pruebas E2E con navegador) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 668 Td (real en pipeline, respaldos, hardening de seguridad/observabilidad y evolucion controlada del) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 655 Td (agente para sintesis con modelo economico opcional.) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+42 34 Td (P&Pmis Ai SaaS - Estado frente a instructivos) Tj
+ET
+BT
+0 g
+/F1 7 Tf
+510 34 Td (Pagina 8) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+12 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+13 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+15 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 7 0 R >>
+endobj
+16 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 8 0 R >>
+endobj
+17 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 9 0 R >>
+endobj
+18 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 10 0 R >>
+endobj
+19 0 obj
+<< /Type /Pages /Kids [11 0 R 12 0 R 13 0 R 14 0 R 15 0 R 16 0 R 17 0 R 18 0 R] /Count 8 >>
+endobj
+20 0 obj
+<< /Type /Catalog /Pages 19 0 R >>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000000721 00000 n 
+0000006443 00000 n 
+0000013680 00000 n 
+0000018115 00000 n 
+0000021993 00000 n 
+0000025642 00000 n 
+0000030107 00000 n 
+0000031393 00000 n 
+0000031531 00000 n 
+0000031669 00000 n 
+0000031807 00000 n 
+0000031945 00000 n 
+0000032083 00000 n 
+0000032221 00000 n 
+0000032359 00000 n 
+0000032498 00000 n 
+0000032606 00000 n 
+trailer
+<< /Size 21 /Root 20 0 R >>
+startxref
+32657
+%%EOF

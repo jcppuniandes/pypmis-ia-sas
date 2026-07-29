@@ -1,0 +1,105 @@
+name: Pilot Readiness CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "guided-*"
+      - "feature/**"
+      - "fix/**"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-lint:
+    name: Backend lint (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - run: pip install ruff
+      - run: ruff format --check backend/app/ backend/tests/
+      - run: ruff check backend/app/ backend/tests/ --output-format=github
+
+  frontend-lint:
+    name: Frontend lint (ESLint + Prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run format:check
+      # Ola 2 extracted the legacy main.tsx monolith; tighten the warning budget
+      # as remaining views are cleaned up further. Lower to 0 once all warnings
+      # are addressed.
+      - run: cd frontend && npm run lint -- --max-warnings=10
+      - run: cd frontend && npm run test -- --run
+
+  verify:
+    name: Build + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build stack
+        run: docker compose up -d --build
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U pypmis -d pypmis 2>/dev/null; do sleep 2; done'
+          echo "Waiting for Redis..."
+          timeout 30 bash -c 'until docker compose exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 2; done'
+          echo "All services ready."
+      - name: Run database migrations
+        run: docker compose exec -T api alembic upgrade head
+      - name: Verify applied migration revision
+        run: docker compose exec -T api alembic current
+      - name: Run backend tests
+        run: docker compose exec -T api pytest
+      - name: Run frontend build
+        run: docker compose exec -T frontend npm run build
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=120 api worker frontend
+
+  e2e:
+    name: Browser E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [verify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start stack
+        # The E2E smoke logs in with the seeded demo tenant and walks the full
+        # guided control flow, so seed data goes on and validation mode off.
+        env:
+          SEED_DEMO_DATA: "true"
+          VITE_FRONTEND_VALIDATION_MODE: "false"
+        run: docker compose up -d --build
+      - name: Wait for app
+        run: |
+          timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
+      - name: Run Playwright production smoke
+        run: cd frontend && npm run test:e2e
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=160 api frontend
