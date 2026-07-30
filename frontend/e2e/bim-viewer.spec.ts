@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 // The seeded demo tenant has no IFC model on disk, so this walkthrough needs a
-// manually prepared environment (model uploaded in Scope Manager). CI runs the
+// manually prepared environment (model uploaded in BIM Manager). CI runs the
 // production-readiness smoke instead; set E2E_BIM_DATA=true to run this one.
 test.skip(process.env.E2E_BIM_DATA !== "true", "Requires an environment with a loaded IFC model (E2E_BIM_DATA=true)");
 
@@ -15,9 +15,9 @@ test("BIM quantities module keeps one IFC viewer and one controlled quantity tab
 
   await expect(page.getByRole("region", { name: /project workspace and control flow/i })).toBeVisible();
 
-  await page.getByRole("button", { name: /scope manager/i }).click();
+  await page.getByRole("button", { name: /bim manager/i }).click();
 
-  await expect(page.getByRole("region", { name: /scope manager module/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /bim manager module/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /modelo ifc/i })).toBeVisible();
   await expect(page.getByTestId("ifc-geometry-viewer-canvas")).toBeVisible();
   await expect(page.getByText(/IFC geometry rendered from stored source file/i)).toBeVisible({ timeout: 60_000 });

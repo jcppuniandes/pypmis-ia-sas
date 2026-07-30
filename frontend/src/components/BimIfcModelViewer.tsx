@@ -2438,7 +2438,7 @@ export default function BimIfcModelViewer({
                   <Box size={22} />
                   <span>
                     <strong>{sourceName || "Modelo IFC pendiente"}</strong>
-                    <small>{modelSummary || "Carga un IFC desde Scope Manager."}</small>
+                    <small>{modelSummary || "Carga un IFC desde BIM Manager."}</small>
                   </span>
                 </div>
                 <span className="bimRibbonGroupLabel">Archivo IFC</span>
@@ -2462,14 +2462,14 @@ export default function BimIfcModelViewer({
 
           {ribbonExpanded && activeRibbonMenu === "information" ? (
             <div
-              aria-label="Información y estado del Scope Manager"
+              aria-label="Información y estado del BIM Manager"
               className="bimRibbonInformationPanel"
               id="ifc-ribbon-information"
               role="region"
             >
               <div className="bimRibbonInformationContent">
                 {informationContent ? (
-                  <section aria-label="Resumen del Scope Manager" className="scopeManagerInformation">
+                  <section aria-label="Resumen del BIM Manager" className="scopeManagerInformation">
                     {informationContent}
                   </section>
                 ) : null}

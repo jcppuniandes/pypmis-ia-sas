@@ -96,7 +96,7 @@ import type {
 import LoginView from "./views/LoginView";
 
 const BIM_VIEWER_MODULE_RELOAD_KEY = "pypmis:bim-viewer-module-reload";
-const SCOPE_MANAGER_MODULE_LABEL = "Scope Manager";
+const SCOPE_MANAGER_MODULE_LABEL = "BIM Manager";
 
 function lazyWithModuleRecovery<TProps>(factory: () => Promise<{ default: ComponentType<TProps> }>) {
   return lazy(async () => {
