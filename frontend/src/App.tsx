@@ -2957,6 +2957,117 @@ function AppShell() {
           : latestQuantityTakeoff
             ? "Spreadsheet quantity columns"
             : "Waiting for source";
+  const scopeManagerInformationContent = (
+    <>
+      <div className="quantityModuleHeader">
+        <div className="mappingSummary quantitySummary">
+          <article>
+            <span>Cargas</span>
+            <strong>{bimModelRuns.length || quantityTakeoffRuns.length || 0}</strong>
+            <small>
+              {latestBimModel
+                ? "Modelo IFC registrado"
+                : latestQuantityTakeoff
+                  ? "Ultima fuente controlada"
+                  : "Sin archivo"}
+            </small>
+          </article>
+          <article>
+            <span>Lineas</span>
+            <strong>{latestQuantityTakeoff?.row_count ?? 0}</strong>
+            <small>{latestQuantityTakeoff?.source_type.toUpperCase() ?? "BIM/Excel"}</small>
+          </article>
+          <article>
+            <span>Codificadas</span>
+            <strong>{latestQuantityTakeoff?.mapped_line_count ?? 0}</strong>
+            <small>WBS + CBS + FBS</small>
+          </article>
+          <article>
+            <span>Por revisar</span>
+            <strong>{quantityNeedsMapping}</strong>
+            <small>Lineas sin codificacion completa</small>
+          </article>
+        </div>
+      </div>
+      <div className="bimScopeNote" role="note">
+        <strong>Objetivo del modulo</strong>
+        <span>
+          Carga el modelo o la plantilla de cantidades, verifica que cada elemento tenga cantidad y trazabilidad, y deja
+          una sola tabla para asignarlo a WBS, CBS, FBS y paquete de trabajo.
+        </span>
+      </div>
+      <section aria-label="Quantity provenance" className="bimEvidencePanel">
+        <article>
+          <span>Archivo fuente</span>
+          <strong>
+            {latestBimModel?.source_file_name ?? latestQuantityTakeoff?.source_file_name ?? "Sin fuente cargada"}
+          </strong>
+          <small>
+            {latestBimModel
+              ? `Modelo #${latestBimModel.id} / ${latestBimModel.schema || "IFC"} / ${(
+                  latestBimModel.source_size_bytes /
+                  (1024 * 1024)
+                ).toFixed(2)} MB`
+              : latestQuantityTakeoff
+                ? `Run #${latestQuantityTakeoff.id} / v${latestQuantityTakeoff.version} / ${latestQuantityTakeoff.source_type.toUpperCase()}`
+                : "Carga IFC, Excel o CSV"}
+          </small>
+        </article>
+        <article>
+          <span>Identidad del modelo</span>
+          <strong>{quantityModelIdentity || "Se leera desde las cantidades"}</strong>
+          <small>
+            {latestBimModel && !quantityTakeoffLines.length
+              ? "Faltan las lineas de cantidad extraidas"
+              : `${quantityElementCount} referencia(s) / ${quantityClassCount} clase(s) IFC`}
+          </small>
+        </article>
+        <article>
+          <span>Base de cantidad</span>
+          <strong>{quantitySourceBasis}</strong>
+          <small>{quantityRuleSummary || "Reglas de medicion pendientes"}</small>
+        </article>
+        <article>
+          <span>Vista y control</span>
+          <strong>
+            {latestBimModel
+              ? "Modelo IFC registrado"
+              : latestQuantityTakeoff?.source_type === "ifc"
+                ? "Modelo IFC y tabla controlada"
+                : "Tabla unica de cantidades"}
+          </strong>
+          <small>
+            El visor muestra la geometria guardada; la tabla concentra cantidad, elemento y codigos de control.
+          </small>
+        </article>
+      </section>
+      <div className="bimAwpGateGrid">
+        <article>
+          <span>Ubicacion</span>
+          <strong>{quantityTakeoffLines.length ? "Leida" : "Pendiente"}</strong>
+          <small>Nivel, zona, sistema o conjunto ayudan a ordenar las cantidades.</small>
+        </article>
+        <article>
+          <span>Elementos</span>
+          <strong>
+            {
+              new Set(
+                quantityTakeoffLines.map((line) =>
+                  [line.ifc_class, line.type_name, line.unit, line.cbs_code].filter(Boolean).join("|")
+                )
+              ).size
+            }
+          </strong>
+          <small>Agrupados por tipo, unidad, costo y ubicacion de control.</small>
+        </article>
+        <article>
+          <span>Paquetes</span>
+          <strong>{quantityTakeoffLines.filter((line) => line.package_code).length}</strong>
+          <small>Listo cuando cada elemento tenga paquete de trabajo.</small>
+        </article>
+      </div>
+    </>
+  );
   const bimBudgetSummary = buildBimBudget(quantityTakeoffLines, project.currency);
   const setupReadyForActivityLoad = operationalSetup?.readiness_status === "ready" || isSetupDraftReady(setupDraft);
   const displayWbsCatalog =
@@ -3406,127 +3517,221 @@ function AppShell() {
         aria-label="Project workspace and control flow"
       >
         <div className="projectWorkspaceRailDock">
-          <aside
-            className="projectWorkspaceRail"
-            hidden={moduleNavigationCollapsed}
-            id="project-module-navigation"
-          >
-          {guidedFlow ? (
-            <>
-              {FRONTEND_VALIDATION_MODE ? (
-                <nav className="navigatorRail" aria-label="Validation focus">
-                  <div className="navigatorHeader">
-                    <strong>Validacion actual</strong>
-                    <span>Dashboard + BIM + APU + Claims</span>
-                  </div>
-                  {validationControlFlowItems.map((item) => (
+          <div className="projectWorkspaceRailToggleDock">
+            <button
+              aria-controls="project-module-navigation"
+              aria-expanded={!moduleNavigationCollapsed}
+              aria-label={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
+              className="projectWorkspaceRailToggle"
+              onClick={() => setModuleNavigationCollapsed((current) => !current)}
+              title={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
+              type="button"
+            >
+              {moduleNavigationCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+          </div>
+          <aside className="projectWorkspaceRail" hidden={moduleNavigationCollapsed} id="project-module-navigation">
+            {guidedFlow ? (
+              <>
+                {FRONTEND_VALIDATION_MODE ? (
+                  <nav className="navigatorRail" aria-label="Validation focus">
+                    <div className="navigatorHeader">
+                      <strong>Validacion actual</strong>
+                      <span>Dashboard + BIM + APU + Claims</span>
+                    </div>
+                    {validationControlFlowItems.map((item) => (
+                      <button
+                        aria-current={visibleControlView === item.key ? "page" : undefined}
+                        className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
+                        key={item.key}
+                        onClick={() => handleControlFlowNavigate(item.key)}
+                        type="button"
+                      >
+                        <span>{item.label}</span>
+                        <strong>{item.count}</strong>
+                      </button>
+                    ))}
+                  </nav>
+                ) : (
+                  <>
+                    <GuidedProcessRail
+                      activeKey={guidedRailActiveKey}
+                      steps={guidedFlow.steps}
+                      onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
+                    />
+                    <details
+                      className="projectAdminDetails projectToolsDetails"
+                      role="group"
+                      aria-label="Project tools"
+                    >
+                      <summary>
+                        <span>Tools and reports</span>
+                        <strong>Open when needed</strong>
+                      </summary>
+                      <div className="projectAdminBody">
+                        {[
+                          {
+                            key: "dashboard" as ControlFlowView,
+                            label: "Dashboard",
+                            count: `${spiLabel} SPI`,
+                          },
+                          {
+                            key: "process-flow" as ControlFlowView,
+                            label: "Process Flow",
+                            count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
+                          },
+                          {
+                            key: "schedule-control" as ControlFlowView,
+                            label: "Planning",
+                            count: dashboard.schedule_activity_count
+                              ? `${dashboard.schedule_activity_count} activities`
+                              : "open",
+                          },
+                          {
+                            key: "quantity-takeoff" as ControlFlowView,
+                            label: SCOPE_MANAGER_MODULE_LABEL,
+                            count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
+                          },
+                          {
+                            key: "bim-budget" as ControlFlowView,
+                            label: "Presupuesto BIM",
+                            count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
+                          },
+                          {
+                            key: "apu-catalog" as ControlFlowView,
+                            label: "Base APU Colombia",
+                            count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
+                          },
+                          { key: "costs" as ControlFlowView, label: "Costs", count: dashboard.cost_sheet.length },
+                          { key: "decisions" as ControlFlowView, label: "Decisions", count: dashboard.changes.length },
+                          {
+                            key: "admin" as ControlFlowView,
+                            label: "Users & Roles",
+                            count: dashboard.project_team.length,
+                          },
+                        ].map((item) => (
+                          <button
+                            aria-current={visibleControlView === item.key ? "page" : undefined}
+                            className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
+                            key={item.key}
+                            onClick={() => handleControlFlowNavigate(item.key)}
+                            type="button"
+                          >
+                            <span>{item.label}</span>
+                            <strong>{item.count}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    </details>
+                  </>
+                )}
+                <details
+                  className="projectAdminDetails"
+                  open={FRONTEND_VALIDATION_MODE}
+                  role="group"
+                  aria-label="Administrative actions"
+                >
+                  <summary>
+                    <span>
+                      <Building2 size={16} /> Proyecto
+                    </span>
+                    <strong>Crear o borrar proyectos</strong>
+                  </summary>
+                  <div className="projectAdminBody">
+                    <div className="projectCurrentProject">
+                      <span>Selected project</span>
+                      <strong>{project.code}</strong>
+                      <small>{projectList.length} projects available</small>
+                    </div>
                     <button
-                      aria-current={visibleControlView === item.key ? "page" : undefined}
-                      className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                      key={item.key}
-                      onClick={() => handleControlFlowNavigate(item.key)}
+                      className="workflowAction"
+                      disabled={!canConfigure}
+                      onClick={() => setProjectDrawerOpen(true)}
                       type="button"
                     >
-                      <span>{item.label}</span>
-                      <strong>{item.count}</strong>
+                      New Project
                     </button>
-                  ))}
-                </nav>
-              ) : (
-                <>
-                  <GuidedProcessRail
-                    activeKey={guidedRailActiveKey}
-                    steps={guidedFlow.steps}
-                    onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
-                  />
-                  <details className="projectAdminDetails projectToolsDetails" role="group" aria-label="Project tools">
-                    <summary>
-                      <span>Tools and reports</span>
-                      <strong>Open when needed</strong>
-                    </summary>
-                    <div className="projectAdminBody">
-                      {[
-                        {
-                          key: "dashboard" as ControlFlowView,
-                          label: "Dashboard",
-                          count: `${spiLabel} SPI`,
-                        },
-                        {
-                          key: "process-flow" as ControlFlowView,
-                          label: "Process Flow",
-                          count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
-                        },
-                        {
-                          key: "schedule-control" as ControlFlowView,
-                          label: "Planning",
-                          count: dashboard.schedule_activity_count
-                            ? `${dashboard.schedule_activity_count} activities`
-                            : "open",
-                        },
-                        {
-                          key: "quantity-takeoff" as ControlFlowView,
-                          label: SCOPE_MANAGER_MODULE_LABEL,
-                          count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
-                        },
-                        {
-                          key: "bim-budget" as ControlFlowView,
-                          label: "Presupuesto BIM",
-                          count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
-                        },
-                        {
-                          key: "apu-catalog" as ControlFlowView,
-                          label: "Base APU Colombia",
-                          count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
-                        },
-                        { key: "costs" as ControlFlowView, label: "Costs", count: dashboard.cost_sheet.length },
-                        { key: "decisions" as ControlFlowView, label: "Decisions", count: dashboard.changes.length },
-                        {
-                          key: "admin" as ControlFlowView,
-                          label: "Users & Roles",
-                          count: dashboard.project_team.length,
-                        },
-                      ].map((item) => (
-                        <button
-                          aria-current={visibleControlView === item.key ? "page" : undefined}
-                          className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                          key={item.key}
-                          onClick={() => handleControlFlowNavigate(item.key)}
-                          type="button"
-                        >
-                          <span>{item.label}</span>
-                          <strong>{item.count}</strong>
-                        </button>
-                      ))}
-                    </div>
-                  </details>
-                </>
-              )}
-              <details
-                className="projectAdminDetails"
-                open={FRONTEND_VALIDATION_MODE}
-                role="group"
-                aria-label="Administrative actions"
-              >
-                <summary>
-                  <span>
-                    <Building2 size={16} /> Proyecto
-                  </span>
-                  <strong>Crear o borrar proyectos</strong>
-                </summary>
-                <div className="projectAdminBody">
-                  <div className="projectCurrentProject">
-                    <span>Selected project</span>
-                    <strong>{project.code}</strong>
-                    <small>{projectList.length} projects available</small>
+                    <button
+                      className="workflowAction subtleDanger"
+                      disabled={!canConfigure || projectDeleteAction}
+                      onClick={handleProjectDelete}
+                      type="button"
+                    >
+                      <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
+                    </button>
+                    <p className="projectHint">
+                      Project creation and deletion are administrative actions, separated from the daily control flow.
+                    </p>
                   </div>
+                </details>
+              </>
+            ) : (
+              <aside className="navigatorRail" aria-label="Control Flow">
+                <div className="navigatorHeader">
+                  <strong>{FRONTEND_VALIDATION_MODE ? "Validacion actual" : "Control Flow"}</strong>
+                  <span>{FRONTEND_VALIDATION_MODE ? "Dashboard + BIM" : "Essential views"}</span>
+                </div>
+                {visibleControlFlowItems.map((item) => (
                   <button
-                    className="workflowAction"
-                    disabled={!canConfigure}
-                    onClick={() => setProjectDrawerOpen(true)}
+                    aria-current={visibleControlView === item.key ? "page" : undefined}
+                    className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
+                    key={item.key}
+                    onClick={() => handleControlFlowNavigate(item.key)}
                     type="button"
                   >
-                    New Project
+                    <span>{item.label}</span>
+                    <strong>{item.count}</strong>
                   </button>
+                ))}
+                {!FRONTEND_VALIDATION_MODE && (
+                  <>
+                    <div className="navigatorDivider">
+                      <span>Advanced</span>
+                    </div>
+                    <button
+                      aria-current={visibleControlView === "work-packages" ? "page" : undefined}
+                      className={visibleControlView === "work-packages" ? "navigatorItem active" : "navigatorItem"}
+                      onClick={() => handleControlFlowNavigate("work-packages")}
+                      type="button"
+                    >
+                      <span>Work Packages</span>
+                      <strong>{dashboard.awp_summary.total_packages}</strong>
+                    </button>
+                    <button
+                      aria-current={visibleControlView === "admin" ? "page" : undefined}
+                      className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
+                      onClick={() => handleControlFlowNavigate("admin")}
+                      type="button"
+                    >
+                      <span>Users & Roles</span>
+                      <strong>{dashboard.project_team.length}</strong>
+                    </button>
+                  </>
+                )}
+              </aside>
+            )}
+
+            {!guidedFlow && (
+              <section className="adminPanel projectCreatePanel" aria-label="Project">
+                <div className="panelHeader">
+                  <h2>
+                    <Building2 size={18} /> Project
+                  </h2>
+                  {!guidedFlow && (
+                    <button
+                      className="quickNavButton"
+                      disabled={!canConfigure}
+                      onClick={() => setShowProjectCreate((current) => !current)}
+                      type="button"
+                    >
+                      {showProjectCreate ? "Close" : "New Project"}
+                    </button>
+                  )}
+                </div>
+                <div className="projectCurrentProject">
+                  <span>Selected project</span>
+                  <strong>{project.code}</strong>
+                  <small>{projectList.length} projects available</small>
                   <button
                     className="workflowAction subtleDanger"
                     disabled={!canConfigure || projectDeleteAction}
@@ -3535,269 +3740,183 @@ function AppShell() {
                   >
                     <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
                   </button>
-                  <p className="projectHint">
-                    Project creation and deletion are administrative actions, separated from the daily control flow.
-                  </p>
                 </div>
-              </details>
-            </>
-          ) : (
-            <aside className="navigatorRail" aria-label="Control Flow">
-              <div className="navigatorHeader">
-                <strong>{FRONTEND_VALIDATION_MODE ? "Validacion actual" : "Control Flow"}</strong>
-                <span>{FRONTEND_VALIDATION_MODE ? "Dashboard + BIM" : "Essential views"}</span>
-              </div>
-              {visibleControlFlowItems.map((item) => (
-                <button
-                  aria-current={visibleControlView === item.key ? "page" : undefined}
-                  className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                  key={item.key}
-                  onClick={() => handleControlFlowNavigate(item.key)}
-                  type="button"
-                >
-                  <span>{item.label}</span>
-                  <strong>{item.count}</strong>
-                </button>
-              ))}
-              {!FRONTEND_VALIDATION_MODE && (
-                <>
-                  <div className="navigatorDivider">
-                    <span>Advanced</span>
-                  </div>
-                  <button
-                    aria-current={visibleControlView === "work-packages" ? "page" : undefined}
-                    className={visibleControlView === "work-packages" ? "navigatorItem active" : "navigatorItem"}
-                    onClick={() => handleControlFlowNavigate("work-packages")}
-                    type="button"
-                  >
-                    <span>Work Packages</span>
-                    <strong>{dashboard.awp_summary.total_packages}</strong>
-                  </button>
-                  <button
-                    aria-current={visibleControlView === "admin" ? "page" : undefined}
-                    className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
-                    onClick={() => handleControlFlowNavigate("admin")}
-                    type="button"
-                  >
-                    <span>Users & Roles</span>
-                    <strong>{dashboard.project_team.length}</strong>
-                  </button>
-                </>
-              )}
-            </aside>
-          )}
 
-          {!guidedFlow && (
-            <section className="adminPanel projectCreatePanel" aria-label="Project">
-              <div className="panelHeader">
-                <h2>
-                  <Building2 size={18} /> Project
-                </h2>
-                {!guidedFlow && (
-                  <button
-                    className="quickNavButton"
-                    disabled={!canConfigure}
-                    onClick={() => setShowProjectCreate((current) => !current)}
-                    type="button"
-                  >
-                    {showProjectCreate ? "Close" : "New Project"}
-                  </button>
-                )}
-              </div>
-              <div className="projectCurrentProject">
-                <span>Selected project</span>
-                <strong>{project.code}</strong>
-                <small>{projectList.length} projects available</small>
-                <button
-                  className="workflowAction subtleDanger"
-                  disabled={!canConfigure || projectDeleteAction}
-                  onClick={handleProjectDelete}
-                  type="button"
-                >
-                  <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
-                </button>
-              </div>
-
-              {!guidedFlow && showProjectCreate ? (
-                <form className="projectCreateForm" onSubmit={handleProjectCreate}>
-                  <div className="formColumns">
+                {!guidedFlow && showProjectCreate ? (
+                  <form className="projectCreateForm" onSubmit={handleProjectCreate}>
+                    <div className="formColumns">
+                      <label>
+                        <span>Code</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
+                          placeholder="PRJ-001"
+                          required
+                          value={projectDraft.code}
+                        />
+                      </label>
+                      <label>
+                        <span>Phase</span>
+                        <select
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, phase: event.target.value }))
+                          }
+                          value={projectDraft.phase}
+                        >
+                          <option value="Planning">Planning</option>
+                          <option value="Execution">Execution</option>
+                          <option value="Closeout">Closeout</option>
+                        </select>
+                      </label>
+                    </div>
                     <label>
-                      <span>Code</span>
+                      <span>Name</span>
                       <input
                         disabled={!canConfigure || projectAction}
-                        onChange={(event) => setProjectDraft((current) => ({ ...current, code: event.target.value }))}
-                        placeholder="PRJ-001"
+                        onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
+                        placeholder="Project control name"
                         required
-                        value={projectDraft.code}
+                        value={projectDraft.name}
                       />
                     </label>
-                    <label>
-                      <span>Phase</span>
-                      <select
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) => setProjectDraft((current) => ({ ...current, phase: event.target.value }))}
-                        value={projectDraft.phase}
-                      >
-                        <option value="Planning">Planning</option>
-                        <option value="Execution">Execution</option>
-                        <option value="Closeout">Closeout</option>
-                      </select>
-                    </label>
-                  </div>
-                  <label>
-                    <span>Name</span>
-                    <input
-                      disabled={!canConfigure || projectAction}
-                      onChange={(event) => setProjectDraft((current) => ({ ...current, name: event.target.value }))}
-                      placeholder="Project control name"
-                      required
-                      value={projectDraft.name}
-                    />
-                  </label>
-                  <div className="formColumns">
-                    <label>
-                      <span>Owner</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) => setProjectDraft((current) => ({ ...current, owner: event.target.value }))}
-                        value={projectDraft.owner}
-                      />
-                    </label>
-                    <label>
-                      <span>Base Calendar</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, calendar_base: event.target.value }))
-                        }
-                        value={projectDraft.calendar_base}
-                      />
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Status</span>
-                      <select
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) => setProjectDraft((current) => ({ ...current, status: event.target.value }))}
-                        value={projectDraft.status}
-                      >
-                        <option value="draft">Draft</option>
-                        <option value="authorized">Authorized</option>
-                        <option value="baseline_approved">Baseline Approved</option>
-                        <option value="in_execution">In Execution</option>
-                        <option value="closed">Closed</option>
-                      </select>
-                    </label>
-                    <label>
-                      <span>Authorization Reference</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, authorization_ref: event.target.value }))
-                        }
-                        value={projectDraft.authorization_ref}
-                      />
-                    </label>
-                    <label>
-                      <span>Authorization Date</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, authorization_date: event.target.value }))
-                        }
-                        type="date"
-                        value={projectDraft.authorization_date}
-                      />
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Currency</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        maxLength={3}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
-                        }
-                        value={projectDraft.currency}
-                      />
-                    </label>
-                    <label>
-                      <span>Start</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
-                        }
-                        type="date"
-                        value={projectDraft.start_date}
-                      />
-                    </label>
-                    <label>
-                      <span>Finish</span>
-                      <input
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
-                        }
-                        type="date"
-                        value={projectDraft.finish_date}
-                      />
-                    </label>
-                  </div>
-                  <div className="formColumns">
-                    <label>
-                      <span>Control Level</span>
-                      <select
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, control_level: event.target.value }))
-                        }
-                        value={projectDraft.control_level}
-                      >
-                        <option value="control_account">Control Account</option>
-                        <option value="cost_code">Cost Code</option>
-                        <option value="awp_package">AWP Package</option>
-                      </select>
-                    </label>
-                    <label className="checkboxLine">
-                      <input
-                        checked={projectDraft.funding_required}
-                        disabled={!canConfigure || projectAction}
-                        onChange={(event) =>
-                          setProjectDraft((current) => ({ ...current, funding_required: event.target.checked }))
-                        }
-                        type="checkbox"
-                      />
-                      <span>Funding Required</span>
-                    </label>
-                  </div>
-                  <button className="workflowAction primary" disabled={!canConfigure || projectAction} type="submit">
-                    {projectAction ? "Creating..." : "Create Project"}
-                  </button>
-                </form>
-              ) : (
-                <p className="projectHint">
-                  The selected project dashboard is open. Create a project only when onboarding a new project.
-                </p>
-              )}
-              {projectMessage && <div className="uploadMessage success">{projectMessage}</div>}
-              {projectError && <div className="uploadMessage error">{projectError}</div>}
-            </section>
-          )}
+                    <div className="formColumns">
+                      <label>
+                        <span>Owner</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, owner: event.target.value }))
+                          }
+                          value={projectDraft.owner}
+                        />
+                      </label>
+                      <label>
+                        <span>Base Calendar</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, calendar_base: event.target.value }))
+                          }
+                          value={projectDraft.calendar_base}
+                        />
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Status</span>
+                        <select
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, status: event.target.value }))
+                          }
+                          value={projectDraft.status}
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="authorized">Authorized</option>
+                          <option value="baseline_approved">Baseline Approved</option>
+                          <option value="in_execution">In Execution</option>
+                          <option value="closed">Closed</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>Authorization Reference</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, authorization_ref: event.target.value }))
+                          }
+                          value={projectDraft.authorization_ref}
+                        />
+                      </label>
+                      <label>
+                        <span>Authorization Date</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, authorization_date: event.target.value }))
+                          }
+                          type="date"
+                          value={projectDraft.authorization_date}
+                        />
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Currency</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          maxLength={3}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, currency: event.target.value.toUpperCase() }))
+                          }
+                          value={projectDraft.currency}
+                        />
+                      </label>
+                      <label>
+                        <span>Start</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, start_date: event.target.value }))
+                          }
+                          type="date"
+                          value={projectDraft.start_date}
+                        />
+                      </label>
+                      <label>
+                        <span>Finish</span>
+                        <input
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, finish_date: event.target.value }))
+                          }
+                          type="date"
+                          value={projectDraft.finish_date}
+                        />
+                      </label>
+                    </div>
+                    <div className="formColumns">
+                      <label>
+                        <span>Control Level</span>
+                        <select
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, control_level: event.target.value }))
+                          }
+                          value={projectDraft.control_level}
+                        >
+                          <option value="control_account">Control Account</option>
+                          <option value="cost_code">Cost Code</option>
+                          <option value="awp_package">AWP Package</option>
+                        </select>
+                      </label>
+                      <label className="checkboxLine">
+                        <input
+                          checked={projectDraft.funding_required}
+                          disabled={!canConfigure || projectAction}
+                          onChange={(event) =>
+                            setProjectDraft((current) => ({ ...current, funding_required: event.target.checked }))
+                          }
+                          type="checkbox"
+                        />
+                        <span>Funding Required</span>
+                      </label>
+                    </div>
+                    <button className="workflowAction primary" disabled={!canConfigure || projectAction} type="submit">
+                      {projectAction ? "Creating..." : "Create Project"}
+                    </button>
+                  </form>
+                ) : (
+                  <p className="projectHint">
+                    The selected project dashboard is open. Create a project only when onboarding a new project.
+                  </p>
+                )}
+                {projectMessage && <div className="uploadMessage success">{projectMessage}</div>}
+                {projectError && <div className="uploadMessage error">{projectError}</div>}
+              </section>
+            )}
           </aside>
-          <button
-            aria-controls="project-module-navigation"
-            aria-expanded={!moduleNavigationCollapsed}
-            aria-label={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
-            className="projectWorkspaceRailToggle"
-            onClick={() => setModuleNavigationCollapsed((current) => !current)}
-            title={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
-            type="button"
-          >
-            {moduleNavigationCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
         </div>
 
         <section className="projectDashboardArea" aria-label="Control dashboard">
@@ -5264,139 +5383,7 @@ function AppShell() {
                       "Carga un IFC, Excel o CSV para iniciar"}
                   </span>
                 </div>
-                <div className="quantityModuleHeader">
-                  <div className="quantityUploadActions">
-                    <label className={quantityAction || !canLoadQuantities ? "uploadButton disabled" : "uploadButton"}>
-                      <input
-                        accept=".ifc,.xlsx,.xls,.csv"
-                        aria-label="Load BIM/IFC or Excel quantities"
-                        disabled={!canLoadQuantities || quantityAction}
-                        onChange={handleQuantityTakeoffUpload}
-                        type="file"
-                      />
-                      <span>{quantityAction ? "Cargando..." : "Cargar IFC o Excel"}</span>
-                    </label>
-                    <button
-                      className="quickNavButton"
-                      disabled={
-                        quantityAction ||
-                        (!bimModelRuns.length && !quantityTakeoffRuns.length && !quantityTakeoffLines.length)
-                      }
-                      onClick={handleQuantityTakeoffClear}
-                      type="button"
-                    >
-                      Limpiar modelo
-                    </button>
-                  </div>
-                  <div className="mappingSummary quantitySummary">
-                    <article>
-                      <span>Cargas</span>
-                      <strong>{bimModelRuns.length || quantityTakeoffRuns.length || 0}</strong>
-                      <small>
-                        {latestBimModel
-                          ? "Modelo IFC registrado"
-                          : latestQuantityTakeoff
-                            ? "Ultima fuente controlada"
-                            : "Sin archivo"}
-                      </small>
-                    </article>
-                    <article>
-                      <span>Lineas</span>
-                      <strong>{latestQuantityTakeoff?.row_count ?? 0}</strong>
-                      <small>{latestQuantityTakeoff?.source_type.toUpperCase() ?? "BIM/Excel"}</small>
-                    </article>
-                    <article>
-                      <span>Codificadas</span>
-                      <strong>{latestQuantityTakeoff?.mapped_line_count ?? 0}</strong>
-                      <small>WBS + CBS + FBS</small>
-                    </article>
-                    <article>
-                      <span>Por revisar</span>
-                      <strong>{quantityNeedsMapping}</strong>
-                      <small>Lineas sin codificacion completa</small>
-                    </article>
-                  </div>
-                </div>
-                <div className="bimScopeNote" role="note">
-                  <strong>Objetivo del modulo</strong>
-                  <span>
-                    Carga el modelo o la plantilla de cantidades, verifica que cada elemento tenga cantidad y
-                    trazabilidad, y deja una sola tabla para asignarlo a WBS, CBS, FBS y paquete de trabajo.
-                  </span>
-                </div>
-                <section aria-label="Quantity provenance" className="bimEvidencePanel">
-                  <article>
-                    <span>Archivo fuente</span>
-                    <strong>
-                      {latestBimModel?.source_file_name ??
-                        latestQuantityTakeoff?.source_file_name ??
-                        "Sin fuente cargada"}
-                    </strong>
-                    <small>
-                      {latestBimModel
-                        ? `Modelo #${latestBimModel.id} / ${latestBimModel.schema || "IFC"} / ${(
-                            latestBimModel.source_size_bytes /
-                            (1024 * 1024)
-                          ).toFixed(2)} MB`
-                        : latestQuantityTakeoff
-                          ? `Run #${latestQuantityTakeoff.id} / v${latestQuantityTakeoff.version} / ${latestQuantityTakeoff.source_type.toUpperCase()}`
-                          : "Carga IFC, Excel o CSV"}
-                    </small>
-                  </article>
-                  <article>
-                    <span>Identidad del modelo</span>
-                    <strong>{quantityModelIdentity || "Se leera desde las cantidades"}</strong>
-                    <small>
-                      {latestBimModel && !quantityTakeoffLines.length
-                        ? "Faltan las lineas de cantidad extraidas"
-                        : `${quantityElementCount} referencia(s) / ${quantityClassCount} clase(s) IFC`}
-                    </small>
-                  </article>
-                  <article>
-                    <span>Base de cantidad</span>
-                    <strong>{quantitySourceBasis}</strong>
-                    <small>{quantityRuleSummary || "Reglas de medicion pendientes"}</small>
-                  </article>
-                  <article>
-                    <span>Vista y control</span>
-                    <strong>
-                      {latestBimModel
-                        ? "Modelo IFC registrado"
-                        : latestQuantityTakeoff?.source_type === "ifc"
-                          ? "Modelo IFC y tabla controlada"
-                          : "Tabla unica de cantidades"}
-                    </strong>
-                    <small>
-                      El visor muestra la geometria guardada; la tabla concentra cantidad, elemento y codigos de
-                      control.
-                    </small>
-                  </article>
-                </section>
-                <div className="bimAwpGateGrid">
-                  <article>
-                    <span>Ubicacion</span>
-                    <strong>{quantityTakeoffLines.length ? "Leida" : "Pendiente"}</strong>
-                    <small>Nivel, zona, sistema o conjunto ayudan a ordenar las cantidades.</small>
-                  </article>
-                  <article>
-                    <span>Elementos</span>
-                    <strong>
-                      {
-                        new Set(
-                          quantityTakeoffLines.map((line) =>
-                            [line.ifc_class, line.type_name, line.unit, line.cbs_code].filter(Boolean).join("|")
-                          )
-                        ).size
-                      }
-                    </strong>
-                    <small>Agrupados por tipo, unidad, costo y ubicacion de control.</small>
-                  </article>
-                  <article>
-                    <span>Paquetes</span>
-                    <strong>{quantityTakeoffLines.filter((line) => line.package_code).length}</strong>
-                    <small>Listo cuando cada elemento tenga paquete de trabajo.</small>
-                  </article>
-                </div>
+                <div className="scopeManagerRibbonHost" id="scope-manager-ifc-ribbon-root" />
                 <LazyModuleErrorBoundary moduleName="Modelo IFC">
                   <Suspense
                     fallback={
@@ -5415,11 +5402,21 @@ function AppShell() {
                   >
                     <BimIfcModelViewer
                       approvalDisabled={quantityAction || !latestQuantityTakeoff}
+                      clearModelDisabled={
+                        quantityAction ||
+                        (!bimModelRuns.length && !quantityTakeoffRuns.length && !quantityTakeoffLines.length)
+                      }
+                      informationContent={scopeManagerInformationContent}
                       lines={quantityTakeoffLines}
                       onApproveControlledMeasurement={handleControlledMeasurementApproval}
+                      onClearModel={handleQuantityTakeoffClear}
+                      onLoadSource={handleQuantityTakeoffUpload}
                       projectId={selectedProjectId}
                       model={displayedBimModel}
+                      ribbonHostId="scope-manager-ifc-ribbon-root"
                       run={latestQuantityTakeoff}
+                      sourceLoadDisabled={!canLoadQuantities || quantityAction}
+                      sourceLoading={quantityAction}
                       token={token}
                     />
                   </Suspense>

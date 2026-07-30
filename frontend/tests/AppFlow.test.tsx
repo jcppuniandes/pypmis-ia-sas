@@ -1146,9 +1146,7 @@ describe("served project control flow", () => {
     expect(hideModuleRail).toHaveAttribute("aria-expanded", "true");
     await user.click(hideModuleRail);
     expect(workspace).toHaveClass("moduleRailCollapsed");
-    expect(
-      within(workspace).queryByRole("navigation", { name: /validation focus/i })
-    ).not.toBeInTheDocument();
+    expect(within(workspace).queryByRole("navigation", { name: /validation focus/i })).not.toBeInTheDocument();
     const showModuleRail = within(workspace).getByRole("button", { name: /mostrar barra de módulos/i });
     expect(showModuleRail).toHaveAttribute("aria-expanded", "false");
     await user.click(showModuleRail);
@@ -1182,9 +1180,7 @@ describe("served project control flow", () => {
     expect(within(projectAdmin).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
 
     await user.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
-    expect(
-      await screen.findByRole("region", { name: /scope manager module/i })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("region", { name: /scope manager module/i })).toBeInTheDocument();
   });
 
   it("opens the blocking cost and currency gate from the next controlled action", async () => {
@@ -1868,6 +1864,14 @@ describe("served project control flow", () => {
     const quantityPanel = await screen.findByRole("region", {
       name: /scope manager module/i,
     });
+    const quantityRibbonMenus = await within(quantityPanel).findByRole(
+      "navigation",
+      {
+        name: /menus superiores ifc/i,
+      },
+      { timeout: 5000 }
+    );
+    await user.click(within(quantityRibbonMenus).getByRole("button", { name: /^Archivo$/i }));
     expect(within(quantityPanel).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
     expect(within(quantityPanel).getAllByText(/bim-quantities.xlsx/i).length).toBeGreaterThan(0);
     expect(within(quantityPanel).getAllByText(/GUID-001/i).length).toBeGreaterThan(0);
@@ -1893,7 +1897,15 @@ describe("served project control flow", () => {
 
     const module = await screen.findByRole("region", { name: /scope manager module/i });
     expect(within(module).getAllByRole("heading", { name: /scope manager/i }).length).toBeGreaterThan(0);
+    const ribbonMenus = await within(module).findByRole(
+      "navigation",
+      { name: /menus superiores ifc/i },
+      { timeout: 5000 }
+    );
+    await user.click(within(ribbonMenus).getByRole("button", { name: /^Archivo$/i }));
     expect(within(module).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
+    expect(within(module).queryByRole("region", { name: /quantity provenance/i })).not.toBeInTheDocument();
+    await user.click(within(ribbonMenus).getByRole("button", { name: /Informaci[oó]n/i }));
     expect(within(module).getAllByText(/^Ubicacion$/i).length).toBeGreaterThan(0);
     expect(within(module).getAllByText(/^Elementos$/i).length).toBeGreaterThan(0);
     expect(within(module).getAllByText(/^Paquetes$/i).length).toBeGreaterThan(0);
@@ -1939,6 +1951,12 @@ describe("served project control flow", () => {
     await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
     const module = await screen.findByRole("region", { name: /scope manager module/i });
+    const ribbonMenus = await within(module).findByRole(
+      "navigation",
+      { name: /menus superiores ifc/i },
+      { timeout: 5000 }
+    );
+    await user.click(within(ribbonMenus).getByRole("button", { name: /^Archivo$/i }));
     const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
     const file = new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" });
     await user.upload(input, file);
@@ -1982,6 +2000,12 @@ describe("served project control flow", () => {
     await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
     const module = await screen.findByRole("region", { name: /scope manager module/i });
+    const ribbonMenus = await within(module).findByRole(
+      "navigation",
+      { name: /menus superiores ifc/i },
+      { timeout: 5000 }
+    );
+    await user.click(within(ribbonMenus).getByRole("button", { name: /^Archivo$/i }));
     const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
     const file = new File([new Uint8Array(9 * 1024 * 1024)], "coordination-model.ifc", {
       type: "application/octet-stream",
@@ -2011,6 +2035,12 @@ describe("served project control flow", () => {
     await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
     const module = await screen.findByRole("region", { name: /scope manager module/i });
+    const ribbonMenus = await within(module).findByRole(
+      "navigation",
+      { name: /menus superiores ifc/i },
+      { timeout: 5000 }
+    );
+    await user.click(within(ribbonMenus).getByRole("button", { name: /^Archivo$/i }));
     await user.upload(
       within(module).getByLabelText(/load bim\/ifc or excel quantities/i),
       new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" })

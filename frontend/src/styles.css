@@ -2505,8 +2505,16 @@ td span {
 }
 
 .projectWorkspaceRailDock {
+  align-self: stretch;
   min-width: 0;
   position: relative;
+}
+
+.projectWorkspaceRailToggleDock {
+  height: 0;
+  position: sticky;
+  top: 18px;
+  z-index: 12;
 }
 
 .projectWorkspaceRail {
@@ -2532,7 +2540,7 @@ td span {
   justify-content: center;
   position: absolute;
   right: -18px;
-  top: 18px;
+  top: 0;
   transition:
     background 160ms ease,
     box-shadow 160ms ease,
@@ -3596,7 +3604,11 @@ td span {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(180px, auto) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.scopeManagerRibbonHost {
+  min-width: 0;
 }
 
 .quantityUploadActions {
@@ -4802,7 +4814,7 @@ td span {
 }
 
 .bimViewerHeader {
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .bimViewerTitle {
@@ -4834,6 +4846,340 @@ td span {
   font-size: 11px;
   font-weight: 800;
   margin-top: 2px;
+}
+
+.bimViewerHeader > span {
+  max-width: 260px;
+  text-align: right;
+}
+
+.bimViewerRibbon {
+  background: #ffffff;
+  border: 1px solid #bfc8cf;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(23, 33, 43, 0.06);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bimRibbonTabs {
+  align-items: stretch;
+  background: #f7f8f9;
+  border-bottom: 1px solid #bfc8cf;
+  display: flex;
+  min-height: 34px;
+  overflow-x: auto;
+}
+
+.bimRibbonTabs button {
+  background: transparent;
+  border: 0;
+  border-right: 1px solid transparent;
+  color: #26343e;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  min-width: 82px;
+  padding: 8px 13px;
+  text-transform: uppercase;
+}
+
+.bimRibbonTabs button:hover {
+  background: #eef2f4;
+  color: #0b6f71;
+}
+
+.bimRibbonTabs button.active {
+  background: #fff0e8;
+  border-left: 1px solid #efb5a0;
+  border-right-color: #efb5a0;
+  color: #d74424;
+}
+
+.bimRibbonTabs button:first-child.active {
+  background: #17212b;
+  border-color: #17212b;
+  color: #ffffff;
+}
+
+.bimRibbonPanel {
+  align-items: stretch;
+  display: flex;
+  min-height: 118px;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 0 0;
+}
+
+.bimRibbonInformationPanel {
+  background: #f7f9fa;
+  max-height: min(72vh, 780px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: 14px;
+}
+
+.bimRibbonInformationContent,
+.scopeManagerInformation,
+.bimModelInformation {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.scopeManagerInformation {
+  border-bottom: 1px solid #cfd7de;
+  padding-bottom: 14px;
+}
+
+.bimModelInformation .bimViewerHeader {
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  margin: 0;
+  padding: 12px 14px;
+}
+
+.bimRibbonInformationPanel .bimCommercialReadiness,
+.bimRibbonInformationPanel .bimViewerHealth,
+.bimRibbonInformationPanel .bimOperationStrip {
+  padding: 0;
+}
+
+.bimRibbonGroup {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 104px;
+  padding: 7px 9px 4px;
+  position: relative;
+}
+
+.bimRibbonGroup + .bimRibbonGroup {
+  border-left: 1px solid #d3d9de;
+}
+
+.bimRibbonActions {
+  align-items: stretch;
+  display: flex;
+  gap: 5px;
+}
+
+.bimRibbonAction {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: #17212b;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  font: inherit;
+  gap: 5px;
+  justify-content: center;
+  min-height: 76px;
+  min-width: 70px;
+  padding: 7px 8px;
+  text-align: center;
+}
+
+.bimRibbonUploadAction {
+  overflow: hidden;
+  position: relative;
+}
+
+.bimRibbonUploadAction input {
+  cursor: pointer;
+  height: 100%;
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.bimRibbonUploadAction.disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.bimRibbonUploadAction.disabled input {
+  cursor: not-allowed;
+}
+
+.bimRibbonAction span {
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.2;
+  max-width: 86px;
+}
+
+.bimRibbonAction small {
+  color: #667481;
+  font-size: 9px;
+  line-height: 1.15;
+  max-width: 92px;
+}
+
+.bimRibbonAction:hover,
+.bimRibbonAction.active {
+  background: #ffe7de;
+  border-color: #ffd0bf;
+  color: #a9321a;
+}
+
+.bimRibbonAction.active small {
+  color: #9b4b38;
+}
+
+.bimRibbonAction:disabled,
+.bimRibbonCompactAction:disabled,
+.bimRibbonPanel input:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.bimRibbonGroupLabel {
+  color: #687680;
+  display: block;
+  font-size: 10px;
+  line-height: 1.1;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.bimRibbonFileGroup {
+  min-width: 300px;
+}
+
+.bimRibbonFileInfo {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 76px;
+  padding: 5px 8px;
+}
+
+.bimRibbonFileInfo > span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bimRibbonFileInfo strong,
+.bimRibbonFileInfo small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bimRibbonFileInfo strong {
+  color: #17212b;
+  font-size: 11px;
+}
+
+.bimRibbonFileInfo small {
+  color: #667481;
+  font-size: 10px;
+}
+
+.bimRibbonControlGroup > .bimRibbonActions {
+  align-items: center;
+  min-height: 76px;
+}
+
+.bimRibbonControlGroup > .bimRibbonActions > svg {
+  flex: 0 0 auto;
+}
+
+.bimRibbonRange,
+.bimRibbonNumber {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 5px;
+  min-width: 118px;
+}
+
+.bimRibbonRange span,
+.bimRibbonNumber span {
+  color: #344450;
+  font-size: 10px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.bimRibbonRange input {
+  accent-color: #0f8b8d;
+  cursor: pointer;
+  width: 100%;
+}
+
+.bimRibbonNumber {
+  min-width: 80px;
+  width: 80px;
+}
+
+.bimRibbonNumber input {
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 5px;
+  box-sizing: border-box;
+  color: #17212b;
+  font: inherit;
+  font-size: 11px;
+  min-width: 0;
+  min-height: 29px;
+  padding: 4px 6px;
+  width: 100%;
+}
+
+.bimRibbonCompactAction {
+  align-items: center;
+  align-self: end;
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 5px;
+  color: #17212b;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 29px;
+  padding: 4px 9px;
+}
+
+.bimRibbonCompactAction:hover {
+  background: #17212b;
+  border-color: #17212b;
+  color: #ffffff;
+}
+
+.bimRibbonClashGroup {
+  min-width: 212px;
+}
+
+.bimRibbonClashGroup > .bimRibbonActions {
+  align-items: center;
+  display: flex;
+}
+
+.bimRibbonClashControl {
+  align-items: end;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 80px 64px;
+  min-width: 0;
+}
+
+.bimRibbonClashGroup .bimRibbonCompactAction {
+  align-self: stretch;
 }
 
 .bimViewerToolbar {
@@ -4951,10 +5297,26 @@ td span {
 }
 
 .bimSectionAxisGroup button {
+  background: #ffffff;
+  border: 1px solid transparent;
   border-radius: 6px;
+  color: #344450;
+  cursor: pointer;
   font-size: 11px;
   min-height: 26px;
   padding: 0 8px;
+}
+
+.bimSectionAxisGroup button:hover,
+.bimSectionAxisGroup button.active {
+  background: #17212b;
+  border-color: #17212b;
+  color: #ffffff;
+}
+
+.bimSectionAxisGroup button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .bimOpenIfcTools {
@@ -6861,10 +7223,17 @@ td span {
     min-height: 42px;
   }
 
+  .projectWorkspaceRailToggleDock {
+    height: auto;
+    position: fixed;
+    right: 18px;
+    top: 142px;
+    z-index: 40;
+  }
+
   .projectWorkspaceRailToggle,
   .projectWorkspace.moduleRailCollapsed .projectWorkspaceRailToggle {
-    right: 10px;
-    top: 10px;
+    position: static;
   }
 
   .navigatorRail {

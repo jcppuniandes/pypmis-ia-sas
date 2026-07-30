@@ -21,12 +21,15 @@ test("BIM quantities module keeps one IFC viewer and one controlled quantity tab
   await expect(page.getByRole("region", { name: /modelo ifc/i })).toBeVisible();
   await expect(page.getByTestId("ifc-geometry-viewer-canvas")).toBeVisible();
   await expect(page.getByText(/IFC geometry rendered from stored source file/i)).toBeVisible({ timeout: 60_000 });
+  await page.getByRole("button", { name: /^Informaci[oó]n$/i }).click();
   await expect(page.getByRole("region", { name: /salud del visor ifc/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /salud del visor ifc/i })).toContainText(/Capacidad navegador/i);
   await expect(page.getByRole("region", { name: /panel de operacion bim/i })).toBeVisible();
+  await page.getByRole("button", { name: /^Vista$/i }).click();
   await expect(page.getByRole("button", { name: /Front IFC view/i })).toBeVisible();
   await page.getByRole("button", { name: /Front IFC view/i }).click();
   await expect(page.getByRole("region", { name: /panel de operacion bim/i })).toContainText(/FRONT \/ Orbitar/i);
+  await page.getByRole("button", { name: /^Herramientas$/i }).click();
   await page.getByRole("button", { name: /Section IFC model/i }).click();
   await expect(page.getByRole("group", { name: /Section axis/i })).toBeVisible();
   await page.getByRole("button", { name: /Section axis Z/i }).click();

@@ -2,8 +2,9 @@
  * Geometry/measurement helpers are exported for the vitest suite; they move to
  * src/lib in the frontend refactor wave. HMR degradation is acceptable here.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Compass, Eye, Maximize2, MousePointer2, RotateCcw, Search, ScanLine } from "lucide-react";
+import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Box, Compass, Eye, Maximize2, MousePointer2, RotateCcw, Search, ScanLine, Trash2, Upload } from "lucide-react";
 import * as THREE from "three";
 import webIfcWasmUrl from "web-ifc/web-ifc.wasm?url";
 import { bimModels as bimModelsApi } from "../api/bimModels";
@@ -24,6 +25,7 @@ type NavigationMode = "orbit" | "walk";
 type InteractionMode = "measure" | "select";
 type IfcVisualStyle = "solid" | "wireframe" | "xray";
 type IfcReviewFilter = "all" | "apu-assigned" | "apu-pending" | "mapped" | "unmapped";
+type IfcRibbonMenu = "appearance" | "file" | "information" | "tools" | "view";
 type IfcViewerTone = "ready" | "review";
 type IfcClashResult = {
   classA: string;
@@ -61,13 +63,25 @@ type ViewerCameraCommands = {
 
 type Props = {
   approvalDisabled?: boolean;
+  clearModelDisabled?: boolean;
+  informationContent?: ReactNode;
   projectId: number | null;
   lines?: QuantityTakeoffLine[];
   model?: BimModel | undefined;
   onApproveControlledMeasurement?: (payload: ControlledMeasurementApproval) => void | Promise<void>;
+  onClearModel?: () => void;
+  onLoadSource?: (event: ChangeEvent<HTMLInputElement>) => void;
+  ribbonHostId?: string;
   run?: QuantityTakeoffRun | undefined;
+  sourceLoadDisabled?: boolean;
+  sourceLoading?: boolean;
   token: string;
 };
+
+function IfcRibbonPortal({ children, hostId }: { children: ReactNode; hostId?: string }) {
+  const host = hostId && typeof document !== "undefined" ? document.getElementById(hostId) : null;
+  return host ? createPortal(children, host) : children;
+}
 
 type IfcTreeGroup = {
   apuCount: number;
@@ -335,9 +349,9 @@ function hasApuAssignment(line: QuantityTakeoffLine) {
   const assignment = line.raw_data?.budget_item_assignment;
   return Boolean(
     assignment &&
-      typeof assignment === "object" &&
-      !Array.isArray(assignment) &&
-      Object.keys(assignment as Record<string, unknown>).length
+    typeof assignment === "object" &&
+    !Array.isArray(assignment) &&
+    Object.keys(assignment as Record<string, unknown>).length
   );
 }
 
@@ -558,9 +572,7 @@ export function buildIfcObjectTree(
         const id = [...path, `${level.kind}:${label}`].join("\u001f");
         const children = buildLevel(groupLines, levelIndex + 1, [...path, `${level.kind}:${label}`]);
         const groupId =
-          level.kind === "class"
-            ? `${compact(groupLines[0]?.storey) || "Nivel pendiente"}|${label}`
-            : undefined;
+          level.kind === "class" ? `${compact(groupLines[0]?.storey) || "Nivel pendiente"}|${label}` : undefined;
         return summarizeNode(id, level.kind, label, groupLines, children, { groupId });
       })
       .sort((left, right) => left.label.localeCompare(right.label));
@@ -877,10 +889,7 @@ export function detectIfcBoxClashes(
   toleranceMeters: number,
   maxResults = 120
 ): IfcClashSummary {
-  const candidates = new Map<
-    string,
-    { box: THREE.Box3; data: IfcMeshData; key: string; meshes: THREE.Mesh[] }
-  >();
+  const candidates = new Map<string, { box: THREE.Box3; data: IfcMeshData; key: string; meshes: THREE.Mesh[] }>();
   const modelBox = new THREE.Box3();
   for (const mesh of meshes) {
     if (!mesh.visible) continue;
@@ -898,9 +907,7 @@ export function detectIfcBoxClashes(
       candidates.set(key, { box: box.clone(), data: data ?? {}, key, meshes: [mesh] });
     }
   }
-  const modelMaxDimension = modelBox.isEmpty()
-    ? 1
-    : Math.max(...modelBox.getSize(new THREE.Vector3()).toArray(), 1);
+  const modelMaxDimension = modelBox.isEmpty() ? 1 : Math.max(...modelBox.getSize(new THREE.Vector3()).toArray(), 1);
   const declaredScale = geometryUnitScaleToMeters(units) ?? 1;
   const scale = geometryCoordinateScaleToMeters(declaredScale, modelMaxDimension);
   const toleranceInCoordinates = Math.max(0, toleranceMeters) / Math.max(scale, Number.EPSILON);
@@ -1293,11 +1300,18 @@ function IfcObjectTreeBranch({
 
 export default function BimIfcModelViewer({
   approvalDisabled = false,
+  clearModelDisabled = false,
+  informationContent,
   projectId,
   lines = [],
   model,
   onApproveControlledMeasurement,
+  onClearModel,
+  onLoadSource,
+  ribbonHostId,
   run,
+  sourceLoadDisabled = false,
+  sourceLoading = false,
   token,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -1309,6 +1323,8 @@ export default function BimIfcModelViewer({
   const [viewPreset, setViewPreset] = useState<ViewPreset>("iso");
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("orbit");
   const [interactionMode, setInteractionMode] = useState<InteractionMode>("select");
+  const [activeRibbonMenu, setActiveRibbonMenu] = useState<IfcRibbonMenu>("view");
+  const [ribbonExpanded, setRibbonExpanded] = useState(true);
   const [visualStyle, setVisualStyle] = useState<IfcVisualStyle>("solid");
   const [explodeFactor, setExplodeFactor] = useState(0);
   const [status, setStatus] = useState("Listo para cargar geometria IFC guardada.");
@@ -1796,8 +1812,7 @@ export default function BimIfcModelViewer({
           setIsolatedGroupId("");
         };
         viewerCommandsRef.current = {
-          clashes: (toleranceMeters) =>
-            detectIfcBoxClashes(pickableMeshes, geometryUnits, toleranceMeters),
+          clashes: (toleranceMeters) => detectIfcBoxClashes(pickableMeshes, geometryUnits, toleranceMeters),
           explode: (factor) => {
             const safeFactor = clamp(factor, 0, 1);
             for (const groupMeshes of explodeGroups.values()) {
@@ -1891,8 +1906,7 @@ export default function BimIfcModelViewer({
           const exactHit = raycaster
             .intersectObjects(root.children, true)
             .find(
-              (intersection) =>
-                intersection.object instanceof THREE.Mesh && Boolean(intersection.object.userData.ifc)
+              (intersection) => intersection.object instanceof THREE.Mesh && Boolean(intersection.object.userData.ifc)
             );
           if (exactHit && exactHit.object instanceof THREE.Mesh) {
             return { mesh: exactHit.object, point: exactHit.point.clone() };
@@ -2290,6 +2304,23 @@ export default function BimIfcModelViewer({
     const summary = viewerCommandsRef.current?.clashes(Math.max(clashToleranceMm, 0) / 1000);
     if (summary) setClashSummary(summary);
   };
+  const handleRibbonMenu = (menu: IfcRibbonMenu) => {
+    if (menu === activeRibbonMenu) {
+      setRibbonExpanded((current) => !current);
+      return;
+    }
+    setActiveRibbonMenu(menu);
+    setRibbonExpanded(true);
+  };
+  const handleRestoreViewer = () => {
+    viewerCommandsRef.current?.resetVisibility();
+    setSectionEnabled(false);
+    setSectionPosition(50);
+    setExplodeFactor(0);
+    setVisualStyle("solid");
+    setInteractionMode("select");
+    setClashSummary(null);
+  };
   const measurementLabel = pointMeasurement
     ? `${formatNumber(pointMeasurement.distanceMeters)} m`
     : interactionMode === "measure"
@@ -2312,238 +2343,511 @@ export default function BimIfcModelViewer({
 
   return (
     <section aria-label="Modelo IFC" className="bimViewer bimViewerWide ifcGeometryViewer">
-      <div className="panelHeader compactHeader bimViewerHeader">
-        <div className="bimViewerTitle">
-          <h3>Modelo IFC</h3>
-          <span>Geometria real del archivo IFC guardado</span>
-          <small>{canLoadModel ? sourceName : "Carga un IFC para ver geometria real"}</small>
-          {modelSummary && <small>{modelSummary}</small>}
-          <small>{displayStatus}</small>
-        </div>
-        <div className="bimViewerToolbar" aria-label="IFC viewer controls">
-          <button
-            aria-label="Fit IFC model"
-            disabled={!canLoadModel}
-            onClick={() => viewerCommandsRef.current?.fit()}
-            type="button"
-          >
-            <Maximize2 size={14} /> Fit
-          </button>
-          <button
-            aria-label="Top IFC view"
-            className={viewPreset === "top" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => {
-              setViewPreset("top");
-              viewerCommandsRef.current?.view("top");
-            }}
-            type="button"
-          >
-            <Compass size={14} /> Top
-          </button>
-          <button
-            aria-label="Front IFC view"
-            className={viewPreset === "front" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => {
-              setViewPreset("front");
-              viewerCommandsRef.current?.view("front");
-            }}
-            type="button"
-          >
-            <Compass size={14} /> Front
-          </button>
-          <button
-            aria-label="Right IFC view"
-            className={viewPreset === "right" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => {
-              setViewPreset("right");
-              viewerCommandsRef.current?.view("right");
-            }}
-            type="button"
-          >
-            <Compass size={14} /> Right
-          </button>
-          <button
-            aria-label="Iso IFC view"
-            className={viewPreset === "iso" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => {
-              setViewPreset("iso");
-              viewerCommandsRef.current?.view("iso");
-            }}
-            type="button"
-          >
-            <Box size={14} /> Iso
-          </button>
-          <button
-            aria-label="Orbit IFC navigation"
-            className={navigationMode === "orbit" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => setNavigationMode("orbit")}
-            type="button"
-          >
-            <Compass size={14} /> Orbitar
-          </button>
-          <button
-            aria-label="Walk IFC navigation"
-            className={navigationMode === "walk" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => setNavigationMode("walk")}
-            type="button"
-          >
-            <MousePointer2 size={14} /> Recorrer
-          </button>
-          <button
-            aria-label="Measure IFC distance"
-            className={interactionMode === "measure" ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => setInteractionMode((current) => (current === "measure" ? "select" : "measure"))}
-            type="button"
-          >
-            <ScanLine size={14} /> Medir
-          </button>
-          <button
-            aria-label="Section IFC model"
-            className={sectionEnabled ? "active" : undefined}
-            disabled={!canLoadModel}
-            onClick={() => setSectionEnabled((current) => !current)}
-            type="button"
-          >
-            <ScanLine size={14} /> Seccion
-          </button>
-          {sectionEnabled ? (
-            <div aria-label="Section axis" className="bimSectionAxisGroup" role="group">
-              {(["x", "y", "z"] as SectionAxis[]).map((axis) => (
+      <IfcRibbonPortal hostId={ribbonHostId}>
+        <section aria-label="Menus de funcionalidades IFC" className="bimViewerRibbon">
+          <nav aria-label="Menus superiores IFC" className="bimRibbonTabs">
+            {(
+              [
+                ["file", "Archivo"],
+                ["view", "Vista"],
+                ["tools", "Herramientas"],
+                ["appearance", "Apariencia"],
+                ["information", "Información"],
+              ] as Array<[IfcRibbonMenu, string]>
+            ).map(([menu, label]) => {
+              const isActive = activeRibbonMenu === menu;
+              const isOpen = isActive && ribbonExpanded;
+              return (
                 <button
-                  aria-label={`Section axis ${axis.toUpperCase()}`}
-                  className={sectionAxis === axis ? "active" : undefined}
-                  key={axis}
-                  onClick={() => setSectionAxis(axis)}
+                  aria-controls={isOpen ? `ifc-ribbon-${menu}` : undefined}
+                  aria-expanded={isOpen}
+                  className={isActive ? "active" : undefined}
+                  key={menu}
+                  onClick={() => handleRibbonMenu(menu)}
                   type="button"
                 >
-                  {axis.toUpperCase()}
+                  {label}
                 </button>
-              ))}
+              );
+            })}
+          </nav>
+
+          {ribbonExpanded && activeRibbonMenu === "file" ? (
+            <div aria-label="Archivo IFC" className="bimRibbonPanel" id="ifc-ribbon-file" role="region">
+              {onLoadSource || onClearModel ? (
+                <section className="bimRibbonGroup">
+                  <div className="bimRibbonActions">
+                    {onLoadSource ? (
+                      <label
+                        className={`bimRibbonAction bimRibbonUploadAction${sourceLoadDisabled ? " disabled" : ""}`}
+                      >
+                        <Upload size={23} />
+                        <span>{sourceLoading ? "Cargando..." : "Cargar IFC o Excel"}</span>
+                        <input
+                          accept=".ifc,.xlsx,.xls,.csv"
+                          aria-label="Load BIM/IFC or Excel quantities"
+                          disabled={sourceLoadDisabled}
+                          onChange={onLoadSource}
+                          type="file"
+                        />
+                      </label>
+                    ) : null}
+                    {onClearModel ? (
+                      <button
+                        aria-label="Limpiar modelo"
+                        className="bimRibbonAction"
+                        disabled={clearModelDisabled}
+                        onClick={onClearModel}
+                        type="button"
+                      >
+                        <Trash2 size={23} />
+                        <span>Limpiar modelo</span>
+                      </button>
+                    ) : null}
+                  </div>
+                  <span className="bimRibbonGroupLabel">Fuente</span>
+                </section>
+              ) : null}
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    aria-label="Fit IFC model"
+                    className="bimRibbonAction"
+                    disabled={!canLoadModel}
+                    onClick={() => viewerCommandsRef.current?.fit()}
+                    type="button"
+                  >
+                    <Maximize2 size={23} />
+                    <span>Ajustar</span>
+                  </button>
+                  <button
+                    aria-label="Restore IFC visibility"
+                    className="bimRibbonAction"
+                    disabled={!canLoadModel}
+                    onClick={handleRestoreViewer}
+                    type="button"
+                  >
+                    <RotateCcw size={23} />
+                    <span>Restaurar</span>
+                  </button>
+                </div>
+                <span className="bimRibbonGroupLabel">Modelo</span>
+              </section>
+              <section className="bimRibbonGroup bimRibbonFileGroup">
+                <div className="bimRibbonFileInfo">
+                  <Box size={22} />
+                  <span>
+                    <strong>{sourceName || "Modelo IFC pendiente"}</strong>
+                    <small>{modelSummary || "Carga un IFC desde Scope Manager."}</small>
+                  </span>
+                </div>
+                <span className="bimRibbonGroupLabel">Archivo IFC</span>
+              </section>
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    className="bimRibbonAction"
+                    disabled={!canPrepareGeometryCache}
+                    onClick={handlePrepareGeometryCache}
+                    type="button"
+                  >
+                    <Box size={23} />
+                    <span>{isPreparingGeometryCache ? "Preparando" : "Preparar cache"}</span>
+                  </button>
+                </div>
+                <span className="bimRibbonGroupLabel">Geometria</span>
+              </section>
             </div>
           ) : null}
-          <button
-            aria-label="Restore IFC visibility"
-            disabled={!canLoadModel}
-            onClick={() => {
-              viewerCommandsRef.current?.resetVisibility();
-              setSectionEnabled(false);
-              setSectionPosition(50);
-              setExplodeFactor(0);
-              setVisualStyle("solid");
-              setInteractionMode("select");
-              setClashSummary(null);
-            }}
-            type="button"
-          >
-            <RotateCcw size={14} /> Restaurar
-          </button>
-        </div>
-        <span>{displayStats}</span>
-      </div>
-      <nav aria-label="IFC viewer panel controls" className="bimViewerPanelBar">
-        <div>
-          <span>Paneles del visor</span>
-          <small>Activa o desactiva las vistas acopladas sin afectar el modelo ni la seleccion.</small>
-        </div>
-        <button
-          aria-label={objectExplorerOpen ? "Ocultar Object Explorer" : "Mostrar Object Explorer"}
-          aria-pressed={objectExplorerOpen}
-          className={objectExplorerOpen ? "active" : undefined}
-          onClick={() => setObjectExplorerOpen((current) => !current)}
-          type="button"
-        >
-          <Box size={17} />
-          <span>Object Explorer</span>
-          <small>{objectExplorerOpen ? "Activo" : "Oculto"}</small>
-        </button>
-        <button
-          aria-label={propertiesPanelOpen ? "Ocultar Properties" : "Mostrar Properties"}
-          aria-pressed={propertiesPanelOpen}
-          className={propertiesPanelOpen ? "active" : undefined}
-          onClick={() => setPropertiesPanelOpen((current) => !current)}
-          type="button"
-        >
-          <MousePointer2 size={17} />
-          <span>Properties</span>
-          <small>{propertiesPanelOpen ? "Activo" : "Oculto"}</small>
-        </button>
-      </nav>
-      <section aria-label="Herramientas abiertas de revision IFC" className="bimOpenIfcTools">
-        <article>
-          <label htmlFor="ifc-visual-style">Estilo visual</label>
-          <select
-            disabled={!canLoadModel}
-            id="ifc-visual-style"
-            onChange={(event) => setVisualStyle(event.target.value as IfcVisualStyle)}
-            value={visualStyle}
-          >
-            <option value="solid">Solido</option>
-            <option value="xray">Transparente</option>
-            <option value="wireframe">Alambrico</option>
-          </select>
-          <small>Reutiliza los materiales Three.js sin perder GUID ni seleccion.</small>
-        </article>
-        <article>
-          <label htmlFor="ifc-explode-factor">Vista explosionada: {explodeFactor}%</label>
-          <input
-            disabled={!canLoadModel}
-            id="ifc-explode-factor"
-            max="100"
-            min="0"
-            onChange={(event) => setExplodeFactor(Number(event.target.value))}
-            step="5"
-            type="range"
-            value={explodeFactor}
-          />
-          <small>Separa productos conservando las referencias vinculadas a cantidades.</small>
-        </article>
-        <article>
-          <label htmlFor="ifc-section-position">
-            Plano de corte {sectionAxis.toUpperCase()}: {sectionPosition}%
-          </label>
-          <input
-            disabled={!canLoadModel || !sectionEnabled}
-            id="ifc-section-position"
-            max="100"
-            min="0"
-            onChange={(event) => setSectionPosition(Number(event.target.value))}
-            step="1"
-            type="range"
-            value={sectionPosition}
-          />
-          <small>{sectionEnabled ? `Plano activo al ${sectionPosition}%` : "Activa Seccion para recorrer el plano."}</small>
-        </article>
-        <article>
-          <span>Medicion por puntos</span>
-          <strong>{measurementLabel}</strong>
-          <small>{measurementStatus}</small>
-        </article>
-        <article className="bimClashTool">
-          <label htmlFor="ifc-clash-tolerance">Interferencias / tolerancia (mm)</label>
-          <div>
-            <input
-              disabled={!canLoadModel}
-              id="ifc-clash-tolerance"
-              min="0"
-              onChange={(event) => setClashToleranceMm(Number(event.target.value))}
-              step="1"
-              type="number"
-              value={clashToleranceMm}
-            />
-            <button disabled={!canLoadModel} onClick={handleClashDetection} type="button">
-              Detectar
-            </button>
-          </div>
-          <small>Screening abierto por cajas AABB; cada resultado conserva las dos referencias IFC.</small>
-        </article>
-      </section>
+
+          {ribbonExpanded && activeRibbonMenu === "information" ? (
+            <div
+              aria-label="Información y estado del Scope Manager"
+              className="bimRibbonInformationPanel"
+              id="ifc-ribbon-information"
+              role="region"
+            >
+              <div className="bimRibbonInformationContent">
+                {informationContent ? (
+                  <section aria-label="Resumen del Scope Manager" className="scopeManagerInformation">
+                    {informationContent}
+                  </section>
+                ) : null}
+                <section aria-label="Detalle tecnico BIM" className="bimModelInformation">
+                  <div className="panelHeader compactHeader bimViewerHeader">
+                    <div className="bimViewerTitle">
+                      <h3>Modelo IFC</h3>
+                      <span>Geometria real del archivo IFC guardado</span>
+                      <small>{canLoadModel ? sourceName : "Carga un IFC para ver geometria real"}</small>
+                      {modelSummary && <small>{modelSummary}</small>}
+                      <small>{displayStatus}</small>
+                    </div>
+                    <span>{displayStats}</span>
+                  </div>
+                  <section aria-label="Preparacion comercial del visor BIM" className="bimCommercialReadiness">
+                    <article className={commercialBlockers.length ? "review" : "ready"}>
+                      <span>Estado comercial</span>
+                      <strong>{commercialReadiness}</strong>
+                      <small>
+                        {commercialBlockers.length
+                          ? commercialBlockers.slice(0, 3).join(" / ")
+                          : "Geometria, seleccion, cantidades y georreferenciacion disponibles para piloto comercial."}
+                      </small>
+                    </article>
+                    <article>
+                      <span>Riesgo IFC</span>
+                      <strong>{hasRenderableGeometry ? "Renderizable" : "Metadatos solamente"}</strong>
+                      <small>{formatFileSize(model?.source_size_bytes)}</small>
+                    </article>
+                    <article>
+                      <span>Trazabilidad</span>
+                      <strong>
+                        {tracedLineCount}/{lines.length}
+                      </strong>
+                      <small>Lineas con referencia BIM para seleccion y presupuesto.</small>
+                    </article>
+                  </section>
+                  <section aria-label="Salud del visor IFC" className="bimViewerHealth">
+                    <article className={browserCapacity.tone}>
+                      <span>Capacidad navegador</span>
+                      <strong>{browserCapacity.label}</strong>
+                      <small>{browserCapacity.detail}</small>
+                    </article>
+                    <article
+                      className={viewerManifest?.geometry_strategy === "backend_cache_required" ? "review" : "ready"}
+                    >
+                      <span>Revision/cache</span>
+                      <strong>{manifestStrategy}</strong>
+                      <small>{geometryCacheStatus || viewerManifest?.revision_id || manifestStatus}</small>
+                      {model && viewerManifest?.geometry_strategy !== "backend_cache" ? (
+                        <button
+                          aria-label="Preparar cache backend"
+                          className="bimInlineAction"
+                          disabled={!canPrepareGeometryCache}
+                          onClick={handlePrepareGeometryCache}
+                          type="button"
+                        >
+                          {isPreparingGeometryCache ? "Preparando..." : "Preparar cache backend"}
+                        </button>
+                      ) : null}
+                    </article>
+                    <article className={viewerManifest?.property_index?.scan_status === "partial" ? "review" : "ready"}>
+                      <span>Indice IFC</span>
+                      <strong>{viewerManifest?.property_index?.scan_status ?? "pendiente"}</strong>
+                      <small>{manifestSummary}</small>
+                    </article>
+                    <article className={webIfcHealthTone}>
+                      <span>Estado web-ifc</span>
+                      <strong>{webIfcHealthLabel}</strong>
+                      <small>{renderDiagnosticSummary}</small>
+                    </article>
+                    <article className={omittedGeometryCount ? "review" : "ready"}>
+                      <span>Mallas omitidas</span>
+                      <strong>{omittedGeometryCount.toLocaleString()}</strong>
+                      <small>
+                        {omittedGeometryCount
+                          ? `${renderDiagnostics.invalidGeometryRefs} refs invalidas / ${renderDiagnostics.invalidMemoryRefs} memoria / ${renderDiagnostics.conversionErrors} conversion`
+                          : "Sin omisiones reportadas por el motor."}
+                      </small>
+                    </article>
+                    <article className={tracedLineCount === lines.length ? "ready" : "review"}>
+                      <span>Trazabilidad BIM</span>
+                      <strong>
+                        {tracedLineCount}/{lines.length || 0}
+                      </strong>
+                      <small>Lineas con GUID o Express ID para seleccionar elemento y aprobar cantidades.</small>
+                    </article>
+                  </section>
+                  <section aria-label="Panel de operacion BIM" className="bimOperationStrip">
+                    <article>
+                      <span>Motor</span>
+                      <strong>{viewerEngineLabel}</strong>
+                      <small>{displayStats}</small>
+                    </article>
+                    <article>
+                      <span>Modo</span>
+                      <strong>{operationModeLabel}</strong>
+                      <small>
+                        {sectionModeLabel} / {visualStyle} / medir {measurementLabel}
+                      </small>
+                    </article>
+                    <article>
+                      <span>Modelo</span>
+                      <strong>{sourceName || "Sin archivo IFC"}</strong>
+                      <small>{modelSummary || "Sin metadatos de modelo"}</small>
+                    </article>
+                    <article>
+                      <span>Seleccion</span>
+                      <strong>{selectionLabel}</strong>
+                      <small>
+                        {isolatedGroup
+                          ? `Aislado: ${isolatedGroup.storey} / ${isolatedGroup.ifcClass}`
+                          : "Modelo completo visible"}
+                      </small>
+                    </article>
+                    <article>
+                      <span>Control</span>
+                      <strong>
+                        {mappedLineCount}/{lines.length || 0} codificadas
+                      </strong>
+                      <small>
+                        {tracedLineCount}/{lines.length || 0} trazadas / {apuAssignedLineCount}/{lines.length || 0} con
+                        APU / {treeGroups.length} grupo(s) IFC
+                      </small>
+                    </article>
+                  </section>
+                </section>
+              </div>
+            </div>
+          ) : null}
+
+          {ribbonExpanded && activeRibbonMenu === "view" ? (
+            <div aria-label="IFC viewer controls" className="bimRibbonPanel" id="ifc-ribbon-view" role="region">
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    aria-label="Orbit IFC navigation"
+                    className={`bimRibbonAction${navigationMode === "orbit" ? " active" : ""}`}
+                    disabled={!canLoadModel}
+                    onClick={() => setNavigationMode("orbit")}
+                    type="button"
+                  >
+                    <Compass size={23} />
+                    <span>Orbitar</span>
+                  </button>
+                  <button
+                    aria-label="Walk IFC navigation"
+                    className={`bimRibbonAction${navigationMode === "walk" ? " active" : ""}`}
+                    disabled={!canLoadModel}
+                    onClick={() => setNavigationMode("walk")}
+                    type="button"
+                  >
+                    <MousePointer2 size={23} />
+                    <span>Recorrer</span>
+                  </button>
+                </div>
+                <span className="bimRibbonGroupLabel">Navegacion</span>
+              </section>
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    aria-label="Fit IFC model"
+                    className="bimRibbonAction"
+                    disabled={!canLoadModel}
+                    onClick={() => viewerCommandsRef.current?.fit()}
+                    type="button"
+                  >
+                    <Maximize2 size={23} />
+                    <span>Ajustar</span>
+                  </button>
+                </div>
+                <span className="bimRibbonGroupLabel">Camara</span>
+              </section>
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  {(["top", "front", "right", "iso"] as ViewPreset[]).map((preset) => (
+                    <button
+                      aria-label={`${preset === "iso" ? "Iso" : `${preset[0].toUpperCase()}${preset.slice(1)}`} IFC view`}
+                      className={`bimRibbonAction${viewPreset === preset ? " active" : ""}`}
+                      disabled={!canLoadModel}
+                      key={preset}
+                      onClick={() => {
+                        setViewPreset(preset);
+                        viewerCommandsRef.current?.view(preset);
+                      }}
+                      type="button"
+                    >
+                      {preset === "iso" ? <Box size={23} /> : <Compass size={23} />}
+                      <span>
+                        {preset === "top"
+                          ? "Superior"
+                          : preset === "front"
+                            ? "Frontal"
+                            : preset === "right"
+                              ? "Derecha"
+                              : "Isometrica"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <span className="bimRibbonGroupLabel">Vistas</span>
+              </section>
+            </div>
+          ) : null}
+
+          {ribbonExpanded && activeRibbonMenu === "tools" ? (
+            <div
+              aria-label="Herramientas abiertas de revision IFC"
+              className="bimRibbonPanel"
+              id="ifc-ribbon-tools"
+              role="region"
+            >
+              <section className="bimRibbonGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    aria-label="Measure IFC distance"
+                    className={`bimRibbonAction${interactionMode === "measure" ? " active" : ""}`}
+                    disabled={!canLoadModel}
+                    onClick={() => setInteractionMode((current) => (current === "measure" ? "select" : "measure"))}
+                    type="button"
+                  >
+                    <ScanLine size={23} />
+                    <span>Medir</span>
+                    <small title={measurementStatus}>{measurementLabel}</small>
+                  </button>
+                </div>
+                <span className="bimRibbonGroupLabel">Medicion</span>
+              </section>
+              <section className="bimRibbonGroup bimRibbonControlGroup">
+                <div className="bimRibbonActions">
+                  <button
+                    aria-label="Section IFC model"
+                    className={`bimRibbonAction${sectionEnabled ? " active" : ""}`}
+                    disabled={!canLoadModel}
+                    onClick={() => setSectionEnabled((current) => !current)}
+                    type="button"
+                  >
+                    <ScanLine size={23} />
+                    <span>Seccion</span>
+                  </button>
+                  <div aria-label="Section axis" className="bimSectionAxisGroup" role="group">
+                    {(["x", "y", "z"] as SectionAxis[]).map((axis) => (
+                      <button
+                        aria-label={`Section axis ${axis.toUpperCase()}`}
+                        className={sectionAxis === axis ? "active" : undefined}
+                        disabled={!canLoadModel || !sectionEnabled}
+                        key={axis}
+                        onClick={() => setSectionAxis(axis)}
+                        type="button"
+                      >
+                        {axis.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="bimRibbonRange" htmlFor="ifc-section-position">
+                    <span>
+                      Plano {sectionAxis.toUpperCase()}: {sectionPosition}%
+                    </span>
+                    <input
+                      disabled={!canLoadModel || !sectionEnabled}
+                      id="ifc-section-position"
+                      max="100"
+                      min="0"
+                      onChange={(event) => setSectionPosition(Number(event.target.value))}
+                      step="1"
+                      type="range"
+                      value={sectionPosition}
+                    />
+                  </label>
+                </div>
+                <span className="bimRibbonGroupLabel">Seccionamiento</span>
+              </section>
+              <section className="bimRibbonGroup bimRibbonControlGroup">
+                <div className="bimRibbonActions">
+                  <Box size={23} />
+                  <label className="bimRibbonRange" htmlFor="ifc-explode-factor">
+                    <span>Explosion: {explodeFactor}%</span>
+                    <input
+                      disabled={!canLoadModel}
+                      id="ifc-explode-factor"
+                      max="100"
+                      min="0"
+                      onChange={(event) => setExplodeFactor(Number(event.target.value))}
+                      step="5"
+                      type="range"
+                      value={explodeFactor}
+                    />
+                  </label>
+                </div>
+                <span className="bimRibbonGroupLabel">Explosion</span>
+              </section>
+              <section className="bimRibbonGroup bimRibbonControlGroup bimRibbonClashGroup">
+                <div className="bimRibbonActions">
+                  <Eye size={23} />
+                  <div className="bimRibbonClashControl">
+                    <label className="bimRibbonNumber" htmlFor="ifc-clash-tolerance">
+                      <span>Tolerancia (mm)</span>
+                      <input
+                        disabled={!canLoadModel}
+                        id="ifc-clash-tolerance"
+                        min="0"
+                        onChange={(event) => setClashToleranceMm(Number(event.target.value))}
+                        step="1"
+                        type="number"
+                        value={clashToleranceMm}
+                      />
+                    </label>
+                    <button
+                      className="bimRibbonCompactAction"
+                      disabled={!canLoadModel}
+                      onClick={handleClashDetection}
+                      type="button"
+                    >
+                      Detectar
+                    </button>
+                  </div>
+                </div>
+                <span className="bimRibbonGroupLabel">Colisiones</span>
+              </section>
+            </div>
+          ) : null}
+
+          {ribbonExpanded && activeRibbonMenu === "appearance" ? (
+            <div aria-label="Apariencia IFC" className="bimRibbonPanel" id="ifc-ribbon-appearance" role="region">
+              <section className="bimRibbonGroup">
+                <div aria-label="Estilo visual" className="bimRibbonActions" role="group">
+                  {(
+                    [
+                      ["solid", "Solido"],
+                      ["xray", "Transparente"],
+                      ["wireframe", "Alambrico"],
+                    ] as Array<[IfcVisualStyle, string]>
+                  ).map(([style, label]) => (
+                    <button
+                      aria-label={`Estilo visual ${label}`}
+                      aria-pressed={visualStyle === style}
+                      className={`bimRibbonAction${visualStyle === style ? " active" : ""}`}
+                      disabled={!canLoadModel}
+                      key={style}
+                      onClick={() => setVisualStyle(style)}
+                      type="button"
+                    >
+                      {style === "xray" ? <Eye size={23} /> : <Box size={23} />}
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
+                <span className="bimRibbonGroupLabel">Renderizado</span>
+              </section>
+              <section className="bimRibbonGroup">
+                <nav aria-label="IFC viewer panel controls" className="bimRibbonActions">
+                  <button
+                    aria-label={objectExplorerOpen ? "Ocultar Object Explorer" : "Mostrar Object Explorer"}
+                    aria-pressed={objectExplorerOpen}
+                    className={`bimRibbonAction${objectExplorerOpen ? " active" : ""}`}
+                    onClick={() => setObjectExplorerOpen((current) => !current)}
+                    type="button"
+                  >
+                    <Box size={23} />
+                    <span>Object Explorer</span>
+                  </button>
+                  <button
+                    aria-label={propertiesPanelOpen ? "Ocultar Properties" : "Mostrar Properties"}
+                    aria-pressed={propertiesPanelOpen}
+                    className={`bimRibbonAction${propertiesPanelOpen ? " active" : ""}`}
+                    onClick={() => setPropertiesPanelOpen((current) => !current)}
+                    type="button"
+                  >
+                    <MousePointer2 size={23} />
+                    <span>Properties</span>
+                  </button>
+                </nav>
+                <span className="bimRibbonGroupLabel">Paneles</span>
+              </section>
+            </div>
+          ) : null}
+        </section>
+      </IfcRibbonPortal>
       {clashSummary ? (
         <section aria-label="Resultados de interferencias IFC" className="bimClashResults">
           <div className="panelHeader compactHeader">
@@ -2588,410 +2892,305 @@ export default function BimIfcModelViewer({
           )}
         </section>
       ) : null}
-      <section aria-label="Preparacion comercial del visor BIM" className="bimCommercialReadiness">
-        <article className={commercialBlockers.length ? "review" : "ready"}>
-          <span>Estado comercial</span>
-          <strong>{commercialReadiness}</strong>
-          <small>
-            {commercialBlockers.length
-              ? commercialBlockers.slice(0, 3).join(" / ")
-              : "Geometria, seleccion, cantidades y georreferenciacion disponibles para piloto comercial."}
-          </small>
-        </article>
-        <article>
-          <span>Riesgo IFC</span>
-          <strong>{hasRenderableGeometry ? "Renderizable" : "Metadatos solamente"}</strong>
-          <small>{formatFileSize(model?.source_size_bytes)}</small>
-        </article>
-        <article>
-          <span>Trazabilidad</span>
-          <strong>
-            {tracedLineCount}/{lines.length}
-          </strong>
-          <small>Lineas con referencia BIM para selección y presupuesto.</small>
-        </article>
-      </section>
-      <section aria-label="Salud del visor IFC" className="bimViewerHealth">
-        <article className={browserCapacity.tone}>
-          <span>Capacidad navegador</span>
-          <strong>{browserCapacity.label}</strong>
-          <small>{browserCapacity.detail}</small>
-        </article>
-        <article className={viewerManifest?.geometry_strategy === "backend_cache_required" ? "review" : "ready"}>
-          <span>Revision/cache</span>
-          <strong>{manifestStrategy}</strong>
-          <small>{geometryCacheStatus || viewerManifest?.revision_id || manifestStatus}</small>
-          {model && viewerManifest?.geometry_strategy !== "backend_cache" ? (
-            <button
-              aria-label="Preparar cache backend"
-              className="bimInlineAction"
-              disabled={!canPrepareGeometryCache}
-              onClick={handlePrepareGeometryCache}
-              type="button"
-            >
-              {isPreparingGeometryCache ? "Preparando..." : "Preparar cache backend"}
-            </button>
-          ) : null}
-        </article>
-        <article className={viewerManifest?.property_index?.scan_status === "partial" ? "review" : "ready"}>
-          <span>Indice IFC</span>
-          <strong>{viewerManifest?.property_index?.scan_status ?? "pendiente"}</strong>
-          <small>{manifestSummary}</small>
-        </article>
-        <article className={webIfcHealthTone}>
-          <span>Estado web-ifc</span>
-          <strong>{webIfcHealthLabel}</strong>
-          <small>{renderDiagnosticSummary}</small>
-        </article>
-        <article className={omittedGeometryCount ? "review" : "ready"}>
-          <span>Mallas omitidas</span>
-          <strong>{omittedGeometryCount.toLocaleString()}</strong>
-          <small>
-            {omittedGeometryCount
-              ? `${renderDiagnostics.invalidGeometryRefs} refs invalidas / ${renderDiagnostics.invalidMemoryRefs} memoria / ${renderDiagnostics.conversionErrors} conversion`
-              : "Sin omisiones reportadas por el motor."}
-          </small>
-        </article>
-        <article className={tracedLineCount === lines.length ? "ready" : "review"}>
-          <span>Trazabilidad BIM</span>
-          <strong>
-            {tracedLineCount}/{lines.length || 0}
-          </strong>
-          <small>Lineas con GUID o Express ID para seleccionar elemento y aprobar cantidades.</small>
-        </article>
-      </section>
-      <section aria-label="Panel de operacion BIM" className="bimOperationStrip">
-        <article>
-          <span>Motor</span>
-          <strong>{viewerEngineLabel}</strong>
-          <small>{displayStats}</small>
-        </article>
-        <article>
-          <span>Modo</span>
-          <strong>{operationModeLabel}</strong>
-          <small>
-            {sectionModeLabel} / {visualStyle} / medir {measurementLabel}
-          </small>
-        </article>
-        <article>
-          <span>Modelo</span>
-          <strong>{sourceName || "Sin archivo IFC"}</strong>
-          <small>{modelSummary || "Sin metadatos de modelo"}</small>
-        </article>
-        <article>
-          <span>Seleccion</span>
-          <strong>{selectionLabel}</strong>
-          <small>
-            {isolatedGroup ? `Aislado: ${isolatedGroup.storey} / ${isolatedGroup.ifcClass}` : "Modelo completo visible"}
-          </small>
-        </article>
-        <article>
-          <span>Control</span>
-          <strong>
-            {mappedLineCount}/{lines.length || 0} codificadas
-          </strong>
-          <small>
-            {tracedLineCount}/{lines.length || 0} trazadas / {apuAssignedLineCount}/{lines.length || 0} con APU /{" "}
-            {treeGroups.length} grupo(s) IFC
-          </small>
-        </article>
-      </section>
       <div className={`bimViewerWorkspace ${workspacePanelClass}`}>
         <div
           aria-label="IFC model navigation canvas"
           className="bimViewerCanvasWrap ifcGeometryCanvasWrap"
           tabIndex={canLoadModel ? 0 : -1}
         >
-        <canvas aria-label="IFC geometric model viewer" data-testid="ifc-geometry-viewer-canvas" ref={canvasRef} />
-        {canLoadModel && !hasRenderableGeometry ? (
-          <div className="bimViewerEmptyOverlay" role="status">
-            <strong>Modelo registrado sin geometria renderizable</strong>
-            <span>{displayStatus}</span>
-            {georeferenceLabel ? <small>{georeferenceLabel}</small> : null}
-            <small>
-              Usa este archivo como evidencia/georreferenciacion o carga un IFC con productos geometricos para ver el
-              edificio.
-            </small>
+          <canvas aria-label="IFC geometric model viewer" data-testid="ifc-geometry-viewer-canvas" ref={canvasRef} />
+          {canLoadModel && !hasRenderableGeometry ? (
+            <div className="bimViewerEmptyOverlay" role="status">
+              <strong>Modelo registrado sin geometria renderizable</strong>
+              <span>{displayStatus}</span>
+              {georeferenceLabel ? <small>{georeferenceLabel}</small> : null}
+              <small>
+                Usa este archivo como evidencia/georreferenciacion o carga un IFC con productos geometricos para ver el
+                edificio.
+              </small>
+            </div>
+          ) : null}
+          <div className="bimViewerCanvasMeta" aria-label="IFC viewer data basis">
+            <strong>{canLoadModel ? "Geometria IFC guardada" : "Sin archivo IFC"}</strong>
+            <span>{displayStats}</span>
           </div>
-        ) : null}
-        <div className="bimViewerCanvasMeta" aria-label="IFC viewer data basis">
-          <strong>{canLoadModel ? "Geometria IFC guardada" : "Sin archivo IFC"}</strong>
-          <span>{displayStats}</span>
-        </div>
-        <div className="bimViewerNavigationHint" aria-label="Modo de navegacion IFC">
-          <strong>
-            {interactionMode === "measure"
-              ? "Modo medir"
-              : navigationMode === "walk"
-                ? "Modo recorrido"
-                : "Modo orbitar"}
-          </strong>
-          <span>
-            {interactionMode === "measure"
-              ? "Haz clic en dos puntos de las mallas IFC. El resultado se expresa en metros."
-              : navigationMode === "walk"
-                ? "WASD / flechas para avanzar. Arrastra para mirar. Doble clic centra un elemento."
-                : "Arrastra para orbitar. Shift + arrastrar desplaza. Rueda para zoom. Doble clic centra un elemento."}
-          </span>
-        </div>
-        {pointMeasurement ? (
-          <div className="bimViewerMeasurementBadge" aria-label="Medicion IFC activa">
-            <strong>Distancia</strong>
-            <span>{formatNumber(pointMeasurement.distanceMeters)} m</span>
-          </div>
-        ) : null}
-        {(selectedLine || selectedIfcElement) && (
-          <div className="bimViewerSelectionBadge" aria-label="Elemento IFC seleccionado">
-            <strong>Elemento seleccionado</strong>
+          <div className="bimViewerNavigationHint" aria-label="Modo de navegacion IFC">
+            <strong>
+              {interactionMode === "measure"
+                ? "Modo medir"
+                : navigationMode === "walk"
+                  ? "Modo recorrido"
+                  : "Modo orbitar"}
+            </strong>
             <span>
-              {constructiveLabel(selectedLine) || selectedIfcElement?.ifcClass || selectedIfcElement?.globalId}
+              {interactionMode === "measure"
+                ? "Haz clic en dos puntos de las mallas IFC. El resultado se expresa en metros."
+                : navigationMode === "walk"
+                  ? "WASD / flechas para avanzar. Arrastra para mirar. Doble clic centra un elemento."
+                  : "Arrastra para orbitar. Shift + arrastrar desplaza. Rueda para zoom. Doble clic centra un elemento."}
             </span>
+          </div>
+          {pointMeasurement ? (
+            <div className="bimViewerMeasurementBadge" aria-label="Medicion IFC activa">
+              <strong>Distancia</strong>
+              <span>{formatNumber(pointMeasurement.distanceMeters)} m</span>
+            </div>
+          ) : null}
+          {(selectedLine || selectedIfcElement) && (
+            <div className="bimViewerSelectionBadge" aria-label="Elemento IFC seleccionado">
+              <strong>Elemento seleccionado</strong>
+              <span>
+                {constructiveLabel(selectedLine) || selectedIfcElement?.ifcClass || selectedIfcElement?.globalId}
+              </span>
+            </div>
+          )}
+        </div>
+        {model && (
+          <div className="bimViewerMetadata" aria-label="IFC model identity">
+            <span>{modelIdentityText(modelIdentity, "project_name", "Proyecto IFC sin nombre publicado")}</span>
+            <span>{modelIdentityText(modelIdentity, "site_name", "Sitio pendiente")}</span>
+            <span>{modelIdentityText(modelIdentity, "building_name", "Edificio pendiente")}</span>
+            {georeferenceLabel ? <span>{georeferenceLabel}</span> : null}
+            {model.element_count === 0 ? <span>Sin productos geometricos detectados en metadatos</span> : null}
           </div>
         )}
-        </div>
-      {model && (
-        <div className="bimViewerMetadata" aria-label="IFC model identity">
-          <span>{modelIdentityText(modelIdentity, "project_name", "Proyecto IFC sin nombre publicado")}</span>
-          <span>{modelIdentityText(modelIdentity, "site_name", "Sitio pendiente")}</span>
-          <span>{modelIdentityText(modelIdentity, "building_name", "Edificio pendiente")}</span>
-          {georeferenceLabel ? <span>{georeferenceLabel}</span> : null}
-          {model.element_count === 0 ? <span>Sin productos geometricos detectados en metadatos</span> : null}
-        </div>
-      )}
-      {georeferenceDetails.length ? (
-        <section aria-label="Georreferenciacion del modelo" className="bimGeorefPanel">
-          <div>
-            <strong>Georreferenciacion detectada</strong>
-            <span>Coordenadas publicadas por el IFC para ubicar el modelo en su sistema de referencia.</span>
-          </div>
-          <div className="bimGeorefFacts">
-            {georeferenceDetails.map((item) => (
-              <article key={item.label}>
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-              </article>
-            ))}
-          </div>
-        </section>
-      ) : model ? (
-        <section aria-label="Georreferenciacion del modelo" className="bimGeorefPanel muted">
-          <div>
-            <strong>Sin georreferenciacion publicada</strong>
-            <span>El IFC cargado no expone IFCSITE con latitud/longitud ni IFCMAPCONVERSION legible.</span>
-          </div>
-        </section>
-      ) : null}
+        {georeferenceDetails.length ? (
+          <section aria-label="Georreferenciacion del modelo" className="bimGeorefPanel">
+            <div>
+              <strong>Georreferenciacion detectada</strong>
+              <span>Coordenadas publicadas por el IFC para ubicar el modelo en su sistema de referencia.</span>
+            </div>
+            <div className="bimGeorefFacts">
+              {georeferenceDetails.map((item) => (
+                <article key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : model ? (
+          <section aria-label="Georreferenciacion del modelo" className="bimGeorefPanel muted">
+            <div>
+              <strong>Sin georreferenciacion publicada</strong>
+              <span>El IFC cargado no expone IFCSITE con latitud/longitud ni IFCMAPCONVERSION legible.</span>
+            </div>
+          </section>
+        ) : null}
         <div className="bimViewerInspector">
-        {objectExplorerOpen ? (
-          <section aria-label="Arbol IFC" className="bimModelTree bimDockPanel">
-          <div className="panelHeader compactHeader">
-            <h3 aria-label="Object Explorer Arbol IFC">Object Explorer</h3>
-            <span>
-              {objectTree.count
-                ? `${filteredObjectTree.count}/${objectTree.count} objeto(s)${isolatedGroupId ? " / aislado" : ""}`
-                : "Esperando cantidades trazadas"}
-            </span>
-          </div>
-          {objectTree.count ? (
-            <>
-              <label className="bimTreeSearch">
-                <Search size={14} />
-                <input
-                  aria-label="Buscar en arbol IFC"
-                  onChange={(event) => setTreeSearch(event.target.value)}
-                  placeholder="Nivel, GUID, propiedad, CBS/WBS o APU"
-                  type="search"
-                  value={treeSearch}
-                />
-              </label>
-              <div className="bimTreeFilters">
-                <label>
-                  <span>Filtro de control</span>
-                  <select
-                    aria-label="Filtro de control IFC"
-                    onChange={(event) => setReviewFilter(event.target.value as IfcReviewFilter)}
-                    value={reviewFilter}
-                  >
-                    <option value="all">Todos</option>
-                    <option value="mapped">Con codificacion</option>
-                    <option value="unmapped">Sin codificacion</option>
-                    <option value="apu-assigned">Con APU</option>
-                    <option value="apu-pending">APU pendiente</option>
-                  </select>
-                </label>
-                <button disabled={!filteredTraceRefs.length} onClick={handleApplyVisualFilter} type="button">
-                  <Eye size={13} /> Aplicar al modelo
-                </button>
-                <button onClick={() => viewerCommandsRef.current?.resetVisibility()} type="button">
-                  Ver todo
-                </button>
+          {objectExplorerOpen ? (
+            <section aria-label="Arbol IFC" className="bimModelTree bimDockPanel">
+              <div className="panelHeader compactHeader">
+                <h3 aria-label="Object Explorer Arbol IFC">Object Explorer</h3>
+                <span>
+                  {objectTree.count
+                    ? `${filteredObjectTree.count}/${objectTree.count} objeto(s)${isolatedGroupId ? " / aislado" : ""}`
+                    : "Esperando cantidades trazadas"}
+                </span>
               </div>
-            </>
-          ) : null}
-          {objectTree.count && filteredObjectTree.count ? (
-            <div aria-label="Jerarquia de objetos IFC" className="bimTreeList bimObjectTree" role="tree">
-              <IfcObjectTreeBranch
-                forceOpen={forceObjectTreeOpen}
-                node={filteredObjectTree}
-                onIsolate={handleIsolateObjectTreeNode}
-                onSelect={handleSelectObjectTreeNode}
-                selectedLineId={selectedLineId}
-              />
-            </div>
-          ) : objectTree.count ? (
-            <p className="projectHint">No hay objetos IFC que coincidan con la busqueda y el filtro actual.</p>
-          ) : (
-            <p className="projectHint">
-              El arbol se activa cuando la tabla de cantidades trae referencias de objetos IFC.
-            </p>
-          )}
-          </section>
-        ) : null}
-        {propertiesPanelOpen ? (
-          <section aria-label="Propiedades del elemento IFC" className="bimElementProperties bimDockPanel">
-          <div className="panelHeader compactHeader">
-            <h3>
-              <MousePointer2 size={16} /> Properties
-            </h3>
-            <span>{selectedLine || selectedIfcElement ? "Elemento seleccionado" : "Sin seleccion"}</span>
-          </div>
-          {selectedLine || selectedIfcElement ? (
-            <div className="bimElementFacts">
-              <article>
-                <span>Elemento constructivo</span>
-                <strong>{constructiveLabel(selectedLine)}</strong>
-              </article>
-              <article>
-                <span>Referencia BIM</span>
-                <strong>{selectedTrace || selectedLine?.element_id || "Referencia pendiente"}</strong>
-              </article>
-              <article>
-                <span>Clase / Regla</span>
-                <strong>
-                  {unique([
-                    compact(selectedLine?.ifc_class),
-                    compact(selectedLine?.measurement_rule),
-                    compact(selectedIfcElement?.ifcClass),
-                  ]).join(" / ") || "Clase IFC pendiente"}
-                </strong>
-              </article>
-              <article>
-                <span>Cantidad controlada</span>
-                <strong>{formatQuantity(selectedLine)}</strong>
-              </article>
-              <article>
-                <span>Regla de medicion</span>
-                <strong>{selectedMeasurementRule}</strong>
-              </article>
-              <article>
-                <span>Dimensiones geometricas L x A x H</span>
-                <strong>
-                  {formatRealGeometryDimensions(selectedIfcElement?.dimensions, effectiveModelUnits || model?.units)}
-                </strong>
-              </article>
-              <article>
-                <span>Cantidad geometrica real</span>
-                <strong title={selectedGeometryEstimate?.explanation}>
-                  {formatGeometryEstimate(selectedGeometryEstimate)}
-                </strong>
-                {geometryApprovalPayload && onApproveControlledMeasurement ? (
-                  <button
-                    className="primaryAction geometryApprovalAction"
-                    disabled={approvalDisabled}
-                    onClick={() => onApproveControlledMeasurement(geometryApprovalPayload)}
-                    type="button"
-                  >
-                    Usar cantidad geometrica
-                  </button>
-                ) : null}
-              </article>
-              <article className="wideFact">
-                <span>Area / Volumen / Longitud reales</span>
-                <strong>
-                  {selectedIfcElement?.realQuantities
-                    ? [
-                        formatGeometryEstimate(selectedIfcElement.realQuantities.area),
-                        formatGeometryEstimate(selectedIfcElement.realQuantities.volume),
-                        formatGeometryEstimate(selectedIfcElement.realQuantities.length),
-                      ].join(" / ")
-                    : "Selecciona geometria para calcular cantidades reales"}
-                </strong>
-              </article>
-              <article className="wideFact ifcPublishedProperties">
-                <span>Propiedades IFC publicadas</span>
-                <strong>{selectedPropertiesSummary}</strong>
-                {elementProperties?.found ? (
-                  <div className="ifcPublishedPropertyGrid">
-                    {elementProperties.type_name || elementProperties.predefined_type ? (
-                      <small>
-                        Tipo: {unique([elementProperties.type_name, elementProperties.predefined_type]).join(" / ")}
-                      </small>
-                    ) : null}
-                    {elementProperties.materials.length ? (
-                      <small>Materiales: {elementProperties.materials.slice(0, 4).join(" / ")}</small>
-                    ) : null}
-                    {elementProperties.quantities.slice(0, 4).map((quantity) => (
-                      <small key={`${quantity.set_name}-${quantity.name}`}>
-                        {quantity.set_name} / {quantity.name}:{" "}
-                        {quantity.value === null
-                          ? "sin valor"
-                          : `${formatNumber(quantity.value)} ${quantity.unit || ""}`.trim()}
-                      </small>
-                    ))}
-                    {elementProperties.property_sets.slice(0, 3).map((propertySet) => (
-                      <small key={propertySet.step_id}>
-                        {propertySet.name}:{" "}
-                        {propertySet.properties
-                          .slice(0, 4)
-                          .map((property) => `${property.name}=${property.value || "sin valor"}`)
-                          .join(" / ") || "sin propiedades simples publicadas"}
-                      </small>
-                    ))}
+              {objectTree.count ? (
+                <>
+                  <label className="bimTreeSearch">
+                    <Search size={14} />
+                    <input
+                      aria-label="Buscar en arbol IFC"
+                      onChange={(event) => setTreeSearch(event.target.value)}
+                      placeholder="Nivel, GUID, propiedad, CBS/WBS o APU"
+                      type="search"
+                      value={treeSearch}
+                    />
+                  </label>
+                  <div className="bimTreeFilters">
+                    <label>
+                      <span>Filtro de control</span>
+                      <select
+                        aria-label="Filtro de control IFC"
+                        onChange={(event) => setReviewFilter(event.target.value as IfcReviewFilter)}
+                        value={reviewFilter}
+                      >
+                        <option value="all">Todos</option>
+                        <option value="mapped">Con codificacion</option>
+                        <option value="unmapped">Sin codificacion</option>
+                        <option value="apu-assigned">Con APU</option>
+                        <option value="apu-pending">APU pendiente</option>
+                      </select>
+                    </label>
+                    <button disabled={!filteredTraceRefs.length} onClick={handleApplyVisualFilter} type="button">
+                      <Eye size={13} /> Aplicar al modelo
+                    </button>
+                    <button onClick={() => viewerCommandsRef.current?.resetVisibility()} type="button">
+                      Ver todo
+                    </button>
                   </div>
-                ) : null}
-              </article>
-              <article>
-                <span>Nivel / ubicacion</span>
-                <strong>
-                  {unique([
-                    compact(selectedLine?.project_name),
-                    compact(selectedLine?.building_name),
-                    compact(selectedLine?.storey),
-                    compact(selectedLine?.zone_name),
-                  ]).join(" / ") || "Ubicacion pendiente"}
-                </strong>
-              </article>
-              <article className="wideFact">
-                <span>Integracion APU</span>
-                <strong>{selectedApuLabel || "APU pendiente de asignacion"}</strong>
-                {selectedApuLabel ? (
-                  <small>
-                    {[
-                      selectedApuAssignment.budget_unit
-                        ? `Unidad ${String(selectedApuAssignment.budget_unit)}`
-                        : "",
-                      Number.isFinite(Number(selectedApuAssignment.unit_rate))
-                        ? `PU ${formatNumber(Number(selectedApuAssignment.unit_rate))}`
-                        : "",
-                      selectedApuAssignment.currency ? String(selectedApuAssignment.currency) : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" / ")}
-                  </small>
-                ) : null}
-              </article>
-              <article className="wideFact">
-                <span>CBS / WBS / FBS / Paquete</span>
-                <strong>{selectedCodes || "Codigos de control pendientes"}</strong>
-              </article>
-            </div>
-          ) : (
-            <p className="projectHint">
-              Selecciona un grupo del arbol o haz clic sobre la geometria para ver propiedades y trazabilidad.
-            </p>
-          )}
-          </section>
-        ) : null}
+                </>
+              ) : null}
+              {objectTree.count && filteredObjectTree.count ? (
+                <div aria-label="Jerarquia de objetos IFC" className="bimTreeList bimObjectTree" role="tree">
+                  <IfcObjectTreeBranch
+                    forceOpen={forceObjectTreeOpen}
+                    node={filteredObjectTree}
+                    onIsolate={handleIsolateObjectTreeNode}
+                    onSelect={handleSelectObjectTreeNode}
+                    selectedLineId={selectedLineId}
+                  />
+                </div>
+              ) : objectTree.count ? (
+                <p className="projectHint">No hay objetos IFC que coincidan con la busqueda y el filtro actual.</p>
+              ) : (
+                <p className="projectHint">
+                  El arbol se activa cuando la tabla de cantidades trae referencias de objetos IFC.
+                </p>
+              )}
+            </section>
+          ) : null}
+          {propertiesPanelOpen ? (
+            <section aria-label="Propiedades del elemento IFC" className="bimElementProperties bimDockPanel">
+              <div className="panelHeader compactHeader">
+                <h3>
+                  <MousePointer2 size={16} /> Properties
+                </h3>
+                <span>{selectedLine || selectedIfcElement ? "Elemento seleccionado" : "Sin seleccion"}</span>
+              </div>
+              {selectedLine || selectedIfcElement ? (
+                <div className="bimElementFacts">
+                  <article>
+                    <span>Elemento constructivo</span>
+                    <strong>{constructiveLabel(selectedLine)}</strong>
+                  </article>
+                  <article>
+                    <span>Referencia BIM</span>
+                    <strong>{selectedTrace || selectedLine?.element_id || "Referencia pendiente"}</strong>
+                  </article>
+                  <article>
+                    <span>Clase / Regla</span>
+                    <strong>
+                      {unique([
+                        compact(selectedLine?.ifc_class),
+                        compact(selectedLine?.measurement_rule),
+                        compact(selectedIfcElement?.ifcClass),
+                      ]).join(" / ") || "Clase IFC pendiente"}
+                    </strong>
+                  </article>
+                  <article>
+                    <span>Cantidad controlada</span>
+                    <strong>{formatQuantity(selectedLine)}</strong>
+                  </article>
+                  <article>
+                    <span>Regla de medicion</span>
+                    <strong>{selectedMeasurementRule}</strong>
+                  </article>
+                  <article>
+                    <span>Dimensiones geometricas L x A x H</span>
+                    <strong>
+                      {formatRealGeometryDimensions(
+                        selectedIfcElement?.dimensions,
+                        effectiveModelUnits || model?.units
+                      )}
+                    </strong>
+                  </article>
+                  <article>
+                    <span>Cantidad geometrica real</span>
+                    <strong title={selectedGeometryEstimate?.explanation}>
+                      {formatGeometryEstimate(selectedGeometryEstimate)}
+                    </strong>
+                    {geometryApprovalPayload && onApproveControlledMeasurement ? (
+                      <button
+                        className="primaryAction geometryApprovalAction"
+                        disabled={approvalDisabled}
+                        onClick={() => onApproveControlledMeasurement(geometryApprovalPayload)}
+                        type="button"
+                      >
+                        Usar cantidad geometrica
+                      </button>
+                    ) : null}
+                  </article>
+                  <article className="wideFact">
+                    <span>Area / Volumen / Longitud reales</span>
+                    <strong>
+                      {selectedIfcElement?.realQuantities
+                        ? [
+                            formatGeometryEstimate(selectedIfcElement.realQuantities.area),
+                            formatGeometryEstimate(selectedIfcElement.realQuantities.volume),
+                            formatGeometryEstimate(selectedIfcElement.realQuantities.length),
+                          ].join(" / ")
+                        : "Selecciona geometria para calcular cantidades reales"}
+                    </strong>
+                  </article>
+                  <article className="wideFact ifcPublishedProperties">
+                    <span>Propiedades IFC publicadas</span>
+                    <strong>{selectedPropertiesSummary}</strong>
+                    {elementProperties?.found ? (
+                      <div className="ifcPublishedPropertyGrid">
+                        {elementProperties.type_name || elementProperties.predefined_type ? (
+                          <small>
+                            Tipo: {unique([elementProperties.type_name, elementProperties.predefined_type]).join(" / ")}
+                          </small>
+                        ) : null}
+                        {elementProperties.materials.length ? (
+                          <small>Materiales: {elementProperties.materials.slice(0, 4).join(" / ")}</small>
+                        ) : null}
+                        {elementProperties.quantities.slice(0, 4).map((quantity) => (
+                          <small key={`${quantity.set_name}-${quantity.name}`}>
+                            {quantity.set_name} / {quantity.name}:{" "}
+                            {quantity.value === null
+                              ? "sin valor"
+                              : `${formatNumber(quantity.value)} ${quantity.unit || ""}`.trim()}
+                          </small>
+                        ))}
+                        {elementProperties.property_sets.slice(0, 3).map((propertySet) => (
+                          <small key={propertySet.step_id}>
+                            {propertySet.name}:{" "}
+                            {propertySet.properties
+                              .slice(0, 4)
+                              .map((property) => `${property.name}=${property.value || "sin valor"}`)
+                              .join(" / ") || "sin propiedades simples publicadas"}
+                          </small>
+                        ))}
+                      </div>
+                    ) : null}
+                  </article>
+                  <article>
+                    <span>Nivel / ubicacion</span>
+                    <strong>
+                      {unique([
+                        compact(selectedLine?.project_name),
+                        compact(selectedLine?.building_name),
+                        compact(selectedLine?.storey),
+                        compact(selectedLine?.zone_name),
+                      ]).join(" / ") || "Ubicacion pendiente"}
+                    </strong>
+                  </article>
+                  <article className="wideFact">
+                    <span>Integracion APU</span>
+                    <strong>{selectedApuLabel || "APU pendiente de asignacion"}</strong>
+                    {selectedApuLabel ? (
+                      <small>
+                        {[
+                          selectedApuAssignment.budget_unit
+                            ? `Unidad ${String(selectedApuAssignment.budget_unit)}`
+                            : "",
+                          Number.isFinite(Number(selectedApuAssignment.unit_rate))
+                            ? `PU ${formatNumber(Number(selectedApuAssignment.unit_rate))}`
+                            : "",
+                          selectedApuAssignment.currency ? String(selectedApuAssignment.currency) : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </small>
+                    ) : null}
+                  </article>
+                  <article className="wideFact">
+                    <span>CBS / WBS / FBS / Paquete</span>
+                    <strong>{selectedCodes || "Codigos de control pendientes"}</strong>
+                  </article>
+                </div>
+              ) : (
+                <p className="projectHint">
+                  Selecciona un grupo del arbol o haz clic sobre la geometria para ver propiedades y trazabilidad.
+                </p>
+              )}
+            </section>
+          ) : null}
         </div>
       </div>
       <div className="bimViewerLegend" aria-label="IFC geometry viewer legend">

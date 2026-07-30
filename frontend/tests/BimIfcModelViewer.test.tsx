@@ -280,6 +280,8 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Informaci[oó]n/i }));
 
     expect(within(viewer).getByRole("heading", { name: /modelo ifc/i })).toBeInTheDocument();
     expect(within(viewer).getByText(/geometria real del archivo ifc guardado/i)).toBeInTheDocument();
@@ -315,6 +317,8 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer projectId={1} model={largeModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Informaci[oó]n/i }));
     const viewerHealth = within(viewer).getByRole("region", { name: /salud del visor ifc/i });
 
     expect(within(viewerHealth).getByText(/Requiere cache backend/i)).toBeInTheDocument();
@@ -397,6 +401,8 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer projectId={1} model={largeModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Informaci[oó]n/i }));
     const viewerHealth = within(viewer).getByRole("region", { name: /salud del visor ifc/i });
     await waitFor(() => expect(within(viewerHealth).getByText(/Cache backend requerido/i)).toBeInTheDocument());
 
@@ -413,8 +419,14 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
     const toolbar = within(viewer).getByLabelText(/IFC viewer controls/i);
 
+    expect(within(menus).getByRole("button", { name: /Archivo/i })).toBeInTheDocument();
+    expect(within(menus).getByRole("button", { name: /Vista/i })).toHaveAttribute("aria-expanded", "true");
+    expect(within(menus).getByRole("button", { name: /Herramientas/i })).toBeInTheDocument();
+    expect(within(menus).getByRole("button", { name: /Apariencia/i })).toBeInTheDocument();
+    expect(within(menus).getByRole("button", { name: /Informaci[oó]n/i })).toBeInTheDocument();
     expect(within(toolbar).getByRole("button", { name: /Orbit IFC navigation/i })).toHaveClass("active");
     expect(within(toolbar).getByRole("button", { name: /Front IFC view/i })).toBeInTheDocument();
     expect(within(toolbar).getByRole("button", { name: /Right IFC view/i })).toBeInTheDocument();
@@ -423,31 +435,42 @@ describe("BimIfcModelViewer", () => {
 
     fireEvent.click(within(toolbar).getByRole("button", { name: /Front IFC view/i }));
     expect(within(toolbar).getByRole("button", { name: /Front IFC view/i })).toHaveClass("active");
+    fireEvent.click(within(menus).getByRole("button", { name: /Informaci[oó]n/i }));
     expect(within(viewer).getByText(/FRONT \/ Orbitar/i)).toBeInTheDocument();
+    fireEvent.click(within(menus).getByRole("button", { name: /Vista/i }));
+    const refreshedToolbar = within(viewer).getByLabelText(/IFC viewer controls/i);
 
-    fireEvent.click(within(toolbar).getByRole("button", { name: /Walk IFC navigation/i }));
+    fireEvent.click(within(refreshedToolbar).getByRole("button", { name: /Walk IFC navigation/i }));
 
-    expect(within(toolbar).getByRole("button", { name: /Walk IFC navigation/i })).toHaveClass("active");
+    expect(within(refreshedToolbar).getByRole("button", { name: /Walk IFC navigation/i })).toHaveClass("active");
     expect(within(viewer).getByText(/Modo recorrido/i)).toBeInTheDocument();
     expect(within(viewer).getByText(/WASD \/ flechas para avanzar/i)).toBeInTheDocument();
+
+    fireEvent.click(within(menus).getByRole("button", { name: /Vista/i }));
+    expect(within(viewer).queryByLabelText(/IFC viewer controls/i)).not.toBeInTheDocument();
+    expect(within(menus).getByRole("button", { name: /Vista/i })).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(within(menus).getByRole("button", { name: /Vista/i }));
+    expect(within(viewer).getByLabelText(/IFC viewer controls/i)).toBeInTheDocument();
   });
 
   it("exposes controlled section axes for professional model inspection", () => {
     render(<BimIfcModelViewer projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
-    const toolbar = within(viewer).getByLabelText(/IFC viewer controls/i);
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Herramientas/i }));
+    const tools = within(viewer).getByRole("region", { name: /herramientas abiertas de revision ifc/i });
 
-    fireEvent.click(within(toolbar).getByRole("button", { name: /Section IFC model/i }));
+    fireEvent.click(within(tools).getByRole("button", { name: /Section IFC model/i }));
 
-    const axisControls = within(toolbar).getByRole("group", { name: /Section axis/i });
+    const axisControls = within(tools).getByRole("group", { name: /Section axis/i });
     expect(within(axisControls).getByRole("button", { name: /Section axis X/i })).toHaveClass("active");
-    expect(within(viewer).getByText(/Seccion X/i)).toBeInTheDocument();
+    expect(within(tools).getByText(/Plano X/i)).toBeInTheDocument();
 
     fireEvent.click(within(axisControls).getByRole("button", { name: /Section axis Z/i }));
 
     expect(within(axisControls).getByRole("button", { name: /Section axis Z/i })).toHaveClass("active");
-    expect(within(viewer).getByText(/Seccion Z/i)).toBeInTheDocument();
+    expect(within(tools).getByText(/Plano Z/i)).toBeInTheDocument();
   });
 
   it("offers open review tools while preserving quantity and APU traceability", () => {
@@ -469,23 +492,29 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer lines={assignedLines} projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
-    const tools = within(viewer).getByRole("region", { name: /herramientas abiertas de revision ifc/i });
-    const toolbar = within(viewer).getByLabelText(/IFC viewer controls/i);
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
     const tree = within(viewer).getByRole("region", { name: /arbol ifc/i });
 
-    fireEvent.change(within(tools).getByLabelText(/Estilo visual/i), { target: { value: "xray" } });
-    expect(within(tools).getByLabelText(/Estilo visual/i)).toHaveValue("xray");
+    fireEvent.click(within(menus).getByRole("button", { name: /Apariencia/i }));
+    const appearance = within(viewer).getByRole("region", { name: /Apariencia IFC/i });
+    fireEvent.click(within(appearance).getByRole("button", { name: /Estilo visual Transparente/i }));
+    expect(within(appearance).getByRole("button", { name: /Estilo visual Transparente/i })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
 
-    fireEvent.change(within(tools).getByLabelText(/Vista explosionada/i), { target: { value: "45" } });
-    expect(within(tools).getByLabelText(/Vista explosionada: 45%/i)).toHaveValue("45");
+    fireEvent.click(within(menus).getByRole("button", { name: /Herramientas/i }));
+    const tools = within(viewer).getByRole("region", { name: /herramientas abiertas de revision ifc/i });
+    fireEvent.change(within(tools).getByLabelText(/Explosion: 0%/i), { target: { value: "45" } });
+    expect(within(tools).getByLabelText(/Explosion: 45%/i)).toHaveValue("45");
 
-    fireEvent.click(within(toolbar).getByRole("button", { name: /Measure IFC distance/i }));
-    expect(within(toolbar).getByRole("button", { name: /Measure IFC distance/i })).toHaveClass("active");
+    fireEvent.click(within(tools).getByRole("button", { name: /Measure IFC distance/i }));
+    expect(within(tools).getByRole("button", { name: /Measure IFC distance/i })).toHaveClass("active");
     expect(within(viewer).getByText(/Modo medir/i)).toBeInTheDocument();
 
-    fireEvent.click(within(toolbar).getByRole("button", { name: /Section IFC model/i }));
-    fireEvent.change(within(tools).getByLabelText(/Plano de corte X/i), { target: { value: "25" } });
-    expect(within(tools).getByLabelText(/Plano de corte X: 25%/i)).toHaveValue("25");
+    fireEvent.click(within(tools).getByRole("button", { name: /Section IFC model/i }));
+    fireEvent.change(within(tools).getByLabelText(/Plano X/i), { target: { value: "25" } });
+    expect(within(tools).getByLabelText(/Plano X: 25%/i)).toHaveValue("25");
 
     fireEvent.change(within(tree).getByLabelText(/Filtro de control IFC/i), {
       target: { value: "apu-assigned" },
@@ -502,6 +531,8 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer lines={tracedLines} projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Apariencia/i }));
     const panelControls = within(viewer).getByRole("navigation", { name: /IFC viewer panel controls/i });
     const canvasWrap = within(viewer).getByLabelText(/IFC model navigation canvas/i);
 
@@ -566,15 +597,11 @@ describe("BimIfcModelViewer", () => {
     expect(within(tree).getByText(/IfcWallStandardCase/i)).toBeInTheDocument();
     expect(within(tree).getByRole("button", { name: /Aislar class IfcWallStandardCase/i })).toBeInTheDocument();
 
-    fireEvent.click(
-      within(hierarchy).getByRole("button", { name: /^Contraer class IfcWallStandardCase/i })
-    );
+    fireEvent.click(within(hierarchy).getByRole("button", { name: /^Contraer class IfcWallStandardCase/i }));
     expect(
       within(hierarchy).queryByRole("button", { name: /^Seleccionar objeto IFC Muro arquitectonico/i })
     ).not.toBeInTheDocument();
-    fireEvent.click(
-      within(hierarchy).getByRole("button", { name: /^Expandir class IfcWallStandardCase/i })
-    );
+    fireEvent.click(within(hierarchy).getByRole("button", { name: /^Expandir class IfcWallStandardCase/i }));
     fireEvent.click(within(tree).getByRole("button", { name: /^Seleccionar objeto IFC Muro arquitectonico/i }));
 
     expect(within(properties).getByText(/Muro arquitectonico \/ Basic Wall \/ Exterior 200mm/i)).toBeInTheDocument();
@@ -671,6 +698,8 @@ describe("BimIfcModelViewer", () => {
     render(<BimIfcModelViewer lines={tracedLines} projectId={1} model={ifcModel} token="tok" />);
 
     const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const menus = within(viewer).getByRole("navigation", { name: /menus superiores ifc/i });
+    fireEvent.click(within(menus).getByRole("button", { name: /Informaci[oó]n/i }));
     await waitFor(() => expect(within(viewer).getByText(/IFC-M77-abc/i)).toBeInTheDocument());
 
     fireEvent.click(
