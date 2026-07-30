@@ -211,7 +211,7 @@ export default function BimBudgetPanel({
         <article className={summary.missingAssignmentCount ? "risk" : ""}>
           <span>Sin partida/APU</span>
           <strong>{summary.missingAssignmentCount}</strong>
-          <small>Se completan desde Cantidades BIM</small>
+          <small>Se completan desde Scope Manager</small>
         </article>
         <article className={summary.duplicateLineCount || summary.unitConflictCount ? "risk" : ""}>
           <span>Control de calidad</span>
@@ -383,10 +383,10 @@ export default function BimBudgetPanel({
           <span>
             {summary.rows.length
               ? "Limpia el filtro para ver las partidas consolidadas."
-              : "Asigna una partida APU y precio unitario desde Cantidades BIM para construir el presupuesto."}
+              : "Asigna una partida APU y precio unitario desde Scope Manager para construir el presupuesto."}
           </span>
           <button className="workflowAction" onClick={onOpenQuantities} type="button">
-            Abrir Cantidades BIM
+            Abrir Scope Manager
           </button>
         </div>
       )}

@@ -599,7 +599,7 @@ describe("served project control flow", () => {
           items: [
             {
               key: "bim_quantity_takeoff",
-              label: "Cantidades BIM",
+              label: "Scope Manager",
               status: "review_required",
               owner_role: "BIM / Workface Planner",
               evidence: "1 run(s); 2 line(s); 1 mapped; 1 need mapping.",
@@ -1140,7 +1140,20 @@ describe("served project control flow", () => {
 
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
     expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
-    expect(within(validationNav).getByRole("button", { name: /cantidades bim/i })).toBeInTheDocument();
+    expect(within(validationNav).getByRole("button", { name: /scope manager/i })).toBeInTheDocument();
+    const workspace = screen.getByRole("region", { name: /project workspace and control flow/i });
+    const hideModuleRail = within(workspace).getByRole("button", { name: /ocultar barra de módulos/i });
+    expect(hideModuleRail).toHaveAttribute("aria-expanded", "true");
+    await user.click(hideModuleRail);
+    expect(workspace).toHaveClass("moduleRailCollapsed");
+    expect(
+      within(workspace).queryByRole("navigation", { name: /validation focus/i })
+    ).not.toBeInTheDocument();
+    const showModuleRail = within(workspace).getByRole("button", { name: /mostrar barra de módulos/i });
+    expect(showModuleRail).toHaveAttribute("aria-expanded", "false");
+    await user.click(showModuleRail);
+    expect(workspace).not.toHaveClass("moduleRailCollapsed");
+    expect(within(workspace).getByRole("navigation", { name: /validation focus/i })).toBeInTheDocument();
     [
       /process flow/i,
       /planning/i,
@@ -1168,9 +1181,9 @@ describe("served project control flow", () => {
     expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
     expect(within(projectAdmin).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
 
-    await user.click(within(validationNav).getByRole("button", { name: /cantidades bim/i }));
+    await user.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
     expect(
-      await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i })
+      await screen.findByRole("region", { name: /scope manager module/i })
     ).toBeInTheDocument();
   });
 
@@ -1835,7 +1848,7 @@ describe("served project control flow", () => {
     expect(activitySheetWbsRows).toHaveBeenCalledWith("tok", 1, 11);
   });
 
-  it("keeps BIM and Excel quantity takeoff in the BIM module instead of Project Setup", async () => {
+  it("keeps BIM and Excel quantity takeoff in Scope Manager instead of Project Setup", async () => {
     const user = userEvent.setup();
 
     render(
@@ -1850,10 +1863,10 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("region", { name: /^quantity takeoff$/i })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/load bim\/ifc or excel quantities/i)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
     const quantityPanel = await screen.findByRole("region", {
-      name: /cantidades bim module|bim quantity takeoff module/i,
+      name: /scope manager module/i,
     });
     expect(within(quantityPanel).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
     expect(within(quantityPanel).getAllByText(/bim-quantities.xlsx/i).length).toBeGreaterThan(0);
@@ -1866,7 +1879,7 @@ describe("served project control flow", () => {
     expect(quantityTakeoffLines).toHaveBeenCalledWith("tok", 1, 61);
   });
 
-  it("opens the BIM quantity takeoff module with AWP validation and 3D viewer", async () => {
+  it("opens Scope Manager with AWP validation and 3D viewer", async () => {
     const user = userEvent.setup();
 
     render(
@@ -1876,10 +1889,10 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
-    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
-    expect(within(module).getAllByRole("heading", { name: /cantidades bim/i }).length).toBeGreaterThan(0);
+    const module = await screen.findByRole("region", { name: /scope manager module/i });
+    expect(within(module).getAllByRole("heading", { name: /scope manager/i }).length).toBeGreaterThan(0);
     expect(within(module).getByLabelText(/load bim\/ifc or excel quantities/i)).toBeInTheDocument();
     expect(within(module).getAllByText(/^Ubicacion$/i).length).toBeGreaterThan(0);
     expect(within(module).getAllByText(/^Elementos$/i).length).toBeGreaterThan(0);
@@ -1923,9 +1936,9 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
-    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const module = await screen.findByRole("region", { name: /scope manager module/i });
     const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
     const file = new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" });
     await user.upload(input, file);
@@ -1966,9 +1979,9 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
-    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const module = await screen.findByRole("region", { name: /scope manager module/i });
     const input = within(module).getByLabelText(/load bim\/ifc or excel quantities/i);
     const file = new File([new Uint8Array(9 * 1024 * 1024)], "coordination-model.ifc", {
       type: "application/octet-stream",
@@ -1995,9 +2008,9 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /cantidades bim|bim quantity takeoff/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
 
-    const module = await screen.findByRole("region", { name: /cantidades bim module|bim quantity takeoff module/i });
+    const module = await screen.findByRole("region", { name: /scope manager module/i });
     await user.upload(
       within(module).getByLabelText(/load bim\/ifc or excel quantities/i),
       new File(["ISO-10303-21;"], "coordination-model.ifc", { type: "application/octet-stream" })

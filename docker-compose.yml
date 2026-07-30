@@ -37,7 +37,7 @@ services:
       COMMIT_SHA: ${COMMIT_SHA:-dev}
       DATABASE_URL: postgresql+psycopg://pypmis:pypmis@db:5432/pypmis
       REDIS_URL: redis://redis:6379/0
-      CORS_ORIGINS: http://localhost:5173
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}"
       ALLOWED_HOSTS: "${ALLOWED_HOSTS:-*}"
       AUTO_CREATE_SCHEMA: "true"
       SEED_DEMO_DATA: "${SEED_DEMO_DATA:-false}"
@@ -130,7 +130,7 @@ services:
       context: ./frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: http://localhost:8000
+      VITE_API_URL: "${VITE_API_URL:-http://127.0.0.1:8000}"
       # Empty keeps the runtime default (validation mode on); CI E2E sets
       # "false" to smoke-test the full guided control flow.
       VITE_FRONTEND_VALIDATION_MODE: ${VITE_FRONTEND_VALIDATION_MODE:-}

@@ -2500,10 +2500,65 @@ td span {
   width: 100%;
 }
 
+.projectWorkspace.moduleRailCollapsed {
+  grid-template-columns: 32px minmax(0, 1fr);
+}
+
+.projectWorkspaceRailDock {
+  min-width: 0;
+  position: relative;
+}
+
 .projectWorkspaceRail {
   display: grid;
   gap: 14px;
   min-width: 0;
+}
+
+.projectWorkspaceRail[hidden] {
+  display: none;
+}
+
+.projectWorkspaceRailToggle {
+  align-items: center;
+  background: #17212b;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(23, 33, 43, 0.24);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  position: absolute;
+  right: -18px;
+  top: 18px;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+  width: 36px;
+  z-index: 12;
+}
+
+.projectWorkspaceRailToggle:hover,
+.projectWorkspaceRailToggle:focus-visible {
+  background: #0b6f71;
+  box-shadow: 0 7px 18px rgba(11, 111, 113, 0.32);
+  outline: 3px solid rgba(15, 139, 141, 0.24);
+  transform: translateX(1px);
+}
+
+.projectWorkspaceRailToggle:active {
+  transform: scale(0.94);
+}
+
+.projectWorkspace.moduleRailCollapsed .projectWorkspaceRailDock {
+  min-height: 72px;
+}
+
+.projectWorkspace.moduleRailCollapsed .projectWorkspaceRailToggle {
+  right: -2px;
 }
 
 .projectWorkspaceRail .adminPanel,
@@ -4811,6 +4866,80 @@ td span {
   color: #ffffff;
 }
 
+.bimViewerPanelBar {
+  align-items: stretch;
+  background: #f5f7f9;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 7px;
+}
+
+.bimViewerPanelBar > div {
+  align-content: center;
+  display: grid;
+  gap: 2px;
+  margin-right: auto;
+  min-width: 220px;
+  padding: 2px 8px;
+}
+
+.bimViewerPanelBar > div > span {
+  color: #17212b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bimViewerPanelBar > div > small {
+  color: #667481;
+  font-size: 11px;
+}
+
+.bimViewerPanelBar button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 7px;
+  color: #334451;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 1px 8px;
+  grid-template-columns: auto auto;
+  min-width: 142px;
+  padding: 7px 11px;
+  text-align: left;
+}
+
+.bimViewerPanelBar button svg {
+  grid-row: 1 / span 2;
+}
+
+.bimViewerPanelBar button span {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bimViewerPanelBar button small {
+  color: #7a8791;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.bimViewerPanelBar button:hover,
+.bimViewerPanelBar button.active {
+  background: #fff0e8;
+  border-color: #ef8f6a;
+  color: #912e18;
+}
+
+.bimViewerPanelBar button.active small {
+  color: #ad4c32;
+}
+
 .bimSectionAxisGroup {
   align-items: center;
   background: #f4f6f8;
@@ -4826,6 +4955,160 @@ td span {
   font-size: 11px;
   min-height: 26px;
   padding: 0 8px;
+}
+
+.bimOpenIfcTools {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0 12px;
+}
+
+.bimOpenIfcTools article {
+  background: #f8fafb;
+  border: 1px solid #d8dee5;
+  border-left: 4px solid #0f8b8d;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.bimOpenIfcTools label,
+.bimOpenIfcTools article > span {
+  color: #667481;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bimOpenIfcTools strong {
+  color: #17212b;
+  font-size: 14px;
+}
+
+.bimOpenIfcTools small {
+  color: #52616f;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.bimOpenIfcTools select,
+.bimOpenIfcTools input[type="number"] {
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 7px;
+  color: #17212b;
+  font: inherit;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.bimOpenIfcTools input[type="range"] {
+  accent-color: #0f8b8d;
+  cursor: pointer;
+  width: 100%;
+}
+
+.bimOpenIfcTools :disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.bimClashTool > div {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(70px, 0.55fr) minmax(88px, 0.45fr);
+}
+
+.bimClashTool button,
+.bimClashResults button,
+.bimTreeFilters button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 7px;
+  color: #17212b;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  gap: 5px;
+  justify-content: center;
+  min-height: 32px;
+  padding: 5px 8px;
+}
+
+.bimClashTool button:hover,
+.bimClashResults button:hover,
+.bimTreeFilters button:hover {
+  background: #10202b;
+  border-color: #10202b;
+  color: #ffffff;
+}
+
+.bimClashResults {
+  background: #fff9ef;
+  border: 1px solid #efd19a;
+  border-left: 4px solid #c26a00;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin: 0 12px;
+  padding: 12px;
+}
+
+.bimClashResults .panelHeader {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.bimClashResults .panelHeader span {
+  color: #667481;
+  display: block;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.bimClashList {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-height: 280px;
+  overflow: auto;
+}
+
+.bimClashList article {
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid #ead9bc;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 9px;
+}
+
+.bimClashList article > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.bimClashList strong,
+.bimClashList span,
+.bimClashList small {
+  overflow-wrap: anywhere;
+}
+
+.bimClashList span,
+.bimClashList small {
+  color: #52616f;
+  font-size: 11px;
 }
 
 .bimOperationStrip {
@@ -4966,6 +5249,31 @@ td span {
 .bimViewerSelectionBadge span {
   color: #ffffff;
   font-size: 12px;
+}
+
+.bimViewerMeasurementBadge {
+  background: rgba(255, 249, 230, 0.96);
+  border: 2px solid #ff9f1c;
+  border-radius: 8px;
+  bottom: 12px;
+  box-shadow: 0 12px 28px rgba(20, 32, 42, 0.18);
+  display: grid;
+  gap: 3px;
+  padding: 9px 11px;
+  position: absolute;
+  right: 12px;
+}
+
+.bimViewerMeasurementBadge strong {
+  color: #9a4d00;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.bimViewerMeasurementBadge span {
+  color: #17212b;
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .bimViewerCanvasMeta strong,
@@ -5214,10 +5522,60 @@ td span {
   overflow-wrap: anywhere;
 }
 
-.bimViewerInspector {
+.bimViewerWorkspace {
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.bimViewerWorkspace.panels-both {
+  grid-template-areas:
+    "explorer canvas properties"
+    "metadata metadata metadata"
+    "georef georef georef";
+  grid-template-columns: minmax(250px, 0.8fr) minmax(360px, 1.45fr) minmax(250px, 0.78fr);
+}
+
+.bimViewerWorkspace.panel-explorer {
+  grid-template-areas:
+    "explorer canvas"
+    "metadata metadata"
+    "georef georef";
+  grid-template-columns: minmax(240px, 0.62fr) minmax(520px, 1.8fr);
+}
+
+.bimViewerWorkspace.panel-properties {
+  grid-template-areas:
+    "canvas properties"
+    "metadata metadata"
+    "georef georef";
+  grid-template-columns: minmax(520px, 1.8fr) minmax(280px, 0.68fr);
+}
+
+.bimViewerWorkspace.panels-hidden {
+  grid-template-areas:
+    "canvas"
+    "metadata"
+    "georef";
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bimViewerWorkspace > .bimViewerCanvasWrap {
+  grid-area: canvas;
+  height: 100%;
+}
+
+.bimViewerWorkspace > .bimViewerMetadata {
+  grid-area: metadata;
+}
+
+.bimViewerWorkspace > .bimGeorefPanel {
+  grid-area: georef;
+  margin: 0;
+}
+
+.bimViewerInspector {
+  display: contents;
 }
 
 .bimModelTree,
@@ -5229,6 +5587,48 @@ td span {
   gap: 10px;
   min-width: 0;
   padding: 12px;
+}
+
+.bimViewerWorkspace .bimModelTree {
+  grid-area: explorer;
+}
+
+.bimViewerWorkspace .bimElementProperties {
+  grid-area: properties;
+}
+
+.bimViewerWorkspace .bimDockPanel {
+  align-self: stretch;
+  border-color: #b9c2c9;
+  border-radius: 6px;
+  box-shadow: 0 8px 22px rgba(20, 32, 42, 0.08);
+  max-height: 640px;
+  min-height: 520px;
+  overflow: hidden;
+}
+
+.bimViewerWorkspace .bimModelTree {
+  display: flex;
+  flex-direction: column;
+}
+
+.bimViewerWorkspace .bimElementProperties {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.bimViewer .bimDockPanel .panelHeader {
+  align-items: center;
+  background: #2d3135;
+  border-radius: 5px 5px 0 0;
+  color: #ffffff;
+  margin: -12px -12px 2px;
+  min-height: 38px;
+  padding: 8px 11px;
+}
+
+.bimViewer .bimDockPanel .panelHeader span {
+  color: #dfe5e9;
+  font-size: 10px;
 }
 
 .bimModelTree .panelHeader,
@@ -5246,11 +5646,194 @@ td span {
 }
 
 .bimTreeList {
+  align-content: start;
   display: grid;
+  flex: 1 1 auto;
   gap: 8px;
-  max-height: 250px;
+  grid-auto-rows: max-content;
+  max-height: none;
+  min-height: 0;
   overflow: auto;
   padding-right: 4px;
+}
+
+.bimTreeRoot {
+  align-items: center;
+  background: #eef2f4;
+  border: 1px solid #ccd5dc;
+  border-radius: 5px;
+  color: #17212b;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 7px 8px;
+}
+
+.bimTreeRoot > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bimTreeRoot strong,
+.bimTreeRoot small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bimTreeRoot strong {
+  font-size: 12px;
+}
+
+.bimTreeRoot small {
+  color: #667481;
+  font-size: 10px;
+}
+
+.bimObjectTree {
+  background: #ffffff;
+  border: 1px solid #d7dee3;
+  border-radius: 5px;
+  display: block;
+  padding: 5px 3px 10px;
+}
+
+.bimObjectTreeNode,
+.bimObjectTreeLeaf {
+  min-width: 0;
+}
+
+.bimObjectTreeBranchRow,
+.bimObjectTreeLeaf {
+  align-items: center;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.bimObjectTreeToggle,
+.bimObjectTreeLeaf > button:first-child {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #17212b;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 5px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 25px;
+  min-width: 0;
+  padding: 3px 4px;
+  text-align: left;
+  width: 100%;
+}
+
+.bimObjectTreeToggle > span:nth-child(2) {
+  font-size: 11px;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bimObjectTreeToggle small {
+  color: #667481;
+  font-size: 10px;
+}
+
+.bimObjectTreeNode.kind-model > .bimObjectTreeBranchRow .bimObjectTreeToggle > span:nth-child(2) {
+  font-weight: 950;
+}
+
+.bimObjectTreeNode.kind-project > .bimObjectTreeBranchRow .bimObjectTreeToggle > span:nth-child(2),
+.bimObjectTreeNode.kind-site > .bimObjectTreeBranchRow .bimObjectTreeToggle > span:nth-child(2),
+.bimObjectTreeNode.kind-building > .bimObjectTreeBranchRow .bimObjectTreeToggle > span:nth-child(2) {
+  font-weight: 850;
+}
+
+.bimObjectTreeGlyph {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #aeb9c2;
+  color: #344551;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 900;
+  height: 13px;
+  justify-content: center;
+  line-height: 1;
+  width: 13px;
+}
+
+.bimObjectTreeChildren {
+  border-left: 1px dotted #aeb9c2;
+  margin-left: 7px;
+  padding-left: 4px;
+}
+
+.bimObjectTreeLeaf {
+  border-radius: 4px;
+  margin: 1px 0;
+}
+
+.bimObjectTreeLeaf:hover,
+.bimObjectTreeLeaf:focus-within,
+.bimObjectTreeLeaf.active {
+  background: #e8f7f6;
+  box-shadow: inset 3px 0 0 #0f8b8d;
+}
+
+.bimObjectTreeLeaf > button:first-child {
+  grid-template-columns: auto minmax(0, 1fr);
+  padding-block: 4px;
+}
+
+.bimObjectTreeLeaf > button:first-child > span:last-child {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bimObjectTreeLeaf strong,
+.bimObjectTreeLeaf small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bimObjectTreeLeaf strong {
+  font-size: 11px;
+}
+
+.bimObjectTreeLeaf small {
+  color: #667481;
+  font-size: 9px;
+}
+
+.bimObjectTreeIsolate {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #667481;
+  cursor: pointer;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  width: 24px;
+}
+
+.bimObjectTreeIsolate:hover {
+  background: #10202b;
+  color: #ffffff;
+}
+
+.bimObjectTreeIsolate:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .bimTreeSearch {
@@ -5274,6 +5857,56 @@ td span {
   min-width: 0;
   outline: none;
   width: 100%;
+}
+
+.bimTreeFilters {
+  align-items: end;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: minmax(140px, 1fr) auto auto;
+}
+
+.bimViewerWorkspace .bimTreeFilters {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bimViewerWorkspace .bimTreeFilters label {
+  grid-column: 1 / -1;
+}
+
+.bimViewerWorkspace .bimTreeFilters button {
+  font-size: 10px;
+  min-width: 0;
+  padding-inline: 5px;
+}
+
+.bimTreeFilters label {
+  display: grid;
+  gap: 4px;
+}
+
+.bimTreeFilters label span {
+  color: #667481;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bimTreeFilters select {
+  background: #ffffff;
+  border: 1px solid #cbd5df;
+  border-radius: 7px;
+  color: #17212b;
+  font: inherit;
+  min-height: 32px;
+  min-width: 0;
+  padding: 5px 7px;
+  width: 100%;
+}
+
+.bimTreeFilters button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
 }
 
 .bimTreeList article {
@@ -5346,17 +5979,21 @@ td span {
 .bimElementFacts {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .bimElementFacts article {
   background: #ffffff;
-  border: 1px solid #e4e8ec;
-  border-radius: 8px;
+  border: 0;
+  border-bottom: 1px solid #e0e5e9;
+  border-radius: 0;
   display: grid;
   gap: 4px;
   min-width: 0;
-  padding: 10px;
+  padding: 8px 4px;
 }
 
 .bimElementFacts article.wideFact {
@@ -6216,6 +6853,20 @@ td span {
     grid-template-columns: 1fr;
   }
 
+  .projectWorkspace.moduleRailCollapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .projectWorkspace.moduleRailCollapsed .projectWorkspaceRailDock {
+    min-height: 42px;
+  }
+
+  .projectWorkspaceRailToggle,
+  .projectWorkspace.moduleRailCollapsed .projectWorkspaceRailToggle {
+    right: 10px;
+    top: 10px;
+  }
+
   .navigatorRail {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     position: static;
@@ -6297,6 +6948,8 @@ td span {
   .bimGeorefPanel,
   .bimGeorefFacts,
   .bimViewerHealth,
+  .bimOpenIfcTools,
+  .bimClashList,
   .bimOperationStrip,
   .bimViewerInspector,
   .bimElementFacts,
@@ -6309,6 +6962,29 @@ td span {
   .mappingSummary,
   .entitlementMatrix {
     grid-template-columns: 1fr;
+  }
+
+  .bimTreeFilters {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .bimViewerWorkspace.panels-both,
+  .bimViewerWorkspace.panel-explorer,
+  .bimViewerWorkspace.panel-properties,
+  .bimViewerWorkspace.panels-hidden {
+    grid-template-areas:
+      "canvas"
+      "explorer"
+      "properties"
+      "metadata"
+      "georef";
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bimViewerWorkspace .bimDockPanel {
+    max-height: 520px;
+    min-height: 360px;
   }
 
   .bimBudgetSearch {
@@ -6348,6 +7024,20 @@ td span {
 @media (max-width: 720px) {
   main {
     padding: 14px;
+  }
+
+  .bimViewerPanelBar {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .bimViewerPanelBar > div {
+    margin-right: 0;
+    min-width: 0;
+  }
+
+  .bimViewerPanelBar button {
+    width: 100%;
   }
 
   .appBrandBar {

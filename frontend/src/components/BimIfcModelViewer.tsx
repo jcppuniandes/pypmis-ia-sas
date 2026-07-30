@@ -21,13 +21,41 @@ import type {
 type SectionAxis = "x" | "y" | "z";
 type ViewPreset = "front" | "iso" | "right" | "top";
 type NavigationMode = "orbit" | "walk";
+type InteractionMode = "measure" | "select";
+type IfcVisualStyle = "solid" | "wireframe" | "xray";
+type IfcReviewFilter = "all" | "apu-assigned" | "apu-pending" | "mapped" | "unmapped";
 type IfcViewerTone = "ready" | "review";
+type IfcClashResult = {
+  classA: string;
+  classB: string;
+  key: string;
+  nameA: string;
+  nameB: string;
+  penetration: number;
+  refA: string;
+  refB: string;
+};
+type IfcClashSummary = {
+  checkedProducts: number;
+  limited: boolean;
+  results: IfcClashResult[];
+};
+type IfcPointMeasurement = {
+  distanceMeters: number;
+  end: [number, number, number];
+  start: [number, number, number];
+};
 type ViewerCameraCommands = {
+  clashes: (toleranceMeters: number) => IfcClashSummary;
+  explode: (factor: number) => void;
   fit: () => void;
+  filterRefs: (refs: string[]) => void;
   focusRefs: (refs: string[]) => void;
   isolateRefs: (refs: string[]) => void;
+  measurement: (active: boolean) => void;
   resetVisibility: () => void;
-  section: (active: boolean, axis: SectionAxis) => void;
+  section: (active: boolean, axis: SectionAxis, position: number) => void;
+  style: (style: IfcVisualStyle) => void;
   view: (preset: ViewPreset) => void;
 };
 
@@ -42,6 +70,7 @@ type Props = {
 };
 
 type IfcTreeGroup = {
+  apuCount: number;
   count: number;
   id: string;
   ifcClass: string;
@@ -52,6 +81,21 @@ type IfcTreeGroup = {
   storey: string;
   traceRefs: string[];
   unit: string;
+};
+
+export type IfcObjectTreeNode = {
+  apuCount: number;
+  children: IfcObjectTreeNode[];
+  count: number;
+  groupId?: string;
+  id: string;
+  kind: "building" | "class" | "model" | "object" | "project" | "site" | "storey";
+  label: string;
+  lineIds: number[];
+  mappedCount: number;
+  reference?: string;
+  representative?: QuantityTakeoffLine;
+  traceRefs: string[];
 };
 
 type SelectedIfcElement = {
@@ -287,6 +331,59 @@ function traceRefsForLine(line: QuantityTakeoffLine) {
   return unique([line.element_guid, line.element_id, line.source_row_id]);
 }
 
+function hasApuAssignment(line: QuantityTakeoffLine) {
+  const assignment = line.raw_data?.budget_item_assignment;
+  return Boolean(
+    assignment &&
+      typeof assignment === "object" &&
+      !Array.isArray(assignment) &&
+      Object.keys(assignment as Record<string, unknown>).length
+  );
+}
+
+function lineMatchesReviewFilter(line: QuantityTakeoffLine, filter: IfcReviewFilter) {
+  if (filter === "mapped") return line.mapping_status === "mapped";
+  if (filter === "unmapped") return line.mapping_status !== "mapped";
+  if (filter === "apu-assigned") return hasApuAssignment(line);
+  if (filter === "apu-pending") return !hasApuAssignment(line);
+  return true;
+}
+
+function lineSearchBasis(line: QuantityTakeoffLine) {
+  const assignment =
+    line.raw_data?.budget_item_assignment &&
+    typeof line.raw_data.budget_item_assignment === "object" &&
+    !Array.isArray(line.raw_data.budget_item_assignment)
+      ? (line.raw_data.budget_item_assignment as Record<string, unknown>)
+      : {};
+  return [
+    line.project_name,
+    line.site_name,
+    line.building_name,
+    line.storey,
+    line.zone_name,
+    line.system_name,
+    line.ifc_class,
+    line.category,
+    line.family,
+    line.type_name,
+    line.instance_name,
+    line.element_guid,
+    line.element_id,
+    line.measurement_rule,
+    line.wbs_code,
+    line.cbs_code,
+    line.fbs_code,
+    line.package_code,
+    assignment.cost_item_code,
+    assignment.cost_item_name,
+    assignment.source_key,
+  ]
+    .filter((value) => value !== null && value !== undefined)
+    .join(" ")
+    .toLowerCase();
+}
+
 function lineMatchesIfcElement(line: QuantityTakeoffLine, element: SelectedIfcElement) {
   const expressRef = element.expressId ? `#${element.expressId}` : "";
   return Boolean(
@@ -317,6 +414,7 @@ function manifestStrategyLabel(manifest: BimViewerManifest | null) {
 function manifestPropertySummary(manifest: BimViewerManifest | null) {
   if (!manifest) return "Sin manifiesto de revision.";
   const index = manifest.property_index;
+  if (!index) return "Manifiesto geometrico sin indice de propiedades publicado.";
   return `${index.scan_status} / ${index.indexed_products.toLocaleString()} elementos / ${index.property_sets} Pset / ${index.quantity_sets} Qto`;
 }
 
@@ -340,6 +438,7 @@ function buildIfcTreeGroups(lines: QuantityTakeoffLine[]) {
       const [storey, ifcClass] = key.split("|");
       const representative = groupLines[0];
       return {
+        apuCount: groupLines.filter(hasApuAssignment).length,
         count: groupLines.length,
         id: key,
         ifcClass,
@@ -353,6 +452,122 @@ function buildIfcTreeGroups(lines: QuantityTakeoffLine[]) {
       };
     })
     .sort((left, right) => `${left.storey}|${left.ifcClass}`.localeCompare(`${right.storey}|${right.ifcClass}`));
+}
+
+function ifcObjectKey(line: QuantityTakeoffLine) {
+  const sourceObjectRef = compact(line.source_row_id).split(":")[0];
+  return compact(line.element_guid) || compact(line.element_id) || sourceObjectRef || `line-${line.id}`;
+}
+
+function ifcObjectLabel(line: QuantityTakeoffLine) {
+  return constructiveLabel(line).split(" / ").join(":");
+}
+
+function countIfcObjects(lines: QuantityTakeoffLine[]) {
+  return new Set(lines.map(ifcObjectKey)).size;
+}
+
+export function buildIfcObjectTree(
+  lines: QuantityTakeoffLine[],
+  sourceName = "Modelo IFC",
+  modelIdentity: Record<string, unknown> = {}
+): IfcObjectTreeNode {
+  const levels: Array<{
+    fallback: string;
+    kind: Exclude<IfcObjectTreeNode["kind"], "model" | "object">;
+    value: (line: QuantityTakeoffLine) => string;
+  }> = [
+    {
+      fallback: modelIdentityText(modelIdentity, "project_name", "IfcProject"),
+      kind: "project",
+      value: (line) => compact(line.project_name),
+    },
+    {
+      fallback: modelIdentityText(modelIdentity, "site_name", "Default"),
+      kind: "site",
+      value: (line) => compact(line.site_name),
+    },
+    {
+      fallback: modelIdentityText(modelIdentity, "building_name", "IfcBuilding"),
+      kind: "building",
+      value: (line) => compact(line.building_name),
+    },
+    {
+      fallback: "Nivel pendiente",
+      kind: "storey",
+      value: (line) => compact(line.storey),
+    },
+    {
+      fallback: "Clase IFC pendiente",
+      kind: "class",
+      value: (line) => compact(line.ifc_class) || compact(line.category),
+    },
+  ];
+
+  const summarizeNode = (
+    id: string,
+    kind: IfcObjectTreeNode["kind"],
+    label: string,
+    nodeLines: QuantityTakeoffLine[],
+    children: IfcObjectTreeNode[],
+    extra: Partial<IfcObjectTreeNode> = {}
+  ): IfcObjectTreeNode => ({
+    apuCount: nodeLines.filter(hasApuAssignment).length,
+    children,
+    count: countIfcObjects(nodeLines),
+    id,
+    kind,
+    label,
+    lineIds: nodeLines.map((line) => line.id),
+    mappedCount: nodeLines.filter((line) => line.mapping_status === "mapped").length,
+    traceRefs: unique(nodeLines.flatMap(traceRefsForLine)),
+    ...extra,
+  });
+
+  const buildObjects = (nodeLines: QuantityTakeoffLine[], path: string[]): IfcObjectTreeNode[] => {
+    const objects = new Map<string, QuantityTakeoffLine[]>();
+    for (const line of nodeLines) {
+      const key = ifcObjectKey(line);
+      objects.set(key, [...(objects.get(key) ?? []), line]);
+    }
+    return Array.from(objects.entries())
+      .map(([reference, objectLines]) => {
+        const representative = objectLines[0];
+        return summarizeNode(
+          [...path, `object:${reference}`].join("\u001f"),
+          "object",
+          ifcObjectLabel(representative),
+          objectLines,
+          [],
+          { reference, representative }
+        );
+      })
+      .sort((left, right) => `${left.label}|${left.reference}`.localeCompare(`${right.label}|${right.reference}`));
+  };
+
+  const buildLevel = (nodeLines: QuantityTakeoffLine[], levelIndex: number, path: string[]): IfcObjectTreeNode[] => {
+    if (levelIndex >= levels.length) return buildObjects(nodeLines, path);
+    const level = levels[levelIndex];
+    const groups = new Map<string, QuantityTakeoffLine[]>();
+    for (const line of nodeLines) {
+      const label = level.value(line) || level.fallback;
+      groups.set(label, [...(groups.get(label) ?? []), line]);
+    }
+    return Array.from(groups.entries())
+      .map(([label, groupLines]) => {
+        const id = [...path, `${level.kind}:${label}`].join("\u001f");
+        const children = buildLevel(groupLines, levelIndex + 1, [...path, `${level.kind}:${label}`]);
+        const groupId =
+          level.kind === "class"
+            ? `${compact(groupLines[0]?.storey) || "Nivel pendiente"}|${label}`
+            : undefined;
+        return summarizeNode(id, level.kind, label, groupLines, children, { groupId });
+      })
+      .sort((left, right) => left.label.localeCompare(right.label));
+  };
+
+  const rootLabel = compact(sourceName) || "Modelo IFC";
+  return summarizeNode(`model:${rootLabel}`, "model", rootLabel, lines, buildLevel(lines, 0, [`model:${rootLabel}`]));
 }
 
 function readIfcText(value: unknown) {
@@ -628,6 +843,109 @@ function selectionKeysForIfcData(data: IfcMeshData | undefined) {
   ]);
 }
 
+export function measureIfcPointDistance(
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  units: string | undefined,
+  modelMaxDimension: number
+) {
+  const declaredScale = geometryUnitScaleToMeters(units) ?? 1;
+  const scale = geometryCoordinateScaleToMeters(declaredScale, modelMaxDimension);
+  return roundGeometryQuantity(start.distanceTo(end) * scale);
+}
+
+export function applyIfcVisualStyle(materials: Iterable<THREE.Material>, style: IfcVisualStyle) {
+  for (const material of materials) {
+    const baseOpacity =
+      typeof material.userData.openIfcBaseOpacity === "number"
+        ? material.userData.openIfcBaseOpacity
+        : material.opacity;
+    material.userData.openIfcBaseOpacity = baseOpacity;
+    material.transparent = style === "xray" || baseOpacity < 1;
+    material.opacity = style === "xray" ? Math.min(baseOpacity, 0.24) : baseOpacity;
+    material.depthWrite = style !== "xray";
+    if (material instanceof THREE.MeshStandardMaterial) {
+      material.wireframe = style === "wireframe";
+    }
+    material.needsUpdate = true;
+  }
+}
+
+export function detectIfcBoxClashes(
+  meshes: THREE.Mesh[],
+  units: string | undefined,
+  toleranceMeters: number,
+  maxResults = 120
+): IfcClashSummary {
+  const candidates = new Map<
+    string,
+    { box: THREE.Box3; data: IfcMeshData; key: string; meshes: THREE.Mesh[] }
+  >();
+  const modelBox = new THREE.Box3();
+  for (const mesh of meshes) {
+    if (!mesh.visible) continue;
+    mesh.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(mesh);
+    if (box.isEmpty()) continue;
+    modelBox.union(box);
+    const data = mesh.userData.ifc as IfcMeshData | undefined;
+    const key = selectionKeyForIfcData(data) || mesh.uuid;
+    const candidate = candidates.get(key);
+    if (candidate) {
+      candidate.box.union(box);
+      candidate.meshes.push(mesh);
+    } else {
+      candidates.set(key, { box: box.clone(), data: data ?? {}, key, meshes: [mesh] });
+    }
+  }
+  const modelMaxDimension = modelBox.isEmpty()
+    ? 1
+    : Math.max(...modelBox.getSize(new THREE.Vector3()).toArray(), 1);
+  const declaredScale = geometryUnitScaleToMeters(units) ?? 1;
+  const scale = geometryCoordinateScaleToMeters(declaredScale, modelMaxDimension);
+  const toleranceInCoordinates = Math.max(0, toleranceMeters) / Math.max(scale, Number.EPSILON);
+  const ordered = Array.from(candidates.values()).sort((left, right) => left.box.min.x - right.box.min.x);
+  const results: IfcClashResult[] = [];
+  let limited = false;
+
+  outer: for (let leftIndex = 0; leftIndex < ordered.length; leftIndex += 1) {
+    const left = ordered[leftIndex];
+    for (let rightIndex = leftIndex + 1; rightIndex < ordered.length; rightIndex += 1) {
+      const right = ordered[rightIndex];
+      if (right.box.min.x >= left.box.max.x - toleranceInCoordinates) break;
+      const overlapX = Math.min(left.box.max.x, right.box.max.x) - Math.max(left.box.min.x, right.box.min.x);
+      const overlapY = Math.min(left.box.max.y, right.box.max.y) - Math.max(left.box.min.y, right.box.min.y);
+      const overlapZ = Math.min(left.box.max.z, right.box.max.z) - Math.max(left.box.min.z, right.box.min.z);
+      const penetrationCoordinates = Math.min(overlapX, overlapY, overlapZ);
+      if (
+        overlapX <= toleranceInCoordinates ||
+        overlapY <= toleranceInCoordinates ||
+        overlapZ <= toleranceInCoordinates
+      ) {
+        continue;
+      }
+      const refA = selectionKeyForIfcData(left.data);
+      const refB = selectionKeyForIfcData(right.data);
+      if (!refA || !refB || refA === refB) continue;
+      results.push({
+        classA: compact(left.data.ifcClass) || "IfcProduct",
+        classB: compact(right.data.ifcClass) || "IfcProduct",
+        key: `${left.key}|${right.key}`,
+        nameA: compact(left.data.name) || refA,
+        nameB: compact(right.data.name) || refB,
+        penetration: roundGeometryQuantity(penetrationCoordinates * scale),
+        refA,
+        refB,
+      });
+      if (results.length >= maxResults) {
+        limited = true;
+        break outer;
+      }
+    }
+  }
+  return { checkedProducts: ordered.length, limited, results };
+}
+
 export function isValidIfcExpressId(value: unknown) {
   return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
@@ -860,6 +1178,119 @@ export function walkCameraStep(
   camera.lookAt(target);
 }
 
+type IfcObjectTreeBranchProps = {
+  depth?: number;
+  forceOpen: boolean;
+  node: IfcObjectTreeNode;
+  onIsolate: (node: IfcObjectTreeNode) => void;
+  onSelect: (node: IfcObjectTreeNode) => void;
+  selectedLineId: number | null;
+};
+
+function IfcObjectTreeBranch({
+  depth = 0,
+  forceOpen,
+  node,
+  onIsolate,
+  onSelect,
+  selectedLineId,
+}: IfcObjectTreeBranchProps) {
+  const [expanded, setExpanded] = useState(depth <= 5);
+  const isExpanded = forceOpen || expanded;
+  const isSelected = selectedLineId !== null && node.lineIds.includes(selectedLineId);
+
+  if (node.kind === "object") {
+    return (
+      <div
+        aria-label={`Objeto IFC ${node.label}`}
+        aria-selected={isSelected}
+        className={`bimObjectTreeLeaf${isSelected ? " active" : ""}`}
+        role="treeitem"
+      >
+        <button
+          aria-label={`Seleccionar objeto IFC ${node.label}`}
+          onClick={() => onSelect(node)}
+          title={`${node.label} / ${node.reference || "Referencia pendiente"}`}
+          type="button"
+        >
+          <span aria-hidden="true" className="bimObjectTreeGlyph">
+            +
+          </span>
+          <span>
+            <strong>{node.label}</strong>
+            <small>
+              {node.reference || "Referencia pendiente"} / {node.lineIds.length} medicion(es)
+              {node.apuCount ? ` / ${node.apuCount} con APU` : ""}
+            </small>
+          </span>
+        </button>
+        <button
+          aria-label={`Aislar objeto IFC ${node.label}`}
+          className="bimObjectTreeIsolate"
+          disabled={!node.traceRefs.length}
+          onClick={() => onIsolate(node)}
+          title="Aislar objeto"
+          type="button"
+        >
+          <Eye size={12} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      aria-expanded={isExpanded}
+      aria-label={`${node.kind} ${node.label}`}
+      className={`bimObjectTreeNode kind-${node.kind}`}
+      role="treeitem"
+    >
+      <div className="bimObjectTreeBranchRow">
+        <button
+          aria-label={`${isExpanded ? "Contraer" : "Expandir"} ${node.kind} ${node.label}`}
+          className="bimObjectTreeToggle"
+          onClick={() => setExpanded((current) => !current)}
+          title={node.label}
+          type="button"
+        >
+          <span aria-hidden="true" className="bimObjectTreeGlyph">
+            {isExpanded ? "−" : "+"}
+          </span>
+          <span>{node.label}</span>
+          <small>({node.count})</small>
+        </button>
+        {node.kind === "class" || node.kind === "storey" ? (
+          <button
+            aria-label={`Aislar ${node.kind} ${node.label}`}
+            className="bimObjectTreeIsolate"
+            disabled={!node.traceRefs.length}
+            onClick={() => onIsolate(node)}
+            title={`Aislar ${node.label}`}
+            type="button"
+          >
+            <Eye size={12} />
+          </button>
+        ) : null}
+      </div>
+      {isExpanded ? (
+        <div className="bimObjectTreeChildren" role="group">
+          {node.children.map((child) => (
+            <IfcObjectTreeBranch
+              depth={depth + 1}
+              forceOpen={forceOpen}
+              key={child.id}
+              node={child}
+              onIsolate={onIsolate}
+              onSelect={onSelect}
+              selectedLineId={selectedLineId}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function BimIfcModelViewer({
   approvalDisabled = false,
   projectId,
@@ -872,10 +1303,14 @@ export default function BimIfcModelViewer({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const viewerCommandsRef = useRef<ViewerCameraCommands | null>(null);
   const navigationModeRef = useRef<NavigationMode>("orbit");
+  const interactionModeRef = useRef<InteractionMode>("select");
   const viewPresetRef = useRef<ViewPreset>("iso");
   const pressedKeysRef = useRef(new Set<string>());
   const [viewPreset, setViewPreset] = useState<ViewPreset>("iso");
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("orbit");
+  const [interactionMode, setInteractionMode] = useState<InteractionMode>("select");
+  const [visualStyle, setVisualStyle] = useState<IfcVisualStyle>("solid");
+  const [explodeFactor, setExplodeFactor] = useState(0);
   const [status, setStatus] = useState("Listo para cargar geometria IFC guardada.");
   const [renderStats, setRenderStats] = useState("Sin geometria IFC cargada");
   const [renderDiagnostics, setRenderDiagnostics] = useState<IfcRenderDiagnostics>(() =>
@@ -888,6 +1323,14 @@ export default function BimIfcModelViewer({
   const [isolatedGroupId, setIsolatedGroupId] = useState("");
   const [sectionEnabled, setSectionEnabled] = useState(false);
   const [sectionAxis, setSectionAxis] = useState<SectionAxis>("x");
+  const [sectionPosition, setSectionPosition] = useState(50);
+  const [reviewFilter, setReviewFilter] = useState<IfcReviewFilter>("all");
+  const [pointMeasurement, setPointMeasurement] = useState<IfcPointMeasurement | null>(null);
+  const [measurementStatus, setMeasurementStatus] = useState("Selecciona dos puntos sobre la geometria.");
+  const [clashToleranceMm, setClashToleranceMm] = useState(10);
+  const [clashSummary, setClashSummary] = useState<IfcClashSummary | null>(null);
+  const [objectExplorerOpen, setObjectExplorerOpen] = useState(true);
+  const [propertiesPanelOpen, setPropertiesPanelOpen] = useState(true);
   const [viewerManifest, setViewerManifest] = useState<BimViewerManifest | null>(null);
   const [manifestStatus, setManifestStatus] = useState("Manifiesto de visor pendiente.");
   const [manifestRefreshKey, setManifestRefreshKey] = useState(0);
@@ -899,16 +1342,20 @@ export default function BimIfcModelViewer({
   const sourceType = model?.source_type ?? run?.source_type;
   const canLoadModel = Boolean(projectId && sourceType === "ifc" && (model || run));
   const treeGroups = useMemo(() => buildIfcTreeGroups(lines), [lines]);
-  const filteredTreeGroups = useMemo(() => {
+  const filteredTreeLines = useMemo(() => {
     const query = compact(treeSearch).toLowerCase();
-    if (!query) return treeGroups;
-    return treeGroups.filter((group) =>
-      [group.storey, group.ifcClass, constructiveLabel(group.representative), group.traceRefs.join(" ")]
-        .join(" ")
-        .toLowerCase()
-        .includes(query)
+    return lines.filter(
+      (line) => lineMatchesReviewFilter(line, reviewFilter) && (!query || lineSearchBasis(line).includes(query))
     );
-  }, [treeGroups, treeSearch]);
+  }, [lines, reviewFilter, treeSearch]);
+  const objectTree = useMemo(
+    () => buildIfcObjectTree(lines, sourceName || "Modelo IFC", model?.model_identity ?? {}),
+    [lines, model?.model_identity, sourceName]
+  );
+  const filteredObjectTree = useMemo(
+    () => buildIfcObjectTree(filteredTreeLines, sourceName || "Modelo IFC", model?.model_identity ?? {}),
+    [filteredTreeLines, model?.model_identity, sourceName]
+  );
   const selectedLine = lines.find((line) => line.id === selectedLineId);
   const selectedPropertyKey = selectedIfcPropertyLookupKey(selectedLine, selectedIfcElement);
 
@@ -940,12 +1387,25 @@ export default function BimIfcModelViewer({
   }, [navigationMode]);
 
   useEffect(() => {
+    interactionModeRef.current = interactionMode;
+    viewerCommandsRef.current?.measurement(interactionMode === "measure");
+  }, [interactionMode]);
+
+  useEffect(() => {
     viewPresetRef.current = viewPreset;
   }, [viewPreset]);
 
   useEffect(() => {
-    viewerCommandsRef.current?.section(sectionEnabled, sectionAxis);
-  }, [sectionAxis, sectionEnabled]);
+    viewerCommandsRef.current?.section(sectionEnabled, sectionAxis, sectionPosition / 100);
+  }, [sectionAxis, sectionEnabled, sectionPosition]);
+
+  useEffect(() => {
+    viewerCommandsRef.current?.style(visualStyle);
+  }, [visualStyle]);
+
+  useEffect(() => {
+    viewerCommandsRef.current?.explode(explodeFactor / 100);
+  }, [explodeFactor]);
 
   useEffect(() => {
     let active = true;
@@ -972,6 +1432,13 @@ export default function BimIfcModelViewer({
     setIsolatedGroupId("");
     setSectionEnabled(false);
     setSectionAxis("x");
+    setSectionPosition(50);
+    setInteractionMode("select");
+    setVisualStyle("solid");
+    setExplodeFactor(0);
+    setPointMeasurement(null);
+    setMeasurementStatus("Selecciona dos puntos sobre la geometria.");
+    setClashSummary(null);
     setRenderDiagnostics(emptyIfcRenderDiagnostics(model?.source_size_bytes ?? 0));
     setGeometryCacheStatus("");
   }, [model?.id, run?.id]);
@@ -1022,6 +1489,9 @@ export default function BimIfcModelViewer({
 
         const root = new THREE.Group();
         scene.add(root);
+        const measurementLayer = new THREE.Group();
+        measurementLayer.userData.ifcMeasurementLayer = true;
+        scene.add(measurementLayer);
         const clippingPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
@@ -1030,6 +1500,7 @@ export default function BimIfcModelViewer({
         const selectedMeshes: THREE.Mesh[] = [];
         const selectedMaterial = createIfcSelectedMaterial();
         let selectionBoxHelper: THREE.Box3Helper | null = null;
+        let measurementStart: THREE.Vector3 | null = null;
         const loadStartedAt = performance.now();
         const diagnostics = emptyIfcRenderDiagnostics(model?.source_size_bytes ?? 0);
 
@@ -1219,6 +1690,7 @@ export default function BimIfcModelViewer({
         if (modelBox.isEmpty()) modelBox.setFromCenterAndSize(new THREE.Vector3(), new THREE.Vector3(10, 10, 10));
         const modelCenter = modelBox.getCenter(new THREE.Vector3());
         const modelSize = modelBox.getSize(new THREE.Vector3());
+        const modelMaxDimension = Math.max(modelSize.x, modelSize.y, modelSize.z, 1);
         const focusBox = new THREE.Box3();
         meshBounds.forEach((bounds) => {
           const size = bounds.getSize(new THREE.Vector3());
@@ -1227,6 +1699,49 @@ export default function BimIfcModelViewer({
           if (!isLargeFlatSite) focusBox.union(bounds);
         });
         if (focusBox.isEmpty()) focusBox.copy(modelBox);
+        const explodeGroups = new Map<string, THREE.Mesh[]>();
+        const originalMeshPositions = new Map<THREE.Mesh, THREE.Vector3>();
+        for (const mesh of pickableMeshes) {
+          const data = mesh.userData.ifc as IfcMeshData | undefined;
+          const key = selectionKeyForIfcData(data) || mesh.uuid;
+          explodeGroups.set(key, [...(explodeGroups.get(key) ?? []), mesh]);
+          originalMeshPositions.set(mesh, mesh.position.clone());
+        }
+        const clearMeasurementArtifacts = () => {
+          measurementLayer.traverse((object) => {
+            if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+              object.geometry.dispose();
+              disposeMaterial(object.material);
+            }
+          });
+          measurementLayer.clear();
+          measurementStart = null;
+        };
+        const addMeasurementMarker = (point: THREE.Vector3) => {
+          const marker = new THREE.Mesh(
+            new THREE.SphereGeometry(Math.max(modelMaxDimension * 0.006, 0.025), 16, 12),
+            new THREE.MeshBasicMaterial({ color: 0xffd166, depthTest: false })
+          );
+          marker.position.copy(point);
+          marker.renderOrder = 100;
+          measurementLayer.add(marker);
+        };
+        const completePointMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
+          const lineGeometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+          const line = new THREE.Line(
+            lineGeometry,
+            new THREE.LineBasicMaterial({ color: 0xff7a00, depthTest: false, linewidth: 2 })
+          );
+          line.renderOrder = 99;
+          measurementLayer.add(line);
+          const distanceMeters = measureIfcPointDistance(start, end, geometryUnits, modelMaxDimension);
+          setPointMeasurement({
+            distanceMeters,
+            end: end.toArray() as [number, number, number],
+            start: start.toArray() as [number, number, number],
+          });
+          setMeasurementStatus(`Distancia medida: ${formatNumber(distanceMeters)} m.`);
+        };
         const gridSize = Math.max(modelSize.x, modelSize.z, 20) * 1.25;
         const grid = new THREE.GridHelper(gridSize, 44, 0x9aacb5, 0xdce6ea);
         grid.position.set(modelCenter.x, modelBox.min.y - Math.max(gridSize * 0.002, 0.03), modelCenter.z);
@@ -1281,7 +1796,38 @@ export default function BimIfcModelViewer({
           setIsolatedGroupId("");
         };
         viewerCommandsRef.current = {
+          clashes: (toleranceMeters) =>
+            detectIfcBoxClashes(pickableMeshes, geometryUnits, toleranceMeters),
+          explode: (factor) => {
+            const safeFactor = clamp(factor, 0, 1);
+            for (const groupMeshes of explodeGroups.values()) {
+              const groupBox = new THREE.Box3();
+              groupMeshes.forEach((mesh) => {
+                const originalPosition = originalMeshPositions.get(mesh);
+                if (originalPosition) mesh.position.copy(originalPosition);
+                mesh.updateMatrixWorld(true);
+                groupBox.expandByObject(mesh);
+              });
+              const direction = groupBox.getCenter(new THREE.Vector3()).sub(modelCenter);
+              if (!direction.lengthSq()) direction.set(0, 1, 0);
+              direction.normalize().multiplyScalar(modelMaxDimension * 0.18 * safeFactor);
+              groupMeshes.forEach((mesh) => {
+                const originalPosition = originalMeshPositions.get(mesh) ?? new THREE.Vector3();
+                mesh.position.copy(originalPosition).add(direction);
+                mesh.updateMatrixWorld(true);
+              });
+            }
+          },
           fit: fitCamera,
+          filterRefs: (refs) => {
+            const matchedMeshes = meshesForRefs(refs);
+            const visibleMeshes = new Set(matchedMeshes);
+            pickableMeshes.forEach((mesh) => {
+              mesh.visible = visibleMeshes.has(mesh);
+            });
+            setIsolatedGroupId("");
+            if (matchedMeshes.length) focusCameraOnMeshes(matchedMeshes);
+          },
           focusRefs: (refs) => {
             const matchedMeshes = meshesForRefs(refs);
             if (matchedMeshes.length) focusCameraOnMeshes(matchedMeshes);
@@ -1295,17 +1841,26 @@ export default function BimIfcModelViewer({
             });
             focusCameraOnMeshes(matchedMeshes);
           },
+          measurement: (active) => {
+            measurementStart = null;
+            setMeasurementStatus(
+              active
+                ? "Selecciona el primer punto sobre una malla IFC."
+                : "Activa Medir para seleccionar dos puntos sobre la geometria."
+            );
+          },
           resetVisibility,
-          section: (active, axis) => {
+          section: (active, axis, position) => {
             renderer!.localClippingEnabled = active;
-            const sectionCenter = focusBox.getCenter(new THREE.Vector3());
             const sectionNormal =
               axis === "y"
                 ? new THREE.Vector3(0, -1, 0)
                 : axis === "z"
                   ? new THREE.Vector3(0, 0, -1)
                   : new THREE.Vector3(-1, 0, 0);
-            const sectionOffset = axis === "y" ? sectionCenter.y : axis === "z" ? sectionCenter.z : sectionCenter.x;
+            const axisMin = axis === "y" ? focusBox.min.y : axis === "z" ? focusBox.min.z : focusBox.min.x;
+            const axisMax = axis === "y" ? focusBox.max.y : axis === "z" ? focusBox.max.z : focusBox.max.x;
+            const sectionOffset = axisMin + (axisMax - axisMin) * clamp(position, 0, 1);
             clippingPlane.normal.copy(sectionNormal);
             clippingPlane.constant = sectionOffset;
             pickableMeshes.forEach((mesh) => {
@@ -1316,6 +1871,7 @@ export default function BimIfcModelViewer({
               });
             });
           },
+          style: (style) => applyIfcVisualStyle(materialCache.values(), style),
           view: (preset) => applyCameraView(preset),
         };
 
@@ -1326,20 +1882,32 @@ export default function BimIfcModelViewer({
         let previousY = 0;
         const interactionTarget = canvas.parentElement ?? canvas;
         interactionTarget.tabIndex = 0;
-        const pickIfcMesh = (event: PointerEvent | MouseEvent) => {
+        const pickIfcHit = (event: PointerEvent | MouseEvent) => {
           const bounds = canvas.getBoundingClientRect();
           pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
           pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
           raycaster.setFromCamera(pointer, camera);
           root.updateMatrixWorld(true);
-          const exactHitMesh = raycaster
+          const exactHit = raycaster
             .intersectObjects(root.children, true)
-            .map((intersection) => intersection.object)
-            .find((object): object is THREE.Mesh => object instanceof THREE.Mesh && Boolean(object.userData.ifc));
-          return exactHitMesh ?? closestProjectedIfcMesh(pickableMeshes, camera, pointer);
+            .find(
+              (intersection) =>
+                intersection.object instanceof THREE.Mesh && Boolean(intersection.object.userData.ifc)
+            );
+          if (exactHit && exactHit.object instanceof THREE.Mesh) {
+            return { mesh: exactHit.object, point: exactHit.point.clone() };
+          }
+          const fallbackMesh = closestProjectedIfcMesh(
+            pickableMeshes.filter((mesh) => mesh.visible),
+            camera,
+            pointer
+          );
+          return fallbackMesh
+            ? { mesh: fallbackMesh, point: new THREE.Box3().setFromObject(fallbackMesh).getCenter(new THREE.Vector3()) }
+            : null;
         };
         const selectMeshFromPointer = (event: PointerEvent | MouseEvent, focusSelected = false) => {
-          const hitMesh = pickIfcMesh(event);
+          const hitMesh = pickIfcHit(event)?.mesh;
           const data = hitMesh?.userData.ifc as IfcMeshData | undefined;
           if (data && hitMesh) {
             const selectionKey = selectionKeyForIfcData(data);
@@ -1368,6 +1936,26 @@ export default function BimIfcModelViewer({
             setSelectedLineId(null);
           }
         };
+        const measurePointFromPointer = (event: PointerEvent | MouseEvent) => {
+          const hit = pickIfcHit(event);
+          if (!hit) {
+            setMeasurementStatus("No se detecto una malla IFC bajo el puntero.");
+            return;
+          }
+          if (!measurementStart) {
+            clearMeasurementArtifacts();
+            measurementStart = hit.point.clone();
+            addMeasurementMarker(measurementStart);
+            setPointMeasurement(null);
+            setMeasurementStatus("Primer punto fijado. Selecciona el segundo punto.");
+            return;
+          }
+          const start = measurementStart.clone();
+          const end = hit.point.clone();
+          addMeasurementMarker(end);
+          completePointMeasurement(start, end);
+          measurementStart = null;
+        };
         const onPointerDown = (event: PointerEvent) => {
           event.preventDefault();
           dragging = true;
@@ -1395,14 +1983,18 @@ export default function BimIfcModelViewer({
         };
         const onPointerUp = (event: PointerEvent) => {
           if (!moved) {
-            selectMeshFromPointer(event);
+            if (interactionModeRef.current === "measure") {
+              measurePointFromPointer(event);
+            } else {
+              selectMeshFromPointer(event);
+            }
           }
           dragging = false;
           interactionTarget.releasePointerCapture?.(event.pointerId);
         };
         const onDoubleClick = (event: MouseEvent) => {
           event.preventDefault();
-          selectMeshFromPointer(event, true);
+          if (interactionModeRef.current === "select") selectMeshFromPointer(event, true);
         };
         const onWheel = (event: WheelEvent) => {
           event.preventDefault();
@@ -1531,6 +2123,7 @@ export default function BimIfcModelViewer({
           viewerCommandsRef.current = null;
           pressedKeysRef.current.clear();
           clearSelection();
+          clearMeasurementArtifacts();
           root.traverse((object) => {
             if (object instanceof THREE.Mesh) object.geometry.dispose();
           });
@@ -1606,6 +2199,20 @@ export default function BimIfcModelViewer({
         " / "
       )
     : "";
+  const selectedApuAssignment =
+    selectedLine?.raw_data?.budget_item_assignment &&
+    typeof selectedLine.raw_data.budget_item_assignment === "object" &&
+    !Array.isArray(selectedLine.raw_data.budget_item_assignment)
+      ? (selectedLine.raw_data.budget_item_assignment as Record<string, unknown>)
+      : {};
+  const selectedApuLabel = [
+    selectedApuAssignment.cost_item_code,
+    selectedApuAssignment.cost_item_name,
+    selectedApuAssignment.source_key,
+  ]
+    .filter((value) => value !== null && value !== undefined && String(value).trim())
+    .map(String)
+    .join(" / ");
   const selectedTrace = selectedLine ? traceRefsForLine(selectedLine).join(" / ") : selectedIfcElement?.globalId || "";
   const selectedMeasurementRule =
     compact(selectedLine?.measurement_rule) || compact(selectedIfcElement?.ifcClass) || "Regla pendiente";
@@ -1659,13 +2266,49 @@ export default function BimIfcModelViewer({
     }
   };
   const operationModeLabel = `${viewPreset.toUpperCase()} / ${navigationMode === "walk" ? "Recorrido" : "Orbitar"}`;
-  const sectionModeLabel = sectionEnabled ? `Seccion ${sectionAxis.toUpperCase()}` : "Sin seccion";
+  const sectionModeLabel = sectionEnabled
+    ? `Seccion ${sectionAxis.toUpperCase()} / ${sectionPosition}%`
+    : "Sin seccion";
+  const filteredTraceRefs = unique(filteredTreeLines.flatMap(traceRefsForLine));
+  const apuAssignedLineCount = lines.filter(hasApuAssignment).length;
+  const forceObjectTreeOpen = Boolean(compact(treeSearch) || reviewFilter !== "all");
+  const handleApplyVisualFilter = () => {
+    if (!filteredTraceRefs.length) return;
+    viewerCommandsRef.current?.filterRefs(filteredTraceRefs);
+  };
+  const handleSelectObjectTreeNode = (node: IfcObjectTreeNode) => {
+    if (!node.representative) return;
+    setSelectedLineId(node.representative.id);
+    setSelectedIfcElement(null);
+    viewerCommandsRef.current?.focusRefs(node.traceRefs);
+  };
+  const handleIsolateObjectTreeNode = (node: IfcObjectTreeNode) => {
+    setIsolatedGroupId(node.groupId ?? "");
+    viewerCommandsRef.current?.isolateRefs(node.traceRefs);
+  };
+  const handleClashDetection = () => {
+    const summary = viewerCommandsRef.current?.clashes(Math.max(clashToleranceMm, 0) / 1000);
+    if (summary) setClashSummary(summary);
+  };
+  const measurementLabel = pointMeasurement
+    ? `${formatNumber(pointMeasurement.distanceMeters)} m`
+    : interactionMode === "measure"
+      ? "Esperando puntos"
+      : "Inactiva";
   const selectionLabel =
     (selectedLine ? constructiveLabel(selectedLine) : "") ||
     selectedIfcElement?.name ||
     selectedIfcElement?.ifcClass ||
     selectedIfcElement?.globalId ||
     "Sin seleccion";
+  const workspacePanelClass =
+    objectExplorerOpen && propertiesPanelOpen
+      ? "panels-both"
+      : objectExplorerOpen
+        ? "panel-explorer"
+        : propertiesPanelOpen
+          ? "panel-properties"
+          : "panels-hidden";
 
   return (
     <section aria-label="Modelo IFC" className="bimViewer bimViewerWide ifcGeometryViewer">
@@ -1753,6 +2396,15 @@ export default function BimIfcModelViewer({
             <MousePointer2 size={14} /> Recorrer
           </button>
           <button
+            aria-label="Measure IFC distance"
+            className={interactionMode === "measure" ? "active" : undefined}
+            disabled={!canLoadModel}
+            onClick={() => setInteractionMode((current) => (current === "measure" ? "select" : "measure"))}
+            type="button"
+          >
+            <ScanLine size={14} /> Medir
+          </button>
+          <button
             aria-label="Section IFC model"
             className={sectionEnabled ? "active" : undefined}
             disabled={!canLoadModel}
@@ -1782,6 +2434,11 @@ export default function BimIfcModelViewer({
             onClick={() => {
               viewerCommandsRef.current?.resetVisibility();
               setSectionEnabled(false);
+              setSectionPosition(50);
+              setExplodeFactor(0);
+              setVisualStyle("solid");
+              setInteractionMode("select");
+              setClashSummary(null);
             }}
             type="button"
           >
@@ -1790,6 +2447,147 @@ export default function BimIfcModelViewer({
         </div>
         <span>{displayStats}</span>
       </div>
+      <nav aria-label="IFC viewer panel controls" className="bimViewerPanelBar">
+        <div>
+          <span>Paneles del visor</span>
+          <small>Activa o desactiva las vistas acopladas sin afectar el modelo ni la seleccion.</small>
+        </div>
+        <button
+          aria-label={objectExplorerOpen ? "Ocultar Object Explorer" : "Mostrar Object Explorer"}
+          aria-pressed={objectExplorerOpen}
+          className={objectExplorerOpen ? "active" : undefined}
+          onClick={() => setObjectExplorerOpen((current) => !current)}
+          type="button"
+        >
+          <Box size={17} />
+          <span>Object Explorer</span>
+          <small>{objectExplorerOpen ? "Activo" : "Oculto"}</small>
+        </button>
+        <button
+          aria-label={propertiesPanelOpen ? "Ocultar Properties" : "Mostrar Properties"}
+          aria-pressed={propertiesPanelOpen}
+          className={propertiesPanelOpen ? "active" : undefined}
+          onClick={() => setPropertiesPanelOpen((current) => !current)}
+          type="button"
+        >
+          <MousePointer2 size={17} />
+          <span>Properties</span>
+          <small>{propertiesPanelOpen ? "Activo" : "Oculto"}</small>
+        </button>
+      </nav>
+      <section aria-label="Herramientas abiertas de revision IFC" className="bimOpenIfcTools">
+        <article>
+          <label htmlFor="ifc-visual-style">Estilo visual</label>
+          <select
+            disabled={!canLoadModel}
+            id="ifc-visual-style"
+            onChange={(event) => setVisualStyle(event.target.value as IfcVisualStyle)}
+            value={visualStyle}
+          >
+            <option value="solid">Solido</option>
+            <option value="xray">Transparente</option>
+            <option value="wireframe">Alambrico</option>
+          </select>
+          <small>Reutiliza los materiales Three.js sin perder GUID ni seleccion.</small>
+        </article>
+        <article>
+          <label htmlFor="ifc-explode-factor">Vista explosionada: {explodeFactor}%</label>
+          <input
+            disabled={!canLoadModel}
+            id="ifc-explode-factor"
+            max="100"
+            min="0"
+            onChange={(event) => setExplodeFactor(Number(event.target.value))}
+            step="5"
+            type="range"
+            value={explodeFactor}
+          />
+          <small>Separa productos conservando las referencias vinculadas a cantidades.</small>
+        </article>
+        <article>
+          <label htmlFor="ifc-section-position">
+            Plano de corte {sectionAxis.toUpperCase()}: {sectionPosition}%
+          </label>
+          <input
+            disabled={!canLoadModel || !sectionEnabled}
+            id="ifc-section-position"
+            max="100"
+            min="0"
+            onChange={(event) => setSectionPosition(Number(event.target.value))}
+            step="1"
+            type="range"
+            value={sectionPosition}
+          />
+          <small>{sectionEnabled ? `Plano activo al ${sectionPosition}%` : "Activa Seccion para recorrer el plano."}</small>
+        </article>
+        <article>
+          <span>Medicion por puntos</span>
+          <strong>{measurementLabel}</strong>
+          <small>{measurementStatus}</small>
+        </article>
+        <article className="bimClashTool">
+          <label htmlFor="ifc-clash-tolerance">Interferencias / tolerancia (mm)</label>
+          <div>
+            <input
+              disabled={!canLoadModel}
+              id="ifc-clash-tolerance"
+              min="0"
+              onChange={(event) => setClashToleranceMm(Number(event.target.value))}
+              step="1"
+              type="number"
+              value={clashToleranceMm}
+            />
+            <button disabled={!canLoadModel} onClick={handleClashDetection} type="button">
+              Detectar
+            </button>
+          </div>
+          <small>Screening abierto por cajas AABB; cada resultado conserva las dos referencias IFC.</small>
+        </article>
+      </section>
+      {clashSummary ? (
+        <section aria-label="Resultados de interferencias IFC" className="bimClashResults">
+          <div className="panelHeader compactHeader">
+            <div>
+              <h3>Interferencias geometricas</h3>
+              <span>
+                {clashSummary.results.length} resultado(s) / {clashSummary.checkedProducts} producto(s) revisado(s)
+                {clashSummary.limited ? " / listado limitado" : ""}
+              </span>
+            </div>
+            <button onClick={() => setClashSummary(null)} type="button">
+              Cerrar
+            </button>
+          </div>
+          {clashSummary.results.length ? (
+            <div className="bimClashList">
+              {clashSummary.results.slice(0, 24).map((clash, index) => (
+                <article key={clash.key}>
+                  <div>
+                    <strong>
+                      {clash.classA} / {clash.classB}
+                    </strong>
+                    <span>
+                      {clash.nameA} ↔ {clash.nameB}
+                    </span>
+                    <small>Penetracion AABB estimada: {formatNumber(clash.penetration)} m</small>
+                  </div>
+                  <button
+                    aria-label={`Aislar interferencia ${index + 1}`}
+                    onClick={() => viewerCommandsRef.current?.isolateRefs([clash.refA, clash.refB])}
+                    type="button"
+                  >
+                    <Eye size={13} /> Revisar
+                  </button>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="projectHint">
+              No se detectaron penetraciones superiores a la tolerancia entre los productos visibles.
+            </p>
+          )}
+        </section>
+      ) : null}
       <section aria-label="Preparacion comercial del visor BIM" className="bimCommercialReadiness">
         <article className={commercialBlockers.length ? "review" : "ready"}>
           <span>Estado comercial</span>
@@ -1835,9 +2633,9 @@ export default function BimIfcModelViewer({
             </button>
           ) : null}
         </article>
-        <article className={viewerManifest?.property_index.scan_status === "partial" ? "review" : "ready"}>
+        <article className={viewerManifest?.property_index?.scan_status === "partial" ? "review" : "ready"}>
           <span>Indice IFC</span>
-          <strong>{viewerManifest ? viewerManifest.property_index.scan_status : "pendiente"}</strong>
+          <strong>{viewerManifest?.property_index?.scan_status ?? "pendiente"}</strong>
           <small>{manifestSummary}</small>
         </article>
         <article className={webIfcHealthTone}>
@@ -1871,7 +2669,9 @@ export default function BimIfcModelViewer({
         <article>
           <span>Modo</span>
           <strong>{operationModeLabel}</strong>
-          <small>{sectionModeLabel}</small>
+          <small>
+            {sectionModeLabel} / {visualStyle} / medir {measurementLabel}
+          </small>
         </article>
         <article>
           <span>Modelo</span>
@@ -1891,15 +2691,17 @@ export default function BimIfcModelViewer({
             {mappedLineCount}/{lines.length || 0} codificadas
           </strong>
           <small>
-            {tracedLineCount}/{lines.length || 0} trazadas / {treeGroups.length} grupo(s) IFC
+            {tracedLineCount}/{lines.length || 0} trazadas / {apuAssignedLineCount}/{lines.length || 0} con APU /{" "}
+            {treeGroups.length} grupo(s) IFC
           </small>
         </article>
       </section>
-      <div
-        aria-label="IFC model navigation canvas"
-        className="bimViewerCanvasWrap ifcGeometryCanvasWrap"
-        tabIndex={canLoadModel ? 0 : -1}
-      >
+      <div className={`bimViewerWorkspace ${workspacePanelClass}`}>
+        <div
+          aria-label="IFC model navigation canvas"
+          className="bimViewerCanvasWrap ifcGeometryCanvasWrap"
+          tabIndex={canLoadModel ? 0 : -1}
+        >
         <canvas aria-label="IFC geometric model viewer" data-testid="ifc-geometry-viewer-canvas" ref={canvasRef} />
         {canLoadModel && !hasRenderableGeometry ? (
           <div className="bimViewerEmptyOverlay" role="status">
@@ -1917,13 +2719,27 @@ export default function BimIfcModelViewer({
           <span>{displayStats}</span>
         </div>
         <div className="bimViewerNavigationHint" aria-label="Modo de navegacion IFC">
-          <strong>{navigationMode === "walk" ? "Modo recorrido" : "Modo orbitar"}</strong>
+          <strong>
+            {interactionMode === "measure"
+              ? "Modo medir"
+              : navigationMode === "walk"
+                ? "Modo recorrido"
+                : "Modo orbitar"}
+          </strong>
           <span>
-            {navigationMode === "walk"
-              ? "WASD / flechas para avanzar. Arrastra para mirar. Doble clic centra un elemento."
-              : "Arrastra para orbitar. Shift + arrastrar desplaza. Rueda para zoom. Doble clic centra un elemento."}
+            {interactionMode === "measure"
+              ? "Haz clic en dos puntos de las mallas IFC. El resultado se expresa en metros."
+              : navigationMode === "walk"
+                ? "WASD / flechas para avanzar. Arrastra para mirar. Doble clic centra un elemento."
+                : "Arrastra para orbitar. Shift + arrastrar desplaza. Rueda para zoom. Doble clic centra un elemento."}
           </span>
         </div>
+        {pointMeasurement ? (
+          <div className="bimViewerMeasurementBadge" aria-label="Medicion IFC activa">
+            <strong>Distancia</strong>
+            <span>{formatNumber(pointMeasurement.distanceMeters)} m</span>
+          </div>
+        ) : null}
         {(selectedLine || selectedIfcElement) && (
           <div className="bimViewerSelectionBadge" aria-label="Elemento IFC seleccionado">
             <strong>Elemento seleccionado</strong>
@@ -1932,7 +2748,7 @@ export default function BimIfcModelViewer({
             </span>
           </div>
         )}
-      </div>
+        </div>
       {model && (
         <div className="bimViewerMetadata" aria-label="IFC model identity">
           <span>{modelIdentityText(modelIdentity, "project_name", "Proyecto IFC sin nombre publicado")}</span>
@@ -1965,73 +2781,77 @@ export default function BimIfcModelViewer({
           </div>
         </section>
       ) : null}
-      <div className="bimViewerInspector">
-        <section aria-label="Arbol IFC" className="bimModelTree">
+        <div className="bimViewerInspector">
+        {objectExplorerOpen ? (
+          <section aria-label="Arbol IFC" className="bimModelTree bimDockPanel">
           <div className="panelHeader compactHeader">
-            <h3>Arbol IFC</h3>
+            <h3 aria-label="Object Explorer Arbol IFC">Object Explorer</h3>
             <span>
-              {treeGroups.length
-                ? `${filteredTreeGroups.length}/${treeGroups.length} grupo(s)${isolatedGroupId ? " / aislado" : ""}`
+              {objectTree.count
+                ? `${filteredObjectTree.count}/${objectTree.count} objeto(s)${isolatedGroupId ? " / aislado" : ""}`
                 : "Esperando cantidades trazadas"}
             </span>
           </div>
-          {treeGroups.length ? (
-            <label className="bimTreeSearch">
-              <Search size={14} />
-              <input
-                aria-label="Buscar en arbol IFC"
-                onChange={(event) => setTreeSearch(event.target.value)}
-                placeholder="Buscar nivel, clase, elemento o GUID"
-                type="search"
-                value={treeSearch}
-              />
-            </label>
+          {objectTree.count ? (
+            <>
+              <label className="bimTreeSearch">
+                <Search size={14} />
+                <input
+                  aria-label="Buscar en arbol IFC"
+                  onChange={(event) => setTreeSearch(event.target.value)}
+                  placeholder="Nivel, GUID, propiedad, CBS/WBS o APU"
+                  type="search"
+                  value={treeSearch}
+                />
+              </label>
+              <div className="bimTreeFilters">
+                <label>
+                  <span>Filtro de control</span>
+                  <select
+                    aria-label="Filtro de control IFC"
+                    onChange={(event) => setReviewFilter(event.target.value as IfcReviewFilter)}
+                    value={reviewFilter}
+                  >
+                    <option value="all">Todos</option>
+                    <option value="mapped">Con codificacion</option>
+                    <option value="unmapped">Sin codificacion</option>
+                    <option value="apu-assigned">Con APU</option>
+                    <option value="apu-pending">APU pendiente</option>
+                  </select>
+                </label>
+                <button disabled={!filteredTraceRefs.length} onClick={handleApplyVisualFilter} type="button">
+                  <Eye size={13} /> Aplicar al modelo
+                </button>
+                <button onClick={() => viewerCommandsRef.current?.resetVisibility()} type="button">
+                  Ver todo
+                </button>
+              </div>
+            </>
           ) : null}
-          {treeGroups.length ? (
-            <div className="bimTreeList">
-              {filteredTreeGroups.slice(0, 36).map((group) => (
-                <article className={selectedLineId === group.representative.id ? "active" : undefined} key={group.id}>
-                  <button
-                    aria-label={`${group.storey} ${group.ifcClass} ${group.count} elemento(s)`}
-                    onClick={() => {
-                      setSelectedLineId(group.representative.id);
-                      setSelectedIfcElement(null);
-                      viewerCommandsRef.current?.focusRefs(group.traceRefs);
-                    }}
-                    type="button"
-                  >
-                    <strong>{group.storey}</strong>
-                    <span>{group.ifcClass}</span>
-                    <small>
-                      {group.count} elemento(s) / {group.quantity.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
-                      {group.unit} / {group.mappedCount} codificado(s)
-                    </small>
-                  </button>
-                  <button
-                    aria-label={`Aislar ${group.storey} ${group.ifcClass}`}
-                    className="bimTreeMiniAction"
-                    disabled={!canLoadModel || !group.traceRefs.length}
-                    onClick={() => {
-                      setIsolatedGroupId(group.id);
-                      viewerCommandsRef.current?.isolateRefs(group.traceRefs);
-                    }}
-                    type="button"
-                  >
-                    <Eye size={13} /> Aislar
-                  </button>
-                </article>
-              ))}
+          {objectTree.count && filteredObjectTree.count ? (
+            <div aria-label="Jerarquia de objetos IFC" className="bimTreeList bimObjectTree" role="tree">
+              <IfcObjectTreeBranch
+                forceOpen={forceObjectTreeOpen}
+                node={filteredObjectTree}
+                onIsolate={handleIsolateObjectTreeNode}
+                onSelect={handleSelectObjectTreeNode}
+                selectedLineId={selectedLineId}
+              />
             </div>
+          ) : objectTree.count ? (
+            <p className="projectHint">No hay objetos IFC que coincidan con la busqueda y el filtro actual.</p>
           ) : (
             <p className="projectHint">
-              El arbol se activa cuando la tabla de cantidades trae referencias por nivel y clase IFC.
+              El arbol se activa cuando la tabla de cantidades trae referencias de objetos IFC.
             </p>
           )}
-        </section>
-        <section aria-label="Propiedades del elemento IFC" className="bimElementProperties">
+          </section>
+        ) : null}
+        {propertiesPanelOpen ? (
+          <section aria-label="Propiedades del elemento IFC" className="bimElementProperties bimDockPanel">
           <div className="panelHeader compactHeader">
             <h3>
-              <MousePointer2 size={16} /> Propiedades
+              <MousePointer2 size={16} /> Properties
             </h3>
             <span>{selectedLine || selectedIfcElement ? "Elemento seleccionado" : "Sin seleccion"}</span>
           </div>
@@ -2142,6 +2962,25 @@ export default function BimIfcModelViewer({
                 </strong>
               </article>
               <article className="wideFact">
+                <span>Integracion APU</span>
+                <strong>{selectedApuLabel || "APU pendiente de asignacion"}</strong>
+                {selectedApuLabel ? (
+                  <small>
+                    {[
+                      selectedApuAssignment.budget_unit
+                        ? `Unidad ${String(selectedApuAssignment.budget_unit)}`
+                        : "",
+                      Number.isFinite(Number(selectedApuAssignment.unit_rate))
+                        ? `PU ${formatNumber(Number(selectedApuAssignment.unit_rate))}`
+                        : "",
+                      selectedApuAssignment.currency ? String(selectedApuAssignment.currency) : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" / ")}
+                  </small>
+                ) : null}
+              </article>
+              <article className="wideFact">
                 <span>CBS / WBS / FBS / Paquete</span>
                 <strong>{selectedCodes || "Codigos de control pendientes"}</strong>
               </article>
@@ -2151,7 +2990,9 @@ export default function BimIfcModelViewer({
               Selecciona un grupo del arbol o haz clic sobre la geometria para ver propiedades y trazabilidad.
             </p>
           )}
-        </section>
+          </section>
+        ) : null}
+        </div>
       </div>
       <div className="bimViewerLegend" aria-label="IFC geometry viewer legend">
         <span>

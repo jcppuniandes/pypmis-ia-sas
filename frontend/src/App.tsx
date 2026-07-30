@@ -12,6 +12,8 @@ import {
 } from "react";
 import {
   Building2,
+  ChevronLeft,
+  ChevronRight,
   Database,
   Download,
   FileSearch,
@@ -94,6 +96,7 @@ import type {
 import LoginView from "./views/LoginView";
 
 const BIM_VIEWER_MODULE_RELOAD_KEY = "pypmis:bim-viewer-module-reload";
+const SCOPE_MANAGER_MODULE_LABEL = "Scope Manager";
 
 function lazyWithModuleRecovery<TProps>(factory: () => Promise<{ default: ComponentType<TProps> }>) {
   return lazy(async () => {
@@ -810,6 +813,7 @@ function AppShell() {
   const [guidedFlow, setGuidedFlow] = useState<GuidedFlow | null>(null);
   const [processFlowBoard, setProcessFlowBoard] = useState<ProcessFlowBoard | null>(null);
   const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
+  const [moduleNavigationCollapsed, setModuleNavigationCollapsed] = useState(false);
   const [currencyAction, setCurrencyAction] = useState(false);
   const [projectDraft, setProjectDraft] = useState({
     calendar_base: "5x8 Colombia",
@@ -3080,7 +3084,7 @@ function AppShell() {
     },
     {
       key: "quantity-takeoff",
-      label: "Cantidades BIM",
+      label: SCOPE_MANAGER_MODULE_LABEL,
       count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
     },
     {
@@ -3114,7 +3118,7 @@ function AppShell() {
     { key: "opc-gap", label: "Diagnóstico de Control", count: `${opcGapAnalysis.readinessScore}%` },
     {
       key: "quantity-takeoff",
-      label: "Cantidades BIM",
+      label: SCOPE_MANAGER_MODULE_LABEL,
       count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
     },
     {
@@ -3173,7 +3177,7 @@ function AppShell() {
     "bim-budget": {
       action: bimBudgetSummary.rows.length
         ? "Revisar partidas, unidades, duplicados y trazabilidad antes de exportar el presupuesto."
-        : "Asignar partida APU y precio unitario desde Cantidades BIM.",
+        : `Asignar partida APU y precio unitario desde ${SCOPE_MANAGER_MODULE_LABEL}.`,
       objective:
         "Consolidar cantidades IFC en partidas presupuestales trazables a WBS, CBS, FBS y elementos del modelo.",
       state: `${bimBudgetSummary.rows.length} partida(s) / ${
@@ -3242,7 +3246,7 @@ function AppShell() {
       objective:
         "Convert BIM/Excel data into controlled physical quantity items with source evidence before package assignment.",
       state: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} quantity line(s)` : "Waiting for takeoff",
-      title: "Cantidades BIM",
+      title: SCOPE_MANAGER_MODULE_LABEL,
     },
     "schedule-intake": {
       action: "Load P6 XML/XER, review data quality and confirm that Activity Sheet rows are controlled.",
@@ -3396,10 +3400,17 @@ function AppShell() {
       />
 
       <section
-        className={guidedFlow ? "projectWorkspace guidedWorkspace" : "projectWorkspace"}
+        className={`${guidedFlow ? "projectWorkspace guidedWorkspace" : "projectWorkspace"}${
+          moduleNavigationCollapsed ? " moduleRailCollapsed" : ""
+        }`}
         aria-label="Project workspace and control flow"
       >
-        <aside className="projectWorkspaceRail">
+        <div className="projectWorkspaceRailDock">
+          <aside
+            className="projectWorkspaceRail"
+            hidden={moduleNavigationCollapsed}
+            id="project-module-navigation"
+          >
           {guidedFlow ? (
             <>
               {FRONTEND_VALIDATION_MODE ? (
@@ -3454,7 +3465,7 @@ function AppShell() {
                         },
                         {
                           key: "quantity-takeoff" as ControlFlowView,
-                          label: "Cantidades BIM",
+                          label: SCOPE_MANAGER_MODULE_LABEL,
                           count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
                         },
                         {
@@ -3775,7 +3786,19 @@ function AppShell() {
               {projectError && <div className="uploadMessage error">{projectError}</div>}
             </section>
           )}
-        </aside>
+          </aside>
+          <button
+            aria-controls="project-module-navigation"
+            aria-expanded={!moduleNavigationCollapsed}
+            aria-label={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
+            className="projectWorkspaceRailToggle"
+            onClick={() => setModuleNavigationCollapsed((current) => !current)}
+            title={moduleNavigationCollapsed ? "Mostrar barra de módulos" : "Ocultar barra de módulos"}
+            type="button"
+          >
+            {moduleNavigationCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
 
         <section className="projectDashboardArea" aria-label="Control dashboard">
           {showOverviewChrome && (
@@ -5228,10 +5251,10 @@ function AppShell() {
               </section>
             )}
             {visibleControlView === "quantity-takeoff" && (
-              <section aria-label="Cantidades BIM Module" className="quantityModule">
+              <section aria-label={`${SCOPE_MANAGER_MODULE_LABEL} Module`} className="quantityModule">
                 <div className="panelHeader">
                   <h2>
-                    <Ruler size={20} /> Cantidades BIM
+                    <Ruler size={20} /> {SCOPE_MANAGER_MODULE_LABEL}
                   </h2>
                   <span>
                     {latestQuantityTakeoff?.validation_summary ??

@@ -4,16 +4,20 @@ import * as THREE from "three";
 import BimIfcModelViewer from "../src/components/BimIfcModelViewer";
 import {
   applyIfcSelectionVisuals,
+  applyIfcVisualStyle,
   buildBackendCacheGeometryMeshes,
   buildControlledMeasurementPayloadFromRealGeometry,
+  buildIfcObjectTree,
   calculateRealGeometryQuantities,
   clearIfcSelectionVisuals,
   createIfcSelectionBoxHelper,
+  detectIfcBoxClashes,
   detectIfcLengthUnitsFromText,
   formatRealGeometryDimensions,
   friendlyIfcRenderStatus,
   isValidIfcExpressId,
   isValidIfcMemoryRef,
+  measureIfcPointDistance,
   primaryRealGeometryEstimate,
   walkCameraStep,
 } from "../src/components/BimIfcModelViewer";
@@ -117,6 +121,86 @@ describe("BimIfcModelViewer", () => {
     expect(isValidIfcMemoryRef(10, 0)).toBe(false);
     expect(isValidIfcMemoryRef(10, -1)).toBe(false);
     expect(isValidIfcMemoryRef(10.5, 12)).toBe(false);
+  });
+
+  it("measures two IFC points in meters using the declared model units", () => {
+    const distance = measureIfcPointDistance(
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(1000, 0, 0),
+      "millimeters",
+      1000
+    );
+
+    expect(distance).toBe(1);
+  });
+
+  it("switches existing IFC materials between solid, xray and wireframe styles", () => {
+    const material = new THREE.MeshStandardMaterial({ opacity: 0.8 });
+
+    applyIfcVisualStyle([material], "xray");
+    expect(material.transparent).toBe(true);
+    expect(material.opacity).toBe(0.24);
+    expect(material.depthWrite).toBe(false);
+
+    applyIfcVisualStyle([material], "wireframe");
+    expect(material.wireframe).toBe(true);
+    expect(material.opacity).toBe(0.8);
+    expect(material.depthWrite).toBe(true);
+
+    applyIfcVisualStyle([material], "solid");
+    expect(material.wireframe).toBe(false);
+    expect(material.opacity).toBe(0.8);
+    material.dispose();
+  });
+
+  it("screens clashes between different visible IFC products and keeps their references", () => {
+    const material = new THREE.MeshStandardMaterial();
+    const first = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), material);
+    first.userData.ifc = { expressId: 10, globalId: "GUID-A", ifcClass: "IfcWall", name: "Wall A" };
+    const second = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), material);
+    second.position.set(1, 0, 0);
+    second.userData.ifc = { expressId: 11, globalId: "GUID-B", ifcClass: "IfcPipeSegment", name: "Pipe B" };
+    const distant = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material);
+    distant.position.set(20, 0, 0);
+    distant.userData.ifc = { expressId: 12, globalId: "GUID-C", ifcClass: "IfcSlab", name: "Slab C" };
+
+    const summary = detectIfcBoxClashes([first, second, distant], "meters", 0.01);
+
+    expect(summary.checkedProducts).toBe(3);
+    expect(summary.results).toHaveLength(1);
+    expect(summary.results[0]).toMatchObject({
+      classA: "IfcWall",
+      classB: "IfcPipeSegment",
+      refA: "GUID-A",
+      refB: "GUID-B",
+      penetration: 1,
+    });
+    first.geometry.dispose();
+    second.geometry.dispose();
+    distant.geometry.dispose();
+    material.dispose();
+  });
+
+  it("builds the Object Explorer hierarchy from model to individual IFC object", () => {
+    const tree = buildIfcObjectTree(tracedLines, ifcModel.source_file_name, ifcModel.model_identity);
+    const project = tree.children[0];
+    const site = project.children[0];
+    const building = site.children[0];
+    const storey = building.children[0];
+    const ifcClass = storey.children[0];
+    const object = ifcClass.children[0];
+
+    expect(tree).toMatchObject({ kind: "model", label: "wellness-center.ifc", count: 1 });
+    expect(project).toMatchObject({ kind: "project", label: "Wellness Center", count: 1 });
+    expect(site).toMatchObject({ kind: "site", label: "Default", count: 1 });
+    expect(building).toMatchObject({ kind: "building", label: "Main Building", count: 1 });
+    expect(storey).toMatchObject({ kind: "storey", label: "Ground floor", count: 1 });
+    expect(ifcClass).toMatchObject({ kind: "class", label: "IfcWallStandardCase", count: 1 });
+    expect(object).toMatchObject({
+      kind: "object",
+      reference: "2IRuU8Tqz92AICLQuWall01",
+      lineIds: [301],
+    });
   });
 
   it("builds selectable Three meshes from the backend geometry cache artifact", () => {
@@ -366,6 +450,95 @@ describe("BimIfcModelViewer", () => {
     expect(within(viewer).getByText(/Seccion Z/i)).toBeInTheDocument();
   });
 
+  it("offers open review tools while preserving quantity and APU traceability", () => {
+    const assignedLines: QuantityTakeoffLine[] = [
+      {
+        ...tracedLines[0],
+        raw_data: {
+          budget_item_assignment: {
+            budget_unit: "m2",
+            cost_item_code: "APU-MUR-001",
+            cost_item_name: "Muro exterior",
+            currency: "COP",
+            source_key: "colombia-apu",
+            unit_rate: 125000,
+          },
+        },
+      },
+    ];
+    render(<BimIfcModelViewer lines={assignedLines} projectId={1} model={ifcModel} token="tok" />);
+
+    const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const tools = within(viewer).getByRole("region", { name: /herramientas abiertas de revision ifc/i });
+    const toolbar = within(viewer).getByLabelText(/IFC viewer controls/i);
+    const tree = within(viewer).getByRole("region", { name: /arbol ifc/i });
+
+    fireEvent.change(within(tools).getByLabelText(/Estilo visual/i), { target: { value: "xray" } });
+    expect(within(tools).getByLabelText(/Estilo visual/i)).toHaveValue("xray");
+
+    fireEvent.change(within(tools).getByLabelText(/Vista explosionada/i), { target: { value: "45" } });
+    expect(within(tools).getByLabelText(/Vista explosionada: 45%/i)).toHaveValue("45");
+
+    fireEvent.click(within(toolbar).getByRole("button", { name: /Measure IFC distance/i }));
+    expect(within(toolbar).getByRole("button", { name: /Measure IFC distance/i })).toHaveClass("active");
+    expect(within(viewer).getByText(/Modo medir/i)).toBeInTheDocument();
+
+    fireEvent.click(within(toolbar).getByRole("button", { name: /Section IFC model/i }));
+    fireEvent.change(within(tools).getByLabelText(/Plano de corte X/i), { target: { value: "25" } });
+    expect(within(tools).getByLabelText(/Plano de corte X: 25%/i)).toHaveValue("25");
+
+    fireEvent.change(within(tree).getByLabelText(/Filtro de control IFC/i), {
+      target: { value: "apu-assigned" },
+    });
+    expect(within(tree).getByText(/1 con APU/i)).toBeInTheDocument();
+
+    fireEvent.click(within(tree).getByRole("button", { name: /^Seleccionar objeto IFC Muro arquitectonico/i }));
+    const properties = within(viewer).getByRole("region", { name: /propiedades del elemento ifc/i });
+    expect(within(properties).getByText(/APU-MUR-001 \/ Muro exterior \/ colombia-apu/i)).toBeInTheDocument();
+    expect(within(properties).getByText(/Unidad m2 \/ PU 125,000 \/ COP/i)).toBeInTheDocument();
+  });
+
+  it("docks Object Explorer and Properties beside the canvas and toggles each panel independently", () => {
+    render(<BimIfcModelViewer lines={tracedLines} projectId={1} model={ifcModel} token="tok" />);
+
+    const viewer = screen.getByRole("region", { name: /modelo ifc/i });
+    const panelControls = within(viewer).getByRole("navigation", { name: /IFC viewer panel controls/i });
+    const canvasWrap = within(viewer).getByLabelText(/IFC model navigation canvas/i);
+
+    expect(within(viewer).getByRole("region", { name: /arbol ifc/i })).toBeInTheDocument();
+    expect(within(viewer).getByRole("region", { name: /propiedades del elemento ifc/i })).toBeInTheDocument();
+    expect(canvasWrap.parentElement).toHaveClass("panels-both");
+    expect(within(panelControls).getByRole("button", { name: /Ocultar Object Explorer/i })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(within(panelControls).getByRole("button", { name: /Ocultar Properties/i })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+
+    fireEvent.click(within(panelControls).getByRole("button", { name: /Ocultar Object Explorer/i }));
+
+    expect(within(viewer).queryByRole("region", { name: /arbol ifc/i })).not.toBeInTheDocument();
+    expect(canvasWrap.parentElement).toHaveClass("panel-properties");
+    expect(within(panelControls).getByRole("button", { name: /Mostrar Object Explorer/i })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+
+    fireEvent.click(within(panelControls).getByRole("button", { name: /Ocultar Properties/i }));
+
+    expect(within(viewer).queryByRole("region", { name: /propiedades del elemento ifc/i })).not.toBeInTheDocument();
+    expect(canvasWrap.parentElement).toHaveClass("panels-hidden");
+
+    fireEvent.click(within(panelControls).getByRole("button", { name: /Mostrar Object Explorer/i }));
+    fireEvent.click(within(panelControls).getByRole("button", { name: /Mostrar Properties/i }));
+
+    expect(within(viewer).getByRole("region", { name: /arbol ifc/i })).toBeInTheDocument();
+    expect(within(viewer).getByRole("region", { name: /propiedades del elemento ifc/i })).toBeInTheDocument();
+    expect(canvasWrap.parentElement).toHaveClass("panels-both");
+  });
+
   it("moves the camera forward in walk navigation mode", () => {
     const camera = new THREE.PerspectiveCamera();
     camera.position.set(0, 1.7, 10);
@@ -387,11 +560,22 @@ describe("BimIfcModelViewer", () => {
 
     expect(within(tree).getByRole("heading", { name: /arbol ifc/i })).toBeInTheDocument();
     expect(within(tree).getByLabelText(/buscar en arbol ifc/i)).toBeInTheDocument();
+    const hierarchy = within(tree).getByRole("tree", { name: /jerarquia de objetos ifc/i });
+    expect(within(hierarchy).getByRole("treeitem", { name: /model wellness-center\.ifc/i })).toBeInTheDocument();
     expect(within(tree).getByText(/Ground floor/i)).toBeInTheDocument();
     expect(within(tree).getByText(/IfcWallStandardCase/i)).toBeInTheDocument();
-    expect(within(tree).getByRole("button", { name: /Aislar Ground floor IfcWallStandardCase/i })).toBeInTheDocument();
+    expect(within(tree).getByRole("button", { name: /Aislar class IfcWallStandardCase/i })).toBeInTheDocument();
 
-    fireEvent.click(within(tree).getByRole("button", { name: /^Ground floor IfcWallStandardCase 1 elemento/i }));
+    fireEvent.click(
+      within(hierarchy).getByRole("button", { name: /^Contraer class IfcWallStandardCase/i })
+    );
+    expect(
+      within(hierarchy).queryByRole("button", { name: /^Seleccionar objeto IFC Muro arquitectonico/i })
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      within(hierarchy).getByRole("button", { name: /^Expandir class IfcWallStandardCase/i })
+    );
+    fireEvent.click(within(tree).getByRole("button", { name: /^Seleccionar objeto IFC Muro arquitectonico/i }));
 
     expect(within(properties).getByText(/Muro arquitectonico \/ Basic Wall \/ Exterior 200mm/i)).toBeInTheDocument();
     expect(within(properties).getByText(/2IRuU8Tqz92AICLQuWall01/i)).toBeInTheDocument();
@@ -491,7 +675,7 @@ describe("BimIfcModelViewer", () => {
 
     fireEvent.click(
       within(within(viewer).getByRole("region", { name: /arbol ifc/i })).getByRole("button", {
-        name: /^Ground floor IfcWallStandardCase 1 elemento/i,
+        name: /^Seleccionar objeto IFC Muro arquitectonico/i,
       })
     );
 
