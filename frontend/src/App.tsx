@@ -190,6 +190,7 @@ type ControlFlowView =
   | "quantity-takeoff"
   | "bim-budget"
   | "estimates"
+  | "cash-flow"
   | "budget-changes"
   | "budget-transfer"
   | "apu-catalog"
@@ -202,9 +203,20 @@ type ControlFlowView =
   | "request-for-bid"
   | "contracts"
   | "purchase-order"
+  | "earned-value-analysis"
+  | "secop-bidder"
   | "idea-creator"
   | "strategic-investment-map"
   | "strategic-evaluation-matrix"
+  | "gate-decision"
+  | "service-request"
+  | "work-order-request"
+  | "preventive-work-order"
+  | "corrective-work-order"
+  | "preventive-maintenance"
+  | "job-plans"
+  | "facility-inspections"
+  | "facility-condition-assessment"
   | "baseline"
   | "progress"
   | "costs"
@@ -223,92 +235,142 @@ type NavigationViewItem = {
 type ModuleNavigationItem = {
   key: string;
   label: string;
-  view?: ControlFlowView;
-  submodules?: NavigationViewItem[];
+  submodules: NavigationViewItem[];
 };
 
-const MODULE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
+type MacroprocessNavigationItem = {
+  key: string;
+  label: string;
+  modules: ModuleNavigationItem[];
+};
+
+const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
   {
-    key: "project-asset-workspace-manager",
-    label: "Project/Asset Workspace Manager",
-    submodules: [
-      { key: "project-creator", label: "Project Creator" },
-      { key: "setup", label: "Asset/Facilities Creator" },
+    key: "project-control-manager",
+    label: "Project Control Manager",
+    modules: [
+      {
+        key: "project-workspace-manager",
+        label: "Project Workspace Manager",
+        submodules: [{ key: "project-creator", label: "Project Creator" }],
+      },
+      {
+        key: "scope-manager",
+        label: SCOPE_MANAGER_MODULE_LABEL,
+        submodules: [
+          { key: "quantity-takeoff", label: BIM_MANAGER_SUBMODULE_LABEL },
+          { key: "scope-items", label: "Scope Items" },
+          { key: "process-flow", label: "Strategy&Path of Execution" },
+          { key: "plan-items", label: "Plan Items" },
+          { key: "work-packages", label: "Work Packages" },
+          { key: "decisions", label: "Scope Changes" },
+        ],
+      },
+      {
+        key: "schedule-manager",
+        label: "Schedule Manager",
+        submodules: [
+          { key: "schedule-intake", label: "Activity Sheet" },
+          { key: "schedule-control", label: "Schedule" },
+          { key: "schedule-4d", label: "4D Model" },
+          { key: "schedule-changes", label: "Schedule Changes" },
+        ],
+      },
+      {
+        key: "cost-manager",
+        label: "Cost Manager",
+        submodules: [
+          { key: "costs", label: "Cost Items" },
+          { key: "estimates", label: "Estimates" },
+          { key: "bim-budget", label: "Budget" },
+          { key: "integrated-control", label: "Fund" },
+          { key: "cash-flow", label: "Cash Flow" },
+          { key: "budget-changes", label: "Budget Changes" },
+          { key: "budget-transfer", label: "Budget Transfer" },
+        ],
+      },
+      {
+        key: "risk-manager",
+        label: "Risk Manager",
+        submodules: [
+          { key: "risk-register", label: "Risk Register" },
+          { key: "risk-evaluation-matrix", label: "Risk Evaluation Matrix" },
+          { key: "risk-quantification-analysis", label: "Risk Quantification Analysis" },
+          { key: "contingency-quantification", label: "Contingency Quantification" },
+        ],
+      },
+      {
+        key: "procurement-manager",
+        label: "Procurement Manager",
+        submodules: [
+          { key: "request-for-bid", label: "Request for Bid" },
+          { key: "contracts", label: "Contracts" },
+          { key: "purchase-order", label: "Purchase Order" },
+        ],
+      },
+      {
+        key: "progress-performance-manager",
+        label: "Progress&Performance Manager",
+        submodules: [
+          { key: "progress", label: "Measuring Progress" },
+          { key: "earned-value-analysis", label: "Earned Value Analysis" },
+        ],
+      },
+      {
+        key: "resource-manager",
+        label: "Resource Manager",
+        submodules: [{ key: "apu-catalog", label: "Master Rate Sheet" }],
+      },
+      {
+        key: "claim-manager",
+        label: "Claim Manager",
+        submodules: [
+          { key: "claims-audit", label: "Reclamaciones" },
+          { key: "window-analysis-37", label: "Ventanas 3.7" },
+        ],
+      },
+      {
+        key: "portfolio-manager",
+        label: "Portfolio Manager",
+        submodules: [
+          { key: "secop-bidder", label: "SECOP Bidder" },
+          { key: "idea-creator", label: "Idea Creator" },
+          { key: "strategic-investment-map", label: "Strategic Investment Map" },
+          { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
+          { key: "gate-decision", label: "Gate Decision" },
+        ],
+      },
     ],
   },
   {
-    key: "scope-manager",
-    label: SCOPE_MANAGER_MODULE_LABEL,
-    submodules: [
-      { key: "quantity-takeoff", label: BIM_MANAGER_SUBMODULE_LABEL },
-      { key: "scope-items", label: "Scope Items" },
-      { key: "process-flow", label: "Path of Execution" },
-      { key: "plan-items", label: "Plan Items" },
-      { key: "work-packages", label: "Work Packages" },
-      { key: "decisions", label: "Scope Changes" },
-    ],
-  },
-  {
-    key: "schedule-manager",
-    label: "Schedule Manager",
-    submodules: [
-      { key: "schedule-intake", label: "Activity Sheet" },
-      { key: "schedule-control", label: "Schedule" },
-      { key: "schedule-4d", label: "4D Model" },
-      { key: "schedule-changes", label: "Schedule Changes" },
-    ],
-  },
-  {
-    key: "cost-manager",
-    label: "Cost Manager",
-    submodules: [
-      { key: "costs", label: "Cost Items" },
-      { key: "estimates", label: "Estimates" },
-      { key: "bim-budget", label: "Budget" },
-      { key: "integrated-control", label: "Fund" },
-      { key: "budget-changes", label: "Budget Changes" },
-      { key: "budget-transfer", label: "Budget Transfer" },
-    ],
-  },
-  {
-    key: "risk-manager",
-    label: "Risk Manager",
-    submodules: [
-      { key: "risk-register", label: "Risk Register" },
-      { key: "risk-evaluation-matrix", label: "Risk Evaluation Matrix" },
-      { key: "risk-quantification-analysis", label: "Risk Quantification Analysis" },
-      { key: "contingency-quantification", label: "Contingency Quantification" },
-    ],
-  },
-  {
-    key: "procurement-manager",
-    label: "Procurement Manager",
-    submodules: [
-      { key: "request-for-bid", label: "Request for Bid" },
-      { key: "contracts", label: "Contracts" },
-      { key: "purchase-order", label: "Purchase Order" },
-    ],
-  },
-  {
-    key: "resource-manager",
-    label: "Resource Manager",
-    submodules: [{ key: "apu-catalog", label: "Master Rate Sheet" }],
-  },
-  {
-    key: "claim-manager",
-    label: "Claim Manager",
-    submodules: [
-      { key: "claims-audit", label: "Reclamaciones" },
-      { key: "window-analysis-37", label: "Ventanas 3.7" },
-    ],
-  },
-  {
-    key: "portfolio-manager",
-    label: "Portfolio Manager",
-    submodules: [
-      { key: "idea-creator", label: "Idea Creator" },
-      { key: "strategic-investment-map", label: "Strategic Investment Map" },
-      { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
+    key: "facilities-asset-manager",
+    label: "Facilities&Asset Manager",
+    modules: [
+      {
+        key: "asset-workspace-manager",
+        label: "Asset Workspace Manager",
+        submodules: [{ key: "setup", label: "Asset/Facilities Creator" }],
+      },
+      {
+        key: "maintenance-manager",
+        label: "Maintenance Manager",
+        submodules: [
+          { key: "service-request", label: "Service Request" },
+          { key: "work-order-request", label: "Work Order Request" },
+          { key: "preventive-work-order", label: "Preventive Work order" },
+          { key: "corrective-work-order", label: "Corrective Work order" },
+          { key: "preventive-maintenance", label: "Preventive Maintenance" },
+          { key: "job-plans", label: "Job Plans" },
+        ],
+      },
+      {
+        key: "condition-assessment-manager",
+        label: "Condition Assessment Manager",
+        submodules: [
+          { key: "facility-inspections", label: "Facility Inspections" },
+          { key: "facility-condition-assessment", label: "Facility Condiction Assessment" },
+        ],
+      },
     ],
   },
 ];
@@ -319,6 +381,7 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "schedule-4d",
   "schedule-changes",
   "estimates",
+  "cash-flow",
   "budget-changes",
   "budget-transfer",
   "risk-register",
@@ -328,9 +391,20 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "request-for-bid",
   "contracts",
   "purchase-order",
+  "earned-value-analysis",
+  "secop-bidder",
   "idea-creator",
   "strategic-investment-map",
   "strategic-evaluation-matrix",
+  "gate-decision",
+  "service-request",
+  "work-order-request",
+  "preventive-work-order",
+  "corrective-work-order",
+  "preventive-maintenance",
+  "job-plans",
+  "facility-inspections",
+  "facility-condition-assessment",
 ]);
 
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
@@ -346,7 +420,9 @@ function frontendValidationMode(): boolean {
 const FRONTEND_VALIDATION_VIEWS: ControlFlowView[] = [
   "dashboard",
   "opc-gap",
-  ...MODULE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules?.map((item) => item.key) ?? []),
+  ...MACROPROCESS_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
+    macroprocess.modules.flatMap((module) => module.submodules.map((item) => item.key))
+  ),
 ];
 const APU_SOURCE_OPTIONS = [
   { key: "", label: "Todas las fuentes" },
@@ -366,76 +442,99 @@ function ModuleNavigationItems({
   onNavigate,
 }: {
   activeView: ControlFlowView;
-  items: ModuleNavigationItem[];
+  items: MacroprocessNavigationItem[];
   onNavigate: (view: ControlFlowView) => void;
 }) {
-  const activeModuleKey = items.find((item) => item.submodules?.some((submodule) => submodule.key === activeView))?.key;
-  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() =>
-    activeModuleKey ? { [activeModuleKey]: true } : {}
-  );
+  const activeMacroprocessKey = items.find((macroprocess) =>
+    macroprocess.modules.some((module) => module.submodules.some((submodule) => submodule.key === activeView))
+  )?.key;
+  const activeModuleKey = items
+    .flatMap((macroprocess) => macroprocess.modules)
+    .find((module) => module.submodules.some((submodule) => submodule.key === activeView))?.key;
+  const [expandedMacroprocesses, setExpandedMacroprocesses] = useState<Record<string, boolean>>({});
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (!activeModuleKey) return;
-    setExpandedModules((current) => (current[activeModuleKey] ? current : { ...current, [activeModuleKey]: true }));
-  }, [activeModuleKey]);
-
-  return items.map((item) => {
-    if (!item.submodules?.length) {
-      const itemActive = item.view === activeView;
-      return (
-        <button
-          aria-current={itemActive ? "page" : undefined}
-          className={itemActive ? "navigatorItem active" : "navigatorItem"}
-          key={item.key}
-          onClick={() => item.view && onNavigate(item.view)}
-          type="button"
-        >
-          <span>{item.label}</span>
-        </button>
-      );
-    }
-
-    const moduleActive = item.submodules.some((submodule) => submodule.key === activeView);
-    const moduleExpanded = expandedModules[item.key] ?? false;
-    const submoduleListId = `${item.key}-submodules`;
+  return items.map((macroprocess) => {
+    const macroprocessActive = macroprocess.modules.some((module) =>
+      module.submodules.some((submodule) => submodule.key === activeView)
+    );
+    const macroprocessExpanded =
+      expandedMacroprocesses[macroprocess.key] ??
+      (macroprocess.key === activeMacroprocessKey || macroprocess.key === "project-control-manager");
+    const moduleListId = `${macroprocess.key}-modules`;
 
     return (
-      <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={item.key}>
+      <div
+        className={macroprocessActive ? "navigatorMacroprocess active" : "navigatorMacroprocess"}
+        key={macroprocess.key}
+      >
         <button
-          aria-controls={submoduleListId}
-          aria-expanded={moduleExpanded}
-          className="navigatorModuleButton"
+          aria-controls={moduleListId}
+          aria-expanded={macroprocessExpanded}
+          className="navigatorMacroprocessButton"
           onClick={() =>
-            setExpandedModules((current) => ({
+            setExpandedMacroprocesses((current) => ({
               ...current,
-              [item.key]: !moduleExpanded,
+              [macroprocess.key]: !macroprocessExpanded,
             }))
           }
           type="button"
         >
-          <span className="navigatorModuleCopy">{item.label}</span>
-          <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
+          <span className="navigatorMacroprocessCopy">{macroprocess.label}</span>
+          <ChevronDown aria-hidden="true" className={macroprocessExpanded ? "expanded" : ""} size={17} />
         </button>
         <div
-          aria-label={`Submódulos de ${item.label}`}
-          className="navigatorSubmoduleList"
-          hidden={!moduleExpanded}
-          id={submoduleListId}
+          aria-label={`Módulos de ${macroprocess.label}`}
+          className="navigatorModuleList"
+          hidden={!macroprocessExpanded}
+          id={moduleListId}
           role="group"
         >
-          {item.submodules.map((submodule) => {
-            const submoduleActive = submodule.key === activeView;
+          {macroprocess.modules.map((module) => {
+            const moduleActive = module.submodules.some((submodule) => submodule.key === activeView);
+            const moduleExpanded = expandedModules[module.key] ?? module.key === activeModuleKey;
+            const submoduleListId = `${module.key}-submodules`;
             return (
-              <button
-                aria-current={submoduleActive ? "page" : undefined}
-                className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
-                key={submodule.key}
-                onClick={() => onNavigate(submodule.key)}
-                type="button"
-              >
-                <span>{submodule.label}</span>
-                {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
-              </button>
+              <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={module.key}>
+                <button
+                  aria-controls={submoduleListId}
+                  aria-expanded={moduleExpanded}
+                  className="navigatorModuleButton"
+                  onClick={() =>
+                    setExpandedModules((current) => ({
+                      ...current,
+                      [module.key]: !moduleExpanded,
+                    }))
+                  }
+                  type="button"
+                >
+                  <span className="navigatorModuleCopy">{module.label}</span>
+                  <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
+                </button>
+                <div
+                  aria-label={`Submódulos de ${module.label}`}
+                  className="navigatorSubmoduleList"
+                  hidden={!moduleExpanded}
+                  id={submoduleListId}
+                  role="group"
+                >
+                  {module.submodules.map((submodule) => {
+                    const submoduleActive = submodule.key === activeView;
+                    return (
+                      <button
+                        aria-current={submoduleActive ? "page" : undefined}
+                        className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
+                        key={submodule.key}
+                        onClick={() => onNavigate(submodule.key)}
+                        type="button"
+                      >
+                        <span>{submodule.label}</span>
+                        {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>
@@ -3401,6 +3500,7 @@ function AppShell() {
     decisions: dashboard.changes.length,
     "integrated-control": integratedMatrix.length,
     "process-flow": processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
+    progress: dashboard.latest_progress_records.length,
     "quantity-takeoff": latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
     "schedule-control": dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
     "schedule-intake": activeImport ? `${dashboard.schedule_activity_count} activities` : "open",
@@ -3408,11 +3508,14 @@ function AppShell() {
     "window-analysis-37": windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
     "work-packages": dashboard.awp_summary.total_packages,
   };
-  const templateModuleNavigationItems = MODULE_NAVIGATION_BLUEPRINT.map((module) => ({
-    ...module,
-    submodules: module.submodules?.map((submodule) => ({
-      ...submodule,
-      count: navigationStatusByView[submodule.key],
+  const templateMacroprocessNavigationItems = MACROPROCESS_NAVIGATION_BLUEPRINT.map((macroprocess) => ({
+    ...macroprocess,
+    modules: macroprocess.modules.map((module) => ({
+      ...module,
+      submodules: module.submodules.map((submodule) => ({
+        ...submodule,
+        count: navigationStatusByView[submodule.key],
+      })),
     })),
   }));
   const activeModuleGuide: Partial<
@@ -3505,13 +3608,13 @@ function AppShell() {
       action: "Open the lane item that is blocked or review-required.",
       objective: "See the full project control process by role, gate, evidence and next action.",
       state: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}% complete` : "Loading",
-      title: "Path of Execution",
+      title: "Strategy&Path of Execution",
     },
     progress: {
       action: "Capture progress against the approved baseline and control account structure.",
       objective: "Convert field progress into earned value and productivity signals.",
       state: `${dashboard.latest_progress_records.length} progress record(s)`,
-      title: "Progress",
+      title: "Measuring Progress",
     },
     "quantity-takeoff": {
       action: "Load prepared IFC quantity exports or Excel/CSV takeoff, then map WBS, CBS, FBS and packages.",
@@ -3548,14 +3651,14 @@ function AppShell() {
     },
     "project-creator": {
       action: "Crear un proyecto o administrar el proyecto seleccionado.",
-      objective: "Crear y mantener los espacios de trabajo de proyectos y activos.",
+      objective: "Crear y mantener los espacios de trabajo de proyectos.",
       state: `${projectList.length} project(s) available`,
       title: "Project Creator",
     },
   };
-  const activeTemplateSubmodule = MODULE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules ?? []).find(
-    (submodule) => submodule.key === visibleControlView
-  );
+  const activeTemplateSubmodule = MACROPROCESS_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
+    macroprocess.modules.flatMap((module) => module.submodules)
+  ).find((submodule) => submodule.key === visibleControlView);
   const currentModuleGuide =
     activeModuleGuide[visibleControlView] ??
     (activeTemplateSubmodule
@@ -3718,7 +3821,7 @@ function AppShell() {
                   <nav className="navigatorRail" aria-label="Validation focus">
                     <div className="navigatorHeader">
                       <strong>Validacion actual</strong>
-                      <span>Workspace + módulos configurables</span>
+                      <span>Macroprocesos + módulos</span>
                     </div>
                     <button
                       aria-current={visibleControlView === "dashboard" ? "page" : undefined}
@@ -3739,11 +3842,11 @@ function AppShell() {
                       <strong>{opcGapAnalysis.readinessScore}%</strong>
                     </button>
                     <div className="navigatorDivider">
-                      <span>Módulos</span>
+                      <span>Macroprocesos</span>
                     </div>
                     <ModuleNavigationItems
                       activeView={visibleControlView}
-                      items={templateModuleNavigationItems}
+                      items={templateMacroprocessNavigationItems}
                       onNavigate={handleControlFlowNavigate}
                     />
                   </nav>
@@ -3752,7 +3855,7 @@ function AppShell() {
                     <nav className="navigatorRail" aria-label="Control Flow">
                       <div className="navigatorHeader">
                         <strong>Control Flow</strong>
-                        <span>Workspace + módulos configurables</span>
+                        <span>Macroprocesos + módulos</span>
                       </div>
                       <button
                         aria-current={visibleControlView === "dashboard" ? "page" : undefined}
@@ -3773,11 +3876,11 @@ function AppShell() {
                         <strong>{opcGapAnalysis.readinessScore}%</strong>
                       </button>
                       <div className="navigatorDivider">
-                        <span>Módulos</span>
+                        <span>Macroprocesos</span>
                       </div>
                       <ModuleNavigationItems
                         activeView={visibleControlView}
-                        items={templateModuleNavigationItems}
+                        items={templateMacroprocessNavigationItems}
                         onNavigate={handleControlFlowNavigate}
                       />
                       <div className="navigatorDivider">
@@ -3862,11 +3965,11 @@ function AppShell() {
                   <strong>{opcGapAnalysis.readinessScore}%</strong>
                 </button>
                 <div className="navigatorDivider">
-                  <span>Módulos</span>
+                  <span>Macroprocesos</span>
                 </div>
                 <ModuleNavigationItems
                   activeView={visibleControlView}
-                  items={templateModuleNavigationItems}
+                  items={templateMacroprocessNavigationItems}
                   onNavigate={handleControlFlowNavigate}
                 />
                 {!FRONTEND_VALIDATION_MODE && (
@@ -4383,7 +4486,7 @@ function AppShell() {
             {visibleControlView === "process-flow" && (
               <>
                 <div className="panelHeader">
-                  <h2>Path of Execution</h2>
+                  <h2>Strategy&amp;Path of Execution</h2>
                   <span>
                     {processFlowBoard
                       ? `${statusLabel(processFlowBoard.overall_status)} / ${processFlowBoard.completion_percent.toFixed(1)}%`
@@ -7090,7 +7193,7 @@ function AppShell() {
             {visibleControlView === "progress" && (
               <>
                 <div className="panelHeader">
-                  <h2>Progress Control</h2>
+                  <h2>Measuring Progress</h2>
                   <span>{dashboard.latest_progress_records.length} records</span>
                 </div>
                 <div className="workList">

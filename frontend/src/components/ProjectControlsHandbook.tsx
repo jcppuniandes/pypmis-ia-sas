@@ -147,7 +147,6 @@ function activityLabel(activity: ScheduleActivity | undefined) {
 }
 
 // Exported for deterministic tests; this is pure schedule-control data, not a React component.
-// eslint-disable-next-line react-refresh/only-export-components
 export function createDefaultScheduleControlData(projectId: number, projectCode: string): ScheduleControlData {
   const codeSeed = projectCode || "PROJECT";
   const wbsNodes: WBSNode[] = [
@@ -405,7 +404,6 @@ function resolvePredecessor<TActivity extends Pick<ScheduleActivity, "code" | "i
 }
 
 // Exported for deterministic tests; this is pure CPM logic, not a React component.
-// eslint-disable-next-line react-refresh/only-export-components
 export function calculateScheduleControlState(data: ScheduleControlData) {
   const projectStart = Math.min(...data.activities.map((activity) => dateValue(activity.plannedStart)).filter(Boolean));
   const normalizedStart = Number.isFinite(projectStart) ? projectStart : dateValue(data.dataDate);

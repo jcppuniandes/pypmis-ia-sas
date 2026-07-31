@@ -1140,6 +1140,18 @@ describe("served project control flow", () => {
 
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
     expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
+    const projectControlMacroprocess = within(validationNav).getByRole("button", {
+      name: "Project Control Manager",
+      exact: true,
+    });
+    const facilitiesAssetMacroprocess = within(validationNav).getByRole("button", {
+      name: "Facilities&Asset Manager",
+      exact: true,
+    });
+    expect(projectControlMacroprocess).toHaveAccessibleName("Project Control Manager");
+    expect(projectControlMacroprocess).toHaveAttribute("aria-expanded", "true");
+    expect(facilitiesAssetMacroprocess).toHaveAccessibleName("Facilities&Asset Manager");
+    expect(facilitiesAssetMacroprocess).toHaveAttribute("aria-expanded", "false");
     const scopeManagerModule = within(validationNav).getByRole("button", { name: /scope manager/i });
     expect(scopeManagerModule).toHaveAccessibleName("Scope Manager");
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "false");
@@ -1148,12 +1160,13 @@ describe("served project control flow", () => {
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "true");
     expect(within(validationNav).getByRole("button", { name: /bim manager/i })).toBeInTheDocument();
     [
-      "Project/Asset Workspace Manager",
+      "Project Workspace Manager",
       "Scope Manager",
       "Schedule Manager",
       "Cost Manager",
       "Risk Manager",
       "Procurement Manager",
+      "Progress&Performance Manager",
       "Resource Manager",
       "Claim Manager",
       "Portfolio Manager",
@@ -1165,6 +1178,13 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: /risk register/i }));
     expect(await screen.findByRole("region", { name: /risk register module/i })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: /current module guide/i })).not.toBeInTheDocument();
+    await user.click(facilitiesAssetMacroprocess);
+    ["Asset Workspace Manager", "Maintenance Manager", "Condition Assessment Manager"].forEach((moduleName) => {
+      expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
+    });
+    await user.click(within(validationNav).getByRole("button", { name: "Maintenance Manager", exact: true }));
+    await user.click(within(validationNav).getByRole("button", { name: "Service Request", exact: true }));
+    expect(await screen.findByRole("region", { name: /service request module/i })).toBeInTheDocument();
     const workspace = screen.getByRole("region", { name: /project workspace and control flow/i });
     const hideModuleRail = within(workspace).getByRole("button", { name: /ocultar barra de módulos/i });
     expect(hideModuleRail).toHaveAttribute("aria-expanded", "true");
@@ -1192,9 +1212,9 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("region", { name: /next controlled action/i })).not.toBeInTheDocument();
 
     const projectWorkspaceModule = within(validationNav).getByRole("button", {
-      name: /project\/asset workspace manager/i,
+      name: /^project workspace manager$/i,
     });
-    expect(projectWorkspaceModule).toHaveAccessibleName("Project/Asset Workspace Manager");
+    expect(projectWorkspaceModule).toHaveAccessibleName("Project Workspace Manager");
     await user.click(projectWorkspaceModule);
     await user.click(within(validationNav).getByRole("button", { name: /project creator/i }));
     const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
@@ -1388,7 +1408,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /project\/asset workspace manager/i }));
+    await user.click(screen.getByRole("button", { name: /^project workspace manager$/i }));
     await user.click(screen.getByRole("button", { name: /project creator/i }));
     const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
     await user.click(within(projectCreator).getByRole("button", { name: /delete project/i }));

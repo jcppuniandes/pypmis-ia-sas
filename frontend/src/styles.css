@@ -2834,6 +2834,65 @@ td span {
   text-transform: uppercase;
 }
 
+.navigatorMacroprocess {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.navigatorMacroprocessButton {
+  align-items: center;
+  background: #17212b;
+  border: 1px solid #17212b;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  justify-content: space-between;
+  min-height: 46px;
+  padding: 7px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.navigatorMacroprocessCopy {
+  display: block;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  min-width: 0;
+  text-transform: uppercase;
+}
+
+.navigatorMacroprocessButton svg {
+  flex: 0 0 auto;
+  transition: transform 160ms ease;
+}
+
+.navigatorMacroprocessButton svg.expanded {
+  transform: rotate(180deg);
+}
+
+.navigatorMacroprocess.active > .navigatorMacroprocessButton,
+.navigatorMacroprocessButton:hover,
+.navigatorMacroprocessButton:focus-visible {
+  background: #0b6f71;
+  border-color: #0b6f71;
+}
+
+.navigatorModuleList {
+  border-left: 2px solid #97c6c5;
+  display: grid;
+  gap: 5px;
+  margin: 0 0 5px 8px;
+  padding-left: 8px;
+}
+
+.navigatorModuleList[hidden] {
+  display: none;
+}
+
 .navigatorModule {
   display: grid;
   gap: 4px;
@@ -2880,6 +2939,7 @@ td span {
   border-color: #b9dcdb;
 }
 
+.navigatorMacroprocessButton:focus-visible,
 .navigatorModuleButton:focus-visible,
 .navigatorSubmoduleItem:focus-visible {
   outline: 3px solid rgba(15, 139, 141, 0.2);
@@ -7392,6 +7452,14 @@ td span {
     grid-column: 1 / -1;
   }
 
+  .navigatorMacroprocess {
+    grid-column: 1 / -1;
+  }
+
+  .navigatorModuleList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .navigatorItem {
     min-height: 46px;
   }
@@ -7693,6 +7761,10 @@ td span {
   }
 
   .navigatorRail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .navigatorModuleList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
