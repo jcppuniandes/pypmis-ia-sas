@@ -1140,6 +1140,11 @@ describe("served project control flow", () => {
 
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
     expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
+    const scopeManagerModule = within(validationNav).getByRole("button", { name: /scope manager/i });
+    expect(scopeManagerModule).toHaveAttribute("aria-expanded", "false");
+    expect(within(validationNav).queryByRole("button", { name: /bim manager/i })).not.toBeInTheDocument();
+    await user.click(scopeManagerModule);
+    expect(scopeManagerModule).toHaveAttribute("aria-expanded", "true");
     expect(within(validationNav).getByRole("button", { name: /bim manager/i })).toBeInTheDocument();
     const workspace = screen.getByRole("region", { name: /project workspace and control flow/i });
     const hideModuleRail = within(workspace).getByRole("button", { name: /ocultar barra de módulos/i });
@@ -1859,6 +1864,7 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("region", { name: /^quantity takeoff$/i })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/load bim\/ifc or excel quantities/i)).not.toBeInTheDocument();
 
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
     await user.click(screen.getByRole("button", { name: /bim manager/i }));
 
     const quantityPanel = await screen.findByRole("region", {
@@ -1893,6 +1899,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
     await user.click(screen.getByRole("button", { name: /bim manager/i }));
 
     const module = await screen.findByRole("region", { name: /bim manager module/i });
@@ -1948,6 +1955,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
     await user.click(screen.getByRole("button", { name: /bim manager/i }));
 
     const module = await screen.findByRole("region", { name: /bim manager module/i });
@@ -1997,6 +2005,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
     await user.click(screen.getByRole("button", { name: /bim manager/i }));
 
     const module = await screen.findByRole("region", { name: /bim manager module/i });
@@ -2032,6 +2041,7 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
     await user.click(screen.getByRole("button", { name: /bim manager/i }));
 
     const module = await screen.findByRole("region", { name: /bim manager module/i });

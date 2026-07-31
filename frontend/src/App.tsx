@@ -12,6 +12,7 @@ import {
 } from "react";
 import {
   Building2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Database,
@@ -96,7 +97,8 @@ import type {
 import LoginView from "./views/LoginView";
 
 const BIM_VIEWER_MODULE_RELOAD_KEY = "pypmis:bim-viewer-module-reload";
-const SCOPE_MANAGER_MODULE_LABEL = "BIM Manager";
+const SCOPE_MANAGER_MODULE_LABEL = "Scope Manager";
+const BIM_MANAGER_SUBMODULE_LABEL = "BIM Manager";
 
 function lazyWithModuleRecovery<TProps>(factory: () => Promise<{ default: ComponentType<TProps> }>) {
   return lazy(async () => {
@@ -194,6 +196,20 @@ type ControlFlowView =
   | "work-packages"
   | "admin";
 
+type NavigationViewItem = {
+  key: ControlFlowView;
+  label: string;
+  count: string | number;
+};
+
+type ModuleNavigationItem = {
+  key: string;
+  label: string;
+  count: string | number;
+  view?: ControlFlowView;
+  submodules?: NavigationViewItem[];
+};
+
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
 // running. Runtime default stays on; tests set VITE_FRONTEND_VALIDATION_MODE
 // to "false" (or the globalThis override, per test) to exercise both layouts.
@@ -223,6 +239,112 @@ const APU_SOURCE_OPTIONS = [
 
 function focusedControlView(view: ControlFlowView): ControlFlowView {
   return FRONTEND_VALIDATION_VIEWS.includes(view) ? view : "dashboard";
+}
+
+function buildModuleNavigationItems(items: NavigationViewItem[]): ModuleNavigationItem[] {
+  return items.map((item) =>
+    item.key === "quantity-takeoff"
+      ? {
+          key: "scope-manager",
+          label: SCOPE_MANAGER_MODULE_LABEL,
+          count: "1 submódulo",
+          submodules: [{ ...item, label: BIM_MANAGER_SUBMODULE_LABEL }],
+        }
+      : {
+          key: `module-${item.key}`,
+          label: item.label,
+          count: item.count,
+          view: item.key,
+        }
+  );
+}
+
+function ModuleNavigationItems({
+  activeView,
+  items,
+  onNavigate,
+}: {
+  activeView: ControlFlowView;
+  items: ModuleNavigationItem[];
+  onNavigate: (view: ControlFlowView) => void;
+}) {
+  const activeModuleKey = items.find((item) => item.submodules?.some((submodule) => submodule.key === activeView))?.key;
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() =>
+    activeModuleKey ? { [activeModuleKey]: true } : {}
+  );
+
+  useEffect(() => {
+    if (!activeModuleKey) return;
+    setExpandedModules((current) => (current[activeModuleKey] ? current : { ...current, [activeModuleKey]: true }));
+  }, [activeModuleKey]);
+
+  return items.map((item) => {
+    if (!item.submodules?.length) {
+      const itemActive = item.view === activeView;
+      return (
+        <button
+          aria-current={itemActive ? "page" : undefined}
+          className={itemActive ? "navigatorItem active" : "navigatorItem"}
+          key={item.key}
+          onClick={() => item.view && onNavigate(item.view)}
+          type="button"
+        >
+          <span>{item.label}</span>
+          <strong>{item.count}</strong>
+        </button>
+      );
+    }
+
+    const moduleActive = item.submodules.some((submodule) => submodule.key === activeView);
+    const moduleExpanded = expandedModules[item.key] ?? false;
+    const submoduleListId = `${item.key}-submodules`;
+
+    return (
+      <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={item.key}>
+        <button
+          aria-controls={submoduleListId}
+          aria-expanded={moduleExpanded}
+          className="navigatorModuleButton"
+          onClick={() =>
+            setExpandedModules((current) => ({
+              ...current,
+              [item.key]: !moduleExpanded,
+            }))
+          }
+          type="button"
+        >
+          <span className="navigatorModuleCopy">
+            <span>{item.label}</span>
+            <strong>{item.count}</strong>
+          </span>
+          <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
+        </button>
+        <div
+          aria-label={`Submódulos de ${item.label}`}
+          className="navigatorSubmoduleList"
+          hidden={!moduleExpanded}
+          id={submoduleListId}
+          role="group"
+        >
+          {item.submodules.map((submodule) => {
+            const submoduleActive = submodule.key === activeView;
+            return (
+              <button
+                aria-current={submoduleActive ? "page" : undefined}
+                className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
+                key={submodule.key}
+                onClick={() => onNavigate(submodule.key)}
+                type="button"
+              >
+                <span>{submodule.label}</span>
+                <strong>{submodule.count}</strong>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  });
 }
 
 function routeControlView(pathname: string): ControlFlowView | null {
@@ -3195,7 +3317,7 @@ function AppShell() {
     },
     {
       key: "quantity-takeoff",
-      label: SCOPE_MANAGER_MODULE_LABEL,
+      label: BIM_MANAGER_SUBMODULE_LABEL,
       count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
     },
     {
@@ -3229,7 +3351,7 @@ function AppShell() {
     { key: "opc-gap", label: "Diagnóstico de Control", count: `${opcGapAnalysis.readinessScore}%` },
     {
       key: "quantity-takeoff",
-      label: SCOPE_MANAGER_MODULE_LABEL,
+      label: BIM_MANAGER_SUBMODULE_LABEL,
       count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
     },
     {
@@ -3256,6 +3378,47 @@ function AppShell() {
     },
   ];
   const visibleControlFlowItems = FRONTEND_VALIDATION_MODE ? validationControlFlowItems : controlFlowItems;
+  const validationModuleNavigationItems = buildModuleNavigationItems(validationControlFlowItems);
+  const visibleModuleNavigationItems = buildModuleNavigationItems(visibleControlFlowItems);
+  const guidedToolNavigationItems = buildModuleNavigationItems([
+    {
+      key: "dashboard",
+      label: "Dashboard",
+      count: `${spiLabel} SPI`,
+    },
+    {
+      key: "process-flow",
+      label: "Process Flow",
+      count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
+    },
+    {
+      key: "schedule-control",
+      label: "Planning",
+      count: dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
+    },
+    {
+      key: "quantity-takeoff",
+      label: BIM_MANAGER_SUBMODULE_LABEL,
+      count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
+    },
+    {
+      key: "bim-budget",
+      label: "Presupuesto BIM",
+      count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
+    },
+    {
+      key: "apu-catalog",
+      label: "Base APU Colombia",
+      count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
+    },
+    { key: "costs", label: "Costs", count: dashboard.cost_sheet.length },
+    { key: "decisions", label: "Decisions", count: dashboard.changes.length },
+    {
+      key: "admin",
+      label: "Users & Roles",
+      count: dashboard.project_team.length,
+    },
+  ]);
   const activeModuleGuide = {
     admin: {
       action: "Create users, assign roles and configure project permissions.",
@@ -3288,7 +3451,7 @@ function AppShell() {
     "bim-budget": {
       action: bimBudgetSummary.rows.length
         ? "Revisar partidas, unidades, duplicados y trazabilidad antes de exportar el presupuesto."
-        : `Asignar partida APU y precio unitario desde ${SCOPE_MANAGER_MODULE_LABEL}.`,
+        : `Asignar partida APU y precio unitario desde ${BIM_MANAGER_SUBMODULE_LABEL}.`,
       objective:
         "Consolidar cantidades IFC en partidas presupuestales trazables a WBS, CBS, FBS y elementos del modelo.",
       state: `${bimBudgetSummary.rows.length} partida(s) / ${
@@ -3357,7 +3520,7 @@ function AppShell() {
       objective:
         "Convert BIM/Excel data into controlled physical quantity items with source evidence before package assignment.",
       state: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} quantity line(s)` : "Waiting for takeoff",
-      title: SCOPE_MANAGER_MODULE_LABEL,
+      title: BIM_MANAGER_SUBMODULE_LABEL,
     },
     "schedule-intake": {
       action: "Load P6 XML/XER, review data quality and confirm that Activity Sheet rows are controlled.",
@@ -3539,18 +3702,11 @@ function AppShell() {
                       <strong>Validacion actual</strong>
                       <span>Dashboard + BIM + APU + Claims</span>
                     </div>
-                    {validationControlFlowItems.map((item) => (
-                      <button
-                        aria-current={visibleControlView === item.key ? "page" : undefined}
-                        className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                        key={item.key}
-                        onClick={() => handleControlFlowNavigate(item.key)}
-                        type="button"
-                      >
-                        <span>{item.label}</span>
-                        <strong>{item.count}</strong>
-                      </button>
-                    ))}
+                    <ModuleNavigationItems
+                      activeView={visibleControlView}
+                      items={validationModuleNavigationItems}
+                      onNavigate={handleControlFlowNavigate}
+                    />
                   </nav>
                 ) : (
                   <>
@@ -3569,58 +3725,11 @@ function AppShell() {
                         <strong>Open when needed</strong>
                       </summary>
                       <div className="projectAdminBody">
-                        {[
-                          {
-                            key: "dashboard" as ControlFlowView,
-                            label: "Dashboard",
-                            count: `${spiLabel} SPI`,
-                          },
-                          {
-                            key: "process-flow" as ControlFlowView,
-                            label: "Process Flow",
-                            count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
-                          },
-                          {
-                            key: "schedule-control" as ControlFlowView,
-                            label: "Planning",
-                            count: dashboard.schedule_activity_count
-                              ? `${dashboard.schedule_activity_count} activities`
-                              : "open",
-                          },
-                          {
-                            key: "quantity-takeoff" as ControlFlowView,
-                            label: SCOPE_MANAGER_MODULE_LABEL,
-                            count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
-                          },
-                          {
-                            key: "bim-budget" as ControlFlowView,
-                            label: "Presupuesto BIM",
-                            count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
-                          },
-                          {
-                            key: "apu-catalog" as ControlFlowView,
-                            label: "Base APU Colombia",
-                            count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
-                          },
-                          { key: "costs" as ControlFlowView, label: "Costs", count: dashboard.cost_sheet.length },
-                          { key: "decisions" as ControlFlowView, label: "Decisions", count: dashboard.changes.length },
-                          {
-                            key: "admin" as ControlFlowView,
-                            label: "Users & Roles",
-                            count: dashboard.project_team.length,
-                          },
-                        ].map((item) => (
-                          <button
-                            aria-current={visibleControlView === item.key ? "page" : undefined}
-                            className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                            key={item.key}
-                            onClick={() => handleControlFlowNavigate(item.key)}
-                            type="button"
-                          >
-                            <span>{item.label}</span>
-                            <strong>{item.count}</strong>
-                          </button>
-                        ))}
+                        <ModuleNavigationItems
+                          activeView={visibleControlView}
+                          items={guidedToolNavigationItems}
+                          onNavigate={handleControlFlowNavigate}
+                        />
                       </div>
                     </details>
                   </>
@@ -3671,18 +3780,11 @@ function AppShell() {
                   <strong>{FRONTEND_VALIDATION_MODE ? "Validacion actual" : "Control Flow"}</strong>
                   <span>{FRONTEND_VALIDATION_MODE ? "Dashboard + BIM" : "Essential views"}</span>
                 </div>
-                {visibleControlFlowItems.map((item) => (
-                  <button
-                    aria-current={visibleControlView === item.key ? "page" : undefined}
-                    className={visibleControlView === item.key ? "navigatorItem active" : "navigatorItem"}
-                    key={item.key}
-                    onClick={() => handleControlFlowNavigate(item.key)}
-                    type="button"
-                  >
-                    <span>{item.label}</span>
-                    <strong>{item.count}</strong>
-                  </button>
-                ))}
+                <ModuleNavigationItems
+                  activeView={visibleControlView}
+                  items={visibleModuleNavigationItems}
+                  onNavigate={handleControlFlowNavigate}
+                />
                 {!FRONTEND_VALIDATION_MODE && (
                   <>
                     <div className="navigatorDivider">
@@ -5370,10 +5472,10 @@ function AppShell() {
               </section>
             )}
             {visibleControlView === "quantity-takeoff" && (
-              <section aria-label={`${SCOPE_MANAGER_MODULE_LABEL} Module`} className="quantityModule">
+              <section aria-label={`${BIM_MANAGER_SUBMODULE_LABEL} Module`} className="quantityModule">
                 <div className="panelHeader">
                   <h2>
-                    <Ruler size={20} /> {SCOPE_MANAGER_MODULE_LABEL}
+                    <Ruler size={20} /> {BIM_MANAGER_SUBMODULE_LABEL}
                   </h2>
                   <span>
                     {latestQuantityTakeoff?.validation_summary ??

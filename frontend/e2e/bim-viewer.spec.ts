@@ -15,6 +15,7 @@ test("BIM quantities module keeps one IFC viewer and one controlled quantity tab
 
   await expect(page.getByRole("region", { name: /project workspace and control flow/i })).toBeVisible();
 
+  await page.getByRole("button", { name: /scope manager/i }).click();
   await page.getByRole("button", { name: /bim manager/i }).click();
 
   await expect(page.getByRole("region", { name: /bim manager module/i })).toBeVisible();
