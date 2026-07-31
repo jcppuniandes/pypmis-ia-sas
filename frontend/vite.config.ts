@@ -5,6 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: ["frontend", "host.docker.internal"],
+    // El dev server corre en Docker con ./frontend montado desde Windows. Los
+    // eventos inotify no cruzan esa frontera: el archivo llega al contenedor
+    // pero el watcher no se entera, asi que no hay HMR ni rebuild. El polling
+    // es la unica forma de detectar los cambios del host.
+    watch: { usePolling: true, interval: 300 },
   },
   build: {
     // web-ifc is isolated behind the BIM module lazy import; this limit keeps
