@@ -5,8 +5,8 @@ type ProductLogoProps = {
 export default function ProductLogo({ compact = false }: ProductLogoProps) {
   return (
     <div className={compact ? "productLogo compact" : "productLogo"}>
-      <svg aria-label="Pypmis AI SaaS logo" className="productLogoMark" role="img" viewBox="0 0 64 64">
-        <title>Pypmis AI SaaS logo</title>
+      <svg aria-label="P&Pmis Construction AI logo" className="productLogoMark" role="img" viewBox="0 0 64 64">
+        <title>P&Pmis Construction AI logo</title>
         <defs>
           <linearGradient id="pypmisMarkGradient" x1="10" x2="54" y1="8" y2="56">
             <stop offset="0" stopColor="#10a6a8" />
@@ -23,7 +23,7 @@ export default function ProductLogo({ compact = false }: ProductLogoProps) {
         <circle cx="51" cy="28" fill="#d89b2b" r="4.2" />
       </svg>
       <div>
-        <strong>Pypmis AI SaaS</strong>
+        <strong>P&Pmis Construction AI</strong>
         {!compact && <span>Control Intelligence</span>}
       </div>
     </div>

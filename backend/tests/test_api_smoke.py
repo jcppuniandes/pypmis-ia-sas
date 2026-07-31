@@ -832,8 +832,11 @@ def test_integration_manifest_and_exports_are_read_only_and_membership_scoped() 
         assert "xl/worksheets/sheet2.xml" in workbook_names
         workbook_xml = workbook.read("xl/workbook.xml").decode("utf-8")
         summary_xml = workbook.read("xl/worksheets/sheet1.xml").decode("utf-8")
+        app_properties_xml = workbook.read("docProps/app.xml").decode("utf-8")
     assert "Summary" in workbook_xml
     assert "cost_sheet" in workbook_xml
+    assert "P&amp;Pmis Construction AI Integration Workbook" in summary_xml
+    assert "<Application>P&amp;Pmis Construction AI</Application>" in app_properties_xml
     assert "control_account_code" in summary_xml
     assert token_create_response.status_code == 200
     created_token = token_create_response.json()

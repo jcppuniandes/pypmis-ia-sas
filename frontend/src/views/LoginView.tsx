@@ -32,7 +32,7 @@ export default function LoginView() {
       <section className="loginPanel" aria-label="Authentication">
         <div className="loginBrand">
           <ProductLogo />
-          <h1>Pypmis AI SaaS</h1>
+          <h1>P&Pmis Construction AI</h1>
           <p>Project Controls, AWP and decision flow in one workspace.</p>
         </div>
 

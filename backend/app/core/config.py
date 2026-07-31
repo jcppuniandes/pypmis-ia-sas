@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Pypmis AI SaaS"
+    app_name: str = "P&Pmis Construction AI"
     app_environment: str = "local"
     app_version: str = "0.1.0"
     commit_sha: str = "dev"

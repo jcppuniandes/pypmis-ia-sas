@@ -1086,8 +1086,8 @@ describe("served project control flow", () => {
 
     const appBrand = screen.getByRole("banner", { name: /application brand/i });
     expect(appBrand).toBeInTheDocument();
-    expect(within(appBrand).getByRole("img", { name: /pypmis ai saas logo/i })).toBeInTheDocument();
-    expect(within(appBrand).getByText("Pypmis AI SaaS", { selector: "strong" })).toBeInTheDocument();
+    expect(within(appBrand).getByRole("img", { name: /p&pmis construction ai logo/i })).toBeInTheDocument();
+    expect(within(appBrand).getByText("P&Pmis Construction AI", { selector: "strong" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /project workspace and control flow/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /control dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();

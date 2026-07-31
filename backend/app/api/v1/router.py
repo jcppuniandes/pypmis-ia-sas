@@ -5392,7 +5392,7 @@ def _integration_rows_to_csv(rows: list[dict[str, object]], fields: list[str]) -
 def _integration_workbook_bytes(project: Project, generated_at: str, datasets: list[dict[str, object]]) -> bytes:
     sheets: list[dict[str, object]] = []
     summary_rows = [
-        ["Pypmis AI SaaS Integration Workbook"],
+        ["P&Pmis Construction AI Integration Workbook"],
         ["Project code", project.code],
         ["Project name", project.name],
         ["Generated at", generated_at],
@@ -5541,7 +5541,7 @@ def _xlsx_app_properties(sheet_names: list[str]) -> str:
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" '
         'xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'
-        "<Application>Pypmis AI SaaS</Application>"
+        "<Application>P&amp;Pmis Construction AI</Application>"
         '<HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant>'
         f"<vt:variant><vt:i4>{len(sheet_names)}</vt:i4></vt:variant></vt:vector></HeadingPairs>"
         f'<TitlesOfParts><vt:vector size="{len(sheet_names)}" baseType="lpstr">{titles}</vt:vector></TitlesOfParts>'
