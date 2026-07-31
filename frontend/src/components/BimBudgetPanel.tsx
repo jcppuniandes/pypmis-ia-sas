@@ -155,7 +155,7 @@ export default function BimBudgetPanel({
       package_code: row.packageCode,
       source_key: row.sourceKey,
       source_url: row.sourceUrl,
-      structure_note: "Estructura APU editada y recalculada desde Presupuesto BIM.",
+      structure_note: "Estructura APU editada y recalculada desde Budget.",
       structure_status: "user_edited",
       unit_rate: unitRate,
       wbs_code: row.wbsCode,
@@ -164,11 +164,11 @@ export default function BimBudgetPanel({
   }
 
   return (
-    <section aria-label="Presupuesto BIM" className="bimBudgetPanel workspaceSection">
+    <section aria-label="Budget" className="bimBudgetPanel workspaceSection">
       <div className="panelHeader">
         <div>
           <h2>
-            <TableProperties size={20} /> Presupuesto BIM
+            <TableProperties size={20} /> Budget
           </h2>
           <span>IFC → cantidad controlada → partida APU → presupuesto trazable</span>
         </div>
@@ -379,7 +379,7 @@ export default function BimBudgetPanel({
         </div>
       ) : (
         <div className="workspaceEmpty compactEmpty">
-          <strong>{summary.rows.length ? "No hay coincidencias" : "Presupuesto BIM pendiente"}</strong>
+          <strong>{summary.rows.length ? "No hay coincidencias" : "Budget pendiente"}</strong>
           <span>
             {summary.rows.length
               ? "Limpia el filtro para ver las partidas consolidadas."

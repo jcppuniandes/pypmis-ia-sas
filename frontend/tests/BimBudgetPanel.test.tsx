@@ -1,8 +1,10 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
 import BimBudgetPanel from "../src/components/BimBudgetPanel";
 import type { QuantityTakeoffLine } from "../src/types";
+
+afterEach(() => cleanup());
 
 const budgetLine: QuantityTakeoffLine = {
   id: 1,
@@ -76,7 +78,7 @@ describe("BimBudgetPanel", () => {
       />
     );
 
-    const panel = screen.getByRole("region", { name: /presupuesto bim/i });
+    const panel = screen.getByRole("region", { name: /budget/i });
     expect(within(panel).getByRole("status")).toHaveTextContent(/Presupuesto pendiente de completar/i);
     expect(within(panel).getByRole("status")).not.toHaveTextContent(/Bloqueado por calidad/i);
   });
@@ -95,8 +97,8 @@ describe("BimBudgetPanel", () => {
       />
     );
 
-    const panel = screen.getByRole("region", { name: /presupuesto bim/i });
-    expect(within(panel).getByRole("heading", { name: /presupuesto bim/i })).toBeInTheDocument();
+    const panel = screen.getByRole("region", { name: /budget/i });
+    expect(within(panel).getByRole("heading", { name: /budget/i })).toBeInTheDocument();
     expect(within(panel).getByText("APU-MUR-01")).toBeInTheDocument();
     expect(within(panel).getByText(/Muro en concreto/i)).toBeInTheDocument();
     expect(within(panel).getAllByText(/1.000.000/).length).toBeGreaterThan(0);
@@ -122,7 +124,7 @@ describe("BimBudgetPanel", () => {
       />
     );
 
-    const panel = screen.getByRole("region", { name: /presupuesto bim/i });
+    const panel = screen.getByRole("region", { name: /budget/i });
     await user.click(within(panel).getByRole("button", { name: /editar estructura apu-mur-01/i }));
     const rate = within(panel).getByLabelText(/precio recurso 1/i);
     await user.clear(rate);

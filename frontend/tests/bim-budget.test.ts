@@ -171,7 +171,7 @@ describe("BIM budget consolidation", () => {
       projectName: "Proyecto Piloto",
     });
 
-    expect(workbook).toContain("Presupuesto BIM");
+    expect(workbook).toContain("Budget");
     expect(workbook).toContain("APU-MUR-01");
     expect(workbook).toContain("GUID-1");
     expect(workbook).toContain("Costo directo");

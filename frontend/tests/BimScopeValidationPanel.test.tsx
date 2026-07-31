@@ -340,7 +340,7 @@ describe("BimScopeValidationPanel", () => {
     );
 
     const panel = screen.getByRole("region", { name: /tabla de cantidades controladas/i });
-    expect(within(panel).getByText(/Presupuesto BIM/i)).toBeInTheDocument();
+    expect(within(panel).getByText(/Budget/i)).toBeInTheDocument();
     expect(within(panel).getByText("$171")).toBeInTheDocument();
     expect(within(panel).getByText(/PART-CIV-001 \/ Montante fachada 50 x 150mm/i)).toBeInTheDocument();
     expect(within(panel).getByText(/2 ea x \$85.50 = \$171/i)).toBeInTheDocument();

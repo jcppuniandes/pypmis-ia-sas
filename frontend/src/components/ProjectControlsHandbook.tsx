@@ -280,7 +280,7 @@ export function createDefaultScheduleControlData(projectId: number, projectCode:
     delayEvents: [],
     module: {
       id: `schedule-control-${projectId}`,
-      name: "Planning Module",
+      name: "Schedule",
       projectId,
       status: "active",
     },
@@ -388,7 +388,7 @@ export function createScheduleControlDataFromSchedule({
     delayEvents: [],
     module: {
       id: `planning-${projectId}`,
-      name: "Planning Module",
+      name: "Schedule",
       projectId,
       status: scheduleActivities.length ? "imported" : "waiting_for_schedule",
     },
@@ -729,11 +729,11 @@ export default function ProjectControlsHandbook({
   }
 
   return (
-    <section aria-label="Planning Module" className="scheduleControlModule">
+    <section aria-label="Schedule" className="scheduleControlModule">
       <div className="panelHeader scheduleControlHeader">
         <div>
           <h2>
-            <CalendarDays size={20} /> Planning Module
+            <CalendarDays size={20} /> Schedule
           </h2>
           <span>
             {hasImportedSchedule ? "Imported schedule baseline" : "Schedule planning workspace"} / {projectCode}
@@ -771,7 +771,7 @@ export default function ProjectControlsHandbook({
         </article>
       </div>
 
-      <div className="scheduleControlTabs" role="tablist" aria-label="Planning module sections">
+      <div className="scheduleControlTabs" role="tablist" aria-label="Schedule sections">
         {sectionTabs.map((tab) => (
           <button
             aria-selected={section === tab.key}

@@ -178,15 +178,33 @@ function RequireAuth({ children }: { children: ReactNode }) {
 type ControlFlowView =
   | "dashboard"
   | "opc-gap"
+  | "project-creator"
   | "process-flow"
   | "setup"
+  | "scope-items"
+  | "plan-items"
   | "schedule-intake"
   | "schedule-control"
+  | "schedule-4d"
+  | "schedule-changes"
   | "quantity-takeoff"
   | "bim-budget"
+  | "estimates"
+  | "budget-changes"
+  | "budget-transfer"
   | "apu-catalog"
   | "claims-audit"
   | "window-analysis-37"
+  | "risk-register"
+  | "risk-evaluation-matrix"
+  | "risk-quantification-analysis"
+  | "contingency-quantification"
+  | "request-for-bid"
+  | "contracts"
+  | "purchase-order"
+  | "idea-creator"
+  | "strategic-investment-map"
+  | "strategic-evaluation-matrix"
   | "baseline"
   | "progress"
   | "costs"
@@ -199,16 +217,121 @@ type ControlFlowView =
 type NavigationViewItem = {
   key: ControlFlowView;
   label: string;
-  count: string | number;
+  count?: string | number;
 };
 
 type ModuleNavigationItem = {
   key: string;
   label: string;
-  count: string | number;
   view?: ControlFlowView;
   submodules?: NavigationViewItem[];
 };
+
+const MODULE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
+  {
+    key: "project-asset-workspace-manager",
+    label: "Project/Asset Workspace Manager",
+    submodules: [
+      { key: "project-creator", label: "Project Creator" },
+      { key: "setup", label: "Asset/Facilities Creator" },
+    ],
+  },
+  {
+    key: "scope-manager",
+    label: SCOPE_MANAGER_MODULE_LABEL,
+    submodules: [
+      { key: "quantity-takeoff", label: BIM_MANAGER_SUBMODULE_LABEL },
+      { key: "scope-items", label: "Scope Items" },
+      { key: "process-flow", label: "Path of Execution" },
+      { key: "plan-items", label: "Plan Items" },
+      { key: "work-packages", label: "Work Packages" },
+      { key: "decisions", label: "Scope Changes" },
+    ],
+  },
+  {
+    key: "schedule-manager",
+    label: "Schedule Manager",
+    submodules: [
+      { key: "schedule-intake", label: "Activity Sheet" },
+      { key: "schedule-control", label: "Schedule" },
+      { key: "schedule-4d", label: "4D Model" },
+      { key: "schedule-changes", label: "Schedule Changes" },
+    ],
+  },
+  {
+    key: "cost-manager",
+    label: "Cost Manager",
+    submodules: [
+      { key: "costs", label: "Cost Items" },
+      { key: "estimates", label: "Estimates" },
+      { key: "bim-budget", label: "Budget" },
+      { key: "integrated-control", label: "Fund" },
+      { key: "budget-changes", label: "Budget Changes" },
+      { key: "budget-transfer", label: "Budget Transfer" },
+    ],
+  },
+  {
+    key: "risk-manager",
+    label: "Risk Manager",
+    submodules: [
+      { key: "risk-register", label: "Risk Register" },
+      { key: "risk-evaluation-matrix", label: "Risk Evaluation Matrix" },
+      { key: "risk-quantification-analysis", label: "Risk Quantification Analysis" },
+      { key: "contingency-quantification", label: "Contingency Quantification" },
+    ],
+  },
+  {
+    key: "procurement-manager",
+    label: "Procurement Manager",
+    submodules: [
+      { key: "request-for-bid", label: "Request for Bid" },
+      { key: "contracts", label: "Contracts" },
+      { key: "purchase-order", label: "Purchase Order" },
+    ],
+  },
+  {
+    key: "resource-manager",
+    label: "Resource Manager",
+    submodules: [{ key: "apu-catalog", label: "Master Rate Sheet" }],
+  },
+  {
+    key: "claim-manager",
+    label: "Claim Manager",
+    submodules: [
+      { key: "claims-audit", label: "Reclamaciones" },
+      { key: "window-analysis-37", label: "Ventanas 3.7" },
+    ],
+  },
+  {
+    key: "portfolio-manager",
+    label: "Portfolio Manager",
+    submodules: [
+      { key: "idea-creator", label: "Idea Creator" },
+      { key: "strategic-investment-map", label: "Strategic Investment Map" },
+      { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
+    ],
+  },
+];
+
+const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
+  "scope-items",
+  "plan-items",
+  "schedule-4d",
+  "schedule-changes",
+  "estimates",
+  "budget-changes",
+  "budget-transfer",
+  "risk-register",
+  "risk-evaluation-matrix",
+  "risk-quantification-analysis",
+  "contingency-quantification",
+  "request-for-bid",
+  "contracts",
+  "purchase-order",
+  "idea-creator",
+  "strategic-investment-map",
+  "strategic-evaluation-matrix",
+]);
 
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
 // running. Runtime default stays on; tests set VITE_FRONTEND_VALIDATION_MODE
@@ -223,11 +346,7 @@ function frontendValidationMode(): boolean {
 const FRONTEND_VALIDATION_VIEWS: ControlFlowView[] = [
   "dashboard",
   "opc-gap",
-  "quantity-takeoff",
-  "bim-budget",
-  "apu-catalog",
-  "claims-audit",
-  "window-analysis-37",
+  ...MODULE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules?.map((item) => item.key) ?? []),
 ];
 const APU_SOURCE_OPTIONS = [
   { key: "", label: "Todas las fuentes" },
@@ -239,24 +358,6 @@ const APU_SOURCE_OPTIONS = [
 
 function focusedControlView(view: ControlFlowView): ControlFlowView {
   return FRONTEND_VALIDATION_VIEWS.includes(view) ? view : "dashboard";
-}
-
-function buildModuleNavigationItems(items: NavigationViewItem[]): ModuleNavigationItem[] {
-  return items.map((item) =>
-    item.key === "quantity-takeoff"
-      ? {
-          key: "scope-manager",
-          label: SCOPE_MANAGER_MODULE_LABEL,
-          count: "1 submódulo",
-          submodules: [{ ...item, label: BIM_MANAGER_SUBMODULE_LABEL }],
-        }
-      : {
-          key: `module-${item.key}`,
-          label: item.label,
-          count: item.count,
-          view: item.key,
-        }
-  );
 }
 
 function ModuleNavigationItems({
@@ -290,7 +391,6 @@ function ModuleNavigationItems({
           type="button"
         >
           <span>{item.label}</span>
-          <strong>{item.count}</strong>
         </button>
       );
     }
@@ -313,10 +413,7 @@ function ModuleNavigationItems({
           }
           type="button"
         >
-          <span className="navigatorModuleCopy">
-            <span>{item.label}</span>
-            <strong>{item.count}</strong>
-          </span>
+          <span className="navigatorModuleCopy">{item.label}</span>
           <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
         </button>
         <div
@@ -337,7 +434,7 @@ function ModuleNavigationItems({
                 type="button"
               >
                 <span>{submodule.label}</span>
-                <strong>{submodule.count}</strong>
+                {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
               </button>
             );
           })}
@@ -1729,7 +1826,7 @@ function AppShell() {
     try {
       if (operationalSetup?.readiness_status !== "ready") {
         if (!isSetupDraftReady(setupDraft)) {
-          throw new Error("Complete Project Setup before loading activity data");
+          throw new Error("Complete Asset/Facilities Creator before loading activity data");
         }
         const updatedSetup = await projectsApi.updateOperationalSetup(token, selectedProjectId, {
           ...setupDraft,
@@ -2065,9 +2162,7 @@ function AppShell() {
       });
       const updatedById = new Map(updatedLines.map((line) => [line.id, line]));
       setQuantityTakeoffLines((current) => current.map((line) => updatedById.get(line.id) ?? line));
-      setQuantityMessage(
-        `${updatedLines.length} linea(s) aprobadas en grupos APU. Ya estan disponibles en Presupuesto BIM.`
-      );
+      setQuantityMessage(`${updatedLines.length} linea(s) aprobadas en grupos APU. Ya estan disponibles en Budget.`);
     } catch (err) {
       if (isUnauthorizedApiError(err)) {
         logout();
@@ -3296,130 +3391,33 @@ function AppShell() {
   ];
   const forecastFundingRows = forecastFunding?.rows ?? [];
   const fundingAlerts = forecastFundingRows.filter((row) => row.forecast_vs_available < 0);
-  const controlFlowItems: Array<{ key: ControlFlowView; label: string; count: string | number }> = [
-    { key: "dashboard", label: "Dashboard", count: `${spiLabel} SPI` },
-    { key: "opc-gap", label: "Diagnóstico de Control", count: `${opcGapAnalysis.readinessScore}%` },
-    {
-      key: "process-flow",
-      label: "Process Flow",
-      count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
-    },
-    { key: "setup", label: "Project Setup", count: operationalSetup?.readiness_status === "ready" ? "ready" : "open" },
-    {
-      key: "schedule-intake",
-      label: "Schedule Intake",
-      count: activeImport ? `${dashboard.schedule_activity_count} activities` : "open",
-    },
-    {
-      key: "schedule-control",
-      label: "Planning",
-      count: dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
-    },
-    {
-      key: "quantity-takeoff",
-      label: BIM_MANAGER_SUBMODULE_LABEL,
-      count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
-    },
-    {
-      key: "bim-budget",
-      label: "Presupuesto BIM",
-      count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
-    },
-    {
-      key: "apu-catalog",
-      label: "Base APU Colombia",
-      count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
-    },
-    {
-      key: "window-analysis-37",
-      label: "Ventanas 3.7",
-      count: windowAnalysisResult ? `${windowAnalysisResult.windows.length} ventanas` : "open",
-    },
-    { key: "baseline", label: "Baseline", count: dashboard.schedule_activity_count },
-    { key: "progress", label: "Progress", count: dashboard.latest_progress_records.length },
-    { key: "costs", label: "Costs", count: dashboard.cost_sheet.length },
-    { key: "integrated-control", label: "Integrated Control", count: integratedMatrix.length },
-    { key: "decisions", label: "Decisions", count: dashboard.changes.length },
-    {
-      key: "evidence",
-      label: "Evidence",
-      count: `${dashboard.document_control_summary.controlled_document_score.toFixed(0)}%`,
-    },
-  ];
-  const validationControlFlowItems: Array<{ key: ControlFlowView; label: string; count: string | number }> = [
-    { key: "dashboard", label: "Dashboard", count: baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI` },
-    { key: "opc-gap", label: "Diagnóstico de Control", count: `${opcGapAnalysis.readinessScore}%` },
-    {
-      key: "quantity-takeoff",
-      label: BIM_MANAGER_SUBMODULE_LABEL,
-      count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
-    },
-    {
-      key: "bim-budget",
-      label: "Presupuesto BIM",
-      count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
-    },
-    {
-      key: "apu-catalog",
-      label: "Base APU Colombia",
-      count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
-    },
-    {
-      key: "claims-audit",
-      label: "Reclamaciones",
-      count: dashboard.claims_forensic_summary.total_claims
-        ? `${dashboard.claims_forensic_summary.total_claims} claims`
-        : "open",
-    },
-    {
-      key: "window-analysis-37",
-      label: "Ventanas 3.7",
-      count: windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
-    },
-  ];
-  const visibleControlFlowItems = FRONTEND_VALIDATION_MODE ? validationControlFlowItems : controlFlowItems;
-  const validationModuleNavigationItems = buildModuleNavigationItems(validationControlFlowItems);
-  const visibleModuleNavigationItems = buildModuleNavigationItems(visibleControlFlowItems);
-  const guidedToolNavigationItems = buildModuleNavigationItems([
-    {
-      key: "dashboard",
-      label: "Dashboard",
-      count: `${spiLabel} SPI`,
-    },
-    {
-      key: "process-flow",
-      label: "Process Flow",
-      count: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
-    },
-    {
-      key: "schedule-control",
-      label: "Planning",
-      count: dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
-    },
-    {
-      key: "quantity-takeoff",
-      label: BIM_MANAGER_SUBMODULE_LABEL,
-      count: latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
-    },
-    {
-      key: "bim-budget",
-      label: "Presupuesto BIM",
-      count: bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
-    },
-    {
-      key: "apu-catalog",
-      label: "Base APU Colombia",
-      count: colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
-    },
-    { key: "costs", label: "Costs", count: dashboard.cost_sheet.length },
-    { key: "decisions", label: "Decisions", count: dashboard.changes.length },
-    {
-      key: "admin",
-      label: "Users & Roles",
-      count: dashboard.project_team.length,
-    },
-  ]);
-  const activeModuleGuide = {
+  const navigationStatusByView: Partial<Record<ControlFlowView, string | number>> = {
+    "apu-catalog": colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
+    "bim-budget": bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
+    "claims-audit": dashboard.claims_forensic_summary.total_claims
+      ? `${dashboard.claims_forensic_summary.total_claims} claims`
+      : "open",
+    costs: dashboard.cost_sheet.length,
+    decisions: dashboard.changes.length,
+    "integrated-control": integratedMatrix.length,
+    "process-flow": processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}%` : "open",
+    "quantity-takeoff": latestQuantityTakeoff ? `${latestQuantityTakeoff.row_count} lines` : "open",
+    "schedule-control": dashboard.schedule_activity_count ? `${dashboard.schedule_activity_count} activities` : "open",
+    "schedule-intake": activeImport ? `${dashboard.schedule_activity_count} activities` : "open",
+    setup: operationalSetup?.readiness_status === "ready" ? "ready" : "open",
+    "window-analysis-37": windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
+    "work-packages": dashboard.awp_summary.total_packages,
+  };
+  const templateModuleNavigationItems = MODULE_NAVIGATION_BLUEPRINT.map((module) => ({
+    ...module,
+    submodules: module.submodules?.map((submodule) => ({
+      ...submodule,
+      count: navigationStatusByView[submodule.key],
+    })),
+  }));
+  const activeModuleGuide: Partial<
+    Record<ControlFlowView, { action: string; objective: string; state: string; title: string }>
+  > = {
     admin: {
       action: "Create users, assign roles and configure project permissions.",
       objective: "Control who can configure, load, approve and operate each project workflow.",
@@ -3431,13 +3429,13 @@ function AppShell() {
       objective:
         "Mantener visible la base APU Colombia que conecta cantidades BIM con partida, unidad y precio unitario.",
       state: colombiaApuCatalog.length ? `${colombiaApuCatalog.length} partida(s)` : "Sin sincronizar",
-      title: "Base APU Colombia",
+      title: "Master Rate Sheet",
     },
     "claims-audit": {
       action: "Cargar expediente, revisar señales contractuales y completar la matriz antes de presentar el claim.",
       objective: "Convertir soportes de reclamacion en registros auditables: claim, aviso, entitlement e impacto.",
       state: `${dashboard.claims_forensic_summary.total_claims} claim(s) / ${dashboard.claims_forensic_summary.forensic_readiness_score.toFixed(0)}% readiness`,
-      title: "Reclamaciones y Auditoria Forense",
+      title: "Reclamaciones",
     },
     "window-analysis-37": {
       action:
@@ -3446,7 +3444,7 @@ function AppShell() {
       state: windowAnalysisResult
         ? `${windowAnalysisResult.windows.length} ventana(s) / ${windowAnalysisResult.summary.net_delay_days ?? 0} dia(s) netos`
         : "Sin corrida",
-      title: "Analisis de Ventanas 3.7",
+      title: "Ventanas 3.7",
     },
     "bim-budget": {
       action: bimBudgetSummary.rows.length
@@ -3457,7 +3455,7 @@ function AppShell() {
       state: `${bimBudgetSummary.rows.length} partida(s) / ${
         bimBudgetSummary.gate === "ready" ? "listo" : bimBudgetSummary.gate === "review" ? "pendiente" : "bloqueado"
       }`,
-      title: "Presupuesto BIM",
+      title: "Budget",
     },
     baseline: {
       action: "Resolve cost/currency blocks, review quality findings and approve the controlled baseline.",
@@ -3469,7 +3467,7 @@ function AppShell() {
       action: "Review CBS, FBS, SOV, commitments, rates and funding exposure.",
       objective: "Keep cost and funding structures aligned to control accounts and business processes.",
       state: `${dashboard.cost_sheet.length} cost line(s)`,
-      title: "Costs",
+      title: "Cost Items",
     },
     dashboard: {
       action: "Use the Next Controlled Action panel to open the next blocked or review-required module.",
@@ -3489,7 +3487,7 @@ function AppShell() {
       action: "Review open changes and decisions before they affect baseline, cost or package release.",
       objective: "Track project control decisions with visible status and ownership.",
       state: `${dashboard.changes.length} decision(s)`,
-      title: "Decisions",
+      title: "Scope Changes",
     },
     evidence: {
       action: "Review controlled documents and closeout evidence readiness.",
@@ -3501,13 +3499,13 @@ function AppShell() {
       action: "Run recost, review BP permissions, export reconciliation and audit exceptions.",
       objective: "Reconcile schedule, cost, commitments, funding and governance in one control layer.",
       state: `${integratedMatrix.length} matrix row(s)`,
-      title: "Integrated Control",
+      title: "Fund",
     },
     "process-flow": {
       action: "Open the lane item that is blocked or review-required.",
       objective: "See the full project control process by role, gate, evidence and next action.",
       state: processFlowBoard ? `${processFlowBoard.completion_percent.toFixed(0)}% complete` : "Loading",
-      title: "Process Flow",
+      title: "Path of Execution",
     },
     progress: {
       action: "Capture progress against the approved baseline and control account structure.",
@@ -3526,7 +3524,7 @@ function AppShell() {
       action: "Load P6 XML/XER, review data quality and confirm that Activity Sheet rows are controlled.",
       objective: "Bring the schedule source into the controlled baseline and Activity Sheet workflow.",
       state: activeImport ? `${dashboard.schedule_activity_count} activities loaded` : "Waiting for XML/XER",
-      title: "Schedule Intake",
+      title: "Activity Sheet",
     },
     "schedule-control": {
       action: "Review WBS, baseline activities, CPM, progress, delays, lookahead constraints and recovery actions.",
@@ -3534,13 +3532,13 @@ function AppShell() {
       state: dashboard.schedule_activity_count
         ? `${dashboard.schedule_activity_count} imported activities`
         : "Waiting for schedule",
-      title: "Planning Module",
+      title: "Schedule",
     },
     setup: {
       action: "Confirm operational readiness and maintain the WBS catalog before downstream loads.",
       objective: "Prepare project identity, roles, modules, cost/funding sheets and WBS controls.",
       state: operationalSetup?.readiness_status === "ready" ? "Ready" : "Open",
-      title: "Project Setup",
+      title: "Asset/Facilities Creator",
     },
     "work-packages": {
       action: "Create or review package drafts and clear blocking constraints.",
@@ -3548,7 +3546,27 @@ function AppShell() {
       state: `${dashboard.awp_summary.total_packages} package(s)`,
       title: "Work Packages",
     },
-  } satisfies Record<ControlFlowView, { action: string; objective: string; state: string; title: string }>;
+    "project-creator": {
+      action: "Crear un proyecto o administrar el proyecto seleccionado.",
+      objective: "Crear y mantener los espacios de trabajo de proyectos y activos.",
+      state: `${projectList.length} project(s) available`,
+      title: "Project Creator",
+    },
+  };
+  const activeTemplateSubmodule = MODULE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules ?? []).find(
+    (submodule) => submodule.key === visibleControlView
+  );
+  const currentModuleGuide =
+    activeModuleGuide[visibleControlView] ??
+    (activeTemplateSubmodule
+      ? {
+          action: "",
+          objective: "",
+          state: "",
+          title: activeTemplateSubmodule.label,
+        }
+      : activeModuleGuide.dashboard!);
+  const emptySubmoduleActive = EMPTY_SUBMODULE_VIEWS.has(visibleControlView);
   const formallyLinkedControlRows = wbsTraceabilityRows.filter(
     (row) => row.costCode !== "Cost code pending" && row.fbsCode !== "FBS pending"
   ).length;
@@ -3700,79 +3718,124 @@ function AppShell() {
                   <nav className="navigatorRail" aria-label="Validation focus">
                     <div className="navigatorHeader">
                       <strong>Validacion actual</strong>
-                      <span>Dashboard + BIM + APU + Claims</span>
+                      <span>Workspace + módulos configurables</span>
+                    </div>
+                    <button
+                      aria-current={visibleControlView === "dashboard" ? "page" : undefined}
+                      className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
+                      onClick={() => handleControlFlowNavigate("dashboard")}
+                      type="button"
+                    >
+                      <span>Dashboard</span>
+                      <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
+                    </button>
+                    <button
+                      aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
+                      className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
+                      onClick={() => handleControlFlowNavigate("opc-gap")}
+                      type="button"
+                    >
+                      <span>Diagnóstico de Control</span>
+                      <strong>{opcGapAnalysis.readinessScore}%</strong>
+                    </button>
+                    <div className="navigatorDivider">
+                      <span>Módulos</span>
                     </div>
                     <ModuleNavigationItems
                       activeView={visibleControlView}
-                      items={validationModuleNavigationItems}
+                      items={templateModuleNavigationItems}
                       onNavigate={handleControlFlowNavigate}
                     />
                   </nav>
                 ) : (
                   <>
+                    <nav className="navigatorRail" aria-label="Control Flow">
+                      <div className="navigatorHeader">
+                        <strong>Control Flow</strong>
+                        <span>Workspace + módulos configurables</span>
+                      </div>
+                      <button
+                        aria-current={visibleControlView === "dashboard" ? "page" : undefined}
+                        className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
+                        onClick={() => handleControlFlowNavigate("dashboard")}
+                        type="button"
+                      >
+                        <span>Dashboard</span>
+                        <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
+                      </button>
+                      <button
+                        aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
+                        className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
+                        onClick={() => handleControlFlowNavigate("opc-gap")}
+                        type="button"
+                      >
+                        <span>Diagnóstico de Control</span>
+                        <strong>{opcGapAnalysis.readinessScore}%</strong>
+                      </button>
+                      <div className="navigatorDivider">
+                        <span>Módulos</span>
+                      </div>
+                      <ModuleNavigationItems
+                        activeView={visibleControlView}
+                        items={templateModuleNavigationItems}
+                        onNavigate={handleControlFlowNavigate}
+                      />
+                      <div className="navigatorDivider">
+                        <span>Advanced</span>
+                      </div>
+                      <button
+                        aria-current={visibleControlView === "admin" ? "page" : undefined}
+                        className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
+                        onClick={() => handleControlFlowNavigate("admin")}
+                        type="button"
+                      >
+                        <span>Users &amp; Roles</span>
+                        <strong>{dashboard.project_team.length}</strong>
+                      </button>
+                    </nav>
                     <GuidedProcessRail
                       activeKey={guidedRailActiveKey}
                       steps={guidedFlow.steps}
                       onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
                     />
-                    <details
-                      className="projectAdminDetails projectToolsDetails"
-                      role="group"
-                      aria-label="Project tools"
-                    >
-                      <summary>
-                        <span>Tools and reports</span>
-                        <strong>Open when needed</strong>
-                      </summary>
-                      <div className="projectAdminBody">
-                        <ModuleNavigationItems
-                          activeView={visibleControlView}
-                          items={guidedToolNavigationItems}
-                          onNavigate={handleControlFlowNavigate}
-                        />
-                      </div>
-                    </details>
                   </>
                 )}
-                <details
-                  className="projectAdminDetails"
-                  open={FRONTEND_VALIDATION_MODE}
-                  role="group"
-                  aria-label="Administrative actions"
-                >
-                  <summary>
-                    <span>
-                      <Building2 size={16} /> Proyecto
-                    </span>
-                    <strong>Crear o borrar proyectos</strong>
-                  </summary>
-                  <div className="projectAdminBody">
-                    <div className="projectCurrentProject">
-                      <span>Selected project</span>
-                      <strong>{project.code}</strong>
-                      <small>{projectList.length} projects available</small>
+                {!FRONTEND_VALIDATION_MODE && (
+                  <details className="projectAdminDetails" role="group" aria-label="Administrative actions">
+                    <summary>
+                      <span>
+                        <Building2 size={16} /> Proyecto
+                      </span>
+                      <strong>Crear o borrar proyectos</strong>
+                    </summary>
+                    <div className="projectAdminBody">
+                      <div className="projectCurrentProject">
+                        <span>Selected project</span>
+                        <strong>{project.code}</strong>
+                        <small>{projectList.length} projects available</small>
+                      </div>
+                      <button
+                        className="workflowAction"
+                        disabled={!canConfigure}
+                        onClick={() => setProjectDrawerOpen(true)}
+                        type="button"
+                      >
+                        New Project
+                      </button>
+                      <button
+                        className="workflowAction subtleDanger"
+                        disabled={!canConfigure || projectDeleteAction}
+                        onClick={handleProjectDelete}
+                        type="button"
+                      >
+                        <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
+                      </button>
+                      <p className="projectHint">
+                        Project creation and deletion are administrative actions, separated from the daily control flow.
+                      </p>
                     </div>
-                    <button
-                      className="workflowAction"
-                      disabled={!canConfigure}
-                      onClick={() => setProjectDrawerOpen(true)}
-                      type="button"
-                    >
-                      New Project
-                    </button>
-                    <button
-                      className="workflowAction subtleDanger"
-                      disabled={!canConfigure || projectDeleteAction}
-                      onClick={handleProjectDelete}
-                      type="button"
-                    >
-                      <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
-                    </button>
-                    <p className="projectHint">
-                      Project creation and deletion are administrative actions, separated from the daily control flow.
-                    </p>
-                  </div>
-                </details>
+                  </details>
+                )}
               </>
             ) : (
               <aside className="navigatorRail" aria-label="Control Flow">
@@ -3780,9 +3843,30 @@ function AppShell() {
                   <strong>{FRONTEND_VALIDATION_MODE ? "Validacion actual" : "Control Flow"}</strong>
                   <span>{FRONTEND_VALIDATION_MODE ? "Dashboard + BIM" : "Essential views"}</span>
                 </div>
+                <button
+                  aria-current={visibleControlView === "dashboard" ? "page" : undefined}
+                  className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
+                  onClick={() => handleControlFlowNavigate("dashboard")}
+                  type="button"
+                >
+                  <span>Dashboard</span>
+                  <strong>{spiLabel} SPI</strong>
+                </button>
+                <button
+                  aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
+                  className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
+                  onClick={() => handleControlFlowNavigate("opc-gap")}
+                  type="button"
+                >
+                  <span>Diagnóstico de Control</span>
+                  <strong>{opcGapAnalysis.readinessScore}%</strong>
+                </button>
+                <div className="navigatorDivider">
+                  <span>Módulos</span>
+                </div>
                 <ModuleNavigationItems
                   activeView={visibleControlView}
-                  items={visibleModuleNavigationItems}
+                  items={templateModuleNavigationItems}
                   onNavigate={handleControlFlowNavigate}
                 />
                 {!FRONTEND_VALIDATION_MODE && (
@@ -3790,15 +3874,6 @@ function AppShell() {
                     <div className="navigatorDivider">
                       <span>Advanced</span>
                     </div>
-                    <button
-                      aria-current={visibleControlView === "work-packages" ? "page" : undefined}
-                      className={visibleControlView === "work-packages" ? "navigatorItem active" : "navigatorItem"}
-                      onClick={() => handleControlFlowNavigate("work-packages")}
-                      type="button"
-                    >
-                      <span>Work Packages</span>
-                      <strong>{dashboard.awp_summary.total_packages}</strong>
-                    </button>
                     <button
                       aria-current={visibleControlView === "admin" ? "page" : undefined}
                       className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
@@ -4086,34 +4161,78 @@ function AppShell() {
             />
           )}
 
-          <section className="moduleGuide" aria-label="Current module guide">
-            <div className="moduleGuideIntro">
-              <span>Current module</span>
-              <strong className="moduleGuideTitle">{activeModuleGuide[visibleControlView].title}</strong>
-              <p>{activeModuleGuide[visibleControlView].objective}</p>
-            </div>
-            <div className="moduleGuideFacts">
-              <article>
-                <span>Status</span>
-                <strong>{activeModuleGuide[visibleControlView].state}</strong>
-              </article>
-              <article>
-                <span>Next action</span>
-                <strong>{activeModuleGuide[visibleControlView].action}</strong>
-              </article>
-            </div>
-          </section>
+          {!emptySubmoduleActive && (
+            <section className="moduleGuide" aria-label="Current module guide">
+              <div className="moduleGuideIntro">
+                <span>Current module</span>
+                <strong className="moduleGuideTitle">{currentModuleGuide.title}</strong>
+                <p>{currentModuleGuide.objective}</p>
+              </div>
+              <div className="moduleGuideFacts">
+                <article>
+                  <span>Status</span>
+                  <strong>{currentModuleGuide.state}</strong>
+                </article>
+                <article>
+                  <span>Next action</span>
+                  <strong>{currentModuleGuide.action}</strong>
+                </article>
+              </div>
+            </section>
+          )}
 
           <section aria-live="polite" className="viewPanel workspaceSection" id="control-flow-content">
             {visibleControlView === "opc-gap" && <OpcGapReadinessPanel analysis={opcGapAnalysis} />}
 
+            {visibleControlView === "project-creator" && (
+              <section aria-label="Project Creator Module" className="projectCreatorModule">
+                <div className="panelHeader">
+                  <h2>
+                    <Building2 size={20} /> Project Creator
+                  </h2>
+                  <span>{projectList.length} projects available</span>
+                </div>
+                <div className="projectCreatorWorkspace">
+                  <article className="projectCreatorCurrent">
+                    <span>Selected project</span>
+                    <strong>{project.code}</strong>
+                    <small>{project.name}</small>
+                  </article>
+                  <div className="projectCreatorActions">
+                    <button
+                      className="workflowAction"
+                      disabled={!canConfigure}
+                      onClick={() => setProjectDrawerOpen(true)}
+                      type="button"
+                    >
+                      New Project
+                    </button>
+                    <button
+                      className="workflowAction subtleDanger"
+                      disabled={!canConfigure || projectDeleteAction}
+                      onClick={handleProjectDelete}
+                      type="button"
+                    >
+                      <Trash2 size={15} /> {projectDeleteAction ? "Deleting..." : "Delete Project"}
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {emptySubmoduleActive && activeTemplateSubmodule ? (
+              <section aria-label={`${activeTemplateSubmodule.label} Module`} className="emptySubmoduleScreen">
+                <h2>{activeTemplateSubmodule.label}</h2>
+              </section>
+            ) : null}
+
             {visibleControlView === "schedule-intake" && (
-              <section className="scheduleGate scheduleIntakeModule" aria-label="Schedule Intake">
+              <section className="scheduleGate scheduleIntakeModule" aria-label="Activity Sheet">
                 <div className="gateHeader">
                   <div className="gateIntro">
                     <GitBranch size={20} />
                     <div>
-                      <strong>Schedule Intake</strong>
+                      <strong>Activity Sheet</strong>
                       <span>Upload the source XML/XER to open the Data Quality Gate and baseline workflow.</span>
                     </div>
                   </div>
@@ -4264,7 +4383,7 @@ function AppShell() {
             {visibleControlView === "process-flow" && (
               <>
                 <div className="panelHeader">
-                  <h2>BPM Process Flow</h2>
+                  <h2>Path of Execution</h2>
                   <span>
                     {processFlowBoard
                       ? `${statusLabel(processFlowBoard.overall_status)} / ${processFlowBoard.completion_percent.toFixed(1)}%`
@@ -4325,7 +4444,7 @@ function AppShell() {
             {visibleControlView === "setup" && (
               <>
                 <div className="panelHeader">
-                  <h2>Project Setup</h2>
+                  <h2>Asset/Facilities Creator</h2>
                   <span>{operationalSetup?.readiness_status === "ready" ? "Ready" : "Open"}</span>
                 </div>
                 <section aria-label="WBS Structure" className="panel wide wbsStructurePanel">
@@ -4800,10 +4919,10 @@ function AppShell() {
               </>
             )}
             {visibleControlView === "apu-catalog" && (
-              <section aria-label="Base de datos APU Colombia Module" className="quantityModule">
+              <section aria-label="Master Rate Sheet Module" className="quantityModule">
                 <div className="panelHeader">
                   <h2>
-                    <Database size={20} /> Base APU Colombia
+                    <Database size={20} /> Master Rate Sheet
                   </h2>
                   <span>
                     Base gratuita sincronizable con DataCauca, INVIAS e IDU para revisar partidas antes de sugerir APU
@@ -5010,10 +5129,10 @@ function AppShell() {
               </section>
             )}
             {visibleControlView === "claims-audit" && (
-              <section aria-label="Reclamaciones y Auditoria Forense Module" className="quantityModule">
+              <section aria-label="Reclamaciones Module" className="quantityModule">
                 <div className="panelHeader">
                   <h2>
-                    <FileSearch size={20} /> Reclamaciones y Auditoria Forense
+                    <FileSearch size={20} /> Reclamaciones
                   </h2>
                   <span>
                     Convierte expedientes contractuales en claim, aviso, matriz de entitlement e impacto auditable.
@@ -5192,10 +5311,10 @@ function AppShell() {
               </section>
             )}
             {visibleControlView === "window-analysis-37" && (
-              <section aria-label="Analisis de Ventanas 3.7 Module" className="quantityModule">
+              <section aria-label="Ventanas 3.7 Module" className="quantityModule">
                 <div className="panelHeader">
                   <h2>
-                    <GitBranch size={20} /> Analisis de Ventanas 3.7
+                    <GitBranch size={20} /> Ventanas 3.7
                   </h2>
                   <span>
                     Compara multiples bases o actualizaciones CPM bajo AACE RP29R MIP 3.7 para detectar ventanas,
@@ -5744,8 +5863,8 @@ function AppShell() {
             {visibleControlView === "integrated-control" && (
               <>
                 <div className="panelHeader">
-                  <h2>Mapa WBS-CBS-FBS</h2>
-                  <span>{integratedMatrix.length} trace rows</span>
+                  <h2>Fund</h2>
+                  <span>{integratedMatrix.length} WBS-CBS-FBS trace rows</span>
                 </div>
                 <section className="moduleGuide" aria-label="CBS FBS relation guide">
                   <strong className="moduleGuideTitle">Como se vincula WBS, CBS y FBS</strong>
@@ -6998,7 +7117,7 @@ function AppShell() {
             {visibleControlView === "costs" && (
               <>
                 <div className="panelHeader">
-                  <h2>Cost Control</h2>
+                  <h2>Cost Items</h2>
                   <span>
                     {costFundingTraceabilityRows.length} linked row(s) / {currency(totalFunding, project.currency)}{" "}
                     funding
@@ -7075,7 +7194,7 @@ function AppShell() {
             {visibleControlView === "decisions" && (
               <>
                 <div className="panelHeader">
-                  <h2>Decision Register</h2>
+                  <h2>Scope Changes</h2>
                   <span>{dashboard.changes.length} changes</span>
                 </div>
                 <div className="workList">
@@ -7152,7 +7271,7 @@ function AppShell() {
             {visibleControlView === "work-packages" && (
               <>
                 <div className="panelHeader">
-                  <h2>AWP Minimum Register</h2>
+                  <h2>Work Packages</h2>
                   <span>
                     {dashboard.awp_summary.cwp_count} CWP / {dashboard.awp_summary.iwp_count} IWP /{" "}
                     {dashboard.awp_summary.twp_count} TWP / {dashboard.awp_summary.top_count} TOP

@@ -644,7 +644,7 @@ export default function BimScopeValidationPanel({
           <small>Cantidad total menos cantidad asignada a paquete.</small>
         </article>
         <article>
-          <span>Presupuesto BIM</span>
+          <span>Budget</span>
           <strong>{formatCurrency(bimBudgetAmount, bimBudgetCurrency)}</strong>
           <small>{budgetedCandidates.length} grupo(s) con partida/APU y precio unitario.</small>
         </article>

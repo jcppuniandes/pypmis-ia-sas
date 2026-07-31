@@ -2857,20 +2857,10 @@ td span {
 }
 
 .navigatorModuleCopy {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.navigatorModuleCopy span {
+  display: block;
   font-size: 13px;
   font-weight: 800;
-}
-
-.navigatorModuleCopy strong {
-  color: #667481;
-  font-size: 10px;
-  text-transform: uppercase;
+  min-width: 0;
 }
 
 .navigatorModuleButton svg {
@@ -2940,6 +2930,55 @@ td span {
   background: #e5f4f4;
   border-color: #9fcecd;
   color: #0b6f71;
+}
+
+.emptySubmoduleScreen {
+  background: #ffffff;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  min-height: 520px;
+  padding: 20px;
+}
+
+.emptySubmoduleScreen h2 {
+  color: #17212b;
+  font-size: 18px;
+  margin: 0;
+}
+
+.projectCreatorModule {
+  display: grid;
+  gap: 16px;
+}
+
+.projectCreatorWorkspace {
+  align-items: end;
+  background: #f7f9fa;
+  border: 1px solid #d8dee5;
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.projectCreatorCurrent {
+  display: grid;
+  gap: 4px;
+}
+
+.projectCreatorCurrent span,
+.projectCreatorCurrent small {
+  color: #667481;
+}
+
+.projectCreatorCurrent strong {
+  font-size: 18px;
+}
+
+.projectCreatorActions {
+  display: flex;
+  gap: 10px;
 }
 
 .navigatorToggle {

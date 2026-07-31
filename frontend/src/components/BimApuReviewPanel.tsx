@@ -96,7 +96,7 @@ export default function BimApuReviewPanel({
             <CheckCheck size={16} /> Aprobar grupos seleccionados
           </button>
           <button className="workflowAction" onClick={onOpenBudget} type="button">
-            Abrir Presupuesto BIM
+            Abrir Budget
           </button>
         </div>
       </div>

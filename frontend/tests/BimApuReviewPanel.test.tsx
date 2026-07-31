@@ -82,7 +82,7 @@ describe("BimApuReviewPanel", () => {
     await user.click(within(panel).getByRole("button", { name: /aprobar grupos seleccionados/i }));
 
     expect(onApproveLines).toHaveBeenCalledWith([1]);
-    await user.click(within(panel).getByRole("button", { name: /abrir presupuesto bim/i }));
+    await user.click(within(panel).getByRole("button", { name: /abrir budget/i }));
     expect(onOpenBudget).toHaveBeenCalledTimes(1);
   });
 

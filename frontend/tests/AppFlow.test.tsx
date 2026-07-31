@@ -1103,7 +1103,7 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("heading", { name: /workload by area/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: /cbs cost codes/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: /fbs funding codes/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /costs/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^cost manager$/i })).toBeInTheDocument();
     const guidedRail = screen.getByRole("complementary", { name: /project information flow/i });
     const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
     expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
@@ -1141,11 +1141,30 @@ describe("served project control flow", () => {
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
     expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
     const scopeManagerModule = within(validationNav).getByRole("button", { name: /scope manager/i });
+    expect(scopeManagerModule).toHaveAccessibleName("Scope Manager");
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "false");
     expect(within(validationNav).queryByRole("button", { name: /bim manager/i })).not.toBeInTheDocument();
     await user.click(scopeManagerModule);
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "true");
     expect(within(validationNav).getByRole("button", { name: /bim manager/i })).toBeInTheDocument();
+    [
+      "Project/Asset Workspace Manager",
+      "Scope Manager",
+      "Schedule Manager",
+      "Cost Manager",
+      "Risk Manager",
+      "Procurement Manager",
+      "Resource Manager",
+      "Claim Manager",
+      "Portfolio Manager",
+    ].forEach((moduleName) => {
+      expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
+    });
+    const riskManagerModule = within(validationNav).getByRole("button", { name: "Risk Manager", exact: true });
+    await user.click(riskManagerModule);
+    await user.click(within(validationNav).getByRole("button", { name: /risk register/i }));
+    expect(await screen.findByRole("region", { name: /risk register module/i })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: /current module guide/i })).not.toBeInTheDocument();
     const workspace = screen.getByRole("region", { name: /project workspace and control flow/i });
     const hideModuleRail = within(workspace).getByRole("button", { name: /ocultar barra de módulos/i });
     expect(hideModuleRail).toHaveAttribute("aria-expanded", "true");
@@ -1157,18 +1176,11 @@ describe("served project control flow", () => {
     await user.click(showModuleRail);
     expect(workspace).not.toHaveClass("moduleRailCollapsed");
     expect(within(workspace).getByRole("navigation", { name: /validation focus/i })).toBeInTheDocument();
-    [
-      /process flow/i,
-      /planning/i,
-      /costs/i,
-      /decisions/i,
-      /users & roles/i,
-      /work packages/i,
-      /baseline/i,
-      /schedule intake/i,
-    ].forEach((hiddenLabel) => {
-      expect(within(validationNav).queryByRole("button", { name: hiddenLabel })).not.toBeInTheDocument();
-    });
+    [/process flow/i, /planning/i, /costs/i, /decisions/i, /users & roles/i, /baseline/i, /schedule intake/i].forEach(
+      (hiddenLabel) => {
+        expect(within(validationNav).queryByRole("button", { name: hiddenLabel })).not.toBeInTheDocument();
+      }
+    );
 
     const commandBar = screen.getByRole("banner", { name: /tenant command bar/i });
     expect(within(commandBar).getByText(/proyectos asignados/i)).toBeInTheDocument();
@@ -1179,10 +1191,15 @@ describe("served project control flow", () => {
 
     expect(screen.queryByRole("region", { name: /next controlled action/i })).not.toBeInTheDocument();
 
-    const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
-    expect(within(projectAdmin).getByText(/^Proyecto$/i)).toBeInTheDocument();
-    expect(within(projectAdmin).getByRole("button", { name: /new project/i })).toBeInTheDocument();
-    expect(within(projectAdmin).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
+    const projectWorkspaceModule = within(validationNav).getByRole("button", {
+      name: /project\/asset workspace manager/i,
+    });
+    expect(projectWorkspaceModule).toHaveAccessibleName("Project/Asset Workspace Manager");
+    await user.click(projectWorkspaceModule);
+    await user.click(within(validationNav).getByRole("button", { name: /project creator/i }));
+    const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
+    expect(within(projectCreator).getByRole("button", { name: /new project/i })).toBeInTheDocument();
+    expect(within(projectCreator).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
 
     await user.click(within(validationNav).getByRole("button", { name: /bim manager/i }));
     expect(await screen.findByRole("region", { name: /bim manager module/i })).toBeInTheDocument();
@@ -1371,8 +1388,10 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    const projectAdmin = screen.getByRole("group", { name: /administrative actions/i });
-    await user.click(within(projectAdmin).getByRole("button", { name: /delete project/i }));
+    await user.click(screen.getByRole("button", { name: /project\/asset workspace manager/i }));
+    await user.click(screen.getByRole("button", { name: /project creator/i }));
+    const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
+    await user.click(within(projectCreator).getByRole("button", { name: /delete project/i }));
 
     await waitFor(() => {
       expect(deleteProject).toHaveBeenCalledWith("tok", 1);
@@ -1541,11 +1560,13 @@ describe("served project control flow", () => {
     );
     expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /costs/i }));
-    expect(screen.getByRole("heading", { name: /cost control/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /cost manager/i }));
+    await user.click(screen.getByRole("button", { name: /cost items/i }));
+    expect(screen.getByRole("heading", { name: /cost items/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /decisions/i }));
-    expect(screen.getByRole("heading", { name: /decision register/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
+    await user.click(screen.getByRole("button", { name: /scope changes/i }));
+    expect(screen.getByRole("heading", { name: /scope changes/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /dashboard/i }));
     expect(screen.getByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
@@ -1558,7 +1579,7 @@ describe("served project control flow", () => {
     expect(screen.getByRole("heading", { name: /baseline control/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /open awp packages/i }));
-    expect(screen.getByRole("heading", { name: /awp minimum register/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /work packages/i })).toBeInTheDocument();
   });
 
   it("keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability", async () => {
@@ -1589,7 +1610,8 @@ describe("served project control flow", () => {
     expect(screen.queryByRole("heading", { name: /cbs cost codes/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: /fbs funding codes/i })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /costs/i }));
+    await user.click(screen.getByRole("button", { name: /cost manager/i }));
+    await user.click(screen.getByRole("button", { name: /cost items/i }));
 
     const traceability = await screen.findByRole("region", { name: /cost and funding traceability/i });
     expect(within(traceability).getByRole("heading", { name: /cost and funding traceability/i })).toBeInTheDocument();
@@ -1610,9 +1632,9 @@ describe("served project control flow", () => {
     );
 
     const module = await screen.findByRole("region", {
-      name: /planning module/i,
+      name: /^schedule$/i,
     });
-    expect(within(module).getByRole("heading", { name: /planning module/i })).toBeInTheDocument();
+    expect(within(module).getByRole("heading", { name: /^schedule$/i })).toBeInTheDocument();
     expect(within(module).getByRole("tab", { name: /wbs/i })).toBeInTheDocument();
     expect(within(module).getByRole("tab", { name: /baseline schedule/i })).toBeInTheDocument();
     expect(within(module).getByRole("tab", { name: /cpm \/ critical path/i })).toBeInTheDocument();
@@ -1636,9 +1658,10 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
-    await user.click(screen.getByRole("button", { name: /process flow/i }));
+    await user.click(screen.getByRole("button", { name: /scope manager/i }));
+    await user.click(screen.getByRole("button", { name: /path of execution/i }));
 
-    expect(await screen.findByRole("heading", { name: /bpm process flow/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /path of execution/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /owner \/ direction/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /project controls/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /planning \/ p6/i })).toBeInTheDocument();

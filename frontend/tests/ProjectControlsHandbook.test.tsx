@@ -1,11 +1,13 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import ProjectControlsHandbook, {
   calculateScheduleControlState,
   createDefaultScheduleControlData,
   type ScheduleControlData,
 } from "../src/components/ProjectControlsHandbook";
+
+afterEach(() => cleanup());
 
 describe("ProjectControlsHandbook", () => {
   it("uses imported schedule data instead of handbook example data", () => {
@@ -58,7 +60,7 @@ describe("ProjectControlsHandbook", () => {
       />
     );
 
-    const module = screen.getByRole("region", { name: /planning module/i });
+    const module = screen.getByRole("region", { name: /schedule/i });
     expect(within(module).getByText(/Review engineering package/i)).toBeInTheDocument();
     expect(within(module).getAllByText(/A1000/i).length).toBeGreaterThan(0);
     expect(within(module).queryByText(/Issue IFC design package/i)).not.toBeInTheDocument();
@@ -151,8 +153,8 @@ describe("ProjectControlsHandbook", () => {
 
     render(<ProjectControlsHandbook currencyCode="USD" projectCode="CTRL-DEMO-001" projectId={88} />);
 
-    const module = screen.getByRole("region", { name: /planning module/i });
-    expect(within(module).getByRole("heading", { name: /planning module/i })).toBeInTheDocument();
+    const module = screen.getByRole("region", { name: /schedule/i });
+    expect(within(module).getByRole("heading", { name: /schedule/i })).toBeInTheDocument();
     expect(within(module).getByText(/Critical Activities/i)).toBeInTheDocument();
 
     await user.click(within(module).getByRole("tab", { name: /wbs/i }));

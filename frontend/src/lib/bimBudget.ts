@@ -300,7 +300,7 @@ export function buildBimBudgetExcelXml(summary: BimBudgetSummary, project: Workb
  xmlns:o="urn:schemas-microsoft-com:office:office"
  xmlns:x="urn:schemas-microsoft-com:office:excel"
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
- <Worksheet ss:Name="Presupuesto BIM"><Table>${budgetRows}</Table></Worksheet>
+ <Worksheet ss:Name="Budget"><Table>${budgetRows}</Table></Worksheet>
  <Worksheet ss:Name="Estructura APU"><Table>${resourceRows}</Table></Worksheet>
  <Worksheet ss:Name="Control"><Table>${controlRows}</Table></Worksheet>
 </Workbook>`;
