@@ -9,6 +9,12 @@ export default defineConfig({
     // eventos inotify no cruzan esa frontera: el archivo llega al contenedor
     // pero el watcher no se entera, asi que no hay HMR ni rebuild. El polling
     // es la unica forma de detectar los cambios del host.
+    //
+    // OJO: cuando Vite se reinicia solo ("vite.config.ts changed, restarting
+    // server...") el watcher de polling NO queda rearmado y se deja de ver los
+    // cambios en silencio. Si el front vuelve a quedar desactualizado:
+    //   docker restart pypmisiasas-frontend-1
+    // El reinicio interno no alcanza; tiene que ser el del contenedor.
     watch: { usePolling: true, interval: 300 },
   },
   build: {
