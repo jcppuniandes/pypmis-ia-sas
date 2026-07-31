@@ -209,6 +209,16 @@ type ControlFlowView =
   | "strategic-investment-map"
   | "strategic-evaluation-matrix"
   | "gate-decision"
+  | "meeting-minutes"
+  | "communications"
+  | "issues"
+  | "lessons-learned"
+  | "punch-list-items"
+  | "document-approval"
+  | "submittals"
+  | "asset-warranty"
+  | "asset-meter"
+  | "asset-inventory"
   | "service-request"
   | "work-order-request"
   | "preventive-work-order"
@@ -330,6 +340,17 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
         ],
       },
       {
+        key: "project-manager",
+        label: "Project Manager",
+        submodules: [
+          { key: "meeting-minutes", label: "Meeting Minutes" },
+          { key: "communications", label: "Communications" },
+          { key: "issues", label: "Issues" },
+          { key: "lessons-learned", label: "Lessons Learned" },
+          { key: "punch-list-items", label: "Punch List Items" },
+        ],
+      },
+      {
         key: "portfolio-manager",
         label: "Portfolio Manager",
         submodules: [
@@ -338,6 +359,14 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
           { key: "strategic-investment-map", label: "Strategic Investment Map" },
           { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
           { key: "gate-decision", label: "Gate Decision" },
+        ],
+      },
+      {
+        key: "document-manager",
+        label: "Document Manager",
+        submodules: [
+          { key: "document-approval", label: "Document Approval" },
+          { key: "submittals", label: "Submittals" },
         ],
       },
     ],
@@ -349,7 +378,12 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
       {
         key: "asset-workspace-manager",
         label: "Asset Workspace Manager",
-        submodules: [{ key: "setup", label: "Asset/Facilities Creator" }],
+        submodules: [
+          { key: "setup", label: "Asset Creator/Receipt" },
+          { key: "asset-warranty", label: "Asset Warranty" },
+          { key: "asset-meter", label: "Asset Meter" },
+          { key: "asset-inventory", label: "Asset Inventory" },
+        ],
       },
       {
         key: "maintenance-manager",
@@ -397,6 +431,16 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "strategic-investment-map",
   "strategic-evaluation-matrix",
   "gate-decision",
+  "meeting-minutes",
+  "communications",
+  "issues",
+  "lessons-learned",
+  "punch-list-items",
+  "document-approval",
+  "submittals",
+  "asset-warranty",
+  "asset-meter",
+  "asset-inventory",
   "service-request",
   "work-order-request",
   "preventive-work-order",
@@ -1925,7 +1969,7 @@ function AppShell() {
     try {
       if (operationalSetup?.readiness_status !== "ready") {
         if (!isSetupDraftReady(setupDraft)) {
-          throw new Error("Complete Asset/Facilities Creator before loading activity data");
+          throw new Error("Complete Asset Creator/Receipt before loading activity data");
         }
         const updatedSetup = await projectsApi.updateOperationalSetup(token, selectedProjectId, {
           ...setupDraft,
@@ -3641,7 +3685,7 @@ function AppShell() {
       action: "Confirm operational readiness and maintain the WBS catalog before downstream loads.",
       objective: "Prepare project identity, roles, modules, cost/funding sheets and WBS controls.",
       state: operationalSetup?.readiness_status === "ready" ? "Ready" : "Open",
-      title: "Asset/Facilities Creator",
+      title: "Asset Creator/Receipt",
     },
     "work-packages": {
       action: "Create or review package drafts and clear blocking constraints.",
@@ -4547,7 +4591,7 @@ function AppShell() {
             {visibleControlView === "setup" && (
               <>
                 <div className="panelHeader">
-                  <h2>Asset/Facilities Creator</h2>
+                  <h2>Asset Creator/Receipt</h2>
                   <span>{operationalSetup?.readiness_status === "ready" ? "Ready" : "Open"}</span>
                 </div>
                 <section aria-label="WBS Structure" className="panel wide wbsStructurePanel">

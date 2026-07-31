@@ -1169,7 +1169,9 @@ describe("served project control flow", () => {
       "Progress&Performance Manager",
       "Resource Manager",
       "Claim Manager",
+      "Project Manager",
       "Portfolio Manager",
+      "Document Manager",
     ].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
@@ -1178,10 +1180,22 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: /risk register/i }));
     expect(await screen.findByRole("region", { name: /risk register module/i })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: /current module guide/i })).not.toBeInTheDocument();
+    await user.click(within(validationNav).getByRole("button", { name: "Project Manager", exact: true }));
+    await user.click(within(validationNav).getByRole("button", { name: "Meeting Minutes", exact: true }));
+    expect(await screen.findByRole("region", { name: /meeting minutes module/i })).toBeInTheDocument();
+    await user.click(within(validationNav).getByRole("button", { name: "Document Manager", exact: true }));
+    await user.click(within(validationNav).getByRole("button", { name: "Submittals", exact: true }));
+    expect(await screen.findByRole("region", { name: /submittals module/i })).toBeInTheDocument();
     await user.click(facilitiesAssetMacroprocess);
     ["Asset Workspace Manager", "Maintenance Manager", "Condition Assessment Manager"].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
+    await user.click(within(validationNav).getByRole("button", { name: "Asset Workspace Manager", exact: true }));
+    ["Asset Creator/Receipt", "Asset Warranty", "Asset Meter", "Asset Inventory"].forEach((submoduleName) => {
+      expect(within(validationNav).getByText(submoduleName, { exact: true, selector: "span" })).toBeInTheDocument();
+    });
+    await user.click(within(validationNav).getByRole("button", { name: "Asset Warranty", exact: true }));
+    expect(await screen.findByRole("region", { name: /asset warranty module/i })).toBeInTheDocument();
     await user.click(within(validationNav).getByRole("button", { name: "Maintenance Manager", exact: true }));
     await user.click(within(validationNav).getByRole("button", { name: "Service Request", exact: true }));
     expect(await screen.findByRole("region", { name: /service request module/i })).toBeInTheDocument();
