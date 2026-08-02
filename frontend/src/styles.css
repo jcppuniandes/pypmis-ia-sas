@@ -184,12 +184,66 @@ body {
   font-size: 19px;
 }
 
-.appBrandBar > span {
+.appBrandBar > span,
+.appBrandTagline {
   color: #52616f;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0;
   text-align: right;
+}
+
+.appBrandActions {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+.applicationModeToggle {
+  align-items: flex-start;
+  background: #0b6f71;
+  border: 1px solid #0b6f71;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-width: 138px;
+  padding: 7px 12px;
+  text-align: left;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.applicationModeToggle.admin {
+  background: #a34720;
+  border-color: #a34720;
+}
+
+.applicationModeToggle:hover,
+.applicationModeToggle:focus-visible {
+  box-shadow: 0 0 0 3px rgba(15, 139, 141, 0.18);
+}
+
+.applicationModeToggle.admin:hover,
+.applicationModeToggle.admin:focus-visible {
+  box-shadow: 0 0 0 3px rgba(163, 71, 32, 0.18);
+}
+
+.applicationModeToggle span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.applicationModeToggle strong {
+  font-size: 13px;
+  letter-spacing: 0.03em;
 }
 
 #root,
@@ -2891,6 +2945,12 @@ td span {
 
 .navigatorModuleList[hidden] {
   display: none;
+}
+
+.navigatorAdminModuleList {
+  border-left: 0;
+  margin: 0;
+  padding-left: 0;
 }
 
 .navigatorModule {
@@ -7630,8 +7690,19 @@ td span {
     gap: 8px;
   }
 
-  .appBrandBar > span {
+  .appBrandBar > span,
+  .appBrandTagline {
     text-align: left;
+  }
+
+  .appBrandActions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .applicationModeToggle {
+    width: 100%;
   }
 
   .topbar {

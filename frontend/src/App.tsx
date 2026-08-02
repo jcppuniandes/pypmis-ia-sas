@@ -178,9 +178,17 @@ function RequireAuth({ children }: { children: ReactNode }) {
 type ControlFlowView =
   | "dashboard"
   | "opc-gap"
+  | "enterprise-workspace-structure"
   | "project-creator"
   | "process-flow"
   | "setup"
+  | "join-venture"
+  | "vendors-list"
+  | "sales-contracts"
+  | "sc-changes"
+  | "sc-payments"
+  | "funds-sources"
+  | "funds-assignments"
   | "scope-items"
   | "plan-items"
   | "schedule-intake"
@@ -202,7 +210,11 @@ type ControlFlowView =
   | "contingency-quantification"
   | "request-for-bid"
   | "contracts"
+  | "contracts-changes"
+  | "contract-payments"
   | "purchase-order"
+  | "po-changes"
+  | "po-payments"
   | "earned-value-analysis"
   | "secop-bidder"
   | "idea-creator"
@@ -214,6 +226,7 @@ type ControlFlowView =
   | "issues"
   | "lessons-learned"
   | "punch-list-items"
+  | "ai-assistant"
   | "document-approval"
   | "submittals"
   | "asset-warranty"
@@ -234,7 +247,11 @@ type ControlFlowView =
   | "decisions"
   | "evidence"
   | "work-packages"
+  | "group-creator"
+  | "access-control"
   | "admin";
+
+type ApplicationMode = "user" | "admin";
 
 type NavigationViewItem = {
   key: ControlFlowView;
@@ -254,15 +271,75 @@ type MacroprocessNavigationItem = {
   modules: ModuleNavigationItem[];
 };
 
-const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
+const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
+  {
+    key: "enterprise-workspace",
+    label: "Enterprise Workspace",
+    modules: [
+      {
+        key: "portfolio-manager",
+        label: "Portfolio Manager",
+        submodules: [
+          { key: "enterprise-workspace-structure", label: "Enterprise Workspace Structure" },
+          { key: "secop-bidder", label: "SECOP Bidder" },
+          { key: "idea-creator", label: "Idea Creator" },
+          { key: "strategic-investment-map", label: "Strategic Investment Map" },
+          { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
+          { key: "gate-decision", label: "Gate Decision" },
+        ],
+      },
+      {
+        key: "workspaces-manager",
+        label: "Workspaces Manager",
+        submodules: [
+          { key: "project-creator", label: "Project Creator" },
+          { key: "setup", label: "Asset Creator/Receipt" },
+        ],
+      },
+      {
+        key: "partners",
+        label: "Partners",
+        submodules: [{ key: "join-venture", label: "Join Venture" }],
+      },
+      {
+        key: "vendors",
+        label: "Vendors",
+        submodules: [{ key: "vendors-list", label: "Vendors List" }],
+      },
+      {
+        key: "commitments",
+        label: "Commitments",
+        submodules: [
+          { key: "sales-contracts", label: "Sales Contracts" },
+          { key: "sc-changes", label: "SC Changes" },
+          { key: "sc-payments", label: "SC Payments" },
+        ],
+      },
+      {
+        key: "funds",
+        label: "Funds",
+        submodules: [
+          { key: "funds-sources", label: "Funds Sources" },
+          { key: "funds-assignments", label: "Funds Assigments" },
+        ],
+      },
+    ],
+  },
   {
     key: "project-control-manager",
     label: "Project Control Manager",
     modules: [
       {
-        key: "project-workspace-manager",
-        label: "Project Workspace Manager",
-        submodules: [{ key: "project-creator", label: "Project Creator" }],
+        key: "project-manager",
+        label: "Project Manager",
+        submodules: [
+          { key: "meeting-minutes", label: "Meeting Minutes" },
+          { key: "communications", label: "Communications" },
+          { key: "issues", label: "Issues" },
+          { key: "lessons-learned", label: "Lessons Learned" },
+          { key: "punch-list-items", label: "Punch List Items" },
+          { key: "ai-assistant", label: "AI Assistant" },
+        ],
       },
       {
         key: "scope-manager",
@@ -315,7 +392,11 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
         submodules: [
           { key: "request-for-bid", label: "Request for Bid" },
           { key: "contracts", label: "Contracts" },
+          { key: "contracts-changes", label: "Contracts Changes" },
+          { key: "contract-payments", label: "Contract Payments" },
           { key: "purchase-order", label: "Purchase Order" },
+          { key: "po-changes", label: "PO Changes" },
+          { key: "po-payments", label: "PO Payments" },
         ],
       },
       {
@@ -340,28 +421,6 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
         ],
       },
       {
-        key: "project-manager",
-        label: "Project Manager",
-        submodules: [
-          { key: "meeting-minutes", label: "Meeting Minutes" },
-          { key: "communications", label: "Communications" },
-          { key: "issues", label: "Issues" },
-          { key: "lessons-learned", label: "Lessons Learned" },
-          { key: "punch-list-items", label: "Punch List Items" },
-        ],
-      },
-      {
-        key: "portfolio-manager",
-        label: "Portfolio Manager",
-        submodules: [
-          { key: "secop-bidder", label: "SECOP Bidder" },
-          { key: "idea-creator", label: "Idea Creator" },
-          { key: "strategic-investment-map", label: "Strategic Investment Map" },
-          { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
-          { key: "gate-decision", label: "Gate Decision" },
-        ],
-      },
-      {
         key: "document-manager",
         label: "Document Manager",
         submodules: [
@@ -376,13 +435,12 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
     label: "Facilities&Asset Manager",
     modules: [
       {
-        key: "asset-workspace-manager",
-        label: "Asset Workspace Manager",
+        key: "asset-manager",
+        label: "Asset Manager",
         submodules: [
-          { key: "setup", label: "Asset Creator/Receipt" },
+          { key: "asset-inventory", label: "Asset Inventory" },
           { key: "asset-warranty", label: "Asset Warranty" },
           { key: "asset-meter", label: "Asset Meter" },
-          { key: "asset-inventory", label: "Asset Inventory" },
         ],
       },
       {
@@ -409,7 +467,27 @@ const MACROPROCESS_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
   },
 ];
 
+const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
+  {
+    key: "admistration",
+    label: "Admistration",
+    submodules: [
+      { key: "admin", label: "User Creator" },
+      { key: "group-creator", label: "Group Creator" },
+      { key: "access-control", label: "Access Control" },
+    ],
+  },
+];
+
 const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
+  "enterprise-workspace-structure",
+  "join-venture",
+  "vendors-list",
+  "sales-contracts",
+  "sc-changes",
+  "sc-payments",
+  "funds-sources",
+  "funds-assignments",
   "scope-items",
   "plan-items",
   "schedule-4d",
@@ -424,7 +502,11 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "contingency-quantification",
   "request-for-bid",
   "contracts",
+  "contracts-changes",
+  "contract-payments",
   "purchase-order",
+  "po-changes",
+  "po-payments",
   "earned-value-analysis",
   "secop-bidder",
   "idea-creator",
@@ -436,6 +518,7 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "issues",
   "lessons-learned",
   "punch-list-items",
+  "ai-assistant",
   "document-approval",
   "submittals",
   "asset-warranty",
@@ -449,6 +532,8 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "job-plans",
   "facility-inspections",
   "facility-condition-assessment",
+  "group-creator",
+  "access-control",
 ]);
 
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
@@ -464,9 +549,10 @@ function frontendValidationMode(): boolean {
 const FRONTEND_VALIDATION_VIEWS: ControlFlowView[] = [
   "dashboard",
   "opc-gap",
-  ...MACROPROCESS_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
+  ...USER_MODE_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
     macroprocess.modules.flatMap((module) => module.submodules.map((item) => item.key))
   ),
+  ...ADMIN_MODE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules.map((item) => item.key)),
 ];
 const APU_SOURCE_OPTIONS = [
   { key: "", label: "Todas las fuentes" },
@@ -478,6 +564,69 @@ const APU_SOURCE_OPTIONS = [
 
 function focusedControlView(view: ControlFlowView): ControlFlowView {
   return FRONTEND_VALIDATION_VIEWS.includes(view) ? view : "dashboard";
+}
+
+function ModuleNavigationGroups({
+  activeView,
+  items,
+  onNavigate,
+}: {
+  activeView: ControlFlowView;
+  items: ModuleNavigationItem[];
+  onNavigate: (view: ControlFlowView) => void;
+}) {
+  const activeModuleKey = items.find((module) =>
+    module.submodules.some((submodule) => submodule.key === activeView)
+  )?.key;
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
+
+  return items.map((module) => {
+    const moduleActive = module.submodules.some((submodule) => submodule.key === activeView);
+    const moduleExpanded = expandedModules[module.key] ?? module.key === activeModuleKey;
+    const submoduleListId = `${module.key}-submodules`;
+    return (
+      <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={module.key}>
+        <button
+          aria-controls={submoduleListId}
+          aria-expanded={moduleExpanded}
+          className="navigatorModuleButton"
+          onClick={() =>
+            setExpandedModules((current) => ({
+              ...current,
+              [module.key]: !moduleExpanded,
+            }))
+          }
+          type="button"
+        >
+          <span className="navigatorModuleCopy">{module.label}</span>
+          <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
+        </button>
+        <div
+          aria-label={`Submódulos de ${module.label}`}
+          className="navigatorSubmoduleList"
+          hidden={!moduleExpanded}
+          id={submoduleListId}
+          role="group"
+        >
+          {module.submodules.map((submodule) => {
+            const submoduleActive = submodule.key === activeView;
+            return (
+              <button
+                aria-current={submoduleActive ? "page" : undefined}
+                className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
+                key={submodule.key}
+                onClick={() => onNavigate(submodule.key)}
+                type="button"
+              >
+                <span>{submodule.label}</span>
+                {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  });
 }
 
 function ModuleNavigationItems({
@@ -492,11 +641,7 @@ function ModuleNavigationItems({
   const activeMacroprocessKey = items.find((macroprocess) =>
     macroprocess.modules.some((module) => module.submodules.some((submodule) => submodule.key === activeView))
   )?.key;
-  const activeModuleKey = items
-    .flatMap((macroprocess) => macroprocess.modules)
-    .find((module) => module.submodules.some((submodule) => submodule.key === activeView))?.key;
   const [expandedMacroprocesses, setExpandedMacroprocesses] = useState<Record<string, boolean>>({});
-  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
   return items.map((macroprocess) => {
     const macroprocessActive = macroprocess.modules.some((module) =>
@@ -504,7 +649,9 @@ function ModuleNavigationItems({
     );
     const macroprocessExpanded =
       expandedMacroprocesses[macroprocess.key] ??
-      (macroprocess.key === activeMacroprocessKey || macroprocess.key === "project-control-manager");
+      (macroprocess.key === activeMacroprocessKey ||
+        macroprocess.key === items[0]?.key ||
+        macroprocess.key === "project-control-manager");
     const moduleListId = `${macroprocess.key}-modules`;
 
     return (
@@ -534,57 +681,98 @@ function ModuleNavigationItems({
           id={moduleListId}
           role="group"
         >
-          {macroprocess.modules.map((module) => {
-            const moduleActive = module.submodules.some((submodule) => submodule.key === activeView);
-            const moduleExpanded = expandedModules[module.key] ?? module.key === activeModuleKey;
-            const submoduleListId = `${module.key}-submodules`;
-            return (
-              <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={module.key}>
-                <button
-                  aria-controls={submoduleListId}
-                  aria-expanded={moduleExpanded}
-                  className="navigatorModuleButton"
-                  onClick={() =>
-                    setExpandedModules((current) => ({
-                      ...current,
-                      [module.key]: !moduleExpanded,
-                    }))
-                  }
-                  type="button"
-                >
-                  <span className="navigatorModuleCopy">{module.label}</span>
-                  <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
-                </button>
-                <div
-                  aria-label={`Submódulos de ${module.label}`}
-                  className="navigatorSubmoduleList"
-                  hidden={!moduleExpanded}
-                  id={submoduleListId}
-                  role="group"
-                >
-                  {module.submodules.map((submodule) => {
-                    const submoduleActive = submodule.key === activeView;
-                    return (
-                      <button
-                        aria-current={submoduleActive ? "page" : undefined}
-                        className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
-                        key={submodule.key}
-                        onClick={() => onNavigate(submodule.key)}
-                        type="button"
-                      >
-                        <span>{submodule.label}</span>
-                        {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+          <ModuleNavigationGroups activeView={activeView} items={macroprocess.modules} onNavigate={onNavigate} />
         </div>
       </div>
     );
   });
+}
+
+function ApplicationModeToggle({ mode, onToggle }: { mode: ApplicationMode; onToggle: () => void }) {
+  const nextModeLabel = mode === "user" ? "ADMIN MODE" : "USER MODE";
+  return (
+    <button
+      aria-label={`Cambiar a ${nextModeLabel}`}
+      aria-pressed={mode === "admin"}
+      className={`applicationModeToggle ${mode}`}
+      onClick={onToggle}
+      title={`Cambiar a ${nextModeLabel}`}
+      type="button"
+    >
+      <span>Modo actual</span>
+      <strong>{mode === "user" ? "USER MODE" : "ADMIN MODE"}</strong>
+    </button>
+  );
+}
+
+function WorkspaceNavigation({
+  activeView,
+  adminItems,
+  applicationMode,
+  baselineOnlyEvm,
+  onNavigate,
+  readinessScore,
+  spiLabel,
+  userItems,
+  validationMode,
+}: {
+  activeView: ControlFlowView;
+  adminItems: ModuleNavigationItem[];
+  applicationMode: ApplicationMode;
+  baselineOnlyEvm: boolean;
+  onNavigate: (view: ControlFlowView) => void;
+  readinessScore: number;
+  spiLabel: string;
+  userItems: MacroprocessNavigationItem[];
+  validationMode: boolean;
+}) {
+  const adminMode = applicationMode === "admin";
+  return (
+    <nav
+      aria-label={adminMode ? "Admin mode navigation" : validationMode ? "Validation focus" : "Control Flow"}
+      className="navigatorRail"
+    >
+      <div className="navigatorHeader">
+        <strong>{adminMode ? "ADMIN MODE" : "USER MODE"}</strong>
+        <span>{adminMode ? "Módulos + submódulos" : "Macroprocesos + módulos"}</span>
+      </div>
+      {adminMode ? (
+        <>
+          <div className="navigatorDivider">
+            <span>Módulos</span>
+          </div>
+          <div aria-label="Módulos de ADMIN MODE" className="navigatorModuleList navigatorAdminModuleList" role="group">
+            <ModuleNavigationGroups activeView={activeView} items={adminItems} onNavigate={onNavigate} />
+          </div>
+        </>
+      ) : (
+        <>
+          <button
+            aria-current={activeView === "dashboard" ? "page" : undefined}
+            className={activeView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
+            onClick={() => onNavigate("dashboard")}
+            type="button"
+          >
+            <span>Dashboard</span>
+            <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
+          </button>
+          <button
+            aria-current={activeView === "opc-gap" ? "page" : undefined}
+            className={activeView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
+            onClick={() => onNavigate("opc-gap")}
+            type="button"
+          >
+            <span>Diagnóstico de Control</span>
+            <strong>{readinessScore}%</strong>
+          </button>
+          <div className="navigatorDivider">
+            <span>Macroprocesos</span>
+          </div>
+          <ModuleNavigationItems activeView={activeView} items={userItems} onNavigate={onNavigate} />
+        </>
+      )}
+    </nav>
+  );
 }
 
 function routeControlView(pathname: string): ControlFlowView | null {
@@ -1176,6 +1364,7 @@ function AppShell() {
   const [processFlowBoard, setProcessFlowBoard] = useState<ProcessFlowBoard | null>(null);
   const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
   const [moduleNavigationCollapsed, setModuleNavigationCollapsed] = useState(false);
+  const [applicationMode, setApplicationMode] = useState<ApplicationMode>("user");
   const [currencyAction, setCurrencyAction] = useState(false);
   const [projectDraft, setProjectDraft] = useState({
     calendar_base: "5x8 Colombia",
@@ -3128,6 +3317,12 @@ function AppShell() {
     document.getElementById("control-flow-content")?.scrollIntoView?.({ block: "start", behavior: "smooth" });
   }
 
+  function handleApplicationModeToggle() {
+    const nextMode: ApplicationMode = applicationMode === "user" ? "admin" : "user";
+    setApplicationMode(nextMode);
+    handleControlFlowNavigate(nextMode === "admin" ? "admin" : "dashboard");
+  }
+
   const constraintsByPackage = useMemo(() => {
     return (dashboard?.work_package_constraints ?? []).reduce<Record<number, number>>((acc, constraint) => {
       if (constraint.status === "open" && constraint.blocking) {
@@ -3536,6 +3731,7 @@ function AppShell() {
   const fundingAlerts = forecastFundingRows.filter((row) => row.forecast_vs_available < 0);
   const navigationStatusByView: Partial<Record<ControlFlowView, string | number>> = {
     "apu-catalog": colombiaApuCatalog.length ? colombiaApuCatalog.length : "sync",
+    admin: users.length,
     "bim-budget": bimBudgetSummary.rows.length ? `${bimBudgetSummary.rows.length} partidas` : "open",
     "claims-audit": dashboard.claims_forensic_summary.total_claims
       ? `${dashboard.claims_forensic_summary.total_claims} claims`
@@ -3552,7 +3748,7 @@ function AppShell() {
     "window-analysis-37": windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
     "work-packages": dashboard.awp_summary.total_packages,
   };
-  const templateMacroprocessNavigationItems = MACROPROCESS_NAVIGATION_BLUEPRINT.map((macroprocess) => ({
+  const templateUserNavigationItems = USER_MODE_NAVIGATION_BLUEPRINT.map((macroprocess) => ({
     ...macroprocess,
     modules: macroprocess.modules.map((module) => ({
       ...module,
@@ -3562,6 +3758,13 @@ function AppShell() {
       })),
     })),
   }));
+  const templateAdminNavigationItems = ADMIN_MODE_NAVIGATION_BLUEPRINT.map((module) => ({
+    ...module,
+    submodules: module.submodules.map((submodule) => ({
+      ...submodule,
+      count: navigationStatusByView[submodule.key],
+    })),
+  }));
   const activeModuleGuide: Partial<
     Record<ControlFlowView, { action: string; objective: string; state: string; title: string }>
   > = {
@@ -3569,7 +3772,7 @@ function AppShell() {
       action: "Create users, assign roles and configure project permissions.",
       objective: "Control who can configure, load, approve and operate each project workflow.",
       state: `${dashboard.project_team.length} project member(s)`,
-      title: "Users & Roles",
+      title: "User Creator",
     },
     "apu-catalog": {
       action: "Actualizar la base gratuita y revisar partidas antes de usarlas como sugerencias de presupuesto.",
@@ -3700,9 +3903,12 @@ function AppShell() {
       title: "Project Creator",
     },
   };
-  const activeTemplateSubmodule = MACROPROCESS_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
-    macroprocess.modules.flatMap((module) => module.submodules)
-  ).find((submodule) => submodule.key === visibleControlView);
+  const activeTemplateSubmodule = [
+    ...USER_MODE_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
+      macroprocess.modules.flatMap((module) => module.submodules)
+    ),
+    ...ADMIN_MODE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules),
+  ].find((submodule) => submodule.key === visibleControlView);
   const currentModuleGuide =
     activeModuleGuide[visibleControlView] ??
     (activeTemplateSubmodule
@@ -3770,7 +3976,10 @@ function AppShell() {
       {guidedFlow && (
         <header className="appBrandBar" aria-label="Application brand">
           <ProductLogo compact />
-          <span>Project Controls Intelligence Platform</span>
+          <div className="appBrandActions">
+            <ApplicationModeToggle mode={applicationMode} onToggle={handleApplicationModeToggle} />
+            <span className="appBrandTagline">Project Controls Intelligence Platform</span>
+          </div>
         </header>
       )}
       {guidedFlow ? (
@@ -3795,6 +4004,7 @@ function AppShell() {
             </p>
           </div>
           <div className="headerActions">
+            <ApplicationModeToggle mode={applicationMode} onToggle={handleApplicationModeToggle} />
             <div className="contextSwitch">
               <label>
                 <span>Project</span>
@@ -3861,93 +4071,25 @@ function AppShell() {
           <aside className="projectWorkspaceRail" hidden={moduleNavigationCollapsed} id="project-module-navigation">
             {guidedFlow ? (
               <>
-                {FRONTEND_VALIDATION_MODE ? (
-                  <nav className="navigatorRail" aria-label="Validation focus">
-                    <div className="navigatorHeader">
-                      <strong>Validacion actual</strong>
-                      <span>Macroprocesos + módulos</span>
-                    </div>
-                    <button
-                      aria-current={visibleControlView === "dashboard" ? "page" : undefined}
-                      className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
-                      onClick={() => handleControlFlowNavigate("dashboard")}
-                      type="button"
-                    >
-                      <span>Dashboard</span>
-                      <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
-                    </button>
-                    <button
-                      aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
-                      className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
-                      onClick={() => handleControlFlowNavigate("opc-gap")}
-                      type="button"
-                    >
-                      <span>Diagnóstico de Control</span>
-                      <strong>{opcGapAnalysis.readinessScore}%</strong>
-                    </button>
-                    <div className="navigatorDivider">
-                      <span>Macroprocesos</span>
-                    </div>
-                    <ModuleNavigationItems
-                      activeView={visibleControlView}
-                      items={templateMacroprocessNavigationItems}
-                      onNavigate={handleControlFlowNavigate}
-                    />
-                  </nav>
-                ) : (
-                  <>
-                    <nav className="navigatorRail" aria-label="Control Flow">
-                      <div className="navigatorHeader">
-                        <strong>Control Flow</strong>
-                        <span>Macroprocesos + módulos</span>
-                      </div>
-                      <button
-                        aria-current={visibleControlView === "dashboard" ? "page" : undefined}
-                        className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
-                        onClick={() => handleControlFlowNavigate("dashboard")}
-                        type="button"
-                      >
-                        <span>Dashboard</span>
-                        <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
-                      </button>
-                      <button
-                        aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
-                        className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
-                        onClick={() => handleControlFlowNavigate("opc-gap")}
-                        type="button"
-                      >
-                        <span>Diagnóstico de Control</span>
-                        <strong>{opcGapAnalysis.readinessScore}%</strong>
-                      </button>
-                      <div className="navigatorDivider">
-                        <span>Macroprocesos</span>
-                      </div>
-                      <ModuleNavigationItems
-                        activeView={visibleControlView}
-                        items={templateMacroprocessNavigationItems}
-                        onNavigate={handleControlFlowNavigate}
-                      />
-                      <div className="navigatorDivider">
-                        <span>Advanced</span>
-                      </div>
-                      <button
-                        aria-current={visibleControlView === "admin" ? "page" : undefined}
-                        className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
-                        onClick={() => handleControlFlowNavigate("admin")}
-                        type="button"
-                      >
-                        <span>Users &amp; Roles</span>
-                        <strong>{dashboard.project_team.length}</strong>
-                      </button>
-                    </nav>
-                    <GuidedProcessRail
-                      activeKey={guidedRailActiveKey}
-                      steps={guidedFlow.steps}
-                      onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
-                    />
-                  </>
+                <WorkspaceNavigation
+                  activeView={visibleControlView}
+                  adminItems={templateAdminNavigationItems}
+                  applicationMode={applicationMode}
+                  baselineOnlyEvm={baselineOnlyEvm}
+                  onNavigate={handleControlFlowNavigate}
+                  readinessScore={opcGapAnalysis.readinessScore}
+                  spiLabel={spiLabel}
+                  userItems={templateUserNavigationItems}
+                  validationMode={FRONTEND_VALIDATION_MODE}
+                />
+                {!FRONTEND_VALIDATION_MODE && applicationMode === "user" && (
+                  <GuidedProcessRail
+                    activeKey={guidedRailActiveKey}
+                    steps={guidedFlow.steps}
+                    onNavigate={(targetView) => handleControlFlowNavigate(targetView as ControlFlowView)}
+                  />
                 )}
-                {!FRONTEND_VALIDATION_MODE && (
+                {!FRONTEND_VALIDATION_MODE && applicationMode === "user" && (
                   <details className="projectAdminDetails" role="group" aria-label="Administrative actions">
                     <summary>
                       <span>
@@ -3985,57 +4127,20 @@ function AppShell() {
                 )}
               </>
             ) : (
-              <aside className="navigatorRail" aria-label="Control Flow">
-                <div className="navigatorHeader">
-                  <strong>{FRONTEND_VALIDATION_MODE ? "Validacion actual" : "Control Flow"}</strong>
-                  <span>{FRONTEND_VALIDATION_MODE ? "Dashboard + BIM" : "Essential views"}</span>
-                </div>
-                <button
-                  aria-current={visibleControlView === "dashboard" ? "page" : undefined}
-                  className={visibleControlView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
-                  onClick={() => handleControlFlowNavigate("dashboard")}
-                  type="button"
-                >
-                  <span>Dashboard</span>
-                  <strong>{spiLabel} SPI</strong>
-                </button>
-                <button
-                  aria-current={visibleControlView === "opc-gap" ? "page" : undefined}
-                  className={visibleControlView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
-                  onClick={() => handleControlFlowNavigate("opc-gap")}
-                  type="button"
-                >
-                  <span>Diagnóstico de Control</span>
-                  <strong>{opcGapAnalysis.readinessScore}%</strong>
-                </button>
-                <div className="navigatorDivider">
-                  <span>Macroprocesos</span>
-                </div>
-                <ModuleNavigationItems
-                  activeView={visibleControlView}
-                  items={templateMacroprocessNavigationItems}
-                  onNavigate={handleControlFlowNavigate}
-                />
-                {!FRONTEND_VALIDATION_MODE && (
-                  <>
-                    <div className="navigatorDivider">
-                      <span>Advanced</span>
-                    </div>
-                    <button
-                      aria-current={visibleControlView === "admin" ? "page" : undefined}
-                      className={visibleControlView === "admin" ? "navigatorItem active" : "navigatorItem"}
-                      onClick={() => handleControlFlowNavigate("admin")}
-                      type="button"
-                    >
-                      <span>Users & Roles</span>
-                      <strong>{dashboard.project_team.length}</strong>
-                    </button>
-                  </>
-                )}
-              </aside>
+              <WorkspaceNavigation
+                activeView={visibleControlView}
+                adminItems={templateAdminNavigationItems}
+                applicationMode={applicationMode}
+                baselineOnlyEvm={baselineOnlyEvm}
+                onNavigate={handleControlFlowNavigate}
+                readinessScore={opcGapAnalysis.readinessScore}
+                spiLabel={spiLabel}
+                userItems={templateUserNavigationItems}
+                validationMode={FRONTEND_VALIDATION_MODE}
+              />
             )}
 
-            {!guidedFlow && (
+            {!guidedFlow && applicationMode === "user" && (
               <section className="adminPanel projectCreatePanel" aria-label="Project">
                 <div className="panelHeader">
                   <h2>
@@ -7718,7 +7823,7 @@ function AppShell() {
             {visibleControlView === "admin" && (
               <>
                 <div className="panelHeader">
-                  <h2>Users & Roles</h2>
+                  <h2>User Creator</h2>
                   <span>{dashboard.project_team.length} project assignments</span>
                 </div>
                 <div className="viewSplit">
