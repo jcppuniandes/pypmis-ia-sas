@@ -1143,8 +1143,8 @@ describe("served project control flow", () => {
 
     const validationNav = screen.getByRole("navigation", { name: /validation focus/i });
     expect(within(validationNav).getByRole("button", { name: /dashboard/i })).toHaveAttribute("aria-current", "page");
-    const enterpriseWorkspaceMacroprocess = within(validationNav).getByRole("button", {
-      name: "Enterprise Workspace",
+    const enterpriseStrategyMacroprocess = within(validationNav).getByRole("button", {
+      name: "Enterprise Strategy Manager",
       exact: true,
     });
     const projectControlMacroprocess = within(validationNav).getByRole("button", {
@@ -1155,14 +1155,48 @@ describe("served project control flow", () => {
       name: "Facilities&Asset Manager",
       exact: true,
     });
-    expect(enterpriseWorkspaceMacroprocess).toHaveAttribute("aria-expanded", "true");
+    expect(enterpriseStrategyMacroprocess).toHaveAttribute("aria-expanded", "true");
     expect(projectControlMacroprocess).toHaveAccessibleName("Project Control Manager");
     expect(projectControlMacroprocess).toHaveAttribute("aria-expanded", "true");
     expect(facilitiesAssetMacroprocess).toHaveAccessibleName("Facilities&Asset Manager");
     expect(facilitiesAssetMacroprocess).toHaveAttribute("aria-expanded", "false");
-    ["Portfolio Manager", "Workspaces Manager", "Partners", "Vendors", "Commitments", "Funds"].forEach((moduleName) => {
+    [
+      "Idea & Demand Manager",
+      "Portfolio Manager",
+      "Funds",
+      "Workspaces Manager",
+      "Partners",
+      "Vendors",
+      "Commitments",
+    ].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
+    await user.click(within(validationNav).getByRole("button", { name: "Idea & Demand Manager", exact: true }));
+    ["SECOP Bidder", "Idea Register", "Idea Intake", "Idea Evaluation Matrix", "Project Proposal Creation"].forEach(
+      (submoduleName) => {
+        expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
+      }
+    );
+    await user.click(within(validationNav).getByRole("button", { name: "Idea Register", exact: true }));
+    expect(await screen.findByRole("region", { name: /idea register module/i })).toBeInTheDocument();
+    await user.click(within(validationNav).getByRole("button", { name: "Portfolio Manager", exact: true }));
+    [
+      "Portfolio Structure",
+      "Project Intake from Ideas",
+      "Portfolio Budget Planning",
+      "Portfolio Cash Flow",
+      "Strategic Investment Map",
+      "Strategic Prioritization Matrix",
+      "Gate Decision",
+    ].forEach((submoduleName) => {
+      expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
+    });
+    await user.click(within(validationNav).getByRole("button", { name: "Commitments", exact: true }));
+    ["Sales Contracts", "SC Changes", "SC Payments", "Purchase Order", "PO Changes", "PO Payments"].forEach(
+      (submoduleName) => {
+        expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
+      }
+    );
     await user.click(within(validationNav).getByRole("button", { name: "Workspaces Manager", exact: true }));
     expect(within(validationNav).getByText("Asset Creator/Receipt", { exact: true })).toBeInTheDocument();
     await user.click(within(validationNav).getByText("Asset Creator/Receipt", { exact: true }));
@@ -1224,6 +1258,7 @@ describe("served project control flow", () => {
     );
     expect(within(adminNavigation).getByText("User Creator", { exact: true, selector: "span" })).toBeInTheDocument();
     expect(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true })).toBeInTheDocument();
+    expect(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true })).toBeInTheDocument();
     expect(within(adminNavigation).getByRole("button", { name: "Access Control", exact: true })).toBeInTheDocument();
     expect(
       within(adminNavigation).queryByRole("button", { name: "Project Control Manager", exact: true })
@@ -1231,6 +1266,8 @@ describe("served project control flow", () => {
     expect(await screen.findByRole("heading", { name: "User Creator", exact: true })).toBeInTheDocument();
     await user.click(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true }));
     expect(await screen.findByRole("region", { name: /group creator module/i })).toBeInTheDocument();
+    await user.click(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true }));
+    expect(await screen.findByRole("region", { name: /permissions module/i })).toBeInTheDocument();
     await user.click(within(adminNavigation).getByRole("button", { name: "Access Control", exact: true }));
     expect(await screen.findByRole("region", { name: /access control module/i })).toBeInTheDocument();
     await user.click(within(applicationBrand).getByRole("button", { name: "Cambiar a USER MODE", exact: true }));

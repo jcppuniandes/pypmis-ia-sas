@@ -178,7 +178,15 @@ function RequireAuth({ children }: { children: ReactNode }) {
 type ControlFlowView =
   | "dashboard"
   | "opc-gap"
-  | "enterprise-workspace-structure"
+  | "idea-register"
+  | "idea-intake"
+  | "idea-evaluation-matrix"
+  | "project-proposal-creation"
+  | "portfolio-structure"
+  | "project-intake-from-ideas"
+  | "portfolio-budget-planning"
+  | "portfolio-cash-flow"
+  | "strategic-prioritization-matrix"
   | "project-creator"
   | "process-flow"
   | "setup"
@@ -187,6 +195,9 @@ type ControlFlowView =
   | "sales-contracts"
   | "sc-changes"
   | "sc-payments"
+  | "commitment-purchase-order"
+  | "commitment-po-changes"
+  | "commitment-po-payments"
   | "funds-sources"
   | "funds-assignments"
   | "scope-items"
@@ -217,9 +228,7 @@ type ControlFlowView =
   | "po-payments"
   | "earned-value-analysis"
   | "secop-bidder"
-  | "idea-creator"
   | "strategic-investment-map"
-  | "strategic-evaluation-matrix"
   | "gate-decision"
   | "meeting-minutes"
   | "communications"
@@ -248,6 +257,7 @@ type ControlFlowView =
   | "evidence"
   | "work-packages"
   | "group-creator"
+  | "permissions"
   | "access-control"
   | "admin";
 
@@ -273,19 +283,39 @@ type MacroprocessNavigationItem = {
 
 const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
   {
-    key: "enterprise-workspace",
-    label: "Enterprise Workspace",
+    key: "enterprise-strategy-manager",
+    label: "Enterprise Strategy Manager",
     modules: [
+      {
+        key: "idea-demand-manager",
+        label: "Idea & Demand Manager",
+        submodules: [
+          { key: "secop-bidder", label: "SECOP Bidder" },
+          { key: "idea-register", label: "Idea Register" },
+          { key: "idea-intake", label: "Idea Intake" },
+          { key: "idea-evaluation-matrix", label: "Idea Evaluation Matrix" },
+          { key: "project-proposal-creation", label: "Project Proposal Creation" },
+        ],
+      },
       {
         key: "portfolio-manager",
         label: "Portfolio Manager",
         submodules: [
-          { key: "enterprise-workspace-structure", label: "Enterprise Workspace Structure" },
-          { key: "secop-bidder", label: "SECOP Bidder" },
-          { key: "idea-creator", label: "Idea Creator" },
+          { key: "portfolio-structure", label: "Portfolio Structure" },
+          { key: "project-intake-from-ideas", label: "Project Intake from Ideas" },
+          { key: "portfolio-budget-planning", label: "Portfolio Budget Planning" },
+          { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
           { key: "strategic-investment-map", label: "Strategic Investment Map" },
-          { key: "strategic-evaluation-matrix", label: "Strategic Evaluation Matrix" },
+          { key: "strategic-prioritization-matrix", label: "Strategic Prioritization Matrix" },
           { key: "gate-decision", label: "Gate Decision" },
+        ],
+      },
+      {
+        key: "funds",
+        label: "Funds",
+        submodules: [
+          { key: "funds-sources", label: "Funds Sources" },
+          { key: "funds-assignments", label: "Funds Assigments" },
         ],
       },
       {
@@ -313,14 +343,9 @@ const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
           { key: "sales-contracts", label: "Sales Contracts" },
           { key: "sc-changes", label: "SC Changes" },
           { key: "sc-payments", label: "SC Payments" },
-        ],
-      },
-      {
-        key: "funds",
-        label: "Funds",
-        submodules: [
-          { key: "funds-sources", label: "Funds Sources" },
-          { key: "funds-assignments", label: "Funds Assigments" },
+          { key: "commitment-purchase-order", label: "Purchase Order" },
+          { key: "commitment-po-changes", label: "PO Changes" },
+          { key: "commitment-po-payments", label: "PO Payments" },
         ],
       },
     ],
@@ -474,18 +499,30 @@ const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
     submodules: [
       { key: "admin", label: "User Creator" },
       { key: "group-creator", label: "Group Creator" },
+      { key: "permissions", label: "Permissions" },
       { key: "access-control", label: "Access Control" },
     ],
   },
 ];
 
 const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
-  "enterprise-workspace-structure",
+  "idea-register",
+  "idea-intake",
+  "idea-evaluation-matrix",
+  "project-proposal-creation",
+  "portfolio-structure",
+  "project-intake-from-ideas",
+  "portfolio-budget-planning",
+  "portfolio-cash-flow",
+  "strategic-prioritization-matrix",
   "join-venture",
   "vendors-list",
   "sales-contracts",
   "sc-changes",
   "sc-payments",
+  "commitment-purchase-order",
+  "commitment-po-changes",
+  "commitment-po-payments",
   "funds-sources",
   "funds-assignments",
   "scope-items",
@@ -509,9 +546,7 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "po-payments",
   "earned-value-analysis",
   "secop-bidder",
-  "idea-creator",
   "strategic-investment-map",
-  "strategic-evaluation-matrix",
   "gate-decision",
   "meeting-minutes",
   "communications",
@@ -533,6 +568,7 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "facility-inspections",
   "facility-condition-assessment",
   "group-creator",
+  "permissions",
   "access-control",
 ]);
 
