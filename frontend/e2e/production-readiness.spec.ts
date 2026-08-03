@@ -24,6 +24,6 @@ test("production readiness smoke covers login, integrated control and AWP", asyn
   await expect(page.getByRole("button", { name: /create draft packages/i })).toBeVisible();
 
   await page.getByRole("button", { name: /open awp packages/i }).click();
-  await expect(page.getByRole("heading", { name: /awp minimum register/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^work packages$/i })).toBeVisible();
   await expect(page.getByText(/POC:/i).first()).toBeVisible();
 });

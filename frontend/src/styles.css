@@ -129,8 +129,10 @@ body {
 }
 
 .productLogoMark {
+  display: block;
   flex: 0 0 auto;
   height: 58px;
+  object-fit: contain;
   width: 58px;
 }
 
@@ -2629,6 +2631,10 @@ td span {
   margin: 0;
   max-width: none;
   width: 100%;
+}
+
+.projectWorkspaceRail .navigatorRail {
+  position: static;
 }
 
 .projectWorkspaceRail .adminPanel {
