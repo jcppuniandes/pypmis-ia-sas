@@ -1,0 +1,512 @@
+metadata:
+  tenant_code: DEMO-ENERGY
+  source_date: '2026-08-06'
+  requested_by: null
+  release_code: ES-PYP-CORE-20260806
+  release_name: Estructura empresarial núcleo - P&P Ingeniería y Proyectos
+  description: Propuesta basada en el brochure 2026 y el estado actual de P&Pmis. Requiere aprobación antes de apply/publish.
+strategic_objectives:
+- code: OBJ-PYP-01
+  name: Convertir proyectos complejos en resultados previsibles
+  active: true
+- code: OBJ-PYP-02
+  name: Proteger plazo, costo, alcance y valor
+  active: true
+- code: OBJ-PYP-03
+  name: Fortalecer el gobierno y la toma de decisiones
+  active: true
+- code: OBJ-PYP-04
+  name: Conectar estrategia, control y ejecución mediante tecnología
+  active: true
+- code: OBJ-PYP-05
+  name: Transformar diseños en activos operativos confiables
+  active: true
+- code: OBJ-PYP-06
+  name: Maximizar el desempeño y el valor del ciclo de vida de los activos
+  active: true
+- code: OBJ-PYP-07
+  name: Consolidar capacidades para minería e infraestructura de alta complejidad
+  active: true
+nodes:
+- external_key: ENT-PYP
+  code: PYP
+  name: P&P Ingeniería y Proyectos
+  node_type: ENTERPRISE
+  status: DRAFT
+  sort_order: 10
+  publish_candidate: false
+  description: Empresa de consultoría, PMO como servicio, tecnología e innovación y gerencia de construcción.
+  region_code: CO
+- external_key: BU-PYP-CONS
+  code: BU-CONS
+  name: Consultoría en Gestión de Proyectos y Activos
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 100
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Línea de negocio orientada a gestión especializada, control, activos, reclamaciones y controversias.
+  region_code: CO
+- external_key: BU-PYP-PMO
+  code: BU-PMO
+  name: PMO como Servicio (PMO aaS)
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 200
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Línea de negocio de PMO flexible para gobierno, control, coordinación y soporte a decisiones.
+  region_code: CO
+- external_key: BU-PYP-TEC
+  code: BU-TEC
+  name: Tecnología e Innovación
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 300
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Línea de negocio para integrar datos, modelos, procesos y plataformas de gestión.
+  region_code: CO
+- external_key: BU-PYP-CONST
+  code: BU-CONST
+  name: Gerencia de Construcción
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 400
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Línea de negocio para coordinar planificación, construcción, control, puesta en servicio, operación y mantenimiento.
+  region_code: CO
+- external_key: PF-PYP-CONS-GEST
+  code: PF-CONS-GEST
+  name: Gestión Integral de Proyectos y Activos
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 110
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Servicios de gerencia, definición, control, desempeño y gestión del ciclo de vida.
+  region_code: CO
+- external_key: PF-PYP-CONS-CTRL
+  code: PF-CONS-CTRL
+  name: Control Integrado de Proyectos
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 120
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Control de alcance, plazo, costo, riesgos, cambios, contratos y reportabilidad.
+  region_code: CO
+- external_key: PF-PYP-CONS-CONT
+  code: PF-CONS-CONT
+  name: Reclamaciones, Controversias y Peritaje
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 130
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Análisis técnico, contractual y forense para decisiones defendibles y resolución de controversias.
+  region_code: CO
+- external_key: PF-PYP-CONS-ASSET
+  code: PF-CONS-ASSET
+  name: Gestión de Activos, Propiedades y Facilities
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 140
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Gestión de activos enfocada en desempeño, continuidad, operación y valor de ciclo de vida.
+  region_code: CO
+- external_key: PF-PYP-PMO-GEN
+  code: PF-PMO-GEN
+  name: PMO aaS para Proyectos y Organizaciones
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 210
+  publish_candidate: false
+  parent_external_key: BU-PYP-PMO
+  description: PMO flexible para propietarios y equipos de proyecto que requieren capacidad especializada.
+  region_code: CO
+- external_key: PF-PYP-PMO-MIN
+  code: PF-PMO-MIN
+  name: PMO aaS Minería
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 220
+  publish_candidate: false
+  parent_external_key: BU-PYP-PMO
+  description: PMO para proyectos mineros de alta complejidad, programación, gestión de activos y disputas.
+  region_code: CO
+- external_key: PF-PYP-TEC-PPM
+  code: PF-TEC-PPM
+  name: Plataformas de Gestión de Proyectos
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 310
+  publish_candidate: false
+  parent_external_key: BU-PYP-TEC
+  description: Implementación y configuración de plataformas para planificación, control y trazabilidad.
+  region_code: CO
+- external_key: PF-PYP-TEC-BIM
+  code: PF-TEC-BIM
+  name: BIM y Planificación Digital
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 320
+  publish_candidate: false
+  parent_external_key: BU-PYP-TEC
+  description: Integración de modelos BIM, cantidades, planificación digital y trazabilidad.
+  region_code: CO
+- external_key: PF-PYP-TEC-BI
+  code: PF-TEC-BI
+  name: Analítica, Tableros y BI
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 330
+  publish_candidate: false
+  parent_external_key: BU-PYP-TEC
+  description: Información integrada, tableros, alertas y analítica para decisiones oportunas.
+  region_code: CO
+- external_key: PF-PYP-TEC-PPMIS
+  code: PF-TEC-PPMIS
+  name: P&Pmis Construction AI
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 340
+  publish_candidate: false
+  parent_external_key: BU-PYP-TEC
+  description: Desarrollo de la plataforma propia P&Pmis Construction AI.
+  region_code: CO
+- external_key: PF-PYP-CONST-VIAS
+  code: PF-CONST-VIAS
+  name: Vías Urbanas e Intermunicipales
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 410
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Gerencia y ejecución de infraestructura vial urbana e intermunicipal.
+  region_code: CO
+- external_key: PF-PYP-CONST-INM
+  code: PF-CONST-INM
+  name: Construcción Inmobiliaria
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 420
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Gerencia integral de construcción inmobiliaria.
+  region_code: CO
+- external_key: PF-PYP-CONST-RED
+  code: PF-CONST-RED
+  name: Infraestructura de Redes Secas y Húmedas
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 430
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Gerencia y ejecución de redes, obras hidráulicas y servicios asociados.
+  region_code: CO
+- external_key: PF-PYP-CONST-FAC
+  code: PF-CONST-FAC
+  name: Facilities y Puesta en Servicio
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 440
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Coordinación de facilidades, constructibilidad, commissioning y entrega operativa.
+  region_code: CO
+- external_key: PF-PYP-CONST-OYM
+  code: PF-CONST-OYM
+  name: Operación y Mantenimiento
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 450
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Servicios orientados a continuidad, confiabilidad y desempeño operativo.
+  region_code: CO
+- external_key: PG-PYP-PMO-MIN
+  code: PG-PMO-MIN
+  name: Programa PMO Minería
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 221
+  publish_candidate: false
+  parent_external_key: PF-PYP-PMO-MIN
+  description: Agrupa experiencias y proyectos de PMO, programación y control en minería.
+  region_code: CO
+- external_key: PG-PYP-TEC-IMP
+  code: PG-TEC-IMP
+  name: Programa de Implementaciones Tecnológicas
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 311
+  publish_candidate: false
+  parent_external_key: PF-PYP-TEC-PPM
+  description: Agrupa implementaciones de plataformas de planificación y control.
+  region_code: CO
+- external_key: PG-PYP-PPMIS
+  code: PG-PPMIS
+  name: Programa de Desarrollo P&Pmis Construction AI
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 341
+  publish_candidate: false
+  parent_external_key: PF-PYP-TEC-PPMIS
+  description: Programa interno de desarrollo progresivo de la plataforma.
+  region_code: CO
+- external_key: PRJ-PYP-PPMIS
+  code: PRJ-PPMIS
+  name: Desarrollo P&Pmis Construction AI
+  node_type: PROJECT
+  status: ACTIVE
+  sort_order: 342
+  publish_candidate: false
+  parent_external_key: PG-PYP-PPMIS
+  description: Proyecto interno activo para desarrollar una plataforma propia de gestión, control, BIM, facilities y propiedades.
+  region_code: CO
+  valid_from: '2026-01-01'
+classifications:
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: ENT-PYP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: BU-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: BU-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: BU-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: BU-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: BU-PYP-TEC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: BU-PYP-TEC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-GEST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-GEST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-CTRL
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-CTRL
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-CONT
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-CONT
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-ASSET
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS-ASSET
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-GEN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-GEN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-GEN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-PPM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-PPM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-BIM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-BIM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-BI
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-BI
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-VIAS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-VIAS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-VIAS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-INM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-INM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-RED
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-RED
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-FAC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-FAC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-OYM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST-OYM
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PG-PYP-TEC-IMP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PRJ-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PRJ-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+links: []
