@@ -6,6 +6,7 @@
   --enterprise-navy: #102a3a;
   display: grid;
   gap: 14px;
+  min-width: 0;
   color: var(--enterprise-ink);
 }
 
@@ -209,7 +210,7 @@
 .enterpriseTreeRow {
   display: flex;
   align-items: stretch;
-  min-width: max-content;
+  min-width: 0;
   border-radius: 7px;
 }
 
@@ -239,7 +240,7 @@
 
 .enterpriseTreeSelect {
   display: grid;
-  grid-template-columns: 19px minmax(185px, 1fr) auto;
+  grid-template-columns: 19px minmax(0, 1fr) auto;
   gap: 7px;
   align-items: center;
   min-height: 48px;
@@ -249,6 +250,7 @@
   color: inherit;
   text-align: left;
   cursor: pointer;
+  width: 100%;
 }
 
 .enterpriseTreeSelect > span {
@@ -259,6 +261,7 @@
 .enterpriseTreeSelect small {
   color: #71848d;
   font-size: 0.7rem;
+  overflow-wrap: anywhere;
 }
 
 .enterpriseTreeSelect em,
@@ -599,15 +602,20 @@
 
 .explorerToolbar {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
 }
 
 .enterpriseFilters {
   display: grid;
-  grid-template-columns: minmax(200px, 1.4fr) repeat(5, minmax(120px, 0.8fr));
+  grid-template-columns: minmax(180px, 1.4fr) repeat(5, minmax(0, 0.8fr));
   gap: 7px;
+  min-width: 0;
+}
+
+.enterpriseFilters > * {
+  min-width: 0;
 }
 
 .enterpriseSearch {
@@ -641,7 +649,7 @@
 }
 
 .enterpriseExplorerGrid {
-  grid-template-columns: minmax(520px, 1.45fr) minmax(285px, 0.55fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.55fr);
 }
 
 .explorerResults {
@@ -808,7 +816,7 @@
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1400px) {
   .enterpriseHero,
   .explorerToolbar {
     align-items: stretch;
