@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import get_settings
 from app.database.session import Base
 from app.domain import models  # noqa: F401
-
+from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
 
 config = context.config
 

@@ -1,0 +1,134 @@
+"""Stable codes and initial published definitions for Enterprise Structure."""
+
+WORKSPACE_TYPE_SEED = {
+    "enterprise": {
+        "name": "Enterprise",
+        "description": "Nodo raíz que representa la empresa del tenant.",
+        "allowed_children": ["business-unit", "portfolio", "program", "project", "property"],
+        "can_be_root": True,
+        "required_categories": [],
+        "required_fields": ["code", "name"],
+    },
+    "business-unit": {
+        "name": "Business Unit",
+        "description": "Unidad de negocio, dirección, región o división empresarial.",
+        "allowed_children": ["business-unit", "portfolio", "program", "project", "property", "facility"],
+        "can_be_root": False,
+        "required_categories": ["responsible-area"],
+        "required_fields": ["code", "name"],
+    },
+    "portfolio": {
+        "name": "Portfolio",
+        "description": "Agrupación estratégica de iniciativas, programas y proyectos.",
+        "allowed_children": ["program", "project"],
+        "can_be_root": False,
+        "required_categories": ["strategic-objective"],
+        "required_fields": ["code", "name"],
+    },
+    "program": {
+        "name": "Program",
+        "description": "Grupo coordinado de proyectos relacionados.",
+        "allowed_children": ["project"],
+        "can_be_root": False,
+        "required_categories": ["strategic-objective"],
+        "required_fields": ["code", "name"],
+    },
+    "project": {
+        "name": "Project",
+        "description": "Proyecto individual operado por los módulos de USER MODE.",
+        "allowed_children": [],
+        "can_be_root": False,
+        "required_categories": ["strategic-objective"],
+        "required_fields": ["code", "name"],
+    },
+    "property": {
+        "name": "Property",
+        "description": "Predio, inmueble o propiedad administrada.",
+        "allowed_children": ["facility"],
+        "can_be_root": False,
+        "required_categories": ["property-type"],
+        "required_fields": ["code", "name"],
+    },
+    "facility": {
+        "name": "Facility",
+        "description": "Edificación, planta, infraestructura o instalación ubicada en una propiedad.",
+        "allowed_children": [],
+        "can_be_root": False,
+        "required_categories": ["facility-type"],
+        "required_fields": ["code", "name"],
+    },
+}
+
+CATEGORY_SEED = {
+    "strategic-objective": {
+        "name": "Strategic Objectives",
+        "description": "Objetivos estratégicos utilizados para clasificar portafolios, programas y proyectos.",
+        "applicable_types": ["portfolio", "program", "project"],
+        "items": [
+            {"code": "growth", "label": "Growth"},
+            {"code": "operational-excellence", "label": "Operational Excellence"},
+            {"code": "sustainability", "label": "Sustainability"},
+        ],
+    },
+    "responsible-area": {
+        "name": "Responsible Areas",
+        "description": "Áreas y centros responsables de la estructura empresarial.",
+        "applicable_types": ["business-unit", "portfolio", "program", "project", "property", "facility"],
+        "items": [
+            {"code": "corporate", "label": "Corporate"},
+            {"code": "capital-projects", "label": "Capital Projects"},
+            {"code": "operations", "label": "Operations"},
+        ],
+    },
+    "project-type": {
+        "name": "Portfolio, Program and Project Categories",
+        "description": "Clasificación inicial para la cartera de iniciativas.",
+        "applicable_types": ["portfolio", "program", "project"],
+        "items": [
+            {"code": "capital", "label": "Capital"},
+            {"code": "operational", "label": "Operational"},
+            {"code": "technology", "label": "Technology"},
+        ],
+    },
+    "property-type": {
+        "name": "Property Types",
+        "description": "Tipos de predio o inmueble administrado.",
+        "applicable_types": ["property"],
+        "items": [
+            {"code": "owned", "label": "Owned"},
+            {"code": "leased", "label": "Leased"},
+            {"code": "concession", "label": "Concession"},
+        ],
+    },
+    "facility-type": {
+        "name": "Facility Types",
+        "description": "Clasificación funcional inicial de instalaciones.",
+        "applicable_types": ["facility"],
+        "items": [
+            {"code": "building", "label": "Building"},
+            {"code": "plant", "label": "Plant"},
+            {"code": "infrastructure", "label": "Infrastructure"},
+        ],
+    },
+}
+
+RELATIONSHIP_TYPES = {"ALIGNED_TO", "AFFECTS", "LOCATED_AT", "SERVES", "RESPONSIBLE_FOR"}
+WORKSPACE_STATUSES = {"draft", "active", "inactive", "archived"}
+
+PERMISSION_SEED = (
+    ("admin.workspace_type.read", "workspace_type", "read", "Consultar tipos de workspace.", "standard"),
+    ("admin.workspace_type.manage", "workspace_type", "manage", "Administrar tipos de workspace.", "high"),
+    ("admin.workspace_type.publish", "workspace_type", "publish", "Publicar tipos de workspace.", "critical"),
+    ("admin.enterprise_structure.read", "enterprise_structure", "read", "Consultar la estructura empresarial.", "standard"),
+    ("admin.enterprise_structure.manage", "enterprise_structure", "manage", "Administrar nodos empresariales.", "high"),
+    ("admin.enterprise_structure.publish", "enterprise_structure", "publish", "Publicar la estructura empresarial.", "critical"),
+    ("admin.enterprise_category.read", "enterprise_category", "read", "Consultar categorías empresariales.", "standard"),
+    ("admin.enterprise_category.manage", "enterprise_category", "manage", "Administrar categorías empresariales.", "high"),
+    ("admin.enterprise_category.publish", "enterprise_category", "publish", "Publicar categorías empresariales.", "critical"),
+    ("admin.composition_rule.read", "composition_rule", "read", "Consultar reglas de composición.", "standard"),
+    ("admin.composition_rule.manage", "composition_rule", "manage", "Administrar reglas de composición.", "high"),
+    ("admin.composition_rule.publish", "composition_rule", "publish", "Publicar reglas de composición.", "critical"),
+    ("enterprise_structure.read", "enterprise_structure", "read", "Consultar Enterprise Explorer.", "standard"),
+    ("enterprise_structure.read_history", "enterprise_structure", "read_history", "Consultar historial empresarial.", "high"),
+    ("enterprise_structure.export", "enterprise_structure", "export", "Exportar la estructura autorizada.", "high"),
+)
