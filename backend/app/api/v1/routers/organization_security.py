@@ -70,6 +70,24 @@ PERMISSION_SEED = (
     ("access.read", "access", "read", "Consultar asignaciones y acceso efectivo.", "standard"),
     ("access.manage", "access", "manage", "Asignar o revocar acceso.", "critical"),
     ("security_event.read", "security_event", "read", "Consultar eventos mínimos de seguridad.", "high"),
+    ("admin.workspace_type.read", "workspace_type", "read", "Consultar tipos de workspace.", "standard"),
+    ("admin.workspace_type.manage", "workspace_type", "manage", "Administrar tipos de workspace.", "high"),
+    ("admin.workspace_type.publish", "workspace_type", "publish", "Publicar tipos de workspace.", "critical"),
+    ("admin.workspace_structure.read", "workspace_structure", "read", "Consultar estructura empresarial.", "standard"),
+    ("admin.workspace_structure.manage", "workspace_structure", "manage", "Administrar estructura empresarial.", "high"),
+    ("admin.workspace_defaults.read", "workspace_defaults", "read", "Consultar valores heredados.", "standard"),
+    ("admin.workspace_defaults.manage", "workspace_defaults", "manage", "Administrar valores heredados.", "high"),
+    ("admin.module_activation.read", "module_activation", "read", "Consultar activación de módulos.", "standard"),
+    ("admin.module_activation.manage", "module_activation", "manage", "Administrar activación de módulos.", "critical"),
+    ("admin.catalog.read", "catalog", "read", "Consultar catálogos maestros.", "standard"),
+    ("admin.catalog.manage", "catalog", "manage", "Administrar catálogos maestros.", "high"),
+    ("admin.catalog.publish", "catalog", "publish", "Publicar catálogos maestros.", "critical"),
+    ("admin.numbering.read", "numbering", "read", "Consultar reglas de numeración.", "standard"),
+    ("admin.numbering.manage", "numbering", "manage", "Administrar reglas de numeración.", "high"),
+    ("admin.numbering.publish", "numbering", "publish", "Publicar reglas de numeración.", "critical"),
+    ("admin.process_definition.read", "process_definition", "read", "Consultar definiciones de proceso.", "standard"),
+    ("admin.process_definition.manage", "process_definition", "manage", "Administrar procesos declarativos.", "high"),
+    ("admin.process_definition.publish", "process_definition", "publish", "Publicar definiciones de proceso.", "critical"),
 )
 
 ROLE_SEED = {
@@ -103,6 +121,11 @@ ROLE_SEED = {
         "name": "Viewer",
         "description": "Lectura básica de la organización.",
         "permissions": ["organization.read"],
+    },
+    "configuration_admin": {
+        "name": "Configuration Administrator",
+        "description": "Gobierno de estructuras, catálogos, reglas y procesos reutilizables.",
+        "permissions": [item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")],
     },
 }
 

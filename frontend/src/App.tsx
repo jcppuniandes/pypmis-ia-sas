@@ -41,6 +41,7 @@ import GuidedProcessRail from "./components/GuidedProcessRail";
 import NextActionPanel from "./components/NextActionPanel";
 import OpcGapReadinessPanel from "./components/OpcGapReadinessPanel";
 import OrganizationSecurityView, { type OrganizationSecurityViewKey } from "./components/OrganizationSecurityView";
+import AdminConfigurationView, { type AdminConfigurationViewKey } from "./components/AdminConfigurationView";
 import ProductLogo from "./components/ProductLogo";
 import ProjectControlsHandbook from "./components/ProjectControlsHandbook";
 import ProjectCreateDrawer from "./components/ProjectCreateDrawer";
@@ -262,6 +263,13 @@ type ControlFlowView =
   | "group-creator"
   | "permissions"
   | "access-control"
+  | "workspace-types"
+  | "enterprise-workspace-structure"
+  | "workspace-defaults"
+  | "module-catalog-activation"
+  | "master-catalogs"
+  | "numbering-rules"
+  | "process-definitions"
   | "admin";
 
 type ApplicationMode = "user" | "admin";
@@ -507,6 +515,29 @@ const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "permissions", label: "Permissions" },
       { key: "access-control", label: "Access Control" },
     ],
+  },
+  {
+    key: "enterprise-structure",
+    label: "Enterprise Structure",
+    submodules: [
+      { key: "workspace-types", label: "Workspace Types" },
+      { key: "enterprise-workspace-structure", label: "Enterprise Workspace Structure" },
+      { key: "workspace-defaults", label: "Workspace Defaults & Inheritance" },
+      { key: "module-catalog-activation", label: "Module Catalog & Activation" },
+    ],
+  },
+  {
+    key: "general-configuration",
+    label: "General Configuration",
+    submodules: [
+      { key: "master-catalogs", label: "Master Catalogs" },
+      { key: "numbering-rules", label: "Numbering & Coding Rules" },
+    ],
+  },
+  {
+    key: "process-configuration",
+    label: "Process Configuration",
+    submodules: [{ key: "process-definitions", label: "Process Definitions" }],
   },
 ];
 
@@ -7871,6 +7902,24 @@ function AppShell() {
                 canConfigure={canConfigure}
                 token={token}
                 view={visibleControlView as OrganizationSecurityViewKey}
+              />
+            )}
+            {(
+              [
+                "workspace-types",
+                "enterprise-workspace-structure",
+                "workspace-defaults",
+                "module-catalog-activation",
+                "master-catalogs",
+                "numbering-rules",
+                "process-definitions",
+              ] as ControlFlowView[]
+            ).includes(visibleControlView) && (
+              <AdminConfigurationView
+                canConfigure={canConfigure}
+                key={visibleControlView}
+                token={token}
+                view={visibleControlView as AdminConfigurationViewKey}
               />
             )}
             {visibleControlView === "admin" && (

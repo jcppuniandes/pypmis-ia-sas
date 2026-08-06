@@ -5,6 +5,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: ["frontend", "host.docker.internal"],
+    proxy: {
+      "/api": {
+        target: process.env.VITE_DEV_PROXY_TARGET ?? "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+    },
     // El dev server corre en Docker con ./frontend montado desde Windows. Los
     // eventos inotify no cruzan esa frontera: el archivo llega al contenedor
     // pero el watcher no se entera, asi que no hay HMR ni rebuild. El polling

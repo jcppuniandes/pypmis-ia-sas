@@ -722,6 +722,117 @@ class OrganizationSecurityOverviewOut(BaseModel):
     authentication: AuthenticationPostureOut
 
 
+class AdminConfigurationCreate(BaseModel):
+    kind: str
+    code: str
+    name: str
+    description: str = ""
+    content_json: dict[str, Any] = Field(default_factory=dict)
+
+
+class AdminConfigurationUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    content_json: dict[str, Any] | None = None
+    expected_version: int | None = None
+
+
+class AdminConfigurationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    code: str
+    name: str
+    description: str
+    status: str
+    revision: int
+    version: int
+    content_json: dict[str, Any]
+    content_hash: str
+    published_at: datetime | None
+    created_by_user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class EnterpriseWorkspaceCreate(BaseModel):
+    code: str
+    name: str
+    workspace_type_code: str
+    parent_id: int | None = None
+    sort_order: int = 0
+
+
+class EnterpriseWorkspaceUpdate(BaseModel):
+    name: str | None = None
+    parent_id: int | None = None
+    status: str | None = None
+    sort_order: int | None = None
+    expected_version: int | None = None
+
+
+class WorkspaceDefaultsUpdate(BaseModel):
+    values: dict[str, Any] = Field(default_factory=dict)
+    expected_version: int | None = None
+
+
+class EnterpriseWorkspaceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    parent_id: int | None
+    workspace_type_code: str
+    code: str
+    name: str
+    status: str
+    defaults_json: dict[str, Any]
+    sort_order: int
+    version: int
+
+
+class WorkspaceModuleSettingUpdate(BaseModel):
+    enabled: bool
+    expected_version: int | None = None
+
+
+class WorkspaceModuleSettingOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    workspace_id: int
+    module_key: str
+    enabled: bool
+    version: int
+
+
+class WorkspaceEffectiveConfigurationOut(BaseModel):
+    workspace_id: int
+    inheritance_path: list[int]
+    defaults: dict[str, Any]
+    modules: dict[str, bool]
+
+
+class AdminConfigurationOverviewOut(BaseModel):
+    configurations: list[AdminConfigurationOut]
+    workspaces: list[EnterpriseWorkspaceOut]
+    module_settings: list[WorkspaceModuleSettingOut]
+    summary: dict[str, int]
+
+
+class NumberingRequest(BaseModel):
+    scope_key: str = "tenant"
+    context: dict[str, str] = Field(default_factory=dict)
+
+
+class NumberingResultOut(BaseModel):
+    rule_code: str
+    scope_key: str
+    value: str
+    sequence: int
+    committed: bool
+
+
 class LoginRequest(BaseModel):
     email: str
     password: str

@@ -725,6 +725,77 @@ export type OrganizationSecurityOverview = {
   authentication: AuthenticationPosture;
 };
 
+export type AdminConfigurationKind =
+  | "workspace_type"
+  | "module_definition"
+  | "catalog"
+  | "numbering_rule"
+  | "process_definition";
+
+export type AdminConfigurationRecord = {
+  id: number;
+  kind: AdminConfigurationKind;
+  code: string;
+  name: string;
+  description: string;
+  status: "draft" | "published" | string;
+  revision: number;
+  version: number;
+  content_json: Record<string, unknown>;
+  content_hash: string;
+  published_at: string | null;
+  created_by_user_id: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EnterpriseWorkspace = {
+  id: number;
+  parent_id: number | null;
+  workspace_type_code: string;
+  code: string;
+  name: string;
+  status: string;
+  defaults_json: Record<string, unknown>;
+  sort_order: number;
+  version: number;
+};
+
+export type WorkspaceModuleSetting = {
+  id: number;
+  workspace_id: number;
+  module_key: string;
+  enabled: boolean;
+  version: number;
+};
+
+export type AdminConfigurationOverview = {
+  configurations: AdminConfigurationRecord[];
+  workspaces: EnterpriseWorkspace[];
+  module_settings: WorkspaceModuleSetting[];
+  summary: {
+    published: number;
+    drafts: number;
+    workspaces: number;
+    active_modules: number;
+  };
+};
+
+export type WorkspaceEffectiveConfiguration = {
+  workspace_id: number;
+  inheritance_path: number[];
+  defaults: Record<string, unknown>;
+  modules: Record<string, boolean>;
+};
+
+export type NumberingResult = {
+  rule_code: string;
+  scope_key: string;
+  value: string;
+  sequence: number;
+  committed: boolean;
+};
+
 export type ProjectMembership = {
   id: number;
   project_id: number;

@@ -1,4 +1,6 @@
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// Relative API calls keep the browser on one origin in local development.
+// Deployments that expose the API separately can still provide VITE_API_URL.
+const apiUrl = import.meta.env.VITE_API_URL ?? "";
 
 export class ApiError extends Error {
   constructor(

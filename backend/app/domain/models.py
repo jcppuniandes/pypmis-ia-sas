@@ -458,6 +458,79 @@ class SecurityEvent(Base):
     occurred_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
 
 
+class AdminConfiguration(Base):
+    """Tenant-wide reusable configuration with explicit draft/publish revisions."""
+
+    __tablename__ = "admin_configurations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(80), index=True)
+    code: Mapped[str] = mapped_column(String(120), index=True)
+    name: Mapped[str] = mapped_column(String(180))
+    description: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(40), default="draft", index=True)
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    content_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    content_hash: Mapped[str] = mapped_column(String(64), default="")
+    published_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "kind", "code", "revision"),)
+
+
+class EnterpriseWorkspace(Base):
+    __tablename__ = "enterprise_workspaces"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    parent_id: Mapped[int | None] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
+    workspace_type_code: Mapped[str] = mapped_column(String(120), index=True)
+    code: Mapped[str] = mapped_column(String(120), index=True)
+    name: Mapped[str] = mapped_column(String(180))
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    defaults_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "code"),)
+
+
+class WorkspaceModuleSetting(Base):
+    __tablename__ = "workspace_module_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    workspace_id: Mapped[int] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
+    module_key: Mapped[str] = mapped_column(String(120), index=True)
+    enabled: Mapped[bool] = mapped_column(default=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "workspace_id", "module_key"),)
+
+
+class AdminNumberSequence(Base):
+    __tablename__ = "admin_number_sequences"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    rule_code: Mapped[str] = mapped_column(String(120), index=True)
+    scope_key: Mapped[str] = mapped_column(String(180), default="tenant", index=True)
+    next_value: Mapped[int] = mapped_column(Integer, default=1)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "rule_code", "scope_key"),)
+
+
 class AuthCredential(Base):
     __tablename__ = "auth_credentials"
 

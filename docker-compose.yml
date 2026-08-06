@@ -130,7 +130,8 @@ services:
       context: ./frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: "${VITE_API_URL:-http://127.0.0.1:8000}"
+      VITE_API_URL: "${VITE_API_URL:-}"
+      VITE_DEV_PROXY_TARGET: "http://api:8000"
       # Empty keeps the runtime default (validation mode on); CI E2E sets
       # "false" to smoke-test the full guided control flow.
       VITE_FRONTEND_VALIDATION_MODE: ${VITE_FRONTEND_VALIDATION_MODE:-}
