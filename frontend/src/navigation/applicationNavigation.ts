@@ -75,6 +75,22 @@ export type ControlFlowView =
   | "job-plans"
   | "facility-inspections"
   | "facility-condition-assessment"
+  | "lease"
+  | "lease-contact"
+  | "lease-invoice"
+  | "lease-payment"
+  | "lease-termination"
+  | "prospective-property"
+  | "prospective-selection"
+  | "prospective-disposition"
+  | "prospective-creation"
+  | "deed"
+  | "easements"
+  | "parcels"
+  | "property-tax"
+  | "property-payments"
+  | "energy-meter"
+  | "water-meter"
   | "baseline"
   | "progress"
   | "costs"
@@ -298,8 +314,8 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
     ],
   },
   {
-    key: "facilities-asset-manager",
-    label: "Facilities&Asset Manager",
+    key: "facility-manager",
+    label: "Facility Manager",
     modules: [
       {
         key: "asset-manager",
@@ -328,6 +344,52 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
         submodules: [
           { key: "facility-inspections", label: "Facility Inspections" },
           { key: "facility-condition-assessment", label: "Facility Condiction Assessment" },
+        ],
+      },
+    ],
+  },
+  {
+    key: "property-manager",
+    label: "Property Manager",
+    modules: [
+      {
+        key: "lease-manager",
+        label: "Lease Manager",
+        submodules: [
+          { key: "lease", label: "Lease" },
+          { key: "lease-contact", label: "Lease Contact" },
+          { key: "lease-invoice", label: "Lease Invoice" },
+          { key: "lease-payment", label: "Lease Payment" },
+          { key: "lease-termination", label: "Lease Termination" },
+        ],
+      },
+      {
+        key: "property-transaction-manager",
+        label: "Property Transaction Manager",
+        submodules: [
+          { key: "prospective-property", label: "Prospective Property" },
+          { key: "prospective-selection", label: "Prospective Selection" },
+          { key: "prospective-disposition", label: "Prospective Disposition" },
+          { key: "prospective-creation", label: "Prospective Creation" },
+        ],
+      },
+      {
+        key: "property-information-manager",
+        label: "Property Information Manager",
+        submodules: [
+          { key: "deed", label: "Deed" },
+          { key: "easements", label: "Easements" },
+          { key: "parcels", label: "Parcels" },
+          { key: "property-tax", label: "Property Tax" },
+          { key: "property-payments", label: "Property Payments" },
+        ],
+      },
+      {
+        key: "property-utilities-manager",
+        label: "Property Utilities Manager",
+        submodules: [
+          { key: "energy-meter", label: "Energy Meter" },
+          { key: "water-meter", label: "Water Meter" },
         ],
       },
     ],
@@ -433,4 +495,20 @@ export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "job-plans",
   "facility-inspections",
   "facility-condition-assessment",
+  "lease",
+  "lease-contact",
+  "lease-invoice",
+  "lease-payment",
+  "lease-termination",
+  "prospective-property",
+  "prospective-selection",
+  "prospective-disposition",
+  "prospective-creation",
+  "deed",
+  "easements",
+  "parcels",
+  "property-tax",
+  "property-payments",
+  "energy-meter",
+  "water-meter",
 ]);

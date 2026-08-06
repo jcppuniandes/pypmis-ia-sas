@@ -149,6 +149,45 @@ describe("Nivel 2A Enterprise Structure", () => {
     expect(userModule?.submodules).toEqual([{ key: "enterprise-explorer", label: "Enterprise Explorer" }]);
   });
 
+  it("adds only the Facility Manager and Property Manager macroprocesses from the workbook", () => {
+    const facility = USER_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "facility-manager");
+    const property = USER_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "property-manager");
+
+    expect(facility?.label).toBe("Facility Manager");
+    expect(facility?.modules.map((item) => item.label)).toEqual([
+      "Asset Manager",
+      "Maintenance Manager",
+      "Condition Assessment Manager",
+    ]);
+    expect(property?.modules.map((item) => item.label)).toEqual([
+      "Lease Manager",
+      "Property Transaction Manager",
+      "Property Information Manager",
+      "Property Utilities Manager",
+    ]);
+    expect(property?.modules.flatMap((item) => item.submodules).map((item) => item.label)).toEqual([
+      "Lease",
+      "Lease Contact",
+      "Lease Invoice",
+      "Lease Payment",
+      "Lease Termination",
+      "Prospective Property",
+      "Prospective Selection",
+      "Prospective Disposition",
+      "Prospective Creation",
+      "Deed",
+      "Easements",
+      "Parcels",
+      "Property Tax",
+      "Property Payments",
+      "Energy Meter",
+      "Water Meter",
+    ]);
+    expect(USER_MODE_NAVIGATION_BLUEPRINT.filter((item) => item.key === "facility-manager")).toHaveLength(1);
+    expect(USER_MODE_NAVIGATION_BLUEPRINT.filter((item) => item.key === "property-manager")).toHaveLength(1);
+    expect(USER_MODE_NAVIGATION_BLUEPRINT.some((item) => item.key === "facilities-asset-manager")).toBe(false);
+  });
+
   it("renders the governed ADMIN configuration with four functional tabs", async () => {
     const user = userEvent.setup();
     render(<AdminEnterpriseStructurePage canConfigure token="token" />);
