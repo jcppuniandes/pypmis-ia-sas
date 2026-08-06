@@ -94,7 +94,7 @@ def _payload() -> dict:
                 "category_set_code": "STRATEGIC_OBJECTIVE",
                 "category_item_code": "obj-001",
                 "status": "ACTIVE",
-            }
+            },
         ],
         "links": [
             {
@@ -275,8 +275,7 @@ def test_required_categories_are_enforced() -> None:
 
     assert report.valid is False
     assert any(
-        item.code == "REQUIRED_CLASSIFICATION_MISSING" and item.reference == "BU-001"
-        for item in report.findings
+        item.code == "REQUIRED_CLASSIFICATION_MISSING" and item.reference == "BU-001" for item in report.findings
     )
 
 

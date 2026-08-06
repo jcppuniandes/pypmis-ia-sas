@@ -118,8 +118,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         permissions[key] = record
 
     roles = {
-        item.code: item
-        for item in db.scalars(select(SecurityRole).where(SecurityRole.tenant_id == tenant_id)).all()
+        item.code: item for item in db.scalars(select(SecurityRole).where(SecurityRole.tenant_id == tenant_id)).all()
     }
     if "organization_admin" not in roles:
         require_tenant_configurator(db, tenant_id, user_id)

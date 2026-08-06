@@ -148,4 +148,3 @@ def test_module_dependencies_and_numbering_sequence() -> None:
     assert cost.status_code == 200, cost.text
     assert first.json()["value"] == "WS-0001"
     assert second.json()["value"] == "WS-0002"
-

@@ -14,7 +14,9 @@ def validate_parent_child(parent: EnterpriseWorkspace, child_type: str, parent_t
         )
 
 
-def validate_rule_definition(code: str, content: dict, known_type_codes: set[str], known_categories: set[str]) -> list[str]:
+def validate_rule_definition(
+    code: str, content: dict, known_type_codes: set[str], known_categories: set[str]
+) -> list[str]:
     issues: list[str] = []
     allowed_children = content.get("allowed_children", [])
     if not isinstance(allowed_children, list):

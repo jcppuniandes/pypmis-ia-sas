@@ -84,7 +84,11 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
 
     for item in configuration.classifications:
         workspace = matched_nodes.get(item.workspace_external_key)
-        identity = (workspace.id, internal_code(item.category_set_code), internal_code(item.category_item_code)) if workspace else None
+        identity = (
+            (workspace.id, internal_code(item.category_set_code), internal_code(item.category_item_code))
+            if workspace
+            else None
+        )
         action = DiffAction.UNCHANGED if identity in snapshot.classifications else DiffAction.CREATE
         result.append(
             DiffEntry(

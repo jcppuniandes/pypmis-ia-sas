@@ -74,7 +74,13 @@ PERMISSION_SEED = (
     ("admin.workspace_type.manage", "workspace_type", "manage", "Administrar tipos de workspace.", "high"),
     ("admin.workspace_type.publish", "workspace_type", "publish", "Publicar tipos de workspace.", "critical"),
     ("admin.workspace_structure.read", "workspace_structure", "read", "Consultar estructura empresarial.", "standard"),
-    ("admin.workspace_structure.manage", "workspace_structure", "manage", "Administrar estructura empresarial.", "high"),
+    (
+        "admin.workspace_structure.manage",
+        "workspace_structure",
+        "manage",
+        "Administrar estructura empresarial.",
+        "high",
+    ),
     ("admin.workspace_defaults.read", "workspace_defaults", "read", "Consultar valores heredados.", "standard"),
     ("admin.workspace_defaults.manage", "workspace_defaults", "manage", "Administrar valores heredados.", "high"),
     ("admin.module_activation.read", "module_activation", "read", "Consultar activación de módulos.", "standard"),
@@ -87,7 +93,13 @@ PERMISSION_SEED = (
     ("admin.numbering.publish", "numbering", "publish", "Publicar reglas de numeración.", "critical"),
     ("admin.process_definition.read", "process_definition", "read", "Consultar definiciones de proceso.", "standard"),
     ("admin.process_definition.manage", "process_definition", "manage", "Administrar procesos declarativos.", "high"),
-    ("admin.process_definition.publish", "process_definition", "publish", "Publicar definiciones de proceso.", "critical"),
+    (
+        "admin.process_definition.publish",
+        "process_definition",
+        "publish",
+        "Publicar definiciones de proceso.",
+        "critical",
+    ),
 )
 
 ROLE_SEED = {
@@ -210,7 +222,9 @@ def create_unit(
     code = payload.code.strip().upper()
     if not code or not payload.name.strip():
         raise HTTPException(status_code=400, detail="Unit code and name are required")
-    if db.scalar(select(OrganizationUnit.id).where(OrganizationUnit.tenant_id == tenant_id, OrganizationUnit.code == code)):
+    if db.scalar(
+        select(OrganizationUnit.id).where(OrganizationUnit.tenant_id == tenant_id, OrganizationUnit.code == code)
+    ):
         raise HTTPException(status_code=409, detail="Organization unit code already exists")
     if payload.parent_id is not None:
         _unit(db, tenant_id, payload.parent_id)
@@ -582,8 +596,7 @@ def _ensure_security_seed(db: Session, tenant_id: int, user_id: int) -> None:
             db.flush()
             permissions_by_key[key] = permission
     roles_by_code = {
-        item.code: item
-        for item in db.scalars(select(SecurityRole).where(SecurityRole.tenant_id == tenant_id)).all()
+        item.code: item for item in db.scalars(select(SecurityRole).where(SecurityRole.tenant_id == tenant_id)).all()
     }
     for code, definition in ROLE_SEED.items():
         role = roles_by_code.get(code)
@@ -678,7 +691,9 @@ def _user(db: Session, tenant_id: int, user_id: int) -> UserAccount:
 
 
 def _unit(db: Session, tenant_id: int, unit_id: int) -> OrganizationUnit:
-    unit = db.scalar(select(OrganizationUnit).where(OrganizationUnit.tenant_id == tenant_id, OrganizationUnit.id == unit_id))
+    unit = db.scalar(
+        select(OrganizationUnit).where(OrganizationUnit.tenant_id == tenant_id, OrganizationUnit.id == unit_id)
+    )
     if not unit:
         raise HTTPException(status_code=404, detail="Organization unit not found")
     return unit
@@ -731,7 +746,9 @@ def _units(db: Session, tenant_id: int) -> list[OrganizationUnit]:
 
 
 def _permissions(db: Session) -> list[PermissionCatalog]:
-    return list(db.scalars(select(PermissionCatalog).order_by(PermissionCatalog.resource, PermissionCatalog.action)).all())
+    return list(
+        db.scalars(select(PermissionCatalog).order_by(PermissionCatalog.resource, PermissionCatalog.action)).all()
+    )
 
 
 def _events(db: Session, tenant_id: int) -> list[SecurityEvent]:

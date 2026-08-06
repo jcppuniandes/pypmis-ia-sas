@@ -1287,15 +1287,15 @@ describe("served project control flow", () => {
       name: "Project Control Manager",
       exact: true,
     });
-    const facilitiesAssetMacroprocess = within(validationNav).getByRole("button", {
-      name: "Facilities&Asset Manager",
+    const facilityMacroprocess = within(validationNav).getByRole("button", {
+      name: "Facility Manager",
       exact: true,
     });
     expect(enterpriseStrategyMacroprocess).toHaveAttribute("aria-expanded", "true");
     expect(projectControlMacroprocess).toHaveAccessibleName("Project Control Manager");
     expect(projectControlMacroprocess).toHaveAttribute("aria-expanded", "true");
-    expect(facilitiesAssetMacroprocess).toHaveAccessibleName("Facilities&Asset Manager");
-    expect(facilitiesAssetMacroprocess).toHaveAttribute("aria-expanded", "false");
+    expect(facilityMacroprocess).toHaveAccessibleName("Facility Manager");
+    expect(facilityMacroprocess).toHaveAttribute("aria-expanded", "false");
     [
       "Idea & Demand Manager",
       "Portfolio Manager",
@@ -1370,7 +1370,7 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: "Document Manager", exact: true }));
     await user.click(within(validationNav).getByRole("button", { name: "Submittals", exact: true }));
     expect(await screen.findByRole("region", { name: /submittals module/i })).toBeInTheDocument();
-    await user.click(facilitiesAssetMacroprocess);
+    await user.click(facilityMacroprocess);
     ["Asset Manager", "Maintenance Manager", "Condition Assessment Manager"].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });

@@ -283,8 +283,7 @@ def validate_configuration(
                     )
                 )
             published_items = {
-                str(published.get("code", "")).strip().upper()
-                for published in category.get("items", [])
+                str(published.get("code", "")).strip().upper() for published in category.get("items", [])
             }
             if category_code != "strategic-objective" and item.category_item_code not in published_items:
                 findings.append(

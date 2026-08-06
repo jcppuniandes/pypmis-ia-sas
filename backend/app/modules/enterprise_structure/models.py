@@ -20,9 +20,7 @@ class EnterpriseWorkspaceClassification(Base):
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    __table_args__ = (
-        UniqueConstraint("tenant_id", "workspace_id", "category_set_code", "category_item_code"),
-    )
+    __table_args__ = (UniqueConstraint("tenant_id", "workspace_id", "category_set_code", "category_item_code"),)
 
 
 class EnterpriseWorkspaceLink(Base):
@@ -39,6 +37,4 @@ class EnterpriseWorkspaceLink(Base):
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    __table_args__ = (
-        UniqueConstraint("tenant_id", "source_workspace_id", "target_workspace_id", "relationship_type"),
-    )
+    __table_args__ = (UniqueConstraint("tenant_id", "source_workspace_id", "target_workspace_id", "relationship_type"),)

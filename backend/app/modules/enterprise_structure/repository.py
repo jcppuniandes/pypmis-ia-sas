@@ -41,7 +41,9 @@ class EnterpriseStructureRepository:
         )
         if published_only:
             statement = statement.where(AdminConfiguration.status == "published")
-        rows = list(self.db.scalars(statement.order_by(AdminConfiguration.code, AdminConfiguration.revision.desc())).all())
+        rows = list(
+            self.db.scalars(statement.order_by(AdminConfiguration.code, AdminConfiguration.revision.desc())).all()
+        )
         selected: dict[str, AdminConfiguration] = {}
         for row in rows:
             current = selected.get(row.code)

@@ -138,9 +138,7 @@ class EnterpriseStructureService:
                 (
                     item
                     for item in self.repository.workspaces()
-                    if item.parent_id is None
-                    and item.workspace_type_code == "enterprise"
-                    and item.status != "archived"
+                    if item.parent_id is None and item.workspace_type_code == "enterprise" and item.status != "archived"
                 ),
                 None,
             )
@@ -190,7 +188,9 @@ class EnterpriseStructureService:
             else:
                 parent = self._workspace(payload.parent_id)
                 self._ensure_no_cycle(workspace.id, parent.id)
-                validate_parent_child(parent, workspace.workspace_type_code, self._published_type(parent.workspace_type_code))
+                validate_parent_child(
+                    parent, workspace.workspace_type_code, self._published_type(parent.workspace_type_code)
+                )
                 self._validate_depth(parent, self._published_type(workspace.workspace_type_code))
                 workspace.parent_id = parent.id
         if payload.name is not None:
@@ -322,7 +322,10 @@ class EnterpriseStructureService:
         unknown_types = sorted(set(applicable_types) - known_types)
         if unknown_types:
             raise HTTPException(status_code=422, detail=f"Unknown applicable types: {', '.join(unknown_types)}")
-        items = [{"code": _configuration_code(item.code), "label": _required(item.label, "Item label")} for item in payload.items]
+        items = [
+            {"code": _configuration_code(item.code), "label": _required(item.label, "Item label")}
+            for item in payload.items
+        ]
         codes = [item["code"] for item in items]
         if len(codes) != len(set(codes)):
             raise HTTPException(status_code=422, detail="Category item codes must be unique")
@@ -402,10 +405,16 @@ class EnterpriseStructureService:
             if node.parent_id is None:
                 continue
             parent = self.repository.workspace(node.parent_id)
-            parent_type = next((item for item in selected_types if item.code == parent.workspace_type_code), None) if parent else None
+            parent_type = (
+                next((item for item in selected_types if item.code == parent.workspace_type_code), None)
+                if parent
+                else None
+            )
             if parent is None:
                 issues.append(f"{node.code}: parent does not exist")
-            elif parent_type is None or node.workspace_type_code not in parent_type.content_json.get("allowed_children", []):
+            elif parent_type is None or node.workspace_type_code not in parent_type.content_json.get(
+                "allowed_children", []
+            ):
                 issues.append(f"{node.code}: incompatible parent-child composition")
             try:
                 self._ensure_no_cycle(node.id, node.parent_id)
@@ -542,7 +551,9 @@ class EnterpriseStructureService:
         return EnterpriseNodeDetailOut(
             node=self.node_out(workspace),
             path=[self.node_out(item) for item in path if item.id in authorized],
-            classifications=[ClassificationOut.model_validate(item) for item in self.repository.classifications(workspace.id)],
+            classifications=[
+                ClassificationOut.model_validate(item) for item in self.repository.classifications(workspace.id)
+            ],
             links=[WorkspaceLinkOut.model_validate(item) for item in self.repository.links(workspace.id)],
         )
 
@@ -568,10 +579,7 @@ class EnterpriseStructureService:
 
         def build(parent_id: int | None) -> list[EnterpriseTreeNodeOut]:
             rows = sorted(children.get(parent_id, []), key=lambda item: (item.sort_order, item.name.lower()))
-            return [
-                EnterpriseTreeNodeOut(**self.node_out(item).model_dump(), children=build(item.id))
-                for item in rows
-            ]
+            return [EnterpriseTreeNodeOut(**self.node_out(item).model_dump(), children=build(item.id)) for item in rows]
 
         return build(None)
 
@@ -724,7 +732,9 @@ class EnterpriseStructureService:
         if record is None:
             raise HTTPException(status_code=404, detail="Configuration not found")
         if record.status != "draft":
-            raise HTTPException(status_code=409, detail="Published configuration is immutable; clone it to create a draft")
+            raise HTTPException(
+                status_code=409, detail="Published configuration is immutable; clone it to create a draft"
+            )
         if expected_kind and record.kind != expected_kind:
             raise HTTPException(status_code=422, detail=f"Expected {expected_kind} configuration")
         return record
@@ -771,11 +781,7 @@ class EnterpriseStructureService:
         nodes = self.repository.workspaces()
         if context.organization_wide:
             return nodes
-        return [
-            item
-            for item in nodes
-            if self.node_out(item).organization_unit_id in context.scope_unit_ids
-        ]
+        return [item for item in nodes if self.node_out(item).organization_unit_id in context.scope_unit_ids]
 
     def _descendant_ids(self, root_id: int, nodes: list[EnterpriseWorkspace]) -> set[int]:
         by_parent: dict[int | None, list[int]] = {}

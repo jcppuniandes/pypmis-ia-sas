@@ -253,16 +253,19 @@ def clone_configuration(
     source = _configuration(db, tenant_id, configuration_id)
     if source.status != "published":
         raise HTTPException(status_code=409, detail="Only a published revision can be cloned")
-    next_revision = int(
-        db.scalar(
-            select(func.max(AdminConfiguration.revision)).where(
-                AdminConfiguration.tenant_id == tenant_id,
-                AdminConfiguration.kind == source.kind,
-                AdminConfiguration.code == source.code,
+    next_revision = (
+        int(
+            db.scalar(
+                select(func.max(AdminConfiguration.revision)).where(
+                    AdminConfiguration.tenant_id == tenant_id,
+                    AdminConfiguration.kind == source.kind,
+                    AdminConfiguration.code == source.code,
+                )
             )
+            or 0
         )
-        or 0
-    ) + 1
+        + 1
+    )
     clone = AdminConfiguration(
         tenant_id=tenant_id,
         kind=source.kind,

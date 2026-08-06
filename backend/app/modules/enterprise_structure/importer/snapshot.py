@@ -25,11 +25,7 @@ from app.modules.enterprise_structure.models import EnterpriseWorkspaceClassific
 def load_tenant_snapshot(db: Session, tenant_code: str, requested_by: str | None = None) -> TenantSnapshot:
     normalized_tenant = tenant_code.strip().lower().replace("_", "-")
     tenant = next(
-        (
-            item
-            for item in db.scalars(select(Tenant)).all()
-            if item.slug.lower().replace("_", "-") == normalized_tenant
-        ),
+        (item for item in db.scalars(select(Tenant)).all() if item.slug.lower().replace("_", "-") == normalized_tenant),
         None,
     )
     if tenant is None:
@@ -79,9 +75,7 @@ def load_tenant_snapshot(db: Session, tenant_code: str, requested_by: str | None
     classifications = {
         (item.workspace_id, item.category_set_code, item.category_item_code)
         for item in db.scalars(
-            select(EnterpriseWorkspaceClassification).where(
-                EnterpriseWorkspaceClassification.tenant_id == tenant.id
-            )
+            select(EnterpriseWorkspaceClassification).where(EnterpriseWorkspaceClassification.tenant_id == tenant.id)
         ).all()
     }
     links = {
@@ -121,9 +115,7 @@ def load_tenant_snapshot(db: Session, tenant_code: str, requested_by: str | None
         classifications=classifications,
         links=links,
         published_type_codes={code for (kind, code), _ in latest.items() if kind == "workspace_type"},
-        published_categories={
-            code: item.content_json for (kind, code), item in latest.items() if kind == "catalog"
-        },
+        published_categories={code: item.content_json for (kind, code), item in latest.items() if kind == "catalog"},
         user_emails=user_emails,
         organization_unit_codes=organization_unit_codes,
         existing_release_codes=release_codes,
