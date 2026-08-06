@@ -239,6 +239,16 @@ const resetUserPassword = vi.fn();
 const deactivateUser = vi.fn();
 const listRoles = vi.fn();
 const removeTeamMember = vi.fn();
+const organizationSecurityOverview = vi.fn();
+const updateOrganizationSecurity = vi.fn();
+const createOrganizationUnit = vi.fn();
+const createSecurityGroup = vi.fn();
+const addSecurityGroupMember = vi.fn();
+const removeSecurityGroupMember = vi.fn();
+const createSecurityRole = vi.fn();
+const createSecurityAssignment = vi.fn();
+const revokeSecurityAssignment = vi.fn();
+const effectiveSecurityAccess = vi.fn();
 
 vi.mock("../src/api/projects", () => ({
   projects: {
@@ -284,6 +294,21 @@ vi.mock("../src/api/admin", () => ({
     resetUserPassword: (...args: unknown[]) => resetUserPassword(...args),
     deactivateUser: (...args: unknown[]) => deactivateUser(...args),
     listRoles: (...args: unknown[]) => listRoles(...args),
+  },
+}));
+
+vi.mock("../src/api/organizationSecurity", () => ({
+  organizationSecurity: {
+    overview: (...args: unknown[]) => organizationSecurityOverview(...args),
+    updateOrganization: (...args: unknown[]) => updateOrganizationSecurity(...args),
+    createUnit: (...args: unknown[]) => createOrganizationUnit(...args),
+    createGroup: (...args: unknown[]) => createSecurityGroup(...args),
+    addGroupMember: (...args: unknown[]) => addSecurityGroupMember(...args),
+    removeGroupMember: (...args: unknown[]) => removeSecurityGroupMember(...args),
+    createRole: (...args: unknown[]) => createSecurityRole(...args),
+    createAssignment: (...args: unknown[]) => createSecurityAssignment(...args),
+    revokeAssignment: (...args: unknown[]) => revokeSecurityAssignment(...args),
+    effectiveAccess: (...args: unknown[]) => effectiveSecurityAccess(...args),
   },
 }));
 
@@ -1040,6 +1065,117 @@ describe("served project control flow", () => {
         can_configure: false,
       },
     ] satisfies RoleProfile[]);
+    organizationSecurityOverview.mockResolvedValue({
+      organization: {
+        id: 1,
+        code: "DEMO_ENERGY",
+        legal_name: "Demo Energy Infrastructure",
+        display_name: "Demo Energy Infrastructure",
+        base_currency: "COP",
+        country_code: "CO",
+        timezone: "America/Bogota",
+        default_locale: "es-CO",
+        status: "active",
+      },
+      units: [
+        {
+          id: 1,
+          parent_id: null,
+          code: "OPS",
+          name: "Operations",
+          unit_type: "division",
+          manager_user_id: 1,
+          status: "active",
+          sort_order: 0,
+          version: 1,
+        },
+      ],
+      users: [
+        {
+          id: 1,
+          email: "carlos.planner@demo.local",
+          full_name: "Carlos Planner",
+          title: "Planner",
+          status: "active",
+        },
+      ],
+      groups: [
+        {
+          id: 1,
+          code: "PROJECT-CONTROLS",
+          name: "Project Controls",
+          description: "Control team",
+          owner_user_id: 1,
+          status: "active",
+          version: 1,
+          member_ids: [1],
+        },
+      ],
+      permissions: [
+        {
+          id: 1,
+          key: "organization.read",
+          resource: "organization",
+          action: "read",
+          description: "Consultar la empresa.",
+          risk_level: "standard",
+          status: "active",
+        },
+        {
+          id: 2,
+          key: "access.manage",
+          resource: "access",
+          action: "manage",
+          description: "Asignar acceso.",
+          risk_level: "critical",
+          status: "active",
+        },
+      ],
+      roles: [
+        {
+          id: 1,
+          code: "organization_admin",
+          name: "Organization Administrator",
+          description: "Tenant administrator",
+          is_system: true,
+          status: "active",
+          version: 1,
+          permission_keys: ["organization.read", "access.manage"],
+        },
+      ],
+      assignments: [
+        {
+          id: 1,
+          subject_type: "user",
+          subject_id: 1,
+          subject_name: "Carlos Planner",
+          role_id: 1,
+          role_code: "organization_admin",
+          role_name: "Organization Administrator",
+          scope_type: "organization",
+          scope_unit_id: null,
+          scope_name: "Organization",
+          starts_at: null,
+          ends_at: null,
+          status: "active",
+        },
+      ],
+      security_events: [],
+      authentication: {
+        local_authentication: true,
+        oidc_available: false,
+        access_token_minutes: 30,
+        refresh_sessions: false,
+        password_hash_policy: "PBKDF2-SHA256 (migración a Argon2id pendiente)",
+        active_user_count: 1,
+      },
+    });
+    effectiveSecurityAccess.mockResolvedValue({
+      user_id: 1,
+      user_name: "Carlos Planner",
+      permission_keys: ["organization.read", "access.manage"],
+      assignments: [],
+    });
     updateUser.mockImplementation((_token, _id, payload) => Promise.resolve({ id: 1, status: "active", ...payload }));
     resetUserPassword.mockResolvedValue({
       id: 1,
@@ -1252,10 +1388,15 @@ describe("served project control flow", () => {
     await user.click(within(applicationBrand).getByRole("button", { name: "Cambiar a ADMIN MODE", exact: true }));
     const adminNavigation = screen.getByRole("navigation", { name: "Admin mode navigation", exact: true });
     expect(screen.queryByRole("navigation", { name: /validation focus/i })).not.toBeInTheDocument();
-    expect(within(adminNavigation).getByRole("button", { name: "Admistration", exact: true })).toHaveAttribute(
-      "aria-expanded",
-      "true"
-    );
+    expect(
+      within(adminNavigation).getByRole("button", { name: "Organization & Security", exact: true })
+    ).toHaveAttribute("aria-expanded", "true");
+    expect(
+      within(adminNavigation).getByRole("button", { name: "Company & Organization Manager", exact: true })
+    ).toBeInTheDocument();
+    expect(
+      within(adminNavigation).getByRole("button", { name: "Authentication & Session Management", exact: true })
+    ).toBeInTheDocument();
     expect(within(adminNavigation).getByText("User Creator", { exact: true, selector: "span" })).toBeInTheDocument();
     expect(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true })).toBeInTheDocument();
     expect(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true })).toBeInTheDocument();
@@ -1264,6 +1405,17 @@ describe("served project control flow", () => {
       within(adminNavigation).queryByRole("button", { name: "Project Control Manager", exact: true })
     ).not.toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "User Creator", exact: true })).toBeInTheDocument();
+    await user.click(
+      within(adminNavigation).getByRole("button", { name: "Company & Organization Manager", exact: true })
+    );
+    expect(await screen.findByRole("region", { name: /company & organization manager module/i })).toBeInTheDocument();
+    expect(screen.getByRole("tree", { name: /árbol organizacional/i })).toBeInTheDocument();
+    await user.click(
+      within(adminNavigation).getByRole("button", { name: "Authentication & Session Management", exact: true })
+    );
+    expect(
+      await screen.findByRole("region", { name: /authentication & session management module/i })
+    ).toBeInTheDocument();
     await user.click(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true }));
     expect(await screen.findByRole("region", { name: /group creator module/i })).toBeInTheDocument();
     await user.click(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true }));

@@ -41,6 +41,7 @@ from app.api.v1.routers import admin as admin_router
 from app.api.v1.routers import auth as auth_router
 from app.api.v1.routers import documents as documents_domain
 from app.api.v1.routers import health as health_router
+from app.api.v1.routers import organization_security as organization_security_router
 from app.api.v1.routers import projects as projects_router
 from app.api.v1.routers import rfq as rfq_domain
 from app.core.config import get_settings
@@ -269,6 +270,7 @@ router = APIRouter(prefix="/api/v1")
 router.include_router(health_router.router, tags=["health"])
 router.include_router(auth_router.router, tags=["auth"])
 router.include_router(admin_router.router, tags=["admin"])
+router.include_router(organization_security_router.router, tags=["organization-security"])
 router.include_router(projects_router.router, tags=["projects"])
 router.include_router(documents_domain.router, tags=["documents"])
 router.include_router(rfq_domain.router, tags=["rfq"])

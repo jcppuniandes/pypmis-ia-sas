@@ -7990,3 +7990,376 @@ td span {
     overflow-x: auto;
   }
 }
+
+.organizationSecurityModule {
+  display: grid;
+  gap: 18px;
+}
+
+.organizationSecurityHeader {
+  align-items: center;
+  background: linear-gradient(120deg, #10242f 0%, #183d49 100%);
+  border-radius: 12px;
+  color: #fff;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 22px 24px;
+}
+
+.organizationSecurityHeader > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.organizationSecurityHeader span {
+  color: #a9c4cc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.organizationSecurityHeader h2,
+.organizationSecurityHeader p {
+  margin: 0;
+}
+
+.organizationSecurityHeader p {
+  color: #d8e5e8;
+  max-width: 740px;
+}
+
+.securityStatusBadge {
+  align-items: center;
+  background: rgb(255 255 255 / 9%);
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 10px;
+  display: grid;
+  flex: 0 0 210px;
+  grid-template-columns: auto 1fr;
+  padding: 13px 15px;
+}
+
+.securityStatusBadge svg {
+  color: #56d2b0;
+  grid-row: span 2;
+  margin-right: 10px;
+}
+
+.securityStatusBadge span {
+  font-size: 0.62rem;
+  text-transform: none;
+}
+
+.organizationSecurityGrid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(360px, 1.1fr);
+}
+
+.securityFormCard,
+.securityListCard {
+  background: #fff;
+  border: 1px solid #d7e0e5;
+  border-radius: 11px;
+  box-shadow: 0 8px 22px rgb(16 36 47 / 5%);
+  display: grid;
+  gap: 13px;
+  min-width: 0;
+  padding: 17px;
+}
+
+.securityFormCard label {
+  display: grid;
+  gap: 6px;
+}
+
+.securityFormCard label > span,
+.permissionChecklist legend {
+  color: #526875;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.securityFormCard input,
+.securityFormCard select,
+.securityFormCard textarea {
+  border: 1px solid #cbd8de;
+  border-radius: 7px;
+  font: inherit;
+  padding: 9px 10px;
+}
+
+.securityFormCard textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.securityFormCard input:focus-visible,
+.securityFormCard select:focus-visible,
+.securityFormCard textarea:focus-visible,
+.permissionChecklist input:focus-visible {
+  outline: 3px solid rgb(20 155 162 / 24%);
+  outline-offset: 1px;
+}
+
+.securityFormCard input:disabled,
+.securityFormCard select:disabled,
+.securityFormCard textarea:disabled {
+  background: #f1f5f6;
+  color: #687c85;
+}
+
+.securityFormCard .panelHeader h3,
+.securityListCard .panelHeader h3 {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  margin: 0;
+}
+
+.securityListCard.wide,
+.securityMetricGrid.wide {
+  grid-column: 1 / -1;
+}
+
+.securityFactStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.securityFactStrip span,
+.securityPolicyList article,
+.effectiveAccessResult {
+  background: #f3f7f8;
+  border: 1px solid #dae4e8;
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.organizationTree,
+.securityEventList,
+.securityAssignmentList,
+.securityPolicyList {
+  display: grid;
+  gap: 7px;
+}
+
+.organizationTreeNode {
+  align-items: center;
+  background: #f7fafb;
+  border-left: 3px solid #179fa5;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 110px minmax(180px, 1fr) auto;
+  min-height: 46px;
+  padding-bottom: 8px;
+  padding-right: 12px;
+  padding-top: 8px;
+}
+
+.organizationTreeNode > span,
+.securityCardCollection article > span,
+.securityRoleCatalog article > span,
+.securityAssignmentList article span {
+  color: #687b84;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.securityEmptyState {
+  color: #647983;
+  margin: 8px 0;
+}
+
+.securityMetricGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+}
+
+.securityMetric {
+  background: #f7fafb;
+  border: 1px solid #d6e1e5;
+  border-radius: 10px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.securityMetric > span {
+  align-items: center;
+  color: #536a75;
+  display: flex;
+  font-size: 0.75rem;
+  font-weight: 800;
+  gap: 7px;
+  text-transform: uppercase;
+}
+
+.securityMetric strong {
+  font-size: 1.25rem;
+}
+
+.securityPolicyList article {
+  display: grid;
+  gap: 4px;
+}
+
+.securityPolicyList article span {
+  color: #617681;
+}
+
+.securityEventList article {
+  align-items: center;
+  border-bottom: 1px solid #e4ebee;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(180px, 1fr) 90px 180px;
+  padding: 9px 4px;
+}
+
+.securityEventList svg {
+  color: #179f77;
+}
+
+.securityCardCollection {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.securityCardCollection article,
+.securityRoleCatalog article {
+  background: #f7fafb;
+  border: 1px solid #dce5e8;
+  border-radius: 9px;
+  display: grid;
+  gap: 6px;
+  padding: 13px;
+}
+
+.securityCardCollection p {
+  color: #586f79;
+  margin: 0;
+}
+
+.permissionChecklist {
+  border: 1px solid #d7e1e5;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  max-height: 330px;
+  overflow: auto;
+  padding: 11px;
+}
+
+.permissionChecklist label {
+  align-items: flex-start;
+  border-bottom: 1px solid #eef2f4;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: auto 1fr;
+  padding: 7px 2px;
+}
+
+.permissionChecklist label > span {
+  display: grid;
+  gap: 3px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.permissionChecklist label small {
+  color: #677b84;
+  font-weight: 400;
+}
+
+.securityRoleCatalog {
+  align-content: start;
+  max-height: 720px;
+  overflow: auto;
+}
+
+.effectiveAccessResult {
+  display: grid;
+  gap: 7px;
+}
+
+.securityAssignmentList article {
+  align-items: center;
+  border-bottom: 1px solid #e5ecef;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  padding: 10px 2px;
+}
+
+.securityAssignmentList article > div {
+  display: grid;
+  gap: 3px;
+}
+
+.securityAssignmentList em {
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 800;
+  padding: 5px 9px;
+  text-transform: uppercase;
+}
+
+.securityAssignmentList em.active {
+  background: #e7f7f0;
+  color: #137852;
+}
+
+.securityAssignmentList em.revoked {
+  background: #f2f4f5;
+  color: #687a82;
+}
+
+.organizationSecurityLoading {
+  align-items: center;
+  background: #f7fafb;
+  border: 1px solid #d7e1e5;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  min-height: 220px;
+  padding: 24px;
+}
+
+.organizationSecurityLoading.error {
+  flex-direction: column;
+}
+
+@media (max-width: 980px) {
+  .organizationSecurityGrid,
+  .securityMetricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .organizationSecurityHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .securityStatusBadge {
+    flex-basis: auto;
+  }
+
+  .organizationTreeNode,
+  .securityEventList article,
+  .securityAssignmentList article {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+}

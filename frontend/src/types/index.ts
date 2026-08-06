@@ -614,6 +614,117 @@ export type AuthSession = {
   user: User;
 };
 
+export type OrganizationSecurityOrganization = {
+  id: number;
+  code: string;
+  legal_name: string;
+  display_name: string;
+  base_currency: string;
+  country_code: string;
+  timezone: string;
+  default_locale: string;
+  status: string;
+};
+
+export type OrganizationUnit = {
+  id: number;
+  parent_id: number | null;
+  code: string;
+  name: string;
+  unit_type: string;
+  manager_user_id: number | null;
+  status: string;
+  sort_order: number;
+  version: number;
+};
+
+export type SecurityGroup = {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  owner_user_id: number | null;
+  status: string;
+  version: number;
+  member_ids: number[];
+};
+
+export type PermissionCatalogItem = {
+  id: number;
+  key: string;
+  resource: string;
+  action: string;
+  description: string;
+  risk_level: string;
+  status: string;
+};
+
+export type SecurityRole = {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  is_system: boolean;
+  status: string;
+  version: number;
+  permission_keys: string[];
+};
+
+export type SecurityAccessAssignment = {
+  id: number;
+  subject_type: "user" | "group";
+  subject_id: number;
+  subject_name: string;
+  role_id: number;
+  role_code: string;
+  role_name: string;
+  scope_type: "organization" | "organization_unit";
+  scope_unit_id: number | null;
+  scope_name: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  status: string;
+};
+
+export type EffectiveAccess = {
+  user_id: number;
+  user_name: string;
+  permission_keys: string[];
+  assignments: SecurityAccessAssignment[];
+};
+
+export type SecurityEvent = {
+  id: number;
+  user_id: number | null;
+  event_type: string;
+  outcome: string;
+  target_type: string;
+  target_id: number | null;
+  metadata_json: Record<string, unknown>;
+  occurred_at: string;
+};
+
+export type AuthenticationPosture = {
+  local_authentication: boolean;
+  oidc_available: boolean;
+  access_token_minutes: number;
+  refresh_sessions: boolean;
+  password_hash_policy: string;
+  active_user_count: number;
+};
+
+export type OrganizationSecurityOverview = {
+  organization: OrganizationSecurityOrganization;
+  units: OrganizationUnit[];
+  users: User[];
+  groups: SecurityGroup[];
+  permissions: PermissionCatalogItem[];
+  roles: SecurityRole[];
+  assignments: SecurityAccessAssignment[];
+  security_events: SecurityEvent[];
+  authentication: AuthenticationPosture;
+};
+
 export type ProjectMembership = {
   id: number;
   project_id: number;

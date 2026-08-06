@@ -40,6 +40,7 @@ import CostCurrencyGate from "./components/CostCurrencyGate";
 import GuidedProcessRail from "./components/GuidedProcessRail";
 import NextActionPanel from "./components/NextActionPanel";
 import OpcGapReadinessPanel from "./components/OpcGapReadinessPanel";
+import OrganizationSecurityView, { type OrganizationSecurityViewKey } from "./components/OrganizationSecurityView";
 import ProductLogo from "./components/ProductLogo";
 import ProjectControlsHandbook from "./components/ProjectControlsHandbook";
 import ProjectCreateDrawer from "./components/ProjectCreateDrawer";
@@ -256,6 +257,8 @@ type ControlFlowView =
   | "decisions"
   | "evidence"
   | "work-packages"
+  | "company-organization"
+  | "authentication-sessions"
   | "group-creator"
   | "permissions"
   | "access-control"
@@ -494,9 +497,11 @@ const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
 
 const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
   {
-    key: "admistration",
-    label: "Admistration",
+    key: "organization-security",
+    label: "Organization & Security",
     submodules: [
+      { key: "company-organization", label: "Company & Organization Manager" },
+      { key: "authentication-sessions", label: "Authentication & Session Management" },
       { key: "admin", label: "User Creator" },
       { key: "group-creator", label: "Group Creator" },
       { key: "permissions", label: "Permissions" },
@@ -567,9 +572,6 @@ const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "job-plans",
   "facility-inspections",
   "facility-condition-assessment",
-  "group-creator",
-  "permissions",
-  "access-control",
 ]);
 
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
@@ -7855,6 +7857,21 @@ function AppShell() {
                   </div>
                 </div>
               </>
+            )}
+            {(
+              [
+                "company-organization",
+                "authentication-sessions",
+                "group-creator",
+                "permissions",
+                "access-control",
+              ] as ControlFlowView[]
+            ).includes(visibleControlView) && (
+              <OrganizationSecurityView
+                canConfigure={canConfigure}
+                token={token}
+                view={visibleControlView as OrganizationSecurityViewKey}
+              />
             )}
             {visibleControlView === "admin" && (
               <>

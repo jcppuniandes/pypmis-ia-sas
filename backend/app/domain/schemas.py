@@ -553,6 +553,175 @@ class UserPasswordReset(BaseModel):
     password: str
 
 
+class OrganizationSecurityOrganizationOut(BaseModel):
+    id: int
+    code: str
+    legal_name: str
+    display_name: str
+    base_currency: str
+    country_code: str = "CO"
+    timezone: str = "America/Bogota"
+    default_locale: str = "es-CO"
+    status: str = "active"
+
+
+class OrganizationSecurityOrganizationUpdate(BaseModel):
+    display_name: str | None = None
+    base_currency: str | None = None
+
+
+class OrganizationUnitCreate(BaseModel):
+    code: str
+    name: str
+    unit_type: str = "department"
+    parent_id: int | None = None
+    manager_user_id: int | None = None
+    sort_order: int = 0
+
+
+class OrganizationUnitUpdate(BaseModel):
+    name: str | None = None
+    unit_type: str | None = None
+    parent_id: int | None = None
+    manager_user_id: int | None = None
+    status: str | None = None
+    sort_order: int | None = None
+    expected_version: int | None = None
+
+
+class OrganizationUnitOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    parent_id: int | None
+    code: str
+    name: str
+    unit_type: str
+    manager_user_id: int | None
+    status: str
+    sort_order: int
+    version: int
+
+
+class SecurityGroupCreate(BaseModel):
+    code: str
+    name: str
+    description: str = ""
+    owner_user_id: int | None = None
+
+
+class SecurityGroupOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    name: str
+    description: str
+    owner_user_id: int | None
+    status: str
+    version: int
+    member_ids: list[int] = Field(default_factory=list)
+
+
+class PermissionCatalogOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    key: str
+    resource: str
+    action: str
+    description: str
+    risk_level: str
+    status: str
+
+
+class SecurityRoleCreate(BaseModel):
+    code: str
+    name: str
+    description: str = ""
+    permission_keys: list[str] = Field(default_factory=list)
+
+
+class SecurityRoleOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    name: str
+    description: str
+    is_system: bool
+    status: str
+    version: int
+    permission_keys: list[str] = Field(default_factory=list)
+
+
+class SecurityAccessAssignmentCreate(BaseModel):
+    subject_type: str
+    subject_id: int
+    role_id: int
+    scope_type: str = "organization"
+    scope_unit_id: int | None = None
+    starts_at: datetime | None = None
+    ends_at: datetime | None = None
+
+
+class SecurityAccessAssignmentOut(BaseModel):
+    id: int
+    subject_type: str
+    subject_id: int
+    subject_name: str
+    role_id: int
+    role_code: str
+    role_name: str
+    scope_type: str
+    scope_unit_id: int | None
+    scope_name: str
+    starts_at: datetime | None
+    ends_at: datetime | None
+    status: str
+
+
+class EffectiveAccessOut(BaseModel):
+    user_id: int
+    user_name: str
+    permission_keys: list[str]
+    assignments: list[SecurityAccessAssignmentOut]
+
+
+class SecurityEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    user_id: int | None
+    event_type: str
+    outcome: str
+    target_type: str
+    target_id: int | None
+    metadata_json: dict
+    occurred_at: datetime
+
+
+class AuthenticationPostureOut(BaseModel):
+    local_authentication: bool
+    oidc_available: bool
+    access_token_minutes: int
+    refresh_sessions: bool
+    password_hash_policy: str
+    active_user_count: int
+
+
+class OrganizationSecurityOverviewOut(BaseModel):
+    organization: OrganizationSecurityOrganizationOut
+    units: list[OrganizationUnitOut]
+    users: list[UserOut]
+    groups: list[SecurityGroupOut]
+    permissions: list[PermissionCatalogOut]
+    roles: list[SecurityRoleOut]
+    assignments: list[SecurityAccessAssignmentOut]
+    security_events: list[SecurityEventOut]
+    authentication: AuthenticationPostureOut
+
+
 class LoginRequest(BaseModel):
     email: str
     password: str

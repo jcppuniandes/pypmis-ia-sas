@@ -1,7 +1,18 @@
 from datetime import date, datetime
 from enum import StrEnum
 
-from sqlalchemy import JSON, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.time import utc_now
@@ -321,6 +332,130 @@ class UserAccount(Base):
     status: Mapped[str] = mapped_column(String(40), default="active")
 
     __table_args__ = (UniqueConstraint("tenant_id", "email"),)
+
+
+class OrganizationUnit(Base):
+    __tablename__ = "organization_units"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    parent_id: Mapped[int | None] = mapped_column(ForeignKey("organization_units.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    name: Mapped[str] = mapped_column(String(180))
+    unit_type: Mapped[str] = mapped_column(String(80), default="department")
+    manager_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "code"),)
+
+
+class SecurityGroup(Base):
+    __tablename__ = "security_groups"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    name: Mapped[str] = mapped_column(String(180))
+    description: Mapped[str] = mapped_column(Text, default="")
+    owner_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "code"),)
+
+
+class SecurityGroupMember(Base):
+    __tablename__ = "security_group_members"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("security_groups.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    added_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    added_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "group_id", "user_id"),)
+
+
+class PermissionCatalog(Base):
+    __tablename__ = "permission_catalog"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    key: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    resource: Mapped[str] = mapped_column(String(80), index=True)
+    action: Mapped[str] = mapped_column(String(80))
+    description: Mapped[str] = mapped_column(Text, default="")
+    risk_level: Mapped[str] = mapped_column(String(40), default="standard")
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+
+
+class SecurityRole(Base):
+    __tablename__ = "security_roles"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    code: Mapped[str] = mapped_column(String(80), index=True)
+    name: Mapped[str] = mapped_column(String(160))
+    description: Mapped[str] = mapped_column(Text, default="")
+    is_system: Mapped[bool] = mapped_column(default=False)
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "code"),)
+
+
+class SecurityRolePermission(Base):
+    __tablename__ = "security_role_permissions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    role_id: Mapped[int] = mapped_column(ForeignKey("security_roles.id"), index=True)
+    permission_id: Mapped[int] = mapped_column(ForeignKey("permission_catalog.id"), index=True)
+    granted_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    granted_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+    __table_args__ = (UniqueConstraint("tenant_id", "role_id", "permission_id"),)
+
+
+class SecurityAccessAssignment(Base):
+    __tablename__ = "security_access_assignments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
+    subject_type: Mapped[str] = mapped_column(String(20), index=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    group_id: Mapped[int | None] = mapped_column(ForeignKey("security_groups.id"), index=True)
+    role_id: Mapped[int] = mapped_column(ForeignKey("security_roles.id"), index=True)
+    scope_type: Mapped[str] = mapped_column(String(40), default="organization", index=True)
+    scope_unit_id: Mapped[int | None] = mapped_column(ForeignKey("organization_units.id"), index=True)
+    starts_at: Mapped[datetime | None] = mapped_column(DateTime)
+    ends_at: Mapped[datetime | None] = mapped_column(DateTime)
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)
+    granted_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+
+
+class SecurityEvent(Base):
+    __tablename__ = "security_events"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tenant_id: Mapped[int | None] = mapped_column(ForeignKey("tenants.id"), index=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    event_type: Mapped[str] = mapped_column(String(80), index=True)
+    outcome: Mapped[str] = mapped_column(String(40), default="success", index=True)
+    target_type: Mapped[str] = mapped_column(String(80), default="")
+    target_id: Mapped[int | None] = mapped_column(Integer)
+    metadata_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
 
 
 class AuthCredential(Base):
