@@ -1,0 +1,26 @@
+P&Pmis Enterprise Structure - Core Correction Gate 00
+Tenant candidate: demo-energy (identity not confirmed)
+Actor: admin@demo.local
+Result: READY_FOR_ADMIN_PUBLISH_APPROVAL
+
+Published source: id=18 revision=1 hash=8cfcc66700593a8f38b63a27e4ee9d2cebadd10198e8d528652d138a359c08be
+Draft candidate: id=22 revision=2 version=2
+Candidate hash: ccfdccd6367a3d9de68e7e5d2b38c521e92ef90a1971236da5b4fe16f4d3ddb7
+Preserved items: corporate, capital-projects, operations
+Added items: consulting, pmo-aas, technology, construction
+Removed items: none
+Modified items: none
+Applicable types preserved: business-unit, portfolio, program, project, property, facility
+Validation: valid=True issues=0 warnings=0
+Publication executed: no
+CORE dry-run/apply/publish executed: no/no/no
+Tenant/root mutation: no
+
+Database counts before -> after
+  tenants: 1 -> 1
+  roots: 1 -> 1
+  enterprise_workspaces: 1 -> 1
+  admin_configurations: 21 -> 22
+  responsible_area_published: 1 -> 1
+  responsible_area_drafts: 0 -> 1
+  security_events: 1 -> 3
