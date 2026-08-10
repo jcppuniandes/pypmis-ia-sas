@@ -1,0 +1,18 @@
+{
+  "status": "NOT_RUN",
+  "reason": "PostgreSQL heavy suite blocked by the Gate 04H disk-space precondition",
+  "declared_cases": 11,
+  "cases": [
+    "editor can edit",
+    "editor cannot approve",
+    "editor cannot publish",
+    "approver can approve",
+    "approver cannot edit",
+    "publisher can publish",
+    "publisher cannot approve",
+    "same user approve and publish blocked",
+    "cross-tenant blocked",
+    "expired assignment blocked",
+    "invalid scope blocked"
+  ]
+}

@@ -235,6 +235,26 @@ def _seed() -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCore
     return db, EnterpriseStructureRevisionService(db, tenant.id, actor.id), release
 
 
+def _service_as(
+    db: Session,
+    service: EnterpriseStructureRevisionService,
+    email: str,
+) -> EnterpriseStructureRevisionService:
+    actor = UserAccount(
+        tenant_id=service.tenant_id,
+        email=email,
+        full_name=email.split("@", maxsplit=1)[0].replace(".", " ").title(),
+        status="active",
+    )
+    db.add(actor)
+    db.commit()
+    return EnterpriseStructureRevisionService(db, service.tenant_id, actor.id)
+
+
+def _version(service: EnterpriseStructureRevisionService, release_id: int) -> int:
+    return service.get_revision(release_id).revision_version
+
+
 def test_create_revision_preserves_published_baseline_and_identity() -> None:
     db, service, published = _seed()
     draft = service.create_revision(published.id)
@@ -270,6 +290,7 @@ def test_draft_add_edit_preview_move_archive_and_classification_operations() -> 
                 RevisionClassificationIn(category_set_code="strategic-objective", category_item_code="growth")
             ],
         ),
+        expected_version=draft.revision_version,
     )
     added = next(item for item in updated.workspaces if item.name == "AI Program")
     assert added.technical_id is None
@@ -279,6 +300,7 @@ def test_draft_add_edit_preview_move_archive_and_classification_operations() -> 
         draft.id,
         added.workspace_key,
         RevisionWorkspaceUpdate(name="AI SaaS Program", description="Controlled draft edit"),
+        expected_version=updated.revision_version,
     )
     assert (
         next(item for item in updated.workspaces if item.workspace_key == added.workspace_key).name == "AI SaaS Program"
@@ -295,6 +317,7 @@ def test_draft_add_edit_preview_move_archive_and_classification_operations() -> 
                 )
             ]
         ),
+        expected_version=updated.revision_version,
     )
     assert (
         next(item for item in updated.workspaces if item.workspace_key == "PF-ONE")
@@ -304,8 +327,17 @@ def test_draft_add_edit_preview_move_archive_and_classification_operations() -> 
     )
 
     with pytest.raises(HTTPException, match="not allowed"):
-        service.move_workspace(draft.id, "PF-TWO", RevisionMoveRequest(new_parent_key="PF-ONE"))
-    archived = service.archive_workspace(draft.id, added.workspace_key)
+        service.move_workspace(
+            draft.id,
+            "PF-TWO",
+            RevisionMoveRequest(new_parent_key="PF-ONE"),
+            expected_version=updated.revision_version,
+        )
+    archived = service.archive_workspace(
+        draft.id,
+        added.workspace_key,
+        expected_version=updated.revision_version,
+    )
     assert next(item for item in archived.workspaces if item.workspace_key == added.workspace_key).status == "archived"
     assert db.get(EnterpriseCoreRelease, published.id).snapshot_json == published.snapshot_json
     db.close()
@@ -325,6 +357,7 @@ def test_move_preserves_external_key_and_recodes_descendants() -> None:
                 RevisionClassificationIn(category_set_code="strategic-objective", category_item_code="growth")
             ],
         ),
+        expected_version=draft.revision_version,
     )
     program = next(item for item in draft.workspaces if item.name == "Portfolio Program")
     draft = service.add_workspace(
@@ -338,6 +371,7 @@ def test_move_preserves_external_key_and_recodes_descendants() -> None:
                 RevisionClassificationIn(category_set_code="strategic-objective", category_item_code="growth")
             ],
         ),
+        expected_version=draft.revision_version,
     )
     project = next(item for item in draft.workspaces if item.name == "Program Project")
     draft = service.add_workspace(
@@ -351,6 +385,7 @@ def test_move_preserves_external_key_and_recodes_descendants() -> None:
                 RevisionClassificationIn(category_set_code="responsible-area", category_item_code="corporate")
             ],
         ),
+        expected_version=draft.revision_version,
     )
     target = next(item for item in draft.workspaces if item.name == "Second Business Unit")
     preview = service.record_code_preview(
@@ -361,7 +396,12 @@ def test_move_preserves_external_key_and_recodes_descendants() -> None:
             workspace_key="PF-ONE",
         ),
     )
-    moved = service.move_workspace(draft.id, "PF-ONE", RevisionMoveRequest(new_parent_key=target.workspace_key))
+    moved = service.move_workspace(
+        draft.id,
+        "PF-ONE",
+        RevisionMoveRequest(new_parent_key=target.workspace_key),
+        expected_version=draft.revision_version,
+    )
     portfolio = next(item for item in moved.workspaces if item.workspace_key == "PF-ONE")
     moved_program = next(item for item in moved.workspaces if item.workspace_key == program.workspace_key)
     moved_project = next(item for item in moved.workspaces if item.workspace_key == project.workspace_key)
@@ -376,7 +416,12 @@ def test_move_preserves_external_key_and_recodes_descendants() -> None:
     assert moved_program.record_code == "01.02.01.01"
     assert moved_project.record_code == "01.02.01.01.01"
     with pytest.raises(HTTPException, match="cycles"):
-        service.move_workspace(draft.id, target.workspace_key, RevisionMoveRequest(new_parent_key="PF-ONE"))
+        service.move_workspace(
+            draft.id,
+            target.workspace_key,
+            RevisionMoveRequest(new_parent_key="PF-ONE"),
+            expected_version=moved.revision_version,
+        )
     db.close()
 
 
@@ -394,11 +439,22 @@ def test_validate_and_diff_cover_added_modified_moved_archived_and_classificatio
                 RevisionClassificationIn(category_set_code="responsible-area", category_item_code="corporate")
             ],
         ),
+        expected_version=draft.revision_version,
     )
     target = next(item for item in draft.workspaces if item.name == "Second Business Unit")
-    service.edit_workspace(draft.id, "BU-CORE", RevisionWorkspaceUpdate(name="Construction Management"))
-    service.move_workspace(draft.id, "PF-ONE", RevisionMoveRequest(new_parent_key=target.workspace_key))
-    service.archive_workspace(draft.id, "PF-TWO")
+    service.edit_workspace(
+        draft.id,
+        "BU-CORE",
+        RevisionWorkspaceUpdate(name="Construction Management"),
+        expected_version=_version(service, draft.id),
+    )
+    service.move_workspace(
+        draft.id,
+        "PF-ONE",
+        RevisionMoveRequest(new_parent_key=target.workspace_key),
+        expected_version=_version(service, draft.id),
+    )
+    service.archive_workspace(draft.id, "PF-TWO", expected_version=_version(service, draft.id))
     service.set_classifications(
         draft.id,
         "PF-ONE",
@@ -409,6 +465,7 @@ def test_validate_and_diff_cover_added_modified_moved_archived_and_classificatio
                 )
             ]
         ),
+        expected_version=_version(service, draft.id),
     )
     validation = service.validate_revision(draft.id)
     diff = service.compare_revision(draft.id)
@@ -456,10 +513,15 @@ def test_invalid_revision_detects_duplicate_codes_orphans_cycles_and_cross_tenan
 def test_approval_hash_guards_publish_successor_idempotency_and_immutability() -> None:
     db, service, published = _seed()
     draft = service.create_revision(published.id)
-    service.edit_workspace(draft.id, "BU-CORE", RevisionWorkspaceUpdate(name="Construction Management"))
+    service.edit_workspace(
+        draft.id,
+        "BU-CORE",
+        RevisionWorkspaceUpdate(name="Construction Management"),
+        expected_version=draft.revision_version,
+    )
     validation = service.validate_revision(draft.id)
 
-    with pytest.raises(HTTPException, match="approval"):
+    with pytest.raises(HTTPException, match="APPROVAL_INVALIDATED"):
         service.publish_revision(
             draft.id,
             RevisionPublishRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
@@ -473,11 +535,12 @@ def test_approval_hash_guards_publish_successor_idempotency_and_immutability() -
         draft.id,
         RevisionApprovalRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
     )
-    successor = service.publish_revision(
+    publisher = _service_as(db, service, "publisher@gate04.local")
+    successor = publisher.publish_revision(
         draft.id,
         RevisionPublishRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
     )
-    replay = service.publish_revision(
+    replay = publisher.publish_revision(
         draft.id,
         RevisionPublishRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
     )
@@ -530,8 +593,9 @@ def test_base_release_change_blocks_publish() -> None:
     db.add(competing)
     db.commit()
 
+    publisher = _service_as(db, service, "publisher.base@gate04.local")
     with pytest.raises(HTTPException, match="BASE_RELEASE_CHANGED"):
-        service.publish_revision(
+        publisher.publish_revision(
             draft.id,
             RevisionPublishRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
         )
@@ -541,19 +605,25 @@ def test_base_release_change_blocks_publish() -> None:
 def test_logical_rollback_requires_confirmation_and_restores_previous_release() -> None:
     db, service, published = _seed()
     draft = service.create_revision(published.id)
-    service.edit_workspace(draft.id, "BU-CORE", RevisionWorkspaceUpdate(name="Construction Management"))
+    service.edit_workspace(
+        draft.id,
+        "BU-CORE",
+        RevisionWorkspaceUpdate(name="Construction Management"),
+        expected_version=draft.revision_version,
+    )
     validation = service.validate_revision(draft.id)
     service.approve_revision(
         draft.id,
         RevisionApprovalRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
     )
-    successor = service.publish_revision(
+    publisher = _service_as(db, service, "publisher.rollback@gate04.local")
+    successor = publisher.publish_revision(
         draft.id,
         RevisionPublishRequest(draft_hash=validation.draft_hash, diff_hash=validation.diff_hash),
     )
     with pytest.raises(HTTPException, match="confirmation"):
-        service.rollback_revision(successor.id, RevisionRollbackRequest(reason="QA rollback", confirm=False))
-    restored = service.rollback_revision(
+        publisher.rollback_revision(successor.id, RevisionRollbackRequest(reason="QA rollback", confirm=False))
+    restored = publisher.rollback_revision(
         successor.id,
         RevisionRollbackRequest(reason="QA rollback approved", confirm=True),
     )

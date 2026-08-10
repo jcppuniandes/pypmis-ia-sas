@@ -1,0 +1,39 @@
+services:
+  gate04h-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate04h
+      POSTGRES_USER: gate04h
+      POSTGRES_PASSWORD: gate04h
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate04h -d gate04h"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate04h-test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate04h:gate04h@gate04h-db:5432/gate04h
+      GATE04H_DATABASE_URL: postgresql+psycopg://gate04h:gate04h@gate04h-db:5432/gate04h
+      GATE04H_EPHEMERAL: "true"
+      GATE04H_ARTIFACT_DIR: /artifacts
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: gate04h-disposable-only
+    volumes:
+      - ./artifacts/enterprise_structure/gate04h:/artifacts
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        alembic upgrade head
+        alembic current
+        pytest --no-cov -q tests/postgres/test_enterprise_structure_postgres_e2e.py
+        python tests/postgres/snapshot_benchmark.py
+    depends_on:
+      gate04h-db:
+        condition: service_healthy

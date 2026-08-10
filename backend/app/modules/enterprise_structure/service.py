@@ -830,6 +830,7 @@ class EnterpriseStructureService:
             release_code=release.release_code,
             release_name=release.release_name,
             revision_number=release.revision_number,
+            revision_version=release.revision_version,
             state=release.state,
             previous_release_id=release.previous_release_id,
             source_hash=release.source_hash,

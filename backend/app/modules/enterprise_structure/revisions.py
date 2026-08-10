@@ -14,6 +14,7 @@ from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import StaleDataError
 
 from app.core.time import utc_now
 from app.domain.models import EnterpriseWorkspace, SecurityEvent, UserAccount
@@ -74,12 +75,14 @@ class EnterpriseStructureRevisionService:
         release_code = self._next_release_code(revision_number)
         snapshot = self._normalized_snapshot(source)
         now = utc_now()
-        draft_hash = _snapshot_hash(release_code, snapshot)
+        release_name = f"Workspace Structure Revision {revision_number:03d}"
+        draft_hash = _snapshot_hash(release_code, snapshot, release_name)
         draft = EnterpriseCoreRelease(
             tenant_id=self.tenant_id,
             release_code=release_code,
-            release_name=f"Workspace Structure Revision {revision_number:03d}",
+            release_name=release_name,
             revision_number=revision_number,
+            revision_version=1,
             state="draft",
             source_hash=source.source_hash,
             canonical_hash=source.canonical_hash,
@@ -97,6 +100,7 @@ class EnterpriseStructureRevisionService:
             created_at=now,
             created_by_user_id=self.actor_id,
             updated_at=now,
+            last_modified_by_user_id=self.actor_id,
         )
         self.db.add(draft)
         self.db.flush()
@@ -112,18 +116,35 @@ class EnterpriseStructureRevisionService:
                 "result": "created",
             },
         )
-        self.db.commit()
+        try:
+            self.db.commit()
+        except IntegrityError as exc:
+            self.db.rollback()
+            concurrent = self.repository.latest_draft_release()
+            if concurrent is not None and concurrent.previous_release_id == source.id:
+                return self.revision_out(concurrent)
+            raise HTTPException(
+                status_code=409,
+                detail={"reason": "REVISION_CREATE_CONFLICT"},
+            ) from exc
         self.db.refresh(draft)
         return self.revision_out(draft)
 
     def get_revision(self, release_id: int) -> CoreRevisionOut:
         return self.revision_out(self._release(release_id))
 
-    def update_revision(self, release_id: int, payload: RevisionReleaseUpdate) -> CoreRevisionOut:
+    def update_revision(
+        self,
+        release_id: int,
+        payload: RevisionReleaseUpdate,
+        *,
+        expected_version: int,
+    ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         release.release_name = payload.release_name.strip()
         self._refresh_draft(release, release.snapshot_json, operation="release_updated")
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def record_code_preview(
@@ -155,8 +176,15 @@ class EnterpriseStructureRevisionService:
             affected_descendants=affected,
         )
 
-    def add_workspace(self, release_id: int, payload: RevisionWorkspaceCreate) -> CoreRevisionOut:
+    def add_workspace(
+        self,
+        release_id: int,
+        payload: RevisionWorkspaceCreate,
+        *,
+        expected_version: int,
+    ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         workspaces = snapshot["workspaces"]
         parent = self._workspace(workspaces, payload.parent_key)
@@ -188,7 +216,7 @@ class EnterpriseStructureRevisionService:
         for classification in payload.applicable_classifications:
             snapshot["classifications"].append(self._classification(workspace_key, classification))
         self._refresh_draft(release, snapshot, operation="workspace_added", workspace_key=workspace_key)
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def edit_workspace(
@@ -196,8 +224,11 @@ class EnterpriseStructureRevisionService:
         release_id: int,
         workspace_key: str,
         payload: RevisionWorkspaceUpdate,
+        *,
+        expected_version: int,
     ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         workspace = self._workspace(snapshot["workspaces"], workspace_key)
         if payload.name is not None:
@@ -214,7 +245,7 @@ class EnterpriseStructureRevisionService:
                 raise HTTPException(status_code=409, detail="Archived workspaces cannot be reactivated inside a draft")
             workspace["status"] = status
         self._refresh_draft(release, snapshot, operation="workspace_edited", workspace_key=workspace_key)
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def move_workspace(
@@ -222,8 +253,11 @@ class EnterpriseStructureRevisionService:
         release_id: int,
         workspace_key: str,
         payload: RevisionMoveRequest,
+        *,
+        expected_version: int,
     ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         workspaces = snapshot["workspaces"]
         workspace = self._workspace(workspaces, workspace_key)
@@ -250,11 +284,18 @@ class EnterpriseStructureRevisionService:
             workspace_key=workspace_key,
             extra={"before": old_code, "after": new_code, "affected_descendants": len(descendants)},
         )
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
-    def archive_workspace(self, release_id: int, workspace_key: str) -> CoreRevisionOut:
+    def archive_workspace(
+        self,
+        release_id: int,
+        workspace_key: str,
+        *,
+        expected_version: int,
+    ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         workspaces = snapshot["workspaces"]
         workspace = self._workspace(workspaces, workspace_key)
@@ -269,7 +310,7 @@ class EnterpriseStructureRevisionService:
             raise HTTPException(status_code=409, detail="The Enterprise root cannot be archived")
         workspace["status"] = "archived"
         self._refresh_draft(release, snapshot, operation="workspace_archived", workspace_key=workspace_key)
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def set_classifications(
@@ -277,8 +318,11 @@ class EnterpriseStructureRevisionService:
         release_id: int,
         workspace_key: str,
         payload: RevisionClassificationsUpdate,
+        *,
+        expected_version: int,
     ) -> CoreRevisionOut:
         release = self._draft(release_id)
+        self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         self._workspace(snapshot["workspaces"], workspace_key)
         replacement = [self._classification(workspace_key, item) for item in payload.classifications]
@@ -289,11 +333,12 @@ class EnterpriseStructureRevisionService:
             item for item in snapshot["classifications"] if item["workspace_external_key"] != workspace_key
         ] + replacement
         self._refresh_draft(release, snapshot, operation="classifications_updated", workspace_key=workspace_key)
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def validate_revision(self, release_id: int) -> RevisionValidationOut:
         release = self._draft(release_id)
+        expected_version = release.revision_version
         result = self._validate(release)
         now = utc_now()
         release.validation_json = {
@@ -319,7 +364,7 @@ class EnterpriseStructureRevisionService:
                 "result": "valid" if result.valid else "invalid",
             },
         )
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return result.model_copy(update={"validated_at": now})
 
     def compare_revision(self, release_id: int) -> RevisionDiffOut:
@@ -328,6 +373,7 @@ class EnterpriseStructureRevisionService:
 
     def approve_revision(self, release_id: int, payload: RevisionApprovalRequest) -> CoreRevisionOut:
         release = self._draft(release_id)
+        expected_version = release.revision_version
         current_diff = self._diff(release)
         self._ensure_hash_match(release, current_diff, payload.draft_hash, payload.diff_hash)
         validation = release.validation_json or {}
@@ -350,27 +396,37 @@ class EnterpriseStructureRevisionService:
                 "result": "approved",
             },
         )
-        self.db.commit()
+        self._commit_revision(release.id, expected_version)
         return self.revision_out(release)
 
     def publish_revision(self, release_id: int, payload: RevisionPublishRequest) -> CoreRevisionOut:
         release = self._release(release_id)
+        expected_version = release.revision_version
         current_diff = self._diff(release)
         if release.state == "published":
             self._ensure_hash_match(release, current_diff, payload.draft_hash, payload.diff_hash)
             return self.revision_out(release)
         if release.state != "draft":
             raise HTTPException(status_code=409, detail="Only a draft revision can be published")
+        if release.approved_at is None:
+            raise HTTPException(status_code=409, detail={"reason": "APPROVAL_INVALIDATED"})
+        if release.approved_by_user_id == self.actor_id:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "reason": "FOUR_EYES_VIOLATION",
+                    "message": "The approving user cannot publish the same revision",
+                },
+            )
+        if (
+            release.approved_draft_hash != release.content_fingerprint
+            or release.approved_diff_hash != current_diff.diff_hash
+        ):
+            raise HTTPException(status_code=409, detail={"reason": "APPROVAL_INVALIDATED"})
         self._ensure_hash_match(release, current_diff, payload.draft_hash, payload.diff_hash)
         validation = self._validate(release)
         if not validation.valid or release.validated_draft_hash != release.content_fingerprint:
             raise HTTPException(status_code=409, detail="The revision must pass validation again before publishing")
-        if (
-            release.approved_at is None
-            or release.approved_draft_hash != release.content_fingerprint
-            or release.approved_diff_hash != current_diff.diff_hash
-        ):
-            raise HTTPException(status_code=409, detail="Explicit approval for the current draft and diff is required")
         current = self.repository.latest_core_release()
         if current is None or current.id != release.previous_release_id:
             raise HTTPException(status_code=409, detail={"reason": "BASE_RELEASE_CHANGED"})
@@ -380,7 +436,7 @@ class EnterpriseStructureRevisionService:
             now = utc_now()
             current.state = "superseded"
             release.snapshot_json = snapshot
-            release.content_fingerprint = _snapshot_hash(release.release_code, snapshot)
+            release.content_fingerprint = _snapshot_hash(release.release_code, snapshot, release.release_name)
             release.workspace_count = len(snapshot["workspaces"])
             release.objective_count = len(snapshot["strategic_objectives"])
             release.classification_count = len(snapshot["classifications"])
@@ -401,7 +457,7 @@ class EnterpriseStructureRevisionService:
                     "result": "published",
                 },
             )
-            self.db.commit()
+            self._commit_revision(release.id, expected_version)
         except IntegrityError as exc:
             self.db.rollback()
             raise HTTPException(
@@ -412,6 +468,7 @@ class EnterpriseStructureRevisionService:
 
     def rollback_revision(self, release_id: int, payload: RevisionRollbackRequest) -> CoreRevisionOut:
         release = self._release(release_id)
+        expected_version = release.revision_version
         if not payload.confirm:
             raise HTTPException(status_code=409, detail="Explicit rollback confirmation is required")
         current = self.repository.latest_core_release()
@@ -438,7 +495,7 @@ class EnterpriseStructureRevisionService:
                     "result": "unpublished",
                 },
             )
-            self.db.commit()
+            self._commit_revision(release.id, expected_version)
         except IntegrityError as exc:
             self.db.rollback()
             raise HTTPException(
@@ -474,6 +531,7 @@ class EnterpriseStructureRevisionService:
             release_code=release.release_code,
             release_name=release.release_name,
             revision_number=release.revision_number,
+            revision_version=release.revision_version,
             state=release.state,
             previous_release_id=release.previous_release_id,
             source_hash=release.source_hash,
@@ -489,6 +547,7 @@ class EnterpriseStructureRevisionService:
             created_at=release.created_at,
             created_by=created_by,
             updated_at=release.updated_at,
+            last_modified_by=self._actor_email(release.last_modified_by_user_id),
             validated_at=release.validated_at,
             approved_at=release.approved_at,
             approved_by=approved_by,
@@ -657,7 +716,7 @@ class EnterpriseStructureRevisionService:
                 errors.append("Workspace link references invalid or identical endpoints")
 
         diff = self._diff(release)
-        draft_hash = _snapshot_hash(release.release_code, snapshot)
+        draft_hash = _snapshot_hash(release.release_code, snapshot, release.release_name)
         return RevisionValidationOut(
             valid=not errors and not conflicts,
             errors=sorted(set(errors)),
@@ -730,7 +789,7 @@ class EnterpriseStructureRevisionService:
         payload = [item.model_dump(mode="json") for item in items]
         return RevisionDiffOut(
             release_id=release.id,
-            draft_hash=_snapshot_hash(release.release_code, current),
+            draft_hash=_snapshot_hash(release.release_code, current, release.release_name),
             diff_hash=_hash(payload),
             summary=dict(summary),
             items=items,
@@ -941,8 +1000,9 @@ class EnterpriseStructureRevisionService:
         release.objective_count = len(snapshot["strategic_objectives"])
         release.classification_count = len(snapshot["classifications"])
         release.link_count = len(snapshot["links"])
-        release.content_fingerprint = _snapshot_hash(release.release_code, snapshot)
-        release.diff_hash = self._diff(release).diff_hash
+        release.content_fingerprint = _snapshot_hash(release.release_code, snapshot, release.release_name)
+        with self.db.no_autoflush:
+            release.diff_hash = self._diff(release).diff_hash
         release.validation_json = {}
         release.validated_at = None
         release.validated_by_user_id = None
@@ -952,6 +1012,7 @@ class EnterpriseStructureRevisionService:
         release.approved_draft_hash = None
         release.approved_diff_hash = None
         release.updated_at = utc_now()
+        release.last_modified_by_user_id = self.actor_id
         metadata = {
             "release": release.release_code,
             "previous_release": release.previous_release_id,
@@ -1095,6 +1156,32 @@ class EnterpriseStructureRevisionService:
                 },
             )
 
+    def _assert_revision_version(self, release: EnterpriseCoreRelease, expected_version: int) -> None:
+        if expected_version != release.revision_version:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "reason": "REVISION_VERSION_CONFLICT",
+                    "expected_version": expected_version,
+                    "current_version": release.revision_version,
+                },
+            )
+
+    def _commit_revision(self, release_id: int, expected_version: int) -> None:
+        try:
+            self.db.commit()
+        except StaleDataError as exc:
+            self.db.rollback()
+            current = self.repository.core_release(release_id)
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "reason": "REVISION_VERSION_CONFLICT",
+                    "expected_version": expected_version,
+                    "current_version": current.revision_version if current is not None else None,
+                },
+            ) from exc
+
     def _draft(self, release_id: int) -> EnterpriseCoreRelease:
         release = self._release(release_id)
         if release.state != "draft":
@@ -1155,6 +1242,7 @@ def core_release_out(db: Session, release: EnterpriseCoreRelease) -> CoreRelease
         release_code=release.release_code,
         release_name=release.release_name,
         revision_number=release.revision_number,
+        revision_version=release.revision_version,
         state=release.state,
         previous_release_id=release.previous_release_id,
         source_hash=release.source_hash,
@@ -1169,8 +1257,8 @@ def core_release_out(db: Session, release: EnterpriseCoreRelease) -> CoreRelease
     )
 
 
-def _snapshot_hash(release_code: str, snapshot: dict[str, Any]) -> str:
-    return _hash({"release_code": release_code, "snapshot": snapshot})
+def _snapshot_hash(release_code: str, snapshot: dict[str, Any], release_name: str) -> str:
+    return _hash({"release_code": release_code, "release_name": release_name, "snapshot": snapshot})
 
 
 def _hash(payload: Any) -> str:

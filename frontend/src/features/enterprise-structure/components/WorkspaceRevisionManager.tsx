@@ -12,6 +12,7 @@ import {
   Send,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
 import type {
   CoreRevision,
@@ -48,6 +49,13 @@ const changeLabels: Record<string, string> = {
   classification: "Classification changed",
   unchanged: "Published baseline",
 };
+
+function revisionOperationError(error: unknown, fallback: string) {
+  if (error instanceof ApiError && error.status === 409 && error.message.includes("REVISION_VERSION_CONFLICT")) {
+    return "This revision changed since you opened it. Reload the latest version before continuing.";
+  }
+  return error instanceof Error ? error.message : fallback;
+}
 
 function categoryItems(data: EnterpriseStructureConfiguration, categoryCode: string) {
   const category = data.categories.find((item) => item.code === categoryCode);
@@ -239,7 +247,7 @@ export default function WorkspaceRevisionManager({
       setMode("view");
       setDiff(null);
     } catch (error) {
-      onError(error instanceof Error ? error.message : "No fue posible completar la operación.");
+      onError(revisionOperationError(error, "No fue posible completar la operación."));
     } finally {
       onBusy(false);
     }
@@ -251,7 +259,7 @@ export default function WorkspaceRevisionManager({
     if (mode === "create") {
       await execute(
         () =>
-          enterpriseStructureApi.addRevisionWorkspace(token, release.id, {
+          enterpriseStructureApi.addRevisionWorkspace(token, release.id, release.revision_version, {
             name: form.name,
             workspace_type_code: form.workspace_type_code,
             parent_key: form.parent_key,
@@ -268,19 +276,33 @@ export default function WorkspaceRevisionManager({
     onBusy(true);
     onError("");
     try {
+      let currentRevision = release;
       if (form.parent_key && form.parent_key !== selected.parent_key) {
-        await enterpriseStructureApi.moveRevisionWorkspace(token, release.id, selected.workspace_key, form.parent_key);
+        currentRevision = await enterpriseStructureApi.moveRevisionWorkspace(
+          token,
+          release.id,
+          selected.workspace_key,
+          form.parent_key,
+          currentRevision.revision_version
+        );
       }
-      await enterpriseStructureApi.editRevisionWorkspace(token, release.id, selected.workspace_key, {
-        name: form.name,
-        description: form.description,
-        responsible_user_id: form.responsible_user_id ? Number(form.responsible_user_id) : null,
-        status: form.status,
-      });
+      currentRevision = await enterpriseStructureApi.editRevisionWorkspace(
+        token,
+        release.id,
+        selected.workspace_key,
+        currentRevision.revision_version,
+        {
+          name: form.name,
+          description: form.description,
+          responsible_user_id: form.responsible_user_id ? Number(form.responsible_user_id) : null,
+          status: form.status,
+        }
+      );
       await enterpriseStructureApi.setRevisionClassifications(
         token,
         release.id,
         selected.workspace_key,
+        currentRevision.revision_version,
         classifications
       );
       await onReload();
@@ -288,7 +310,7 @@ export default function WorkspaceRevisionManager({
       setMode("view");
       setDiff(null);
     } catch (error) {
-      onError(error instanceof Error ? error.message : "No fue posible guardar el workspace.");
+      onError(revisionOperationError(error, "No fue posible guardar el workspace."));
     } finally {
       onBusy(false);
     }
@@ -358,7 +380,9 @@ export default function WorkspaceRevisionManager({
           <div>
             <span>Revision {release.revision_number} · DRAFT</span>
             <strong>{release.release_code}</strong>
-            <small>Based on: {data.published_release?.release_code}</small>
+            <small>
+              Version {release.revision_version} · Based on: {data.published_release?.release_code}
+            </small>
           </div>
         ) : (
           <button
@@ -411,6 +435,7 @@ export default function WorkspaceRevisionManager({
               {validation ? (validation.valid ? "VALID · 0 errors · 0 conflicts" : "INVALID") : "Not validated"}
             </strong>
             <strong>{release.approved_at ? `Approved by ${release.approved_by}` : "Approval pending"}</strong>
+            <span>Last modified by {release.last_modified_by ?? release.created_by}</span>
           </section>
           {validation && !validation.valid ? (
             <section className="enterpriseAlert error">
@@ -462,7 +487,12 @@ export default function WorkspaceRevisionManager({
                       onClick={() =>
                         execute(
                           () =>
-                            enterpriseStructureApi.archiveRevisionWorkspace(token, release.id, selected.workspace_key),
+                            enterpriseStructureApi.archiveRevisionWorkspace(
+                              token,
+                              release.id,
+                              selected.workspace_key,
+                              release.revision_version
+                            ),
                           "Workspace archivado lógicamente en el DRAFT."
                         )
                       }

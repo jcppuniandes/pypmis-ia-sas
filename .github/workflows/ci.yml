@@ -14,6 +14,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  enterprise-structure-postgres-e2e:
+    name: enterprise-structure-postgres-e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Gate 04H evidence directory
+        run: mkdir -p artifacts/enterprise_structure/gate04h
+      - name: Run migrations, PostgreSQL E2E, concurrency, SoD and benchmark
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f docker-compose.gate04h.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate04h-test 2>&1 \
+            | tee artifacts/enterprise_structure/gate04h/postgres_e2e_log.txt
+      - name: Destroy ephemeral environment
+        if: always()
+        run: docker compose -f docker-compose.gate04h.yml down --remove-orphans
+      - name: Preserve Gate 04H evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-structure-gate04h
+          path: artifacts/enterprise_structure/gate04h/
+          if-no-files-found: error
+
   backend-lint:
     name: Backend lint (Ruff)
     runs-on: ubuntu-latest

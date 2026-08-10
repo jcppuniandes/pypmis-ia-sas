@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-08-10",
+  "status": "PASS",
+  "before": {
+    "tenant": "P&P Ingeniería y Proyectos",
+    "tenant_id": 1,
+    "release": "ES-PYP-CORE-RECONCILED-20260809",
+    "release_id": 1,
+    "state": "published",
+    "release_count": 1,
+    "draft_count": 0,
+    "workspaces": 14,
+    "strategic_objectives": 7,
+    "classifications": 26,
+    "links": 0
+  },
+  "after": {
+    "tenant": "P&P Ingeniería y Proyectos",
+    "tenant_id": 1,
+    "release": "ES-PYP-CORE-RECONCILED-20260809",
+    "release_id": 1,
+    "state": "published",
+    "release_count": 1,
+    "draft_count": 0,
+    "workspaces": 14,
+    "strategic_objectives": 7,
+    "classifications": 26,
+    "links": 0,
+    "revision_version": 1,
+    "alembic_head": "20260810_0033"
+  },
+  "business_payload_mutations": 0,
+  "operational_metadata_backfill": "last_modified_by_user_id initialized from created_by_user_id by Alembic 0033",
+  "operational_security_configuration": {
+    "roles_seeded": ["structure_editor", "structure_approver", "structure_publisher"],
+    "bootstrap_assignment": "admin@demo.local -> structure_editor / organization",
+    "approver_assignments_created": 0,
+    "publisher_assignments_created": 0
+  },
+  "fixtures_left_behind": 0
+}

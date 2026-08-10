@@ -18,6 +18,55 @@ from app.domain.models import (
 )
 from app.modules.enterprise_structure.constants import PERMISSION_SEED
 
+STRUCTURE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "structure_editor": frozenset(
+        {
+            "admin.enterprise_structure.revision.create",
+            "admin.enterprise_structure.revision.edit",
+            "admin.enterprise_structure.revision.validate",
+            "admin.enterprise_structure.revision.compare",
+        }
+    ),
+    "structure_approver": frozenset(
+        {
+            "admin.enterprise_structure.revision.compare",
+            "admin.enterprise_structure.revision.approve",
+        }
+    ),
+    "structure_publisher": frozenset(
+        {
+            "admin.enterprise_structure.revision.compare",
+            "admin.enterprise_structure.publish",
+            "admin.enterprise_structure.rollback",
+        }
+    ),
+}
+
+STRUCTURE_ROLE_DEFINITIONS = {
+    "structure_editor": (
+        "Structure Editor",
+        "Creates, edits, validates and compares governed workspace revisions.",
+    ),
+    "structure_approver": (
+        "Structure Approver",
+        "Compares and approves a validated workspace revision.",
+    ),
+    "structure_publisher": (
+        "Structure Publisher",
+        "Publishes approved successors and executes logical rollback.",
+    ),
+}
+
+REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
+    "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
+    "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
+    "admin.enterprise_structure.revision.validate": frozenset({"structure_editor"}),
+    "admin.enterprise_structure.revision.compare": frozenset(STRUCTURE_ROLE_PERMISSIONS),
+    "admin.enterprise_structure.revision.approve": frozenset({"structure_approver"}),
+    "admin.enterprise_structure.publish": frozenset({"structure_publisher"}),
+    "admin.enterprise_structure.rollback": frozenset({"structure_publisher"}),
+}
+
 
 @dataclass(frozen=True)
 class EnterprisePermissionContext:
@@ -31,6 +80,8 @@ def require_enterprise_permission(
     tenant_id: int,
     user_id: int,
     permission_key: str,
+    *,
+    allowed_role_codes: frozenset[str] | None = None,
 ) -> EnterprisePermissionContext:
     ensure_enterprise_permissions(db, tenant_id, user_id)
     db.commit()
@@ -84,6 +135,17 @@ def require_enterprise_permission(
             ).all()
         )
     effective = [item for item in assignments if item.role_id in permitted_role_ids]
+    if allowed_role_codes is not None:
+        duty_role_ids = set(
+            db.scalars(
+                select(SecurityRole.id).where(
+                    SecurityRole.tenant_id == tenant_id,
+                    SecurityRole.code.in_(allowed_role_codes),
+                    SecurityRole.status == "active",
+                )
+            ).all()
+        )
+        effective = [item for item in effective if item.role_id in duty_role_ids]
     if not effective:
         raise HTTPException(status_code=403, detail=f"Missing required permission: {permission_key}")
     organization_wide = any(item.scope_type == "organization" for item in effective)
@@ -145,12 +207,27 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in STRUCTURE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
         | {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"},
+        **STRUCTURE_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)
@@ -193,6 +270,37 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
                 user_id=user_id,
                 role_id=organization_admin.id,
                 scope_type="organization",
+                status="active",
+                granted_by_user_id=user_id,
+            )
+        )
+    structure_editor = roles["structure_editor"]
+    active_editor = db.scalar(
+        select(SecurityAccessAssignment.id).where(
+            SecurityAccessAssignment.tenant_id == tenant_id,
+            SecurityAccessAssignment.role_id == structure_editor.id,
+            SecurityAccessAssignment.status == "active",
+        )
+    )
+    if active_editor is None:
+        bootstrap = db.scalar(
+            select(SecurityAccessAssignment).where(
+                SecurityAccessAssignment.tenant_id == tenant_id,
+                SecurityAccessAssignment.role_id == organization_admin.id,
+                SecurityAccessAssignment.status == "active",
+            )
+        )
+        db.add(
+            SecurityAccessAssignment(
+                tenant_id=tenant_id,
+                subject_type=bootstrap.subject_type if bootstrap is not None else "user",
+                user_id=bootstrap.user_id if bootstrap is not None else user_id,
+                group_id=bootstrap.group_id if bootstrap is not None else None,
+                role_id=structure_editor.id,
+                scope_type=bootstrap.scope_type if bootstrap is not None else "organization",
+                scope_unit_id=bootstrap.scope_unit_id if bootstrap is not None else None,
+                starts_at=bootstrap.starts_at if bootstrap is not None else None,
+                ends_at=bootstrap.ends_at if bootstrap is not None else None,
                 status="active",
                 granted_by_user_id=user_id,
             )

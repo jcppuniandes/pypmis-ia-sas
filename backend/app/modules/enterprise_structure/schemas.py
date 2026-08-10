@@ -168,6 +168,7 @@ class CoreReleaseOut(BaseModel):
     release_code: str
     release_name: str
     revision_number: int
+    revision_version: int
     state: str
     previous_release_id: int | None
     source_hash: str
@@ -302,6 +303,7 @@ class CoreRevisionOut(CoreReleaseOut):
     created_at: datetime
     created_by: str
     updated_at: datetime
+    last_modified_by: str | None
     validated_at: datetime | None
     approved_at: datetime | None
     approved_by: str | None

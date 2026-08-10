@@ -1,0 +1,8 @@
+{
+  "status": "NOT_RUN",
+  "reason": "ABORT_HEAVY_TESTS: only 1.50 GB was free at the preflight check; Gate 04H requires at least 10 GB",
+  "implementation": "backend/tests/postgres/test_enterprise_structure_postgres_e2e.py",
+  "environment": "docker-compose.gate04h.yml",
+  "database_contract": "ephemeral PostgreSQL 16 only",
+  "sqlite_used": false
+}

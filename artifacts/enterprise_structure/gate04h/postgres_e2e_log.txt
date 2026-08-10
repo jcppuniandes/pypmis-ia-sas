@@ -1,0 +1,6 @@
+Gate 04H heavy PostgreSQL E2E was not executed locally.
+Preflight free space: 1.50 GB.
+Required free space: 10 GB.
+Decision: ABORT_HEAVY_TESTS.
+Reproducible command after restoring sufficient space:
+docker compose -f docker-compose.gate04h.yml up --build --abort-on-container-exit --exit-code-from gate04h-test

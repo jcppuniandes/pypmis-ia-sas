@@ -1,0 +1,14 @@
+{
+  "status": "NOT_RUN",
+  "reason": "ABORT_HEAVY_TESTS because free space is below 10 GB",
+  "database": "ephemeral PostgreSQL required",
+  "datasets": [100, 1000, 10000],
+  "implementation": "backend/tests/postgres/snapshot_benchmark.py",
+  "results": [],
+  "decision": {
+    "choice": "PENDING_MEASUREMENT",
+    "full_snapshot_remains_active": true,
+    "delta_storage_implemented": false,
+    "rationale": "No threshold or delta recommendation is invented before the 100/1k/10k measurements run."
+  }
+}

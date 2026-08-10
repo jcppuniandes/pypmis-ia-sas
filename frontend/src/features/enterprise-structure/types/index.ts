@@ -75,6 +75,7 @@ export type CoreRelease = {
   release_code: string;
   release_name: string;
   revision_number: number;
+  revision_version: number;
   state: "draft" | "published" | "superseded" | "unpublished";
   previous_release_id: number | null;
   source_hash: string;
@@ -124,6 +125,7 @@ export type CoreRevision = CoreRelease & {
   created_at: string;
   created_by: string;
   updated_at: string;
+  last_modified_by: string | null;
   validated_at: string | null;
   approved_at: string | null;
   approved_by: string | null;

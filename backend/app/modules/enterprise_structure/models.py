@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint, event, inspect
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, event, inspect
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.time import utc_now
@@ -38,6 +38,7 @@ class EnterpriseCoreRelease(Base):
     release_code: Mapped[str] = mapped_column(String(160), index=True)
     release_name: Mapped[str] = mapped_column(String(220))
     revision_number: Mapped[int] = mapped_column(default=1)
+    revision_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     state: Mapped[str] = mapped_column(String(40), default="published", index=True)
     source_hash: Mapped[str] = mapped_column(String(64))
     canonical_hash: Mapped[str] = mapped_column(String(64))
@@ -62,6 +63,7 @@ class EnterpriseCoreRelease(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    last_modified_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     published_at: Mapped[datetime | None] = mapped_column(DateTime)
     published_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     unpublished_at: Mapped[datetime | None] = mapped_column(DateTime)
@@ -69,6 +71,7 @@ class EnterpriseCoreRelease(Base):
     rollback_reason: Mapped[str | None] = mapped_column(Text)
 
     __table_args__ = (UniqueConstraint("tenant_id", "release_code", name="uq_enterprise_core_release_code"),)
+    __mapper_args__ = {"version_id_col": revision_version}
 
 
 _IMMUTABLE_RELEASE_FIELDS = {
@@ -76,6 +79,7 @@ _IMMUTABLE_RELEASE_FIELDS = {
     "release_code",
     "release_name",
     "revision_number",
+    "revision_version",
     "source_hash",
     "canonical_hash",
     "content_fingerprint",
@@ -89,6 +93,7 @@ _IMMUTABLE_RELEASE_FIELDS = {
     "link_count",
     "created_at",
     "created_by_user_id",
+    "last_modified_by_user_id",
     "published_at",
     "published_by_user_id",
 }

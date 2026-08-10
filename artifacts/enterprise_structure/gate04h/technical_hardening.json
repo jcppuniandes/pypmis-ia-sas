@@ -1,0 +1,21 @@
+{
+  "status": "IMPLEMENTED_STATICALLY_VERIFIED",
+  "items": {
+    "optimistic_concurrency": "revision_version plus SQLAlchemy atomic version column",
+    "http_contract": "required If-Match on metadata, add, edit, move, classify and archive",
+    "conflict": "409 REVISION_VERSION_CONFLICT without silent merge",
+    "validation_invalidation": "all draft mutations clear validation and approval",
+    "approval_invalidation": "publish returns APPROVAL_INVALIDATED after a post-approval mutation",
+    "four_eyes": "approved_by_user_id must differ from published_by_user_id",
+    "sod": ["structure_editor", "structure_approver", "structure_publisher"],
+    "sod_no_bypass": "revision endpoints accept only their mapped duty roles; legacy admin grants do not bypass the duty filter",
+    "bootstrap_compatibility": "the existing organization administrator receives Structure Editor only; approver and publisher remain explicit assignments",
+    "actor_traceability": "last_modified_by_user_id",
+    "etag": "GET and mutating revision responses expose the current version",
+    "postgres_trigger_fix": "snapshot_json is compared as text; the inherited JSON equality failure is removed",
+    "frontend_conflict_message": "This revision changed since you opened it. Reload the latest version before continuing.",
+    "ci": "enterprise-structure-postgres-e2e with disposable PostgreSQL tmpfs",
+    "snapshot_storage": "full snapshot retained; Delta/Change Set not implemented"
+  },
+  "scope_exclusions_respected": true
+}

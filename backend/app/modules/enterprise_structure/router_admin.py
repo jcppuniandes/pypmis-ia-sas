@@ -1,11 +1,12 @@
 """ADMIN MODE routes for Enterprise Structure Configuration."""
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_tenant_id, get_user_id
 from app.database.session import get_db
 from app.modules.enterprise_structure.permissions import (
+    REVISION_DUTY_ROLES,
     require_enterprise_permission,
     require_organization_scope,
 )
@@ -46,6 +47,24 @@ from app.modules.enterprise_structure.service import EnterpriseStructureService
 router = APIRouter(prefix="/admin-configuration/enterprise-structure")
 
 
+def _revision_if_match(if_match: str = Header(..., alias="If-Match")) -> int:
+    normalized = if_match.strip()
+    if normalized.startswith("W/"):
+        normalized = normalized[2:]
+    normalized = normalized.strip('"')
+    if not normalized.isdigit() or int(normalized) < 1:
+        raise HTTPException(
+            status_code=400,
+            detail={"reason": "INVALID_IF_MATCH", "message": 'Use If-Match: "<revision_version>"'},
+        )
+    return int(normalized)
+
+
+def _set_revision_etag(response: Response, revision: CoreRevisionOut) -> CoreRevisionOut:
+    response.headers["ETag"] = f'"{revision.revision_version}"'
+    return revision
+
+
 def _service(
     db: Session,
     tenant_id: int,
@@ -70,7 +89,13 @@ def _revision_service(
     *,
     organization_scope: bool = True,
 ) -> EnterpriseStructureRevisionService:
-    context = require_enterprise_permission(db, tenant_id, user_id, permission)
+    context = require_enterprise_permission(
+        db,
+        tenant_id,
+        user_id,
+        permission,
+        allowed_role_codes=REVISION_DUTY_ROLES.get(permission),
+    )
     if organization_scope:
         require_organization_scope(context)
     EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
@@ -351,42 +376,49 @@ def clone_release(
 @router.post("/enterprise-core-releases/{published_id}/clone", response_model=CoreRevisionOut, status_code=201)
 def create_core_revision(
     published_id: int,
+    response: Response,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.create").create_revision(
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.create").create_revision(
         published_id
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.get("/enterprise-core-releases/{release_id}", response_model=CoreRevisionOut)
 def core_revision(
     release_id: int,
+    response: Response,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(
+    revision = _revision_service(
         db,
         tenant_id,
         user_id,
         "admin.enterprise_structure.read",
         organization_scope=False,
     ).get_revision(release_id)
+    return _set_revision_etag(response, revision)
 
 
 @router.patch("/enterprise-core-releases/{release_id}", response_model=CoreRevisionOut)
 def update_core_revision(
     release_id: int,
     payload: RevisionReleaseUpdate,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").update_revision(
-        release_id, payload
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").update_revision(
+        release_id, payload, expected_version=expected_version
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.post(
@@ -409,13 +441,16 @@ def preview_revision_record_code(
 def add_revision_workspace(
     release_id: int,
     payload: RevisionWorkspaceCreate,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").add_workspace(
-        release_id, payload
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").add_workspace(
+        release_id, payload, expected_version=expected_version
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.patch(
@@ -426,13 +461,16 @@ def edit_revision_workspace(
     release_id: int,
     workspace_key: str,
     payload: RevisionWorkspaceUpdate,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").edit_workspace(
-        release_id, workspace_key, payload
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").edit_workspace(
+        release_id, workspace_key, payload, expected_version=expected_version
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.post(
@@ -443,13 +481,16 @@ def move_revision_workspace(
     release_id: int,
     workspace_key: str,
     payload: RevisionMoveRequest,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").move_workspace(
-        release_id, workspace_key, payload
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").move_workspace(
+        release_id, workspace_key, payload, expected_version=expected_version
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.post(
@@ -459,13 +500,16 @@ def move_revision_workspace(
 def archive_revision_workspace(
     release_id: int,
     workspace_key: str,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").archive_workspace(
-        release_id, workspace_key
+    revision = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").archive_workspace(
+        release_id, workspace_key, expected_version=expected_version
     )
+    return _set_revision_etag(response, revision)
 
 
 @router.put(
@@ -476,13 +520,16 @@ def classify_revision_workspace(
     release_id: int,
     workspace_key: str,
     payload: RevisionClassificationsUpdate,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> CoreRevisionOut:
-    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").set_classifications(
-        release_id, workspace_key, payload
-    )
+    revision = _revision_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.revision.edit"
+    ).set_classifications(release_id, workspace_key, payload, expected_version=expected_version)
+    return _set_revision_etag(response, revision)
 
 
 @router.post("/enterprise-core-releases/{release_id}/validate", response_model=RevisionValidationOut)

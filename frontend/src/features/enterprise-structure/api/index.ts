@@ -133,6 +133,14 @@ export const enterpriseStructureApi = {
   coreRevision: (token: string, releaseId: number) =>
     apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}`, { token }),
 
+  updateCoreRevision: (token: string, releaseId: number, releaseName: string, revisionVersion: number) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}`, {
+      method: "PATCH",
+      token,
+      headers: { "If-Match": `"${revisionVersion}"` },
+      body: JSON.stringify({ release_name: releaseName }),
+    }),
+
   previewRecordCode: (
     token: string,
     releaseId: number,
@@ -153,6 +161,7 @@ export const enterpriseStructureApi = {
   addRevisionWorkspace: (
     token: string,
     releaseId: number,
+    revisionVersion: number,
     payload: {
       name: string;
       workspace_type_code: string;
@@ -166,6 +175,7 @@ export const enterpriseStructureApi = {
     apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces`, {
       method: "POST",
       token,
+      headers: { "If-Match": `"${revisionVersion}"` },
       body: JSON.stringify(payload),
     }),
 
@@ -173,36 +183,52 @@ export const enterpriseStructureApi = {
     token: string,
     releaseId: number,
     workspaceKey: string,
+    revisionVersion: number,
     payload: { name?: string; description?: string; responsible_user_id?: number | null; status?: string }
   ) =>
     apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}`, {
       method: "PATCH",
       token,
+      headers: { "If-Match": `"${revisionVersion}"` },
       body: JSON.stringify(payload),
     }),
 
-  moveRevisionWorkspace: (token: string, releaseId: number, workspaceKey: string, newParentKey: string) =>
+  moveRevisionWorkspace: (
+    token: string,
+    releaseId: number,
+    workspaceKey: string,
+    newParentKey: string,
+    revisionVersion: number
+  ) =>
     apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/move`, {
       method: "POST",
       token,
+      headers: { "If-Match": `"${revisionVersion}"` },
       body: JSON.stringify({ new_parent_key: newParentKey }),
     }),
 
-  archiveRevisionWorkspace: (token: string, releaseId: number, workspaceKey: string) =>
+  archiveRevisionWorkspace: (token: string, releaseId: number, workspaceKey: string, revisionVersion: number) =>
     apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/archive`, {
       method: "POST",
       token,
+      headers: { "If-Match": `"${revisionVersion}"` },
     }),
 
   setRevisionClassifications: (
     token: string,
     releaseId: number,
     workspaceKey: string,
+    revisionVersion: number,
     classifications: RevisionClassification[]
   ) =>
     apiFetch<CoreRevision>(
       `${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/classifications`,
-      { method: "PUT", token, body: JSON.stringify({ classifications }) }
+      {
+        method: "PUT",
+        token,
+        headers: { "If-Match": `"${revisionVersion}"` },
+        body: JSON.stringify({ classifications }),
+      }
     ),
 
   validateCoreRevision: (token: string, releaseId: number) =>

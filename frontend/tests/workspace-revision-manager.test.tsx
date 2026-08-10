@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import WorkspaceRevisionManager from "../src/features/enterprise-structure/components/WorkspaceRevisionManager";
 import type { EnterpriseStructureConfiguration } from "../src/features/enterprise-structure/types";
@@ -9,6 +10,7 @@ const published = {
   release_code: "ES-PYP-CORE-RECONCILED-20260809",
   release_name: "Published CORE",
   revision_number: 1,
+  revision_version: 1,
   state: "published" as const,
   previous_release_id: null,
   source_hash: "a".repeat(64),
@@ -85,6 +87,7 @@ const data: EnterpriseStructureConfiguration = {
     created_at: "2026-08-10T11:00:00Z",
     created_by: "admin@demo.local",
     updated_at: "2026-08-10T11:00:00Z",
+    last_modified_by: "editor@demo.local",
     validated_at: "2026-08-10T11:05:00Z",
     approved_at: null,
     approved_by: null,
@@ -178,5 +181,45 @@ describe("Workspace Structure Revision Manager", () => {
 
     expect(screen.getByRole("button", { name: /Create New Revision/i })).toBeEnabled();
     expect(screen.getByText("Published CORE is immutable")).toBeInTheDocument();
+  });
+
+  it("sends If-Match and explains an optimistic concurrency conflict", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ detail: { reason: "REVISION_VERSION_CONFLICT" } }), {
+        status: 409,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const onError = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <WorkspaceRevisionManager
+        busy={false}
+        canConfigure
+        data={data}
+        onBusy={vi.fn()}
+        onError={onError}
+        onNotice={vi.fn()}
+        onReload={vi.fn().mockResolvedValue(data)}
+        token="token"
+      />
+    );
+
+    await user.click(screen.getByText("Artificial Intelligence"));
+    await user.click(screen.getByRole("button", { name: /Archive/i }));
+
+    await waitFor(() =>
+      expect(onError).toHaveBeenCalledWith(
+        "This revision changed since you opened it. Reload the latest version before continuing."
+      )
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/archive"),
+      expect.objectContaining({
+        headers: expect.objectContaining({ "If-Match": '"1"' }),
+      })
+    );
+    vi.unstubAllGlobals();
   });
 });

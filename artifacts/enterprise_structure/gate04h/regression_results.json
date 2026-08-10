@@ -1,0 +1,38 @@
+{
+  "status": "INCOMPLETE",
+  "final_gate_state": "HARDENING_REQUIRED",
+  "passed": {
+    "hardening_contract_pytest": "3 passed",
+    "workspace_revision_manager_vitest": "3 passed",
+    "ruff_targeted": "PASS",
+    "python_ast": "PASS",
+    "prettier_targeted": "PASS",
+    "eslint_targeted": "PASS",
+    "typescript_no_emit": "PASS",
+    "git_diff_check": "PASS",
+    "alembic_upgrade": "20260810_0033 head",
+    "api_health": "ready",
+    "frontend_http": 200
+  },
+  "environment_incident": {
+    "docker_image_rebuild": "FAILED_DUE_TO_DISK_IO",
+    "localhost_recovered": true,
+    "runtime_code_synced": true,
+    "free_gb_after_recovery": 3.15,
+    "free_gb_final_check": 7.61
+  },
+  "not_run_due_environment_health": [
+    "Gate 02A importer",
+    "Gate 02B apply",
+    "Gate 03 publish/rollback",
+    "Gate 04 revision manager mutation suite",
+    "Organization & Security full suite",
+    "ADMIN Enterprise Structure full suite",
+    "USER Enterprise Explorer full suite",
+    "Frontend full suite",
+    "Vite production build",
+    "Ruff full repository",
+    "PostgreSQL Gate 04H E2E",
+    "snapshot benchmark 100/1k/10k"
+  ]
+}
