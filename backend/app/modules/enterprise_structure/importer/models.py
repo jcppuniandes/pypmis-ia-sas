@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -29,6 +29,10 @@ class RecordStatus(StrEnum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     ARCHIVED = "ARCHIVED"
+
+
+class ReconciliationAction(StrEnum):
+    ADOPT = "ADOPT"
 
 
 class ImportMetadata(StrictModel):
@@ -88,12 +92,20 @@ class WorkspaceLinkInput(StrictModel):
     description: str | None = None
 
 
+class WorkspaceReconciliationInput(StrictModel):
+    external_key: str = Field(min_length=1)
+    existing_id: int = Field(gt=0)
+    action: ReconciliationAction = ReconciliationAction.ADOPT
+    rationale: str = Field(min_length=1)
+
+
 class EnterpriseStructureImport(StrictModel):
     metadata: ImportMetadata
     strategic_objectives: list[StrategicObjectiveInput] = Field(default_factory=list)
     nodes: list[EnterpriseNodeInput] = Field(min_length=1)
     classifications: list[ClassificationInput] = Field(default_factory=list)
     links: list[WorkspaceLinkInput] = Field(default_factory=list)
+    reconciliation: list[WorkspaceReconciliationInput] = Field(default_factory=list)
 
 
 class Severity(StrEnum):
@@ -103,6 +115,7 @@ class Severity(StrEnum):
 
 
 class DiffAction(StrEnum):
+    ADOPT = "adopt"
     CREATE = "create"
     UPDATE = "update"
     UNCHANGED = "unchanged"
@@ -123,6 +136,9 @@ class DiffEntry(StrictModel):
     key: str
     action: DiffAction
     reason: str
+    record_code: str | None = None
+    existing_id: int | None = None
+    old_record_code: str | None = None
 
 
 class DryRunReport(StrictModel):
@@ -144,6 +160,47 @@ class DryRunReport(StrictModel):
         return 0
 
 
+class TenantIdentityChange(StrictModel):
+    tenant_id: int
+    old_name: str
+    new_name: str
+    old_slug: str
+    new_slug: str
+    currency: str
+    changed: bool
+
+
+class AppliedWorkspace(StrictModel):
+    id: int
+    external_key: str
+    record_code: str
+    workspace_type: str
+    name: str
+    action: DiffAction
+
+
+class CoreApplyReport(StrictModel):
+    outcome: str
+    release_code: str
+    tenant_code: str
+    actor: str
+    input_hash: str
+    canonical_input_hash: str
+    reconciliation_hash: str
+    source_snapshot_hash: str
+    approved_source_snapshot_hash: str
+    idempotent_replay: bool
+    tenant_change: TenantIdentityChange
+    adopted_ids: dict[str, int]
+    created_workspace_ids: list[int]
+    objective_codes: list[str]
+    classification_keys: list[str]
+    workspaces: list[AppliedWorkspace]
+    summary: dict[str, int]
+    audit_event_id: int
+    occurred_at: datetime
+
+
 @dataclass(frozen=True)
 class ExistingNode:
     id: int
@@ -155,6 +212,16 @@ class ExistingNode:
     status: str
     sort_order: int
     metadata: dict[str, Any]
+    record_code: str
+    references: dict[str, int] = field(default_factory=dict)
+    child_ids: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True)
+class SnapshotIntegrityIssue:
+    code: str
+    reference: str
+    message: str
 
 
 @dataclass
@@ -170,3 +237,5 @@ class TenantSnapshot:
     organization_unit_codes: set[str] = field(default_factory=set)
     existing_release_codes: set[str] = field(default_factory=set)
     requester_has_manage_permission: bool | None = None
+    workspace_tenant_ids: dict[int, int] = field(default_factory=dict)
+    integrity_issues: list[SnapshotIntegrityIssue] = field(default_factory=list)

@@ -1,0 +1,38 @@
+{
+  "algorithm": "ordered-primary-key/canonical-json-v1",
+  "protected_source_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+  "tables": {
+    "admin_configurations": {
+      "rows": 22,
+      "sha256": "eef262e87edaf39ecde5dbb084e128685e9e4a43b9d2ee2f913f668fbf4db97f"
+    },
+    "enterprise_workspace_classifications": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "enterprise_workspace_links": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "enterprise_workspaces": {
+      "rows": 3,
+      "sha256": "067ca65707862780d7625bb9bd480121543c91ec8f7c23bde66a55c8c8ea2b5d"
+    },
+    "security_events": {
+      "rows": 8,
+      "sha256": "f41de1e12a5c3f8128f8e5359811c251ad5f299e3784ab0ce2834dbfdea03ef9"
+    },
+    "tenants": {
+      "rows": 1,
+      "sha256": "30dfe042c356bb32522d315613ee82284622b253baed621f6d551098e186b5ae"
+    },
+    "user_accounts": {
+      "rows": 9,
+      "sha256": "9b63e0f516fbc92ec1eec50ac754ccdf9a3b01a93891c95ffa325811cd9270f7"
+    },
+    "workspace_module_settings": {
+      "rows": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  }
+}

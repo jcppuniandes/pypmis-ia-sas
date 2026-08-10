@@ -2,6 +2,7 @@ import { Archive, CheckCircle2, CopyPlus, GitFork, Layers3, Plus, Save, Send, Se
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
+import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTree from "../components/EnterpriseTree";
 import StructureNodeForm from "../components/StructureNodeForm";
 import type {
@@ -89,6 +90,21 @@ export default function AdminEnterpriseStructurePage({
     data?.links.filter(
       (item) => item.source_workspace_id === selectedNodeId || item.target_workspace_id === selectedNodeId
     ) ?? [];
+  const recordCodePreview = useMemo(() => {
+    if (nodeMode === "edit" && selectedNode) return selectedNode.record_code;
+    const parent = nodes.find((node) => node.id === nodeDraft.parent_id) ?? null;
+    const siblings = nodes.filter((node) => node.parent_id === nodeDraft.parent_id);
+    const nextSequence =
+      Math.max(
+        0,
+        ...siblings.map((node) => {
+          const segments = node.record_code.split(".");
+          return Number(segments[segments.length - 1]) || 0;
+        })
+      ) + 1;
+    const segment = String(nextSequence).padStart(2, "0");
+    return parent ? `${parent.record_code}.${segment}` : segment;
+  }, [nodeDraft.parent_id, nodeMode, nodes, selectedNode]);
 
   const load = useCallback(
     async (preferredNodeId?: number | null) => {
@@ -294,7 +310,10 @@ export default function AdminEnterpriseStructurePage({
   }
 
   async function publishRelease() {
-    await run(() => enterpriseStructureApi.publish(token), "Configuraciones publicadas.");
+    const drafts = data?.drafts ?? [];
+    const ids = drafts.map((draft) => draft.id);
+    const expectedHashes = Object.fromEntries(drafts.map((draft) => [draft.id, draft.content_hash]));
+    await run(() => enterpriseStructureApi.publish(token, ids, expectedHashes), "Configuraciones publicadas.");
     setValidation(null);
   }
 
@@ -303,27 +322,29 @@ export default function AdminEnterpriseStructurePage({
 
   return (
     <section className="enterpriseWorkspace adminEnterpriseWorkspace">
-      <header className="enterpriseHero">
-        <div>
-          <span>ADMIN MODE · ENTERPRISE STRUCTURE</span>
-          <h2>Enterprise Structure Configuration</h2>
-          <p>Gobierne la jerarquía, sus clasificaciones y reglas sin mezclar operación de proyectos.</p>
-        </div>
-        <div className="enterpriseKpis">
-          <article>
-            <strong>{data?.summary.nodes ?? 0}</strong>
-            <span>Nodos</span>
-          </article>
-          <article>
-            <strong>{data?.summary.types ?? 0}</strong>
-            <span>Tipos</span>
-          </article>
-          <article>
-            <strong>{data?.summary.drafts ?? 0}</strong>
-            <span>Borradores</span>
-          </article>
-        </div>
-      </header>
+      <CompactModuleHeader
+        actions={
+          <button
+            className="enterpriseButton primary"
+            disabled={!canConfigure || busy}
+            onClick={() => {
+              setTab("hierarchy");
+              startNode();
+            }}
+            type="button"
+          >
+            <Plus size={15} /> Agregar nodo
+          </button>
+        }
+        description="Gobierne la jerarquía, sus clasificaciones y reglas sin mezclar operación de proyectos."
+        eyebrow="ADMIN MODE · ENTERPRISE STRUCTURE"
+        metrics={[
+          { label: "Nodos", value: data?.summary.nodes ?? 0 },
+          { label: "Tipos", value: data?.summary.types ?? 0 },
+          { label: "Borradores", value: data?.summary.drafts ?? 0 },
+        ]}
+        title="Enterprise Structure Configuration"
+      />
 
       <nav className="enterpriseTabs" aria-label="Configuración de estructura empresarial">
         <button className={tab === "hierarchy" ? "active" : ""} onClick={() => setTab("hierarchy")} type="button">
@@ -399,6 +420,7 @@ export default function AdminEnterpriseStructurePage({
               draft={nodeDraft}
               mode={nodeMode}
               nodes={nodes.filter((node) => node.id !== selectedNodeId)}
+              recordCodePreview={recordCodePreview}
               onChange={setNodeDraft}
               onSubmit={submitNode}
               workspaceTypes={data?.workspace_types ?? []}

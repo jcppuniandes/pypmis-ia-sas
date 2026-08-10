@@ -17,6 +17,8 @@ export type EnterpriseNode = {
   parent_id: number | null;
   workspace_type_code: string;
   code: string;
+  record_code: string;
+  depth: number;
   name: string;
   description: string;
   organization_unit_id: number | null;

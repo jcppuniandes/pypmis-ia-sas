@@ -837,7 +837,7 @@ class LoginRequest(BaseModel):
     email: str
     password: str
     tenant_id: int | None = None
-    tenant_slug: str = "demo-energy"
+    tenant_slug: str | None = None
 
 
 class AuthSessionOut(BaseModel):

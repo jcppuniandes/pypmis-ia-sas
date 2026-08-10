@@ -110,11 +110,11 @@ export const enterpriseStructureApi = {
       body: JSON.stringify({ configuration_ids: configurationIds }),
     }),
 
-  publish: (token: string, configurationIds: number[] = []) =>
+  publish: (token: string, configurationIds: number[] = [], expectedHashes: Record<number, string> = {}) =>
     apiFetch<PublicationResult>(`${adminRoot}/publish`, {
       method: "POST",
       token,
-      body: JSON.stringify({ configuration_ids: configurationIds }),
+      body: JSON.stringify({ configuration_ids: configurationIds, expected_hashes: expectedHashes }),
     }),
 
   cloneRelease: (token: string) => apiFetch<ConfigurationVersion[]>(`${adminRoot}/clone`, { method: "POST", token }),

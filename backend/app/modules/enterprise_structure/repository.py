@@ -6,7 +6,11 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace
-from app.modules.enterprise_structure.models import EnterpriseWorkspaceClassification, EnterpriseWorkspaceLink
+from app.modules.enterprise_structure.models import (
+    EnterpriseStrategicObjective,
+    EnterpriseWorkspaceClassification,
+    EnterpriseWorkspaceLink,
+)
 
 
 class EnterpriseStructureRepository:
@@ -96,6 +100,14 @@ class EnterpriseStructureRepository:
                 EnterpriseWorkspace.code == code,
             )
         )
+
+    def strategic_objectives(self, *, active_only: bool = False) -> list[EnterpriseStrategicObjective]:
+        statement = select(EnterpriseStrategicObjective).where(
+            EnterpriseStrategicObjective.tenant_id == self.tenant_id
+        )
+        if active_only:
+            statement = statement.where(EnterpriseStrategicObjective.active.is_(True))
+        return list(self.db.scalars(statement.order_by(EnterpriseStrategicObjective.code)).all())
 
     def active_children(self, workspace_id: int) -> list[EnterpriseWorkspace]:
         return list(

@@ -1,0 +1,62 @@
+{
+  "accepted": true,
+  "comparison": {
+    "gate02a_fingerprint_algorithm": "deterministic-md5/undocumented-canonicalization",
+    "gate02b_fingerprint_algorithm": "ordered-primary-key/canonical-json-v1",
+    "hashes_directly_comparable": false,
+    "reason": "Gate 02A did not preserve the canonicalization recipe used for its MD5 values. Gate 02B therefore uses exact row counts plus a semantic comparison of the tenant and all three persisted workspaces, and establishes a documented SHA-256 baseline for subsequent checks."
+  },
+  "gate02a": {
+    "row_counts": {
+      "admin_configurations": 22,
+      "enterprise_workspace_classifications": 0,
+      "enterprise_workspace_links": 0,
+      "enterprise_workspaces": 3,
+      "security_events": 8,
+      "tenants": 1,
+      "user_accounts": 9,
+      "workspace_module_settings": 0
+    },
+    "tenant": {
+      "base_currency": "COP",
+      "id": 1,
+      "name": "Demo Energy Infrastructure",
+      "slug": "demo-energy"
+    },
+    "workspace_identities": [
+      {"id": 1, "parent_id": null, "record_code": "01", "version": 3},
+      {"id": 2, "parent_id": 1, "record_code": "01.01", "version": 2},
+      {"id": 3, "parent_id": 1, "record_code": "01.02", "version": 1}
+    ]
+  },
+  "gate02b_preflight": {
+    "protected_source_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+    "row_counts": {
+      "admin_configurations": 22,
+      "enterprise_workspace_classifications": 0,
+      "enterprise_workspace_links": 0,
+      "enterprise_workspaces": 3,
+      "security_events": 8,
+      "tenants": 1,
+      "user_accounts": 9,
+      "workspace_module_settings": 0
+    },
+    "tenant": {
+      "base_currency": "COP",
+      "id": 1,
+      "name": "Demo Energy Infrastructure",
+      "slug": "demo-energy"
+    },
+    "workspace_identities": [
+      {"id": 1, "parent_id": null, "record_code": "01", "version": 3},
+      {"id": 2, "parent_id": 1, "record_code": "01.01", "version": 2},
+      {"id": 3, "parent_id": 1, "record_code": "01.02", "version": 1}
+    ]
+  },
+  "result": {
+    "exact_row_counts": true,
+    "semantic_tenant_match": true,
+    "semantic_workspace_identity_match": true,
+    "source_snapshot_changed": false
+  }
+}

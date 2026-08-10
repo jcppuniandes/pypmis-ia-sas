@@ -20,4 +20,37 @@ El esquema ejecutable puede consultarse con:
 python -m app.modules.enterprise_structure.importer schema
 ```
 
-Esta entrega corresponde a la Fase 1: parser, normalización, validación, diff y reporte. `apply` y `publish` permanecen bloqueados hasta la revisión explícita del dry-run y la aprobación de datos reales.
+La validación continúa siendo obligatoria antes de cualquier escritura. `publish` permanece como una operación separada y nunca es ejecutado implícitamente por el importador.
+
+## Reconciliación explícita de workspaces existentes
+
+Los archivos anteriores continúan siendo válidos porque `reconciliation` es opcional. Cuando un nodo persistido deba adoptar una identidad canónica, la decisión debe declararse sin heurísticas:
+
+```yaml
+reconciliation:
+  - external_key: ENT-PYP
+    existing_id: 1
+    action: ADOPT
+    rationale: La raíz existente representa funcionalmente la raíz canónica.
+```
+
+El dry-run comprueba tenant, tipo, unicidad del `existing_id`, identidad previa, hijos referenciados, integridad de clasificaciones y links. Una adopción válida se reporta como `adopt`, conserva el `id` y muestra `old_record_code` y el Record Code previsto.
+
+## Apply CORE controlado
+
+`apply` requiere todas las aprobaciones explícitas, el hash SHA-256 del archivo original, el hash del snapshot protegido y un usuario activo con `admin.enterprise_structure.manage` y alcance sobre la organización. La operación toma locks de escritura coordinados y se ejecuta en una única transacción PostgreSQL; cualquier error revierte tenant, nodos, objetivos, clasificaciones y auditoría.
+
+```bash
+python -m app.modules.enterprise_structure.importer apply \
+  --file config/enterprise_structure.pyp_core_reconciled_review.yaml \
+  --tenant tenant-slug-actual \
+  --expected-hash <sha256-del-yaml> \
+  --expected-source-hash <sha256-del-preflight> \
+  --actor usuario-autorizado@example.com \
+  --approved-tenant-name "Nombre final aprobado" \
+  --approved-tenant-slug tenant-slug-final \
+  --json-output apply.json \
+  --human-output apply.txt
+```
+
+Antes del apply capture la fuente con `preflight`; inmediatamente antes de escribir, vuelva a ejecutar `validate`. Repita el mismo apply para demostrar idempotencia: la segunda pasada debe reportar cero creaciones, cero actualizaciones y cero conflictos. Cada pasada registra `enterprise_structure.core_applied`. El comando no contiene ni invoca una ruta de publicación.

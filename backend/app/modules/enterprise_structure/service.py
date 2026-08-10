@@ -13,17 +13,29 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.time import utc_now
-from app.domain.models import AdminConfiguration, EnterpriseWorkspace, SecurityEvent
+from app.domain.models import (
+    AdminConfiguration,
+    EnterpriseWorkspace,
+    SecurityEvent,
+    Tenant,
+)
 from app.modules.enterprise_structure.classifications import validate_classification
-from app.modules.enterprise_structure.composition_rules import validate_parent_child, validate_rule_definition
+from app.modules.enterprise_structure.composition_rules import (
+    validate_parent_child,
+    validate_rule_definition,
+)
 from app.modules.enterprise_structure.constants import (
     CATEGORY_SEED,
     WORKSPACE_STATUSES,
     WORKSPACE_TYPE_SEED,
 )
 from app.modules.enterprise_structure.links import validate_workspace_link
-from app.modules.enterprise_structure.models import EnterpriseWorkspaceClassification, EnterpriseWorkspaceLink
+from app.modules.enterprise_structure.models import (
+    EnterpriseWorkspaceClassification,
+    EnterpriseWorkspaceLink,
+)
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
+from app.modules.enterprise_structure.record_codes import next_record_code
 from app.modules.enterprise_structure.repository import EnterpriseStructureRepository
 from app.modules.enterprise_structure.schemas import (
     CategoryItem,
@@ -75,6 +87,7 @@ class EnterpriseStructureService:
                     parent_id=None,
                     workspace_type_code="enterprise",
                     code="enterprise",
+                    record_code=self._next_record_code(None),
                     name="Enterprise Workspace",
                     status="active",
                     defaults_json={
@@ -103,10 +116,10 @@ class EnterpriseStructureService:
         classifications = self.repository.classifications()
         links = self.repository.links()
         return EnterpriseStructureConfigurationOut(
-            workspace_types=[ConfigurationVersionOut.model_validate(item) for item in types],
-            categories=[ConfigurationVersionOut.model_validate(item) for item in enterprise_categories],
+            workspace_types=[_configuration_out(item) for item in types],
+            categories=[_configuration_out(item) for item in enterprise_categories],
             composition_rules=[self._composition_rule(item) for item in types],
-            drafts=[ConfigurationVersionOut.model_validate(item) for item in drafts],
+            drafts=[_configuration_out(item) for item in drafts],
             tree=self.build_tree(workspaces),
             classifications=[ClassificationOut.model_validate(item) for item in classifications],
             links=[WorkspaceLinkOut.model_validate(item) for item in links],
@@ -154,6 +167,7 @@ class EnterpriseStructureService:
             parent_id=parent.id if parent else None,
             workspace_type_code=type_code,
             code=node_code,
+            record_code=self._next_record_code(parent),
             name=_required(payload.name, "Workspace name"),
             status=payload.status.strip().lower(),
             defaults_json={"_enterprise": _metadata_from_payload(payload)},
@@ -162,7 +176,7 @@ class EnterpriseStructureService:
             created_by_user_id=self.actor_id,
         )
         self.db.add(workspace)
-        self._commit("Workspace code already exists")
+        self._commit("Workspace code or hierarchy record code already exists")
         self.db.refresh(workspace)
         self._event("enterprise_structure.node_created", workspace)
         self.db.commit()
@@ -171,7 +185,10 @@ class EnterpriseStructureService:
     def update_node(self, workspace_id: int, payload: EnterpriseNodeUpdate) -> EnterpriseNodeOut:
         workspace = self._workspace(workspace_id)
         self._require_version(workspace, payload.expected_version)
+        move_metadata: dict[str, Any] | None = None
         if "parent_id" in payload.model_fields_set and payload.parent_id != workspace.parent_id:
+            old_record_code = workspace.record_code
+            descendants = self._descendant_workspaces(workspace.id)
             if payload.parent_id is None:
                 workspace_type = self._published_type(workspace.workspace_type_code)
                 if not workspace_type.content_json.get("can_be_root", False):
@@ -184,7 +201,7 @@ class EnterpriseStructureService:
                     for item in self.repository.workspaces()
                 ):
                     raise HTTPException(status_code=409, detail="Only one active Enterprise root is allowed")
-                workspace.parent_id = None
+                new_parent = None
             else:
                 parent = self._workspace(payload.parent_id)
                 self._ensure_no_cycle(workspace.id, parent.id)
@@ -192,7 +209,21 @@ class EnterpriseStructureService:
                     parent, workspace.workspace_type_code, self._published_type(parent.workspace_type_code)
                 )
                 self._validate_depth(parent, self._published_type(workspace.workspace_type_code))
-                workspace.parent_id = parent.id
+                new_parent = parent
+            new_record_code = self._next_record_code(new_parent, exclude_workspace_id=workspace.id)
+            workspace.parent_id = new_parent.id if new_parent else None
+            workspace.record_code = new_record_code
+            for descendant in descendants:
+                if not descendant.record_code.startswith(f"{old_record_code}."):
+                    raise HTTPException(status_code=409, detail="Descendant hierarchy code is inconsistent")
+                descendant.record_code = f"{new_record_code}{descendant.record_code[len(old_record_code):]}"
+                descendant.version += 1
+                descendant.updated_at = utc_now()
+            move_metadata = {
+                "old_record_code": old_record_code,
+                "new_record_code": new_record_code,
+                "descendant_count": len(descendants),
+            }
         if payload.name is not None:
             workspace.name = _required(payload.name, "Workspace name")
         if payload.status is not None:
@@ -223,6 +254,8 @@ class EnterpriseStructureService:
         workspace.defaults_json = defaults
         workspace.version += 1
         workspace.updated_at = utc_now()
+        if move_metadata:
+            self._event("enterprise_structure.node_moved", workspace, move_metadata)
         self._event("enterprise_structure.node_updated", workspace)
         self.db.commit()
         self.db.refresh(workspace)
@@ -304,14 +337,14 @@ class EnterpriseStructureService:
         normalized_code = _configuration_code(code)
         existing_draft = self.repository.latest_configuration(kind, normalized_code, prefer_draft=True)
         if existing_draft and existing_draft.status == "draft":
-            return ConfigurationVersionOut.model_validate(existing_draft)
+            return _configuration_out(existing_draft)
         source = self.repository.latest_configuration(kind, normalized_code, published_only=True)
         if source is None:
             raise HTTPException(status_code=404, detail="Published configuration not found")
         clone = self._clone(source)
         self.db.commit()
         self.db.refresh(clone)
-        return ConfigurationVersionOut.model_validate(clone)
+        return _configuration_out(clone)
 
     def update_category(self, configuration_id: int, payload: CategoryUpdate) -> ConfigurationVersionOut:
         record = self._draft_configuration(configuration_id, "catalog")
@@ -337,7 +370,7 @@ class EnterpriseStructureService:
         self._event("enterprise_structure.category_updated", record)
         self.db.commit()
         self.db.refresh(record)
-        return ConfigurationVersionOut.model_validate(record)
+        return _configuration_out(record)
 
     def update_composition_rule(self, parent_type_code: str, payload: CompositionRuleUpdate) -> CompositionRuleOut:
         code = _configuration_code(parent_type_code)
@@ -446,17 +479,30 @@ class EnterpriseStructureService:
                 record.kind == "catalog" and record.code not in CATEGORY_SEED
             ):
                 raise HTTPException(status_code=422, detail=f"Configuration {configuration_id} is outside Nivel 2A")
+            observed_hash = _content_hash(record)
+            expected_hash = payload.expected_hashes.get(configuration_id, "")
+            if expected_hash != observed_hash:
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "message": "Draft content changed or expected hash was not supplied",
+                        "configuration_id": configuration_id,
+                        "expected_hash": expected_hash,
+                        "observed_hash": observed_hash,
+                    },
+                )
+            records.append(record)
+        for record in records:
             record.status = "published"
             record.published_at = utc_now()
             record.content_hash = _content_hash(record)
             record.version += 1
             record.updated_at = utc_now()
             self._event("enterprise_structure.configuration_published", record)
-            records.append(record)
         self.db.commit()
         return PublicationOut(
             **validation.model_dump(),
-            published=[ConfigurationVersionOut.model_validate(item) for item in records],
+            published=[_configuration_out(item) for item in records],
         )
 
     def clone_release(self) -> list[ConfigurationVersionOut]:
@@ -471,7 +517,7 @@ class EnterpriseStructureService:
                 else:
                     clones.append(self._clone(source))
         self.db.commit()
-        return [ConfigurationVersionOut.model_validate(item) for item in clones]
+        return [_configuration_out(item) for item in clones]
 
     def explorer(
         self,
@@ -525,12 +571,12 @@ class EnterpriseStructureService:
                 parent_id = parent_map.get(parent_id)
         tree_nodes = [item for item in all_nodes if item.id in visible_ids]
         types = self.repository.latest_configurations("workspace_type", published_only=True)
-        objectives = self._published_category("strategic-objective").content_json.get("items", [])
+        objectives = self.strategic_objective_items()
         return EnterpriseExplorerOut(
             tree=self.build_tree(tree_nodes),
             nodes=[self.node_out(item) for item in matched],
-            workspace_types=[ConfigurationVersionOut.model_validate(item) for item in types],
-            objectives=[CategoryItem.model_validate(item) for item in objectives],
+            workspace_types=[_configuration_out(item) for item in types],
+            objectives=objectives,
             classifications=[ClassificationOut.model_validate(item) for item in classifications],
             links=[WorkspaceLinkOut.model_validate(item) for item in links],
             summary={
@@ -590,6 +636,9 @@ class EnterpriseStructureService:
             parent_id=workspace.parent_id,
             workspace_type_code=workspace.workspace_type_code,
             code=workspace.code,
+            external_key=workspace.external_key or str(metadata.get("external_key") or "") or None,
+            record_code=workspace.record_code,
+            depth=len(self.workspace_path(workspace)) - 1,
             name=workspace.name,
             description=str(metadata.get("description") or ""),
             organization_unit_id=_optional_int(metadata.get("organization_unit_id")),
@@ -603,6 +652,13 @@ class EnterpriseStructureService:
             created_at=workspace.created_at,
             updated_at=workspace.updated_at,
         )
+
+    def strategic_objective_items(self) -> list[CategoryItem]:
+        objectives = self.repository.strategic_objectives(active_only=True)
+        if objectives:
+            return [CategoryItem(code=item.code, label=item.name) for item in objectives]
+        category = self._published_category("strategic-objective")
+        return [CategoryItem.model_validate(item) for item in category.content_json.get("items", [])]
 
     def _seed_workspace_types(self) -> None:
         for code, definition in WORKSPACE_TYPE_SEED.items():
@@ -797,6 +853,45 @@ class EnterpriseStructureService:
             pending.extend(by_parent.get(current, []))
         return descendants
 
+    def _descendant_workspaces(self, root_id: int) -> list[EnterpriseWorkspace]:
+        nodes = self.repository.workspaces()
+        descendant_ids = self._descendant_ids(root_id, nodes) - {root_id}
+        return [item for item in nodes if item.id in descendant_ids]
+
+    def _next_record_code(
+        self,
+        parent: EnterpriseWorkspace | None,
+        *,
+        exclude_workspace_id: int | None = None,
+    ) -> str:
+        if parent is None:
+            self.db.execute(
+                select(Tenant.id).where(Tenant.id == self.tenant_id).with_for_update()
+            ).scalar_one()
+            statement = select(EnterpriseWorkspace.record_code).where(
+                EnterpriseWorkspace.tenant_id == self.tenant_id,
+                EnterpriseWorkspace.parent_id.is_(None),
+            )
+            parent_code = None
+        else:
+            locked_parent = self.db.execute(
+                select(EnterpriseWorkspace)
+                .where(
+                    EnterpriseWorkspace.tenant_id == self.tenant_id,
+                    EnterpriseWorkspace.id == parent.id,
+                )
+                .with_for_update()
+            ).scalar_one()
+            statement = select(EnterpriseWorkspace.record_code).where(
+                EnterpriseWorkspace.tenant_id == self.tenant_id,
+                EnterpriseWorkspace.parent_id == locked_parent.id,
+            )
+            parent_code = locked_parent.record_code
+        if exclude_workspace_id is not None:
+            statement = statement.where(EnterpriseWorkspace.id != exclude_workspace_id)
+        sibling_codes = self.db.scalars(statement).all()
+        return next_record_code(parent_code, sibling_codes)
+
     def _event(self, event_type: str, target: object, metadata: dict[str, Any] | None = None) -> None:
         self.db.add(
             SecurityEvent(
@@ -886,3 +981,10 @@ def _content_hash(record: AdminConfiguration) -> str:
         "content": record.content_json,
     }
     return hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+
+
+def _configuration_out(record: AdminConfiguration) -> ConfigurationVersionOut:
+    output = ConfigurationVersionOut.model_validate(record)
+    if record.status == "draft":
+        return output.model_copy(update={"content_hash": _content_hash(record)})
+    return output

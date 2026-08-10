@@ -1,0 +1,191 @@
+{
+  "actor": "admin@demo.local",
+  "adopted_ids": {
+    "BU-PYP-CONST": 2,
+    "BU-PYP-PMO": 3,
+    "ENT-PYP": 1
+  },
+  "approved_source_snapshot_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+  "audit_event_id": 10,
+  "canonical_input_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+  "classification_keys": [
+    "BU-PYP-CONS:responsible-area:consulting",
+    "BU-PYP-CONST:responsible-area:construction",
+    "BU-PYP-PMO:responsible-area:pmo-aas",
+    "BU-PYP-TEC:responsible-area:technology",
+    "PF-PYP-ASSET:strategic-objective:obj-pyp-05",
+    "PF-PYP-ASSET:strategic-objective:obj-pyp-06",
+    "PF-PYP-CONS:strategic-objective:obj-pyp-01",
+    "PF-PYP-CONS:strategic-objective:obj-pyp-02",
+    "PF-PYP-CONS:strategic-objective:obj-pyp-03",
+    "PF-PYP-CONST:strategic-objective:obj-pyp-01",
+    "PF-PYP-CONST:strategic-objective:obj-pyp-02",
+    "PF-PYP-CONST:strategic-objective:obj-pyp-05",
+    "PF-PYP-CONST:strategic-objective:obj-pyp-07",
+    "PF-PYP-PMO:strategic-objective:obj-pyp-01",
+    "PF-PYP-PMO:strategic-objective:obj-pyp-02",
+    "PF-PYP-PMO:strategic-objective:obj-pyp-03",
+    "PF-PYP-PMO:strategic-objective:obj-pyp-07",
+    "PF-PYP-TEC:strategic-objective:obj-pyp-03",
+    "PF-PYP-TEC:strategic-objective:obj-pyp-04",
+    "PG-PYP-PMO-MIN:strategic-objective:obj-pyp-03",
+    "PG-PYP-PMO-MIN:strategic-objective:obj-pyp-07",
+    "PG-PYP-PPMIS:strategic-objective:obj-pyp-03",
+    "PG-PYP-PPMIS:strategic-objective:obj-pyp-04",
+    "PG-PYP-TEC-IMP:strategic-objective:obj-pyp-04",
+    "PRJ-PYP-PPMIS:strategic-objective:obj-pyp-03",
+    "PRJ-PYP-PPMIS:strategic-objective:obj-pyp-04"
+  ],
+  "created_workspace_ids": [],
+  "idempotent_replay": true,
+  "input_hash": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+  "objective_codes": [
+    "OBJ-PYP-01",
+    "OBJ-PYP-02",
+    "OBJ-PYP-03",
+    "OBJ-PYP-04",
+    "OBJ-PYP-05",
+    "OBJ-PYP-06",
+    "OBJ-PYP-07"
+  ],
+  "occurred_at": "2026-08-10T03:16:36.748355",
+  "outcome": "SUCCESS",
+  "reconciliation_hash": "1dfb11c24685c7beff9dca0dce3f568da7615b9c0392072dc61d63d8fe87fcea",
+  "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+  "source_snapshot_hash": "38096421d557116975cdc40993c56f65bae5c990e54054fda15e85a9644c1d58",
+  "summary": {
+    "adopt": 0,
+    "classification_create": 0,
+    "conflict": 0,
+    "create": 0,
+    "objective_create": 0,
+    "tenant_update": 0,
+    "unchanged": 47,
+    "update": 0,
+    "workspace_create": 0
+  },
+  "tenant_change": {
+    "changed": false,
+    "currency": "COP",
+    "new_name": "P&P Ingeniería y Proyectos",
+    "new_slug": "pyp-ingenieria-proyectos",
+    "old_name": "P&P Ingeniería y Proyectos",
+    "old_slug": "pyp-ingenieria-proyectos",
+    "tenant_id": 1
+  },
+  "tenant_code": "pyp-ingenieria-proyectos",
+  "workspaces": [
+    {
+      "action": "unchanged",
+      "external_key": "ENT-PYP",
+      "id": 1,
+      "name": "P&P Ingeniería y Proyectos",
+      "record_code": "01",
+      "workspace_type": "enterprise"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "BU-PYP-CONS",
+      "id": 4,
+      "name": "Consultoría en Gestión de Proyectos y Activos",
+      "record_code": "01.01",
+      "workspace_type": "business-unit"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "BU-PYP-PMO",
+      "id": 3,
+      "name": "PMO como Servicio (PMO aaS)",
+      "record_code": "01.02",
+      "workspace_type": "business-unit"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "BU-PYP-TEC",
+      "id": 5,
+      "name": "Tecnología e Innovación",
+      "record_code": "01.03",
+      "workspace_type": "business-unit"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "BU-PYP-CONST",
+      "id": 2,
+      "name": "Gerencia de Construcción",
+      "record_code": "01.04",
+      "workspace_type": "business-unit"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PF-PYP-CONS",
+      "id": 6,
+      "name": "Consultoría y Control de Proyectos",
+      "record_code": "01.01.01",
+      "workspace_type": "portfolio"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PF-PYP-ASSET",
+      "id": 7,
+      "name": "Gestión de Activos, Propiedades y Facilities",
+      "record_code": "01.01.02",
+      "workspace_type": "portfolio"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PF-PYP-PMO",
+      "id": 8,
+      "name": "PMO como Servicio",
+      "record_code": "01.02.01",
+      "workspace_type": "portfolio"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PF-PYP-TEC",
+      "id": 9,
+      "name": "Tecnología e Innovación",
+      "record_code": "01.03.01",
+      "workspace_type": "portfolio"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PF-PYP-CONST",
+      "id": 10,
+      "name": "Gerencia de Construcción",
+      "record_code": "01.04.01",
+      "workspace_type": "portfolio"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PG-PYP-PMO-MIN",
+      "id": 11,
+      "name": "Programa PMO Minería",
+      "record_code": "01.02.01.01",
+      "workspace_type": "program"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PG-PYP-TEC-IMP",
+      "id": 12,
+      "name": "Programa de Implementaciones Tecnológicas",
+      "record_code": "01.03.01.01",
+      "workspace_type": "program"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PG-PYP-PPMIS",
+      "id": 13,
+      "name": "Programa de Desarrollo P&Pmis Construction AI",
+      "record_code": "01.03.01.02",
+      "workspace_type": "program"
+    },
+    {
+      "action": "unchanged",
+      "external_key": "PRJ-PYP-PPMIS",
+      "id": 14,
+      "name": "Desarrollo P&Pmis Construction AI",
+      "record_code": "01.03.01.02.01",
+      "workspace_type": "project"
+    }
+  ]
+}

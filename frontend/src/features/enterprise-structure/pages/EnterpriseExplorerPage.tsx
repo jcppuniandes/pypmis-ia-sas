@@ -2,11 +2,18 @@ import { Building2, Network, RefreshCw, Table2, TreePine } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
+import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTable from "../components/EnterpriseTable";
 import EnterpriseTree from "../components/EnterpriseTree";
 import NodeDetailPanel from "../components/NodeDetailPanel";
 import StructureFilters from "../components/StructureFilters";
-import type { EnterpriseExplorer, EnterpriseNodeDetail, ExplorerFilters } from "../types";
+import type {
+  EnterpriseExplorer,
+  EnterpriseNode,
+  EnterpriseNodeDetail,
+  EnterpriseTreeNode,
+  ExplorerFilters,
+} from "../types";
 import "../enterpriseStructure.css";
 
 const initialFilters: ExplorerFilters = {
@@ -17,6 +24,10 @@ const initialFilters: ExplorerFilters = {
   region: "",
   status: "",
 };
+
+function flattenTree(nodes: EnterpriseTreeNode[]): EnterpriseNode[] {
+  return nodes.flatMap((node) => [node, ...flattenTree(node.children)]);
+}
 
 function messageFrom(error: unknown) {
   if (!(error instanceof ApiError))
@@ -74,27 +85,17 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
 
   return (
     <section className="enterpriseWorkspace enterpriseExplorerWorkspace">
-      <header className="enterpriseHero userHero">
-        <div>
-          <span>USER MODE · ENTERPRISE STRATEGY MANAGER</span>
-          <h2>Enterprise Explorer</h2>
-          <p>Consulte la estructura autorizada, su ruta jerárquica, clasificaciones y relaciones transversales.</p>
-        </div>
-        <div className="enterpriseKpis">
-          <article>
-            <strong>{data?.summary.nodes ?? 0}</strong>
-            <span>Resultados</span>
-          </article>
-          <article>
-            <strong>{data?.summary.projects ?? 0}</strong>
-            <span>Proyectos</span>
-          </article>
-          <article>
-            <strong>{data?.summary.facilities ?? 0}</strong>
-            <span>Facilities</span>
-          </article>
-        </div>
-      </header>
+      <CompactModuleHeader
+        description="Consulte la estructura autorizada, su ruta jerárquica, clasificaciones y relaciones transversales."
+        eyebrow="USER MODE · ENTERPRISE STRATEGY MANAGER"
+        metrics={[
+          { label: "Resultados", value: data?.summary.nodes ?? 0 },
+          { label: "Proyectos", value: data?.summary.projects ?? 0 },
+          { label: "Facilities", value: data?.summary.facilities ?? 0 },
+        ]}
+        title="Enterprise Explorer"
+        tone="user"
+      />
 
       {error ? (
         <div className="enterpriseAlert error" role="alert">
@@ -135,7 +136,12 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
           {view === "tree" ? (
             <EnterpriseTree nodes={data?.tree ?? []} onSelect={selectNode} selectedNodeId={detail?.node.id ?? null} />
           ) : (
-            <EnterpriseTable nodes={data?.nodes ?? []} onSelect={selectNode} />
+            <EnterpriseTable
+              allNodes={flattenTree(data?.tree ?? [])}
+              classifications={data?.classifications ?? []}
+              nodes={data?.nodes ?? []}
+              onSelect={selectNode}
+            />
           )}
         </section>
         <NodeDetailPanel detail={detail} />

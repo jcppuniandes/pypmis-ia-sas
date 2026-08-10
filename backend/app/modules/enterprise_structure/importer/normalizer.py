@@ -43,6 +43,8 @@ def normalize_configuration(configuration: EnterpriseStructureImport) -> Enterpr
         link["source_external_key"] = _upper(link["source_external_key"])
         link["target_external_key"] = _upper(link["target_external_key"])
         link["relationship_type"] = _upper(link["relationship_type"])
+    for reconciliation in payload["reconciliation"]:
+        reconciliation["external_key"] = _upper(reconciliation["external_key"])
     return EnterpriseStructureImport.model_validate(payload)
 
 

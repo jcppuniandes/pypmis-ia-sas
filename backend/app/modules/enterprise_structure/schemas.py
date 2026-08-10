@@ -56,6 +56,9 @@ class EnterpriseNodeOut(BaseModel):
     parent_id: int | None
     workspace_type_code: str
     code: str
+    external_key: str | None = None
+    record_code: str
+    depth: int
     name: str
     description: str
     organization_unit_id: int | None
@@ -146,6 +149,7 @@ class CategoryUpdate(BaseModel):
 
 class PublicationRequest(BaseModel):
     configuration_ids: list[int] = Field(default_factory=list)
+    expected_hashes: dict[int, str] = Field(default_factory=dict)
 
 
 class ConfigurationValidationOut(BaseModel):

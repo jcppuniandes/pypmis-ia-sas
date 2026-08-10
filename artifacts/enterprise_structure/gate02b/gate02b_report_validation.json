@@ -1,0 +1,30 @@
+{
+  "document": "Informe_Tecnico_PPMIS_Core_Correction_Gate02B_2026-08-09.docx",
+  "package_validation": {
+    "empty_tables": 0,
+    "inline_shapes": 1,
+    "ooxml_zip_integrity": "PASS",
+    "paragraphs": 296,
+    "sections": 1,
+    "tables": 99,
+    "word_document_xml_present": true
+  },
+  "required_content": {
+    "14_workspaces": true,
+    "35_backend_tests": true,
+    "47_unchanged": true,
+    "8_frontend_tests": true,
+    "gate02b_sections_31_to_41": true,
+    "publish_core_not_executed": true,
+    "qa_admin": true,
+    "qa_user": true,
+    "security_event_9_and_10": true,
+    "tenant_final_slug": true
+  },
+  "render_validation": {
+    "attempted_with_canonical_render_docx": true,
+    "result": "UNAVAILABLE",
+    "reason": "LibreOffice/soffice executable is not installed in the local environment"
+  },
+  "status": "PASS_WITH_RENDERING_LIMITATION"
+}

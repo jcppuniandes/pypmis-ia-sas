@@ -1,0 +1,86 @@
+{
+  "gate": "02A",
+  "captured_at": "2026-08-09T21:00:00-05:00",
+  "mode": "read-only",
+  "tenant": {
+    "id": 1,
+    "slug": "demo-energy",
+    "name": "Demo Energy Infrastructure",
+    "base_currency": "COP",
+    "status": null,
+    "status_note": "The current Tenant model does not expose a status column."
+  },
+  "users": {
+    "total": 9,
+    "active": 9
+  },
+  "published_admin_configurations": {
+    "total_revisions": 22,
+    "distinct_codes": 18,
+    "by_kind": {
+      "catalog": 7,
+      "module_definition": 3,
+      "numbering_rule": 1,
+      "process_definition": 1,
+      "workspace_type": 10
+    }
+  },
+  "references": {
+    "classifications": 0,
+    "links": 0,
+    "workspace_module_settings": 0
+  },
+  "workspaces": [
+    {
+      "id": 1,
+      "tenant_id": 1,
+      "external_key": null,
+      "record_code": "01",
+      "code": "enterprise",
+      "name": "P&P Ingenieria y Proyectos",
+      "workspace_type": "enterprise",
+      "parent_id": null,
+      "is_active": true,
+      "sort_order": 0,
+      "version": 3,
+      "child_ids": [2, 3],
+      "classification_count": 0,
+      "link_count": 0,
+      "module_setting_count": 0
+    },
+    {
+      "id": 2,
+      "tenant_id": 1,
+      "external_key": null,
+      "record_code": "01.01",
+      "code": "001",
+      "name": "Gerencia de Construcciones",
+      "workspace_type": "business-unit",
+      "parent_id": 1,
+      "is_active": true,
+      "sort_order": 0,
+      "version": 2,
+      "child_ids": [],
+      "classification_count": 0,
+      "link_count": 0,
+      "module_setting_count": 0
+    },
+    {
+      "id": 3,
+      "tenant_id": 1,
+      "external_key": null,
+      "record_code": "01.02",
+      "code": "002",
+      "name": "Gerencia PMO aaS",
+      "workspace_type": "business-unit",
+      "parent_id": 1,
+      "is_active": true,
+      "sort_order": 0,
+      "version": 1,
+      "child_ids": [],
+      "classification_count": 0,
+      "link_count": 0,
+      "module_setting_count": 0
+    }
+  ]
+}

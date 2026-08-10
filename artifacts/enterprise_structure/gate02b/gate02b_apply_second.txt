@@ -1,0 +1,44 @@
+P&Pmis Controlled CORE Apply
+Release: ES-PYP-CORE-RECONCILED-20260809
+Tenant: pyp-ingenieria-proyectos
+Actor: admin@demo.local
+Result: SUCCESS
+Idempotent replay: YES
+Input SHA-256: 04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025
+Source snapshot SHA-256: 38096421d557116975cdc40993c56f65bae5c990e54054fda15e85a9644c1d58
+
+Summary
+- adopt: 0
+- classification_create: 0
+- conflict: 0
+- create: 0
+- objective_create: 0
+- tenant_update: 0
+- unchanged: 47
+- update: 0
+- workspace_create: 0
+
+Tenant identity
+- id: 1
+- name: P&P Ingeniería y Proyectos -> P&P Ingeniería y Proyectos
+- slug: pyp-ingenieria-proyectos -> pyp-ingenieria-proyectos
+- currency: COP
+
+Workspaces
+- UNCHANGED id=1   ENT-PYP            01               enterprise     P&P Ingeniería y Proyectos
+- UNCHANGED id=4   BU-PYP-CONS        01.01            business-unit  Consultoría en Gestión de Proyectos y Activos
+- UNCHANGED id=3   BU-PYP-PMO         01.02            business-unit  PMO como Servicio (PMO aaS)
+- UNCHANGED id=5   BU-PYP-TEC         01.03            business-unit  Tecnología e Innovación
+- UNCHANGED id=2   BU-PYP-CONST       01.04            business-unit  Gerencia de Construcción
+- UNCHANGED id=6   PF-PYP-CONS        01.01.01         portfolio      Consultoría y Control de Proyectos
+- UNCHANGED id=7   PF-PYP-ASSET       01.01.02         portfolio      Gestión de Activos, Propiedades y Facilities
+- UNCHANGED id=8   PF-PYP-PMO         01.02.01         portfolio      PMO como Servicio
+- UNCHANGED id=9   PF-PYP-TEC         01.03.01         portfolio      Tecnología e Innovación
+- UNCHANGED id=10  PF-PYP-CONST       01.04.01         portfolio      Gerencia de Construcción
+- UNCHANGED id=11  PG-PYP-PMO-MIN     01.02.01.01      program        Programa PMO Minería
+- UNCHANGED id=12  PG-PYP-TEC-IMP     01.03.01.01      program        Programa de Implementaciones Tecnológicas
+- UNCHANGED id=13  PG-PYP-PPMIS       01.03.01.02      program        Programa de Desarrollo P&Pmis Construction AI
+- UNCHANGED id=14  PRJ-PYP-PPMIS      01.03.01.02.01   project        Desarrollo P&Pmis Construction AI
+
+Audit SecurityEvent: 10
+Publish CORE: NOT EXECUTED

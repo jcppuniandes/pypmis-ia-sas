@@ -2,11 +2,57 @@
 
 import json
 
-from app.modules.enterprise_structure.importer.models import DryRunReport, Severity
+from app.modules.enterprise_structure.importer.models import CoreApplyReport, DryRunReport, Severity
 
 
 def render_json(report: DryRunReport) -> str:
     return json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
+
+
+def render_apply_json(report: CoreApplyReport) -> str:
+    return json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+
+def render_apply_human(report: CoreApplyReport) -> str:
+    lines = [
+        "P&Pmis Controlled CORE Apply",
+        f"Release: {report.release_code}",
+        f"Tenant: {report.tenant_code}",
+        f"Actor: {report.actor}",
+        f"Result: {report.outcome}",
+        f"Idempotent replay: {'YES' if report.idempotent_replay else 'NO'}",
+        f"Input SHA-256: {report.input_hash}",
+        f"Source snapshot SHA-256: {report.source_snapshot_hash}",
+        "",
+        "Summary",
+    ]
+    lines.extend(f"- {key}: {value}" for key, value in sorted(report.summary.items()))
+    lines.extend(
+        [
+            "",
+            "Tenant identity",
+            f"- id: {report.tenant_change.tenant_id}",
+            f"- name: {report.tenant_change.old_name} -> {report.tenant_change.new_name}",
+            f"- slug: {report.tenant_change.old_slug} -> {report.tenant_change.new_slug}",
+            f"- currency: {report.tenant_change.currency}",
+            "",
+            "Workspaces",
+        ]
+    )
+    lines.extend(
+        "- "
+        f"{item.action.value.upper():9} id={item.id:<3} {item.external_key:<18} "
+        f"{item.record_code:<16} {item.workspace_type:<14} {item.name}"
+        for item in report.workspaces
+    )
+    lines.extend(
+        [
+            "",
+            f"Audit SecurityEvent: {report.audit_event_id}",
+            "Publish CORE: NOT EXECUTED",
+        ]
+    )
+    return "\n".join(lines) + "\n"
 
 
 def render_human(report: DryRunReport) -> str:
@@ -31,6 +77,8 @@ def render_human(report: DryRunReport) -> str:
         lines.append(f"      Recommendation: {item.recommendation}")
     lines.extend(["", "Diff"])
     for item in report.diff:
-        lines.append(f"  {item.action.value:9} {item.entity:22} {item.key} - {item.reason}")
+        record_code = f" [{item.record_code}]" if item.record_code else ""
+        adoption = f" existing_id={item.existing_id} old={item.old_record_code}" if item.existing_id else ""
+        lines.append(f"  {item.action.value:9} {item.entity:22} {item.key}{record_code}{adoption} - {item.reason}")
     lines.extend(["", "Topological order", "  " + " -> ".join(report.topological_order)])
     return "\n".join(lines) + "\n"

@@ -1,0 +1,290 @@
+metadata:
+  tenant_code: DEMO-ENERGY
+  release_code: ES-PYP-CORE-RECONCILED-20260809
+  release_name: Estructura empresarial CORE reconciliada - P&P Ingeniería y Proyectos
+  source_date: '2026-08-06'
+  requested_by: null
+  description: Corrección posterior al gate dry-run bloqueado. Usa DEMO-ENERGY solo como tenant candidato para validate; debe
+    confirmarse antes de apply. Requiere catálogo responsible-area publicado.
+strategic_objectives:
+- code: OBJ-PYP-01
+  name: Convertir proyectos complejos en resultados previsibles
+  active: true
+- code: OBJ-PYP-02
+  name: Proteger plazo, costo, alcance y valor
+  active: true
+- code: OBJ-PYP-03
+  name: Fortalecer el gobierno y la toma de decisiones
+  active: true
+- code: OBJ-PYP-04
+  name: Conectar estrategia, control y ejecución mediante tecnología
+  active: true
+- code: OBJ-PYP-05
+  name: Transformar diseños en activos operativos confiables
+  active: true
+- code: OBJ-PYP-06
+  name: Maximizar el desempeño y el valor del ciclo de vida de los activos
+  active: true
+- code: OBJ-PYP-07
+  name: Consolidar capacidades para minería e infraestructura de alta complejidad
+  active: true
+nodes:
+- external_key: ENT-PYP
+  code: PYP
+  name: P&P Ingeniería y Proyectos
+  node_type: ENTERPRISE
+  status: DRAFT
+  sort_order: 10
+  publish_candidate: false
+  description: Empresa de consultoría, PMO como servicio, tecnología e innovación y gerencia de construcción.
+  region_code: CO
+- external_key: BU-PYP-CONS
+  code: BU-CONS
+  name: Consultoría en Gestión de Proyectos y Activos
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 100
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Gestión especializada, control de proyectos, reclamaciones y gestión del ciclo de vida de activos.
+  region_code: CO
+- external_key: BU-PYP-PMO
+  code: BU-PMO
+  name: PMO como Servicio (PMO aaS)
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 200
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: PMO flexible para gobierno, control, coordinación y soporte a decisiones.
+  region_code: CO
+- external_key: BU-PYP-TEC
+  code: BU-TEC
+  name: Tecnología e Innovación
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 300
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Integración de datos, modelos, procesos y plataformas de gestión.
+  region_code: CO
+- external_key: BU-PYP-CONST
+  code: BU-CONST
+  name: Gerencia de Construcción
+  node_type: BUSINESS_UNIT
+  status: DRAFT
+  sort_order: 400
+  publish_candidate: false
+  parent_external_key: ENT-PYP
+  description: Planificación, coordinación constructiva, ejecución, puesta en servicio, operación y mantenimiento.
+  region_code: CO
+- external_key: PF-PYP-CONS
+  code: PF-CONS
+  name: Consultoría y Control de Proyectos
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 110
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Integra gestión de proyectos, control, reclamaciones, controversias y peritaje.
+  region_code: CO
+- external_key: PF-PYP-ASSET
+  code: PF-ASSET
+  name: Gestión de Activos, Propiedades y Facilities
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 120
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONS
+  description: Gestión de activos enfocada en desempeño, continuidad, operación y valor del ciclo de vida.
+  region_code: CO
+- external_key: PF-PYP-PMO
+  code: PF-PMO
+  name: PMO como Servicio
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 210
+  publish_candidate: false
+  parent_external_key: BU-PYP-PMO
+  description: Agrupa servicios PMO aaS para proyectos, organizaciones, minería e infraestructura.
+  region_code: CO
+- external_key: PF-PYP-TEC
+  code: PF-TEC
+  name: Tecnología e Innovación
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 310
+  publish_candidate: false
+  parent_external_key: BU-PYP-TEC
+  description: Agrupa plataformas PPM, BIM, planificación digital, analítica y desarrollo de productos tecnológicos.
+  region_code: CO
+- external_key: PF-PYP-CONST
+  code: PF-CONST
+  name: Gerencia de Construcción
+  node_type: PORTFOLIO
+  status: DRAFT
+  sort_order: 410
+  publish_candidate: false
+  parent_external_key: BU-PYP-CONST
+  description: Agrupa gerencia de vías, edificación, redes, facilities, commissioning y operación.
+  region_code: CO
+- external_key: PG-PYP-PMO-MIN
+  code: PG-PMO-MIN
+  name: Programa PMO Minería
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 220
+  publish_candidate: false
+  parent_external_key: PF-PYP-PMO
+  description: Agrupa proyectos de PMO, programación y control en minería.
+  region_code: CO
+- external_key: PG-PYP-TEC-IMP
+  code: PG-TEC-IMP
+  name: Programa de Implementaciones Tecnológicas
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 320
+  publish_candidate: false
+  parent_external_key: PF-PYP-TEC
+  description: Agrupa implementaciones de plataformas de planificación, control, BIM y trazabilidad.
+  region_code: CO
+- external_key: PG-PYP-PPMIS
+  code: PG-PPMIS
+  name: Programa de Desarrollo P&Pmis Construction AI
+  node_type: PROGRAM
+  status: DRAFT
+  sort_order: 330
+  publish_candidate: false
+  parent_external_key: PF-PYP-TEC
+  description: Programa interno de desarrollo progresivo de la plataforma P&Pmis.
+  region_code: CO
+- external_key: PRJ-PYP-PPMIS
+  code: PRJ-PPMIS
+  name: Desarrollo P&Pmis Construction AI
+  node_type: PROJECT
+  status: ACTIVE
+  sort_order: 331
+  publish_candidate: false
+  parent_external_key: PG-PYP-PPMIS
+  description: Proyecto interno para desarrollar la plataforma propia de gestión, control, BIM, facilities y propiedades.
+  region_code: CO
+classifications:
+- workspace_external_key: BU-PYP-CONS
+  category_set_code: RESPONSIBLE_AREA
+  category_item_code: consulting
+  status: ACTIVE
+- workspace_external_key: BU-PYP-PMO
+  category_set_code: RESPONSIBLE_AREA
+  category_item_code: pmo-aas
+  status: ACTIVE
+- workspace_external_key: BU-PYP-TEC
+  category_set_code: RESPONSIBLE_AREA
+  category_item_code: technology
+  status: ACTIVE
+- workspace_external_key: BU-PYP-CONST
+  category_set_code: RESPONSIBLE_AREA
+  category_item_code: construction
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-ASSET
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-ASSET
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-06
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-PMO
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PF-PYP-TEC
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-01
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-02
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-05
+  status: ACTIVE
+- workspace_external_key: PF-PYP-CONST
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PMO-MIN
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-07
+  status: ACTIVE
+- workspace_external_key: PG-PYP-TEC-IMP
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PG-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+- workspace_external_key: PRJ-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-03
+  status: ACTIVE
+- workspace_external_key: PRJ-PYP-PPMIS
+  category_set_code: STRATEGIC_OBJECTIVE
+  category_item_code: OBJ-PYP-04
+  status: ACTIVE
+links: []
+reconciliation:
+- external_key: ENT-PYP
+  existing_id: 1
+  action: ADOPT
+  rationale: La única raíz Enterprise existente representa a P&P Ingeniería y Proyectos; conserva sus dos referencias hijas reconciliadas.
+- external_key: BU-PYP-CONST
+  existing_id: 2
+  action: ADOPT
+  rationale: La Business Unit existente de construcción coincide en tipo, padre y propósito; no tiene clasificaciones, links ni módulos asociados.
+- external_key: BU-PYP-PMO
+  existing_id: 3
+  action: ADOPT
+  rationale: La Business Unit Gerencia PMO aaS coincide en tipo, padre y propósito con PMO como Servicio; no tiene referencias dependientes.
+

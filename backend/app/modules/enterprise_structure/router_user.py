@@ -178,5 +178,4 @@ def objectives(
     user_id: int = Depends(get_user_id),
 ) -> list[CategoryItem]:
     service, _context = _authorized_service(db, tenant_id, user_id)
-    category = service.repository.latest_configuration("catalog", "strategic-objective", published_only=True)
-    return [CategoryItem.model_validate(item) for item in (category.content_json.get("items", []) if category else [])]
+    return service.strategic_objective_items()

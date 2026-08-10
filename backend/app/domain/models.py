@@ -490,6 +490,8 @@ class EnterpriseWorkspace(Base):
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
     workspace_type_code: Mapped[str] = mapped_column(String(120), index=True)
     code: Mapped[str] = mapped_column(String(120), index=True)
+    external_key: Mapped[str | None] = mapped_column(String(160), index=True)
+    record_code: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(180))
     status: Mapped[str] = mapped_column(String(40), default="active", index=True)
     defaults_json: Mapped[dict] = mapped_column(JSON, default=dict)
@@ -499,7 +501,11 @@ class EnterpriseWorkspace(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    __table_args__ = (UniqueConstraint("tenant_id", "code"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "code"),
+        UniqueConstraint("tenant_id", "external_key", name="uq_enterprise_workspace_external_key"),
+        UniqueConstraint("tenant_id", "record_code", name="uq_enterprise_workspace_record_code"),
+    )
 
 
 class WorkspaceModuleSetting(Base):

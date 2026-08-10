@@ -1,0 +1,104 @@
+{
+  "gate": "02A",
+  "execution_mode": "proposal-and-dry-run-only",
+  "tenant_proposal": {
+    "existing": {
+      "id": 1,
+      "slug": "demo-energy",
+      "name": "Demo Energy Infrastructure"
+    },
+    "proposed": {
+      "slug": "pyp-ingenieria-proyectos",
+      "name": "P&P Ingenieria y Proyectos"
+    },
+    "executed": false,
+    "reason": "Tenant rename and slug changes are explicitly outside Gate 02A."
+  },
+  "actions": {
+    "ADOPT": [
+      {
+        "external_key": "ENT-PYP",
+        "existing_id": 1,
+        "existing_name": "P&P Ingenieria y Proyectos",
+        "final_name": "P&P Ingenieria y Proyectos",
+        "workspace_type": "enterprise",
+        "old_record_code": "01",
+        "new_record_code": "01",
+        "parent_external_key": null,
+        "references": {
+          "children": 2,
+          "classifications": 0,
+          "links": 0,
+          "module_settings": 0
+        },
+        "rationale": "Existing tenant root has the same enterprise role and is retained with identity 1."
+      },
+      {
+        "external_key": "BU-PYP-CONST",
+        "existing_id": 2,
+        "existing_name": "Gerencia de Construcciones",
+        "final_name": "Gerencia de Construccion",
+        "workspace_type": "business-unit",
+        "old_record_code": "01.01",
+        "new_record_code": "01.04",
+        "parent_external_key": "ENT-PYP",
+        "references": {
+          "children": 0,
+          "classifications": 0,
+          "links": 0,
+          "module_settings": 0
+        },
+        "rationale": "Existing construction business unit matches the final business purpose; adoption preserves identity 2 and simulates recoding."
+      },
+      {
+        "external_key": "BU-PYP-PMO",
+        "existing_id": 3,
+        "existing_name": "Gerencia PMO aaS",
+        "final_name": "PMO como Servicio (PMO aaS)",
+        "workspace_type": "business-unit",
+        "old_record_code": "01.02",
+        "new_record_code": "01.02",
+        "parent_external_key": "ENT-PYP",
+        "references": {
+          "children": 0,
+          "classifications": 0,
+          "links": 0,
+          "module_settings": 0
+        },
+        "rationale": "Existing PMO business unit matches the final business purpose and is retained with identity 3."
+      }
+    ],
+    "CREATE": [
+      "BU-PYP-CONS",
+      "BU-PYP-TEC",
+      "PF-PYP-CONS",
+      "PF-PYP-ASSET",
+      "PF-PYP-PMO",
+      "PF-PYP-TEC",
+      "PF-PYP-CONST",
+      "PG-PYP-PMO-MIN",
+      "PG-PYP-TEC-IMP",
+      "PG-PYP-PPMIS",
+      "PRJ-PYP-PPMIS"
+    ],
+    "KEEP": [],
+    "EXCLUDE": []
+  },
+  "integrity": {
+    "missing_reconciliation_targets": 0,
+    "duplicate_existing_id_claims": 0,
+    "cross_tenant_adoptions": 0,
+    "workspace_type_mismatches": 0,
+    "unmapped_adopted_children": 0,
+    "hierarchy_cycles": 0,
+    "persisted_identity_conflicts": 0
+  },
+  "forbidden_actions_executed": {
+    "tenant_rename": false,
+    "tenant_slug_change": false,
+    "persistent_adoption": false,
+    "node_creation": false,
+    "apply": false,
+    "publish": false
+  }
+}

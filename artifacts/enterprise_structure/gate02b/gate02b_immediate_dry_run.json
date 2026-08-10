@@ -1,0 +1,467 @@
+{
+  "diff": [
+    {
+      "action": "adopt",
+      "entity": "node",
+      "existing_id": 1,
+      "key": "ENT-PYP",
+      "old_record_code": "01",
+      "reason": "Adopt workspace 1; preserve id and references; apply controlled fields",
+      "record_code": "01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "BU-PYP-CONS",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.01"
+    },
+    {
+      "action": "adopt",
+      "entity": "node",
+      "existing_id": 3,
+      "key": "BU-PYP-PMO",
+      "old_record_code": "01.02",
+      "reason": "Adopt workspace 3; preserve id and references; apply controlled fields",
+      "record_code": "01.02"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "BU-PYP-TEC",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.03"
+    },
+    {
+      "action": "adopt",
+      "entity": "node",
+      "existing_id": 2,
+      "key": "BU-PYP-CONST",
+      "old_record_code": "01.01",
+      "reason": "Adopt workspace 2; preserve id and references; apply controlled fields",
+      "record_code": "01.04"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PF-PYP-CONS",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.01.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PF-PYP-ASSET",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.01.02"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PF-PYP-PMO",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.02.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PF-PYP-TEC",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.03.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PF-PYP-CONST",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.04.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PG-PYP-PMO-MIN",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.02.01.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PG-PYP-TEC-IMP",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.03.01.01"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PG-PYP-PPMIS",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.03.01.02"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "existing_id": null,
+      "key": "PRJ-PYP-PPMIS",
+      "old_record_code": null,
+      "reason": "New external_key",
+      "record_code": "01.03.01.02.01"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-01",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-02",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-04",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-05",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-06",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "existing_id": null,
+      "key": "OBJ-PYP-07",
+      "old_record_code": null,
+      "reason": "New strategic objective",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "BU-PYP-CONS:RESPONSIBLE_AREA:CONSULTING",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "BU-PYP-PMO:RESPONSIBLE_AREA:PMO-AAS",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "BU-PYP-TEC:RESPONSIBLE_AREA:TECHNOLOGY",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "BU-PYP-CONST:RESPONSIBLE_AREA:CONSTRUCTION",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PG-PYP-TEC-IMP:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "existing_id": null,
+      "key": "PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "old_record_code": null,
+      "reason": "New assignment",
+      "record_code": null
+    }
+  ],
+  "findings": [],
+  "input_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+  "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+  "summary": {
+    "adopt": 3,
+    "base_mutations": 0,
+    "category_not_applicable": 0,
+    "classifications": 26,
+    "conflict": 0,
+    "create": 44,
+    "errors": 0,
+    "hierarchy_errors": 0,
+    "identity_conflicts": 0,
+    "info": 0,
+    "links": 0,
+    "nodes": 14,
+    "required_classification_missing": 0,
+    "strategic_objectives": 7,
+    "unchanged": 0,
+    "update": 0,
+    "warnings": 0
+  },
+  "tenant_code": "DEMO-ENERGY",
+  "topological_order": [
+    "ENT-PYP",
+    "BU-PYP-CONS",
+    "BU-PYP-PMO",
+    "BU-PYP-TEC",
+    "BU-PYP-CONST",
+    "PF-PYP-CONS",
+    "PF-PYP-ASSET",
+    "PF-PYP-PMO",
+    "PF-PYP-TEC",
+    "PF-PYP-CONST",
+    "PG-PYP-PMO-MIN",
+    "PG-PYP-TEC-IMP",
+    "PG-PYP-PPMIS",
+    "PRJ-PYP-PPMIS"
+  ],
+  "valid": true
+}

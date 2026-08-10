@@ -6,17 +6,31 @@ type Props = {
   draft: NodePayload;
   mode: "create" | "edit";
   nodes: EnterpriseNode[];
+  recordCodePreview: string;
   onChange: (draft: NodePayload) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   workspaceTypes: ConfigurationVersion[];
 };
 
-export default function StructureNodeForm({ busy, draft, mode, nodes, onChange, onSubmit, workspaceTypes }: Props) {
+export default function StructureNodeForm({
+  busy,
+  draft,
+  mode,
+  nodes,
+  recordCodePreview,
+  onChange,
+  onSubmit,
+  workspaceTypes,
+}: Props) {
   return (
     <form className="enterpriseNodeForm" onSubmit={onSubmit}>
       <div className="formColumns">
         <label>
-          <span>Código</span>
+          <span>Record Code</span>
+          <input aria-label="Record Code autogenerado" readOnly value={recordCodePreview} />
+        </label>
+        <label>
+          <span>Código de negocio</span>
           <input
             disabled={busy || mode === "edit"}
             required

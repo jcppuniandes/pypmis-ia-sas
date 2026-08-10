@@ -1,8 +1,11 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AdminEnterpriseStructurePage from "../src/features/enterprise-structure/pages/AdminEnterpriseStructurePage";
 import EnterpriseExplorerPage from "../src/features/enterprise-structure/pages/EnterpriseExplorerPage";
+import CompactModuleHeader from "../src/features/enterprise-structure/components/CompactModuleHeader";
+import EnterpriseTable from "../src/features/enterprise-structure/components/EnterpriseTable";
+import EnterpriseTree from "../src/features/enterprise-structure/components/EnterpriseTree";
 import { enterpriseStructureApi } from "../src/features/enterprise-structure/api";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -57,12 +60,22 @@ function configuration(code: string, name: string, kind = "workspace_type"): Con
   };
 }
 
-function node(id: number, code: string, name: string, type: string, parentId: number | null): EnterpriseNode {
+function node(
+  id: number,
+  code: string,
+  recordCode: string,
+  depth: number,
+  name: string,
+  type: string,
+  parentId: number | null
+): EnterpriseNode {
   return {
     id,
     parent_id: parentId,
     workspace_type_code: type,
     code,
+    record_code: recordCode,
+    depth,
     name,
     description: `${name} description`,
     organization_unit_id: null,
@@ -78,8 +91,8 @@ function node(id: number, code: string, name: string, type: string, parentId: nu
   };
 }
 
-const root = node(1, "ENT", "P&Pmis Enterprise", "enterprise", null);
-const businessUnit = node(2, "BU-CO", "Colombia Business Unit", "business-unit", 1);
+const root = node(1, "ENT", "01", 0, "P&Pmis Enterprise", "enterprise", null);
+const businessUnit = node(2, "BU-CO", "01.01", 1, "Colombia Business Unit", "business-unit", 1);
 const types = [
   configuration("enterprise", "Enterprise"),
   configuration("business-unit", "Business Unit"),
@@ -139,6 +152,57 @@ beforeEach(() => {
 });
 
 describe("Nivel 2A Enterprise Structure", () => {
+  it("reuses compact metric chips and actions through CompactModuleHeader", () => {
+    render(
+      <CompactModuleHeader
+        actions={<button type="button">Add</button>}
+        description="Compact description"
+        eyebrow="ADMIN MODE"
+        metrics={[{ label: "Nodes", value: 3 }]}
+        title="Shared header"
+      />
+    );
+
+    expect(screen.getByRole("heading", { name: "Shared header" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Métricas de Shared header")).toHaveClass("compactHeaderMetrics");
+    expect(screen.getByRole("button", { name: "Add" })).toBeInTheDocument();
+  });
+
+  it("shows record codes and derives tree indentation from depth", () => {
+    const { container } = render(
+      <EnterpriseTree
+        nodes={adminData.tree}
+        onSelect={() => undefined}
+        selectedNodeId={null}
+      />
+    );
+    const rows = container.querySelectorAll<HTMLElement>(".enterpriseTreeRow");
+
+    const nestedRecordCode = screen.getByText("01.01");
+    expect(nestedRecordCode).toHaveClass("enterpriseRecordCode");
+    expect(nestedRecordCode.closest("small")?.querySelector("em.active")).toHaveTextContent("active");
+    expect(rows[0].style.paddingLeft).toBe("12px");
+    expect(rows[1].style.paddingLeft).toBe("30px");
+  });
+
+  it("orders the table by numeric record code and hides USER actions", () => {
+    const tenth = { ...businessUnit, id: 10, code: "BU-10", record_code: "01.10", name: "Tenth" };
+    const second = { ...businessUnit, id: 3, code: "BU-02", record_code: "01.02", name: "Second" };
+    render(<EnterpriseTable nodes={[tenth, second]} onSelect={() => undefined} />);
+    const rows = screen.getAllByRole("row");
+
+    expect(within(rows[1]).getByText("01.02")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("01.10")).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Actions" })).not.toBeInTheDocument();
+  });
+
+  it("exposes node actions only when the table is in ADMIN context", () => {
+    render(<EnterpriseTable admin nodes={[businessUnit]} onSelect={() => undefined} />);
+
+    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument();
+  });
+
   it("places configuration in ADMIN MODE and Explorer in USER MODE", () => {
     const adminModule = ADMIN_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "enterprise-structure");
     expect(adminModule?.submodules.map((item) => item.key)).toContain("enterprise-structure-configuration");
@@ -193,6 +257,9 @@ describe("Nivel 2A Enterprise Structure", () => {
     render(<AdminEnterpriseStructurePage canConfigure token="token" />);
 
     expect(await screen.findByRole("heading", { name: "Enterprise Structure Configuration" })).toBeInTheDocument();
+    expect(document.querySelector(".compactModuleHeader.admin")).toBeInTheDocument();
+    expect(screen.getByText("01.01")).toBeInTheDocument();
+    expect(screen.getByLabelText("Record Code autogenerado")).toHaveAttribute("readonly");
     expect(screen.getByRole("tree", { name: "Enterprise hierarchy" })).toBeInTheDocument();
     expect(screen.getByText("Colombia Business Unit")).toBeInTheDocument();
 
@@ -212,13 +279,19 @@ describe("Nivel 2A Enterprise Structure", () => {
     render(<EnterpriseExplorerPage token="token" />);
 
     await screen.findByRole("tree", { name: "Enterprise hierarchy" });
-    await user.click(await screen.findByRole("button", { name: /^Colombia Business Unit/i }));
+    expect(document.querySelector(".compactModuleHeader.user")).toBeInTheDocument();
+    const businessUnitButton = (
+      await screen.findByText("Colombia Business Unit", { selector: "strong" })
+    ).closest("button");
+    expect(businessUnitButton).not.toBeNull();
+    await user.click(businessUnitButton!);
 
     expect(await screen.findByRole("heading", { name: "Colombia Business Unit" })).toBeInTheDocument();
     expect(screen.getByLabelText("Filtrar por objetivo estratégico")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^tabla$/i }));
-    expect(screen.getByRole("columnheader", { name: "Código" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Record Code" })).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Actions" })).not.toBeInTheDocument();
     expect(enterpriseStructureApi.nodeDetail).toHaveBeenCalledWith("token", 2);
   });
 });

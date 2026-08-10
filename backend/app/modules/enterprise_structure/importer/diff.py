@@ -12,16 +12,25 @@ from app.modules.enterprise_structure.importer.models import (
     TenantSnapshot,
 )
 from app.modules.enterprise_structure.importer.normalizer import internal_code
+from app.modules.enterprise_structure.record_codes import plan_record_codes
 
 
 def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapshot | None) -> list[DiffEntry]:
+    planned_codes = plan_record_codes(configuration.nodes)
     if snapshot is None:
         return [
-            DiffEntry(entity="node", key=item.external_key, action=DiffAction.CREATE, reason="Tenant not resolved")
+            DiffEntry(
+                entity="node",
+                key=item.external_key,
+                action=DiffAction.CREATE,
+                reason="Tenant not resolved",
+                record_code=planned_codes[item.external_key],
+            )
             for item in configuration.nodes
         ]
 
     result: list[DiffEntry] = []
+    reconciliation_by_key = {item.external_key: item for item in configuration.reconciliation}
     matched_nodes: dict[str, ExistingNode] = {}
     existing_by_id = {item.id: item for item in snapshot.nodes}
     by_external = {item.external_key: item for item in snapshot.nodes if item.external_key}
@@ -36,8 +45,48 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
     )
 
     for node in configuration.nodes:
-        existing = by_external.get(node.external_key)
-        if existing is None and node.node_type == NodeType.ENTERPRISE and node.parent_external_key is None:
+        reconciliation = reconciliation_by_key.get(node.external_key)
+        existing = existing_by_id.get(reconciliation.existing_id) if reconciliation else by_external.get(node.external_key)
+        if reconciliation is not None:
+            owner_tenant = snapshot.workspace_tenant_ids.get(reconciliation.existing_id)
+            if owner_tenant is not None and owner_tenant != snapshot.tenant_id:
+                result.append(
+                    DiffEntry(
+                        entity="node",
+                        key=node.external_key,
+                        action=DiffAction.CONFLICT,
+                        reason=f"Workspace {reconciliation.existing_id} belongs to tenant {owner_tenant}",
+                        record_code=planned_codes.get(node.external_key),
+                        existing_id=reconciliation.existing_id,
+                    )
+                )
+                continue
+            if existing is None:
+                result.append(
+                    DiffEntry(
+                        entity="node",
+                        key=node.external_key,
+                        action=DiffAction.CONFLICT,
+                        reason=f"Adoption target workspace {reconciliation.existing_id} was not found",
+                        record_code=planned_codes.get(node.external_key),
+                        existing_id=reconciliation.existing_id,
+                    )
+                )
+                continue
+            if existing.node_type != internal_code(node.node_type.value):
+                result.append(
+                    DiffEntry(
+                        entity="node",
+                        key=node.external_key,
+                        action=DiffAction.CONFLICT,
+                        reason=f"Workspace {existing.id} type {existing.node_type} does not match {node.node_type.value}",
+                        record_code=planned_codes.get(node.external_key),
+                        existing_id=existing.id,
+                        old_record_code=existing.record_code,
+                    )
+                )
+                continue
+        if existing is None and not configuration.reconciliation and node.node_type == NodeType.ENTERPRISE and node.parent_external_key is None:
             existing = active_root
         code_owner = by_code.get(node.code)
         if existing is None and code_owner is not None:
@@ -47,6 +96,7 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
                     key=node.external_key,
                     action=DiffAction.CONFLICT,
                     reason=f"Code {node.code} belongs to another declarative identity",
+                    record_code=planned_codes.get(node.external_key),
                 )
             )
             continue
@@ -57,18 +107,46 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
                     key=node.external_key,
                     action=DiffAction.CONFLICT,
                     reason=f"Code {node.code} is already used by workspace {code_owner.id}",
+                    record_code=planned_codes.get(node.external_key),
                 )
             )
             continue
         if existing is None:
             result.append(
-                DiffEntry(entity="node", key=node.external_key, action=DiffAction.CREATE, reason="New external_key")
+                DiffEntry(
+                    entity="node",
+                    key=node.external_key,
+                    action=DiffAction.CREATE,
+                    reason="New external_key",
+                    record_code=planned_codes.get(node.external_key),
+                )
             )
             continue
         matched_nodes[node.external_key] = existing
+        if reconciliation is not None:
+            result.append(
+                DiffEntry(
+                    entity="node",
+                    key=node.external_key,
+                    action=DiffAction.ADOPT,
+                    reason=f"Adopt workspace {existing.id}; preserve id and references; apply controlled fields",
+                    record_code=planned_codes.get(node.external_key),
+                    existing_id=existing.id,
+                    old_record_code=existing.record_code,
+                )
+            )
+            continue
         action = DiffAction.UNCHANGED if _node_matches(node, existing, existing_by_id) else DiffAction.UPDATE
         reason = "All controlled fields match" if action == DiffAction.UNCHANGED else "Controlled fields differ"
-        result.append(DiffEntry(entity="node", key=node.external_key, action=action, reason=reason))
+        result.append(
+            DiffEntry(
+                entity="node",
+                key=node.external_key,
+                action=action,
+                reason=reason,
+                record_code=planned_codes.get(node.external_key),
+            )
+        )
 
     objective_items = snapshot.published_categories.get("strategic-objective", {}).get("items", [])
     objectives_by_code = {str(item.get("code", "")).upper(): item for item in objective_items}

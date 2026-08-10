@@ -1,0 +1,32 @@
+{
+  "baseline": {
+    "security_event_count": 8,
+    "existing_publish_event_count": 1,
+    "existing_publish_event_id": 8
+  },
+  "gate02b_events": [
+    {
+      "actor": "admin@demo.local",
+      "event_id": 9,
+      "event_type": "enterprise_structure.core_applied",
+      "idempotent_replay": false,
+      "outcome": "success",
+      "release_code": "ES-PYP-CORE-RECONCILED-20260809"
+    },
+    {
+      "actor": "admin@demo.local",
+      "event_id": 10,
+      "event_type": "enterprise_structure.core_applied",
+      "idempotent_replay": true,
+      "outcome": "success",
+      "release_code": "ES-PYP-CORE-RECONCILED-20260809"
+    }
+  ],
+  "gate02b_publish_events": 0,
+  "final": {
+    "existing_publish_event_count": 1,
+    "security_event_count": 10
+  },
+  "publish_core": "NOT EXECUTED",
+  "status": "PASS"
+}

@@ -111,7 +111,11 @@ def release_seed_demo_lock(db: Session) -> None:
 
 
 def seed_demo_records(db: Session) -> None:
-    existing = db.scalar(select(Tenant).where(Tenant.slug == "demo-energy"))
+    existing = db.scalar(
+        select(Tenant)
+        .where(Tenant.slug.in_({"demo-energy", "pyp-ingenieria-proyectos"}))
+        .order_by(Tenant.id)
+    )
     if existing:
         existing.base_currency = existing.base_currency or "COP"
         ensure_default_bp_templates(db, existing.id)

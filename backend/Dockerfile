@@ -14,6 +14,7 @@ COPY gunicorn.conf.py ./
 COPY alembic ./alembic
 COPY app ./app
 COPY tests ./tests
+COPY config ./config
 
 RUN mkdir -p /app/storage/documents \
     && useradd --system --create-home --home-dir /app appuser \

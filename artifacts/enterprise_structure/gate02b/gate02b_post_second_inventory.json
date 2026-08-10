@@ -1,0 +1,1764 @@
+{
+  "algorithm": "ordered-primary-key/canonical-json-v1",
+  "supplemental": {
+    "enterprise_strategic_objectives": [
+      {
+        "active": true,
+        "code": "OBJ-PYP-01",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 1,
+        "name": "Convertir proyectos complejos en resultados previsibles",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-02",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 2,
+        "name": "Proteger plazo, costo, alcance y valor",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-03",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 3,
+        "name": "Fortalecer el gobierno y la toma de decisiones",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-04",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 4,
+        "name": "Conectar estrategia, control y ejecución mediante tecnología",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-05",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 5,
+        "name": "Transformar diseños en activos operativos confiables",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-06",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 6,
+        "name": "Maximizar el desempeño y el valor del ciclo de vida de los activos",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      },
+      {
+        "active": true,
+        "code": "OBJ-PYP-07",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "description": "",
+        "horizon": null,
+        "id": 7,
+        "name": "Consolidar capacidades para minería e infraestructura de alta complejidad",
+        "priority": null,
+        "responsible_area": null,
+        "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+        "strategic_line": null,
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844"
+      }
+    ]
+  },
+  "tables": {
+    "admin_configurations": [
+      {
+        "code": "portfolio",
+        "content_hash": "0647800ce4f59c828daa1f0c938d11f47db942a648dff2452b71ca7fa6131ade",
+        "content_json": {
+          "allowed_children": [
+            "program",
+            "project"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ]
+        },
+        "created_at": "2026-08-06T16:29:04.344649",
+        "created_by_user_id": 1,
+        "description": "Agrupa programas y proyectos bajo objetivos de inversión comunes.",
+        "id": 1,
+        "kind": "workspace_type",
+        "name": "Portfolio",
+        "published_at": "2026-08-06T16:29:04.341528",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344658",
+        "version": 1
+      },
+      {
+        "code": "program",
+        "content_hash": "17d279f3a512c893c4aad88e42f3107a927353b4b57cd4cf241c67489f225124",
+        "content_json": {
+          "allowed_children": [
+            "project"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ]
+        },
+        "created_at": "2026-08-06T16:29:04.344661",
+        "created_by_user_id": 1,
+        "description": "Coordina proyectos relacionados y hereda políticas del portafolio.",
+        "id": 2,
+        "kind": "workspace_type",
+        "name": "Program",
+        "published_at": "2026-08-06T16:29:04.341761",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344663",
+        "version": 1
+      },
+      {
+        "code": "project",
+        "content_hash": "406f99e862c5fe6296f2cca3fcf2dbfb8eb976649e0ef196c1f19c20540dd56e",
+        "content_json": {
+          "allowed_children": [],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ]
+        },
+        "created_at": "2026-08-06T16:29:04.344665",
+        "created_by_user_id": 1,
+        "description": "Espacio operativo para ejecutar los módulos de USER MODE.",
+        "id": 3,
+        "kind": "workspace_type",
+        "name": "Project",
+        "published_at": "2026-08-06T16:29:04.341852",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344666",
+        "version": 1
+      },
+      {
+        "code": "scope-manager",
+        "content_hash": "e62b0372acf6d36bfcb114b022a16164c14501e7145c5b043d4489f46b292df0",
+        "content_json": {
+          "dependencies": [],
+          "mode": "hybrid"
+        },
+        "created_at": "2026-08-06T16:29:04.344669",
+        "created_by_user_id": 1,
+        "description": "Gobierno de alcance BIM y cantidades.",
+        "id": 4,
+        "kind": "module_definition",
+        "name": "Scope Manager",
+        "published_at": "2026-08-06T16:29:04.341919",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344670",
+        "version": 1
+      },
+      {
+        "code": "schedule-manager",
+        "content_hash": "0e4efc38499cbc209d6af5389eff0f26ff3ceb298bfe1981324b8ecc0e7fd4eb",
+        "content_json": {
+          "dependencies": [],
+          "mode": "hybrid"
+        },
+        "created_at": "2026-08-06T16:29:04.344672",
+        "created_by_user_id": 1,
+        "description": "Planificación y control de cronograma.",
+        "id": 5,
+        "kind": "module_definition",
+        "name": "Schedule Manager",
+        "published_at": "2026-08-06T16:29:04.341984",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344674",
+        "version": 1
+      },
+      {
+        "code": "cost-manager",
+        "content_hash": "1d8348e4068ced5590877c91e68834647d7145a635cdd4bfe17c1534973814fe",
+        "content_json": {
+          "dependencies": [
+            "scope-manager"
+          ],
+          "mode": "hybrid"
+        },
+        "created_at": "2026-08-06T16:29:04.344676",
+        "created_by_user_id": 1,
+        "description": "Control presupuestal y de costos.",
+        "id": 6,
+        "kind": "module_definition",
+        "name": "Cost Manager",
+        "published_at": "2026-08-06T16:29:04.342054",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344677",
+        "version": 1
+      },
+      {
+        "code": "workspace-status",
+        "content_hash": "74a7470c4a2c1d96f54cf8d00de994c20b5f6c39785a6e69f4633f65cf3fd48c",
+        "content_json": {
+          "items": [
+            {
+              "code": "active",
+              "label": "Active"
+            },
+            {
+              "code": "inactive",
+              "label": "Inactive"
+            }
+          ]
+        },
+        "created_at": "2026-08-06T16:29:04.344679",
+        "created_by_user_id": 1,
+        "description": "Estados maestros permitidos para la estructura empresarial.",
+        "id": 7,
+        "kind": "catalog",
+        "name": "Workspace Status",
+        "published_at": "2026-08-06T16:29:04.342126",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344680",
+        "version": 1
+      },
+      {
+        "code": "workspace",
+        "content_hash": "2fb63e883b961507163b9663d6598269d66c0d73bcb02ae2e4c1969fbd0eb8a0",
+        "content_json": {
+          "pattern": "{prefix}-{sequence:04d}",
+          "prefix": "WS",
+          "start": 1
+        },
+        "created_at": "2026-08-06T16:29:04.344682",
+        "created_by_user_id": 1,
+        "description": "Numeración empresarial por tenant.",
+        "id": 8,
+        "kind": "numbering_rule",
+        "name": "Workspace Numbering",
+        "published_at": "2026-08-06T16:29:04.342193",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344684",
+        "version": 1
+      },
+      {
+        "code": "configuration-release",
+        "content_hash": "16d4f342b2cb4e7cd4f215d4edea3f611116da7df825bd9df4ea2d81b513bcde",
+        "content_json": {
+          "form": {
+            "fields": [
+              {
+                "key": "release_notes",
+                "required": true,
+                "type": "textarea"
+              }
+            ]
+          },
+          "states": [
+            "draft",
+            "in_review",
+            "published"
+          ],
+          "transitions": [
+            {
+              "from": "draft",
+              "permission": "admin.process_definition.manage",
+              "to": "in_review"
+            },
+            {
+              "from": "in_review",
+              "permission": "admin.process_definition.publish",
+              "to": "published"
+            }
+          ]
+        },
+        "created_at": "2026-08-06T16:29:04.344685",
+        "created_by_user_id": 1,
+        "description": "Flujo declarativo para revisión y publicación de configuración.",
+        "id": 9,
+        "kind": "process_definition",
+        "name": "Configuration Release",
+        "published_at": "2026-08-06T16:29:04.342250",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T16:29:04.344687",
+        "version": 1
+      },
+      {
+        "code": "enterprise",
+        "content_hash": "74d64edbc9440f73d7b9ac5f7af5f00514e1cda74f03d6865ee8f074da0ffea0",
+        "content_json": {
+          "allowed_children": [
+            "business-unit",
+            "portfolio",
+            "program",
+            "project",
+            "property"
+          ],
+          "can_be_root": true,
+          "max_depth": null,
+          "required_categories": [],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731934",
+        "created_by_user_id": 1,
+        "description": "Nodo raíz que representa la empresa del tenant.",
+        "id": 10,
+        "kind": "workspace_type",
+        "name": "Enterprise",
+        "published_at": "2026-08-06T18:26:22.700959",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731940",
+        "version": 1
+      },
+      {
+        "code": "business-unit",
+        "content_hash": "ffada54819e1d7e9f074c09831dd430c8d293239deef26d40958640e29b8b987",
+        "content_json": {
+          "allowed_children": [
+            "business-unit",
+            "portfolio",
+            "program",
+            "project",
+            "property",
+            "facility"
+          ],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "responsible-area"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731942",
+        "created_by_user_id": 1,
+        "description": "Unidad de negocio, dirección, región o división empresarial.",
+        "id": 11,
+        "kind": "workspace_type",
+        "name": "Business Unit",
+        "published_at": "2026-08-06T18:26:22.703472",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731943",
+        "version": 1
+      },
+      {
+        "code": "portfolio",
+        "content_hash": "4fdcb01eead85db849809e6454ef3c0a049014eeabd46dd767d438d53422f9db",
+        "content_json": {
+          "allowed_children": [
+            "program",
+            "project"
+          ],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "strategic-objective"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731945",
+        "created_by_user_id": 1,
+        "description": "Agrupación estratégica de iniciativas, programas y proyectos.",
+        "id": 12,
+        "kind": "workspace_type",
+        "name": "Portfolio",
+        "published_at": "2026-08-06T18:26:22.706129",
+        "revision": 2,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731946",
+        "version": 1
+      },
+      {
+        "code": "program",
+        "content_hash": "7e74c0917d363a823df735ed377f885211662bd1a195325757c269917d4861eb",
+        "content_json": {
+          "allowed_children": [
+            "project"
+          ],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "strategic-objective"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731948",
+        "created_by_user_id": 1,
+        "description": "Grupo coordinado de proyectos relacionados.",
+        "id": 13,
+        "kind": "workspace_type",
+        "name": "Program",
+        "published_at": "2026-08-06T18:26:22.709822",
+        "revision": 2,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731949",
+        "version": 1
+      },
+      {
+        "code": "project",
+        "content_hash": "a6a9e4a9489ca55777050744efe7e502737b3132e29e079ec66b9c42f6b0e9a4",
+        "content_json": {
+          "allowed_children": [],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "strategic-objective"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731951",
+        "created_by_user_id": 1,
+        "description": "Proyecto individual operado por los módulos de USER MODE.",
+        "id": 14,
+        "kind": "workspace_type",
+        "name": "Project",
+        "published_at": "2026-08-06T18:26:22.713391",
+        "revision": 2,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731952",
+        "version": 1
+      },
+      {
+        "code": "property",
+        "content_hash": "fd2e8e2cae26c5aa09bd919c4401d038a937c9890b113ca27adfcb24dd437c4d",
+        "content_json": {
+          "allowed_children": [
+            "facility"
+          ],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "property-type"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731954",
+        "created_by_user_id": 1,
+        "description": "Predio, inmueble o propiedad administrada.",
+        "id": 15,
+        "kind": "workspace_type",
+        "name": "Property",
+        "published_at": "2026-08-06T18:26:22.716627",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731955",
+        "version": 1
+      },
+      {
+        "code": "facility",
+        "content_hash": "156cfa8c8c575a1058483ee98d1c23e11608449dc5829ec79f1d83369646565e",
+        "content_json": {
+          "allowed_children": [],
+          "can_be_root": false,
+          "max_depth": null,
+          "required_categories": [
+            "facility-type"
+          ],
+          "required_defaults": [
+            "currency",
+            "timezone"
+          ],
+          "required_fields": [
+            "code",
+            "name"
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731956",
+        "created_by_user_id": 1,
+        "description": "Edificación, planta, infraestructura o instalación ubicada en una propiedad.",
+        "id": 16,
+        "kind": "workspace_type",
+        "name": "Facility",
+        "published_at": "2026-08-06T18:26:22.724028",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731958",
+        "version": 1
+      },
+      {
+        "code": "strategic-objective",
+        "content_hash": "de6a53f729305ade39ccbe4306f3a8378c721c3915e375195c77778d9ff8b498",
+        "content_json": {
+          "applicable_types": [
+            "portfolio",
+            "program",
+            "project"
+          ],
+          "items": [
+            {
+              "code": "growth",
+              "label": "Growth"
+            },
+            {
+              "code": "operational-excellence",
+              "label": "Operational Excellence"
+            },
+            {
+              "code": "sustainability",
+              "label": "Sustainability"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731959",
+        "created_by_user_id": 1,
+        "description": "Objetivos estratégicos utilizados para clasificar portafolios, programas y proyectos.",
+        "id": 17,
+        "kind": "catalog",
+        "name": "Strategic Objectives",
+        "published_at": "2026-08-06T18:26:22.725831",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731961",
+        "version": 1
+      },
+      {
+        "code": "responsible-area",
+        "content_hash": "8cfcc66700593a8f38b63a27e4ee9d2cebadd10198e8d528652d138a359c08be",
+        "content_json": {
+          "applicable_types": [
+            "business-unit",
+            "portfolio",
+            "program",
+            "project",
+            "property",
+            "facility"
+          ],
+          "items": [
+            {
+              "code": "corporate",
+              "label": "Corporate"
+            },
+            {
+              "code": "capital-projects",
+              "label": "Capital Projects"
+            },
+            {
+              "code": "operations",
+              "label": "Operations"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731962",
+        "created_by_user_id": 1,
+        "description": "Áreas y centros responsables de la estructura empresarial.",
+        "id": 18,
+        "kind": "catalog",
+        "name": "Responsible Areas",
+        "published_at": "2026-08-06T18:26:22.727051",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731964",
+        "version": 1
+      },
+      {
+        "code": "project-type",
+        "content_hash": "95c35fc555b0a7491781da9669723b41d67bcdc6d2ccf4bc30138406ce48663f",
+        "content_json": {
+          "applicable_types": [
+            "portfolio",
+            "program",
+            "project"
+          ],
+          "items": [
+            {
+              "code": "capital",
+              "label": "Capital"
+            },
+            {
+              "code": "operational",
+              "label": "Operational"
+            },
+            {
+              "code": "technology",
+              "label": "Technology"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731965",
+        "created_by_user_id": 1,
+        "description": "Clasificación inicial para la cartera de iniciativas.",
+        "id": 19,
+        "kind": "catalog",
+        "name": "Portfolio, Program and Project Categories",
+        "published_at": "2026-08-06T18:26:22.728176",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731967",
+        "version": 1
+      },
+      {
+        "code": "property-type",
+        "content_hash": "57e41d58f305419c16c497ec09cc9e3c29c041289a6fe3781e1fa42fe630b396",
+        "content_json": {
+          "applicable_types": [
+            "property"
+          ],
+          "items": [
+            {
+              "code": "owned",
+              "label": "Owned"
+            },
+            {
+              "code": "leased",
+              "label": "Leased"
+            },
+            {
+              "code": "concession",
+              "label": "Concession"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731968",
+        "created_by_user_id": 1,
+        "description": "Tipos de predio o inmueble administrado.",
+        "id": 20,
+        "kind": "catalog",
+        "name": "Property Types",
+        "published_at": "2026-08-06T18:26:22.729283",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731970",
+        "version": 1
+      },
+      {
+        "code": "facility-type",
+        "content_hash": "ed78221542782bc935a05c333361cbaf9df8ebb04f0ff239b3ace7a99bea2c87",
+        "content_json": {
+          "applicable_types": [
+            "facility"
+          ],
+          "items": [
+            {
+              "code": "building",
+              "label": "Building"
+            },
+            {
+              "code": "plant",
+              "label": "Plant"
+            },
+            {
+              "code": "infrastructure",
+              "label": "Infrastructure"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T18:26:22.731971",
+        "created_by_user_id": 1,
+        "description": "Clasificación funcional inicial de instalaciones.",
+        "id": 21,
+        "kind": "catalog",
+        "name": "Facility Types",
+        "published_at": "2026-08-06T18:26:22.730272",
+        "revision": 1,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-06T18:26:22.731973",
+        "version": 1
+      },
+      {
+        "code": "responsible-area",
+        "content_hash": "ccfdccd6367a3d9de68e7e5d2b38c521e92ef90a1971236da5b4fe16f4d3ddb7",
+        "content_json": {
+          "applicable_types": [
+            "business-unit",
+            "portfolio",
+            "program",
+            "project",
+            "property",
+            "facility"
+          ],
+          "items": [
+            {
+              "code": "corporate",
+              "label": "Corporate"
+            },
+            {
+              "code": "capital-projects",
+              "label": "Capital Projects"
+            },
+            {
+              "code": "operations",
+              "label": "Operations"
+            },
+            {
+              "code": "consulting",
+              "label": "Consultoría en Gestión de Proyectos y Activos"
+            },
+            {
+              "code": "pmo-aas",
+              "label": "PMO como Servicio (PMO aaS)"
+            },
+            {
+              "code": "technology",
+              "label": "Tecnología e Innovación"
+            },
+            {
+              "code": "construction",
+              "label": "Gerencia de Construcción"
+            }
+          ],
+          "seed_version": "nivel-2a-v1.1"
+        },
+        "created_at": "2026-08-06T21:23:42.105896",
+        "created_by_user_id": 1,
+        "description": "Áreas y centros responsables de la estructura empresarial.",
+        "id": 22,
+        "kind": "catalog",
+        "name": "Responsible Areas",
+        "published_at": "2026-08-09T15:37:54.114860",
+        "revision": 2,
+        "status": "published",
+        "tenant_id": 1,
+        "updated_at": "2026-08-09T15:37:54.114980",
+        "version": 3
+      }
+    ],
+    "enterprise_workspace_classifications": [
+      {
+        "category_item_code": "consulting",
+        "category_set_code": "responsible-area",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 1,
+        "tenant_id": 1,
+        "workspace_id": 4
+      },
+      {
+        "category_item_code": "pmo-aas",
+        "category_set_code": "responsible-area",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 2,
+        "tenant_id": 1,
+        "workspace_id": 3
+      },
+      {
+        "category_item_code": "technology",
+        "category_set_code": "responsible-area",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 3,
+        "tenant_id": 1,
+        "workspace_id": 5
+      },
+      {
+        "category_item_code": "construction",
+        "category_set_code": "responsible-area",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 4,
+        "tenant_id": 1,
+        "workspace_id": 2
+      },
+      {
+        "category_item_code": "obj-pyp-01",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 5,
+        "tenant_id": 1,
+        "workspace_id": 6
+      },
+      {
+        "category_item_code": "obj-pyp-02",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 6,
+        "tenant_id": 1,
+        "workspace_id": 6
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 7,
+        "tenant_id": 1,
+        "workspace_id": 6
+      },
+      {
+        "category_item_code": "obj-pyp-05",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 8,
+        "tenant_id": 1,
+        "workspace_id": 7
+      },
+      {
+        "category_item_code": "obj-pyp-06",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 9,
+        "tenant_id": 1,
+        "workspace_id": 7
+      },
+      {
+        "category_item_code": "obj-pyp-01",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 10,
+        "tenant_id": 1,
+        "workspace_id": 8
+      },
+      {
+        "category_item_code": "obj-pyp-02",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 11,
+        "tenant_id": 1,
+        "workspace_id": 8
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 12,
+        "tenant_id": 1,
+        "workspace_id": 8
+      },
+      {
+        "category_item_code": "obj-pyp-07",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 13,
+        "tenant_id": 1,
+        "workspace_id": 8
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 14,
+        "tenant_id": 1,
+        "workspace_id": 9
+      },
+      {
+        "category_item_code": "obj-pyp-04",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 15,
+        "tenant_id": 1,
+        "workspace_id": 9
+      },
+      {
+        "category_item_code": "obj-pyp-01",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 16,
+        "tenant_id": 1,
+        "workspace_id": 10
+      },
+      {
+        "category_item_code": "obj-pyp-02",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 17,
+        "tenant_id": 1,
+        "workspace_id": 10
+      },
+      {
+        "category_item_code": "obj-pyp-05",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 18,
+        "tenant_id": 1,
+        "workspace_id": 10
+      },
+      {
+        "category_item_code": "obj-pyp-07",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 19,
+        "tenant_id": 1,
+        "workspace_id": 10
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 20,
+        "tenant_id": 1,
+        "workspace_id": 11
+      },
+      {
+        "category_item_code": "obj-pyp-07",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 21,
+        "tenant_id": 1,
+        "workspace_id": 11
+      },
+      {
+        "category_item_code": "obj-pyp-04",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 22,
+        "tenant_id": 1,
+        "workspace_id": 12
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 23,
+        "tenant_id": 1,
+        "workspace_id": 13
+      },
+      {
+        "category_item_code": "obj-pyp-04",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 24,
+        "tenant_id": 1,
+        "workspace_id": 13
+      },
+      {
+        "category_item_code": "obj-pyp-03",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 25,
+        "tenant_id": 1,
+        "workspace_id": 14
+      },
+      {
+        "category_item_code": "obj-pyp-04",
+        "category_set_code": "strategic-objective",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "id": 26,
+        "tenant_id": 1,
+        "workspace_id": 14
+      }
+    ],
+    "enterprise_workspace_links": [],
+    "enterprise_workspaces": [
+      {
+        "code": "PYP",
+        "created_at": "2026-08-06T16:29:04.362013",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Empresa de consultoría, PMO como servicio, tecnología e innovación y gerencia de construcción.",
+            "external_key": "ENT-PYP",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          },
+          "currency": "COP",
+          "locale": "es-CO",
+          "timezone": "America/Bogota"
+        },
+        "external_key": "ENT-PYP",
+        "id": 1,
+        "name": "P&P Ingeniería y Proyectos",
+        "parent_id": null,
+        "record_code": "01",
+        "sort_order": 10,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 4,
+        "workspace_type_code": "enterprise"
+      },
+      {
+        "code": "BU-CONST",
+        "created_at": "2026-08-07T02:26:32.448648",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Planificación, coordinación constructiva, ejecución, puesta en servicio, operación y mantenimiento.",
+            "external_key": "BU-PYP-CONST",
+            "organization_unit_code": null,
+            "organization_unit_id": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "responsible_user_id": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "BU-PYP-CONST",
+        "id": 2,
+        "name": "Gerencia de Construcción",
+        "parent_id": 1,
+        "record_code": "01.04",
+        "sort_order": 400,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 3,
+        "workspace_type_code": "business-unit"
+      },
+      {
+        "code": "BU-PMO",
+        "created_at": "2026-08-07T02:28:43.906372",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "PMO flexible para gobierno, control, coordinación y soporte a decisiones.",
+            "external_key": "BU-PYP-PMO",
+            "organization_unit_code": null,
+            "organization_unit_id": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "responsible_user_id": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "BU-PYP-PMO",
+        "id": 3,
+        "name": "PMO como Servicio (PMO aaS)",
+        "parent_id": 1,
+        "record_code": "01.02",
+        "sort_order": 200,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 2,
+        "workspace_type_code": "business-unit"
+      },
+      {
+        "code": "BU-CONS",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Gestión especializada, control de proyectos, reclamaciones y gestión del ciclo de vida de activos.",
+            "external_key": "BU-PYP-CONS",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "BU-PYP-CONS",
+        "id": 4,
+        "name": "Consultoría en Gestión de Proyectos y Activos",
+        "parent_id": 1,
+        "record_code": "01.01",
+        "sort_order": 100,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "business-unit"
+      },
+      {
+        "code": "BU-TEC",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Integración de datos, modelos, procesos y plataformas de gestión.",
+            "external_key": "BU-PYP-TEC",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "BU-PYP-TEC",
+        "id": 5,
+        "name": "Tecnología e Innovación",
+        "parent_id": 1,
+        "record_code": "01.03",
+        "sort_order": 300,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "business-unit"
+      },
+      {
+        "code": "PF-CONS",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Integra gestión de proyectos, control, reclamaciones, controversias y peritaje.",
+            "external_key": "PF-PYP-CONS",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PF-PYP-CONS",
+        "id": 6,
+        "name": "Consultoría y Control de Proyectos",
+        "parent_id": 4,
+        "record_code": "01.01.01",
+        "sort_order": 110,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "portfolio"
+      },
+      {
+        "code": "PF-ASSET",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Gestión de activos enfocada en desempeño, continuidad, operación y valor del ciclo de vida.",
+            "external_key": "PF-PYP-ASSET",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PF-PYP-ASSET",
+        "id": 7,
+        "name": "Gestión de Activos, Propiedades y Facilities",
+        "parent_id": 4,
+        "record_code": "01.01.02",
+        "sort_order": 120,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "portfolio"
+      },
+      {
+        "code": "PF-PMO",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Agrupa servicios PMO aaS para proyectos, organizaciones, minería e infraestructura.",
+            "external_key": "PF-PYP-PMO",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PF-PYP-PMO",
+        "id": 8,
+        "name": "PMO como Servicio",
+        "parent_id": 3,
+        "record_code": "01.02.01",
+        "sort_order": 210,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "portfolio"
+      },
+      {
+        "code": "PF-TEC",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Agrupa plataformas PPM, BIM, planificación digital, analítica y desarrollo de productos tecnológicos.",
+            "external_key": "PF-PYP-TEC",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PF-PYP-TEC",
+        "id": 9,
+        "name": "Tecnología e Innovación",
+        "parent_id": 5,
+        "record_code": "01.03.01",
+        "sort_order": 310,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "portfolio"
+      },
+      {
+        "code": "PF-CONST",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Agrupa gerencia de vías, edificación, redes, facilities, commissioning y operación.",
+            "external_key": "PF-PYP-CONST",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PF-PYP-CONST",
+        "id": 10,
+        "name": "Gerencia de Construcción",
+        "parent_id": 2,
+        "record_code": "01.04.01",
+        "sort_order": 410,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "portfolio"
+      },
+      {
+        "code": "PG-PMO-MIN",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Agrupa proyectos de PMO, programación y control en minería.",
+            "external_key": "PG-PYP-PMO-MIN",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PG-PYP-PMO-MIN",
+        "id": 11,
+        "name": "Programa PMO Minería",
+        "parent_id": 8,
+        "record_code": "01.02.01.01",
+        "sort_order": 220,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "program"
+      },
+      {
+        "code": "PG-TEC-IMP",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Agrupa implementaciones de plataformas de planificación, control, BIM y trazabilidad.",
+            "external_key": "PG-PYP-TEC-IMP",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PG-PYP-TEC-IMP",
+        "id": 12,
+        "name": "Programa de Implementaciones Tecnológicas",
+        "parent_id": 9,
+        "record_code": "01.03.01.01",
+        "sort_order": 320,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "program"
+      },
+      {
+        "code": "PG-PPMIS",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Programa interno de desarrollo progresivo de la plataforma P&Pmis.",
+            "external_key": "PG-PYP-PPMIS",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PG-PYP-PPMIS",
+        "id": 13,
+        "name": "Programa de Desarrollo P&Pmis Construction AI",
+        "parent_id": 9,
+        "record_code": "01.03.01.02",
+        "sort_order": 330,
+        "status": "draft",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "program"
+      },
+      {
+        "code": "PRJ-PPMIS",
+        "created_at": "2026-08-10T03:16:13.851844",
+        "created_by_user_id": 1,
+        "defaults_json": {
+          "_enterprise": {
+            "description": "Proyecto interno para desarrollar la plataforma propia de gestión, control, BIM, facilities y propiedades.",
+            "external_key": "PRJ-PYP-PPMIS",
+            "organization_unit_code": null,
+            "region_code": "CO",
+            "responsible_email": null,
+            "source_release_code": "ES-PYP-CORE-RECONCILED-20260809",
+            "valid_from": null,
+            "valid_to": null
+          }
+        },
+        "external_key": "PRJ-PYP-PPMIS",
+        "id": 14,
+        "name": "Desarrollo P&Pmis Construction AI",
+        "parent_id": 13,
+        "record_code": "01.03.01.02.01",
+        "sort_order": 331,
+        "status": "active",
+        "tenant_id": 1,
+        "updated_at": "2026-08-10T03:16:13.851844",
+        "version": 1,
+        "workspace_type_code": "project"
+      }
+    ],
+    "security_events": [
+      {
+        "event_type": "access.bootstrap",
+        "id": 1,
+        "metadata_json": {},
+        "occurred_at": "2026-08-06T14:22:14.570214",
+        "outcome": "success",
+        "target_id": 1,
+        "target_type": "security_access_assignment",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.configuration_cloned",
+        "id": 2,
+        "metadata_json": {
+          "source_id": 18
+        },
+        "occurred_at": "2026-08-06T21:23:42.192478",
+        "outcome": "success",
+        "target_id": 22,
+        "target_type": "AdminConfiguration",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.category_updated",
+        "id": 3,
+        "metadata_json": {},
+        "occurred_at": "2026-08-06T21:23:42.633016",
+        "outcome": "success",
+        "target_id": 22,
+        "target_type": "AdminConfiguration",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.node_created",
+        "id": 4,
+        "metadata_json": {},
+        "occurred_at": "2026-08-07T02:26:32.491750",
+        "outcome": "success",
+        "target_id": 2,
+        "target_type": "EnterpriseWorkspace",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.node_updated",
+        "id": 5,
+        "metadata_json": {},
+        "occurred_at": "2026-08-07T02:27:59.314399",
+        "outcome": "success",
+        "target_id": 2,
+        "target_type": "EnterpriseWorkspace",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.node_updated",
+        "id": 6,
+        "metadata_json": {},
+        "occurred_at": "2026-08-07T02:28:16.854112",
+        "outcome": "success",
+        "target_id": 1,
+        "target_type": "EnterpriseWorkspace",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.node_created",
+        "id": 7,
+        "metadata_json": {},
+        "occurred_at": "2026-08-07T02:28:43.931355",
+        "outcome": "success",
+        "target_id": 3,
+        "target_type": "EnterpriseWorkspace",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.configuration_published",
+        "id": 8,
+        "metadata_json": {},
+        "occurred_at": "2026-08-09T15:37:54.122663",
+        "outcome": "success",
+        "target_id": 22,
+        "target_type": "AdminConfiguration",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.core_applied",
+        "id": 9,
+        "metadata_json": {
+          "actor": "admin@demo.local",
+          "adopted_ids": {
+            "BU-PYP-CONST": 2,
+            "BU-PYP-PMO": 3,
+            "ENT-PYP": 1
+          },
+          "approved_source_snapshot_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+          "canonical_input_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+          "classifications_count": 26,
+          "created_workspace_ids": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "idempotent_replay": false,
+          "input_hash": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+          "new_tenant_name": "P&P Ingeniería y Proyectos",
+          "new_tenant_slug": "pyp-ingenieria-proyectos",
+          "objectives_count": 7,
+          "old_tenant_name": "Demo Energy Infrastructure",
+          "old_tenant_slug": "demo-energy",
+          "outcome": "success",
+          "reconciliation_hash": "1dfb11c24685c7beff9dca0dce3f568da7615b9c0392072dc61d63d8fe87fcea",
+          "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+          "source_snapshot_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+          "summary": {
+            "adopt": 3,
+            "classification_create": 26,
+            "conflict": 0,
+            "create": 44,
+            "objective_create": 7,
+            "tenant_update": 1,
+            "unchanged": 0,
+            "update": 0,
+            "workspace_create": 11
+          },
+          "tenant_id": 1,
+          "timestamp": "2026-08-10T03:16:13.851844"
+        },
+        "occurred_at": "2026-08-10T03:16:13.851844",
+        "outcome": "success",
+        "target_id": 1,
+        "target_type": "EnterpriseStructureCore",
+        "tenant_id": 1,
+        "user_id": 1
+      },
+      {
+        "event_type": "enterprise_structure.core_applied",
+        "id": 10,
+        "metadata_json": {
+          "actor": "admin@demo.local",
+          "adopted_ids": {
+            "BU-PYP-CONST": 2,
+            "BU-PYP-PMO": 3,
+            "ENT-PYP": 1
+          },
+          "approved_source_snapshot_hash": "cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966",
+          "canonical_input_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+          "classifications_count": 26,
+          "created_workspace_ids": [],
+          "idempotent_replay": true,
+          "input_hash": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+          "new_tenant_name": "P&P Ingeniería y Proyectos",
+          "new_tenant_slug": "pyp-ingenieria-proyectos",
+          "objectives_count": 7,
+          "old_tenant_name": "P&P Ingeniería y Proyectos",
+          "old_tenant_slug": "pyp-ingenieria-proyectos",
+          "outcome": "success",
+          "reconciliation_hash": "1dfb11c24685c7beff9dca0dce3f568da7615b9c0392072dc61d63d8fe87fcea",
+          "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+          "source_snapshot_hash": "38096421d557116975cdc40993c56f65bae5c990e54054fda15e85a9644c1d58",
+          "summary": {
+            "adopt": 0,
+            "classification_create": 0,
+            "conflict": 0,
+            "create": 0,
+            "objective_create": 0,
+            "tenant_update": 0,
+            "unchanged": 47,
+            "update": 0,
+            "workspace_create": 0
+          },
+          "tenant_id": 1,
+          "timestamp": "2026-08-10T03:16:36.748355"
+        },
+        "occurred_at": "2026-08-10T03:16:36.748355",
+        "outcome": "success",
+        "target_id": 1,
+        "target_type": "EnterpriseStructureCore",
+        "tenant_id": 1,
+        "user_id": 1
+      }
+    ],
+    "tenants": [
+      {
+        "base_currency": "COP",
+        "id": 1,
+        "name": "P&P Ingeniería y Proyectos",
+        "slug": "pyp-ingenieria-proyectos"
+      }
+    ],
+    "user_accounts": [
+      {
+        "email": "admin@demo.local",
+        "full_name": "Pypmis Admin",
+        "id": 1,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Tenant Administrator"
+      },
+      {
+        "email": "ana.control@demo.local",
+        "full_name": "Ana Martinez",
+        "id": 2,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Project Controls Manager"
+      },
+      {
+        "email": "pablo.planner@demo.local",
+        "full_name": "Pablo Rojas",
+        "id": 3,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Lead Planner"
+      },
+      {
+        "email": "camila.cost@demo.local",
+        "full_name": "Camila Torres",
+        "id": 4,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Cost Controller"
+      },
+      {
+        "email": "laura.contracts@demo.local",
+        "full_name": "Laura Gomez",
+        "id": 5,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Contract Manager"
+      },
+      {
+        "email": "mateo.field@demo.local",
+        "full_name": "Mateo Ruiz",
+        "id": 6,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Field Engineer"
+      },
+      {
+        "email": "sofia.awp@demo.local",
+        "full_name": "Sofia Navarro",
+        "id": 7,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Workface Planner"
+      },
+      {
+        "email": "diana.docs@demo.local",
+        "full_name": "Diana Vega",
+        "id": 8,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Document Controller"
+      },
+      {
+        "email": "direccion@demo.local",
+        "full_name": "Direccion Proyecto",
+        "id": 9,
+        "status": "active",
+        "tenant_id": 1,
+        "title": "Executive Sponsor"
+      }
+    ],
+    "workspace_module_settings": []
+  }
+}

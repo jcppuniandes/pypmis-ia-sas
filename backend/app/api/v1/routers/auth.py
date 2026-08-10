@@ -31,8 +31,7 @@ router = APIRouter()
 @router.post("/auth/login", response_model=AuthSessionOut)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> AuthSessionOut:
     settings = get_settings()
-    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
-    tenant = db.scalar(select(Tenant).where(tenant_filter))
+    tenant = _resolve_tenant(db, payload.tenant_id, payload.tenant_slug)
     if not tenant:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     login_name = payload.email.strip().lower()
@@ -148,8 +147,7 @@ def oidc_token_exchange(payload: OIDCTokenExchange, db: Session = Depends(get_db
     if not email:
         raise HTTPException(status_code=401, detail="OIDC token is missing an email claim")
 
-    tenant_filter = Tenant.id == payload.tenant_id if payload.tenant_id else Tenant.slug == payload.tenant_slug
-    tenant = db.scalar(select(Tenant).where(tenant_filter))
+    tenant = _resolve_tenant(db, payload.tenant_id, payload.tenant_slug)
     if not tenant:
         raise HTTPException(status_code=401, detail="Tenant not recognised")
 
@@ -188,3 +186,12 @@ def auth_providers() -> dict[str, object]:
             "authorization_url": settings.oidc_authorization_url if settings.oidc_enabled else "",
         },
     }
+
+
+def _resolve_tenant(db: Session, tenant_id: int | None, tenant_slug: str | None) -> Tenant | None:
+    if tenant_id is not None:
+        return db.scalar(select(Tenant).where(Tenant.id == tenant_id))
+    if tenant_slug:
+        return db.scalar(select(Tenant).where(Tenant.slug == tenant_slug.strip().lower()))
+    tenants = list(db.scalars(select(Tenant).order_by(Tenant.id).limit(2)).all())
+    return tenants[0] if len(tenants) == 1 else None
