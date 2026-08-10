@@ -1,0 +1,22 @@
+{
+  "document": "C:/Users/Ricardo/Documents/P&P/P&Pmis Construction AI/Diseño/Resumen de Sprint/Informe_Tecnico_PPMIS_Core_Correction_Gate03_2026-08-10.docx",
+  "file_size_bytes": 133419,
+  "gate03_headings": 9,
+  "inline_shapes": 1,
+  "paragraphs": 364,
+  "required_content": {
+    "content_fingerprint": true,
+    "gate03_complete": true,
+    "release_code": true,
+    "security_event_11": true
+  },
+  "sections": 1,
+  "structural_validation": "PASS",
+  "tables": 115,
+  "visual_render": {
+    "renderer": "documents/render_docx.py",
+    "result": "UNAVAILABLE",
+    "reason": "LibreOffice/soffice is not installed in the local environment"
+  },
+  "zip_integrity": "PASS"
+}

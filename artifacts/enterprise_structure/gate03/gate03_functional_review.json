@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "broken_parents": 0,
+    "classification_count": 26,
+    "cycles": 0,
+    "external_key_unique": 14,
+    "facility_count": 0,
+    "link_count": 0,
+    "objective_count": 7,
+    "property_count": 0,
+    "record_code_unique": 14,
+    "responsible_area_required": 4,
+    "root_count": 1,
+    "strategic_objective_only_portfolio_program_project": true,
+    "workspace_count": 14
+  },
+  "experience_loaded": false,
+  "nodes": [
+    {"id": 1, "parent_id": null, "external_key": "ENT-PYP", "record_code": "01", "type": "enterprise", "status_before": "draft", "status_after": "draft"},
+    {"id": 4, "parent_id": 1, "external_key": "BU-PYP-CONS", "record_code": "01.01", "type": "business-unit", "status_before": "draft", "status_after": "draft"},
+    {"id": 6, "parent_id": 4, "external_key": "PF-PYP-CONS", "record_code": "01.01.01", "type": "portfolio", "status_before": "draft", "status_after": "draft"},
+    {"id": 7, "parent_id": 4, "external_key": "PF-PYP-ASSET", "record_code": "01.01.02", "type": "portfolio", "status_before": "draft", "status_after": "draft"},
+    {"id": 3, "parent_id": 1, "external_key": "BU-PYP-PMO", "record_code": "01.02", "type": "business-unit", "status_before": "draft", "status_after": "draft"},
+    {"id": 8, "parent_id": 3, "external_key": "PF-PYP-PMO", "record_code": "01.02.01", "type": "portfolio", "status_before": "draft", "status_after": "draft"},
+    {"id": 11, "parent_id": 8, "external_key": "PG-PYP-PMO-MIN", "record_code": "01.02.01.01", "type": "program", "status_before": "draft", "status_after": "draft"},
+    {"id": 5, "parent_id": 1, "external_key": "BU-PYP-TEC", "record_code": "01.03", "type": "business-unit", "status_before": "draft", "status_after": "draft"},
+    {"id": 9, "parent_id": 5, "external_key": "PF-PYP-TEC", "record_code": "01.03.01", "type": "portfolio", "status_before": "draft", "status_after": "draft"},
+    {"id": 12, "parent_id": 9, "external_key": "PG-PYP-TEC-IMP", "record_code": "01.03.01.01", "type": "program", "status_before": "draft", "status_after": "draft"},
+    {"id": 13, "parent_id": 9, "external_key": "PG-PYP-PPMIS", "record_code": "01.03.01.02", "type": "program", "status_before": "draft", "status_after": "draft"},
+    {"id": 14, "parent_id": 13, "external_key": "PRJ-PYP-PPMIS", "record_code": "01.03.01.02.01", "type": "project", "status_before": "active", "status_after": "active"},
+    {"id": 2, "parent_id": 1, "external_key": "BU-PYP-CONST", "record_code": "01.04", "type": "business-unit", "status_before": "draft", "status_after": "draft"},
+    {"id": 10, "parent_id": 2, "external_key": "PF-PYP-CONST", "record_code": "01.04.01", "type": "portfolio", "status_before": "draft", "status_after": "draft"}
+  ],
+  "operational_status_transition_count": 0,
+  "result": "PASS",
+  "tenant": {"id": 1, "name": "P&P Ingeniería y Proyectos", "slug": "pyp-ingenieria-proyectos", "currency": "COP"}
+}

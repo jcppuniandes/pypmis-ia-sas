@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace
 from app.modules.enterprise_structure.models import (
+    EnterpriseCoreRelease,
     EnterpriseStrategicObjective,
     EnterpriseWorkspaceClassification,
     EnterpriseWorkspaceLink,
@@ -74,6 +75,17 @@ class EnterpriseStructureRepository:
                 AdminConfiguration.tenant_id == self.tenant_id,
                 AdminConfiguration.id == configuration_id,
             )
+        )
+
+    def latest_core_release(self) -> EnterpriseCoreRelease | None:
+        return self.db.scalar(
+            select(EnterpriseCoreRelease)
+            .where(
+                EnterpriseCoreRelease.tenant_id == self.tenant_id,
+                EnterpriseCoreRelease.state == "published",
+            )
+            .order_by(EnterpriseCoreRelease.published_at.desc(), EnterpriseCoreRelease.id.desc())
+            .limit(1)
         )
 
     def workspaces(self) -> list[EnterpriseWorkspace]:

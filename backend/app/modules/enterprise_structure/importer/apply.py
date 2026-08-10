@@ -13,11 +13,7 @@ from sqlalchemy.orm import Session
 from app.core.time import utc_now
 from app.domain.models import (
     EnterpriseWorkspace,
-    PermissionCatalog,
-    SecurityAccessAssignment,
     SecurityEvent,
-    SecurityGroupMember,
-    SecurityRolePermission,
     Tenant,
     UserAccount,
 )
@@ -31,6 +27,10 @@ from app.modules.enterprise_structure.importer.models import (
     TenantIdentityChange,
 )
 from app.modules.enterprise_structure.importer.normalizer import internal_code
+from app.modules.enterprise_structure.importer.security import (
+    ActorAuthorizationError,
+    require_actor_with_permission,
+)
 from app.modules.enterprise_structure.importer.snapshot import load_tenant_snapshot
 from app.modules.enterprise_structure.importer.validator import build_dry_run
 from app.modules.enterprise_structure.models import (
@@ -447,55 +447,10 @@ def _resolve_tenant(
 
 
 def _require_actor(db: Session, tenant_id: int, actor_email: str) -> UserAccount:
-    actor = db.scalar(
-        select(UserAccount).where(
-            UserAccount.tenant_id == tenant_id,
-            UserAccount.email == actor_email.strip().lower(),
-            UserAccount.status == "active",
-        )
-    )
-    if actor is None:
-        raise CoreApplyError("ACTOR_NOT_FOUND", actor_email)
-    group_ids = set(
-        db.scalars(
-            select(SecurityGroupMember.group_id).where(
-                SecurityGroupMember.tenant_id == tenant_id,
-                SecurityGroupMember.user_id == actor.id,
-            )
-        ).all()
-    )
-    now = utc_now()
-    assignments = list(
-        db.scalars(
-            select(SecurityAccessAssignment).where(
-                SecurityAccessAssignment.tenant_id == tenant_id,
-                SecurityAccessAssignment.status == "active",
-                SecurityAccessAssignment.scope_type == "organization",
-            )
-        ).all()
-    )
-    role_ids = {
-        assignment.role_id
-        for assignment in assignments
-        if (assignment.user_id == actor.id or assignment.group_id in group_ids)
-        and (assignment.starts_at is None or assignment.starts_at <= now)
-        and (assignment.ends_at is None or assignment.ends_at > now)
-    }
-    permitted = None
-    if role_ids:
-        permitted = db.scalar(
-            select(SecurityRolePermission.id)
-            .join(PermissionCatalog, PermissionCatalog.id == SecurityRolePermission.permission_id)
-            .where(
-                SecurityRolePermission.tenant_id == tenant_id,
-                SecurityRolePermission.role_id.in_(role_ids),
-                PermissionCatalog.key == MANAGE_PERMISSION,
-                PermissionCatalog.status == "active",
-            )
-        )
-    if permitted is None:
-        raise CoreApplyError("ACTOR_NOT_AUTHORIZED", actor.email)
-    return actor
+    try:
+        return require_actor_with_permission(db, tenant_id, actor_email, MANAGE_PERMISSION)
+    except ActorAuthorizationError as exc:
+        raise CoreApplyError(exc.code, str(exc)) from exc
 
 
 def _validate_gate_approvals(

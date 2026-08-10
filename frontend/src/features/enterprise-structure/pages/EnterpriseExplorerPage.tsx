@@ -97,6 +97,22 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         tone="user"
       />
 
+      {data?.published_release ? (
+        <section className="coreReleaseBanner user" aria-label="Estructura publicada">
+          <Network size={20} />
+          <div>
+            <strong>Estructura publicada · {data.published_release.release_code}</strong>
+            <span>
+              {data.published_release.workspace_count} nodos · publicada el{" "}
+              {new Date(data.published_release.published_at).toLocaleDateString("es-CO")}
+            </span>
+          </div>
+          <code title={data.published_release.content_fingerprint}>
+            {data.published_release.content_fingerprint.slice(0, 16)}…
+          </code>
+        </section>
+      ) : null}
+
       {error ? (
         <div className="enterpriseAlert error" role="alert">
           {error}

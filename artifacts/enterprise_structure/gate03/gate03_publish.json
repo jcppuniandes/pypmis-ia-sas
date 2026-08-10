@@ -1,0 +1,28 @@
+{
+  "actor": "admin@demo.local",
+  "approved_source_snapshot_hash": "ec5c8b1538516079b89cfff48cdd145e5563139485bf7851f0c59202c03a5957",
+  "audit_event_id": 11,
+  "canonical_input_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+  "classification_count": 26,
+  "content_fingerprint": "58be6cce288d4067f83f43bd9ac850da76f20784b4f113aac50398a6bf70c828",
+  "input_hash": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+  "link_count": 0,
+  "mutation_count": 2,
+  "objective_count": 7,
+  "operational_statuses": {
+    "active": 1,
+    "draft": 13
+  },
+  "outcome": "SUCCESS",
+  "previous_release": null,
+  "published_at": "2026-08-10T15:55:52.883614",
+  "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+  "release_id": 1,
+  "release_name": "Estructura empresarial CORE reconciliada - P&P Ingeniería y Proyectos",
+  "source_snapshot_hash": "ec5c8b1538516079b89cfff48cdd145e5563139485bf7851f0c59202c03a5957",
+  "state": "published",
+  "status_transitions": [],
+  "tenant_code": "pyp-ingenieria-proyectos",
+  "tenant_id": 1,
+  "workspace_count": 14
+}

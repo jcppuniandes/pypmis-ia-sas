@@ -1,0 +1,15 @@
+{
+  "canonical_hash": {
+    "expected": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+    "observed": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+    "result": "PASS"
+  },
+  "input": "backend/config/enterprise_structure.pyp_core_reconciled_review.yaml",
+  "raw_sha256": {
+    "expected": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+    "observed": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+    "result": "PASS"
+  },
+  "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+  "result": "PASS"
+}

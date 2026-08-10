@@ -69,6 +69,22 @@ export type CompositionRule = {
 
 export type CategoryItem = { code: string; label: string };
 
+export type CoreRelease = {
+  id: number;
+  release_code: string;
+  release_name: string;
+  state: "published";
+  source_hash: string;
+  canonical_hash: string;
+  content_fingerprint: string;
+  workspace_count: number;
+  objective_count: number;
+  classification_count: number;
+  link_count: number;
+  published_at: string;
+  published_by: string;
+};
+
 export type EnterpriseStructureConfiguration = {
   workspace_types: ConfigurationVersion[];
   categories: ConfigurationVersion[];
@@ -78,6 +94,7 @@ export type EnterpriseStructureConfiguration = {
   classifications: Classification[];
   links: WorkspaceLink[];
   summary: Record<string, number>;
+  published_release: CoreRelease | null;
 };
 
 export type EnterpriseExplorer = {
@@ -88,6 +105,7 @@ export type EnterpriseExplorer = {
   classifications: Classification[];
   links: WorkspaceLink[];
   summary: Record<string, number>;
+  published_release: CoreRelease | null;
 };
 
 export type EnterpriseNodeDetail = {

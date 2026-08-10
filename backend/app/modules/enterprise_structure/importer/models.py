@@ -201,6 +201,32 @@ class CoreApplyReport(StrictModel):
     occurred_at: datetime
 
 
+class CorePublishReport(StrictModel):
+    outcome: str
+    release_id: int
+    release_code: str
+    release_name: str
+    state: str
+    tenant_id: int
+    tenant_code: str
+    actor: str
+    input_hash: str
+    canonical_input_hash: str
+    source_snapshot_hash: str
+    approved_source_snapshot_hash: str
+    content_fingerprint: str
+    workspace_count: int
+    objective_count: int
+    classification_count: int
+    link_count: int
+    operational_statuses: dict[str, int]
+    status_transitions: list[str]
+    previous_release: str | None = None
+    mutation_count: int
+    audit_event_id: int | None = None
+    published_at: datetime
+
+
 @dataclass(frozen=True)
 class ExistingNode:
     id: int

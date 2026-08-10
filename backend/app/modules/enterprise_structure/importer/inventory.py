@@ -20,6 +20,7 @@ from app.domain.models import (
     WorkspaceModuleSetting,
 )
 from app.modules.enterprise_structure.models import (
+    EnterpriseCoreRelease,
     EnterpriseStrategicObjective,
     EnterpriseWorkspaceClassification,
     EnterpriseWorkspaceLink,
@@ -47,10 +48,18 @@ def capture_inventory(db: Session) -> dict[str, Any]:
         if EnterpriseStrategicObjective.__tablename__ in inspect(db.get_bind()).get_table_names()
         else []
     )
+    releases = (
+        _rows(db, EnterpriseCoreRelease)
+        if EnterpriseCoreRelease.__tablename__ in inspect(db.get_bind()).get_table_names()
+        else []
+    )
     return {
         "algorithm": "ordered-primary-key/canonical-json-v1",
         "tables": tables,
-        "supplemental": {"enterprise_strategic_objectives": objectives},
+        "supplemental": {
+            "enterprise_strategic_objectives": objectives,
+            "enterprise_core_releases": releases,
+        },
     }
 
 

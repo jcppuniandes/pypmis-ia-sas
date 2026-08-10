@@ -2,7 +2,12 @@
 
 import json
 
-from app.modules.enterprise_structure.importer.models import CoreApplyReport, DryRunReport, Severity
+from app.modules.enterprise_structure.importer.models import (
+    CoreApplyReport,
+    CorePublishReport,
+    DryRunReport,
+    Severity,
+)
 
 
 def render_json(report: DryRunReport) -> str:
@@ -52,6 +57,36 @@ def render_apply_human(report: CoreApplyReport) -> str:
             "Publish CORE: NOT EXECUTED",
         ]
     )
+    return "\n".join(lines) + "\n"
+
+
+def render_publish_json(report: CorePublishReport) -> str:
+    return json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+
+def render_publish_human(report: CorePublishReport) -> str:
+    lines = [
+        "P&Pmis Controlled CORE Publish",
+        f"Release: {report.release_code}",
+        f"Tenant: {report.tenant_id} · {report.tenant_code}",
+        f"Actor: {report.actor}",
+        f"Result: {report.outcome}",
+        f"State: {report.state}",
+        f"Mutations: {report.mutation_count}",
+        f"Raw SHA-256: {report.input_hash}",
+        f"Canonical SHA-256: {report.canonical_input_hash}",
+        f"Content fingerprint: {report.content_fingerprint}",
+        "",
+        "Published snapshot",
+        f"- Workspaces: {report.workspace_count}",
+        f"- Strategic Objectives: {report.objective_count}",
+        f"- Classifications: {report.classification_count}",
+        f"- Links: {report.link_count}",
+        f"- Operational statuses: {report.operational_statuses}",
+        "- Operational status transitions: NONE",
+        f"- SecurityEvent: {report.audit_event_id if report.audit_event_id is not None else 'NONE (safe replay)'}",
+        f"- Published at: {report.published_at.isoformat()}",
+    ]
     return "\n".join(lines) + "\n"
 
 

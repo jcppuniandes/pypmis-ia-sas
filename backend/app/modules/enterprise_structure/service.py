@@ -18,6 +18,7 @@ from app.domain.models import (
     EnterpriseWorkspace,
     SecurityEvent,
     Tenant,
+    UserAccount,
 )
 from app.modules.enterprise_structure.classifications import validate_classification
 from app.modules.enterprise_structure.composition_rules import (
@@ -46,6 +47,7 @@ from app.modules.enterprise_structure.schemas import (
     CompositionRuleUpdate,
     ConfigurationValidationOut,
     ConfigurationVersionOut,
+    CoreReleaseOut,
     EnterpriseExplorerOut,
     EnterpriseNodeCreate,
     EnterpriseNodeDetailOut,
@@ -132,9 +134,11 @@ class EnterpriseStructureService:
                 "classifications": len(classifications),
                 "links": len(links),
             },
+            published_release=self._published_release_out(),
         )
 
     def create_node(self, payload: EnterpriseNodeCreate) -> EnterpriseNodeOut:
+        self._ensure_core_editable()
         type_code = _configuration_code(payload.workspace_type_code)
         node_code = _workspace_code(payload.code)
         if self.repository.workspace_by_code(node_code):
@@ -183,6 +187,7 @@ class EnterpriseStructureService:
         return self.node_out(workspace)
 
     def update_node(self, workspace_id: int, payload: EnterpriseNodeUpdate) -> EnterpriseNodeOut:
+        self._ensure_core_editable()
         workspace = self._workspace(workspace_id)
         self._require_version(workspace, payload.expected_version)
         move_metadata: dict[str, Any] | None = None
@@ -262,6 +267,7 @@ class EnterpriseStructureService:
         return self.node_out(workspace)
 
     def archive_node(self, workspace_id: int) -> EnterpriseNodeOut:
+        self._ensure_core_editable()
         workspace = self._workspace(workspace_id)
         if self.repository.active_children(workspace.id):
             raise HTTPException(status_code=409, detail="Cannot archive a workspace with active children")
@@ -274,6 +280,7 @@ class EnterpriseStructureService:
         return self.node_out(workspace)
 
     def add_classification(self, workspace_id: int, payload: ClassificationCreate) -> ClassificationOut:
+        self._ensure_core_editable()
         workspace = self._workspace(workspace_id)
         category_code = _configuration_code(payload.category_set_code)
         item_code = _configuration_code(payload.category_item_code)
@@ -294,6 +301,7 @@ class EnterpriseStructureService:
         return ClassificationOut.model_validate(record)
 
     def remove_classification(self, classification_id: int) -> None:
+        self._ensure_core_editable()
         record = self.repository.classification(classification_id)
         if record is None:
             raise HTTPException(status_code=404, detail="Classification not found")
@@ -302,6 +310,7 @@ class EnterpriseStructureService:
         self.db.commit()
 
     def add_link(self, payload: WorkspaceLinkCreate) -> WorkspaceLinkOut:
+        self._ensure_core_editable()
         source = self._workspace(payload.source_workspace_id)
         target = self._workspace(payload.target_workspace_id)
         relationship_type = payload.relationship_type.strip().upper()
@@ -326,6 +335,7 @@ class EnterpriseStructureService:
         return WorkspaceLinkOut.model_validate(record)
 
     def remove_link(self, link_id: int) -> None:
+        self._ensure_core_editable()
         record = self.repository.link(link_id)
         if record is None:
             raise HTTPException(status_code=404, detail="Workspace link not found")
@@ -586,6 +596,7 @@ class EnterpriseStructureService:
                 "facilities": sum(item.workspace_type_code == "facility" for item in matched),
                 "projects": sum(item.workspace_type_code == "project" for item in matched),
             },
+            published_release=self._published_release_out(),
         )
 
     def node_detail(self, context: EnterprisePermissionContext, workspace_id: int) -> EnterpriseNodeDetailOut:
@@ -800,6 +811,38 @@ class EnterpriseStructureService:
         if workspace is None:
             raise HTTPException(status_code=404, detail="Workspace not found")
         return workspace
+
+    def _published_release_out(self) -> CoreReleaseOut | None:
+        release = self.repository.latest_core_release()
+        if release is None:
+            return None
+        actor_email = self.db.scalar(select(UserAccount.email).where(UserAccount.id == release.published_by_user_id))
+        return CoreReleaseOut(
+            id=release.id,
+            release_code=release.release_code,
+            release_name=release.release_name,
+            state=release.state,
+            source_hash=release.source_hash,
+            canonical_hash=release.canonical_hash,
+            content_fingerprint=release.content_fingerprint,
+            workspace_count=release.workspace_count,
+            objective_count=release.objective_count,
+            classification_count=release.classification_count,
+            link_count=release.link_count,
+            published_at=release.published_at,
+            published_by=actor_email or "unknown",
+        )
+
+    def _ensure_core_editable(self) -> None:
+        release = self.repository.latest_core_release()
+        if release is not None:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "The published CORE release is immutable; create an approved new revision before editing",
+                    "release_code": release.release_code,
+                },
+            )
 
     def _ensure_no_cycle(self, workspace_id: int, parent_id: int) -> None:
         current_id: int | None = parent_id

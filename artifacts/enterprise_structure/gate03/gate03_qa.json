@@ -1,0 +1,38 @@
+{
+  "admin_mode": {
+    "api_nodes": 14,
+    "compact_module_header": "PASS",
+    "console_errors": 0,
+    "edit_actions_disabled": true,
+    "fingerprint_visible": true,
+    "published_actor_visible": "admin@demo.local",
+    "published_date_visible": true,
+    "release_visible": "ES-PYP-CORE-RECONCILED-20260809",
+    "result": "PASS",
+    "structural_mutation_blocked_http_status": 409,
+    "tree_items": 14
+  },
+  "application": {
+    "api_health": "healthy",
+    "frontend_url": "http://127.0.0.1:5173/app",
+    "logo_and_name": "P&Pmis Construction AI",
+    "services": ["api", "db", "redis", "frontend", "worker", "beat"]
+  },
+  "out_of_scope": {
+    "experience_loaded": false,
+    "facility_loaded": false,
+    "property_loaded": false
+  },
+  "result": "PASS",
+  "user_mode": {
+    "admin_actions_exposed": 0,
+    "api_facilities": 0,
+    "api_nodes": 14,
+    "api_projects": 1,
+    "api_properties": 0,
+    "filters": "PASS_PROJECT_FILTER_1_RESULT",
+    "hierarchy_order_and_record_codes": "PASS",
+    "release_visible": "ES-PYP-CORE-RECONCILED-20260809",
+    "result": "PASS"
+  }
+}

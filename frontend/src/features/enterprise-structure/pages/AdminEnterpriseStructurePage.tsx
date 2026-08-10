@@ -83,6 +83,7 @@ export default function AdminEnterpriseStructurePage({
   const [error, setError] = useState("");
 
   const nodes = useMemo(() => flattenTree(data?.tree ?? []), [data]);
+  const coreLocked = Boolean(data?.published_release);
   const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null;
   const selectedCategory = data?.categories.find((item) => item.code === selectedCategoryCode) ?? null;
   const selectedClassifications = data?.classifications.filter((item) => item.workspace_id === selectedNodeId) ?? [];
@@ -326,7 +327,7 @@ export default function AdminEnterpriseStructurePage({
         actions={
           <button
             className="enterpriseButton primary"
-            disabled={!canConfigure || busy}
+            disabled={!canConfigure || busy || coreLocked}
             onClick={() => {
               setTab("hierarchy");
               startNode();
@@ -345,6 +346,23 @@ export default function AdminEnterpriseStructurePage({
         ]}
         title="Enterprise Structure Configuration"
       />
+
+      {data?.published_release ? (
+        <section className="coreReleaseBanner" aria-label="Release CORE publicado">
+          <CheckCircle2 size={20} />
+          <div>
+            <strong>CORE publicado · {data.published_release.release_code}</strong>
+            <span>
+              {new Date(data.published_release.published_at).toLocaleString("es-CO")} ·{" "}
+              {data.published_release.published_by}
+            </span>
+          </div>
+          <code title={data.published_release.content_fingerprint}>
+            {data.published_release.content_fingerprint.slice(0, 16)}…
+          </code>
+          <p>La estructura es inmutable. Cualquier cambio requiere una nueva revisión aprobada.</p>
+        </section>
+      ) : null}
 
       <nav className="enterpriseTabs" aria-label="Configuración de estructura empresarial">
         <button className={tab === "hierarchy" ? "active" : ""} onClick={() => setTab("hierarchy")} type="button">
@@ -385,7 +403,7 @@ export default function AdminEnterpriseStructurePage({
               </div>
               <button
                 className="enterpriseButton primary"
-                disabled={!canConfigure || busy}
+                disabled={!canConfigure || busy || coreLocked}
                 onClick={startNode}
                 type="button"
               >
@@ -407,7 +425,7 @@ export default function AdminEnterpriseStructurePage({
               {nodeMode === "edit" ? (
                 <button
                   className="enterpriseButton danger"
-                  disabled={!canConfigure || busy || selectedNode?.workspace_type_code === "enterprise"}
+                  disabled={!canConfigure || busy || coreLocked || selectedNode?.workspace_type_code === "enterprise"}
                   onClick={archiveSelectedNode}
                   type="button"
                 >
@@ -416,7 +434,7 @@ export default function AdminEnterpriseStructurePage({
               ) : null}
             </header>
             <StructureNodeForm
-              busy={busy || !canConfigure}
+              busy={busy || !canConfigure || coreLocked}
               draft={nodeDraft}
               mode={nodeMode}
               nodes={nodes.filter((node) => node.id !== selectedNodeId)}
@@ -454,7 +472,7 @@ export default function AdminEnterpriseStructurePage({
                     </select>
                     <button
                       className="enterpriseButton"
-                      disabled={!canConfigure || busy || !classificationItem}
+                      disabled={!canConfigure || busy || coreLocked || !classificationItem}
                       type="submit"
                     >
                       Asignar
@@ -477,7 +495,11 @@ export default function AdminEnterpriseStructurePage({
                         <option key={item}>{item}</option>
                       ))}
                     </select>
-                    <button className="enterpriseButton" disabled={!canConfigure || busy || !linkTarget} type="submit">
+                    <button
+                      className="enterpriseButton"
+                      disabled={!canConfigure || busy || coreLocked || !linkTarget}
+                      type="submit"
+                    >
                       Relacionar
                     </button>
                   </form>
@@ -493,7 +515,7 @@ export default function AdminEnterpriseStructurePage({
                           </span>
                           <button
                             aria-label={`Quitar clasificación ${item.category_item_code}`}
-                            disabled={!canConfigure || busy}
+                            disabled={!canConfigure || busy || coreLocked}
                             onClick={() =>
                               run(
                                 () => enterpriseStructureApi.removeClassification(token, item.id),
@@ -521,7 +543,7 @@ export default function AdminEnterpriseStructurePage({
                           </span>
                           <button
                             aria-label={`Quitar relación ${item.relationship_type}`}
-                            disabled={!canConfigure || busy}
+                            disabled={!canConfigure || busy || coreLocked}
                             onClick={() =>
                               run(
                                 () => enterpriseStructureApi.removeLink(token, item.id),

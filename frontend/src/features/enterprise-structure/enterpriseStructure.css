@@ -214,6 +214,49 @@
   color: #176743;
 }
 
+.coreReleaseBanner {
+  align-items: center;
+  background: #edf9f4;
+  border: 1px solid #91d2bd;
+  border-left: 4px solid #168c70;
+  border-radius: 10px;
+  color: #102d29;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(220px, 1fr) auto;
+  margin: 0 0 14px;
+  padding: 12px 15px;
+}
+
+.coreReleaseBanner div {
+  display: grid;
+  gap: 3px;
+}
+
+.coreReleaseBanner span,
+.coreReleaseBanner p {
+  color: #4d6863;
+  font-size: 12px;
+  margin: 0;
+}
+
+.coreReleaseBanner code {
+  background: #fff;
+  border: 1px solid #c8ded7;
+  border-radius: 6px;
+  padding: 5px 7px;
+}
+
+.coreReleaseBanner p {
+  grid-column: 2 / -1;
+}
+
+.coreReleaseBanner.user {
+  background: #eef5fb;
+  border-color: #9dc3df;
+  border-left-color: #236b9c;
+}
+
 .enterpriseAdminGrid,
 .enterpriseCatalogLayout,
 .enterpriseRulesLayout,

@@ -163,6 +163,22 @@ class PublicationOut(ConfigurationValidationOut):
     published: list[ConfigurationVersionOut]
 
 
+class CoreReleaseOut(BaseModel):
+    id: int
+    release_code: str
+    release_name: str
+    state: str
+    source_hash: str
+    canonical_hash: str
+    content_fingerprint: str
+    workspace_count: int
+    objective_count: int
+    classification_count: int
+    link_count: int
+    published_at: datetime
+    published_by: str
+
+
 class EnterpriseStructureConfigurationOut(BaseModel):
     workspace_types: list[ConfigurationVersionOut]
     categories: list[ConfigurationVersionOut]
@@ -172,6 +188,7 @@ class EnterpriseStructureConfigurationOut(BaseModel):
     classifications: list[ClassificationOut]
     links: list[WorkspaceLinkOut]
     summary: dict[str, int]
+    published_release: CoreReleaseOut | None = None
 
 
 class EnterpriseNodeDetailOut(BaseModel):
@@ -189,3 +206,4 @@ class EnterpriseExplorerOut(BaseModel):
     classifications: list[ClassificationOut]
     links: list[WorkspaceLinkOut]
     summary: dict[str, int]
+    published_release: CoreReleaseOut | None = None

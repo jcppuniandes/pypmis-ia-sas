@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "email": "admin@demo.local",
+    "permission": "admin.enterprise_structure.publish",
+    "scope": "organization",
+    "status": "active"
+  },
+  "event": {
+    "event_type": "enterprise_structure.core_published",
+    "id": 11,
+    "outcome": "success",
+    "target_id": 1,
+    "target_type": "EnterpriseCoreRelease",
+    "user_id": 1
+  },
+  "fingerprint_comparison": {
+    "admin_configurations": "UNCHANGED",
+    "enterprise_workspace_classifications": "UNCHANGED",
+    "enterprise_workspace_links": "UNCHANGED",
+    "enterprise_workspaces": "UNCHANGED",
+    "security_events": "EXPECTED_CHANGE_10_TO_11",
+    "tenants": "UNCHANGED",
+    "user_accounts": "UNCHANGED",
+    "workspace_module_settings": "UNCHANGED"
+  },
+  "immutability": {
+    "database_trigger": "PASS",
+    "orm_guard": "PASS",
+    "physical_delete_blocked": true,
+    "structural_api_mutation_http_status": 409
+  },
+  "published_at": "2026-08-10T15:55:52.883614",
+  "release": {
+    "canonical_hash": "c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d",
+    "classification_count": 26,
+    "content_fingerprint": "58be6cce288d4067f83f43bd9ac850da76f20784b4f113aac50398a6bf70c828",
+    "id": 1,
+    "link_count": 0,
+    "objective_count": 7,
+    "raw_hash": "04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025",
+    "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+    "state": "published",
+    "workspace_count": 14
+  },
+  "result": "PASS",
+  "second_publish": {
+    "audit_event_created": false,
+    "mutation_count": 0,
+    "outcome": "ALREADY_PUBLISHED",
+    "release_count": 1
+  },
+  "status_transitions": []
+}
