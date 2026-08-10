@@ -106,6 +106,8 @@ class EnterpriseStructureService:
         self.db.commit()
 
     def configuration_overview(self) -> EnterpriseStructureConfigurationOut:
+        from app.modules.enterprise_structure.revisions import EnterpriseStructureRevisionService
+
         types = self.repository.latest_configurations("workspace_type", prefer_draft=True)
         categories = self.repository.latest_configurations("catalog", prefer_draft=True)
         enterprise_categories = [item for item in categories if item.code in CATEGORY_SEED]
@@ -117,6 +119,7 @@ class EnterpriseStructureService:
         workspaces = self.repository.workspaces()
         classifications = self.repository.classifications()
         links = self.repository.links()
+        draft_release = self.repository.latest_draft_release()
         return EnterpriseStructureConfigurationOut(
             workspace_types=[_configuration_out(item) for item in types],
             categories=[_configuration_out(item) for item in enterprise_categories],
@@ -135,6 +138,11 @@ class EnterpriseStructureService:
                 "links": len(links),
             },
             published_release=self._published_release_out(),
+            draft_release=(
+                EnterpriseStructureRevisionService(self.db, self.tenant_id, self.actor_id).revision_out(draft_release)
+                if draft_release
+                else None
+            ),
         )
 
     def create_node(self, payload: EnterpriseNodeCreate) -> EnterpriseNodeOut:
@@ -821,7 +829,9 @@ class EnterpriseStructureService:
             id=release.id,
             release_code=release.release_code,
             release_name=release.release_name,
+            revision_number=release.revision_number,
             state=release.state,
+            previous_release_id=release.previous_release_id,
             source_hash=release.source_hash,
             canonical_hash=release.canonical_hash,
             content_fingerprint=release.content_fingerprint,
@@ -830,7 +840,7 @@ class EnterpriseStructureService:
             classification_count=release.classification_count,
             link_count=release.link_count,
             published_at=release.published_at,
-            published_by=actor_email or "unknown",
+            published_by=actor_email,
         )
 
     def _ensure_core_editable(self) -> None:

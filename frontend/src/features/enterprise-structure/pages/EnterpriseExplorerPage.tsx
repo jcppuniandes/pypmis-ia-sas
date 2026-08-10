@@ -104,7 +104,9 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
             <strong>Estructura publicada · {data.published_release.release_code}</strong>
             <span>
               {data.published_release.workspace_count} nodos · publicada el{" "}
-              {new Date(data.published_release.published_at).toLocaleDateString("es-CO")}
+              {data.published_release.published_at
+                ? new Date(data.published_release.published_at).toLocaleDateString("es-CO")
+                : "sin fecha"}
             </span>
           </div>
           <code title={data.published_release.content_fingerprint}>

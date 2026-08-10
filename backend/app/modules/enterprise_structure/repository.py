@@ -88,6 +88,32 @@ class EnterpriseStructureRepository:
             .limit(1)
         )
 
+    def core_release(self, release_id: int) -> EnterpriseCoreRelease | None:
+        return self.db.scalar(
+            select(EnterpriseCoreRelease).where(
+                EnterpriseCoreRelease.tenant_id == self.tenant_id,
+                EnterpriseCoreRelease.id == release_id,
+            )
+        )
+
+    def latest_draft_release(self) -> EnterpriseCoreRelease | None:
+        return self.db.scalar(
+            select(EnterpriseCoreRelease)
+            .where(
+                EnterpriseCoreRelease.tenant_id == self.tenant_id,
+                EnterpriseCoreRelease.state == "draft",
+            )
+            .order_by(EnterpriseCoreRelease.created_at.desc(), EnterpriseCoreRelease.id.desc())
+            .limit(1)
+        )
+
+    def release_count(self) -> int:
+        return len(
+            self.db.scalars(
+                select(EnterpriseCoreRelease.id).where(EnterpriseCoreRelease.tenant_id == self.tenant_id)
+            ).all()
+        )
+
     def workspaces(self) -> list[EnterpriseWorkspace]:
         return list(
             self.db.scalars(

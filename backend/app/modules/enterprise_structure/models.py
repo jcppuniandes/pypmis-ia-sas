@@ -37,19 +37,33 @@ class EnterpriseCoreRelease(Base):
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
     release_code: Mapped[str] = mapped_column(String(160), index=True)
     release_name: Mapped[str] = mapped_column(String(220))
+    revision_number: Mapped[int] = mapped_column(default=1)
     state: Mapped[str] = mapped_column(String(40), default="published", index=True)
     source_hash: Mapped[str] = mapped_column(String(64))
     canonical_hash: Mapped[str] = mapped_column(String(64))
     content_fingerprint: Mapped[str] = mapped_column(String(64), index=True)
     source_release_code: Mapped[str | None] = mapped_column(String(160))
     previous_release_id: Mapped[int | None] = mapped_column(ForeignKey("enterprise_core_releases.id"))
+    base_content_fingerprint: Mapped[str] = mapped_column(String(64), default="")
     snapshot_json: Mapped[dict] = mapped_column(JSON, default=dict)
     workspace_count: Mapped[int]
     objective_count: Mapped[int]
     classification_count: Mapped[int]
     link_count: Mapped[int]
-    published_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
-    published_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    validation_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    validated_at: Mapped[datetime | None] = mapped_column(DateTime)
+    validated_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"))
+    validated_draft_hash: Mapped[str | None] = mapped_column(String(64))
+    diff_hash: Mapped[str] = mapped_column(String(64), default="")
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime)
+    approved_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"))
+    approved_draft_hash: Mapped[str | None] = mapped_column(String(64))
+    approved_diff_hash: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime)
+    published_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     unpublished_at: Mapped[datetime | None] = mapped_column(DateTime)
     unpublished_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"))
     rollback_reason: Mapped[str | None] = mapped_column(Text)
@@ -61,16 +75,20 @@ _IMMUTABLE_RELEASE_FIELDS = {
     "tenant_id",
     "release_code",
     "release_name",
+    "revision_number",
     "source_hash",
     "canonical_hash",
     "content_fingerprint",
     "source_release_code",
     "previous_release_id",
+    "base_content_fingerprint",
     "snapshot_json",
     "workspace_count",
     "objective_count",
     "classification_count",
     "link_count",
+    "created_at",
+    "created_by_user_id",
     "published_at",
     "published_by_user_id",
 }
@@ -79,6 +97,10 @@ _IMMUTABLE_RELEASE_FIELDS = {
 @event.listens_for(EnterpriseCoreRelease, "before_update")
 def _protect_release_update(_mapper, _connection, target: EnterpriseCoreRelease) -> None:
     state = inspect(target)
+    state_history = state.attrs.state.history
+    original_state = state_history.deleted[0] if state_history.deleted else target.state
+    if original_state == "draft":
+        return
     changed = sorted(name for name in _IMMUTABLE_RELEASE_FIELDS if state.attrs[name].history.has_changes())
     if changed:
         raise ValueError(f"Published CORE release is immutable: {', '.join(changed)}")

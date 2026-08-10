@@ -167,7 +167,9 @@ class CoreReleaseOut(BaseModel):
     id: int
     release_code: str
     release_name: str
+    revision_number: int
     state: str
+    previous_release_id: int | None
     source_hash: str
     canonical_hash: str
     content_fingerprint: str
@@ -175,8 +177,138 @@ class CoreReleaseOut(BaseModel):
     objective_count: int
     classification_count: int
     link_count: int
-    published_at: datetime
-    published_by: str
+    published_at: datetime | None
+    published_by: str | None
+
+
+class RevisionClassificationIn(BaseModel):
+    category_set_code: str
+    category_item_code: str
+
+
+class RevisionWorkspaceCreate(BaseModel):
+    name: str
+    workspace_type_code: str
+    parent_key: str
+    description: str = ""
+    responsible_user_id: int | None = None
+    status: str = "draft"
+    applicable_classifications: list[RevisionClassificationIn] = Field(default_factory=list)
+
+
+class RevisionWorkspaceUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    responsible_user_id: int | None = None
+    status: str | None = None
+
+
+class RevisionMoveRequest(BaseModel):
+    new_parent_key: str
+
+
+class RevisionClassificationsUpdate(BaseModel):
+    classifications: list[RevisionClassificationIn]
+
+
+class RevisionRecordCodePreviewRequest(BaseModel):
+    parent_key: str
+    workspace_type_code: str
+    workspace_key: str | None = None
+
+
+class RevisionRecordCodeImpact(BaseModel):
+    workspace_key: str
+    before: str
+    after: str
+
+
+class RevisionRecordCodePreviewOut(BaseModel):
+    current_record_code: str | None = None
+    record_code: str
+    affected_descendants: list[RevisionRecordCodeImpact] = Field(default_factory=list)
+
+
+class RevisionApprovalRequest(BaseModel):
+    draft_hash: str
+    diff_hash: str
+
+
+class RevisionPublishRequest(RevisionApprovalRequest):
+    pass
+
+
+class RevisionRollbackRequest(BaseModel):
+    reason: str = Field(min_length=4, max_length=500)
+    confirm: bool = False
+
+
+class RevisionReleaseUpdate(BaseModel):
+    release_name: str = Field(min_length=1, max_length=220)
+
+
+class RevisionWorkspaceOut(BaseModel):
+    workspace_key: str
+    technical_id: int | None
+    parent_key: str | None
+    record_code: str
+    code: str
+    name: str
+    workspace_type_code: str
+    description: str
+    responsible_user_id: int | None
+    status: str
+    sort_order: int
+    change_state: str
+    classifications: list[RevisionClassificationIn] = Field(default_factory=list)
+
+
+class RevisionDiffItem(BaseModel):
+    action: str
+    workspace_key: str
+    old_record_code: str | None = None
+    new_record_code: str | None = None
+    workspace_type: str
+    name: str
+    parent_before: str | None = None
+    parent_after: str | None = None
+    classifications_before: list[RevisionClassificationIn] = Field(default_factory=list)
+    classifications_after: list[RevisionClassificationIn] = Field(default_factory=list)
+    status_before: str | None = None
+    status_after: str | None = None
+    affected_descendants: list[str] = Field(default_factory=list)
+
+
+class RevisionDiffOut(BaseModel):
+    release_id: int
+    draft_hash: str
+    diff_hash: str
+    summary: dict[str, int]
+    items: list[RevisionDiffItem]
+
+
+class RevisionValidationOut(BaseModel):
+    valid: bool
+    errors: list[str]
+    conflicts: list[str]
+    checks: dict[str, bool]
+    draft_hash: str
+    diff_hash: str
+    validated_at: datetime | None = None
+
+
+class CoreRevisionOut(CoreReleaseOut):
+    base_content_fingerprint: str
+    created_at: datetime
+    created_by: str
+    updated_at: datetime
+    validated_at: datetime | None
+    approved_at: datetime | None
+    approved_by: str | None
+    draft_hash: str
+    diff_hash: str
+    validation: RevisionValidationOut | None
+    workspaces: list[RevisionWorkspaceOut]
 
 
 class EnterpriseStructureConfigurationOut(BaseModel):
@@ -189,6 +321,7 @@ class EnterpriseStructureConfigurationOut(BaseModel):
     links: list[WorkspaceLinkOut]
     summary: dict[str, int]
     published_release: CoreReleaseOut | None = None
+    draft_release: CoreRevisionOut | None = None
 
 
 class EnterpriseNodeDetailOut(BaseModel):

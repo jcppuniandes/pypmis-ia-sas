@@ -9,6 +9,7 @@ from app.modules.enterprise_structure.permissions import (
     require_enterprise_permission,
     require_organization_scope,
 )
+from app.modules.enterprise_structure.revisions import EnterpriseStructureRevisionService
 from app.modules.enterprise_structure.schemas import (
     CategoryUpdate,
     ClassificationCreate,
@@ -17,6 +18,7 @@ from app.modules.enterprise_structure.schemas import (
     CompositionRuleUpdate,
     ConfigurationValidationOut,
     ConfigurationVersionOut,
+    CoreRevisionOut,
     EnterpriseNodeCreate,
     EnterpriseNodeOut,
     EnterpriseNodeUpdate,
@@ -24,6 +26,18 @@ from app.modules.enterprise_structure.schemas import (
     EnterpriseTreeNodeOut,
     PublicationOut,
     PublicationRequest,
+    RevisionApprovalRequest,
+    RevisionClassificationsUpdate,
+    RevisionDiffOut,
+    RevisionMoveRequest,
+    RevisionPublishRequest,
+    RevisionRecordCodePreviewOut,
+    RevisionRecordCodePreviewRequest,
+    RevisionReleaseUpdate,
+    RevisionRollbackRequest,
+    RevisionValidationOut,
+    RevisionWorkspaceCreate,
+    RevisionWorkspaceUpdate,
     WorkspaceLinkCreate,
     WorkspaceLinkOut,
 )
@@ -46,6 +60,21 @@ def _service(
     service = EnterpriseStructureService(db, tenant_id, context.user.id)
     service.ensure_seed()
     return service
+
+
+def _revision_service(
+    db: Session,
+    tenant_id: int,
+    user_id: int,
+    permission: str,
+    *,
+    organization_scope: bool = True,
+) -> EnterpriseStructureRevisionService:
+    context = require_enterprise_permission(db, tenant_id, user_id, permission)
+    if organization_scope:
+        require_organization_scope(context)
+    EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
+    return EnterpriseStructureRevisionService(db, tenant_id, context.user.id)
 
 
 @router.get("/configuration", response_model=EnterpriseStructureConfigurationOut)
@@ -317,3 +346,203 @@ def clone_release(
         "admin.enterprise_structure.manage",
         organization_scope=True,
     ).clone_release()
+
+
+@router.post("/enterprise-core-releases/{published_id}/clone", response_model=CoreRevisionOut, status_code=201)
+def create_core_revision(
+    published_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.create").create_revision(
+        published_id
+    )
+
+
+@router.get("/enterprise-core-releases/{release_id}", response_model=CoreRevisionOut)
+def core_revision(
+    release_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.read",
+        organization_scope=False,
+    ).get_revision(release_id)
+
+
+@router.patch("/enterprise-core-releases/{release_id}", response_model=CoreRevisionOut)
+def update_core_revision(
+    release_id: int,
+    payload: RevisionReleaseUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").update_revision(
+        release_id, payload
+    )
+
+
+@router.post(
+    "/enterprise-core-releases/{release_id}/record-code-preview",
+    response_model=RevisionRecordCodePreviewOut,
+)
+def preview_revision_record_code(
+    release_id: int,
+    payload: RevisionRecordCodePreviewRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RevisionRecordCodePreviewOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").record_code_preview(
+        release_id, payload
+    )
+
+
+@router.post("/enterprise-core-releases/{release_id}/workspaces", response_model=CoreRevisionOut, status_code=201)
+def add_revision_workspace(
+    release_id: int,
+    payload: RevisionWorkspaceCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").add_workspace(
+        release_id, payload
+    )
+
+
+@router.patch(
+    "/enterprise-core-releases/{release_id}/workspaces/{workspace_key}",
+    response_model=CoreRevisionOut,
+)
+def edit_revision_workspace(
+    release_id: int,
+    workspace_key: str,
+    payload: RevisionWorkspaceUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").edit_workspace(
+        release_id, workspace_key, payload
+    )
+
+
+@router.post(
+    "/enterprise-core-releases/{release_id}/workspaces/{workspace_key}/move",
+    response_model=CoreRevisionOut,
+)
+def move_revision_workspace(
+    release_id: int,
+    workspace_key: str,
+    payload: RevisionMoveRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").move_workspace(
+        release_id, workspace_key, payload
+    )
+
+
+@router.post(
+    "/enterprise-core-releases/{release_id}/workspaces/{workspace_key}/archive",
+    response_model=CoreRevisionOut,
+)
+def archive_revision_workspace(
+    release_id: int,
+    workspace_key: str,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").archive_workspace(
+        release_id, workspace_key
+    )
+
+
+@router.put(
+    "/enterprise-core-releases/{release_id}/workspaces/{workspace_key}/classifications",
+    response_model=CoreRevisionOut,
+)
+def classify_revision_workspace(
+    release_id: int,
+    workspace_key: str,
+    payload: RevisionClassificationsUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit").set_classifications(
+        release_id, workspace_key, payload
+    )
+
+
+@router.post("/enterprise-core-releases/{release_id}/validate", response_model=RevisionValidationOut)
+def validate_core_revision(
+    release_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RevisionValidationOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.validate").validate_revision(
+        release_id
+    )
+
+
+@router.get("/enterprise-core-releases/{release_id}/diff", response_model=RevisionDiffOut)
+def compare_core_revision(
+    release_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RevisionDiffOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.compare").compare_revision(
+        release_id
+    )
+
+
+@router.post("/enterprise-core-releases/{release_id}/approve", response_model=CoreRevisionOut)
+def approve_core_revision(
+    release_id: int,
+    payload: RevisionApprovalRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.approve").approve_revision(
+        release_id, payload
+    )
+
+
+@router.post("/enterprise-core-releases/{release_id}/publish", response_model=CoreRevisionOut)
+def publish_core_revision(
+    release_id: int,
+    payload: RevisionPublishRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.publish").publish_revision(
+        release_id, payload
+    )
+
+
+@router.post("/enterprise-core-releases/{release_id}/rollback", response_model=CoreRevisionOut)
+def rollback_core_revision(
+    release_id: int,
+    payload: RevisionRollbackRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    return _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.rollback").rollback_revision(
+        release_id, payload
+    )

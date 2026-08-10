@@ -1,6 +1,7 @@
 import { apiFetch } from "../../../api/client";
 import type {
   CompositionRule,
+  CoreRevision,
   ConfigurationVersion,
   ConfigurationValidation,
   EnterpriseExplorer,
@@ -10,6 +11,10 @@ import type {
   ExplorerFilters,
   NodePayload,
   PublicationResult,
+  RecordCodePreview,
+  RevisionClassification,
+  RevisionDiff,
+  RevisionValidation,
 } from "../types";
 
 const adminRoot = "/api/v1/admin-configuration/enterprise-structure";
@@ -118,6 +123,110 @@ export const enterpriseStructureApi = {
     }),
 
   cloneRelease: (token: string) => apiFetch<ConfigurationVersion[]>(`${adminRoot}/clone`, { method: "POST", token }),
+
+  createCoreRevision: (token: string, publishedId: number) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${publishedId}/clone`, {
+      method: "POST",
+      token,
+    }),
+
+  coreRevision: (token: string, releaseId: number) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}`, { token }),
+
+  previewRecordCode: (
+    token: string,
+    releaseId: number,
+    parentKey: string,
+    workspaceTypeCode: string,
+    workspaceKey?: string
+  ) =>
+    apiFetch<RecordCodePreview>(`${adminRoot}/enterprise-core-releases/${releaseId}/record-code-preview`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({
+        parent_key: parentKey,
+        workspace_type_code: workspaceTypeCode,
+        workspace_key: workspaceKey,
+      }),
+    }),
+
+  addRevisionWorkspace: (
+    token: string,
+    releaseId: number,
+    payload: {
+      name: string;
+      workspace_type_code: string;
+      parent_key: string;
+      description: string;
+      responsible_user_id: number | null;
+      status: string;
+      applicable_classifications: RevisionClassification[];
+    }
+  ) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  editRevisionWorkspace: (
+    token: string,
+    releaseId: number,
+    workspaceKey: string,
+    payload: { name?: string; description?: string; responsible_user_id?: number | null; status?: string }
+  ) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  moveRevisionWorkspace: (token: string, releaseId: number, workspaceKey: string, newParentKey: string) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/move`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ new_parent_key: newParentKey }),
+    }),
+
+  archiveRevisionWorkspace: (token: string, releaseId: number, workspaceKey: string) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/archive`, {
+      method: "POST",
+      token,
+    }),
+
+  setRevisionClassifications: (
+    token: string,
+    releaseId: number,
+    workspaceKey: string,
+    classifications: RevisionClassification[]
+  ) =>
+    apiFetch<CoreRevision>(
+      `${adminRoot}/enterprise-core-releases/${releaseId}/workspaces/${workspaceKey}/classifications`,
+      { method: "PUT", token, body: JSON.stringify({ classifications }) }
+    ),
+
+  validateCoreRevision: (token: string, releaseId: number) =>
+    apiFetch<RevisionValidation>(`${adminRoot}/enterprise-core-releases/${releaseId}/validate`, {
+      method: "POST",
+      token,
+    }),
+
+  compareCoreRevision: (token: string, releaseId: number) =>
+    apiFetch<RevisionDiff>(`${adminRoot}/enterprise-core-releases/${releaseId}/diff`, { token }),
+
+  approveCoreRevision: (token: string, releaseId: number, draftHash: string, diffHash: string) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/approve`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ draft_hash: draftHash, diff_hash: diffHash }),
+    }),
+
+  publishCoreRevision: (token: string, releaseId: number, draftHash: string, diffHash: string) =>
+    apiFetch<CoreRevision>(`${adminRoot}/enterprise-core-releases/${releaseId}/publish`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ draft_hash: draftHash, diff_hash: diffHash }),
+    }),
 
   explorer: (token: string, filters: ExplorerFilters) => {
     const query = queryString(filters);

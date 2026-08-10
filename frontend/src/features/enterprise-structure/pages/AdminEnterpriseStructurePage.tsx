@@ -1,10 +1,11 @@
 import { Archive, CheckCircle2, CopyPlus, GitFork, Layers3, Plus, Save, Send, Settings2, Tags } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
 import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTree from "../components/EnterpriseTree";
 import StructureNodeForm from "../components/StructureNodeForm";
+import WorkspaceRevisionManager from "../components/WorkspaceRevisionManager";
 import type {
   CategoryItem,
   CompositionRule,
@@ -17,7 +18,7 @@ import type {
 } from "../types";
 import "../enterpriseStructure.css";
 
-type AdminTab = "hierarchy" | "catalogs" | "rules" | "publication";
+type AdminTab = "revisions" | "hierarchy" | "catalogs" | "rules" | "publication";
 
 const emptyNode: NodePayload = {
   code: "",
@@ -62,6 +63,7 @@ export default function AdminEnterpriseStructurePage({
 }) {
   const [data, setData] = useState<EnterpriseStructureConfiguration | null>(null);
   const [tab, setTab] = useState<AdminTab>("hierarchy");
+  const initialTabResolved = useRef(false);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [nodeMode, setNodeMode] = useState<"create" | "edit">("create");
   const [nodeDraft, setNodeDraft] = useState<NodePayload>(emptyNode);
@@ -111,6 +113,10 @@ export default function AdminEnterpriseStructurePage({
     async (preferredNodeId?: number | null) => {
       const response = await enterpriseStructureApi.configuration(token);
       setData(response);
+      if (!initialTabResolved.current) {
+        setTab(response.published_release ? "revisions" : "hierarchy");
+        initialTabResolved.current = true;
+      }
       setSelectedCategoryCode((current) => current || response.categories[0]?.code || "");
       setSelectedRuleCode((current) => current || response.composition_rules[0]?.parent_type_code || "");
       if (preferredNodeId !== undefined) setSelectedNodeId(preferredNodeId);
@@ -324,19 +330,6 @@ export default function AdminEnterpriseStructurePage({
   return (
     <section className="enterpriseWorkspace adminEnterpriseWorkspace">
       <CompactModuleHeader
-        actions={
-          <button
-            className="enterpriseButton primary"
-            disabled={!canConfigure || busy || coreLocked}
-            onClick={() => {
-              setTab("hierarchy");
-              startNode();
-            }}
-            type="button"
-          >
-            <Plus size={15} /> Agregar nodo
-          </button>
-        }
         description="Gobierne la jerarquía, sus clasificaciones y reglas sin mezclar operación de proyectos."
         eyebrow="ADMIN MODE · ENTERPRISE STRUCTURE"
         metrics={[
@@ -353,8 +346,10 @@ export default function AdminEnterpriseStructurePage({
           <div>
             <strong>CORE publicado · {data.published_release.release_code}</strong>
             <span>
-              {new Date(data.published_release.published_at).toLocaleString("es-CO")} ·{" "}
-              {data.published_release.published_by}
+              {data.published_release.published_at
+                ? new Date(data.published_release.published_at).toLocaleString("es-CO")
+                : "Sin fecha"}{" "}
+              · {data.published_release.published_by}
             </span>
           </div>
           <code title={data.published_release.content_fingerprint}>
@@ -365,8 +360,11 @@ export default function AdminEnterpriseStructurePage({
       ) : null}
 
       <nav className="enterpriseTabs" aria-label="Configuración de estructura empresarial">
+        <button className={tab === "revisions" ? "active" : ""} onClick={() => setTab("revisions")} type="button">
+          <GitFork size={16} /> Revision Manager
+        </button>
         <button className={tab === "hierarchy" ? "active" : ""} onClick={() => setTab("hierarchy")} type="button">
-          <GitFork size={16} /> Jerarquía
+          <GitFork size={16} /> Published baseline
         </button>
         <button className={tab === "catalogs" ? "active" : ""} onClick={() => setTab("catalogs")} type="button">
           <Tags size={16} /> Tipos y categorías
@@ -391,6 +389,19 @@ export default function AdminEnterpriseStructurePage({
       ) : null}
       {!canConfigure ? (
         <div className="enterpriseAlert">Vista de consulta: su rol no tiene alcance de configuración.</div>
+      ) : null}
+
+      {tab === "revisions" && data ? (
+        <WorkspaceRevisionManager
+          busy={busy}
+          canConfigure={canConfigure}
+          data={data}
+          onBusy={setBusy}
+          onError={setError}
+          onNotice={setNotice}
+          onReload={load}
+          token={token}
+        />
       ) : null}
 
       {tab === "hierarchy" ? (

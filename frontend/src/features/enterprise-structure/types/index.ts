@@ -17,6 +17,7 @@ export type EnterpriseNode = {
   parent_id: number | null;
   workspace_type_code: string;
   code: string;
+  external_key: string | null;
   record_code: string;
   depth: number;
   name: string;
@@ -73,7 +74,9 @@ export type CoreRelease = {
   id: number;
   release_code: string;
   release_name: string;
-  state: "published";
+  revision_number: number;
+  state: "draft" | "published" | "superseded" | "unpublished";
+  previous_release_id: number | null;
   source_hash: string;
   canonical_hash: string;
   content_fingerprint: string;
@@ -81,8 +84,83 @@ export type CoreRelease = {
   objective_count: number;
   classification_count: number;
   link_count: number;
-  published_at: string;
-  published_by: string;
+  published_at: string | null;
+  published_by: string | null;
+};
+
+export type RevisionClassification = {
+  category_set_code: string;
+  category_item_code: string;
+};
+
+export type RevisionWorkspace = {
+  workspace_key: string;
+  technical_id: number | null;
+  parent_key: string | null;
+  record_code: string;
+  code: string;
+  name: string;
+  workspace_type_code: string;
+  description: string;
+  responsible_user_id: number | null;
+  status: "draft" | "active" | "inactive" | "archived";
+  sort_order: number;
+  change_state: "add" | "modify" | "move" | "archive" | "classification" | "unchanged";
+  classifications: RevisionClassification[];
+};
+
+export type RevisionValidation = {
+  valid: boolean;
+  errors: string[];
+  conflicts: string[];
+  checks: Record<string, boolean>;
+  draft_hash: string;
+  diff_hash: string;
+  validated_at: string | null;
+};
+
+export type CoreRevision = CoreRelease & {
+  base_content_fingerprint: string;
+  created_at: string;
+  created_by: string;
+  updated_at: string;
+  validated_at: string | null;
+  approved_at: string | null;
+  approved_by: string | null;
+  draft_hash: string;
+  diff_hash: string;
+  validation: RevisionValidation | null;
+  workspaces: RevisionWorkspace[];
+};
+
+export type RevisionDiffItem = {
+  action: "ADD" | "MODIFY" | "MOVE" | "ARCHIVE" | "CLASSIFICATION";
+  workspace_key: string;
+  old_record_code: string | null;
+  new_record_code: string | null;
+  workspace_type: string;
+  name: string;
+  parent_before: string | null;
+  parent_after: string | null;
+  classifications_before: RevisionClassification[];
+  classifications_after: RevisionClassification[];
+  status_before: string | null;
+  status_after: string | null;
+  affected_descendants: string[];
+};
+
+export type RevisionDiff = {
+  release_id: number;
+  draft_hash: string;
+  diff_hash: string;
+  summary: Record<string, number>;
+  items: RevisionDiffItem[];
+};
+
+export type RecordCodePreview = {
+  current_record_code: string | null;
+  record_code: string;
+  affected_descendants: Array<{ workspace_key: string; before: string; after: string }>;
 };
 
 export type EnterpriseStructureConfiguration = {
@@ -95,6 +173,7 @@ export type EnterpriseStructureConfiguration = {
   links: WorkspaceLink[];
   summary: Record<string, number>;
   published_release: CoreRelease | null;
+  draft_release: CoreRevision | null;
 };
 
 export type EnterpriseExplorer = {
