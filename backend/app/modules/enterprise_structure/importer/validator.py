@@ -612,10 +612,7 @@ def _validate_reconciliation(
             child_id
             for child_id in existing.child_ids
             if child_id not in adopted_ids
-            and (
-                child_id not in existing_by_id
-                or existing_by_id[child_id].external_key not in nodes_by_key
-            )
+            and (child_id not in existing_by_id or existing_by_id[child_id].external_key not in nodes_by_key)
         )
         if unmapped_children:
             findings.append(

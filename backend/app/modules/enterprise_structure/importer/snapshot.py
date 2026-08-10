@@ -81,9 +81,11 @@ def load_tenant_snapshot(db: Session, tenant_code: str, requested_by: str | None
                     message="Link source or target workspace does not exist.",
                 )
             )
-        elif (
-            source_tenant != target_tenant or item.tenant_id not in {source_tenant, target_tenant}
-        ) and tenant.id in {item.tenant_id, source_tenant, target_tenant}:
+        elif (source_tenant != target_tenant or item.tenant_id not in {source_tenant, target_tenant}) and tenant.id in {
+            item.tenant_id,
+            source_tenant,
+            target_tenant,
+        }:
             integrity_issues.append(
                 SnapshotIntegrityIssue(
                     code="CROSS_TENANT_LINK",
@@ -145,11 +147,7 @@ def load_tenant_snapshot(db: Session, tenant_code: str, requested_by: str | None
             )
         ).all()
     )
-    published_categories = {
-        code: dict(item.content_json)
-        for (kind, code), item in latest.items()
-        if kind == "catalog"
-    }
+    published_categories = {code: dict(item.content_json) for (kind, code), item in latest.items() if kind == "catalog"}
     if strategic_objectives:
         strategic_category = dict(published_categories.get("strategic-objective", {}))
         strategic_category["items"] = [

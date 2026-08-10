@@ -73,8 +73,7 @@ def capture_fingerprints(db: Session) -> dict[str, Any]:
         for name, rows in inventory["tables"].items()
     }
     protected_payload = {
-        name: {"rows": value["rows"], "sha256": value["sha256"]}
-        for name, value in sorted(fingerprints.items())
+        name: {"rows": value["rows"], "sha256": value["sha256"]} for name, value in sorted(fingerprints.items())
     }
     return {
         "algorithm": inventory["algorithm"],
@@ -90,18 +89,12 @@ def protected_source_hash(db: Session) -> str:
 def _rows(db: Session, model: type[Any]) -> list[dict[str, Any]]:
     table = Table(model.__tablename__, MetaData(), autoload_with=db.get_bind())
     records = list(db.execute(select(table).order_by(table.c.id)).mappings().all())
-    return [
-        {column.name: _jsonable(record[column.name]) for column in table.columns}
-        for record in records
-    ]
+    return [{column.name: _jsonable(record[column.name]) for column in table.columns} for record in records]
 
 
 def _fingerprint_rows(table_name: str, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     excluded = FINGERPRINT_EXCLUDED_COLUMNS.get(table_name, set())
-    return [
-        {key: value for key, value in row.items() if key not in excluded}
-        for row in rows
-    ]
+    return [{key: value for key, value in row.items() if key not in excluded} for row in rows]
 
 
 def _jsonable(value: Any) -> Any:

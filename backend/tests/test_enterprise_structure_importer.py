@@ -267,9 +267,7 @@ def test_diff_is_idempotent_for_existing_nodes_classifications_and_links() -> No
             status=node.status.value.lower(),
             sort_order=node.sort_order or 0,
             metadata={"external_key": node.external_key, "description": node.description or "", "region_code": ""},
-            record_code={"BU-001": "01.01", "PROP-001": "01.01.01", "PRJ-001": "01.01.02"}[
-                node.external_key
-            ],
+            record_code={"BU-001": "01.01", "PROP-001": "01.01.01", "PRJ-001": "01.01.02"}[node.external_key],
         )
         snapshot.nodes.append(existing)
         existing_by_key[node.external_key] = existing
@@ -457,7 +455,9 @@ def test_reconciliation_rejects_duplicate_claims_and_unknown_external_keys() -> 
     codes = {item.code for item in report.findings}
 
     assert report.valid is False
-    assert {"DUPLICATE_RECONCILIATION_KEY", "DUPLICATE_RECONCILIATION_ID", "RECONCILIATION_NODE_NOT_FOUND"}.issubset(codes)
+    assert {"DUPLICATE_RECONCILIATION_KEY", "DUPLICATE_RECONCILIATION_ID", "RECONCILIATION_NODE_NOT_FOUND"}.issubset(
+        codes
+    )
 
 
 def test_reconciliation_blocks_cross_tenant_adoption_and_workspace_type_mismatch() -> None:

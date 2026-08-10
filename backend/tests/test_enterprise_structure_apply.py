@@ -380,7 +380,12 @@ def test_apply_rolls_back_completely_on_failure(session_factory, failure_injecti
         assert db.scalar(select(func.count()).select_from(EnterpriseWorkspace)) == 3
         assert db.scalar(select(func.count()).select_from(EnterpriseStrategicObjective)) == 0
         assert db.scalar(select(func.count()).select_from(EnterpriseWorkspaceClassification)) == 0
-        assert db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == CORE_EVENT_TYPE)) == 0
+        assert (
+            db.scalar(
+                select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == CORE_EVENT_TYPE)
+            )
+            == 0
+        )
 
 
 def test_apply_rejects_wrong_input_hash_without_mutation(session_factory) -> None:
@@ -425,7 +430,12 @@ def test_apply_rejects_missing_actor(session_factory) -> None:
             _apply(db, source_hash, actor_email="missing@example.com")
     with session_factory() as db:
         assert db.scalar(select(func.count()).select_from(EnterpriseWorkspace)) == 3
-        assert db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == CORE_EVENT_TYPE)) == 0
+        assert (
+            db.scalar(
+                select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == CORE_EVENT_TYPE)
+            )
+            == 0
+        )
 
 
 def test_apply_blocks_cross_tenant_adoption(session_factory) -> None:
@@ -467,7 +477,9 @@ def test_publish_core_is_auditable_immutable_and_idempotent(session_factory) -> 
     with session_factory() as db:
         assert db.scalar(select(func.count()).select_from(EnterpriseCoreRelease)) == 1
         assert (
-            db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == PUBLISH_EVENT_TYPE))
+            db.scalar(
+                select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == PUBLISH_EVENT_TYPE)
+            )
             == 1
         )
 
@@ -587,7 +599,9 @@ def test_publish_rolls_back_atomically_on_failure(session_factory) -> None:
     with session_factory() as db:
         assert db.scalar(select(func.count()).select_from(EnterpriseCoreRelease)) == 0
         assert (
-            db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == PUBLISH_EVENT_TYPE))
+            db.scalar(
+                select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == PUBLISH_EVENT_TYPE)
+            )
             == 0
         )
 
@@ -630,4 +644,9 @@ def test_logical_rollback_preserves_all_applied_workspaces(session_factory) -> N
             ).all()
         )
         assert after == before
-        assert db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == UNPUBLISH_EVENT_TYPE)) == 1
+        assert (
+            db.scalar(
+                select(func.count()).select_from(SecurityEvent).where(SecurityEvent.event_type == UNPUBLISH_EVENT_TYPE)
+            )
+            == 1
+        )

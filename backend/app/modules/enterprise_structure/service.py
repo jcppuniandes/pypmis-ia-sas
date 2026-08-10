@@ -221,7 +221,7 @@ class EnterpriseStructureService:
             for descendant in descendants:
                 if not descendant.record_code.startswith(f"{old_record_code}."):
                     raise HTTPException(status_code=409, detail="Descendant hierarchy code is inconsistent")
-                descendant.record_code = f"{new_record_code}{descendant.record_code[len(old_record_code):]}"
+                descendant.record_code = f"{new_record_code}{descendant.record_code[len(old_record_code) :]}"
                 descendant.version += 1
                 descendant.updated_at = utc_now()
             move_metadata = {
@@ -908,9 +908,7 @@ class EnterpriseStructureService:
         exclude_workspace_id: int | None = None,
     ) -> str:
         if parent is None:
-            self.db.execute(
-                select(Tenant.id).where(Tenant.id == self.tenant_id).with_for_update()
-            ).scalar_one()
+            self.db.execute(select(Tenant.id).where(Tenant.id == self.tenant_id).with_for_update()).scalar_one()
             statement = select(EnterpriseWorkspace.record_code).where(
                 EnterpriseWorkspace.tenant_id == self.tenant_id,
                 EnterpriseWorkspace.parent_id.is_(None),

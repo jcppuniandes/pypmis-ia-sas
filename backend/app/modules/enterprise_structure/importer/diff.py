@@ -46,7 +46,9 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
 
     for node in configuration.nodes:
         reconciliation = reconciliation_by_key.get(node.external_key)
-        existing = existing_by_id.get(reconciliation.existing_id) if reconciliation else by_external.get(node.external_key)
+        existing = (
+            existing_by_id.get(reconciliation.existing_id) if reconciliation else by_external.get(node.external_key)
+        )
         if reconciliation is not None:
             owner_tenant = snapshot.workspace_tenant_ids.get(reconciliation.existing_id)
             if owner_tenant is not None and owner_tenant != snapshot.tenant_id:
@@ -86,7 +88,12 @@ def build_diff(configuration: EnterpriseStructureImport, snapshot: TenantSnapsho
                     )
                 )
                 continue
-        if existing is None and not configuration.reconciliation and node.node_type == NodeType.ENTERPRISE and node.parent_external_key is None:
+        if (
+            existing is None
+            and not configuration.reconciliation
+            and node.node_type == NodeType.ENTERPRISE
+            and node.parent_external_key is None
+        ):
             existing = active_root
         code_owner = by_code.get(node.code)
         if existing is None and code_owner is not None:

@@ -114,9 +114,7 @@ class EnterpriseStructureRepository:
         )
 
     def strategic_objectives(self, *, active_only: bool = False) -> list[EnterpriseStrategicObjective]:
-        statement = select(EnterpriseStrategicObjective).where(
-            EnterpriseStrategicObjective.tenant_id == self.tenant_id
-        )
+        statement = select(EnterpriseStrategicObjective).where(EnterpriseStrategicObjective.tenant_id == self.tenant_id)
         if active_only:
             statement = statement.where(EnterpriseStrategicObjective.active.is_(True))
         return list(self.db.scalars(statement.order_by(EnterpriseStrategicObjective.code)).all())

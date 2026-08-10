@@ -253,9 +253,7 @@ def apply_core(
     existing_classifications = {
         (item.workspace_id, item.category_set_code, item.category_item_code)
         for item in db.scalars(
-            select(EnterpriseWorkspaceClassification).where(
-                EnterpriseWorkspaceClassification.tenant_id == tenant.id
-            )
+            select(EnterpriseWorkspaceClassification).where(EnterpriseWorkspaceClassification.tenant_id == tenant.id)
         ).all()
     }
     classification_created = 0
@@ -429,7 +427,9 @@ def _resolve_tenant(
                 (node for node in configuration.nodes if node.external_key == decision.external_key),
                 None,
             )
-            and next(node for node in configuration.nodes if node.external_key == decision.external_key).parent_external_key
+            and next(
+                node for node in configuration.nodes if node.external_key == decision.external_key
+            ).parent_external_key
             is None
         ),
         None,
@@ -617,7 +617,9 @@ def _final_state_errors(
         errors.append("tenant identity")
     workspaces = list(
         db.scalars(
-            select(EnterpriseWorkspace).where(EnterpriseWorkspace.tenant_id == tenant.id).order_by(EnterpriseWorkspace.id)
+            select(EnterpriseWorkspace)
+            .where(EnterpriseWorkspace.tenant_id == tenant.id)
+            .order_by(EnterpriseWorkspace.id)
         ).all()
     )
     if len(workspaces) != len(configuration.nodes):
@@ -658,7 +660,10 @@ def _final_state_errors(
             select(EnterpriseStrategicObjective).where(EnterpriseStrategicObjective.tenant_id == tenant.id)
         ).all()
     )
-    expected_objectives = {item.code: _objective_input_values(item, configuration.metadata.release_code) for item in configuration.strategic_objectives}
+    expected_objectives = {
+        item.code: _objective_input_values(item, configuration.metadata.release_code)
+        for item in configuration.strategic_objectives
+    }
     observed_objectives = {item.code: _objective_values(item) for item in objectives}
     if observed_objectives != expected_objectives:
         errors.append("strategic objectives")
@@ -666,9 +671,7 @@ def _final_state_errors(
     classifications = {
         (item.workspace_id, item.category_set_code, item.category_item_code)
         for item in db.scalars(
-            select(EnterpriseWorkspaceClassification).where(
-                EnterpriseWorkspaceClassification.tenant_id == tenant.id
-            )
+            select(EnterpriseWorkspaceClassification).where(EnterpriseWorkspaceClassification.tenant_id == tenant.id)
         ).all()
     }
     expected_classifications = {
