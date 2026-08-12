@@ -259,6 +259,7 @@ from app.domain.schemas import (
 )
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
+from app.modules.project_creation import router as project_creation_router
 from app.services.ai_insights import AIInsightService
 from app.services.claims_forensic import ClaimsForensicDossierService
 from app.services.control_audit_agent import ControlAuditAgentService
@@ -276,6 +277,7 @@ router.include_router(admin_router.router, tags=["admin"])
 router.include_router(admin_configuration_router.router, tags=["admin-configuration"])
 router.include_router(enterprise_structure_admin_router.router, tags=["enterprise-structure-admin"])
 router.include_router(enterprise_structure_user_router.router, tags=["enterprise-structure"])
+router.include_router(project_creation_router.router, tags=["project-creation"])
 router.include_router(organization_security_router.router, tags=["organization-security"])
 router.include_router(projects_router.router, tags=["projects"])
 router.include_router(documents_domain.router, tags=["documents"])

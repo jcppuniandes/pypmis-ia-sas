@@ -12,8 +12,13 @@ import type {
   NodePayload,
   PublicationResult,
   ProjectConfiguration,
+  ProjectCreationOptions,
+  ProjectCreationRequest,
+  ProjectRequestPayload,
+  ProjectRequestPreview,
   ProjectPreview,
   ProjectTemplatePayload,
+  ProjectWorkspaceOverview,
   RecordCodePreview,
   RevisionClassification,
   RevisionDiff,
@@ -22,6 +27,7 @@ import type {
 
 const adminRoot = "/api/v1/admin-configuration/enterprise-structure";
 const userRoot = "/api/v1/enterprise-structure";
+const projectCreationRoot = "/api/v1/project-creation-requests";
 
 function queryString(filters: ExplorerFilters) {
   const query = new URLSearchParams();
@@ -330,4 +336,58 @@ export const enterpriseStructureApi = {
 
   nodeDetail: (token: string, nodeId: number) =>
     apiFetch<EnterpriseNodeDetail>(`${userRoot}/nodes/${nodeId}`, { token }),
+
+  projectCreationOptions: (token: string, parentWorkspaceId?: number) =>
+    apiFetch<ProjectCreationOptions>(
+      `${projectCreationRoot}/options${parentWorkspaceId ? `?parent_workspace_id=${parentWorkspaceId}` : ""}`,
+      { token }
+    ),
+
+  createProjectRequest: (token: string, payload: ProjectRequestPayload) =>
+    apiFetch<ProjectCreationRequest>(projectCreationRoot, {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  updateProjectRequest: (token: string, requestId: number, version: number, payload: ProjectRequestPayload) =>
+    apiFetch<ProjectCreationRequest>(`${projectCreationRoot}/${requestId}`, {
+      method: "PUT",
+      token,
+      headers: { "If-Match": `"${version}"` },
+      body: JSON.stringify(payload),
+    }),
+
+  projectRequestPreview: (token: string, requestId: number) =>
+    apiFetch<ProjectRequestPreview>(`${projectCreationRoot}/${requestId}/preview`, { method: "POST", token }),
+
+  projectRequests: (token: string, reviewQueue = false) =>
+    apiFetch<ProjectCreationRequest[]>(`${projectCreationRoot}${reviewQueue ? "?review_queue=true" : ""}`, {
+      token,
+    }),
+
+  transitionProjectRequest: (
+    token: string,
+    request: ProjectCreationRequest,
+    action: "submit" | "cancel" | "start-review" | "return" | "reject" | "approve",
+    reason?: string
+  ) =>
+    apiFetch<ProjectCreationRequest>(`${projectCreationRoot}/${request.id}/${action}`, {
+      method: "POST",
+      token,
+      headers: { "If-Match": `"${request.revision_version}"` },
+      body: reason ? JSON.stringify({ reason }) : undefined,
+    }),
+
+  materializeProjectRequest: (token: string, requestId: number) =>
+    apiFetch<{
+      result: "CREATED" | "ALREADY_CREATED";
+      materialized_workspace_id: number;
+      project_number: string;
+      record_code: string;
+      mutation_count: number;
+    }>(`${projectCreationRoot}/${requestId}/materialize`, { method: "POST", token }),
+
+  projectWorkspaceOverview: (token: string, workspaceId: number) =>
+    apiFetch<ProjectWorkspaceOverview>(`/api/v1/project-workspaces/${workspaceId}/overview`, { token }),
 };

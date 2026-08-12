@@ -916,7 +916,18 @@ class EnterpriseStructureService:
         nodes = self.repository.workspaces()
         if context.organization_wide:
             return nodes
-        return [item for item in nodes if self.node_out(item).organization_unit_id in context.scope_unit_ids]
+        visible_ids = {
+            item.id
+            for item in nodes
+            if self.node_out(item).organization_unit_id in context.scope_unit_ids or item.id in context.workspace_ids
+        }
+        by_id = {item.id: item for item in nodes}
+        for node_id in list(visible_ids):
+            parent_id = by_id[node_id].parent_id
+            while parent_id is not None and parent_id in by_id:
+                visible_ids.add(parent_id)
+                parent_id = by_id[parent_id].parent_id
+        return [item for item in nodes if item.id in visible_ids]
 
     def _descendant_ids(self, root_id: int, nodes: list[EnterpriseWorkspace]) -> set[int]:
         by_parent: dict[int | None, list[int]] = {}

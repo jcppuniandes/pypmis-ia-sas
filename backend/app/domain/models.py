@@ -436,6 +436,7 @@ class SecurityAccessAssignment(Base):
     role_id: Mapped[int] = mapped_column(ForeignKey("security_roles.id"), index=True)
     scope_type: Mapped[str] = mapped_column(String(40), default="organization", index=True)
     scope_unit_id: Mapped[int | None] = mapped_column(ForeignKey("organization_units.id"), index=True)
+    workspace_id: Mapped[int | None] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
     starts_at: Mapped[datetime | None] = mapped_column(DateTime)
     ends_at: Mapped[datetime | None] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String(40), default="active", index=True)

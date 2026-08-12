@@ -1287,6 +1287,468 @@
   }
 }
 
+.projectCreationActions,
+.projectCreationHeader,
+.projectListToolbar,
+.projectFormActions,
+.projectPreviewPanel > header,
+.projectRequestCard > header,
+.projectRequestCard > footer,
+.projectOverviewCard > header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.projectCreationActions {
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid #d7e1e5;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.projectCreationActions button,
+.projectCreationWorkspace button,
+.projectIntakeForm button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid #102a3a;
+  border-radius: 7px;
+  background: #102a3a;
+  color: #fff;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.projectCreationActions button.ghost,
+.projectCreationWorkspace button.ghost {
+  border-color: #cbd8dd;
+  background: #fff;
+  color: #25404d;
+}
+
+.projectCreationActions button.contextual {
+  margin-left: auto;
+  border-color: #0d8f8b;
+  background: #e7f6f5;
+  color: #126d6a;
+}
+
+.projectCreationWorkspace {
+  display: grid;
+  gap: 14px;
+  color: #102532;
+}
+
+.projectCreationHeader {
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #cad8de;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #fff, #eff8f7);
+}
+
+.projectCreationHeader > div {
+  flex: 1;
+}
+
+.projectCreationHeader span,
+.projectPreviewPanel header span,
+.projectOverviewCard header span {
+  color: #657b86;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.projectCreationHeader h2,
+.projectPreviewPanel h3,
+.projectOverviewCard h2 {
+  margin: 2px 0 0;
+}
+
+.governedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #daf2ec;
+  color: #17654f !important;
+}
+
+.projectIntakeForm,
+.projectRequestPanel,
+.projectPreviewPanel,
+.projectOverviewCard,
+.projectBlockedState {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #d4e0e5;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.projectIntakeSection {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e1e9ec;
+}
+
+.projectIntakeSection > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.projectIntakeSection > header > span {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #102a3a;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.projectIntakeSection h3,
+.projectIntakeSection p {
+  margin: 0;
+}
+
+.projectIntakeSection p {
+  margin-top: 3px;
+  color: #687e88;
+  font-size: 0.74rem;
+}
+
+.projectLocationTree {
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid #d7e1e5;
+  border-radius: 8px;
+}
+
+.projectLocationTree label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-top: 6px;
+  padding-right: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #edf2f4;
+  cursor: pointer;
+}
+
+.projectLocationTree label.selected {
+  background: #eaf7f6;
+  box-shadow: inset 3px 0 #0d8f8b;
+}
+
+.projectLocationTree label span,
+.objectivePicker label span {
+  display: grid;
+  gap: 2px;
+}
+
+.projectLocationTree small,
+.objectivePicker small {
+  color: #71848c;
+  font-size: 0.68rem;
+}
+
+.selectedPath {
+  padding: 7px 9px;
+  border-radius: 6px;
+  background: #f2f7f8;
+}
+
+.projectFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 11px;
+}
+
+.projectFormGrid label,
+.objectivePicker label {
+  display: grid;
+  gap: 5px;
+  color: #415965;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.projectFormGrid label.wide {
+  grid-column: 1 / -1;
+}
+
+.projectFormGrid input,
+.projectFormGrid select,
+.projectFormGrid textarea {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 9px;
+  border: 1px solid #cbd8de;
+  border-radius: 7px;
+  background: #fff;
+  color: #122b37;
+  font: inherit;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.objectivePicker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.objectivePicker label {
+  display: flex;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid #d7e1e5;
+  border-radius: 7px;
+}
+
+.projectFormActions {
+  justify-content: space-between;
+}
+
+.projectFormActions p,
+.projectPreviewPanel footer p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #5c727d;
+  font-size: 0.73rem;
+}
+
+.projectBlockedState {
+  justify-items: center;
+  padding: 42px;
+  text-align: center;
+}
+
+.projectBlockedState svg {
+  color: #bc6c09;
+}
+
+.projectBlockedState h3,
+.projectBlockedState p {
+  margin: 0;
+}
+
+.projectBlockedState p {
+  max-width: 620px;
+  color: #6b7e87;
+}
+
+.projectPreviewPanel > header,
+.projectOverviewCard > header,
+.projectRequestCard > header {
+  justify-content: space-between;
+}
+
+.previewNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  border: 1px solid #b9d7e6;
+  border-radius: 7px;
+  background: #eff8fc;
+  color: #325f74;
+  font-size: 0.75rem;
+}
+
+.projectPreviewGrid,
+.projectOverviewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 9px;
+}
+
+.projectPreviewGrid > div,
+.projectOverviewGrid > div {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  border: 1px solid #dce5e8;
+  border-radius: 8px;
+  background: #f8fafb;
+}
+
+.projectPreviewGrid span,
+.projectOverviewGrid span,
+.projectRequestCard dt {
+  color: #687e87;
+  font-size: 0.67rem;
+  font-weight: 750;
+}
+
+.projectRequestList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.projectListToolbar {
+  justify-content: space-between;
+}
+
+.projectListToolbar > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.projectRequestCard {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid #dae4e7;
+  border-radius: 9px;
+  background: #fbfcfc;
+}
+
+.projectRequestCard h3 {
+  margin: 3px 0 0;
+  font-size: 0.94rem;
+}
+
+.projectRequestCard dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 0;
+}
+
+.projectRequestCard dl div {
+  display: grid;
+  gap: 2px;
+}
+
+.projectRequestCard dd {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.projectRequestCard > footer {
+  flex-wrap: wrap;
+}
+
+.projectCreationWorkspace button.danger {
+  border-color: #b64b4b;
+  background: #fff1f1;
+  color: #9a3131;
+}
+
+.requestState {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #eaf0f3;
+  color: #405d69 !important;
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.requestState.approved,
+.requestState.created {
+  background: #dcf3e6;
+  color: #246b49 !important;
+}
+
+.requestState.returned,
+.requestState.failed {
+  background: #fff1d9;
+  color: #96600c !important;
+}
+
+.requestState.rejected,
+.requestState.cancelled {
+  background: #fbe4e4;
+  color: #9a3f3f !important;
+}
+
+.requestDecision,
+.requestCreatedNumber {
+  margin: 0;
+  padding: 7px;
+  border-radius: 6px;
+  background: #f3f7f8;
+  font-size: 0.72rem;
+}
+
+.requestCreatedNumber {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #216348;
+}
+
+.projectRequestEmpty {
+  padding: 34px;
+  border: 1px dashed #c8d6dc;
+  border-radius: 9px;
+  color: #6b7f88;
+  text-align: center;
+}
+
+.projectOverviewCard > header > strong {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff0d3;
+  color: #8c5b0f;
+  text-transform: uppercase;
+}
+
+.projectOverviewCard section h3 {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+}
+
+.projectTagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.projectTagRow span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e6f5f4;
+  color: #176a68;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.enterpriseAlert.error {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.projectCreationWorkspace button:disabled,
+.projectIntakeForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 1400px) {
   .enterpriseHero,
   .explorerToolbar {
@@ -1338,6 +1800,20 @@
   .enterprisePublication,
   .enterpriseExplorerGrid {
     grid-template-columns: 1fr;
+  }
+
+  .projectFormGrid,
+  .objectivePicker,
+  .projectPreviewGrid,
+  .projectOverviewGrid,
+  .projectRequestList {
+    grid-template-columns: 1fr;
+  }
+
+  .projectCreationHeader,
+  .projectFormActions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .revisionReleaseStrip,

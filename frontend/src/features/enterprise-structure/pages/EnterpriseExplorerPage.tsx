@@ -1,4 +1,4 @@
-import { Building2, Network, RefreshCw, Table2, TreePine } from "lucide-react";
+import { Building2, ClipboardList, Eye, Network, Plus, RefreshCw, ShieldCheck, Table2, TreePine } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
@@ -6,6 +6,7 @@ import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTable from "../components/EnterpriseTable";
 import EnterpriseTree from "../components/EnterpriseTree";
 import NodeDetailPanel from "../components/NodeDetailPanel";
+import ProjectCreationWorkspace, { type ProjectCreationView } from "../components/ProjectCreationWorkspace";
 import StructureFilters from "../components/StructureFilters";
 import type {
   EnterpriseExplorer,
@@ -47,6 +48,7 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
   const [view, setView] = useState<"tree" | "table">("tree");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [projectView, setProjectView] = useState<ProjectCreationView | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -81,6 +83,23 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
     } finally {
       setBusy(false);
     }
+  }
+
+  if (projectView) {
+    return (
+      <ProjectCreationWorkspace
+        initialParentId={
+          projectView === "create" && detail && ["portfolio", "program"].includes(detail.node.workspace_type_code)
+            ? detail.node.id
+            : undefined
+        }
+        onBack={() => setProjectView(null)}
+        onCreated={() => setFilters({ ...filters })}
+        projectWorkspaceId={projectView === "overview" ? detail?.node.id : undefined}
+        token={token}
+        view={projectView}
+      />
+    );
   }
 
   return (
@@ -120,6 +139,28 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
           {error}
         </div>
       ) : null}
+
+      <nav className="projectCreationActions" aria-label="Acciones de creación de proyectos">
+        <button onClick={() => setProjectView("create")} type="button">
+          <Plus size={15} /> Create Project
+        </button>
+        <button className="ghost" onClick={() => setProjectView("requests")} type="button">
+          <ClipboardList size={15} /> My Project Requests
+        </button>
+        <button className="ghost" onClick={() => setProjectView("review")} type="button">
+          <ShieldCheck size={15} /> Review Queue
+        </button>
+        {detail && ["portfolio", "program"].includes(detail.node.workspace_type_code) ? (
+          <button className="contextual" onClick={() => setProjectView("create")} type="button">
+            <Plus size={15} /> Crear proyecto en {detail.node.name}
+          </button>
+        ) : null}
+        {detail?.node.workspace_type_code === "project" ? (
+          <button className="contextual" onClick={() => setProjectView("overview")} type="button">
+            <Eye size={15} /> Project Overview
+          </button>
+        ) : null}
+      </nav>
 
       <section className="enterprisePanel explorerToolbar">
         <StructureFilters

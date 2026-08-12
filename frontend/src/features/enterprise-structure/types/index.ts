@@ -277,3 +277,113 @@ export type ProjectTemplatePayload = {
   default_attributes: Record<string, unknown>;
   creation_policy_code: string;
 };
+
+export type ProjectCreationState =
+  | "draft"
+  | "submitted"
+  | "under_review"
+  | "returned"
+  | "rejected"
+  | "approved"
+  | "materializing"
+  | "created"
+  | "failed"
+  | "cancelled";
+
+export type ProjectRequestPayload = {
+  parent_workspace_id: number;
+  project_template_config_id: number;
+  project_name: string;
+  description: string;
+  project_manager_user_id: number;
+  planned_start: string | null;
+  planned_finish: string | null;
+  currency_code: string;
+  estimated_budget: string | null;
+  project_type: string | null;
+  project_phase: string | null;
+  priority: string | null;
+  country: string | null;
+  region: string | null;
+  strategic_objective_codes: string[];
+};
+
+export type ProjectCreationRequest = ProjectRequestPayload & {
+  id: number;
+  request_number: string;
+  state: ProjectCreationState;
+  requestor_user_id: number;
+  requestor_name: string;
+  parent_name: string;
+  parent_record_code: string;
+  template_code: string;
+  template_name: string;
+  project_manager_name: string;
+  revision_version: number;
+  decision_reason: string | null;
+  failure_reason: string | null;
+  approved_by_user_id: number | null;
+  materialized_workspace_id: number | null;
+  materialized_project_number: string | null;
+  materialized_record_code: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProjectLocationOption = {
+  id: number;
+  workspace_type_code: "portfolio" | "program";
+  name: string;
+  record_code: string;
+  path: string[];
+};
+
+export type ProjectCreationOptions = {
+  locations: ProjectLocationOption[];
+  templates: Array<{
+    id: number;
+    code: string;
+    name: string;
+    applicable_parent_types: string[];
+    enabled_modules: string[];
+  }>;
+  managers: Array<{ id: number; name: string; email: string }>;
+  strategic_objectives: CategoryItem[];
+  classifications: Record<string, CategoryItem[]>;
+  blocked_reason: string | null;
+};
+
+export type ProjectRequestPreview = {
+  allowed: boolean;
+  issues: string[];
+  parent_workspace_id: number;
+  parent_name: string;
+  parent_record_code: string;
+  projected_record_code: string;
+  projected_project_number: string;
+  inherited_classifications: Array<Record<string, string>>;
+  selected_classifications: Array<Record<string, string>>;
+  enabled_modules: string[];
+  initial_workspace_status: string;
+  template: Record<string, unknown>;
+  creation_policy: Record<string, unknown>;
+  persisted: false;
+  notice: string;
+};
+
+export type ProjectWorkspaceOverview = {
+  workspace_id: number;
+  project_name: string;
+  project_number: string;
+  record_code: string;
+  status: string;
+  parent_workspace: string;
+  project_manager: string;
+  template: string;
+  strategic_objectives: string[];
+  planned_start: string | null;
+  planned_finish: string | null;
+  currency: string;
+  estimated_budget: string | null;
+  enabled_modules: string[];
+};

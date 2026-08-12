@@ -396,6 +396,12 @@ class ProjectWorkspaceConfigurationService:
 
     def issue_project_number(self, *, scope_key: str = "tenant") -> str:
         """Contract for Gate 05B; allocates only a business number, never a workspace."""
+        value = self.reserve_project_number(scope_key=scope_key)
+        self._commit("Project number sequence changed concurrently; retry")
+        return value
+
+    def reserve_project_number(self, *, scope_key: str = "tenant") -> str:
+        """Reserve a Project Number inside the caller's transaction without committing it."""
         rule = self._latest("numbering_rule", PROJECT_NUMBERING_CODE, published_only=True)
         if rule is None:
             raise HTTPException(status_code=409, detail="Published Project numbering rule not found")
@@ -415,9 +421,7 @@ class ProjectWorkspaceConfigurationService:
         )
         if sequence is None:
             raise HTTPException(status_code=409, detail="Project number sequence is not initialized")
-        value = _format_number(rule.content_json, sequence)
-        self._commit("Project number sequence changed concurrently; retry")
-        return value
+        return _format_number(rule.content_json, sequence)
 
     def _seed_numbering_rule(self) -> None:
         rule = self._latest("numbering_rule", PROJECT_NUMBERING_CODE, published_only=True)

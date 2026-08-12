@@ -58,6 +58,51 @@ STRUCTURE_ROLE_DEFINITIONS = {
     ),
 }
 
+PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "project_requestor": frozenset(
+        {
+            "project_creation.request.create",
+            "project_creation.request.edit",
+            "project_creation.request.submit",
+            "project_creation.request.read",
+            "enterprise_structure.read",
+        }
+    ),
+    "project_reviewer": frozenset(
+        {
+            "project_creation.request.read",
+            "project_creation.review",
+            "enterprise_structure.read",
+        }
+    ),
+    "project_approver": frozenset(
+        {
+            "project_creation.request.read",
+            "project_creation.approve",
+            "enterprise_structure.read",
+        }
+    ),
+    "project_materialization_service": frozenset(
+        {
+            "project_creation.request.read",
+            "project_creation.materialize",
+            "enterprise_structure.read",
+        }
+    ),
+    "project_manager": frozenset({"enterprise_structure.read"}),
+}
+
+PROJECT_CREATION_ROLE_DEFINITIONS = {
+    "project_requestor": ("Project Requestor", "Creates and submits governed Project Workspace requests."),
+    "project_reviewer": ("Project Reviewer", "Reviews, returns and rejects Project Workspace requests."),
+    "project_approver": ("Project Approver", "Approves Project Workspace requests under Four-Eyes."),
+    "project_materialization_service": (
+        "Project Materialization Service",
+        "Highly restricted role that materializes approved Project Workspaces.",
+    ),
+    "project_manager": ("Project Manager", "Minimum Workspace-scoped access for the assigned Project Manager."),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -74,6 +119,8 @@ class EnterprisePermissionContext:
     user: UserAccount
     organization_wide: bool
     scope_unit_ids: frozenset[int]
+    workspace_ids: frozenset[int]
+    role_codes: frozenset[str]
 
 
 def require_enterprise_permission(
@@ -151,10 +198,24 @@ def require_enterprise_permission(
         raise HTTPException(status_code=403, detail=f"Missing required permission: {permission_key}")
     organization_wide = any(item.scope_type == "organization" for item in effective)
     scope_unit_ids = frozenset(item.scope_unit_id for item in effective if item.scope_unit_id is not None)
+    workspace_ids = frozenset(item.workspace_id for item in effective if item.workspace_id is not None)
+    effective_role_ids = {item.role_id for item in effective}
+    role_codes = frozenset(
+        db.scalars(
+            select(SecurityRole.code).where(
+                SecurityRole.tenant_id == tenant_id,
+                SecurityRole.id.in_(effective_role_ids),
+            )
+        ).all()
+        if effective_role_ids
+        else []
+    )
     return EnterprisePermissionContext(
         user=user,
         organization_wide=organization_wide,
         scope_unit_ids=scope_unit_ids,
+        workspace_ids=workspace_ids,
+        role_codes=role_codes,
     )
 
 
@@ -223,6 +284,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PROJECT_CREATION_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -230,6 +305,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"},
         **STRUCTURE_ROLE_PERMISSIONS,
+        **PROJECT_CREATION_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)
