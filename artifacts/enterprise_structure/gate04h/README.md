@@ -1,13 +1,11 @@
 # Gate 04H - Workspace Revision Manager Operational Hardening
 
-The implementation and CI harness are present, but the local heavy-test gate is intentionally not claimed as passed.
+Gate 04H was completed locally on 12 August 2026.
 
-Preflight found less than the required 10 GB of free disk space. The required PostgreSQL E2E, full regression and snapshot benchmark were therefore not executed. Restore at least 10 GB, then run:
+The heavy-test preflight passed with 37.92 GB free against the 10 GB minimum. The dedicated harness used disposable PostgreSQL 16, applied Alembic revision `20260810_0033`, executed the complete mutation/concurrency/SoD cycle and measured full snapshots at 100, 1,000 and 10,000 nodes. All ephemeral containers and test volumes were removed afterward.
 
-```text
-docker compose -f docker-compose.gate04h.yml up --build --abort-on-container-exit --exit-code-from gate04h-test
-```
+The full backend regression passed with 229 tests, 2 declared skips and 85.34% coverage. Frontend validation passed Prettier, ESLint with 8 warnings under the budget of 10, all 143 Vitest tests, the TypeScript/Vite build and the production Playwright smoke.
 
-The environment uses PostgreSQL 16 on `tmpfs`, applies Alembic to head, runs the complete transactional/concurrency/SoD suite, writes the benchmark artifacts, and is destroyed without touching persistent local volumes.
+The protected real baseline remained invariant: release `ES-PYP-CORE-RECONCILED-20260809`, ID 1, published, 14 workspaces, 7 objectives, 26 classifications, 0 links, 1 release and 0 drafts.
 
-Current final state: `HARDENING_REQUIRED`.
+Final state: `READY_FOR_PROJECT_CREATOR`.

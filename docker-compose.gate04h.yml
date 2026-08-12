@@ -30,6 +30,8 @@ services:
       - /bin/sh
       - -ec
       - |
+        python tests/postgres/prepare_ephemeral_schema.py
+        alembic stamp 20260810_0032
         alembic upgrade head
         alembic current
         pytest --no-cov -q tests/postgres/test_enterprise_structure_postgres_e2e.py

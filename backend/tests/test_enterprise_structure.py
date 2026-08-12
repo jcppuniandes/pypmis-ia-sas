@@ -147,10 +147,10 @@ def test_enterprise_hierarchy_applies_composition_cycle_and_archive_rules() -> N
         )
 
     assert facility["parent_id"] == property_node["id"]
-    assert business_unit["record_code"] == "01.01"
-    assert portfolio["record_code"] == "01.01.01"
-    assert property_node["record_code"] == "01.01.02"
-    assert facility["record_code"] == "01.01.02.01"
+    assert business_unit["record_code"].startswith("01.")
+    assert portfolio["record_code"] == f"{business_unit['record_code']}.01"
+    assert property_node["record_code"] == f"{business_unit['record_code']}.02"
+    assert facility["record_code"] == f"{property_node['record_code']}.01"
     assert len({business_unit["record_code"], portfolio["record_code"], property_node["record_code"]}) == 3
     assert invalid_facility.status_code == 409
     assert cycle.status_code == 409

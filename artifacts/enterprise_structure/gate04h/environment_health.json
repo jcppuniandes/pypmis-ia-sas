@@ -1,29 +1,24 @@
 {
-  "checked_at": "2026-08-10",
+  "checked_at": "2026-08-12",
   "drive": "C:",
   "required_free_gb": 10,
-  "free_gb_before_implementation": 1.5,
-  "free_gb_after_recovery": 3.15,
-  "free_gb_final_check": 7.61,
-  "meets_gate04h_threshold": false,
-  "decision": "ABORT_HEAVY_TESTS",
+  "free_gb_before_heavy_tests": 37.92,
+  "free_gb_after_rebuild": 25.15,
+  "meets_gate04h_threshold": true,
+  "decision": "RUN_HEAVY_TESTS",
   "persistent_volumes_deleted": false,
-  "docker_cleanup": {
-    "scope": ["build cache", "dangling images", "incomplete Docker Desktop update in user Temp"],
-    "docker_cache_reclaimed_bytes": 0,
-    "temporary_update_removed": "C:\\Users\\Ricardo\\AppData\\Local\\Temp\\DockerDesktopUpdates\\in_progress",
-    "temporary_update_recoverable": true
-  },
+  "ephemeral_test_volumes_deleted": true,
   "deployment": {
     "alembic_head": "20260810_0033",
-    "repository_build": "blocked during final image unpack by insufficient disk",
-    "runtime_sync": "final Python modules copied into existing API/worker/beat containers and processes restarted",
-    "rebuild_required_after_free_space_recovery": true
+    "repository_build": "PASS",
+    "api_worker_beat_frontend_recreated": true
   },
   "localhost": {
     "frontend": "http://127.0.0.1:5173/app",
     "api": "http://127.0.0.1:8000",
     "api_ready": true,
+    "database": "ok",
+    "redis": "ok",
     "frontend_http_status": 200,
     "services_running": 6
   }

@@ -90,10 +90,12 @@ class EnterpriseStructureRepository:
 
     def core_release(self, release_id: int) -> EnterpriseCoreRelease | None:
         return self.db.scalar(
-            select(EnterpriseCoreRelease).where(
+            select(EnterpriseCoreRelease)
+            .where(
                 EnterpriseCoreRelease.tenant_id == self.tenant_id,
                 EnterpriseCoreRelease.id == release_id,
             )
+            .execution_options(populate_existing=True)
         )
 
     def latest_draft_release(self) -> EnterpriseCoreRelease | None:

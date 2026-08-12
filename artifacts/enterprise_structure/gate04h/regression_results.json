@@ -1,38 +1,38 @@
 {
-  "status": "INCOMPLETE",
-  "final_gate_state": "HARDENING_REQUIRED",
-  "passed": {
-    "hardening_contract_pytest": "3 passed",
-    "workspace_revision_manager_vitest": "3 passed",
-    "ruff_targeted": "PASS",
-    "python_ast": "PASS",
-    "prettier_targeted": "PASS",
-    "eslint_targeted": "PASS",
-    "typescript_no_emit": "PASS",
-    "git_diff_check": "PASS",
-    "alembic_upgrade": "20260810_0033 head",
+  "status": "PASS",
+  "final_gate_state": "READY_FOR_PROJECT_CREATOR",
+  "checked_at": "2026-08-12",
+  "backend": {
+    "pytest": "229 passed, 2 skipped",
+    "coverage_percent": 85.34,
+    "coverage_required_percent": 75,
+    "ruff_format": "122 files already formatted",
+    "ruff_check": "PASS"
+  },
+  "frontend": {
+    "prettier": "PASS",
+    "eslint": "PASS with 8 warnings within max-warnings=10",
+    "vitest": "24 files, 143 tests passed",
+    "typescript_vite_build": "PASS",
+    "playwright": "1 production smoke passed, 1 BIM-data scenario skipped by declared fixture guard"
+  },
+  "enterprise_structure": {
+    "postgres_e2e": "PASS",
+    "postgres_tests": "3 passed",
+    "gate02a_importer": "PASS in full backend regression",
+    "gate02b_apply": "PASS in full backend regression",
+    "gate03_publish_rollback": "PASS in full backend regression and PostgreSQL E2E",
+    "gate04_revision_manager": "PASS in unit, frontend and PostgreSQL E2E",
+    "organization_security": "PASS",
+    "admin_enterprise_structure": "PASS",
+    "user_enterprise_explorer": "PASS",
+    "snapshot_benchmark": "COMPLETE for 100, 1000 and 10000 nodes"
+  },
+  "runtime": {
+    "alembic": "20260810_0033 (head)",
     "api_health": "ready",
-    "frontend_http": 200
-  },
-  "environment_incident": {
-    "docker_image_rebuild": "FAILED_DUE_TO_DISK_IO",
-    "localhost_recovered": true,
-    "runtime_code_synced": true,
-    "free_gb_after_recovery": 3.15,
-    "free_gb_final_check": 7.61
-  },
-  "not_run_due_environment_health": [
-    "Gate 02A importer",
-    "Gate 02B apply",
-    "Gate 03 publish/rollback",
-    "Gate 04 revision manager mutation suite",
-    "Organization & Security full suite",
-    "ADMIN Enterprise Structure full suite",
-    "USER Enterprise Explorer full suite",
-    "Frontend full suite",
-    "Vite production build",
-    "Ruff full repository",
-    "PostgreSQL Gate 04H E2E",
-    "snapshot benchmark 100/1k/10k"
-  ]
+    "frontend_http": 200,
+    "services_running": 6,
+    "persistent_images_rebuilt": true
+  }
 }

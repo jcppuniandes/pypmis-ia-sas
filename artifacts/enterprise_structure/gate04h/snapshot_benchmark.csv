@@ -1,4 +1,4 @@
-status,nodes,snapshot_size_bytes,clone_ms,load_draft_ms,record_code_preview_ms,move_subtree_ms,validate_ms,diff_ms,approve_ms,publish_ms,rollback_ms,transaction_ms,peak_memory_bytes
-NOT_RUN,100,,,,,,,,,,,,
-NOT_RUN,1000,,,,,,,,,,,,
-NOT_RUN,10000,,,,,,,,,,,,
+nodes,snapshot_size_bytes,clone_ms,load_draft_ms,record_code_preview_ms,move_subtree_ms,validate_ms,diff_ms,approve_ms,publish_ms,rollback_ms,transaction_ms,peak_memory_bytes
+100,32882,272.061,75.128,70.275,211.265,316.685,49.415,153.01,738.143,492.086,2380.552,2767992
+1000,333978,1545.645,569.79,146.618,1222.78,3469.154,602.834,1889.648,8411.284,3711.43,21586.732,19804049
+10000,3380974,18366.489,7863.856,2027.96,16525.053,38161.412,5080.916,12433.794,81561.493,39520.127,221752.054,160296190

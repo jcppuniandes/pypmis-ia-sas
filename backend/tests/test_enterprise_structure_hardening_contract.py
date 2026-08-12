@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from app.modules.enterprise_structure.models import EnterpriseCoreRelease
@@ -41,7 +42,7 @@ def test_structure_roles_enforce_the_gate04h_sod_matrix() -> None:
 
 
 def test_http_ci_and_benchmark_contracts_are_declared() -> None:
-    repository = Path(__file__).resolve().parents[2]
+    repository = Path(os.environ.get("PYPMIS_REPOSITORY_ROOT", Path(__file__).resolve().parents[2]))
     router = (repository / "backend/app/modules/enterprise_structure/router_admin.py").read_text(encoding="utf-8")
     revision_service = (repository / "backend/app/modules/enterprise_structure/revisions.py").read_text(
         encoding="utf-8"
@@ -57,4 +58,7 @@ def test_http_ci_and_benchmark_contracts_are_declared() -> None:
     assert "enterprise-structure-postgres-e2e" in workflow
     assert "tmpfs:" in compose
     assert "sqlite" not in compose.lower()
+    assert "prepare_ephemeral_schema.py" in compose
+    assert "alembic stamp 20260810_0032" in compose
+    assert "alembic upgrade head" in compose
     assert "(100, 1_000, 10_000)" in benchmark

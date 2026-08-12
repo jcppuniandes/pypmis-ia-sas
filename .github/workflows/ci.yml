@@ -26,14 +26,14 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          docker compose -f docker-compose.gate04h.yml up \
+          docker compose -p pypmis-gate04h -f docker-compose.gate04h.yml up \
             --build \
             --abort-on-container-exit \
             --exit-code-from gate04h-test 2>&1 \
             | tee artifacts/enterprise_structure/gate04h/postgres_e2e_log.txt
       - name: Destroy ephemeral environment
         if: always()
-        run: docker compose -f docker-compose.gate04h.yml down --remove-orphans
+        run: docker compose -p pypmis-gate04h -f docker-compose.gate04h.yml down --remove-orphans
       - name: Preserve Gate 04H evidence
         if: always()
         uses: actions/upload-artifact@v4

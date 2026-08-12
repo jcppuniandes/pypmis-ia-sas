@@ -1,12 +1,9 @@
 {
-  "status": "NOT_RUN",
-  "reason": "PostgreSQL heavy suite blocked by the Gate 04H disk-space precondition",
-  "implemented_scenarios": [
-    "Editor A and Editor B read version N",
-    "Editor A commits N+1",
-    "Editor B receives 409 REVISION_VERSION_CONFLICT",
-    "Validate then mutate then approve returns HASH_MISMATCH",
-    "Approve then mutate then publish returns APPROVAL_INVALIDATED",
-    "same user approve and publish returns FOUR_EYES_VIOLATION"
-  ]
+  "approve_then_modify_then_publish": "APPROVAL_INVALIDATED",
+  "database": "ephemeral PostgreSQL",
+  "four_eyes": "PASS",
+  "stale_writer_reason": "REVISION_VERSION_CONFLICT",
+  "stale_writer_status": 409,
+  "status": "PASS",
+  "validate_then_modify_then_approve": "HASH_MISMATCH"
 }

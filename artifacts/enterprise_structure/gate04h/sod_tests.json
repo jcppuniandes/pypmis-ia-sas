@@ -1,18 +1,17 @@
 {
-  "status": "NOT_RUN",
-  "reason": "PostgreSQL heavy suite blocked by the Gate 04H disk-space precondition",
-  "declared_cases": 11,
-  "cases": [
-    "editor can edit",
-    "editor cannot approve",
-    "editor cannot publish",
-    "approver can approve",
-    "approver cannot edit",
-    "publisher can publish",
-    "publisher cannot approve",
-    "same user approve and publish blocked",
-    "cross-tenant blocked",
-    "expired assignment blocked",
-    "invalid scope blocked"
-  ]
+  "results": {
+    "approver_approve": "PASS",
+    "approver_edit": "PASS",
+    "cross_tenant": "PASS",
+    "editor_approve": "PASS",
+    "editor_edit": "PASS",
+    "editor_publish": "PASS",
+    "expired_assignment": "PASS",
+    "invalid_scope": "PASS",
+    "organization_admin_has_no_revision_duty_bypass": "PASS",
+    "publisher_approve": "PASS",
+    "publisher_publish": "PASS",
+    "same_user_approve_publish": "covered_by_four_eyes_test"
+  },
+  "status": "PASS"
 }

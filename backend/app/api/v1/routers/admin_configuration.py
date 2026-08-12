@@ -41,6 +41,7 @@ from app.domain.schemas import (
     WorkspaceModuleSettingOut,
     WorkspaceModuleSettingUpdate,
 )
+from app.modules.enterprise_structure.record_codes import next_record_code
 
 router = APIRouter(prefix="/admin-configuration")
 
@@ -295,6 +296,7 @@ def create_workspace(
 ) -> EnterpriseWorkspaceOut:
     actor = require_tenant_configurator(db, tenant_id, user_id)
     type_code = _normalized_code(payload.workspace_type_code)
+    workspace_code = _normalized_code(payload.code)
     _published_configuration(db, tenant_id, "workspace_type", type_code)
     if payload.parent_id is not None:
         parent = _workspace(db, tenant_id, payload.parent_id)
@@ -306,7 +308,9 @@ def create_workspace(
         tenant_id=tenant_id,
         parent_id=payload.parent_id,
         workspace_type_code=type_code,
-        code=_normalized_code(payload.code),
+        code=workspace_code,
+        external_key=workspace_code,
+        record_code=_next_workspace_record_code(db, tenant_id, payload.parent_id),
         name=_required(payload.name, "Workspace name"),
         status="active",
         defaults_json={},
@@ -532,6 +536,8 @@ def _ensure_seed(db: Session, tenant_id: int, user_id: int) -> None:
                 parent_id=None,
                 workspace_type_code="portfolio",
                 code="enterprise",
+                external_key="enterprise",
+                record_code=_next_workspace_record_code(db, tenant_id, None),
                 name="Enterprise Workspace",
                 status="active",
                 defaults_json={"currency": "COP", "timezone": "America/Bogota", "locale": "es-CO"},
@@ -610,6 +616,22 @@ def _workspace(db: Session, tenant_id: int, workspace_id: int) -> EnterpriseWork
     if not workspace:
         raise HTTPException(status_code=404, detail="Workspace not found")
     return workspace
+
+
+def _next_workspace_record_code(db: Session, tenant_id: int, parent_id: int | None) -> str:
+    parent_code: str | None = None
+    if parent_id is not None:
+        parent_code = _workspace(db, tenant_id, parent_id).record_code
+    parent_filter = (
+        EnterpriseWorkspace.parent_id.is_(None) if parent_id is None else EnterpriseWorkspace.parent_id == parent_id
+    )
+    sibling_codes = db.scalars(
+        select(EnterpriseWorkspace.record_code).where(
+            EnterpriseWorkspace.tenant_id == tenant_id,
+            parent_filter,
+        )
+    ).all()
+    return next_record_code(parent_code, sibling_codes)
 
 
 def _workspace_path(db: Session, tenant_id: int, workspace: EnterpriseWorkspace) -> list[EnterpriseWorkspace]:

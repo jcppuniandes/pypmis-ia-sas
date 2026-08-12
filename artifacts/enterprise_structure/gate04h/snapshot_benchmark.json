@@ -1,14 +1,56 @@
 {
-  "status": "NOT_RUN",
-  "reason": "ABORT_HEAVY_TESTS because free space is below 10 GB",
-  "database": "ephemeral PostgreSQL required",
-  "datasets": [100, 1000, 10000],
-  "implementation": "backend/tests/postgres/snapshot_benchmark.py",
-  "results": [],
+  "status": "COMPLETE",
+  "database": "ephemeral PostgreSQL",
+  "storage_model": "full snapshot",
+  "results": [
+    {
+      "nodes": 100,
+      "snapshot_size_bytes": 32882,
+      "clone_ms": 272.061,
+      "load_draft_ms": 75.128,
+      "record_code_preview_ms": 70.275,
+      "move_subtree_ms": 211.265,
+      "validate_ms": 316.685,
+      "diff_ms": 49.415,
+      "approve_ms": 153.01,
+      "publish_ms": 738.143,
+      "rollback_ms": 492.086,
+      "transaction_ms": 2380.552,
+      "peak_memory_bytes": 2767992
+    },
+    {
+      "nodes": 1000,
+      "snapshot_size_bytes": 333978,
+      "clone_ms": 1545.645,
+      "load_draft_ms": 569.79,
+      "record_code_preview_ms": 146.618,
+      "move_subtree_ms": 1222.78,
+      "validate_ms": 3469.154,
+      "diff_ms": 602.834,
+      "approve_ms": 1889.648,
+      "publish_ms": 8411.284,
+      "rollback_ms": 3711.43,
+      "transaction_ms": 21586.732,
+      "peak_memory_bytes": 19804049
+    },
+    {
+      "nodes": 10000,
+      "snapshot_size_bytes": 3380974,
+      "clone_ms": 18366.489,
+      "load_draft_ms": 7863.856,
+      "record_code_preview_ms": 2027.96,
+      "move_subtree_ms": 16525.053,
+      "validate_ms": 38161.412,
+      "diff_ms": 5080.916,
+      "approve_ms": 12433.794,
+      "publish_ms": 81561.493,
+      "rollback_ms": 39520.127,
+      "transaction_ms": 221752.054,
+      "peak_memory_bytes": 160296190
+    }
+  ],
   "decision": {
-    "choice": "PENDING_MEASUREMENT",
-    "full_snapshot_remains_active": true,
-    "delta_storage_implemented": false,
-    "rationale": "No threshold or delta recommendation is invented before the 100/1k/10k measurements run."
+    "choice": "RETAIN_FULL_SNAPSHOT",
+    "rationale": "No threshold was invented before measurement. The complete 10k run provides the evidence for operational review; delta storage remains out of Gate 04H scope."
   }
 }

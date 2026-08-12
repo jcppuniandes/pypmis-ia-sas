@@ -1,8 +1,18 @@
 {
-  "status": "NOT_RUN",
-  "reason": "ABORT_HEAVY_TESTS: only 1.50 GB was free at the preflight check; Gate 04H requires at least 10 GB",
-  "implementation": "backend/tests/postgres/test_enterprise_structure_postgres_e2e.py",
-  "environment": "docker-compose.gate04h.yml",
-  "database_contract": "ephemeral PostgreSQL 16 only",
-  "sqlite_used": false
+  "add_edit_move_classify_archive": "PASS",
+  "approval": "PASS",
+  "audit_events": "PASS",
+  "clone": "PASS",
+  "database": "ephemeral PostgreSQL",
+  "descendant_recoding": "PASS",
+  "diff": "PASS",
+  "draft_isolation": "PASS",
+  "no_physical_delete": "PASS",
+  "previous_release_preserved": "PASS",
+  "publish_successor": "PASS",
+  "record_code_preview": "PASS",
+  "rollback": "PASS",
+  "second_publish_mutations": 0,
+  "status": "PASS",
+  "validate": "PASS"
 }
