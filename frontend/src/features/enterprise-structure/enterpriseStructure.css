@@ -1400,3 +1400,278 @@
     grid-template-columns: 1fr;
   }
 }
+.projectConfigurationWorkspace {
+  display: grid;
+  gap: 14px;
+}
+
+.projectGateStrip {
+  align-items: center;
+  background: #eaf7f2;
+  border: 1px solid #9bd5c2;
+  border-left: 4px solid #148566;
+  border-radius: 10px;
+  color: #123b31;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  padding: 14px 16px;
+}
+
+.projectGateStrip div {
+  display: grid;
+  gap: 3px;
+}
+.projectGateStrip em {
+  color: #397064;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.projectSummaryGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.projectSummaryGrid article {
+  background: #fff;
+  border: 1px solid #d8e1e7;
+  border-radius: 10px;
+  display: grid;
+  gap: 6px;
+  min-height: 116px;
+  padding: 15px;
+}
+
+.projectSummaryGrid svg {
+  color: #117f87;
+}
+.projectSummaryGrid span,
+.projectSummaryGrid small {
+  color: #617180;
+}
+.projectSummaryGrid strong {
+  color: #10222f;
+  font-size: 17px;
+}
+
+.projectDefinitionGrid,
+.projectTemplateLayout {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.8fr);
+}
+
+.projectFacts {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.projectFacts div {
+  border-bottom: 1px solid #edf1f3;
+  display: grid;
+  gap: 3px;
+  padding: 11px 4px;
+}
+
+.projectFacts dt {
+  color: #657480;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.projectFacts dd {
+  color: #172734;
+  font-weight: 700;
+  margin: 0;
+}
+
+.projectAttributeList {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.projectAttributeList span {
+  background: #f5f8fa;
+  border: 1px solid #e0e7eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+}
+
+.projectAttributeList small {
+  color: #677580;
+}
+
+.projectTemplateList {
+  align-content: start;
+  display: grid;
+  gap: 7px;
+}
+.projectTemplateList > button:not(.enterpriseButton) {
+  background: #fff;
+  border: 1px solid #dce4e9;
+  border-radius: 8px;
+  color: #142733;
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+  padding: 11px;
+  text-align: left;
+}
+
+.projectTemplateList > button.active {
+  background: #e9f5f5;
+  border-color: #168b91;
+  box-shadow: inset 3px 0 #168b91;
+}
+
+.projectTemplateList span,
+.projectTemplateList em {
+  color: #657581;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.projectTemplateForm {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.projectTemplateForm > label,
+.projectPreviewControls label {
+  display: grid;
+  gap: 5px;
+}
+.projectTemplateForm > label span,
+.projectPreviewControls label span {
+  color: #566877;
+  font-size: 12px;
+  font-weight: 700;
+}
+.projectTemplateForm .wide {
+  grid-column: 1 / -1;
+}
+.projectTemplateForm fieldset {
+  border: 1px solid #dce4e8;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+.projectTemplateForm fieldset label {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.projectPreviewPanel header,
+.projectFocusedPanel header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.projectPreviewControls {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+}
+.projectPreviewResult {
+  border-left: 4px solid #b46b00;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 16px;
+  padding: 12px;
+}
+.projectPreviewResult.allowed {
+  background: #edf8f3;
+  border-color: #16835e;
+}
+.projectPreviewResult.blocked {
+  background: #fff6e8;
+}
+.projectPreviewResult article {
+  display: grid;
+  gap: 4px;
+}
+.projectPreviewResult span {
+  color: #687984;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.projectPreviewResult p,
+.projectPreviewResult ul {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.projectFocusedPanel {
+  margin: 0 auto;
+  max-width: 980px;
+  width: 100%;
+}
+.projectNumberExample {
+  background: #0f2432;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 18px 0;
+  padding: 22px;
+  text-align: center;
+}
+.projectPolicyGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0;
+}
+.projectPolicyGrid label {
+  align-items: center;
+  background: #f5f8f9;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  display: flex;
+  gap: 9px;
+  padding: 12px;
+}
+
+@media (max-width: 1050px) {
+  .projectSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .projectDefinitionGrid,
+  .projectTemplateLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .projectGateStrip {
+    grid-template-columns: auto 1fr;
+  }
+  .projectGateStrip em {
+    grid-column: 1 / -1;
+  }
+  .projectSummaryGrid,
+  .projectFacts,
+  .projectAttributeList,
+  .projectTemplateForm,
+  .projectPreviewControls,
+  .projectPreviewResult,
+  .projectPolicyGrid {
+    grid-template-columns: 1fr;
+  }
+  .projectPreviewResult p,
+  .projectPreviewResult ul {
+    grid-column: auto;
+  }
+}

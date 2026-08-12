@@ -1,9 +1,24 @@
-import { Archive, CheckCircle2, CopyPlus, GitFork, Layers3, Plus, Save, Send, Settings2, Tags } from "lucide-react";
+import {
+  Archive,
+  CheckCircle2,
+  CopyPlus,
+  FileStack,
+  GitFork,
+  Hash,
+  Layers3,
+  Plus,
+  Save,
+  Send,
+  Settings2,
+  ShieldCheck,
+  Tags,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
 import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTree from "../components/EnterpriseTree";
+import ProjectWorkspaceConfigurationPanel from "../components/ProjectWorkspaceConfigurationPanel";
 import StructureNodeForm from "../components/StructureNodeForm";
 import WorkspaceRevisionManager from "../components/WorkspaceRevisionManager";
 import type {
@@ -18,7 +33,15 @@ import type {
 } from "../types";
 import "../enterpriseStructure.css";
 
-type AdminTab = "revisions" | "hierarchy" | "catalogs" | "rules" | "publication";
+type AdminTab =
+  | "revisions"
+  | "hierarchy"
+  | "catalogs"
+  | "rules"
+  | "project-templates"
+  | "project-numbering"
+  | "project-policies"
+  | "publication";
 
 const emptyNode: NodePayload = {
   code: "",
@@ -176,6 +199,11 @@ export default function AdminEnterpriseStructurePage({
       status: node.status,
       sort_order: node.sort_order,
     });
+  }
+
+  function selectTab(nextTab: AdminTab) {
+    initialTabResolved.current = true;
+    setTab(nextTab);
   }
 
   function startNode() {
@@ -360,19 +388,44 @@ export default function AdminEnterpriseStructurePage({
       ) : null}
 
       <nav className="enterpriseTabs" aria-label="Configuración de estructura empresarial">
-        <button className={tab === "revisions" ? "active" : ""} onClick={() => setTab("revisions")} type="button">
+        <button className={tab === "revisions" ? "active" : ""} onClick={() => selectTab("revisions")} type="button">
           <GitFork size={16} /> Revision Manager
         </button>
-        <button className={tab === "hierarchy" ? "active" : ""} onClick={() => setTab("hierarchy")} type="button">
+        <button className={tab === "hierarchy" ? "active" : ""} onClick={() => selectTab("hierarchy")} type="button">
           <GitFork size={16} /> Published baseline
         </button>
-        <button className={tab === "catalogs" ? "active" : ""} onClick={() => setTab("catalogs")} type="button">
+        <button className={tab === "catalogs" ? "active" : ""} onClick={() => selectTab("catalogs")} type="button">
           <Tags size={16} /> Tipos y categorías
         </button>
-        <button className={tab === "rules" ? "active" : ""} onClick={() => setTab("rules")} type="button">
+        <button className={tab === "rules" ? "active" : ""} onClick={() => selectTab("rules")} type="button">
           <Settings2 size={16} /> Reglas de composición
         </button>
-        <button className={tab === "publication" ? "active" : ""} onClick={() => setTab("publication")} type="button">
+        <button
+          className={tab === "project-templates" ? "active" : ""}
+          onClick={() => selectTab("project-templates")}
+          type="button"
+        >
+          <FileStack size={16} /> Project Templates
+        </button>
+        <button
+          className={tab === "project-numbering" ? "active" : ""}
+          onClick={() => selectTab("project-numbering")}
+          type="button"
+        >
+          <Hash size={16} /> Numbering Rules
+        </button>
+        <button
+          className={tab === "project-policies" ? "active" : ""}
+          onClick={() => selectTab("project-policies")}
+          type="button"
+        >
+          <ShieldCheck size={16} /> Creation Policies
+        </button>
+        <button
+          className={tab === "publication" ? "active" : ""}
+          onClick={() => selectTab("publication")}
+          type="button"
+        >
           <Send size={16} /> Publicación
         </button>
       </nav>
@@ -402,6 +455,16 @@ export default function AdminEnterpriseStructurePage({
           onReload={load}
           token={token}
         />
+      ) : null}
+
+      {tab === "project-templates" ? (
+        <ProjectWorkspaceConfigurationPanel canConfigure={canConfigure} token={token} view="templates" />
+      ) : null}
+      {tab === "project-numbering" ? (
+        <ProjectWorkspaceConfigurationPanel canConfigure={canConfigure} token={token} view="numbering" />
+      ) : null}
+      {tab === "project-policies" ? (
+        <ProjectWorkspaceConfigurationPanel canConfigure={canConfigure} token={token} view="policy" />
       ) : null}
 
       {tab === "hierarchy" ? (

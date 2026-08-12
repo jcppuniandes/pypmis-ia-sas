@@ -16,11 +16,22 @@ import type {
   EnterpriseExplorer,
   EnterpriseNode,
   EnterpriseStructureConfiguration,
+  ProjectConfiguration,
 } from "../src/features/enterprise-structure/types";
 
 vi.mock("../src/features/enterprise-structure/api", () => ({
   enterpriseStructureApi: {
     configuration: vi.fn(),
+    projectConfiguration: vi.fn(),
+    previewProject: vi.fn(),
+    createProjectTemplate: vi.fn(),
+    updateProjectTemplate: vi.fn(),
+    validateProjectTemplate: vi.fn(),
+    publishProjectTemplate: vi.fn(),
+    cloneProjectTemplate: vi.fn(),
+    archiveProjectTemplate: vi.fn(),
+    updateProjectNumbering: vi.fn(),
+    updateProjectCreationPolicy: vi.fn(),
     createNode: vi.fn(),
     updateNode: vi.fn(),
     archiveNode: vi.fn(),
@@ -137,11 +148,96 @@ const explorerData: EnterpriseExplorer = {
   summary: { nodes: 2, active: 2, properties: 0, facilities: 0, projects: 0 },
 };
 
+const projectType: ConfigurationVersion = {
+  ...configuration("project", "Project"),
+  content_json: {
+    repeatable: true,
+    user_mode_enabled: true,
+    admin_configurable: true,
+    template_supported: true,
+    creation_process_supported: true,
+    project_attributes: [
+      { code: "name", label: "Nombre", type: "text", required: true },
+      { code: "project_number", label: "Numero de proyecto", type: "text", read_only: true },
+    ],
+  },
+};
+
+const projectTemplate: ConfigurationVersion = {
+  ...configuration("PYP-PRJ-GENERAL", "Proyecto general", "project_template"),
+  status: "draft",
+  content_json: {
+    applicable_parent_types: ["portfolio", "program"],
+    default_classifications: [],
+    enabled_modules: ["scope-manager"],
+    default_role_codes: [],
+    default_group_codes: [],
+    numbering_rule_code: "project-workspace",
+    default_attributes: { currency: "COP" },
+    creation_policy_code: "project-creation",
+  },
+};
+
+const projectData: ProjectConfiguration = {
+  project_type: projectType,
+  templates: [projectTemplate],
+  numbering_rule: {
+    ...configuration("project-workspace", "Project Workspace Numbering", "numbering_rule"),
+    content_json: { prefix: "PYP-PRJ", padding: 5, pattern: "{prefix}-{sequence:05d}" },
+  },
+  creation_policy: {
+    ...configuration("project-creation", "Project Creation Policy", "creation_policy"),
+    content_json: {
+      allowed_parent_types: ["portfolio", "program"],
+      template_required: true,
+      project_manager_required: true,
+      strategic_objective_required: true,
+      approval_required: true,
+      auto_project_number: true,
+      auto_record_code: true,
+      initial_status: "pending",
+      activation_after_approval: true,
+      materialization_after_approval: true,
+    },
+  },
+  classification_sets: [configuration("strategic-objective", "Strategic Objectives", "catalog")],
+  available_modules: [configuration("scope-manager", "Scope Manager", "module_definition")],
+  parent_options: [
+    { id: 10, name: "Strategic Portfolio", workspace_type_code: "portfolio", record_code: "01.01", status: "active" },
+  ],
+  allowed_parent_types: ["portfolio", "program"],
+  summary: {
+    templates: 1,
+    draft_templates: 1,
+    published_templates: 0,
+    classification_proposals: 3,
+    available_modules: 1,
+    eligible_parents: 1,
+  },
+  gate_status: "READY_FOR_PROJECT_CREATION_PROCESS",
+  gate_05b_contract: { workspace_table: "enterprise_workspaces", materialization_endpoint: null },
+};
+
 afterEach(() => cleanup());
 
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(enterpriseStructureApi.configuration).mockResolvedValue(adminData);
+  vi.mocked(enterpriseStructureApi.projectConfiguration).mockResolvedValue(projectData);
+  vi.mocked(enterpriseStructureApi.previewProject).mockResolvedValue({
+    allowed: true,
+    parent: projectData.parent_options[0],
+    template_code: "PYP-PRJ-GENERAL",
+    projected_record_code: "01.01.01",
+    projected_project_number: "PYP-PRJ-00001",
+    inherited_classifications: [
+      { category_set_code: "strategic-objective", category_item_code: "growth", source: "parent" },
+    ],
+    enabled_modules: ["scope-manager"],
+    initial_status: "pending",
+    issues: [],
+    persisted: false,
+  });
   vi.mocked(enterpriseStructureApi.explorer).mockResolvedValue(explorerData);
   vi.mocked(enterpriseStructureApi.nodeDetail).mockResolvedValue({
     node: businessUnit,
@@ -170,11 +266,7 @@ describe("Nivel 2A Enterprise Structure", () => {
 
   it("shows record codes and derives tree indentation from depth", () => {
     const { container } = render(
-      <EnterpriseTree
-        nodes={adminData.tree}
-        onSelect={() => undefined}
-        selectedNodeId={null}
-      />
+      <EnterpriseTree nodes={adminData.tree} onSelect={() => undefined} selectedNodeId={null} />
     );
     const rows = container.querySelectorAll<HTMLElement>(".enterpriseTreeRow");
 
@@ -252,7 +344,7 @@ describe("Nivel 2A Enterprise Structure", () => {
     expect(USER_MODE_NAVIGATION_BLUEPRINT.some((item) => item.key === "facilities-asset-manager")).toBe(false);
   });
 
-  it("renders the governed ADMIN configuration with four functional tabs", async () => {
+  it("renders the governed ADMIN configuration with all functional tabs", async () => {
     const user = userEvent.setup();
     render(<AdminEnterpriseStructurePage canConfigure token="token" />);
 
@@ -274,15 +366,47 @@ describe("Nivel 2A Enterprise Structure", () => {
     expect(screen.getByRole("button", { name: /validar/i })).toBeInTheDocument();
   });
 
+  it("configures PROJECT, templates, allowed parents, attributes and readonly preview outputs", async () => {
+    const user = userEvent.setup();
+    render(<AdminEnterpriseStructurePage canConfigure token="token" />);
+
+    await user.click(await screen.findByRole("button", { name: /project templates/i }));
+    expect(await screen.findByText("READY_FOR_PROJECT_CREATION_PROCESS")).toBeInTheDocument();
+    expect(screen.getByText("Portfolio / Program")).toBeInTheDocument();
+    expect(screen.getByText("Numero de proyecto")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Revisiones configuradas" })).toBeInTheDocument();
+    expect(screen.getByText("PYP-PRJ-GENERAL")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /previsualizar/i }));
+    expect(await screen.findByText("01.01.01")).toBeInTheDocument();
+    expect(screen.getByText("PYP-PRJ-00001")).toBeInTheDocument();
+    expect(screen.getByText("No (preview)")).toBeInTheDocument();
+    expect(enterpriseStructureApi.previewProject).toHaveBeenCalledWith("token", 10, projectTemplate.id);
+  });
+
+  it("exposes Numbering Rules and Creation Policies without a materialize action", async () => {
+    const user = userEvent.setup();
+    render(<AdminEnterpriseStructurePage canConfigure token="token" />);
+
+    await user.click(await screen.findByRole("button", { name: /numbering rules/i }));
+    expect(await screen.findByText("PYP-PRJ-00001")).toBeInTheDocument();
+    expect(screen.getByText("No consume secuencia")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /creation policies/i }));
+    expect(await screen.findByRole("heading", { name: "Project Creation Process" })).toBeInTheDocument();
+    expect(screen.getByText(/no crea, aprueba ni materializa/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /materializar|crear project/i })).not.toBeInTheDocument();
+  });
+
   it("renders USER Explorer filters, tree/table views and persisted node detail", async () => {
     const user = userEvent.setup();
     render(<EnterpriseExplorerPage token="token" />);
 
     await screen.findByRole("tree", { name: "Enterprise hierarchy" });
     expect(document.querySelector(".compactModuleHeader.user")).toBeInTheDocument();
-    const businessUnitButton = (
-      await screen.findByText("Colombia Business Unit", { selector: "strong" })
-    ).closest("button");
+    const businessUnitButton = (await screen.findByText("Colombia Business Unit", { selector: "strong" })).closest(
+      "button"
+    );
     expect(businessUnitButton).not.toBeNull();
     await user.click(businessUnitButton!);
 

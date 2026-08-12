@@ -61,7 +61,7 @@ from app.modules.enterprise_structure.schemas import (
     WorkspaceLinkOut,
 )
 
-SEED_VERSION = "nivel-2a-v1.1"
+SEED_VERSION = "gate-05a-project-workspace-v1.0"
 
 
 class EnterpriseStructureService:
@@ -682,9 +682,6 @@ class EnterpriseStructureService:
     def _seed_workspace_types(self) -> None:
         for code, definition in WORKSPACE_TYPE_SEED.items():
             latest = self.repository.latest_configuration("workspace_type", code, prefer_draft=True)
-            if latest is not None and (latest.content_json.get("seed_version") == SEED_VERSION or latest.revision > 1):
-                continue
-            revision = self._next_revision("workspace_type", code)
             content = {
                 "allowed_children": definition["allowed_children"],
                 "max_depth": None,
@@ -693,8 +690,29 @@ class EnterpriseStructureService:
                 "required_fields": definition["required_fields"],
                 "required_defaults": ["currency", "timezone"],
                 "seed_version": SEED_VERSION,
+                **{
+                    key: value
+                    for key, value in definition.items()
+                    if key
+                    not in {
+                        "name",
+                        "description",
+                        "allowed_children",
+                        "can_be_root",
+                        "required_categories",
+                        "required_fields",
+                    }
+                },
             }
-            self._add_published_configuration(
+            if latest is not None and latest.status == "draft":
+                continue
+            if latest is not None:
+                current = {key: value for key, value in latest.content_json.items() if key != "seed_version"}
+                desired = {key: value for key, value in content.items() if key != "seed_version"}
+                if current == desired:
+                    continue
+            revision = self._next_revision("workspace_type", code)
+            record = self._add_published_configuration(
                 "workspace_type",
                 code,
                 definition["name"],
@@ -702,6 +720,13 @@ class EnterpriseStructureService:
                 content,
                 revision,
             )
+            if code == "project":
+                self.db.flush()
+                self._event(
+                    "enterprise_structure.project_type.configured",
+                    record,
+                    {"seed_version": SEED_VERSION, "allowed_parent_types": ["portfolio", "program"]},
+                )
 
     def _seed_categories(self) -> None:
         for code, definition in CATEGORY_SEED.items():

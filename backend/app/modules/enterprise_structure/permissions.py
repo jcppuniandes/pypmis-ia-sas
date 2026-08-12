@@ -14,6 +14,7 @@ from app.domain.models import (
     SecurityGroupMember,
     SecurityRole,
     SecurityRolePermission,
+    Tenant,
     UserAccount,
 )
 from app.modules.enterprise_structure.constants import PERMISSION_SEED
@@ -163,6 +164,7 @@ def require_organization_scope(context: EnterprisePermissionContext) -> None:
 
 
 def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> None:
+    db.execute(select(Tenant.id).where(Tenant.id == tenant_id).with_for_update()).scalar_one()
     permissions = {item.key: item for item in db.scalars(select(PermissionCatalog)).all()}
     for key, resource, action, description, risk_level in PERMISSION_SEED:
         if key in permissions:

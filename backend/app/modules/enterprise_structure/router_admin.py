@@ -10,6 +10,18 @@ from app.modules.enterprise_structure.permissions import (
     require_enterprise_permission,
     require_organization_scope,
 )
+from app.modules.enterprise_structure.project_configuration import ProjectWorkspaceConfigurationService
+from app.modules.enterprise_structure.project_schemas import (
+    ProjectConfigurationOut,
+    ProjectCreationPolicyUpdate,
+    ProjectNumberingUpdate,
+    ProjectPreviewOut,
+    ProjectPreviewRequest,
+    ProjectTemplatePayload,
+    ProjectTemplatePublishRequest,
+    ProjectTemplateUpdate,
+    ProjectTemplateValidationOut,
+)
 from app.modules.enterprise_structure.revisions import EnterpriseStructureRevisionService
 from app.modules.enterprise_structure.schemas import (
     CategoryUpdate,
@@ -100,6 +112,23 @@ def _revision_service(
         require_organization_scope(context)
     EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
     return EnterpriseStructureRevisionService(db, tenant_id, context.user.id)
+
+
+def _project_service(
+    db: Session,
+    tenant_id: int,
+    user_id: int,
+    permission: str,
+    *,
+    organization_scope: bool = False,
+) -> ProjectWorkspaceConfigurationService:
+    context = require_enterprise_permission(db, tenant_id, user_id, permission)
+    if organization_scope:
+        require_organization_scope(context)
+    EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
+    service = ProjectWorkspaceConfigurationService(db, tenant_id, context.user.id)
+    service.ensure_seed()
+    return service
 
 
 @router.get("/configuration", response_model=EnterpriseStructureConfigurationOut)
@@ -248,6 +277,155 @@ def workspace_types(
         ConfigurationVersionOut.model_validate(item)
         for item in service.repository.latest_configurations("workspace_type", prefer_draft=True)
     ]
+
+
+@router.get("/project-workspace", response_model=ProjectConfigurationOut)
+def project_workspace_configuration(
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectConfigurationOut:
+    return _project_service(db, tenant_id, user_id, "admin.enterprise_structure.read").overview()
+
+
+@router.post("/project-workspace/preview", response_model=ProjectPreviewOut)
+def preview_project_workspace(
+    payload: ProjectPreviewRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectPreviewOut:
+    return _project_service(db, tenant_id, user_id, "admin.enterprise_structure.read").preview(payload)
+
+
+@router.post("/project-templates", response_model=ConfigurationVersionOut, status_code=201)
+def create_project_template(
+    payload: ProjectTemplatePayload,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).create_template(payload)
+
+
+@router.post("/project-templates/{configuration_id}/clone", response_model=ConfigurationVersionOut, status_code=201)
+def clone_project_template(
+    configuration_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).clone_template(configuration_id)
+
+
+@router.put("/project-templates/{configuration_id}", response_model=ConfigurationVersionOut)
+def update_project_template(
+    configuration_id: int,
+    payload: ProjectTemplateUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).update_template(configuration_id, payload)
+
+
+@router.post("/project-templates/{configuration_id}/validate", response_model=ProjectTemplateValidationOut)
+def validate_project_template(
+    configuration_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectTemplateValidationOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).validate_template(configuration_id)
+
+
+@router.post("/project-templates/{configuration_id}/publish", response_model=ConfigurationVersionOut)
+def publish_project_template(
+    configuration_id: int,
+    payload: ProjectTemplatePublishRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).publish_template(configuration_id, payload.expected_hash)
+
+
+@router.post("/project-templates/{configuration_id}/archive", response_model=ConfigurationVersionOut)
+def archive_project_template(
+    configuration_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_template.manage",
+        organization_scope=True,
+    ).archive_template(configuration_id)
+
+
+@router.put("/project-numbering", response_model=ConfigurationVersionOut)
+def configure_project_numbering(
+    payload: ProjectNumberingUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.project_numbering.manage",
+        organization_scope=True,
+    ).configure_numbering(payload)
+
+
+@router.put("/project-creation-policy", response_model=ConfigurationVersionOut)
+def configure_project_creation_policy(
+    payload: ProjectCreationPolicyUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.creation_policy.manage",
+        organization_scope=True,
+    ).configure_creation_policy(payload)
 
 
 @router.post("/types/{type_code}/clone", response_model=ConfigurationVersionOut, status_code=201)

@@ -4,7 +4,7 @@ export type ConfigurationVersion = {
   code: string;
   name: string;
   description: string;
-  status: "draft" | "published";
+  status: "draft" | "published" | "archived";
   revision: number;
   version: number;
   content_json: Record<string, unknown>;
@@ -223,4 +223,57 @@ export type ExplorerFilters = {
   strategic_objective: string;
   region: string;
   status: string;
+};
+
+export type ProjectParentOption = {
+  id: number;
+  name: string;
+  workspace_type_code: "portfolio" | "program";
+  record_code: string;
+  status: string;
+};
+
+export type ProjectConfiguration = {
+  project_type: ConfigurationVersion;
+  templates: ConfigurationVersion[];
+  numbering_rule: ConfigurationVersion;
+  creation_policy: ConfigurationVersion;
+  classification_sets: ConfigurationVersion[];
+  available_modules: ConfigurationVersion[];
+  parent_options: ProjectParentOption[];
+  allowed_parent_types: string[];
+  summary: Record<string, number>;
+  gate_status: "READY_FOR_PROJECT_CREATION_PROCESS" | "GATE05A_REWORK_REQUIRED";
+  gate_05b_contract: Record<string, unknown>;
+};
+
+export type ProjectPreview = {
+  allowed: boolean;
+  parent: ProjectParentOption;
+  template_code: string;
+  projected_record_code: string;
+  projected_project_number: string;
+  inherited_classifications: Array<{
+    category_set_code: string;
+    category_item_code: string;
+    source: string;
+  }>;
+  enabled_modules: string[];
+  initial_status: string;
+  issues: string[];
+  persisted: false;
+};
+
+export type ProjectTemplatePayload = {
+  code: string;
+  name: string;
+  description: string;
+  applicable_parent_types: string[];
+  default_classifications: Array<{ category_set_code: string; category_item_code: string }>;
+  enabled_modules: string[];
+  default_role_codes: string[];
+  default_group_codes: string[];
+  numbering_rule_code: string;
+  default_attributes: Record<string, unknown>;
+  creation_policy_code: string;
 };

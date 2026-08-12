@@ -66,6 +66,16 @@ def _payload() -> dict:
                 "publish_candidate": True,
             },
             {
+                "external_key": "pf-001",
+                "code": "pf-001",
+                "name": "Strategic Portfolio",
+                "node_type": "PORTFOLIO",
+                "parent_external_key": "bu-001",
+                "status": "DRAFT",
+                "sort_order": 15,
+                "publish_candidate": True,
+            },
+            {
                 "external_key": "prop-001",
                 "code": "prop-001",
                 "name": "Main Property",
@@ -80,7 +90,7 @@ def _payload() -> dict:
                 "code": "prj-001",
                 "name": "Pilot Project",
                 "node_type": "PROJECT",
-                "parent_external_key": "bu-001",
+                "parent_external_key": "pf-001",
                 "status": "DRAFT",
                 "sort_order": 30,
                 "publish_candidate": True,
@@ -91,6 +101,12 @@ def _payload() -> dict:
                 "workspace_external_key": "bu-001",
                 "category_set_code": "RESPONSIBLE_AREA",
                 "category_item_code": "corporate",
+                "status": "ACTIVE",
+            },
+            {
+                "workspace_external_key": "pf-001",
+                "category_set_code": "STRATEGIC_OBJECTIVE",
+                "category_item_code": "obj-001",
                 "status": "ACTIVE",
             },
             {
@@ -211,15 +227,16 @@ def test_dry_run_validates_topology_references_and_diff_without_mutation() -> No
     assert report.valid is True
     assert report.summary["errors"] == 0
     assert report.topological_order.index("ENT-ROOT") < report.topological_order.index("BU-001")
-    assert report.summary["create"] == 8
+    assert report.summary["create"] == 10
     assert report.summary["unchanged"] == 1
     assert report.summary["base_mutations"] == 0
     node_codes = {item.key: item.record_code for item in report.diff if item.entity == "node"}
     assert node_codes == {
         "ENT-ROOT": "01",
         "BU-001": "01.01",
-        "PROP-001": "01.01.01",
-        "PRJ-001": "01.01.02",
+        "PF-001": "01.01.01",
+        "PROP-001": "01.01.02",
+        "PRJ-001": "01.01.01.01",
     }
     assert len(report.input_hash) == 64
     assert "Result: VALID" in render_human(report)
@@ -254,7 +271,7 @@ def test_diff_is_idempotent_for_existing_nodes_classifications_and_links() -> No
     configuration = _configuration()
     snapshot = _snapshot()
     existing_by_key = {item.external_key: item for item in snapshot.nodes}
-    parent_ids = {"ENT-ROOT": None, "BU-001": 1, "PROP-001": 2, "PRJ-001": 2}
+    parent_ids = {"ENT-ROOT": None, "BU-001": 1, "PF-001": 2, "PROP-001": 2, "PRJ-001": 3}
     for index, node in enumerate(configuration.nodes[1:], start=2):
         parent_id = parent_ids[node.external_key]
         existing = ExistingNode(
@@ -267,12 +284,18 @@ def test_diff_is_idempotent_for_existing_nodes_classifications_and_links() -> No
             status=node.status.value.lower(),
             sort_order=node.sort_order or 0,
             metadata={"external_key": node.external_key, "description": node.description or "", "region_code": ""},
-            record_code={"BU-001": "01.01", "PROP-001": "01.01.01", "PRJ-001": "01.01.02"}[node.external_key],
+            record_code={
+                "BU-001": "01.01",
+                "PF-001": "01.01.01",
+                "PROP-001": "01.01.02",
+                "PRJ-001": "01.01.01.01",
+            }[node.external_key],
         )
         snapshot.nodes.append(existing)
         existing_by_key[node.external_key] = existing
     snapshot.published_categories["strategic-objective"]["items"] = [{"code": "OBJ-001", "label": "Growth"}]
     snapshot.classifications.add((existing_by_key["BU-001"].id, "responsible-area", "corporate"))
+    snapshot.classifications.add((existing_by_key["PF-001"].id, "strategic-objective", "obj-001"))
     snapshot.classifications.add((existing_by_key["PROP-001"].id, "property-type", "owned"))
     snapshot.classifications.add((existing_by_key["PRJ-001"].id, "strategic-objective", "obj-001"))
     snapshot.links.add((existing_by_key["PRJ-001"].id, existing_by_key["PROP-001"].id, "LOCATED_AT"))
@@ -281,7 +304,7 @@ def test_diff_is_idempotent_for_existing_nodes_classifications_and_links() -> No
     assert {item.action for item in diff} == {DiffAction.UNCHANGED}
 
     changed_parent = _payload()
-    changed_parent["nodes"][2]["parent_external_key"] = "ENT-ROOT"
+    changed_parent["nodes"][3]["parent_external_key"] = "ENT-ROOT"
     parent_diff = build_diff(_configuration(changed_parent), snapshot)
     property_change = next(item for item in parent_diff if item.entity == "node" and item.key == "PROP-001")
     assert property_change.action == DiffAction.UPDATE
@@ -348,8 +371,9 @@ def _reconciled_payload() -> dict:
     payload["reconciliation"] = [
         {"external_key": "ENT-ROOT", "existing_id": 1, "action": "ADOPT", "rationale": "Existing root"},
         {"external_key": "BU-001", "existing_id": 2, "action": "ADOPT", "rationale": "Existing BU"},
-        {"external_key": "PROP-001", "existing_id": 3, "action": "ADOPT", "rationale": "Existing property"},
-        {"external_key": "PRJ-001", "existing_id": 4, "action": "ADOPT", "rationale": "Existing project"},
+        {"external_key": "PF-001", "existing_id": 3, "action": "ADOPT", "rationale": "Existing portfolio"},
+        {"external_key": "PROP-001", "existing_id": 4, "action": "ADOPT", "rationale": "Existing property"},
+        {"external_key": "PRJ-001", "existing_id": 5, "action": "ADOPT", "rationale": "Existing project"},
     ]
     return payload
 
@@ -389,18 +413,32 @@ def _reconciliation_snapshot() -> TenantSnapshot:
             id=3,
             parent_id=2,
             external_key="",
+            code="LEG-PF",
+            name="Legacy Portfolio",
+            node_type="portfolio",
+            status="active",
+            sort_order=0,
+            metadata={},
+            record_code="01.04.01",
+            references={"children": 1, "classifications": 1, "links": 0, "module_settings": 0},
+            child_ids=(5,),
+        ),
+        ExistingNode(
+            id=4,
+            parent_id=2,
+            external_key="",
             code="LEG-PROP",
             name="Legacy Property",
             node_type="property",
             status="active",
             sort_order=0,
             metadata={},
-            record_code="01.04.01",
+            record_code="01.04.02",
             references={"children": 0, "classifications": 1, "links": 1, "module_settings": 0},
         ),
         ExistingNode(
-            id=4,
-            parent_id=2,
+            id=5,
+            parent_id=3,
             external_key="",
             code="LEG-PRJ",
             name="Legacy Project",
@@ -408,18 +446,19 @@ def _reconciliation_snapshot() -> TenantSnapshot:
             status="active",
             sort_order=0,
             metadata={},
-            record_code="01.04.02",
+            record_code="01.04.01.01",
             references={"children": 0, "classifications": 1, "links": 1, "module_settings": 0},
         ),
     ]
-    snapshot.workspace_tenant_ids = {1: 1, 2: 1, 3: 1, 4: 1}
+    snapshot.workspace_tenant_ids = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
     snapshot.published_categories["strategic-objective"]["items"] = [{"code": "OBJ-001", "label": "Growth"}]
     snapshot.classifications = {
         (2, "responsible-area", "corporate"),
-        (3, "property-type", "owned"),
-        (4, "strategic-objective", "obj-001"),
+        (3, "strategic-objective", "obj-001"),
+        (4, "property-type", "owned"),
+        (5, "strategic-objective", "obj-001"),
     }
-    snapshot.links = {(4, 3, "LOCATED_AT")}
+    snapshot.links = {(5, 4, "LOCATED_AT")}
     return snapshot
 
 
@@ -431,7 +470,7 @@ def test_explicit_adoption_preserves_ids_references_and_distinguishes_adopt_from
 
     adopted = {item.key: item for item in report.diff if item.action == DiffAction.ADOPT}
     assert report.valid is True
-    assert report.summary["adopt"] == 4
+    assert report.summary["adopt"] == 5
     assert report.summary["identity_conflicts"] == 0
     assert adopted["ENT-ROOT"].existing_id == 1
     assert adopted["BU-001"].existing_id == 2

@@ -11,6 +11,9 @@ import type {
   ExplorerFilters,
   NodePayload,
   PublicationResult,
+  ProjectConfiguration,
+  ProjectPreview,
+  ProjectTemplatePayload,
   RecordCodePreview,
   RevisionClassification,
   RevisionDiff,
@@ -30,6 +33,72 @@ function queryString(filters: ExplorerFilters) {
 
 export const enterpriseStructureApi = {
   configuration: (token: string) => apiFetch<EnterpriseStructureConfiguration>(`${adminRoot}/configuration`, { token }),
+
+  projectConfiguration: (token: string) => apiFetch<ProjectConfiguration>(`${adminRoot}/project-workspace`, { token }),
+
+  previewProject: (token: string, parentId: number, templateId: number) =>
+    apiFetch<ProjectPreview>(`${adminRoot}/project-workspace/preview`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ parent_id: parentId, template_id: templateId }),
+    }),
+
+  createProjectTemplate: (token: string, payload: ProjectTemplatePayload) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-templates`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  updateProjectTemplate: (
+    token: string,
+    configurationId: number,
+    payload: ProjectTemplatePayload & { expected_version: number }
+  ) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-templates/${configurationId}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  validateProjectTemplate: (token: string, configurationId: number) =>
+    apiFetch<ConfigurationValidation & { content_hash: string }>(
+      `${adminRoot}/project-templates/${configurationId}/validate`,
+      { method: "POST", token }
+    ),
+
+  publishProjectTemplate: (token: string, configurationId: number, expectedHash: string) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-templates/${configurationId}/publish`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ expected_hash: expectedHash }),
+    }),
+
+  cloneProjectTemplate: (token: string, configurationId: number) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-templates/${configurationId}/clone`, {
+      method: "POST",
+      token,
+    }),
+
+  archiveProjectTemplate: (token: string, configurationId: number) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-templates/${configurationId}/archive`, {
+      method: "POST",
+      token,
+    }),
+
+  updateProjectNumbering: (token: string, prefix: string, padding: number) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-numbering`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ prefix, padding, start: 1, no_reuse: true }),
+    }),
+
+  updateProjectCreationPolicy: (token: string, payload: Record<string, unknown>) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/project-creation-policy`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   createNode: (token: string, payload: NodePayload) =>
     apiFetch<EnterpriseNode>(`${adminRoot}/nodes`, {

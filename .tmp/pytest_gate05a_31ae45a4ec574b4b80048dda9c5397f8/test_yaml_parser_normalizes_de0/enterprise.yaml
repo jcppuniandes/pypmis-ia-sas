@@ -1,0 +1,10 @@
+metadata:
+  tenant_code: demo-energy
+  release_code: es-001
+  release_name: First release
+nodes:
+  - external_key: ent-root
+    code: ent-001
+    name: Enterprise
+    node_type: ENTERPRISE
+    status: DRAFT
