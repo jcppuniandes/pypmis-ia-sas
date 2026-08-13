@@ -1308,6 +1308,97 @@
   background: #fff;
 }
 
+.physicalTypePicker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.physicalTypePicker button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cbd8df;
+  border-radius: 10px;
+  color: #172b38;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  min-height: 64px;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.physicalTypePicker button.active {
+  background: #eaf8f7;
+  border-color: #159b93;
+  box-shadow: inset 3px 0 #159b93;
+}
+
+.physicalTypePicker button span {
+  display: grid;
+  gap: 2px;
+}
+.physicalTypePicker button small {
+  color: #617581;
+  font-size: 0.72rem;
+}
+.dynamicPhysicalAttributes label {
+  text-transform: none;
+}
+
+.physicalAttributeSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.physicalAttributeSummary div {
+  background: #f4f8fa;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  padding: 9px 11px;
+}
+
+.physicalAttributeSummary dt {
+  color: #617581;
+  font-size: 0.72rem;
+  text-transform: capitalize;
+}
+.physicalAttributeSummary dd {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+
+.physicalRequestFilters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #d7e1e5;
+  background: #f8fafc;
+}
+
+.physicalRequestFilters input,
+.physicalRequestFilters select {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #cbd8df;
+  border-radius: 8px;
+  background: #fff;
+}
+
+@media (max-width: 760px) {
+  .physicalTypePicker,
+  .physicalAttributeSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .physicalRequestFilters {
+    grid-template-columns: 1fr;
+  }
+}
+
 .projectCreationActions button,
 .projectCreationWorkspace button,
 .projectIntakeForm button {

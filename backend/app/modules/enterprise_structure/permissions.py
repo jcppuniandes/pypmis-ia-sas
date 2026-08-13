@@ -131,6 +131,63 @@ PROJECT_WORKSPACE_LIFECYCLE_ROLE_DEFINITIONS = {
     ),
 }
 
+PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "physical_workspace_requestor": frozenset(
+        {
+            "physical_workspace_creation.request.create",
+            "physical_workspace_creation.request.edit",
+            "physical_workspace_creation.request.submit",
+            "physical_workspace_creation.request.read",
+            "enterprise_structure.read",
+        }
+    ),
+    "physical_workspace_reviewer": frozenset(
+        {
+            "physical_workspace_creation.request.read",
+            "physical_workspace_creation.review",
+            "enterprise_structure.read",
+        }
+    ),
+    "physical_workspace_approver": frozenset(
+        {
+            "physical_workspace_creation.request.read",
+            "physical_workspace_creation.approve",
+            "enterprise_structure.read",
+        }
+    ),
+    "physical_workspace_materialization_service": frozenset(
+        {
+            "physical_workspace_creation.request.read",
+            "physical_workspace_creation.materialize",
+            "enterprise_structure.read",
+        }
+    ),
+    "physical_workspace_responsible": frozenset({"enterprise_structure.read"}),
+}
+
+PHYSICAL_WORKSPACE_CREATION_ROLE_DEFINITIONS = {
+    "physical_workspace_requestor": (
+        "Physical Workspace Requestor",
+        "Creates and submits governed Property, Facility and Warehouse requests.",
+    ),
+    "physical_workspace_reviewer": (
+        "Physical Workspace Reviewer",
+        "Reviews, returns and rejects governed physical Workspace requests.",
+    ),
+    "physical_workspace_approver": (
+        "Physical Workspace Approver",
+        "Approves governed physical Workspace requests under Four-Eyes.",
+    ),
+    "physical_workspace_materialization_service": (
+        "Physical Workspace Materialization Service",
+        "Restricted service role that materializes approved physical Workspaces.",
+    ),
+    "physical_workspace_responsible": (
+        "Physical Workspace Responsible",
+        "Minimum Workspace-scoped access for the assigned physical Workspace responsible.",
+    ),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -340,6 +397,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PHYSICAL_WORKSPACE_CREATION_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -349,6 +420,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **STRUCTURE_ROLE_PERMISSIONS,
         **PROJECT_CREATION_ROLE_PERMISSIONS,
         **PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
+        **PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

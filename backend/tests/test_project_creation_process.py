@@ -658,12 +658,14 @@ def test_33_materialization_persists_classification_module_and_manager_scope(gat
     workspace_id = created["materialized_workspace_id"]
     with SessionLocal() as db:
         classifications = db.scalar(
-            select(func.count()).select_from(EnterpriseWorkspaceClassification).where(
-                EnterpriseWorkspaceClassification.workspace_id == workspace_id
-            )
+            select(func.count())
+            .select_from(EnterpriseWorkspaceClassification)
+            .where(EnterpriseWorkspaceClassification.workspace_id == workspace_id)
         )
         modules = db.scalar(
-            select(func.count()).select_from(WorkspaceModuleSetting).where(
+            select(func.count())
+            .select_from(WorkspaceModuleSetting)
+            .where(
                 WorkspaceModuleSetting.workspace_id == workspace_id,
                 WorkspaceModuleSetting.enabled.is_(True),
             )
@@ -767,7 +769,9 @@ def test_38_retry_after_transient_failure_succeeds(gate: Gate) -> None:
     with SessionLocal() as db:
         service = ProjectCreationService(db, gate.tenant_id, gate.actor_ids["materializer"])
         with pytest.raises(RuntimeError):
-            service.materialize(request["id"], failure_injector=lambda _workspace: (_ for _ in ()).throw(RuntimeError()))
+            service.materialize(
+                request["id"], failure_injector=lambda _workspace: (_ for _ in ()).throw(RuntimeError())
+            )
     response = gate.client.post(f"{ROOT}/{request['id']}/materialize", headers=gate.headers["materializer"])
     assert response.status_code == 200
     assert response.json()["result"] == "CREATED"
@@ -779,7 +783,9 @@ def test_39_concurrent_materialization_creates_exactly_one_workspace(gate: Gate)
 
     def materialize() -> tuple[str, int]:
         with SessionLocal() as db:
-            result = ProjectCreationService(db, gate.tenant_id, gate.actor_ids["materializer"]).materialize(request["id"])
+            result = ProjectCreationService(db, gate.tenant_id, gate.actor_ids["materializer"]).materialize(
+                request["id"]
+            )
             return result.result, result.materialized_workspace_id
 
     with ThreadPoolExecutor(max_workers=2) as executor:

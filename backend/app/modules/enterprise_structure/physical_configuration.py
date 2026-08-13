@@ -207,12 +207,8 @@ class PhysicalWorkspaceConfigurationService:
             )
         record = self._required("workspace_type", parent, published_only=True)
         self._assert_version(record, expected_version)
-        existing_children = [
-            _type_code(item) for item in record.content_json.get("allowed_children", [])
-        ]
-        non_physical_children = [
-            item for item in existing_children if item not in set(PHYSICAL_TYPE_CODES)
-        ]
+        existing_children = [_type_code(item) for item in record.content_json.get("allowed_children", [])]
+        non_physical_children = [item for item in existing_children if item not in set(PHYSICAL_TYPE_CODES)]
         merged_children = list(dict.fromkeys([*non_physical_children, *allowed]))
         replacement = self._replace_published(
             record,

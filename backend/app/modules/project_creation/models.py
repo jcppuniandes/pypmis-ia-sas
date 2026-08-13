@@ -57,6 +57,4 @@ class ProjectCreationRequest(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime)
     materialized_at: Mapped[datetime | None] = mapped_column(DateTime)
 
-    __table_args__ = (
-        UniqueConstraint("tenant_id", "request_number", name="uq_project_creation_request_number"),
-    )
+    __table_args__ = (UniqueConstraint("tenant_id", "request_number", name="uq_project_creation_request_number"),)

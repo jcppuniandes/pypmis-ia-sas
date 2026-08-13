@@ -11,6 +11,11 @@ import type {
   ExplorerFilters,
   NodePayload,
   PhysicalConfiguration,
+  PhysicalWorkspaceCreationOptions,
+  PhysicalWorkspaceCreationRequest,
+  PhysicalWorkspaceOverview,
+  PhysicalWorkspaceRequestPayload,
+  PhysicalWorkspaceRequestPreview,
   PhysicalPreview,
   PublicationResult,
   ProjectConfiguration,
@@ -32,6 +37,7 @@ import type {
 const adminRoot = "/api/v1/admin-configuration/enterprise-structure";
 const userRoot = "/api/v1/enterprise-structure";
 const projectCreationRoot = "/api/v1/project-creation-requests";
+const physicalCreationRoot = "/api/v1/physical-workspace-creation-requests";
 
 function queryString(filters: ExplorerFilters) {
   const query = new URLSearchParams();
@@ -431,6 +437,73 @@ export const enterpriseStructureApi = {
 
   projectWorkspaceOverview: (token: string, workspaceId: number) =>
     apiFetch<ProjectWorkspaceOverview>(`/api/v1/project-workspaces/${workspaceId}/overview`, { token }),
+
+  physicalCreationOptions: (token: string, workspaceTypeCode?: string, parentWorkspaceId?: number) => {
+    const query = new URLSearchParams();
+    if (workspaceTypeCode) query.set("workspace_type_code", workspaceTypeCode);
+    if (parentWorkspaceId) query.set("parent_workspace_id", String(parentWorkspaceId));
+    return apiFetch<PhysicalWorkspaceCreationOptions>(`${physicalCreationRoot}/options?${query}`, { token });
+  },
+
+  createPhysicalWorkspaceRequest: (token: string, payload: PhysicalWorkspaceRequestPayload) =>
+    apiFetch<PhysicalWorkspaceCreationRequest>(physicalCreationRoot, {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  updatePhysicalWorkspaceRequest: (
+    token: string,
+    requestId: number,
+    version: number,
+    payload: PhysicalWorkspaceRequestPayload
+  ) =>
+    apiFetch<PhysicalWorkspaceCreationRequest>(`${physicalCreationRoot}/${requestId}`, {
+      method: "PUT",
+      token,
+      headers: { "If-Match": `"${version}"` },
+      body: JSON.stringify(payload),
+    }),
+
+  physicalWorkspaceRequestPreview: (token: string, requestId: number) =>
+    apiFetch<PhysicalWorkspaceRequestPreview>(`${physicalCreationRoot}/${requestId}/preview`, {
+      method: "POST",
+      token,
+    }),
+
+  physicalWorkspaceRequests: (token: string, reviewQueue = false) =>
+    apiFetch<PhysicalWorkspaceCreationRequest[]>(`${physicalCreationRoot}${reviewQueue ? "?review_queue=true" : ""}`, {
+      token,
+    }),
+
+  transitionPhysicalWorkspaceRequest: (
+    token: string,
+    request: PhysicalWorkspaceCreationRequest,
+    action: "submit" | "cancel" | "start-review" | "return" | "reject" | "approve",
+    reason?: string
+  ) =>
+    apiFetch<PhysicalWorkspaceCreationRequest>(`${physicalCreationRoot}/${request.id}/${action}`, {
+      method: "POST",
+      token,
+      headers: { "If-Match": `"${request.revision_version}"` },
+      body: reason ? JSON.stringify({ reason }) : undefined,
+    }),
+
+  materializePhysicalWorkspaceRequest: (token: string, request: PhysicalWorkspaceCreationRequest) =>
+    apiFetch<{
+      result: "CREATED" | "ALREADY_CREATED";
+      materialized_workspace_id: number;
+      business_number: string;
+      record_code: string;
+      mutation_count: number;
+    }>(`${physicalCreationRoot}/${request.id}/materialize`, {
+      method: "POST",
+      token,
+      headers: { "If-Match": `"${request.revision_version}"` },
+    }),
+
+  physicalWorkspaceOverview: (token: string, workspaceId: number) =>
+    apiFetch<PhysicalWorkspaceOverview>(`/api/v1/physical-workspaces/${workspaceId}/overview`, { token }),
 
   projectWorkspaces: (token: string, status = "") =>
     apiFetch<ProjectWorkspaceListItem[]>(`/api/v1/project-workspaces${status ? `?status=${status}` : ""}`, { token }),

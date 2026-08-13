@@ -409,7 +409,11 @@ def test_38_baseline_has_no_real_physical_instances_or_core_draft(gate) -> None:
         )
         assert after == before
         assert all(
-            (current := db.scalar(select(AdminNumberSequence.next_value).where(AdminNumberSequence.rule_code == rule_code)))
+            (
+                current := db.scalar(
+                    select(AdminNumberSequence.next_value).where(AdminNumberSequence.rule_code == rule_code)
+                )
+            )
             is not None
             and current >= 1
             for rule_code, _prefix_value in NUMBERING.values()

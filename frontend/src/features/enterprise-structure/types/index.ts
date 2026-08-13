@@ -302,6 +302,116 @@ export type PhysicalPreview = {
   persisted: false;
 };
 
+export type PhysicalWorkspaceCreationState = ProjectCreationState;
+
+export type PhysicalClassificationValue = {
+  category_set_code: string;
+  category_item_code: string;
+};
+
+export type PhysicalWorkspaceRequestPayload = {
+  workspace_type_code: "property" | "facility" | "warehouse";
+  parent_workspace_id: number;
+  template_config_id: number;
+  workspace_name: string;
+  description: string;
+  responsible_user_id: number;
+  attributes: Record<string, unknown>;
+  classifications: PhysicalClassificationValue[];
+};
+
+export type PhysicalWorkspaceCreationRequest = PhysicalWorkspaceRequestPayload & {
+  id: number;
+  request_number: string;
+  state: PhysicalWorkspaceCreationState;
+  requestor_user_id: number;
+  requestor_name: string;
+  parent_name: string;
+  parent_record_code: string;
+  template_code: string;
+  template_name: string;
+  responsible_name: string;
+  revision_version: number;
+  decision_reason: string | null;
+  failure_reason: string | null;
+  approved_by_user_id: number | null;
+  materialized_workspace_id: number | null;
+  materialized_business_number: string | null;
+  materialized_record_code: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PhysicalWorkspaceCreationOptions = {
+  workspace_types: Array<{ code: "property" | "facility" | "warehouse"; name: string; domain_description: string }>;
+  selected_workspace_type: string | null;
+  locations: Array<{
+    id: number;
+    workspace_type_code: string;
+    name: string;
+    record_code: string;
+    path: string[];
+  }>;
+  templates: Array<{
+    id: number;
+    code: string;
+    name: string;
+    workspace_type_code: string;
+    applicable_parent_types: string[];
+    enabled_modules: string[];
+  }>;
+  responsibles: Array<{ id: number; name: string; email: string }>;
+  dynamic_attributes: Array<{
+    code: string;
+    label: string;
+    input_type: string;
+    required: boolean;
+    read_only: boolean;
+    options: CategoryItem[];
+  }>;
+  classifications: Record<string, CategoryItem[]>;
+  creation_policy: Record<string, unknown> | null;
+  blocked_reason: string | null;
+};
+
+export type PhysicalWorkspaceRequestPreview = {
+  allowed: boolean;
+  issues: string[];
+  warnings: string[];
+  workspace_type: Record<string, unknown>;
+  parent: Record<string, unknown>;
+  parent_record_code: string;
+  projected_record_code: string;
+  projected_business_number: string;
+  template: Record<string, unknown>;
+  creation_policy: Record<string, unknown>;
+  applicable_classifications: string[];
+  selected_classifications: PhysicalClassificationValue[];
+  enabled_modules: string[];
+  planned_modules: string[];
+  initial_workspace_status: string;
+  persisted: false;
+};
+
+export type PhysicalWorkspaceOverview = {
+  workspace_id: number;
+  workspace_type_code: "property" | "facility" | "warehouse";
+  workspace_name: string;
+  business_number: string;
+  record_code: string;
+  status: string;
+  parent_workspace: string;
+  responsible: string;
+  template: string;
+  creation_request_id: number | null;
+  creation_request_number: string;
+  created_at: string;
+  attributes: Record<string, unknown>;
+  classifications: PhysicalClassificationValue[];
+  enabled_modules: string[];
+  planned_modules: string[];
+};
+
 export type ProjectTemplatePayload = {
   code: string;
   name: string;

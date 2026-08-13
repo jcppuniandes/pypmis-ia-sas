@@ -1,0 +1,39 @@
+{
+  "building_name": "",
+  "cache_status": "metadata_manifest_ready",
+  "class_summary": [
+    {
+      "count": 1,
+      "ifc_class": "IfcSlab"
+    }
+  ],
+  "engine": "web-ifc/three",
+  "geometry_cache": {},
+  "geometry_strategy": "direct_browser",
+  "georeferencing": {},
+  "limits": {
+    "backend_cache_required_bytes": 104857600,
+    "direct_browser_bytes": 26214400
+  },
+  "model_id": 2,
+  "product_count": 1,
+  "project_id": 6,
+  "project_name": "Geometry Project",
+  "property_index": {
+    "indexed_products": 1,
+    "property_sets": 0,
+    "quantity_sets": 0,
+    "scan_limit_bytes": 26214400,
+    "scan_status": "complete",
+    "type_relations": 0
+  },
+  "revision_id": "IFC-M2-9494f39b1ec4",
+  "schema": "IFC4X3",
+  "site_name": "",
+  "source_file_name": "geometry-model.ifc",
+  "source_sha256": "9494f39b1ec4a5e2a6201d8c2aa67af0464b1ae6ec2198c58d68577d1cb3499c",
+  "source_size_bytes": 209,
+  "storey_count": 0,
+  "units": "",
+  "warnings": []
+}

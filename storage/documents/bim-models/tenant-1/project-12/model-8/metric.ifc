@@ -1,0 +1,10 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');
+FILE_SCHEMA(('IFC2X3'));
+ENDSEC;
+DATA;
+#10=IFCPROJECT('PROJECTGUID',$,'Wellness Center',$,$,$,$,$,$);
+#20=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+ENDSEC;
+END-ISO-10303-21;

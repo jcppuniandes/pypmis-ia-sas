@@ -1,0 +1,59 @@
+{
+  "building_name": "",
+  "cache_status": "geometry_cache_ready",
+  "class_summary": [
+    {
+      "count": 1,
+      "ifc_class": "IfcBuildingElementProxy"
+    },
+    {
+      "count": 1,
+      "ifc_class": "IfcBuildingelementproxytype"
+    },
+    {
+      "count": 1,
+      "ifc_class": "IfcElementQuantity"
+    }
+  ],
+  "engine": "web-ifc/three",
+  "geometry_cache": {
+    "engine": "fake-ifc-converter",
+    "generated_at": "2026-08-13T05:24:17.913241",
+    "mesh_count": 1,
+    "model_id": 6,
+    "product_count": 1,
+    "project_id": 10,
+    "revision_id": "IFC-M6-7ed471229a31-GEOM",
+    "source_sha256": "7ed471229a3141ab6b98d2093259b14784f98cd0d38914ebe71d91f85b3eefd5",
+    "status": "ready",
+    "storage_path": "bim-models/tenant-1/project-10/model-6/geometry_cache.json",
+    "triangle_count": 1
+  },
+  "geometry_strategy": "backend_cache",
+  "georeferencing": {},
+  "limits": {
+    "backend_cache_required_bytes": 104857600,
+    "direct_browser_bytes": 26214400
+  },
+  "model_id": 6,
+  "product_count": 3,
+  "project_id": 10,
+  "project_name": "Wellness Center",
+  "property_index": {
+    "indexed_products": 3,
+    "property_sets": 1,
+    "quantity_sets": 1,
+    "scan_limit_bytes": 26214400,
+    "scan_status": "complete",
+    "type_relations": 1
+  },
+  "revision_id": "IFC-M6-7ed471229a31",
+  "schema": "IFC4",
+  "site_name": "",
+  "source_file_name": "geometry.ifc",
+  "source_sha256": "7ed471229a3141ab6b98d2093259b14784f98cd0d38914ebe71d91f85b3eefd5",
+  "source_size_bytes": 1011,
+  "storey_count": 0,
+  "units": "",
+  "warnings": []
+}

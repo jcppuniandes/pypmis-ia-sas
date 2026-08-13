@@ -1,0 +1,34 @@
+{
+  "building_name": "",
+  "cache_status": "metadata_manifest_ready",
+  "class_summary": [],
+  "engine": "web-ifc/three",
+  "geometry_cache": {},
+  "geometry_strategy": "direct_browser",
+  "georeferencing": {},
+  "limits": {
+    "backend_cache_required_bytes": 104857600,
+    "direct_browser_bytes": 26214400
+  },
+  "model_id": 8,
+  "product_count": 0,
+  "project_id": 12,
+  "project_name": "Wellness Center",
+  "property_index": {
+    "indexed_products": 0,
+    "property_sets": 0,
+    "quantity_sets": 0,
+    "scan_limit_bytes": 26214400,
+    "scan_status": "complete",
+    "type_relations": 0
+  },
+  "revision_id": "IFC-M8-fc14f5b8d163",
+  "schema": "IFC2X3",
+  "site_name": "",
+  "source_file_name": "metric.ifc",
+  "source_sha256": "fc14f5b8d16310de5b198d6579d3d2a46af3c379a691ffe3d669e24e2591f677",
+  "source_size_bytes": 260,
+  "storey_count": 0,
+  "units": "millimeters",
+  "warnings": []
+}

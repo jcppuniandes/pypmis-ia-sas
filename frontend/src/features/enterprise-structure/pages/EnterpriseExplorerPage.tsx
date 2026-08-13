@@ -18,6 +18,9 @@ import EnterpriseTable from "../components/EnterpriseTable";
 import EnterpriseTree from "../components/EnterpriseTree";
 import NodeDetailPanel from "../components/NodeDetailPanel";
 import ProjectCreationWorkspace, { type ProjectCreationView } from "../components/ProjectCreationWorkspace";
+import PhysicalWorkspaceCreationWorkspace, {
+  type PhysicalWorkspaceCreationView,
+} from "../components/PhysicalWorkspaceCreationWorkspace";
 import StructureFilters from "../components/StructureFilters";
 import type {
   EnterpriseExplorer,
@@ -60,6 +63,9 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [projectView, setProjectView] = useState<ProjectCreationView | null>(null);
+  const [physicalView, setPhysicalView] = useState<PhysicalWorkspaceCreationView | null>(null);
+  const [physicalType, setPhysicalType] = useState<"property" | "facility" | "warehouse">("property");
+  const [eligiblePhysicalTypes, setEligiblePhysicalTypes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let active = true;
@@ -83,6 +89,41 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
       window.clearTimeout(timer);
     };
   }, [token, filters]);
+
+  useEffect(() => {
+    let active = true;
+    if (!detail) {
+      const timer = window.setTimeout(() => {
+        if (active) setEligiblePhysicalTypes(new Set());
+      }, 0);
+      return () => {
+        active = false;
+        window.clearTimeout(timer);
+      };
+    }
+    const loadEligibility = async () => {
+      try {
+        const types = ["property", "facility", "warehouse"] as const;
+        const responses = await Promise.all(
+          types.map((type) => enterpriseStructureApi.physicalCreationOptions(token, type, detail.node.id))
+        );
+        if (!active) return;
+        setEligiblePhysicalTypes(
+          new Set(
+            types.filter((_type, index) =>
+              responses[index].locations.some((location) => location.id === detail.node.id)
+            )
+          )
+        );
+      } catch {
+        if (active) setEligiblePhysicalTypes(new Set());
+      }
+    };
+    void loadEligibility();
+    return () => {
+      active = false;
+    };
+  }, [detail, token]);
 
   async function selectNode(nodeId: number) {
     setBusy(true);
@@ -109,6 +150,20 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         projectWorkspaceId={projectView === "overview" ? detail?.node.id : undefined}
         token={token}
         view={projectView}
+      />
+    );
+  }
+
+  if (physicalView) {
+    return (
+      <PhysicalWorkspaceCreationWorkspace
+        initialParentId={physicalView === "create" ? detail?.node.id : undefined}
+        initialType={physicalType}
+        onBack={() => setPhysicalView(null)}
+        onCreated={() => setFilters({ ...filters })}
+        token={token}
+        view={physicalView}
+        workspaceId={physicalView === "overview" ? detail?.node.id : undefined}
       />
     );
   }
@@ -164,6 +219,15 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         <button className="ghost" onClick={() => setProjectView("review")} type="button">
           <ShieldCheck size={15} /> Review Queue
         </button>
+        <button onClick={() => setPhysicalView("create")} type="button">
+          <Plus size={15} /> Create Physical Workspace
+        </button>
+        <button className="ghost" onClick={() => setPhysicalView("requests")} type="button">
+          <ClipboardList size={15} /> My Physical Requests
+        </button>
+        <button className="ghost" onClick={() => setPhysicalView("review")} type="button">
+          <ShieldCheck size={15} /> Physical Review Queue
+        </button>
         {detail && ["portfolio", "program"].includes(detail.node.workspace_type_code) ? (
           <button className="contextual" onClick={() => setProjectView("create")} type="button">
             <Plus size={15} /> Crear proyecto en {detail.node.name}
@@ -172,6 +236,47 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         {detail?.node.workspace_type_code === "project" ? (
           <button className="contextual" onClick={() => setProjectView("overview")} type="button">
             <Eye size={15} /> Project Overview
+          </button>
+        ) : null}
+        {detail && eligiblePhysicalTypes.has("property") ? (
+          <button
+            className="contextual"
+            onClick={() => {
+              setPhysicalType("property");
+              setPhysicalView("create");
+            }}
+            type="button"
+          >
+            <Plus size={15} /> Create Property
+          </button>
+        ) : null}
+        {detail && eligiblePhysicalTypes.has("facility") ? (
+          <button
+            className="contextual"
+            onClick={() => {
+              setPhysicalType("facility");
+              setPhysicalView("create");
+            }}
+            type="button"
+          >
+            <Plus size={15} /> Create Facility
+          </button>
+        ) : null}
+        {detail && eligiblePhysicalTypes.has("warehouse") ? (
+          <button
+            className="contextual"
+            onClick={() => {
+              setPhysicalType("warehouse");
+              setPhysicalView("create");
+            }}
+            type="button"
+          >
+            <Plus size={15} /> Create Warehouse
+          </button>
+        ) : null}
+        {detail && ["property", "facility", "warehouse"].includes(detail.node.workspace_type_code) ? (
+          <button className="contextual" onClick={() => setPhysicalView("overview")} type="button">
+            <Eye size={15} /> Physical Workspace Overview
           </button>
         ) : null}
       </nav>
