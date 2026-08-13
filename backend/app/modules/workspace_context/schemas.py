@@ -137,4 +137,3 @@ class WorkspaceModuleAccessOut(BaseModel):
     module: WorkspaceNavigatorItemOut
     access: str = "READY"
     data_scope: dict[str, int]
-

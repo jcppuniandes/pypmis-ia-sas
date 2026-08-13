@@ -158,4 +158,3 @@ def update_last_route(
 ) -> RecentWorkspaceOut:
     service, _context = _authorized(db, tenant_id, user_id, "workspace.recent.write", workspace_id=workspace_id)
     return service.update_last_route(workspace_id, payload.route)
-

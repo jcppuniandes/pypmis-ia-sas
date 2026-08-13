@@ -69,7 +69,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Prepare Gate 04H evidence directory
-        run: mkdir -p artifacts/enterprise_structure/gate04h
+        # The backend image runs as its non-root appuser (UID 999), while the
+        # bind-mounted directory is created by the GitHub runner user. Grant
+        # write access only to this disposable evidence directory so the E2E
+        # process can persist its JSON/CSV evidence.
+        run: install -d -m 0777 artifacts/enterprise_structure/gate04h
       - name: Run migrations, PostgreSQL E2E, concurrency, SoD and benchmark
         shell: bash
         run: |
@@ -99,7 +103,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-      - run: pip install ruff
+      # Keep formatting stable across runner image updates.
+      - run: pip install ruff==0.16.3
       - run: ruff format --check backend/app/ backend/tests/
       - run: ruff check backend/app/ backend/tests/ --output-format=github
 

@@ -174,4 +174,3 @@ class WorkspaceNavigatorService:
     @staticmethod
     def _slug(value: str) -> str:
         return "-".join(value.strip().lower().replace("_", "-").split())
-

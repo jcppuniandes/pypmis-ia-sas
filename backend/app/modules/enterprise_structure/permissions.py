@@ -173,9 +173,7 @@ PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
             "enterprise_structure.read",
         }
     ),
-    "physical_workspace_responsible": frozenset(
-        {"enterprise_structure.read", "physical_workspace.initialization.read"}
-    )
+    "physical_workspace_responsible": frozenset({"enterprise_structure.read", "physical_workspace.initialization.read"})
     | WORKSPACE_OPERATION_PERMISSIONS,
 }
 

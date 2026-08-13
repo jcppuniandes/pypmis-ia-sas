@@ -252,7 +252,9 @@ class WorkspaceOperationalContextService:
             number = self._business_number(workspace)
             if responsible.strip() and responsible.strip().lower() not in responsible_user.name.lower():
                 continue
-            if parent.strip() and parent.strip().lower() not in (parent_workspace.name.lower() if parent_workspace else ""):
+            if parent.strip() and parent.strip().lower() not in (
+                parent_workspace.name.lower() if parent_workspace else ""
+            ):
                 continue
             if business_number.strip() and business_number.strip().lower() not in number.lower():
                 continue
@@ -392,7 +394,8 @@ class WorkspaceOperationalContextService:
             business_number=self._business_number(workspace),
             record_code=workspace.record_code,
             status=workspace.status.upper(),
-            navigable=workspace.workspace_type_code in SUPPORTED_WORKSPACE_TYPES and self._has_workspace_access(workspace.id),
+            navigable=workspace.workspace_type_code in SUPPORTED_WORKSPACE_TYPES
+            and self._has_workspace_access(workspace.id),
         )
 
     def _responsible(self, workspace: EnterpriseWorkspace) -> WorkspaceResponsibleOut:
@@ -412,7 +415,9 @@ class WorkspaceOperationalContextService:
         return WorkspaceTemplateOut(
             code=str(metadata.get("template_code") or (configuration.code if configuration else "")),
             revision=metadata.get("template_revision") or (configuration.revision if configuration else None),
-            content_hash=str(metadata.get("template_content_hash") or (configuration.content_hash if configuration else "")),
+            content_hash=str(
+                metadata.get("template_content_hash") or (configuration.content_hash if configuration else "")
+            ),
         )
 
     def _permission_keys(self) -> set[str]:

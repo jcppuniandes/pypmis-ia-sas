@@ -49,6 +49,7 @@ def test_http_ci_and_benchmark_contracts_are_declared() -> None:
     )
     workflow = (repository / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     compose = (repository / "docker-compose.gate04h.yml").read_text(encoding="utf-8")
+    dockerfile = (repository / "backend/Dockerfile").read_text(encoding="utf-8")
     benchmark = (repository / "backend/tests/postgres/snapshot_benchmark.py").read_text(encoding="utf-8")
 
     assert 'alias="If-Match"' in router
@@ -56,9 +57,12 @@ def test_http_ci_and_benchmark_contracts_are_declared() -> None:
     assert "APPROVAL_INVALIDATED" in revision_service
     assert "FOUR_EYES_VIOLATION" in revision_service
     assert "enterprise-structure-postgres-e2e" in workflow
+    assert "install -d -m 0777 artifacts/enterprise_structure/gate04h" in workflow
+    assert "pip install ruff==0.16.3" in workflow
     assert "tmpfs:" in compose
     assert "sqlite" not in compose.lower()
     assert "prepare_ephemeral_schema.py" in compose
     assert "alembic stamp 20260810_0032" in compose
     assert "alembic upgrade head" in compose
+    assert "COPY pyproject.toml ./" in dockerfile
     assert "(100, 1_000, 10_000)" in benchmark

@@ -86,9 +86,7 @@ def gate06d():
                 db.add(definition)
                 db.flush()
                 module_definitions[code] = definition
-            cost_permission = db.scalar(
-                select(PermissionCatalog).where(PermissionCatalog.key == "workspace.cost.read")
-            )
+            cost_permission = db.scalar(select(PermissionCatalog).where(PermissionCatalog.key == "workspace.cost.read"))
             if cost_permission is None:
                 cost_permission = PermissionCatalog(
                     key="workspace.cost.read",
@@ -376,12 +374,8 @@ def test_module_permission_filtering_and_disabled_module_denial(gate06d):
     project_context = client.get(f"/api/v1/workspaces/{project_id}/context", headers=headers["project"])
     assert project_context.status_code == 200
     assert "Cost" not in {item["label"] for item in project_context.json()["navigator"]}
-    assert (
-        client.get(f"/api/v1/workspaces/{project_id}/modules/cost", headers=headers["project"]).status_code == 403
-    )
-    assert (
-        client.get(f"/api/v1/workspaces/{project_id}/modules/scope", headers=headers["project"]).status_code == 200
-    )
+    assert client.get(f"/api/v1/workspaces/{project_id}/modules/cost", headers=headers["project"]).status_code == 403
+    assert client.get(f"/api/v1/workspaces/{project_id}/modules/scope", headers=headers["project"]).status_code == 200
 
 
 def test_pending_archived_planned_disabled_and_direct_url_guards(gate06d):
@@ -391,8 +385,7 @@ def test_pending_archived_planned_disabled_and_direct_url_guards(gate06d):
     assert pending.status_code == 200
     assert {item["code"] for item in pending.json()["navigator"]} == {"home", "overview"}
     assert (
-        client.get(f"/api/v1/workspaces/{pending_id}/modules/asset-manager", headers=headers["full"]).status_code
-        == 403
+        client.get(f"/api/v1/workspaces/{pending_id}/modules/asset-manager", headers=headers["full"]).status_code == 403
     )
     facility_id = ids["facility_active"]
     planned = client.get(f"/api/v1/workspaces/{facility_id}/modules/asset-manager", headers=headers["full"])
@@ -410,7 +403,10 @@ def test_pending_archived_planned_disabled_and_direct_url_guards(gate06d):
 
 def test_invalid_workspace_type_cross_tenant_and_permission_denial(gate06d):
     client, headers, ids, _tenant_id = gate06d
-    assert client.get(f"/api/v1/workspaces/{ids['project_active']}/context", headers=headers["no_access"]).status_code == 403
+    assert (
+        client.get(f"/api/v1/workspaces/{ids['project_active']}/context", headers=headers["no_access"]).status_code
+        == 403
+    )
     with SessionLocal() as db:
         full_user = db.scalar(select(UserAccount).where(UserAccount.email.like("gate06d-full-%")))
         assert full_user is not None
@@ -443,7 +439,5 @@ def test_invalid_workspace_type_cross_tenant_and_permission_denial(gate06d):
             SecurityEvent.tenant_id == unsupported_tenant_id,
             SecurityEvent.target_id == unsupported_id,
         ).delete(synchronize_session=False)
-        db.query(EnterpriseWorkspace).filter(EnterpriseWorkspace.id == unsupported_id).delete(
-            synchronize_session=False
-        )
+        db.query(EnterpriseWorkspace).filter(EnterpriseWorkspace.id == unsupported_id).delete(synchronize_session=False)
         db.commit()

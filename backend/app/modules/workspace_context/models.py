@@ -23,4 +23,3 @@ class RecentWorkspace(Base):
     __table_args__ = (
         UniqueConstraint("tenant_id", "user_id", "workspace_id", name="uq_recent_workspace_user_context"),
     )
-
