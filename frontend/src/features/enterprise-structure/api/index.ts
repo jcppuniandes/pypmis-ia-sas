@@ -19,6 +19,8 @@ import type {
   ProjectPreview,
   ProjectTemplatePayload,
   ProjectWorkspaceOverview,
+  ProjectWorkspaceInitialization,
+  ProjectWorkspaceListItem,
   RecordCodePreview,
   RevisionClassification,
   RevisionDiff,
@@ -390,4 +392,33 @@ export const enterpriseStructureApi = {
 
   projectWorkspaceOverview: (token: string, workspaceId: number) =>
     apiFetch<ProjectWorkspaceOverview>(`/api/v1/project-workspaces/${workspaceId}/overview`, { token }),
+
+  projectWorkspaces: (token: string, status = "") =>
+    apiFetch<ProjectWorkspaceListItem[]>(`/api/v1/project-workspaces${status ? `?status=${status}` : ""}`, { token }),
+
+  projectWorkspaceInitialization: (token: string, workspaceId: number) =>
+    apiFetch<ProjectWorkspaceInitialization>(`/api/v1/project-workspaces/${workspaceId}/initialization`, { token }),
+
+  previewProjectWorkspaceInitialization: (token: string, workspaceId: number) =>
+    apiFetch<ProjectWorkspaceInitialization>(`/api/v1/project-workspaces/${workspaceId}/initialization/preview`, {
+      method: "POST",
+      token,
+    }),
+
+  transitionProjectWorkspace: (
+    token: string,
+    workspaceId: number,
+    version: number,
+    action: "start" | "validate" | "activate"
+  ) =>
+    apiFetch<ProjectWorkspaceInitialization>(
+      action === "activate"
+        ? `/api/v1/project-workspaces/${workspaceId}/activate`
+        : `/api/v1/project-workspaces/${workspaceId}/initialization/${action}`,
+      {
+        method: "POST",
+        token,
+        headers: { "If-Match": `"${version}"` },
+      }
+    ),
 };

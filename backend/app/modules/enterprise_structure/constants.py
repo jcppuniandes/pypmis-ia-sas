@@ -307,6 +307,27 @@ PERMISSION_SEED = (
         "Materializar Project Workspaces aprobados.",
         "critical",
     ),
+    (
+        "project_workspace.initialization.read",
+        "project_workspace_initialization",
+        "read",
+        "Consultar el estado, preview y checklist de inicializacion de Project Workspaces.",
+        "standard",
+    ),
+    (
+        "project_workspace.initialization.execute",
+        "project_workspace_initialization",
+        "execute",
+        "Inicializar y validar Project Workspaces materializados.",
+        "high",
+    ),
+    (
+        "project_workspace.activation.execute",
+        "project_workspace_activation",
+        "execute",
+        "Activar Project Workspaces listos con separacion de funciones.",
+        "critical",
+    ),
     ("enterprise_structure.read", "enterprise_structure", "read", "Consultar Enterprise Explorer.", "standard"),
     (
         "enterprise_structure.read_history",

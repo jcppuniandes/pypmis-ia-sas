@@ -55,6 +55,7 @@ from app.modules.project_creation.schemas import (
     ProjectRequestUpdate,
     ProjectTemplateOption,
 )
+from app.modules.project_workspace_initialization.models import ProjectWorkspaceInitialization
 
 REQUEST_NUMBER_RULE = "project-creation-request"
 REQUEST_PRIVILEGED_ROLES = frozenset(
@@ -494,6 +495,26 @@ class ProjectCreationService:
                 )
             ).all()
         )
+        initialization = self.db.scalar(
+            select(ProjectWorkspaceInitialization).where(
+                ProjectWorkspaceInitialization.tenant_id == self.tenant_id,
+                ProjectWorkspaceInitialization.workspace_id == workspace.id,
+            )
+        )
+        checklist = initialization.checklist_json if initialization else []
+        blockers = [
+            str(item.get("message", item.get("code", "")))
+            for item in checklist
+            if item.get("blocking") and item.get("status") == "FAIL"
+        ]
+        warnings = [
+            str(item.get("message", item.get("code", ""))) for item in checklist if item.get("status") == "WARNING"
+        ]
+        complete_count = sum(1 for item in checklist if item.get("status") in {"PASS", "WARNING"})
+        initialization_state = (
+            initialization.state if initialization else ("ACTIVATED" if workspace.status == "active" else "NOT_STARTED")
+        )
+        role_codes = set(context.role_codes)
         return ProjectOverviewOut(
             workspace_id=workspace.id,
             project_name=workspace.name,
@@ -509,6 +530,27 @@ class ProjectCreationService:
             currency=str(metadata.get("currency_code", "")),
             estimated_budget=metadata.get("estimated_budget"),
             enabled_modules=modules,
+            initialization_state=initialization_state,
+            initialization_progress_percent=round(complete_count / len(checklist) * 100)
+            if checklist
+            else (100 if workspace.status == "active" else 0),
+            initialization_blocker_count=len(blockers),
+            initialization_warning_count=len(warnings),
+            blocking_issues=blockers,
+            warnings=warnings,
+            template_revision=initialization.template_revision if initialization else metadata.get("template_revision"),
+            module_states={
+                key: str(value.get("state", "NOT_INITIALIZED"))
+                for key, value in (initialization.module_states_json if initialization else {}).items()
+            },
+            activated_at=initialization.activated_at if initialization else None,
+            activated_by_user_id=initialization.activated_by_user_id if initialization else None,
+            initialization_revision_version=initialization.revision_version if initialization else workspace.version,
+            can_initialize=bool(role_codes & {"organization_admin", "project_workspace_initializer"})
+            and workspace.status == "pending",
+            can_activate=bool(role_codes & {"organization_admin", "project_workspace_activator"})
+            and initialization is not None
+            and initialization.state == "READY_FOR_ACTIVATION",
         )
 
     def _validate_payload(
@@ -622,8 +664,14 @@ class ProjectCreationService:
             if not value:
                 continue
             catalog = self._latest_configuration("catalog", catalog_code, published_only=True)
-            valid_items = {str(item.get("code", "")) for item in catalog.content_json.get("items", [])} if catalog else set()
-            if catalog is None or "project" not in catalog.content_json.get("applicable_types", []) or value not in valid_items:
+            valid_items = (
+                {str(item.get("code", "")) for item in catalog.content_json.get("items", [])} if catalog else set()
+            )
+            if (
+                catalog is None
+                or "project" not in catalog.content_json.get("applicable_types", [])
+                or value not in valid_items
+            ):
                 issues.append(f"CLASSIFICATION_NOT_AVAILABLE:{catalog_code}/{value}")
             else:
                 selected_classifications.append(
@@ -695,6 +743,24 @@ class ProjectCreationService:
         modules: list[str],
         project_number: str,
     ) -> dict[str, Any]:
+        explicit_fields = [
+            field
+            for field, value in {
+                "description": request.description,
+                "project_manager_user_id": request.project_manager_user_id,
+                "planned_start": request.planned_start,
+                "planned_finish": request.planned_finish,
+                "currency_code": request.currency_code,
+                "estimated_budget": request.estimated_budget,
+                "project_type": request.project_type,
+                "project_phase": request.project_phase,
+                "priority": request.priority,
+                "country": request.country,
+                "region": request.region,
+                "strategic_objective_codes": request.strategic_objective_codes,
+            }.items()
+            if value not in (None, "", [])
+        ]
         return {
             "project_number": project_number,
             "description": request.description,
@@ -711,6 +777,10 @@ class ProjectCreationService:
             "strategic_objective_codes": list(request.strategic_objective_codes),
             "template_id": template.id,
             "template_code": template.code,
+            "template_revision": template.revision,
+            "template_content_hash": template.content_hash,
+            "template_defaults_snapshot": dict(template.content_json.get("default_attributes", {})),
+            "explicit_fields": explicit_fields,
             "enabled_modules": modules,
             "creation_request_id": request.id,
             "creation_request_number": request.request_number,

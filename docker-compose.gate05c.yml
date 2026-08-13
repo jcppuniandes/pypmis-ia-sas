@@ -1,0 +1,38 @@
+services:
+  gate05c-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate05c
+      POSTGRES_USER: gate05c
+      POSTGRES_PASSWORD: gate05c
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate05c -d gate05c"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate05c-test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate05c:gate05c@gate05c-db:5432/gate05c
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://gate05c:gate05c@gate05c-db:5432/gate05c
+      AUTO_CREATE_SCHEMA: "true"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate05c-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c "from sqlalchemy import text; from app.database.session import Base, engine; import app.domain.models, app.modules.enterprise_structure.models, app.modules.project_creation.models, app.modules.project_workspace_initialization.models; Base.metadata.create_all(engine); connection = engine.connect(); connection.execute(text('DROP TABLE project_workspace_initializations')); connection.commit(); connection.close()"
+        alembic stamp 20260812_0034
+        alembic upgrade head
+        pytest --no-cov -q tests/test_project_workspace_initialization.py
+        alembic downgrade 20260812_0034
+        alembic upgrade head
+    depends_on:
+      gate05c-db:
+        condition: service_healthy

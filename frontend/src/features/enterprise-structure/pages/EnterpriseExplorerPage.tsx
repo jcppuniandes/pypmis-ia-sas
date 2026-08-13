@@ -1,4 +1,15 @@
-import { Building2, ClipboardList, Eye, Network, Plus, RefreshCw, ShieldCheck, Table2, TreePine } from "lucide-react";
+import {
+  Building2,
+  ClipboardList,
+  Eye,
+  FolderKanban,
+  Network,
+  Plus,
+  RefreshCw,
+  ShieldCheck,
+  Table2,
+  TreePine,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
@@ -146,6 +157,9 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         </button>
         <button className="ghost" onClick={() => setProjectView("requests")} type="button">
           <ClipboardList size={15} /> My Project Requests
+        </button>
+        <button className="ghost" onClick={() => setProjectView("workspaces")} type="button">
+          <FolderKanban size={15} /> My Project Workspaces
         </button>
         <button className="ghost" onClick={() => setProjectView("review")} type="button">
           <ShieldCheck size={15} /> Review Queue

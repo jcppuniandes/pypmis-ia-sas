@@ -15,6 +15,10 @@ vi.mock("../api", () => ({
     transitionProjectRequest: vi.fn(),
     materializeProjectRequest: vi.fn(),
     projectWorkspaceOverview: vi.fn(),
+    projectWorkspaceInitialization: vi.fn(),
+    projectWorkspaces: vi.fn(),
+    previewProjectWorkspaceInitialization: vi.fn(),
+    transitionProjectWorkspace: vi.fn(),
   },
 }));
 
@@ -82,7 +86,7 @@ const request: ProjectCreationRequest = {
   updated_at: "2026-08-12T10:00:00Z",
 };
 
-function renderView(view: "create" | "requests" | "review" | "overview", workspaceId?: number) {
+function renderView(view: "create" | "requests" | "review" | "workspaces" | "overview", workspaceId?: number) {
   return render(
     <ProjectCreationWorkspace onBack={vi.fn()} projectWorkspaceId={workspaceId} token="token" view={view} />
   );
@@ -93,6 +97,7 @@ describe("ProjectCreationWorkspace", () => {
     vi.clearAllMocks();
     api.projectCreationOptions.mockResolvedValue(options);
     api.projectRequests.mockResolvedValue([]);
+    api.projectWorkspaces.mockResolvedValue([]);
   });
 
   afterEach(() => cleanup());
@@ -195,9 +200,69 @@ describe("ProjectCreationWorkspace", () => {
       currency: "COP",
       estimated_budget: "1000.00",
       enabled_modules: ["scope-manager"],
+      initialization_state: "NOT_STARTED",
+      initialization_progress_percent: 0,
+      initialization_blocker_count: 1,
+      initialization_warning_count: 0,
+      blocking_issues: ["Debe iniciar la inicialización"],
+      warnings: [],
+      template_revision: 1,
+      module_states: {},
+      activated_at: null,
+      activated_by_user_id: null,
+      initialization_revision_version: 1,
+      can_initialize: true,
+      can_activate: false,
+    });
+    api.projectWorkspaceInitialization.mockResolvedValue({
+      result: "FOUND",
+      persisted: false,
+      initialization_id: null,
+      workspace_id: 81,
+      workspace_status: "pending",
+      state: "NOT_STARTED",
+      progress_percent: 94,
+      blocker_count: 1,
+      warning_count: 0,
+      checklist: [
+        {
+          code: "template_snapshot_valid",
+          status: "PASS",
+          message: "La plantilla coincide.",
+          blocking: true,
+          evidence: {},
+        },
+      ],
+      template_config_id: 41,
+      template_code: "PYP-PRJ-GENERAL",
+      template_revision: 1,
+      modules: [
+        {
+          module_key: "scope-manager",
+          state: "INITIALIZED",
+          configuration_container: "ready",
+          evidence: {},
+        },
+      ],
+      defaults_applied: {},
+      assignments: [],
+      validation_hash: null,
+      checklist_hash: "hash",
+      revision_version: 1,
+      started_at: null,
+      ready_at: null,
+      activated_at: null,
+      activated_by_user_id: null,
+      failure_code: null,
+      failure_reason: null,
+      mutation_count: 0,
     });
     renderView("overview", 81);
-    expect(await screen.findByText("PYP-PRJ-0001")).toBeInTheDocument();
+    expect(
+      await screen.findByText((_content, element) =>
+        Boolean(element?.tagName === "SMALL" && element.textContent?.includes("PYP-PRJ-0001"))
+      )
+    ).toBeInTheDocument();
     expect(screen.getByText("scope-manager")).toBeInTheDocument();
   });
 });

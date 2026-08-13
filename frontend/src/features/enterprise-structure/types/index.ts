@@ -386,4 +386,83 @@ export type ProjectWorkspaceOverview = {
   currency: string;
   estimated_budget: string | null;
   enabled_modules: string[];
+  initialization_state: ProjectWorkspaceInitializationState;
+  initialization_progress_percent: number;
+  initialization_blocker_count: number;
+  initialization_warning_count: number;
+  blocking_issues: string[];
+  warnings: string[];
+  template_revision: number | null;
+  module_states: Record<string, string>;
+  activated_at: string | null;
+  activated_by_user_id: number | null;
+  initialization_revision_version: number;
+  can_initialize: boolean;
+  can_activate: boolean;
+};
+
+export type ProjectWorkspaceInitializationState =
+  | "NOT_STARTED"
+  | "INITIALIZING"
+  | "BLOCKED"
+  | "READY_FOR_ACTIVATION"
+  | "ACTIVATED"
+  | "FAILED";
+
+export type ProjectWorkspaceChecklistItem = {
+  code: string;
+  status: "PASS" | "FAIL" | "WARNING";
+  message: string;
+  blocking: boolean;
+  evidence: Record<string, unknown>;
+};
+
+export type ProjectWorkspaceInitialization = {
+  result: string;
+  persisted: boolean;
+  initialization_id: number | null;
+  workspace_id: number;
+  workspace_status: string;
+  state: ProjectWorkspaceInitializationState;
+  progress_percent: number;
+  blocker_count: number;
+  warning_count: number;
+  checklist: ProjectWorkspaceChecklistItem[];
+  template_config_id: number | null;
+  template_code: string;
+  template_revision: number | null;
+  modules: Array<{
+    module_key: string;
+    state: string;
+    configuration_container: string;
+    evidence: Record<string, unknown>;
+  }>;
+  defaults_applied: Record<string, unknown>;
+  assignments: Array<Record<string, unknown>>;
+  validation_hash: string | null;
+  checklist_hash: string | null;
+  revision_version: number;
+  started_at: string | null;
+  ready_at: string | null;
+  activated_at: string | null;
+  activated_by_user_id: number | null;
+  failure_code: string | null;
+  failure_reason: string | null;
+  mutation_count: number;
+};
+
+export type ProjectWorkspaceListItem = {
+  workspace_id: number;
+  project_name: string;
+  project_number: string;
+  record_code: string;
+  workspace_status: string;
+  initialization_state: ProjectWorkspaceInitializationState;
+  template_code: string;
+  project_manager: string;
+  blocker_count: number;
+  warning_count: number;
+  revision_version: number;
+  can_initialize: boolean;
+  can_activate: boolean;
 };

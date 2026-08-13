@@ -2130,6 +2130,248 @@
   }
 }
 
+.projectLifecycleWorkspace,
+.projectWorkspaceInventory {
+  display: grid;
+  gap: 14px;
+}
+
+.lifecycleOverview > header,
+.lifecycleChecklist > header,
+.lifecycleModules > header,
+.projectWorkspaceCards article > header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lifecycleOverview header small {
+  color: #647480;
+  display: block;
+  margin-top: 4px;
+}
+
+.lifecycleStateStack {
+  align-items: flex-end;
+  display: grid;
+  gap: 6px;
+}
+
+.workspaceLifecycleState,
+.workspaceStatus {
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 9px;
+  text-transform: uppercase;
+}
+
+.workspaceLifecycleState.not_started,
+.workspaceLifecycleState.not_initialized {
+  background: #edf1f4;
+  color: #536470;
+}
+.workspaceLifecycleState.initializing,
+.workspaceLifecycleState.ready_for_activation,
+.workspaceLifecycleState.initialized {
+  background: #e2f1fb;
+  color: #12618b;
+}
+.workspaceLifecycleState.blocked,
+.workspaceLifecycleState.failed,
+.workspaceLifecycleState.warning {
+  background: #fff0e3;
+  color: #9b4d00;
+}
+.workspaceLifecycleState.activated,
+.workspaceStatus.active {
+  background: #def3e8;
+  color: #126a4b;
+}
+.workspaceStatus.pending {
+  background: #fff2d8;
+  color: #875600;
+}
+
+.initializationProgress {
+  background: #e7edf0;
+  border-radius: 999px;
+  height: 9px;
+  margin: 18px 0 12px;
+  overflow: hidden;
+}
+.initializationProgress span {
+  background: linear-gradient(90deg, #168b91, #25aa79);
+  display: block;
+  height: 100%;
+  transition: width 180ms ease;
+}
+
+.lifecycleMetrics {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+.lifecycleMetrics article {
+  background: #f5f8fa;
+  border: 1px solid #e0e7eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+}
+.lifecycleMetrics span {
+  color: #617380;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.lifecycleActions {
+  align-items: center;
+  border-top: 1px solid #e1e7eb;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+}
+.lifecycleActions button,
+.lifecycleBack,
+.projectWorkspaceCards footer button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+.lifecycleActions .activate {
+  background: #176f51;
+}
+.activatedNotice {
+  align-items: center;
+  color: #176f51;
+  display: inline-flex;
+  font-weight: 750;
+  gap: 6px;
+}
+
+.checklistRows {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+.checklistRows article {
+  align-items: center;
+  border: 1px solid #dde5e9;
+  border-left: 4px solid #17926c;
+  border-radius: 7px;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: auto 1fr auto;
+  padding: 10px 12px;
+}
+.checklistRows article.fail {
+  border-left-color: #c84e38;
+}
+.checklistRows article.warning {
+  border-left-color: #d28b16;
+}
+.checklistRows article.fail .checkStatus {
+  color: #c84e38;
+}
+.checklistRows article.pass .checkStatus {
+  color: #17926c;
+}
+.checklistRows article.warning .checkStatus {
+  color: #d28b16;
+}
+.checklistRows strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.checklistRows p {
+  color: #5f707d;
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+.blockingFlag {
+  align-items: center;
+  color: #a24433;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 3px;
+  text-transform: uppercase;
+}
+
+.lifecycleModules > div {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+}
+.lifecycleModules article {
+  border: 1px solid #dce5e9;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+.lifecycleModules small {
+  color: #657682;
+}
+
+.projectListToolbar label {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+}
+.projectWorkspaceCards {
+  display: grid;
+  gap: 11px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.projectWorkspaceCards > article {
+  background: #fff;
+  border: 1px solid #d9e2e7;
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+}
+.projectWorkspaceCards header span:first-child {
+  color: #60727e;
+  font-size: 11px;
+}
+.projectWorkspaceCards h3 {
+  margin: 3px 0 0;
+}
+.projectWorkspaceCards dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+.projectWorkspaceCards dt {
+  color: #687984;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.projectWorkspaceCards dd {
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+.projectWorkspaceCards footer {
+  align-items: center;
+  border-top: 1px solid #e6ecef;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 11px;
+}
+.projectWorkspaceCards footer span {
+  color: #657682;
+  font-size: 11px;
+}
+
 @media (max-width: 700px) {
   .projectGateStrip {
     grid-template-columns: auto 1fr;
@@ -2144,6 +2386,12 @@
   .projectPreviewControls,
   .projectPreviewResult,
   .projectPolicyGrid {
+    grid-template-columns: 1fr;
+  }
+  .lifecycleMetrics,
+  .lifecycleModules > div,
+  .projectWorkspaceCards,
+  .projectWorkspaceCards dl {
     grid-template-columns: 1fr;
   }
   .projectPreviewResult p,

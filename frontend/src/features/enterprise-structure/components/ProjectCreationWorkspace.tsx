@@ -23,8 +23,9 @@ import type {
   ProjectRequestPreview,
   ProjectWorkspaceOverview,
 } from "../types";
+import ProjectWorkspaceLifecycle from "./ProjectWorkspaceLifecycle";
 
-export type ProjectCreationView = "create" | "requests" | "review" | "overview";
+export type ProjectCreationView = "create" | "requests" | "review" | "workspaces" | "overview";
 
 type Props = {
   token: string;
@@ -190,7 +191,7 @@ function RequestList({
   );
 }
 
-function ProjectOverview({ token, workspaceId }: { token: string; workspaceId: number }) {
+export function ProjectOverview({ token, workspaceId }: { token: string; workspaceId: number }) {
   const [overview, setOverview] = useState<ProjectWorkspaceOverview | null>(null);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -398,7 +399,9 @@ export default function ProjectCreationWorkspace({
                 ? "My Project Requests"
                 : view === "review"
                   ? "Project Review Queue"
-                  : "Project Overview"}
+                  : view === "workspaces"
+                    ? "My Project Workspaces"
+                    : "Project Overview"}
           </h2>
         </div>
         <span className="governedBadge">
@@ -413,8 +416,10 @@ export default function ProjectCreationWorkspace({
       ) : null}
 
       {view === "overview" && projectWorkspaceId ? (
-        <ProjectOverview token={token} workspaceId={projectWorkspaceId} />
+        <ProjectWorkspaceLifecycle token={token} workspaceId={projectWorkspaceId} />
       ) : null}
+
+      {view === "workspaces" ? <ProjectWorkspaceLifecycle token={token} /> : null}
 
       {view === "requests" || view === "review" ? (
         <section className="projectRequestPanel">
