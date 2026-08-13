@@ -410,6 +410,87 @@ export type PhysicalWorkspaceOverview = {
   classifications: PhysicalClassificationValue[];
   enabled_modules: string[];
   planned_modules: string[];
+  initialization_state: ProjectWorkspaceInitializationState;
+  initialization_progress_percent: number;
+  initialization_blocker_count: number;
+  initialization_warning_count: number;
+  blocking_issues: string[];
+  warnings: string[];
+  template_revision: number | null;
+  module_states: Record<string, PhysicalWorkspaceModuleReadiness>;
+  activated_at: string | null;
+  activated_by_user_id: number | null;
+  initialization_revision_version: number;
+  can_initialize: boolean;
+  can_activate: boolean;
+};
+
+export type PhysicalWorkspaceModuleReadiness = {
+  module_key: string;
+  state: string;
+  operational_module_created: boolean;
+  planned: boolean;
+  evidence: Record<string, unknown>;
+};
+
+export type PhysicalWorkspaceInitialization = {
+  result: string;
+  persisted: boolean;
+  initialization_id: number | null;
+  workspace_id: number;
+  workspace_type_code: "property" | "facility" | "warehouse";
+  workspace_name: string;
+  workspace_status: string;
+  business_number: string;
+  record_code: string;
+  external_key: string;
+  parent: string;
+  responsible: string;
+  state: ProjectWorkspaceInitializationState;
+  progress_percent: number;
+  blocker_count: number;
+  warning_count: number;
+  common_checklist: ProjectWorkspaceChecklistItem[];
+  type_specific_checklist: ProjectWorkspaceChecklistItem[];
+  template_config_id: number | null;
+  template_code: string;
+  template_revision: number | null;
+  template_content_hash: string;
+  attributes: Record<string, unknown>;
+  classifications: PhysicalClassificationValue[];
+  enabled_modules: string[];
+  planned_modules: string[];
+  modules: PhysicalWorkspaceModuleReadiness[];
+  defaults_applied: Record<string, unknown>;
+  assignments: Array<Record<string, unknown>>;
+  validation_hash: string | null;
+  checklist_hash: string | null;
+  revision_version: number;
+  started_at: string | null;
+  ready_at: string | null;
+  activated_at: string | null;
+  activated_by_user_id: number | null;
+  failure_code: string | null;
+  failure_reason: string | null;
+  mutation_count: number;
+};
+
+export type PhysicalWorkspaceListItem = {
+  workspace_id: number;
+  workspace_type_code: "property" | "facility" | "warehouse";
+  workspace_name: string;
+  business_number: string;
+  record_code: string;
+  workspace_status: string;
+  initialization_state: ProjectWorkspaceInitializationState;
+  parent: string;
+  responsible: string;
+  template_code: string;
+  blocker_count: number;
+  warning_count: number;
+  revision_version: number;
+  can_initialize: boolean;
+  can_activate: boolean;
 };
 
 export type ProjectTemplatePayload = {

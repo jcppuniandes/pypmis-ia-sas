@@ -193,3 +193,16 @@ class PhysicalWorkspaceOverviewOut(BaseModel):
     classifications: list[dict[str, str]]
     enabled_modules: list[str]
     planned_modules: list[str]
+    initialization_state: str
+    initialization_progress_percent: int
+    initialization_blocker_count: int
+    initialization_warning_count: int
+    blocking_issues: list[str]
+    warnings: list[str]
+    template_revision: int | None = None
+    module_states: dict[str, Any]
+    activated_at: datetime | None = None
+    activated_by_user_id: int | None = None
+    initialization_revision_version: int
+    can_initialize: bool
+    can_activate: bool

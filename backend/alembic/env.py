@@ -7,6 +7,10 @@ from app.core.config import get_settings
 from app.database.session import Base
 from app.domain import models  # noqa: F401
 from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
+from app.modules.physical_workspace_creation import models as physical_workspace_creation_models  # noqa: F401
+from app.modules.physical_workspace_initialization import (
+    models as physical_workspace_initialization_models,  # noqa: F401
+)
 from app.modules.project_creation import models as project_creation_models  # noqa: F401
 from app.modules.project_workspace_initialization import models as project_workspace_initialization_models  # noqa: F401
 

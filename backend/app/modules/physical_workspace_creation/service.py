@@ -47,6 +47,7 @@ from app.modules.physical_workspace_creation.schemas import (
     PhysicalWorkspaceRequestUpdate,
     PhysicalWorkspaceTypeOption,
 )
+from app.modules.physical_workspace_initialization.models import PhysicalWorkspaceInitialization
 
 REQUEST_NUMBER_RULE = "physical-workspace-creation-request"
 CREATABLE_TYPES = frozenset(CREATION_TYPES)
@@ -536,6 +537,25 @@ class PhysicalWorkspaceCreationService:
                 )
             ).all()
         )
+        initialization = self.db.scalar(
+            select(PhysicalWorkspaceInitialization).where(
+                PhysicalWorkspaceInitialization.tenant_id == self.tenant_id,
+                PhysicalWorkspaceInitialization.workspace_id == workspace.id,
+            )
+        )
+        common = list(initialization.common_checklist_json) if initialization else []
+        specific = list(initialization.type_specific_checklist_json) if initialization else []
+        checklist = [*common, *specific]
+        initialization_state = (
+            initialization.state if initialization else ("ACTIVATED" if workspace.status == "active" else "NOT_STARTED")
+        )
+        completed = sum(1 for item in checklist if item.get("status") in {"PASS", "WARNING"})
+        progress = (
+            round(completed / len(checklist) * 100)
+            if checklist
+            else (100 if initialization_state == "ACTIVATED" else 0)
+        )
+        role_codes = set(context.role_codes)
         return PhysicalWorkspaceOverviewOut(
             workspace_id=workspace.id,
             workspace_type_code=workspace.workspace_type_code,
@@ -553,6 +573,26 @@ class PhysicalWorkspaceCreationService:
             classifications=classifications,
             enabled_modules=modules,
             planned_modules=list(metadata.get("planned_modules", [])),
+            initialization_state=initialization_state,
+            initialization_progress_percent=progress,
+            initialization_blocker_count=sum(
+                1 for item in checklist if item.get("blocking") and item.get("status") == "FAIL"
+            ),
+            initialization_warning_count=sum(1 for item in checklist if item.get("status") == "WARNING"),
+            blocking_issues=[
+                str(item.get("code", "")) for item in checklist if item.get("blocking") and item.get("status") == "FAIL"
+            ],
+            warnings=[str(item.get("code", "")) for item in checklist if item.get("status") == "WARNING"],
+            template_revision=metadata.get("template_revision"),
+            module_states=dict(initialization.module_states_json) if initialization else {},
+            activated_at=initialization.activated_at if initialization else None,
+            activated_by_user_id=initialization.activated_by_user_id if initialization else None,
+            initialization_revision_version=initialization.revision_version if initialization else workspace.version,
+            can_initialize=bool(role_codes & {"organization_admin", "physical_workspace_initializer"})
+            and workspace.status == "pending",
+            can_activate=bool(role_codes & {"organization_admin", "physical_workspace_activator"})
+            and workspace.status == "pending"
+            and initialization_state == "READY_FOR_ACTIVATION",
         )
 
     def _validate_payload(

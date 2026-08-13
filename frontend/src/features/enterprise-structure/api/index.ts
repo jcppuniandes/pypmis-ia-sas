@@ -13,6 +13,8 @@ import type {
   PhysicalConfiguration,
   PhysicalWorkspaceCreationOptions,
   PhysicalWorkspaceCreationRequest,
+  PhysicalWorkspaceInitialization,
+  PhysicalWorkspaceListItem,
   PhysicalWorkspaceOverview,
   PhysicalWorkspaceRequestPayload,
   PhysicalWorkspaceRequestPreview,
@@ -504,6 +506,35 @@ export const enterpriseStructureApi = {
 
   physicalWorkspaceOverview: (token: string, workspaceId: number) =>
     apiFetch<PhysicalWorkspaceOverview>(`/api/v1/physical-workspaces/${workspaceId}/overview`, { token }),
+
+  physicalWorkspaces: (token: string, query = "") =>
+    apiFetch<PhysicalWorkspaceListItem[]>(`/api/v1/physical-workspaces${query ? `?${query}` : ""}`, { token }),
+
+  physicalWorkspaceInitialization: (token: string, workspaceId: number) =>
+    apiFetch<PhysicalWorkspaceInitialization>(`/api/v1/physical-workspaces/${workspaceId}/initialization`, { token }),
+
+  previewPhysicalWorkspaceInitialization: (token: string, workspaceId: number) =>
+    apiFetch<PhysicalWorkspaceInitialization>(`/api/v1/physical-workspaces/${workspaceId}/initialization/preview`, {
+      method: "POST",
+      token,
+    }),
+
+  transitionPhysicalWorkspace: (
+    token: string,
+    workspaceId: number,
+    version: number,
+    action: "start" | "validate" | "activate"
+  ) =>
+    apiFetch<PhysicalWorkspaceInitialization>(
+      action === "activate"
+        ? `/api/v1/physical-workspaces/${workspaceId}/activate`
+        : `/api/v1/physical-workspaces/${workspaceId}/initialization/${action}`,
+      {
+        method: "POST",
+        token,
+        headers: { "If-Match": `"${version}"` },
+      }
+    ),
 
   projectWorkspaces: (token: string, status = "") =>
     apiFetch<ProjectWorkspaceListItem[]>(`/api/v1/project-workspaces${status ? `?status=${status}` : ""}`, { token }),

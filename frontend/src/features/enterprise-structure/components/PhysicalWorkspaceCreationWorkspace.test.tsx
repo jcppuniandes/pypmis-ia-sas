@@ -19,6 +19,10 @@ vi.mock("../api", () => ({
     transitionPhysicalWorkspaceRequest: vi.fn(),
     materializePhysicalWorkspaceRequest: vi.fn(),
     physicalWorkspaceOverview: vi.fn(),
+    physicalWorkspaceInitialization: vi.fn(),
+    previewPhysicalWorkspaceInitialization: vi.fn(),
+    transitionPhysicalWorkspace: vi.fn(),
+    physicalWorkspaces: vi.fn(),
   },
 }));
 
@@ -164,7 +168,7 @@ describe("PhysicalWorkspaceCreationWorkspace", () => {
     fireEvent.change(await screen.findByLabelText("Workspace Name"), { target: { value: "Property Atlas" } });
     fireEvent.click(screen.getByRole("button", { name: /Crear borrador y previsualizar/ }));
     expect(await screen.findByText(/PWR-00007 · Property Atlas/)).toBeInTheDocument();
-    expect(screen.getByText("PYP-PROP-00001")).toBeInTheDocument();
+    expect(screen.getByText(/PYP-PROP-00001/)).toBeInTheDocument();
     expect(screen.getByText(/no consume Business Number/i)).toBeInTheDocument();
   });
 
@@ -218,10 +222,64 @@ describe("PhysicalWorkspaceCreationWorkspace", () => {
       classifications: [{ category_set_code: "property-type", category_item_code: "general" }],
       enabled_modules: ["scope-manager"],
       planned_modules: ["Overview"],
+      initialization_state: "NOT_STARTED",
+      initialization_progress_percent: 0,
+      initialization_blocker_count: 0,
+      initialization_warning_count: 0,
+      blocking_issues: [],
+      warnings: [],
+      template_revision: 1,
+      module_states: {},
+      activated_at: null,
+      activated_by_user_id: null,
+      initialization_revision_version: 1,
+      can_initialize: true,
+      can_activate: false,
+    });
+    api.physicalWorkspaceInitialization.mockResolvedValue({
+      result: "FOUND",
+      persisted: false,
+      initialization_id: null,
+      workspace_id: 81,
+      workspace_type_code: "property",
+      workspace_name: "Property Atlas",
+      workspace_status: "pending",
+      business_number: "PYP-PROP-00001",
+      record_code: "01.05",
+      external_key: "urn:property:81",
+      parent: "P&P",
+      responsible: "Ana Responsible",
+      state: "NOT_STARTED",
+      progress_percent: 0,
+      blocker_count: 0,
+      warning_count: 0,
+      common_checklist: [],
+      type_specific_checklist: [],
+      template_config_id: 1,
+      template_code: "PYP-PROP-GENERAL",
+      template_revision: 1,
+      template_content_hash: "a".repeat(64),
+      attributes: { address: "Bogotá" },
+      classifications: [],
+      enabled_modules: ["scope-manager"],
+      planned_modules: ["Overview"],
+      modules: [],
+      defaults_applied: {},
+      assignments: [],
+      validation_hash: null,
+      checklist_hash: null,
+      revision_version: 1,
+      started_at: null,
+      ready_at: null,
+      activated_at: null,
+      activated_by_user_id: null,
+      failure_code: null,
+      failure_reason: null,
+      mutation_count: 0,
     });
     renderView("overview", 81);
     expect(await screen.findByText("PROPERTY OVERVIEW")).toBeInTheDocument();
-    expect(screen.getByText("PYP-PROP-00001")).toBeInTheDocument();
-    expect(screen.getByText("Bogotá")).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("PYP-PROP-00001"))).toBeInTheDocument();
+    expect(screen.getByText("urn:property:81")).toBeInTheDocument();
   });
 });

@@ -225,6 +225,9 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         <button className="ghost" onClick={() => setPhysicalView("requests")} type="button">
           <ClipboardList size={15} /> My Physical Requests
         </button>
+        <button className="ghost" onClick={() => setPhysicalView("workspaces")} type="button">
+          <FolderKanban size={15} /> My Physical Workspaces
+        </button>
         <button className="ghost" onClick={() => setPhysicalView("review")} type="button">
           <ShieldCheck size={15} /> Physical Review Queue
         </button>

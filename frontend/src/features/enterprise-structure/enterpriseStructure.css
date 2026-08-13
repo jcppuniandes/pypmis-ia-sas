@@ -2662,3 +2662,24 @@
     grid-template-columns: 1fr;
   }
 }
+.physicalChecklistGroup + .physicalChecklistGroup {
+  border-top: 1px solid var(--border, #d9e2ea);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.physicalChecklistGroup h4 {
+  color: #3c5161;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.physicalLifecycleFilters select {
+  min-width: 150px;
+}
+
+.physicalLifecycleWorkspace .projectOverviewGrid strong {
+  overflow-wrap: anywhere;
+}

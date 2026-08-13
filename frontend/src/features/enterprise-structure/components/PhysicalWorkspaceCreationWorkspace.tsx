@@ -16,15 +16,15 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
+import PhysicalWorkspaceLifecycle from "./PhysicalWorkspaceLifecycle";
 import type {
   PhysicalWorkspaceCreationOptions,
   PhysicalWorkspaceCreationRequest,
-  PhysicalWorkspaceOverview,
   PhysicalWorkspaceRequestPayload,
   PhysicalWorkspaceRequestPreview,
 } from "../types";
 
-export type PhysicalWorkspaceCreationView = "create" | "requests" | "review" | "overview";
+export type PhysicalWorkspaceCreationView = "create" | "requests" | "review" | "workspaces" | "overview";
 
 type PhysicalType = "property" | "facility" | "warehouse";
 type RequestAction =
@@ -213,77 +213,6 @@ function RequestCards({
         </article>
       ))}
     </div>
-  );
-}
-
-function PhysicalOverview({ token, workspaceId }: { token: string; workspaceId: number }) {
-  const [data, setData] = useState<PhysicalWorkspaceOverview | null>(null);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    enterpriseStructureApi
-      .physicalWorkspaceOverview(token, workspaceId)
-      .then(setData)
-      .catch((caught) => setError(errorMessage(caught)));
-  }, [token, workspaceId]);
-  if (error) return <div className="enterpriseAlert error">{error}</div>;
-  if (!data) return <div className="projectRequestEmpty">Consultando Physical Workspace Overview…</div>;
-  return (
-    <section className="projectOverviewCard physicalOverviewCard">
-      <header>
-        <div>
-          <span>{data.workspace_type_code.toUpperCase()} OVERVIEW</span>
-          <h2>{data.workspace_name}</h2>
-        </div>
-        <strong>{data.status}</strong>
-      </header>
-      <div className="projectOverviewGrid">
-        <div>
-          <span>Business Number</span>
-          <strong>{data.business_number}</strong>
-        </div>
-        <div>
-          <span>Record Code</span>
-          <strong>{data.record_code}</strong>
-        </div>
-        <div>
-          <span>Parent</span>
-          <strong>{data.parent_workspace}</strong>
-        </div>
-        <div>
-          <span>Responsible</span>
-          <strong>{data.responsible}</strong>
-        </div>
-        <div>
-          <span>Template</span>
-          <strong>{data.template}</strong>
-        </div>
-        <div>
-          <span>Creation Request</span>
-          <strong>{data.creation_request_number}</strong>
-        </div>
-      </div>
-      <section>
-        <h3>Atributos gobernados</h3>
-        <dl className="physicalAttributeSummary">
-          {Object.entries(data.attributes).map(([key, value]) => (
-            <div key={key}>
-              <dt>{key.replace(/_/g, " ")}</dt>
-              <dd>{String(value || "—")}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-      <section>
-        <h3>Módulos habilitados</h3>
-        <div className="projectTagRow">
-          {data.enabled_modules.length ? (
-            data.enabled_modules.map((item) => <span key={item}>{item}</span>)
-          ) : (
-            <span>Sin módulos operativos profundos</span>
-          )}
-        </div>
-      </section>
-    </section>
   );
 }
 
@@ -482,7 +411,9 @@ export default function PhysicalWorkspaceCreationWorkspace({
         ? "My Physical Workspace Requests"
         : view === "review"
           ? "Physical Workspace Review Queue"
-          : "Physical Workspace Overview";
+          : view === "workspaces"
+            ? "My Physical Workspaces"
+            : "Physical Workspace Overview";
 
   return (
     <section className="projectCreationWorkspace physicalCreationWorkspace">
@@ -495,7 +426,7 @@ export default function PhysicalWorkspaceCreationWorkspace({
           <h2>{title}</h2>
         </div>
         <span className="governedBadge">
-          <ShieldCheck size={15} /> Gate 06B · Gobernado
+          <ShieldCheck size={15} /> Gate 06C · Gobernado
         </span>
       </header>
       {error ? (
@@ -508,8 +439,11 @@ export default function PhysicalWorkspaceCreationWorkspace({
           <Eye size={16} /> {previewMessage}
         </div>
       ) : null}
-      {view === "overview" && workspaceId ? <PhysicalOverview token={token} workspaceId={workspaceId} /> : null}
-      {selectedOverviewId ? <PhysicalOverview token={token} workspaceId={selectedOverviewId} /> : null}
+      {view === "workspaces" ? <PhysicalWorkspaceLifecycle token={token} /> : null}
+      {view === "overview" && workspaceId ? (
+        <PhysicalWorkspaceLifecycle token={token} workspaceId={workspaceId} />
+      ) : null}
+      {selectedOverviewId ? <PhysicalWorkspaceLifecycle token={token} workspaceId={selectedOverviewId} /> : null}
       {["requests", "review"].includes(view) ? (
         <section className="projectRequestPanel">
           <div className="projectListToolbar">

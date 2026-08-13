@@ -700,6 +700,27 @@ PERMISSION_SEED = (
         "Materializar Workspaces fisicos aprobados.",
         "critical",
     ),
+    (
+        "physical_workspace.initialization.read",
+        "physical_workspace_initialization",
+        "read",
+        "Consultar preview, checklist y estado de inicializacion de Workspaces fisicos.",
+        "standard",
+    ),
+    (
+        "physical_workspace.initialization.execute",
+        "physical_workspace_initialization",
+        "execute",
+        "Inicializar, reintentar y validar Workspaces fisicos materializados.",
+        "high",
+    ),
+    (
+        "physical_workspace.activation.execute",
+        "physical_workspace_activation",
+        "execute",
+        "Activar Workspaces fisicos listos bajo separacion de funciones.",
+        "critical",
+    ),
     ("enterprise_structure.read", "enterprise_structure", "read", "Consultar Enterprise Explorer.", "standard"),
     (
         "enterprise_structure.read_history",

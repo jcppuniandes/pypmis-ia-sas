@@ -162,7 +162,9 @@ PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
             "enterprise_structure.read",
         }
     ),
-    "physical_workspace_responsible": frozenset({"enterprise_structure.read"}),
+    "physical_workspace_responsible": frozenset(
+        {"enterprise_structure.read", "physical_workspace.initialization.read"}
+    ),
 }
 
 PHYSICAL_WORKSPACE_CREATION_ROLE_DEFINITIONS = {
@@ -185,6 +187,34 @@ PHYSICAL_WORKSPACE_CREATION_ROLE_DEFINITIONS = {
     "physical_workspace_responsible": (
         "Physical Workspace Responsible",
         "Minimum Workspace-scoped access for the assigned physical Workspace responsible.",
+    ),
+}
+
+PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "physical_workspace_initializer": frozenset(
+        {
+            "physical_workspace.initialization.read",
+            "physical_workspace.initialization.execute",
+            "enterprise_structure.read",
+        }
+    ),
+    "physical_workspace_activator": frozenset(
+        {
+            "physical_workspace.initialization.read",
+            "physical_workspace.activation.execute",
+            "enterprise_structure.read",
+        }
+    ),
+}
+
+PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_DEFINITIONS = {
+    "physical_workspace_initializer": (
+        "Physical Workspace Initializer",
+        "Previews, initializes, retries and validates Property, Facility and Warehouse Workspaces.",
+    ),
+    "physical_workspace_activator": (
+        "Physical Workspace Activator",
+        "Independently activates physical Workspaces that passed initialization.",
     ),
 }
 
@@ -411,6 +441,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -421,6 +465,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PROJECT_CREATION_ROLE_PERMISSIONS,
         **PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
         **PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS,
+        **PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)
