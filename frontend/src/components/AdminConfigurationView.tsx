@@ -15,6 +15,7 @@ export type AdminConfigurationViewKey =
   | "enterprise-workspace-structure"
   | "workspace-defaults"
   | "module-catalog-activation"
+  | "workspace-navigation-profiles"
   | "master-catalogs"
   | "numbering-rules"
   | "process-definitions";
@@ -55,6 +56,12 @@ const pages: Record<AdminConfigurationViewKey, PageDefinition> = {
     kind: "module_definition",
     icon: Boxes,
   },
+  "workspace-navigation-profiles": {
+    title: "Workspace Navigation Profiles",
+    description: "Orden, landing y visibilidad de módulos planificados por Workspace Type.",
+    kind: "workspace_navigation_profile",
+    icon: Layers3,
+  },
   "master-catalogs": {
     title: "Master Catalogs",
     description: "Catálogos corporativos versionados para formularios, procesos y módulos operativos.",
@@ -84,6 +91,14 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
     form: { fields: [{ key: "notes", type: "textarea", required: true }] },
     states: ["draft", "published"],
     transitions: [{ from: "draft", to: "published", permission: "admin.process_definition.publish" }],
+  },
+  workspace_navigation_profile: {
+    default_home_route: "home",
+    module_order: ["home", "overview", "documents"],
+    show_planned_modules: true,
+    show_overview: true,
+    show_documents: true,
+    show_reports: false,
   },
 };
 

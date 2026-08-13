@@ -11,7 +11,9 @@ import {
   TreePine,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../../api/client";
+import MyWorkspacesPanel from "../../workspace-context/MyWorkspacesPanel";
 import { enterpriseStructureApi } from "../api";
 import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTable from "../components/EnterpriseTable";
@@ -56,6 +58,7 @@ function messageFrom(error: unknown) {
 }
 
 export default function EnterpriseExplorerPage({ token }: { token: string }) {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<ExplorerFilters>(initialFilters);
   const [data, setData] = useState<EnterpriseExplorer | null>(null);
   const [detail, setDetail] = useState<EnterpriseNodeDetail | null>(null);
@@ -66,6 +69,7 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
   const [physicalView, setPhysicalView] = useState<PhysicalWorkspaceCreationView | null>(null);
   const [physicalType, setPhysicalType] = useState<"property" | "facility" | "warehouse">("property");
   const [eligiblePhysicalTypes, setEligiblePhysicalTypes] = useState<Set<string>>(new Set());
+  const [showMyWorkspaces, setShowMyWorkspaces] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -154,6 +158,10 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
     );
   }
 
+  if (showMyWorkspaces) {
+    return <MyWorkspacesPanel onBack={() => setShowMyWorkspaces(false)} token={token} />;
+  }
+
   if (physicalView) {
     return (
       <PhysicalWorkspaceCreationWorkspace
@@ -207,6 +215,9 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
       ) : null}
 
       <nav className="projectCreationActions" aria-label="Acciones de creación de proyectos">
+        <button className="ghost" onClick={() => setShowMyWorkspaces(true)} type="button">
+          <Building2 size={15} /> My Workspaces
+        </button>
         <button onClick={() => setProjectView("create")} type="button">
           <Plus size={15} /> Create Project
         </button>
@@ -234,6 +245,16 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
         {detail && ["portfolio", "program"].includes(detail.node.workspace_type_code) ? (
           <button className="contextual" onClick={() => setProjectView("create")} type="button">
             <Plus size={15} /> Crear proyecto en {detail.node.name}
+          </button>
+        ) : null}
+        {detail?.node.workspace_type_code === "project" ? (
+          <button
+            className="contextual primary"
+            disabled={detail.node.status !== "active"}
+            onClick={() => navigate(`/workspaces/${detail.node.id}/home`)}
+            type="button"
+          >
+            <FolderKanban size={15} /> Open Workspace
           </button>
         ) : null}
         {detail?.node.workspace_type_code === "project" ? (
@@ -275,6 +296,16 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
             type="button"
           >
             <Plus size={15} /> Create Warehouse
+          </button>
+        ) : null}
+        {detail && ["property", "facility", "warehouse"].includes(detail.node.workspace_type_code) ? (
+          <button
+            className="contextual primary"
+            disabled={detail.node.status !== "active"}
+            onClick={() => navigate(`/workspaces/${detail.node.id}/home`)}
+            type="button"
+          >
+            <FolderKanban size={15} /> Open Workspace
           </button>
         ) : null}
         {detail && ["property", "facility", "warehouse"].includes(detail.node.workspace_type_code) ? (

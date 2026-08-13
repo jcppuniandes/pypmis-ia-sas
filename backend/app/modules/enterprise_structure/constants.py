@@ -420,6 +420,11 @@ RELATIONSHIP_TYPES = {"ALIGNED_TO", "AFFECTS", "LOCATED_AT", "SERVES", "RESPONSI
 WORKSPACE_STATUSES = {"draft", "active", "inactive", "archived"}
 
 PERMISSION_SEED = (
+    ("workspace.open", "workspace", "open", "Abrir un Workspace como contexto operativo activo.", "standard"),
+    ("workspace.home.read", "workspace_home", "read", "Consultar Workspace Home.", "standard"),
+    ("workspace.navigator.read", "workspace_navigator", "read", "Consultar Workspace Navigator.", "standard"),
+    ("workspace.recent.read", "recent_workspace", "read", "Consultar Recent Workspaces propios.", "standard"),
+    ("workspace.recent.write", "recent_workspace", "write", "Actualizar ruta reciente propia.", "standard"),
     ("admin.workspace_type.read", "workspace_type", "read", "Consultar tipos de workspace.", "standard"),
     ("admin.workspace_type.manage", "workspace_type", "manage", "Administrar tipos de workspace.", "high"),
     ("admin.workspace_type.publish", "workspace_type", "publish", "Publicar tipos de workspace.", "critical"),

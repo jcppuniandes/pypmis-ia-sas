@@ -1,5 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AdminEnterpriseStructurePage from "../src/features/enterprise-structure/pages/AdminEnterpriseStructurePage";
 import EnterpriseExplorerPage from "../src/features/enterprise-structure/pages/EnterpriseExplorerPage";
@@ -400,7 +401,11 @@ describe("Nivel 2A Enterprise Structure", () => {
 
   it("renders USER Explorer filters, tree/table views and persisted node detail", async () => {
     const user = userEvent.setup();
-    render(<EnterpriseExplorerPage token="token" />);
+    render(
+      <MemoryRouter>
+        <EnterpriseExplorerPage token="token" />
+      </MemoryRouter>
+    );
 
     await screen.findByRole("tree", { name: "Enterprise hierarchy" });
     expect(document.querySelector(".compactModuleHeader.user")).toBeInTheDocument();

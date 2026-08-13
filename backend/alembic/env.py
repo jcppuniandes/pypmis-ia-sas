@@ -13,6 +13,7 @@ from app.modules.physical_workspace_initialization import (
 )
 from app.modules.project_creation import models as project_creation_models  # noqa: F401
 from app.modules.project_workspace_initialization import models as project_workspace_initialization_models  # noqa: F401
+from app.modules.workspace_context import models as workspace_context_models  # noqa: F401
 
 config = context.config
 

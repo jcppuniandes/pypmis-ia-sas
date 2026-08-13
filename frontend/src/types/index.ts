@@ -730,7 +730,8 @@ export type AdminConfigurationKind =
   | "module_definition"
   | "catalog"
   | "numbering_rule"
-  | "process_definition";
+  | "process_definition"
+  | "workspace_navigation_profile";
 
 export type AdminConfigurationRecord = {
   id: number;

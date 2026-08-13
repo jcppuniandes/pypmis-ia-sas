@@ -109,6 +109,7 @@ export type ControlFlowView =
   | "enterprise-explorer"
   | "workspace-defaults"
   | "module-catalog-activation"
+  | "workspace-navigation-profiles"
   | "master-catalogs"
   | "numbering-rules"
   | "process-definitions"
@@ -416,6 +417,7 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "enterprise-structure-configuration", label: "Enterprise Structure Configuration" },
       { key: "workspace-defaults", label: "Workspace Defaults & Inheritance" },
       { key: "module-catalog-activation", label: "Module Catalog & Activation" },
+      { key: "workspace-navigation-profiles", label: "Workspace Navigation Profiles" },
     ],
   },
   {

@@ -51,6 +51,7 @@ CONFIGURATION_KINDS = {
     "catalog",
     "numbering_rule",
     "process_definition",
+    "workspace_navigation_profile",
 }
 
 CONFIGURATION_SEED = (
@@ -720,6 +721,11 @@ def _validate_content(kind: str, content: dict) -> None:
         for transition in transitions:
             if transition.get("from") not in states or transition.get("to") not in states:
                 raise HTTPException(status_code=422, detail="Process transition references an unknown state")
+    elif kind == "workspace_navigation_profile":
+        if not isinstance(content.get("module_order", []), list):
+            raise HTTPException(status_code=422, detail="module_order must be a list")
+        if not isinstance(content.get("show_planned_modules", True), bool):
+            raise HTTPException(status_code=422, detail="show_planned_modules must be a boolean")
 
 
 def _numbering_result(

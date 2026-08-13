@@ -44,6 +44,7 @@ import OrganizationSecurityView, { type OrganizationSecurityViewKey } from "./co
 import AdminConfigurationView, { type AdminConfigurationViewKey } from "./components/AdminConfigurationView";
 import AdminEnterpriseStructurePage from "./features/enterprise-structure/pages/AdminEnterpriseStructurePage";
 import EnterpriseExplorerPage from "./features/enterprise-structure/pages/EnterpriseExplorerPage";
+import WorkspaceOperationalPage from "./features/workspace-context/WorkspaceOperationalPage";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -185,6 +186,11 @@ function RequireAuth({ children }: { children: ReactNode }) {
   const { token } = useAuthStore();
   if (!token) return <Navigate to="/login" replace />;
   return <>{children}</>;
+}
+
+function WorkspaceRoute() {
+  const { token } = useAuthStore();
+  return <WorkspaceOperationalPage token={token} />;
 }
 
 // Validation mode narrows the UI to Dashboard + BIM while field validation is
@@ -7496,6 +7502,7 @@ function AppShell() {
                 "enterprise-workspace-structure",
                 "workspace-defaults",
                 "module-catalog-activation",
+                "workspace-navigation-profiles",
                 "master-catalogs",
                 "numbering-rules",
                 "process-definitions",
@@ -8036,6 +8043,14 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/app" replace />} />
       <Route path="/login" element={<LoginView />} />
+      <Route
+        path="/workspaces/:workspaceId/*"
+        element={
+          <RequireAuth>
+            <WorkspaceRoute />
+          </RequireAuth>
+        }
+      />
       <Route
         path="/app/*"
         element={

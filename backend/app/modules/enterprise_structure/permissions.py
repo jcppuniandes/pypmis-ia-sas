@@ -19,6 +19,16 @@ from app.domain.models import (
 )
 from app.modules.enterprise_structure.constants import PERMISSION_SEED
 
+WORKSPACE_OPERATION_PERMISSIONS = frozenset(
+    {
+        "workspace.open",
+        "workspace.home.read",
+        "workspace.navigator.read",
+        "workspace.recent.read",
+        "workspace.recent.write",
+    }
+)
+
 STRUCTURE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
     "structure_editor": frozenset(
         {
@@ -89,7 +99,8 @@ PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
             "enterprise_structure.read",
         }
     ),
-    "project_manager": frozenset({"enterprise_structure.read", "project_workspace.initialization.read"}),
+    "project_manager": frozenset({"enterprise_structure.read", "project_workspace.initialization.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
 }
 
 PROJECT_CREATION_ROLE_DEFINITIONS = {
@@ -164,7 +175,8 @@ PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
     ),
     "physical_workspace_responsible": frozenset(
         {"enterprise_structure.read", "physical_workspace.initialization.read"}
-    ),
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
 }
 
 PHYSICAL_WORKSPACE_CREATION_ROLE_DEFINITIONS = {
@@ -460,7 +472,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
         | {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
-        "viewer": {"enterprise_structure.read"},
+        "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
         **STRUCTURE_ROLE_PERMISSIONS,
         **PROJECT_CREATION_ROLE_PERMISSIONS,
         **PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
