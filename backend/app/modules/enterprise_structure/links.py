@@ -19,6 +19,7 @@ def validate_workspace_link(
     allowed_pairs = {
         ("project", "property"),
         ("project", "facility"),
+        ("project", "warehouse"),
         ("property", "business-unit"),
         ("facility", "business-unit"),
     }

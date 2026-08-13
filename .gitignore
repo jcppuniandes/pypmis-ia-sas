@@ -17,6 +17,10 @@ env/
 
 .pytest_cache/
 .pytest_tmp*/
+.tmp/pytest_full_gate06a/
+.tmp/pytest_gate06a/
+.tmp/build_gate06a_report.py
+.tmp/gate06a_render*/
 .mypy_cache/
 .ruff_cache/
 .coverage

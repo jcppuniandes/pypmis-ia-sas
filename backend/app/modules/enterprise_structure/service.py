@@ -61,7 +61,7 @@ from app.modules.enterprise_structure.schemas import (
     WorkspaceLinkOut,
 )
 
-SEED_VERSION = "gate-05a-project-workspace-v1.0"
+SEED_VERSION = "gate-06a-physical-workspace-v1.0"
 
 
 class EnterpriseStructureService:
@@ -720,30 +720,50 @@ class EnterpriseStructureService:
                 content,
                 revision,
             )
-            if code == "project":
+            event_type = {
+                "project": "enterprise_structure.project_type.configured",
+                "property": "enterprise_structure.property_type_configured",
+                "facility": "enterprise_structure.facility_type_configured",
+                "warehouse": "enterprise_structure.warehouse_type_configured",
+                "region": "enterprise_structure.geographic_type_configured",
+                "district": "enterprise_structure.geographic_type_configured",
+                "site": "enterprise_structure.geographic_type_configured",
+                "linear-asset": "enterprise_structure.geographic_type_configured",
+            }.get(code)
+            if event_type:
                 self.db.flush()
                 self._event(
-                    "enterprise_structure.project_type.configured",
+                    event_type,
                     record,
-                    {"seed_version": SEED_VERSION, "allowed_parent_types": ["portfolio", "program"]},
+                    {
+                        "seed_version": SEED_VERSION,
+                        "workspace_type_code": code,
+                        "allowed_children": content["allowed_children"],
+                    },
                 )
 
     def _seed_categories(self) -> None:
         for code, definition in CATEGORY_SEED.items():
-            if self.repository.latest_configuration("catalog", code, prefer_draft=True):
+            latest = self.repository.latest_configuration("catalog", code, prefer_draft=True)
+            if latest is not None and latest.status == "draft":
                 continue
             content = {
                 "applicable_types": definition["applicable_types"],
                 "items": definition["items"],
                 "seed_version": SEED_VERSION,
             }
+            if latest is not None:
+                current = {key: value for key, value in latest.content_json.items() if key != "seed_version"}
+                desired = {key: value for key, value in content.items() if key != "seed_version"}
+                if current == desired:
+                    continue
             self._add_published_configuration(
                 "catalog",
                 code,
                 definition["name"],
                 definition["description"],
                 content,
-                1,
+                self._next_revision("catalog", code),
             )
 
     def _add_published_configuration(

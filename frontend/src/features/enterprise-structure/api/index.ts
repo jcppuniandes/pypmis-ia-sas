@@ -10,6 +10,8 @@ import type {
   EnterpriseStructureConfiguration,
   ExplorerFilters,
   NodePayload,
+  PhysicalConfiguration,
+  PhysicalPreview,
   PublicationResult,
   ProjectConfiguration,
   ProjectCreationOptions,
@@ -43,6 +45,43 @@ export const enterpriseStructureApi = {
   configuration: (token: string) => apiFetch<EnterpriseStructureConfiguration>(`${adminRoot}/configuration`, { token }),
 
   projectConfiguration: (token: string) => apiFetch<ProjectConfiguration>(`${adminRoot}/project-workspace`, { token }),
+
+  physicalConfiguration: (token: string) =>
+    apiFetch<PhysicalConfiguration>(`${adminRoot}/physical-workspaces`, { token }),
+
+  previewPhysicalWorkspace: (
+    token: string,
+    payload: { workspace_type_code: string; parent_id: number; template_id: number | null; minimal_attributes: object }
+  ) =>
+    apiFetch<PhysicalPreview>(`${adminRoot}/physical-workspaces/preview`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  updatePhysicalComposition: (token: string, parentTypeCode: string, version: number, allowedChildren: string[]) =>
+    apiFetch<Record<string, string[]>>(`${adminRoot}/physical-composition/${parentTypeCode}`, {
+      method: "PUT",
+      token,
+      headers: { "If-Match": `"${version}"` },
+      body: JSON.stringify({ allowed_children: allowedChildren }),
+    }),
+
+  updatePhysicalNumbering: (token: string, typeCode: string, version: number, prefix: string, padding: number) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/physical-numbering/${typeCode}`, {
+      method: "PUT",
+      token,
+      headers: { "If-Match": `"${version}"` },
+      body: JSON.stringify({ prefix, padding, start: 1, no_reuse: true }),
+    }),
+
+  updatePhysicalCreationPolicy: (token: string, typeCode: string, version: number, payload: Record<string, unknown>) =>
+    apiFetch<ConfigurationVersion>(`${adminRoot}/physical-creation-policies/${typeCode}`, {
+      method: "PUT",
+      token,
+      headers: { "If-Match": `"${version}"` },
+      body: JSON.stringify(payload),
+    }),
 
   previewProject: (token: string, parentId: number, templateId: number) =>
     apiFetch<ProjectPreview>(`${adminRoot}/project-workspace/preview`, {

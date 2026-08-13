@@ -10,6 +10,18 @@ from app.modules.enterprise_structure.permissions import (
     require_enterprise_permission,
     require_organization_scope,
 )
+from app.modules.enterprise_structure.physical_configuration import PhysicalWorkspaceConfigurationService
+from app.modules.enterprise_structure.physical_schemas import (
+    PhysicalConfigurationOut,
+    PhysicalCreationPolicyUpdate,
+    PhysicalNumberingUpdate,
+    PhysicalTemplatePayload,
+    PhysicalTemplatePublishRequest,
+    PhysicalTemplateUpdate,
+    PhysicalTemplateValidationOut,
+    PhysicalWorkspacePreviewOut,
+    PhysicalWorkspacePreviewRequest,
+)
 from app.modules.enterprise_structure.project_configuration import ProjectWorkspaceConfigurationService
 from app.modules.enterprise_structure.project_schemas import (
     ProjectConfigurationOut,
@@ -127,6 +139,23 @@ def _project_service(
         require_organization_scope(context)
     EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
     service = ProjectWorkspaceConfigurationService(db, tenant_id, context.user.id)
+    service.ensure_seed()
+    return service
+
+
+def _physical_service(
+    db: Session,
+    tenant_id: int,
+    user_id: int,
+    permission: str,
+    *,
+    organization_scope: bool = False,
+) -> PhysicalWorkspaceConfigurationService:
+    context = require_enterprise_permission(db, tenant_id, user_id, permission)
+    if organization_scope:
+        require_organization_scope(context)
+    EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
+    service = PhysicalWorkspaceConfigurationService(db, tenant_id, context.user.id)
     service.ensure_seed()
     return service
 
@@ -277,6 +306,151 @@ def workspace_types(
         ConfigurationVersionOut.model_validate(item)
         for item in service.repository.latest_configurations("workspace_type", prefer_draft=True)
     ]
+
+
+@router.get("/physical-workspaces", response_model=PhysicalConfigurationOut)
+def physical_workspace_configuration(
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PhysicalConfigurationOut:
+    return _physical_service(db, tenant_id, user_id, "admin.enterprise_structure.read").overview()
+
+
+@router.post("/physical-workspaces/preview", response_model=PhysicalWorkspacePreviewOut)
+def preview_physical_workspace(
+    payload: PhysicalWorkspacePreviewRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PhysicalWorkspacePreviewOut:
+    return _physical_service(db, tenant_id, user_id, "admin.enterprise_structure.read").preview(payload)
+
+
+@router.post("/physical-workspaces/{workspace_type_code}/configure", response_model=ConfigurationVersionOut)
+def configure_physical_workspace_type(
+    workspace_type_code: str,
+    expected_version: int = Depends(_revision_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    permission = {
+        "property": "admin.enterprise_structure.property.manage",
+        "facility": "admin.enterprise_structure.facility.manage",
+        "warehouse": "admin.enterprise_structure.warehouse.manage",
+    }.get(workspace_type_code.lower().replace("_", "-"), "admin.enterprise_structure.geography.manage")
+    return _physical_service(db, tenant_id, user_id, permission, organization_scope=True).configure_type(
+        workspace_type_code, expected_version=expected_version
+    )
+
+
+@router.put("/physical-composition/{parent_type_code}")
+def configure_physical_composition(
+    parent_type_code: str,
+    payload: dict[str, list[str]],
+    expected_version: int = Depends(_revision_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> dict[str, list[str]]:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.geography.manage", organization_scope=True
+    ).configure_composition(parent_type_code, payload.get("allowed_children", []), expected_version=expected_version)
+
+
+@router.put("/physical-numbering/{workspace_type_code}", response_model=ConfigurationVersionOut)
+def configure_physical_numbering(
+    workspace_type_code: str,
+    payload: PhysicalNumberingUpdate,
+    expected_version: int = Depends(_revision_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.physical_numbering.manage",
+        organization_scope=True,
+    ).configure_numbering(workspace_type_code, payload, expected_version=expected_version)
+
+
+@router.put("/physical-creation-policies/{workspace_type_code}", response_model=ConfigurationVersionOut)
+def configure_physical_creation_policy(
+    workspace_type_code: str,
+    payload: PhysicalCreationPolicyUpdate,
+    expected_version: int = Depends(_revision_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_policy.manage", organization_scope=True
+    ).configure_policy(workspace_type_code, payload, expected_version=expected_version)
+
+
+@router.post("/physical-templates", response_model=ConfigurationVersionOut, status_code=201)
+def create_physical_template(
+    payload: PhysicalTemplatePayload,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_templates.manage", organization_scope=True
+    ).create_template(payload)
+
+
+@router.put("/physical-templates/{configuration_id}", response_model=ConfigurationVersionOut)
+def update_physical_template(
+    configuration_id: int,
+    payload: PhysicalTemplateUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_templates.manage", organization_scope=True
+    ).update_template(configuration_id, payload)
+
+
+@router.post("/physical-templates/{configuration_id}/validate", response_model=PhysicalTemplateValidationOut)
+def validate_physical_template(
+    configuration_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PhysicalTemplateValidationOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_templates.manage", organization_scope=True
+    ).validate_template(configuration_id)
+
+
+@router.post("/physical-templates/{configuration_id}/publish", response_model=ConfigurationVersionOut)
+def publish_physical_template(
+    configuration_id: int,
+    payload: PhysicalTemplatePublishRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_templates.manage", organization_scope=True
+    ).publish_template(configuration_id, payload.expected_hash)
+
+
+@router.post("/physical-templates/{configuration_id}/archive", response_model=ConfigurationVersionOut)
+def archive_physical_template(
+    configuration_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ConfigurationVersionOut:
+    return _physical_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.physical_templates.manage", organization_scope=True
+    ).archive_template(configuration_id)
 
 
 @router.get("/project-workspace", response_model=ProjectConfigurationOut)

@@ -6,6 +6,7 @@ import {
   GitFork,
   Hash,
   Layers3,
+  MapPin,
   Plus,
   Save,
   Send,
@@ -19,6 +20,7 @@ import { enterpriseStructureApi } from "../api";
 import CompactModuleHeader from "../components/CompactModuleHeader";
 import EnterpriseTree from "../components/EnterpriseTree";
 import ProjectWorkspaceConfigurationPanel from "../components/ProjectWorkspaceConfigurationPanel";
+import PhysicalWorkspaceConfigurationPanel from "../components/PhysicalWorkspaceConfigurationPanel";
 import StructureNodeForm from "../components/StructureNodeForm";
 import WorkspaceRevisionManager from "../components/WorkspaceRevisionManager";
 import type {
@@ -41,6 +43,7 @@ type AdminTab =
   | "project-templates"
   | "project-numbering"
   | "project-policies"
+  | "physical-workspaces"
   | "publication";
 
 const emptyNode: NodePayload = {
@@ -401,6 +404,13 @@ export default function AdminEnterpriseStructurePage({
           <Settings2 size={16} /> Reglas de composición
         </button>
         <button
+          className={tab === "physical-workspaces" ? "active" : ""}
+          onClick={() => selectTab("physical-workspaces")}
+          type="button"
+        >
+          <MapPin size={16} /> Physical Workspaces
+        </button>
+        <button
           className={tab === "project-templates" ? "active" : ""}
           onClick={() => selectTab("project-templates")}
           type="button"
@@ -465,6 +475,9 @@ export default function AdminEnterpriseStructurePage({
       ) : null}
       {tab === "project-policies" ? (
         <ProjectWorkspaceConfigurationPanel canConfigure={canConfigure} token={token} view="policy" />
+      ) : null}
+      {tab === "physical-workspaces" ? (
+        <PhysicalWorkspaceConfigurationPanel canConfigure={canConfigure} token={token} />
       ) : null}
 
       {tab === "hierarchy" ? (

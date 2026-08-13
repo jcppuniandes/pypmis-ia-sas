@@ -8,7 +8,8 @@ import re
 from collections import Counter
 
 from app.modules.enterprise_structure.constants import (
-    CATEGORY_SEED,
+    CORE_GOVERNANCE_CATEGORIES,
+    CORE_GOVERNANCE_WORKSPACE_TYPES,
     RELATIONSHIP_TYPES,
     WORKSPACE_TYPE_SEED,
 )
@@ -705,7 +706,7 @@ def _validate_snapshot(
                 "Use the existing release for audit or choose a new approved code.",
             )
         )
-    missing_types = sorted(set(WORKSPACE_TYPE_SEED) - snapshot.published_type_codes)
+    missing_types = sorted(CORE_GOVERNANCE_WORKSPACE_TYPES - snapshot.published_type_codes)
     if missing_types:
         findings.append(
             _finding(
@@ -717,7 +718,7 @@ def _validate_snapshot(
                 "Complete Enterprise Structure Configuration in ADMIN MODE.",
             )
         )
-    missing_categories = sorted(set(CATEGORY_SEED) - set(snapshot.published_categories))
+    missing_categories = sorted(CORE_GOVERNANCE_CATEGORIES - set(snapshot.published_categories))
     if missing_categories:
         findings.append(
             _finding(

@@ -264,6 +264,44 @@ export type ProjectPreview = {
   persisted: false;
 };
 
+export type PhysicalParentOption = {
+  id: number;
+  name: string;
+  workspace_type_code: string;
+  record_code: string;
+  status: string;
+};
+
+export type PhysicalConfiguration = {
+  workspace_types: ConfigurationVersion[];
+  composition_rules: Record<string, string[]>;
+  templates: ConfigurationVersion[];
+  numbering_rules: ConfigurationVersion[];
+  creation_policies: ConfigurationVersion[];
+  available_modules: ConfigurationVersion[];
+  parent_options: PhysicalParentOption[];
+  relationship_contract: Array<{ source: string; target: string; relationship_type: string }>;
+  summary: Record<string, number>;
+  gate_status: "READY_FOR_PHYSICAL_WORKSPACE_CREATION_PROCESSES" | "GATE06A_REWORK_REQUIRED";
+  exclusions: Record<string, unknown>;
+};
+
+export type PhysicalPreview = {
+  allowed: boolean;
+  workspace_type_code: string;
+  parent: PhysicalParentOption;
+  template_code: string | null;
+  projected_record_code: string;
+  projected_business_number: string | null;
+  applicable_classifications: string[];
+  enabled_modules: string[];
+  planned_modules: string[];
+  initial_status: string;
+  issues: string[];
+  warnings: string[];
+  persisted: false;
+};
+
 export type ProjectTemplatePayload = {
   code: string;
   name: string;
