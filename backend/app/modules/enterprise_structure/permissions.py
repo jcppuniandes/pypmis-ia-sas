@@ -228,6 +228,24 @@ PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_DEFINITIONS = {
     ),
 }
 
+IDEA_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "idea_requestor": frozenset({"idea.read", "idea.create", "idea.edit", "idea.submit", "idea.cancel"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "idea_intake_reviewer": frozenset({"idea.read", "idea.screen", "idea.route", "idea.assign_owner"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "idea_owner": frozenset({"idea.read", "idea.evaluate"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "idea_decision_maker": frozenset({"idea.read", "idea.decide"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "idea_configuration_admin": frozenset({"idea.read", "idea.admin.configure", "idea.admin.publish"}),
+}
+
+IDEA_ROLE_DEFINITIONS = {
+    "idea_requestor": ("Idea Requestor", "Creates, edits and submits governed enterprise ideas."),
+    "idea_intake_reviewer": ("Idea Intake Reviewer", "Screens, routes and assigns owners to submitted ideas."),
+    "idea_owner": ("Idea Owner", "Owns and evaluates assigned ideas."),
+    "idea_decision_maker": ("Idea Decision Maker", "Accepts or rejects evaluated ideas."),
+    "idea_configuration_admin": ("Idea Configuration Admin", "Configures and publishes the Idea lifecycle."),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -465,10 +483,31 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in IDEA_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
-        | {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
+        | {
+            "enterprise_structure.read",
+            "enterprise_structure.read_history",
+            "enterprise_structure.export",
+            "idea.read",
+            "idea.admin.configure",
+            "idea.admin.publish",
+        },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
         **STRUCTURE_ROLE_PERMISSIONS,
@@ -476,6 +515,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
         **PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS,
         **PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
+        **IDEA_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

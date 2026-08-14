@@ -4,10 +4,8 @@ export const BIM_MANAGER_SUBMODULE_LABEL = "BIM Manager";
 export type ControlFlowView =
   | "dashboard"
   | "opc-gap"
-  | "idea-register"
-  | "idea-intake"
-  | "idea-evaluation-matrix"
-  | "project-proposal-creation"
+  | "idea-lifecycle"
+  | "idea-demand-configuration"
   | "portfolio-structure"
   | "project-intake-from-ideas"
   | "portfolio-budget-planning"
@@ -53,7 +51,6 @@ export type ControlFlowView =
   | "po-changes"
   | "po-payments"
   | "earned-value-analysis"
-  | "secop-bidder"
   | "strategic-investment-map"
   | "gate-decision"
   | "meeting-minutes"
@@ -143,13 +140,7 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
       {
         key: "idea-demand-manager",
         label: "Idea & Demand Manager",
-        submodules: [
-          { key: "secop-bidder", label: "SECOP Bidder" },
-          { key: "idea-register", label: "Idea Register" },
-          { key: "idea-intake", label: "Idea Intake" },
-          { key: "idea-evaluation-matrix", label: "Idea Evaluation Matrix" },
-          { key: "project-proposal-creation", label: "Project Proposal Creation" },
-        ],
+        submodules: [{ key: "idea-lifecycle", label: "Idea Lifecycle" }],
       },
       {
         key: "enterprise-structure-workspace-manager",
@@ -399,6 +390,11 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
 
 export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
   {
+    key: "enterprise-strategy-manager",
+    label: "Enterprise Strategy Manager",
+    submodules: [{ key: "idea-demand-configuration", label: "Idea & Demand Manager" }],
+  },
+  {
     key: "organization-security",
     label: "Organization & Security",
     submodules: [
@@ -436,10 +432,6 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
 ];
 
 export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
-  "idea-register",
-  "idea-intake",
-  "idea-evaluation-matrix",
-  "project-proposal-creation",
   "portfolio-structure",
   "project-intake-from-ideas",
   "portfolio-budget-planning",
@@ -475,7 +467,6 @@ export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "po-changes",
   "po-payments",
   "earned-value-analysis",
-  "secop-bidder",
   "strategic-investment-map",
   "gate-decision",
   "meeting-minutes",

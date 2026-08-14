@@ -52,6 +52,8 @@ CONFIGURATION_KINDS = {
     "numbering_rule",
     "process_definition",
     "workspace_navigation_profile",
+    "idea_demand_configuration",
+    "idea_evaluation_matrix",
 }
 
 CONFIGURATION_SEED = (
@@ -726,6 +728,17 @@ def _validate_content(kind: str, content: dict) -> None:
             raise HTTPException(status_code=422, detail="module_order must be a list")
         if not isinstance(content.get("show_planned_modules", True), bool):
             raise HTTPException(status_code=422, detail="show_planned_modules must be a boolean")
+    elif kind == "idea_demand_configuration":
+        if not isinstance(content.get("idea_types", []), list) or not isinstance(content.get("categories", []), list):
+            raise HTTPException(status_code=422, detail="Idea configuration requires idea_types and categories")
+        if content.get("objective_selection", "multiple") not in {"one", "multiple"}:
+            raise HTTPException(status_code=422, detail="objective_selection must be one or multiple")
+    elif kind == "idea_evaluation_matrix":
+        criteria = content.get("criteria")
+        if not isinstance(criteria, list) or not criteria:
+            raise HTTPException(status_code=422, detail="Evaluation matrix requires criteria")
+        if round(sum(float(item.get("weight", 0)) for item in criteria), 4) != 100:
+            raise HTTPException(status_code=422, detail="Evaluation matrix weights must total 100")
 
 
 def _numbering_result(

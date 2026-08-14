@@ -1308,13 +1308,10 @@ describe("served project control flow", () => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
     await user.click(within(validationNav).getByRole("button", { name: "Idea & Demand Manager", exact: true }));
-    ["SECOP Bidder", "Idea Register", "Idea Intake", "Idea Evaluation Matrix", "Project Proposal Creation"].forEach(
-      (submoduleName) => {
-        expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
-      }
-    );
-    await user.click(within(validationNav).getByRole("button", { name: "Idea Register", exact: true }));
-    expect(await screen.findByRole("region", { name: /idea register module/i })).toBeInTheDocument();
+    expect(within(validationNav).getByRole("button", { name: "Idea Lifecycle", exact: true })).toBeInTheDocument();
+    expect(within(validationNav).queryByRole("button", { name: "SECOP Bidder", exact: true })).not.toBeInTheDocument();
+    await user.click(within(validationNav).getByRole("button", { name: "Idea Lifecycle", exact: true }));
+    expect(await screen.findByRole("region", { name: /idea lifecycle/i })).toBeInTheDocument();
     await user.click(within(validationNav).getByRole("button", { name: "Portfolio Manager", exact: true }));
     [
       "Portfolio Structure",

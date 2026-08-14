@@ -45,6 +45,8 @@ import AdminConfigurationView, { type AdminConfigurationViewKey } from "./compon
 import AdminEnterpriseStructurePage from "./features/enterprise-structure/pages/AdminEnterpriseStructurePage";
 import EnterpriseExplorerPage from "./features/enterprise-structure/pages/EnterpriseExplorerPage";
 import WorkspaceOperationalPage from "./features/workspace-context/WorkspaceOperationalPage";
+import IdeaLifecycleWorkspace from "./features/idea-demand/IdeaLifecycleWorkspace";
+import IdeaDemandAdminView from "./features/idea-demand/IdeaDemandAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7496,6 +7498,8 @@ function AppShell() {
               <AdminEnterpriseStructurePage canConfigure={canConfigure} token={token} />
             )}
             {visibleControlView === "enterprise-explorer" && <EnterpriseExplorerPage token={token} />}
+            {visibleControlView === "idea-lifecycle" && <IdeaLifecycleWorkspace token={token} />}
+            {visibleControlView === "idea-demand-configuration" && <IdeaDemandAdminView token={token} />}
             {(
               [
                 "workspace-types",

@@ -1,0 +1,38 @@
+services:
+  gate07a-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate07a
+      POSTGRES_USER: gate07a
+      POSTGRES_PASSWORD: gate07a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate07a -d gate07a"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate07a-test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate07a:gate07a@gate07a-db:5432/gate07a
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://gate07a:gate07a@gate07a-db:5432/gate07a
+      AUTO_CREATE_SCHEMA: "true"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate07a-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c "from sqlalchemy import text; from app.database.session import Base, engine; import app.domain.models, app.modules.enterprise_structure.models, app.modules.project_creation.models, app.modules.project_workspace_initialization.models, app.modules.physical_workspace_creation.models, app.modules.physical_workspace_initialization.models, app.modules.workspace_context.models, app.modules.idea_demand.models; Base.metadata.create_all(engine); connection = engine.connect(); connection.execute(text('DROP TABLE idea_evaluations')); connection.execute(text('DROP TABLE ideas')); connection.commit(); connection.close()"
+        alembic stamp 20260813_0039
+        alembic upgrade head
+        pytest --no-cov -q tests/test_idea_demand_gate07a.py
+        alembic downgrade 20260813_0039
+        alembic upgrade head
+    depends_on:
+      gate07a-db:
+        condition: service_healthy

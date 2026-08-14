@@ -13,7 +13,9 @@ from sqlalchemy.orm import Session
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace, WorkspaceModuleSetting
 from app.modules.workspace_context.schemas import WorkspaceNavigatorItemOut
 
-SUPPORTED_WORKSPACE_TYPES = frozenset({"project", "property", "facility", "warehouse"})
+SUPPORTED_WORKSPACE_TYPES = frozenset(
+    {"enterprise", "business-unit", "portfolio", "project", "property", "facility", "warehouse"}
+)
 
 
 @dataclass(frozen=True)
@@ -22,9 +24,25 @@ class NavigationDefinition:
     label: str
     default_state: str = "READY"
     definition_code: str = ""
+    permission_key: str = ""
 
 
 DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
+    "enterprise": (
+        NavigationDefinition("home", "Home"),
+        NavigationDefinition("overview", "Overview"),
+        NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
+    ),
+    "business-unit": (
+        NavigationDefinition("home", "Home"),
+        NavigationDefinition("overview", "Overview"),
+        NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
+    ),
+    "portfolio": (
+        NavigationDefinition("home", "Home"),
+        NavigationDefinition("overview", "Overview"),
+        NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
+    ),
     "project": (
         NavigationDefinition("home", "Home"),
         NavigationDefinition("overview", "Overview"),
@@ -96,7 +114,7 @@ class WorkspaceNavigatorService:
         for item in profile:
             definition = definitions.get(item.definition_code) if item.definition_code else None
             state = item.default_state
-            permission_key = ""
+            permission_key = item.permission_key
             reason = ""
             if item.definition_code:
                 if item.definition_code not in enabled or definition is None:
