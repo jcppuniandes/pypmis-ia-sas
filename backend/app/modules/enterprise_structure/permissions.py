@@ -246,6 +246,52 @@ IDEA_ROLE_DEFINITIONS = {
     "idea_configuration_admin": ("Idea Configuration Admin", "Configures and publishes the Idea lifecycle."),
 }
 
+PROJECT_PROPOSAL_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "proposal_requestor": frozenset(
+        {
+            "project_proposal.read",
+            "project_proposal.create",
+            "project_proposal.edit",
+            "project_proposal.submit",
+            "project_proposal.cancel",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "proposal_owner": frozenset(
+        {"project_proposal.read", "project_proposal.edit", "project_proposal.evaluate"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "proposal_reviewer": frozenset(
+        {
+            "project_proposal.read",
+            "project_proposal.review",
+            "project_proposal.return",
+            "project_proposal.mark_gate_ready",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "proposal_evaluator": frozenset({"project_proposal.read", "project_proposal.evaluate"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "proposal_configuration_admin": frozenset(
+        {
+            "project_proposal.read",
+            "project_proposal.admin.configure",
+            "project_proposal.admin.publish",
+        }
+    ),
+}
+
+PROJECT_PROPOSAL_ROLE_DEFINITIONS = {
+    "proposal_requestor": ("Proposal Requestor", "Creates and submits Project Proposals from accepted Ideas."),
+    "proposal_owner": ("Proposal Owner", "Owns the strategic business case and Proposal evaluation."),
+    "proposal_reviewer": ("Proposal Reviewer", "Reviews, returns and marks evaluated Proposals gate-ready."),
+    "proposal_evaluator": ("Proposal Evaluator", "Evaluates Project Proposals with a published matrix."),
+    "proposal_configuration_admin": (
+        "Proposal Configuration Admin",
+        "Configures and publishes the Project Proposal lifecycle.",
+    ),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -497,6 +543,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PROJECT_PROPOSAL_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -507,6 +567,9 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "idea.read",
             "idea.admin.configure",
             "idea.admin.publish",
+            "project_proposal.read",
+            "project_proposal.admin.configure",
+            "project_proposal.admin.publish",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -516,6 +579,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS,
         **PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
         **IDEA_ROLE_PERMISSIONS,
+        **PROJECT_PROPOSAL_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

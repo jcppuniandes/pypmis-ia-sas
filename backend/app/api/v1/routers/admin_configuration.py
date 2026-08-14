@@ -54,6 +54,8 @@ CONFIGURATION_KINDS = {
     "workspace_navigation_profile",
     "idea_demand_configuration",
     "idea_evaluation_matrix",
+    "project_proposal_configuration",
+    "project_proposal_evaluation_matrix",
 }
 
 CONFIGURATION_SEED = (
@@ -739,6 +741,19 @@ def _validate_content(kind: str, content: dict) -> None:
             raise HTTPException(status_code=422, detail="Evaluation matrix requires criteria")
         if round(sum(float(item.get("weight", 0)) for item in criteria), 4) != 100:
             raise HTTPException(status_code=422, detail="Evaluation matrix weights must total 100")
+    elif kind == "project_proposal_configuration":
+        if not isinstance(content.get("required_fields", []), list):
+            raise HTTPException(status_code=422, detail="Proposal configuration requires required_fields")
+        if not isinstance(content.get("review_checklist", []), list):
+            raise HTTPException(status_code=422, detail="Proposal configuration requires review_checklist")
+        if int(content.get("max_active_proposals_per_idea", 1)) < 1:
+            raise HTTPException(status_code=422, detail="max_active_proposals_per_idea must be at least 1")
+    elif kind == "project_proposal_evaluation_matrix":
+        criteria = content.get("criteria")
+        if not isinstance(criteria, list) or not criteria:
+            raise HTTPException(status_code=422, detail="Proposal evaluation matrix requires criteria")
+        if round(sum(float(item.get("weight", 0)) for item in criteria), 4) != 100:
+            raise HTTPException(status_code=422, detail="Proposal evaluation matrix weights must total 100")
 
 
 def _numbering_result(

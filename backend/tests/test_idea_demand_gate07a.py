@@ -133,7 +133,7 @@ def test_gate07a_full_lifecycle_readiness_and_audit() -> None:
         readiness = client.get(f"/api/v1/ideas/{idea['id']}/proposal-readiness", headers=headers)
         assert readiness.status_code == 200
         assert readiness.json()["status"] == "READY_FOR_PROJECT_PROPOSAL"
-        assert readiness.json()["can_create_project_proposal"] is False
+        assert readiness.json()["can_create_project_proposal"] is True
         history = client.get(f"/api/v1/ideas/{idea['id']}/history", headers=headers).json()
         assert {item["event_type"] for item in history} >= {
             "idea.created",
@@ -169,7 +169,7 @@ def test_gate07a_etag_scope_and_preview_do_not_consume_number() -> None:
         assert mismatch.status_code == 412
 
 
-def test_gate07a_evaluation_is_immutable_and_no_proposal_endpoint_exists() -> None:
+def test_gate07a_evaluation_is_immutable_and_proposal_source_remains_read_only() -> None:
     with TestClient(app) as client:
         headers = _headers(client)
         assert client.post("/api/v1/ideas/1/create-project-proposal", headers=headers).status_code == 404

@@ -47,6 +47,8 @@ import EnterpriseExplorerPage from "./features/enterprise-structure/pages/Enterp
 import WorkspaceOperationalPage from "./features/workspace-context/WorkspaceOperationalPage";
 import IdeaLifecycleWorkspace from "./features/idea-demand/IdeaLifecycleWorkspace";
 import IdeaDemandAdminView from "./features/idea-demand/IdeaDemandAdminView";
+import ProjectProposalWorkspace from "./features/project-proposal/ProjectProposalWorkspace";
+import ProjectProposalAdminView from "./features/project-proposal/ProjectProposalAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7500,6 +7502,8 @@ function AppShell() {
             {visibleControlView === "enterprise-explorer" && <EnterpriseExplorerPage token={token} />}
             {visibleControlView === "idea-lifecycle" && <IdeaLifecycleWorkspace token={token} />}
             {visibleControlView === "idea-demand-configuration" && <IdeaDemandAdminView token={token} />}
+            {visibleControlView === "project-proposal" && <ProjectProposalWorkspace token={token} />}
+            {visibleControlView === "project-proposal-configuration" && <ProjectProposalAdminView token={token} />}
             {(
               [
                 "workspace-types",

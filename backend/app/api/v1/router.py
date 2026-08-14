@@ -263,6 +263,7 @@ from app.modules.idea_demand import router as idea_demand_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
 from app.modules.project_creation import router as project_creation_router
+from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
 from app.modules.workspace_context import router as workspace_context_router
 from app.services.ai_insights import AIInsightService
@@ -288,6 +289,8 @@ router.include_router(physical_workspace_initialization_router.router, tags=["ph
 router.include_router(project_workspace_initialization_router.router, tags=["project-workspace-initialization"])
 router.include_router(workspace_context_router.router, tags=["workspace-context"])
 router.include_router(idea_demand_router.router, tags=["idea-demand"])
+router.include_router(project_proposal_router.router, tags=["project-proposal"])
+router.include_router(project_proposal_router.idea_router, tags=["project-proposal"])
 router.include_router(organization_security_router.router, tags=["organization-security"])
 router.include_router(projects_router.router, tags=["projects"])
 router.include_router(documents_domain.router, tags=["documents"])

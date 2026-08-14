@@ -455,7 +455,7 @@ class IdeaDemandService:
             status="READY_FOR_PROJECT_PROPOSAL" if not readiness["blocking_issues"] else "GATE07A_REWORK_REQUIRED",
             blocking_issues=readiness["blocking_issues"],
             mapping_preview=readiness["mapping_preview"],
-            can_create_project_proposal=False,
+            can_create_project_proposal=not readiness["blocking_issues"],
         )
 
     def history(self, idea_id: int) -> list[IdeaHistoryItemOut]:
@@ -996,7 +996,7 @@ class IdeaDemandService:
         if idea.state == "EVALUATED" and (admin or "idea_decision_maker" in roles):
             actions += ["accept", "reject", "return"]
         if idea.state == "ACCEPTED":
-            actions.append("proposal_readiness")
+            actions += ["proposal_readiness", "create_project_proposal"]
         return actions
 
     @staticmethod

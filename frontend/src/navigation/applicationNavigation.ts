@@ -6,6 +6,8 @@ export type ControlFlowView =
   | "opc-gap"
   | "idea-lifecycle"
   | "idea-demand-configuration"
+  | "project-proposal"
+  | "project-proposal-configuration"
   | "portfolio-structure"
   | "project-intake-from-ideas"
   | "portfolio-budget-planning"
@@ -140,7 +142,10 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
       {
         key: "idea-demand-manager",
         label: "Idea & Demand Manager",
-        submodules: [{ key: "idea-lifecycle", label: "Idea Lifecycle" }],
+        submodules: [
+          { key: "idea-lifecycle", label: "Idea Lifecycle" },
+          { key: "project-proposal", label: "Project Proposal" },
+        ],
       },
       {
         key: "enterprise-structure-workspace-manager",
@@ -392,7 +397,10 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
   {
     key: "enterprise-strategy-manager",
     label: "Enterprise Strategy Manager",
-    submodules: [{ key: "idea-demand-configuration", label: "Idea & Demand Manager" }],
+    submodules: [
+      { key: "idea-demand-configuration", label: "Idea Lifecycle Configuration" },
+      { key: "project-proposal-configuration", label: "Project Proposal Configuration" },
+    ],
   },
   {
     key: "organization-security",
