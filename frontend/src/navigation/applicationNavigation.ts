@@ -8,6 +8,8 @@ export type ControlFlowView =
   | "idea-demand-configuration"
   | "project-proposal"
   | "project-proposal-configuration"
+  | "strategic-gate-decision"
+  | "strategic-gate-configuration"
   | "portfolio-structure"
   | "project-intake-from-ideas"
   | "portfolio-budget-planning"
@@ -146,6 +148,11 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
           { key: "idea-lifecycle", label: "Idea Lifecycle" },
           { key: "project-proposal", label: "Project Proposal" },
         ],
+      },
+      {
+        key: "strategic-gate-decision",
+        label: "Strategic Gate Decision",
+        submodules: [{ key: "strategic-gate-decision", label: "Strategic Gate Decision" }],
       },
       {
         key: "enterprise-structure-workspace-manager",
@@ -400,6 +407,7 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
     submodules: [
       { key: "idea-demand-configuration", label: "Idea Lifecycle Configuration" },
       { key: "project-proposal-configuration", label: "Project Proposal Configuration" },
+      { key: "strategic-gate-configuration", label: "Strategic Gate Decision" },
     ],
   },
   {

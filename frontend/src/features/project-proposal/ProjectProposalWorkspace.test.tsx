@@ -119,11 +119,12 @@ describe("ProjectProposalWorkspace", () => {
       vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const path = String(input);
         let body: unknown = [proposal];
-        if (path.endsWith("/options")) body = options;
+        if (path.includes("/strategic-gate-decisions")) body = [];
+        else if (path.endsWith("/options")) body = options;
         else if (path.includes("/gate-readiness"))
           body = {
             project_proposal_id: 4,
-            status: "READY_FOR_STRATEGIC_GATE_DECISION",
+            status: "READY_FOR_STRATEGIC_GATE",
             can_enter_strategic_gate: true,
             source_idea_id: 8,
             accepted_idea_evaluation_id: 5,

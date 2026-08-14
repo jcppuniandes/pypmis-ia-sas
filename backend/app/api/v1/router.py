@@ -265,6 +265,7 @@ from app.modules.physical_workspace_initialization import router as physical_wor
 from app.modules.project_creation import router as project_creation_router
 from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
+from app.modules.strategic_gate import router as strategic_gate_router
 from app.modules.workspace_context import router as workspace_context_router
 from app.services.ai_insights import AIInsightService
 from app.services.claims_forensic import ClaimsForensicDossierService
@@ -291,6 +292,9 @@ router.include_router(workspace_context_router.router, tags=["workspace-context"
 router.include_router(idea_demand_router.router, tags=["idea-demand"])
 router.include_router(project_proposal_router.router, tags=["project-proposal"])
 router.include_router(project_proposal_router.idea_router, tags=["project-proposal"])
+router.include_router(strategic_gate_router.router, tags=["strategic-gate"])
+router.include_router(strategic_gate_router.proposal_router, tags=["strategic-gate"])
+router.include_router(strategic_gate_router.idea_router, tags=["strategic-gate"])
 router.include_router(organization_security_router.router, tags=["organization-security"])
 router.include_router(projects_router.router, tags=["projects"])
 router.include_router(documents_domain.router, tags=["documents"])

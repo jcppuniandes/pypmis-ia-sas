@@ -278,7 +278,7 @@ def test_gate07b_full_lifecycle_preserves_source_and_exposes_gate07c_contract() 
         assert readiness.json()["proposal_evaluation_id"] == proposal["evaluations"][-1]["id"]
         assert readiness.json()["readiness_hash"]
         proposal = _action(client, headers, proposal, "mark-gate-ready")
-        assert proposal["status"] == "READY_FOR_STRATEGIC_GATE_DECISION"
+        assert proposal["status"] == "READY_FOR_STRATEGIC_GATE"
 
         assert (
             client.post(

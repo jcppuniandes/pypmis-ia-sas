@@ -292,6 +292,50 @@ PROJECT_PROPOSAL_ROLE_DEFINITIONS = {
     ),
 }
 
+STRATEGIC_GATE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "gate_preparer": frozenset(
+        {
+            "strategic_gate.read",
+            "strategic_gate.create",
+            "strategic_gate.edit",
+            "strategic_gate.submit",
+            "strategic_gate.void",
+            "project_proposal.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "gate_reviewer": frozenset(
+        {"strategic_gate.read", "strategic_gate.review", "strategic_gate.void", "project_proposal.read"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "gate_decision_maker": frozenset(
+        {"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "gate_committee_member": frozenset(
+        {"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "gate_configuration_admin": frozenset(
+        {
+            "strategic_gate.read",
+            "strategic_gate.admin.configure",
+            "strategic_gate.admin.publish",
+        }
+    ),
+}
+
+STRATEGIC_GATE_ROLE_DEFINITIONS = {
+    "gate_preparer": ("Gate Preparer", "Prepares and submits governed Strategic Gate Decisions."),
+    "gate_reviewer": ("Gate Reviewer", "Reviews Strategic Gate Decisions before formal decision."),
+    "gate_decision_maker": ("Gate Decision Maker", "Records formal Strategic Gate outcomes."),
+    "gate_committee_member": ("Gate Committee Member", "Participates in committee-based gate decisions."),
+    "gate_configuration_admin": (
+        "Gate Configuration Admin",
+        "Configures and publishes Strategic Gate policies.",
+    ),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -557,6 +601,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in STRATEGIC_GATE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -570,6 +628,9 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "project_proposal.read",
             "project_proposal.admin.configure",
             "project_proposal.admin.publish",
+            "strategic_gate.read",
+            "strategic_gate.admin.configure",
+            "strategic_gate.admin.publish",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -580,6 +641,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
         **IDEA_ROLE_PERMISSIONS,
         **PROJECT_PROPOSAL_ROLE_PERMISSIONS,
+        **STRATEGIC_GATE_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

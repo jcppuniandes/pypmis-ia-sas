@@ -4,6 +4,7 @@ import { Link, Navigate, useLocation, useNavigate, useParams } from "react-route
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
 import IdeaLifecycleWorkspace from "../idea-demand/IdeaLifecycleWorkspace";
 import ProjectProposalWorkspace from "../project-proposal/ProjectProposalWorkspace";
+import StrategicGateWorkspace from "../strategic-gate/StrategicGateWorkspace";
 import { workspaceContextApi } from "./api";
 import { WorkspaceContextProvider, useActiveWorkspaceContext } from "./WorkspaceContextProvider";
 import "./workspaceContext.css";
@@ -168,6 +169,8 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             <IdeaLifecycleWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "project-proposals" ? (
             <ProjectProposalWorkspace token={token} workspaceId={workspaceId} />
+          ) : current?.code === "strategic-gate-decisions" ? (
+            <StrategicGateWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "home" ? (
             <>
               <div className="workspaceHomeFacts">

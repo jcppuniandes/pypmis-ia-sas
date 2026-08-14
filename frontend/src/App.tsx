@@ -49,6 +49,8 @@ import IdeaLifecycleWorkspace from "./features/idea-demand/IdeaLifecycleWorkspac
 import IdeaDemandAdminView from "./features/idea-demand/IdeaDemandAdminView";
 import ProjectProposalWorkspace from "./features/project-proposal/ProjectProposalWorkspace";
 import ProjectProposalAdminView from "./features/project-proposal/ProjectProposalAdminView";
+import StrategicGateWorkspace from "./features/strategic-gate/StrategicGateWorkspace";
+import StrategicGateAdminView from "./features/strategic-gate/StrategicGateAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7504,6 +7506,8 @@ function AppShell() {
             {visibleControlView === "idea-demand-configuration" && <IdeaDemandAdminView token={token} />}
             {visibleControlView === "project-proposal" && <ProjectProposalWorkspace token={token} />}
             {visibleControlView === "project-proposal-configuration" && <ProjectProposalAdminView token={token} />}
+            {visibleControlView === "strategic-gate-decision" && <StrategicGateWorkspace token={token} />}
+            {visibleControlView === "strategic-gate-configuration" && <StrategicGateAdminView token={token} />}
             {(
               [
                 "workspace-types",

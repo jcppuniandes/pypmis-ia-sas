@@ -33,18 +33,33 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("overview", "Overview"),
         NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
         NavigationDefinition("project-proposals", "Project Proposals", permission_key="project_proposal.read"),
+        NavigationDefinition(
+            "strategic-gate-decisions",
+            "Strategic Gate Decisions",
+            permission_key="strategic_gate.read",
+        ),
     ),
     "business-unit": (
         NavigationDefinition("home", "Home"),
         NavigationDefinition("overview", "Overview"),
         NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
         NavigationDefinition("project-proposals", "Project Proposals", permission_key="project_proposal.read"),
+        NavigationDefinition(
+            "strategic-gate-decisions",
+            "Strategic Gate Decisions",
+            permission_key="strategic_gate.read",
+        ),
     ),
     "portfolio": (
         NavigationDefinition("home", "Home"),
         NavigationDefinition("overview", "Overview"),
         NavigationDefinition("ideas", "Ideas", permission_key="idea.read"),
         NavigationDefinition("project-proposals", "Project Proposals", permission_key="project_proposal.read"),
+        NavigationDefinition(
+            "strategic-gate-decisions",
+            "Strategic Gate Decisions",
+            permission_key="strategic_gate.read",
+        ),
     ),
     "project": (
         NavigationDefinition("home", "Home"),

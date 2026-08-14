@@ -56,6 +56,7 @@ CONFIGURATION_KINDS = {
     "idea_evaluation_matrix",
     "project_proposal_configuration",
     "project_proposal_evaluation_matrix",
+    "strategic_gate_configuration",
 }
 
 CONFIGURATION_SEED = (
@@ -754,6 +755,16 @@ def _validate_content(kind: str, content: dict) -> None:
             raise HTTPException(status_code=422, detail="Proposal evaluation matrix requires criteria")
         if round(sum(float(item.get("weight", 0)) for item in criteria), 4) != 100:
             raise HTTPException(status_code=422, detail="Proposal evaluation matrix weights must total 100")
+    elif kind == "strategic_gate_configuration":
+        if content.get("context_type", "PROJECT_PROPOSAL") != "PROJECT_PROPOSAL":
+            raise HTTPException(status_code=422, detail="Only PROJECT_PROPOSAL context is operational")
+        if not isinstance(content.get("decision_checklist", []), list):
+            raise HTTPException(status_code=422, detail="Strategic Gate configuration requires a checklist")
+        if content.get("decision_authority", {}).get("mode") not in {
+            "SINGLE_DECISION_MAKER",
+            "COMMITTEE",
+        }:
+            raise HTTPException(status_code=422, detail="Invalid Strategic Gate authority mode")
 
 
 def _numbering_result(

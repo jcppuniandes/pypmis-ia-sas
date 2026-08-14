@@ -16,6 +16,7 @@ import {
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ApiError } from "../../api/client";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
+import ProposalGateDecisionsPanel from "../strategic-gate/ProposalGateDecisionsPanel";
 import { projectProposalApi } from "./api";
 import type { GateReadiness, ProjectProposal, ProposalDraft, ProposalOptions, ProposalPreview } from "./types";
 import "./projectProposal.css";
@@ -217,10 +218,17 @@ export default function ProjectProposalWorkspace({ token, workspaceId }: { token
 
   const metrics = {
     open: records.filter(
-      (item) => !["CANCELLED", "ARCHIVED", "READY_FOR_STRATEGIC_GATE_DECISION"].includes(item.status)
+      (item) =>
+        ![
+          "CANCELLED",
+          "ARCHIVED",
+          "READY_FOR_STRATEGIC_GATE",
+          "STRATEGIC_GATE_APPROVED",
+          "STRATEGIC_GATE_REJECTED",
+        ].includes(item.status)
     ).length,
     review: records.filter((item) => ["SUBMITTED", "UNDER_REVIEW"].includes(item.status)).length,
-    ready: records.filter((item) => item.status === "READY_FOR_STRATEGIC_GATE_DECISION").length,
+    ready: records.filter((item) => item.status === "READY_FOR_STRATEGIC_GATE").length,
   };
 
   return (
@@ -444,6 +452,8 @@ export default function ProjectProposalWorkspace({ token, workspaceId }: { token
                     : "Eligible for the next controlled strategic gate; this is not approval."}
                 </small>
               </section>
+
+              <ProposalGateDecisionsPanel proposal={selected} token={token} />
 
               <div className="proposalActions">
                 {selected.allowed_actions.includes("edit") && (

@@ -41,7 +41,9 @@ from app.modules.project_proposal.schemas import (
 
 PROPOSAL_NUMBER_RULE = "project-proposal"
 OWNING_TYPES = frozenset({"enterprise", "business-unit", "portfolio"})
-INACTIVE_STATES = frozenset({"CANCELLED", "ARCHIVED"})
+INACTIVE_STATES = frozenset(
+    {"CANCELLED", "ARCHIVED", "STRATEGIC_GATE_APPROVED", "STRATEGIC_GATE_REJECTED"}
+)
 PRIVILEGED_ROLES = frozenset(
     {
         "organization_admin",
@@ -402,7 +404,7 @@ class ProjectProposalService:
             "review": ProjectProposal.status.in_(["SUBMITTED", "UNDER_REVIEW"]),
             "assigned": ProjectProposal.proposal_owner_user_id == self.actor_id,
             "evaluation": ProjectProposal.status == "UNDER_EVALUATION",
-            "gate": ProjectProposal.status == "READY_FOR_STRATEGIC_GATE_DECISION",
+            "gate": ProjectProposal.status == "READY_FOR_STRATEGIC_GATE",
             "returned": ProjectProposal.status == "RETURNED",
             "cancelled": ProjectProposal.status == "CANCELLED",
         }
@@ -603,7 +605,7 @@ class ProjectProposalService:
 
     def mark_gate_ready(self, proposal_id: int, expected_version: int) -> ProjectProposalOut:
         proposal = self._proposal(proposal_id, for_update=True)
-        if proposal.status == "READY_FOR_STRATEGIC_GATE_DECISION":
+        if proposal.status == "READY_FOR_STRATEGIC_GATE":
             return self._out(proposal)
         self._check_version(proposal, expected_version)
         if proposal.status != "EVALUATED":
@@ -616,7 +618,7 @@ class ProjectProposalService:
             )
         return self._transition(
             proposal,
-            "READY_FOR_STRATEGIC_GATE_DECISION",
+            "READY_FOR_STRATEGIC_GATE",
             "project_proposal.ready_for_strategic_gate",
             metadata={"readiness_hash": readiness["readiness_hash"]},
             ready_for_gate_at=utc_now(),
@@ -894,7 +896,7 @@ class ProjectProposalService:
     def _gate_readiness(self, proposal: ProjectProposal) -> dict:
         blockers: list[str] = []
         warnings: list[str] = []
-        if proposal.status not in {"EVALUATED", "READY_FOR_STRATEGIC_GATE_DECISION"}:
+        if proposal.status not in {"EVALUATED", "READY_FOR_STRATEGIC_GATE"}:
             blockers.append("PROPOSAL_NOT_EVALUATED")
         latest = self._latest_evaluation(proposal.id)
         if latest is None:
