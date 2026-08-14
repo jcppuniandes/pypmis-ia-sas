@@ -119,7 +119,9 @@ class IdeaDemandService:
                 "idea_demand_configuration", "default", "Default Idea Lifecycle", DEFAULT_IDEA_CONFIGURATION
             )
         if self._latest_configuration("idea_evaluation_matrix", "default") is None:
-            self._seed_configuration("idea_evaluation_matrix", "default", "Default Idea Evaluation Matrix", DEFAULT_MATRIX)
+            self._seed_configuration(
+                "idea_evaluation_matrix", "default", "Default Idea Evaluation Matrix", DEFAULT_MATRIX
+            )
         sequence = self.db.scalar(
             select(AdminNumberSequence).where(
                 AdminNumberSequence.tenant_id == self.tenant_id,
@@ -166,7 +168,9 @@ class IdeaDemandService:
         return IdeaOptionsOut(
             number_preview=f"IDEA-{sequence.next_value:05d}",
             owning_workspaces=[self._workspace_option(item) for item in workspaces],
-            target_portfolios=[self._workspace_option(item) for item in workspaces if item.workspace_type_code == "portfolio"],
+            target_portfolios=[
+                self._workspace_option(item) for item in workspaces if item.workspace_type_code == "portfolio"
+            ],
             strategic_objectives=[{"code": item.code, "label": item.name} for item in objectives],
             users=[{"id": item.id, "name": item.full_name, "email": item.email} for item in users],
             idea_types=list(effective.get("idea_types", [])),
@@ -229,9 +233,7 @@ class IdeaDemandService:
             statement = statement.where(Idea.owning_workspace_id == owning_workspace_id)
         if search.strip():
             term = f"%{search.strip().lower()}%"
-            statement = statement.where(
-                func.lower(Idea.idea_number).like(term) | func.lower(Idea.title).like(term)
-            )
+            statement = statement.where(func.lower(Idea.idea_number).like(term) | func.lower(Idea.title).like(term))
         queues = {
             "mine": Idea.requestor_user_id == self.actor_id,
             "screen": Idea.state.in_(["SUBMITTED", "SCREENING"]),
@@ -368,16 +370,24 @@ class IdeaDemandService:
             weight = Decimal(str(criterion.get("weight", 0)))
             total += rating / maximum * weight
             normalized_ratings.append(
-                {"criterion_code": code, "rating": float(rating), "weight": float(weight), "comment": ratings[code].get("comment", "")}
+                {
+                    "criterion_code": code,
+                    "rating": float(rating),
+                    "weight": float(weight),
+                    "comment": ratings[code].get("comment", ""),
+                }
             )
-        version = int(
-            self.db.scalar(
-                select(func.coalesce(func.max(IdeaEvaluation.evaluation_version), 0)).where(
-                    IdeaEvaluation.tenant_id == self.tenant_id, IdeaEvaluation.idea_id == idea.id
+        version = (
+            int(
+                self.db.scalar(
+                    select(func.coalesce(func.max(IdeaEvaluation.evaluation_version), 0)).where(
+                        IdeaEvaluation.tenant_id == self.tenant_id, IdeaEvaluation.idea_id == idea.id
+                    )
                 )
+                or 0
             )
-            or 0
-        ) + 1
+            + 1
+        )
         threshold = Decimal(str(matrix.content_json.get("recommendation_threshold", 70)))
         evaluation = IdeaEvaluation(
             tenant_id=self.tenant_id,
@@ -497,16 +507,19 @@ class IdeaDemandService:
         self._check_configuration_version(source, expected_version)
         if source.status != "published":
             raise HTTPException(status_code=409, detail="Only a published Idea configuration can be cloned")
-        revision = int(
-            self.db.scalar(
-                select(func.max(AdminConfiguration.revision)).where(
-                    AdminConfiguration.tenant_id == self.tenant_id,
-                    AdminConfiguration.kind == source.kind,
-                    AdminConfiguration.code == source.code,
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.max(AdminConfiguration.revision)).where(
+                        AdminConfiguration.tenant_id == self.tenant_id,
+                        AdminConfiguration.kind == source.kind,
+                        AdminConfiguration.code == source.code,
+                    )
                 )
+                or 0
             )
-            or 0
-        ) + 1
+            + 1
+        )
         clone = AdminConfiguration(
             tenant_id=self.tenant_id,
             kind=source.kind,
@@ -575,7 +588,9 @@ class IdeaDemandService:
         types = {str(item.get("code")) for item in effective.get("idea_types", [])}
         categories = {str(item.get("code")) for item in effective.get("categories", [])}
         if payload.idea_type not in types or payload.category not in categories:
-            raise HTTPException(status_code=422, detail="Idea type or category is not enabled by effective configuration")
+            raise HTTPException(
+                status_code=422, detail="Idea type or category is not enabled by effective configuration"
+            )
         if payload.target_portfolio_workspace_id is not None:
             portfolio = self._workspace(payload.target_portfolio_workspace_id)
             if portfolio.workspace_type_code != "portfolio":
@@ -611,7 +626,11 @@ class IdeaDemandService:
         if record.version != expected_version:
             raise HTTPException(
                 status_code=412,
-                detail={"reason": "ETAG_MISMATCH", "current_version": record.version, "expected_version": expected_version},
+                detail={
+                    "reason": "ETAG_MISMATCH",
+                    "current_version": record.version,
+                    "expected_version": expected_version,
+                },
             )
 
     @staticmethod
@@ -628,9 +647,7 @@ class IdeaDemandService:
         if round(sum(float(item.get("weight", 0)) for item in criteria), 4) != 100:
             raise HTTPException(status_code=422, detail="Evaluation matrix weights must total 100")
 
-    def _configuration_event(
-        self, event_type: str, record: AdminConfiguration, metadata: dict | None = None
-    ) -> None:
+    def _configuration_event(self, event_type: str, record: AdminConfiguration, metadata: dict | None = None) -> None:
         self.db.add(
             SecurityEvent(
                 tenant_id=self.tenant_id,
@@ -639,7 +656,12 @@ class IdeaDemandService:
                 outcome="success",
                 target_type="AdminConfiguration",
                 target_id=record.id,
-                metadata_json={"kind": record.kind, "code": record.code, "revision": record.revision, **(metadata or {})},
+                metadata_json={
+                    "kind": record.kind,
+                    "code": record.code,
+                    "revision": record.revision,
+                    **(metadata or {}),
+                },
             )
         )
 
@@ -662,7 +684,9 @@ class IdeaDemandService:
     def _owning_workspace(self, workspace_id: int) -> EnterpriseWorkspace:
         workspace = self._workspace(workspace_id)
         if workspace.workspace_type_code not in OWNING_TYPES:
-            raise HTTPException(status_code=422, detail="Ideas can only be owned by Enterprise, Business Unit or Portfolio")
+            raise HTTPException(
+                status_code=422, detail="Ideas can only be owned by Enterprise, Business Unit or Portfolio"
+            )
         if not self.context.organization_wide and workspace.id not in self.context.workspace_ids:
             raise HTTPException(status_code=404, detail="Owning Workspace not found or not authorized")
         return workspace
@@ -711,7 +735,9 @@ class IdeaDemandService:
         selected = default
         for item in path:
             candidate = self._latest_configuration("idea_demand_configuration", f"workspace-{item.id}")
-            if candidate is not None and (item.id == getattr(workspace, "id", None) or candidate.content_json.get("inherit_to_descendants", True)):
+            if candidate is not None and (
+                item.id == getattr(workspace, "id", None) or candidate.content_json.get("inherit_to_descendants", True)
+            ):
                 selected = candidate
         source = {
             "configuration_id": selected.id,
@@ -731,7 +757,9 @@ class IdeaDemandService:
         selected = default
         for item in path:
             candidate = self._latest_configuration("idea_evaluation_matrix", f"workspace-{item.id}")
-            if candidate is not None and (item.id == workspace.id or candidate.content_json.get("inherit_to_descendants", True)):
+            if candidate is not None and (
+                item.id == workspace.id or candidate.content_json.get("inherit_to_descendants", True)
+            ):
                 selected = candidate
         return selected, {"matrix_configuration_id": selected.id, "revision": selected.revision}, path
 
@@ -905,7 +933,11 @@ class IdeaDemandService:
         if idea.revision_version != expected:
             raise HTTPException(
                 status_code=412,
-                detail={"reason": "ETAG_MISMATCH", "current_version": idea.revision_version, "expected_version": expected},
+                detail={
+                    "reason": "ETAG_MISMATCH",
+                    "current_version": idea.revision_version,
+                    "expected_version": expected,
+                },
             )
 
     def _commit(self, idea: Idea) -> IdeaOut:

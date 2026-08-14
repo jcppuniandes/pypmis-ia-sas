@@ -41,9 +41,7 @@ from app.modules.project_proposal.schemas import (
 
 PROPOSAL_NUMBER_RULE = "project-proposal"
 OWNING_TYPES = frozenset({"enterprise", "business-unit", "portfolio"})
-INACTIVE_STATES = frozenset(
-    {"CANCELLED", "ARCHIVED", "STRATEGIC_GATE_APPROVED", "STRATEGIC_GATE_REJECTED"}
-)
+INACTIVE_STATES = frozenset({"CANCELLED", "ARCHIVED", "STRATEGIC_GATE_APPROVED", "STRATEGIC_GATE_REJECTED"})
 PRIVILEGED_ROLES = frozenset(
     {
         "organization_admin",

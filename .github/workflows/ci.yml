@@ -70,10 +70,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Prepare Gate 04H evidence directory
         # The backend image runs as its non-root appuser (UID 999), while the
-        # bind-mounted directory is created by the GitHub runner user. Grant
-        # write access only to this disposable evidence directory so the E2E
-        # process can persist its JSON/CSV evidence.
-        run: install -d -m 0777 artifacts/enterprise_structure/gate04h
+        # bind-mounted directory and its tracked evidence files are owned by
+        # the GitHub runner user. Grant write access only to this disposable
+        # evidence tree so the E2E process can replace its JSON/CSV outputs.
+        run: |
+          install -d -m 0777 artifacts/enterprise_structure/gate04h
+          chmod -R a+rwX artifacts/enterprise_structure/gate04h
       - name: Run migrations, PostgreSQL E2E, concurrency, SoD and benchmark
         shell: bash
         run: |

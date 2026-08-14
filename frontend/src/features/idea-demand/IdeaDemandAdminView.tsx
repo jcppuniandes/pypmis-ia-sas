@@ -10,7 +10,11 @@ export default function IdeaDemandAdminView({ token }: { token: string }) {
   const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
-  const load = () => ideaDemandApi.configurations(token).then(setItems).catch((error: Error) => setMessage(error.message));
+  const load = () =>
+    ideaDemandApi
+      .configurations(token)
+      .then(setItems)
+      .catch((error: Error) => setMessage(error.message));
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,7 +42,11 @@ export default function IdeaDemandAdminView({ token }: { token: string }) {
         eyebrow="ADMIN MODE / Enterprise Strategy Manager"
         title="Idea & Demand Manager"
         description="Govern lifecycle rules, screening, routing and immutable evaluation matrix revisions."
-        metrics={[{ label: "Configurations", value: items.length }, { label: "Published", value: published }, { label: "Drafts", value: drafts }]}
+        metrics={[
+          { label: "Configurations", value: items.length },
+          { label: "Published", value: published },
+          { label: "Drafts", value: drafts },
+        ]}
       />
       {message ? <div className="ideaMessage">{message}</div> : null}
       <div className="ideaAdminGrid">
@@ -48,16 +56,82 @@ export default function IdeaDemandAdminView({ token }: { token: string }) {
             <span>{String(item.kind).replace(/_/g, " ")}</span>
             <h3>{String(item.name)}</h3>
             <p>{String(item.description || "Controlled configuration")}</p>
-            <footer><span>Revision {String(item.revision)}</span><strong><ShieldCheck size={14} /> {String(item.status)}</strong></footer>
+            <footer>
+              <span>Revision {String(item.revision)}</span>
+              <strong>
+                <ShieldCheck size={14} /> {String(item.status)}
+              </strong>
+            </footer>
             <div className="ideaAdminActions">
-              {item.status === "published" ? <button disabled={busy} onClick={() => void mutate("clone", item)} type="button"><CopyPlus size={14} /> Clone to draft</button> : null}
-              {item.status === "draft" ? <><button disabled={busy} onClick={() => { setEditing(item); setContent(JSON.stringify(item.content_json, null, 2)); }} type="button"><Settings2 size={14} /> Edit</button><button disabled={busy} onClick={() => void mutate("publish", item)} type="button"><Send size={14} /> Publish</button></> : null}
+              {item.status === "published" ? (
+                <button disabled={busy} onClick={() => void mutate("clone", item)} type="button">
+                  <CopyPlus size={14} /> Clone to draft
+                </button>
+              ) : null}
+              {item.status === "draft" ? (
+                <>
+                  <button
+                    disabled={busy}
+                    onClick={() => {
+                      setEditing(item);
+                      setContent(JSON.stringify(item.content_json, null, 2));
+                    }}
+                    type="button"
+                  >
+                    <Settings2 size={14} /> Edit
+                  </button>
+                  <button disabled={busy} onClick={() => void mutate("publish", item)} type="button">
+                    <Send size={14} /> Publish
+                  </button>
+                </>
+              ) : null}
             </div>
           </article>
         ))}
       </div>
-      <div className="ideaGovernanceNote"><strong>Publishing workflow</strong><p>Create, clone, edit and publish these governed revisions through General Configuration. Published revisions remain immutable and each evaluation stores the exact matrix snapshot used.</p></div>
-      {editing ? <div className="ideaDrawerBackdrop"><section className="ideaDrawer" aria-label="Edit Idea configuration"><header><div><span>DRAFT REVISION {String(editing.revision)}</span><h3>{String(editing.name)}</h3></div><button onClick={() => setEditing(null)} type="button">Close</button></header><label><span>Configuration JSON</span><textarea className="ideaConfigEditor" value={content} onChange={(event) => setContent(event.target.value)} /></label><footer><button onClick={() => setEditing(null)} type="button">Cancel</button><button className="ideaPrimary" disabled={busy} onClick={() => void mutate("save", editing)} type="button">Save draft</button></footer></section></div> : null}
+      <div className="ideaGovernanceNote">
+        <strong>Publishing workflow</strong>
+        <p>
+          Create, clone, edit and publish these governed revisions through General Configuration. Published revisions
+          remain immutable and each evaluation stores the exact matrix snapshot used.
+        </p>
+      </div>
+      {editing ? (
+        <div className="ideaDrawerBackdrop">
+          <section className="ideaDrawer" aria-label="Edit Idea configuration">
+            <header>
+              <div>
+                <span>DRAFT REVISION {String(editing.revision)}</span>
+                <h3>{String(editing.name)}</h3>
+              </div>
+              <button onClick={() => setEditing(null)} type="button">
+                Close
+              </button>
+            </header>
+            <label>
+              <span>Configuration JSON</span>
+              <textarea
+                className="ideaConfigEditor"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+              />
+            </label>
+            <footer>
+              <button onClick={() => setEditing(null)} type="button">
+                Cancel
+              </button>
+              <button
+                className="ideaPrimary"
+                disabled={busy}
+                onClick={() => void mutate("save", editing)}
+                type="button"
+              >
+                Save draft
+              </button>
+            </footer>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }

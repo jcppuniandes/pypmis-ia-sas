@@ -75,7 +75,9 @@ class IdeaEvaluation(Base):
     evaluator_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    __table_args__ = (UniqueConstraint("tenant_id", "idea_id", "evaluation_version", name="uq_idea_evaluation_version"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "idea_id", "evaluation_version", name="uq_idea_evaluation_version"),
+    )
 
 
 @event.listens_for(IdeaEvaluation, "before_update")

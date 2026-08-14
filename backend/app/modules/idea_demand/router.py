@@ -140,8 +140,12 @@ def _transition_route(permission: str, roles: frozenset[str] | None, method: str
     return endpoint
 
 
-router.add_api_route("/{idea_id}/submit", _transition_route("idea.submit", None, "submit"), methods=["POST"], response_model=IdeaOut)
-router.add_api_route("/{idea_id}/cancel", _transition_route("idea.cancel", None, "cancel"), methods=["POST"], response_model=IdeaOut)
+router.add_api_route(
+    "/{idea_id}/submit", _transition_route("idea.submit", None, "submit"), methods=["POST"], response_model=IdeaOut
+)
+router.add_api_route(
+    "/{idea_id}/cancel", _transition_route("idea.cancel", None, "cancel"), methods=["POST"], response_model=IdeaOut
+)
 router.add_api_route(
     "/{idea_id}/evaluation/start",
     _transition_route("idea.evaluate", OWNER_ROLES, "start_evaluation"),
@@ -217,15 +221,34 @@ def _decision_route(method: str, permission: str, roles: frozenset[str], *, acce
         user_id: int = Depends(get_user_id),
     ) -> IdeaOut:
         service, _ = _authorized(db, tenant_id, user_id, permission, roles)
-        result = service.decide(idea_id, payload, expected, accept=bool(accept)) if method == "decide" else service.return_idea(idea_id, payload, expected)
+        result = (
+            service.decide(idea_id, payload, expected, accept=bool(accept))
+            if method == "decide"
+            else service.return_idea(idea_id, payload, expected)
+        )
         return _etag(response, result)
 
     return endpoint
 
 
-router.add_api_route("/{idea_id}/accept", _decision_route("decide", "idea.decide", DECISION_ROLES, accept=True), methods=["POST"], response_model=IdeaOut)
-router.add_api_route("/{idea_id}/reject", _decision_route("decide", "idea.decide", DECISION_ROLES, accept=False), methods=["POST"], response_model=IdeaOut)
-router.add_api_route("/{idea_id}/return", _decision_route("return", "idea.screen", INTAKE_ROLES), methods=["POST"], response_model=IdeaOut)
+router.add_api_route(
+    "/{idea_id}/accept",
+    _decision_route("decide", "idea.decide", DECISION_ROLES, accept=True),
+    methods=["POST"],
+    response_model=IdeaOut,
+)
+router.add_api_route(
+    "/{idea_id}/reject",
+    _decision_route("decide", "idea.decide", DECISION_ROLES, accept=False),
+    methods=["POST"],
+    response_model=IdeaOut,
+)
+router.add_api_route(
+    "/{idea_id}/return",
+    _decision_route("return", "idea.screen", INTAKE_ROLES),
+    methods=["POST"],
+    response_model=IdeaOut,
+)
 
 
 @router.get("/{idea_id}/proposal-readiness", response_model=ProposalReadinessOut)

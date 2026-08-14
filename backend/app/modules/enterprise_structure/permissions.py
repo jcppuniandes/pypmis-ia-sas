@@ -257,9 +257,7 @@ PROJECT_PROPOSAL_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         }
     )
     | WORKSPACE_OPERATION_PERMISSIONS,
-    "proposal_owner": frozenset(
-        {"project_proposal.read", "project_proposal.edit", "project_proposal.evaluate"}
-    )
+    "proposal_owner": frozenset({"project_proposal.read", "project_proposal.edit", "project_proposal.evaluate"})
     | WORKSPACE_OPERATION_PERMISSIONS,
     "proposal_reviewer": frozenset(
         {
@@ -308,13 +306,9 @@ STRATEGIC_GATE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         {"strategic_gate.read", "strategic_gate.review", "strategic_gate.void", "project_proposal.read"}
     )
     | WORKSPACE_OPERATION_PERMISSIONS,
-    "gate_decision_maker": frozenset(
-        {"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"}
-    )
+    "gate_decision_maker": frozenset({"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"})
     | WORKSPACE_OPERATION_PERMISSIONS,
-    "gate_committee_member": frozenset(
-        {"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"}
-    )
+    "gate_committee_member": frozenset({"strategic_gate.read", "strategic_gate.decide", "project_proposal.read"})
     | WORKSPACE_OPERATION_PERMISSIONS,
     "gate_configuration_admin": frozenset(
         {

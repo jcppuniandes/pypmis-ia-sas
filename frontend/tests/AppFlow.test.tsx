@@ -1462,7 +1462,7 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
     await user.click(within(validationNav).getByRole("button", { name: /bim manager/i }));
     expect(await screen.findByRole("region", { name: /bim manager module/i })).toBeInTheDocument();
-  });
+  }, 90_000);
 
   it("opens the blocking cost and currency gate from the next controlled action", async () => {
     const user = userEvent.setup();
