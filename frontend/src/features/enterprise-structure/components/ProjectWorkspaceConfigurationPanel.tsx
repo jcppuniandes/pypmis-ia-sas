@@ -2,7 +2,13 @@ import { Archive, CheckCircle2, CopyPlus, Eye, FileStack, Hash, Layers3, Save, S
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { enterpriseStructureApi } from "../api";
-import type { ConfigurationVersion, ProjectConfiguration, ProjectPreview, ProjectTemplatePayload } from "../types";
+import type {
+  ConfigurationVersion,
+  ProjectConfiguration,
+  ProjectGovernanceModel,
+  ProjectPreview,
+  ProjectTemplatePayload,
+} from "../types";
 
 type ProjectView = "templates" | "numbering" | "policy";
 
@@ -71,6 +77,8 @@ export default function ProjectWorkspaceConfigurationPanel({
   const [prefix, setPrefix] = useState("PYP-PRJ");
   const [padding, setPadding] = useState(5);
   const [policy, setPolicy] = useState<Record<string, unknown>>({});
+  const [selectedGovernance, setSelectedGovernance] = useState<ProjectGovernanceModel>("CAPITAL_OWNER");
+  const [governancePolicy, setGovernancePolicy] = useState<Record<string, unknown>>({});
   const [busy, setBusy] = useState(true);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -84,6 +92,7 @@ export default function ProjectWorkspaceConfigurationPanel({
     setPrefix(String(response.numbering_rule.content_json.prefix ?? "PYP-PRJ"));
     setPadding(Number(response.numbering_rule.content_json.padding ?? 5));
     setPolicy(response.creation_policy.content_json);
+    setGovernancePolicy(response.governance_models[0]?.content ?? {});
   }, [token]);
 
   useEffect(() => {
@@ -98,6 +107,10 @@ export default function ProjectWorkspaceConfigurationPanel({
     () => data?.templates.find((item) => item.id === selectedTemplateId) ?? null,
     [data, selectedTemplateId]
   );
+  const selectedGovernancePolicy = useMemo(
+    () => data?.governance_models.find((item) => item.governance_model === selectedGovernance) ?? null,
+    [data, selectedGovernance]
+  );
 
   useEffect(() => {
     if (!selectedTemplate) return;
@@ -105,6 +118,13 @@ export default function ProjectWorkspaceConfigurationPanel({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(templatePayload(selectedTemplate));
   }, [selectedTemplate]);
+
+  useEffect(() => {
+    if (!selectedGovernancePolicy) return;
+    // The editable form intentionally mirrors the selected published policy.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGovernancePolicy(selectedGovernancePolicy.content);
+  }, [selectedGovernancePolicy]);
 
   async function run(action: () => Promise<unknown>, success: string) {
     setBusy(true);
@@ -559,53 +579,152 @@ export default function ProjectWorkspaceConfigurationPanel({
       ) : null}
 
       {view === "policy" && data ? (
-        <section className="enterprisePanel projectFocusedPanel">
-          <header>
-            <div>
-              <span>Creation Policies</span>
-              <h3>Project Creation Process</h3>
+        <>
+          <section className="enterprisePanel projectFocusedPanel">
+            <header>
+              <div>
+                <span>Creation Policies</span>
+                <h3>Project Creation Process</h3>
+              </div>
+              <ShieldCheck />
+            </header>
+            <p>
+              Configuracion declarativa para Gate 05B. Este panel no crea, aprueba ni materializa Project Workspaces.
+            </p>
+            <div className="projectPolicyGrid">
+              {[
+                ["template_required", "Project Template requerida"],
+                ["project_manager_required", "Project Manager requerido"],
+                ["strategic_objective_required", "Objetivo estrategico requerido"],
+                ["approval_required", "Aprobacion requerida"],
+                ["auto_project_number", "Project Number automatico"],
+                ["auto_record_code", "Record Code automatico"],
+                ["activation_after_approval", "Activacion posterior a aprobacion"],
+                ["materialization_after_approval", "Materializacion posterior a aprobacion"],
+              ].map(([key, label]) => (
+                <label key={key}>
+                  <input
+                    checked={Boolean(policy[key])}
+                    disabled={!canConfigure}
+                    onChange={(event) => setPolicy({ ...policy, [key]: event.target.checked })}
+                    type="checkbox"
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
             </div>
-            <ShieldCheck />
-          </header>
-          <p>Configuracion declarativa para Gate 05B. Este panel no crea, aprueba ni materializa Project Workspaces.</p>
-          <div className="projectPolicyGrid">
-            {[
-              ["template_required", "Project Template requerida"],
-              ["project_manager_required", "Project Manager requerido"],
-              ["strategic_objective_required", "Objetivo estrategico requerido"],
-              ["approval_required", "Aprobacion requerida"],
-              ["auto_project_number", "Project Number automatico"],
-              ["auto_record_code", "Record Code automatico"],
-              ["activation_after_approval", "Activacion posterior a aprobacion"],
-              ["materialization_after_approval", "Materializacion posterior a aprobacion"],
-            ].map(([key, label]) => (
-              <label key={key}>
-                <input
-                  checked={Boolean(policy[key])}
-                  disabled={!canConfigure}
-                  onChange={(event) => setPolicy({ ...policy, [key]: event.target.checked })}
-                  type="checkbox"
-                />
-                <span>{label}</span>
-              </label>
-            ))}
-          </div>
-          <div className="publicationActions">
-            <button
-              className="enterpriseButton primary"
-              disabled={!canConfigure || busy}
-              onClick={() =>
-                run(
-                  () => enterpriseStructureApi.updateProjectCreationPolicy(token, policy),
-                  "Politica de creacion versionada."
-                )
-              }
-              type="button"
-            >
-              <Save size={15} /> Guardar revision
-            </button>
-          </div>
-        </section>
+            <div className="publicationActions">
+              <button
+                className="enterpriseButton primary"
+                disabled={!canConfigure || busy}
+                onClick={() =>
+                  run(
+                    () => enterpriseStructureApi.updateProjectCreationPolicy(token, policy),
+                    "Politica de creacion versionada."
+                  )
+                }
+                type="button"
+              >
+                <Save size={15} /> Guardar revision
+              </button>
+            </div>
+          </section>
+
+          <section className="enterprisePanel projectFocusedPanel governancePolicyPanel">
+            <header>
+              <div>
+                <span>Multi-source Project Governance</span>
+                <h3>{data.multi_source_status}</h3>
+              </div>
+              <Layers3 />
+            </header>
+            <p>
+              Las tres rutas reutilizan ProjectCreationRequest, el mismo ciclo Four-eyes y una única identidad PROJECT.
+              La política efectiva se resuelve por tenant y puede heredarse por workspace.
+            </p>
+            <div className="governancePolicyTabs" role="tablist" aria-label="Modelos de gobierno">
+              {data.governance_models.map((item) => (
+                <button
+                  aria-selected={selectedGovernance === item.governance_model}
+                  className={selectedGovernance === item.governance_model ? "active" : ""}
+                  key={item.governance_model}
+                  onClick={() => setSelectedGovernance(item.governance_model)}
+                  role="tab"
+                  type="button"
+                >
+                  {item.label}
+                  <small>Rev. {item.revision}</small>
+                </button>
+              ))}
+            </div>
+            {selectedGovernancePolicy ? (
+              <>
+                <dl className="projectFacts governancePolicyFacts">
+                  <div>
+                    <dt>Modelo</dt>
+                    <dd>{selectedGovernancePolicy.governance_model}</dd>
+                  </div>
+                  <div>
+                    <dt>Herencia</dt>
+                    <dd>{selectedGovernancePolicy.source_workspace_name || "Tenant default"}</dd>
+                  </div>
+                  <div>
+                    <dt>Policy revision</dt>
+                    <dd>{selectedGovernancePolicy.revision}</dd>
+                  </div>
+                  <div>
+                    <dt>Policy hash</dt>
+                    <dd>{selectedGovernancePolicy.content_hash.slice(0, 12)}…</dd>
+                  </div>
+                </dl>
+                <div className="projectPolicyGrid">
+                  {[
+                    ["template_required", "Project Template requerida"],
+                    ["project_manager_required", "Project Manager requerido"],
+                    ["strategic_objective_required", "Objetivo estratégico requerido"],
+                    ["portfolio_required", "Portfolio requerido"],
+                    ["fel_required", "FEL requerido"],
+                    ["pdri_required", "PDRI requerido"],
+                    ["fid_required_for_creation", "FID requerido para crear"],
+                    ["contract_source_required", "Fuente contractual requerida"],
+                    ["notice_to_proceed_required", "Notice to Proceed requerido"],
+                    ["approval_required", "Aprobación Four-eyes requerida"],
+                  ].map(([key, label]) => (
+                    <label key={key}>
+                      <input
+                        checked={Boolean(governancePolicy[key])}
+                        disabled={!canConfigure}
+                        onChange={(event) => setGovernancePolicy({ ...governancePolicy, [key]: event.target.checked })}
+                        type="checkbox"
+                      />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="publicationActions">
+                  <button
+                    className="enterpriseButton primary"
+                    disabled={!canConfigure || busy}
+                    onClick={() =>
+                      run(
+                        () =>
+                          enterpriseStructureApi.updateProjectGovernancePolicy(
+                            token,
+                            selectedGovernance,
+                            governancePolicy
+                          ),
+                        `Política ${selectedGovernancePolicy.label} versionada y publicada.`
+                      )
+                    }
+                    type="button"
+                  >
+                    <Save size={15} /> Guardar política de gobierno
+                  </button>
+                </div>
+              </>
+            ) : null}
+          </section>
+        </>
       ) : null}
     </div>
   );

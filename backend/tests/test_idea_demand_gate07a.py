@@ -1,5 +1,7 @@
 """Gate 07A acceptance tests for the single governed Idea lifecycle."""
 
+from uuid import uuid4
+
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 
@@ -21,14 +23,14 @@ def _headers(client: TestClient) -> dict[str, str]:
 
 def _workspace_id() -> int:
     with SessionLocal() as db:
+        admin = db.scalar(select(UserAccount).where(UserAccount.email == "admin@demo.local"))
+        assert admin is not None
         workspace = db.scalar(
             select(EnterpriseWorkspace)
             .where(EnterpriseWorkspace.workspace_type_code.in_(["enterprise", "business-unit", "portfolio"]))
             .order_by(EnterpriseWorkspace.id)
         )
         if workspace is None:
-            admin = db.scalar(select(UserAccount).where(UserAccount.email == "admin@demo.local"))
-            assert admin is not None
             workspace = EnterpriseWorkspace(
                 tenant_id=admin.tenant_id,
                 parent_id=None,
@@ -45,10 +47,20 @@ def _workspace_id() -> int:
             )
             db.add(workspace)
             db.flush()
+
+        objective = db.scalar(
+            select(EnterpriseStrategicObjective)
+            .where(
+                EnterpriseStrategicObjective.tenant_id == admin.tenant_id,
+                EnterpriseStrategicObjective.active.is_(True),
+            )
+            .order_by(EnterpriseStrategicObjective.id)
+        )
+        if objective is None:
             db.add(
                 EnterpriseStrategicObjective(
                     tenant_id=admin.tenant_id,
-                    code="growth",
+                    code=f"g07a-objective-{uuid4().hex[:8]}",
                     name="Sustainable growth",
                     strategic_line="Enterprise",
                     priority="high",
@@ -60,8 +72,22 @@ def _workspace_id() -> int:
                     created_by_user_id=admin.id,
                 )
             )
-            db.commit()
+        db.commit()
         return workspace.id
+
+
+def test_gate07a_fixture_restores_its_strategic_objective_precondition() -> None:
+    with TestClient(app):
+        with SessionLocal() as db:
+            objectives = db.scalars(select(EnterpriseStrategicObjective)).all()
+            for objective in objectives:
+                objective.active = False
+            db.commit()
+
+        _workspace_id()
+
+        with SessionLocal() as db:
+            assert db.scalar(select(EnterpriseStrategicObjective).where(EnterpriseStrategicObjective.active.is_(True)))
 
 
 def _payload(client: TestClient, headers: dict[str, str]) -> dict:

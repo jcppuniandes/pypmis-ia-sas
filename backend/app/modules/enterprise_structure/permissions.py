@@ -75,6 +75,9 @@ PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
             "project_creation.request.edit",
             "project_creation.request.submit",
             "project_creation.request.read",
+            "project_creation.contract_source.create",
+            "project_creation.direct.create",
+            "project_governance_model.read",
             "enterprise_structure.read",
         }
     ),
@@ -82,6 +85,7 @@ PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         {
             "project_creation.request.read",
             "project_creation.review",
+            "project_governance_model.read",
             "enterprise_structure.read",
         }
     ),
@@ -89,6 +93,7 @@ PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         {
             "project_creation.request.read",
             "project_creation.approve",
+            "project_governance_model.read",
             "enterprise_structure.read",
         }
     ),
@@ -96,10 +101,13 @@ PROJECT_CREATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         {
             "project_creation.request.read",
             "project_creation.materialize",
+            "project_governance_model.read",
             "enterprise_structure.read",
         }
     ),
-    "project_manager": frozenset({"enterprise_structure.read", "project_workspace.initialization.read"})
+    "project_manager": frozenset(
+        {"enterprise_structure.read", "project_workspace.initialization.read", "project_governance_model.read"}
+    )
     | WORKSPACE_OPERATION_PERMISSIONS,
 }
 
@@ -327,6 +335,101 @@ STRATEGIC_GATE_ROLE_DEFINITIONS = {
     "gate_configuration_admin": (
         "Gate Configuration Admin",
         "Configures and publishes Strategic Gate policies.",
+    ),
+}
+
+PORTFOLIO_PLANNING_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_intake_planner": frozenset(
+        {
+            "portfolio_project.read",
+            "portfolio_project.intake",
+            "portfolio_planning.readiness.read",
+            "project_definition.readiness.read",
+            "strategic_gate.read",
+            "project_creation.request.create",
+            "project_creation.request.edit",
+            "project_creation.request.submit",
+            "project_creation.request.read",
+            "project_governance_model.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_membership_manager": frozenset(
+        {
+            "portfolio_project.read",
+            "portfolio_project.membership.manage",
+            "portfolio_planning.readiness.read",
+            "project_definition.readiness.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_configuration_admin": frozenset(
+        {
+            "portfolio_project.read",
+            "portfolio_project.admin.configure",
+            "portfolio_project.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_PLANNING_ROLE_DEFINITIONS = {
+    "portfolio_intake_planner": (
+        "Portfolio Intake Planner",
+        "Creates strategic Project planning entries from approved Gate decisions.",
+    ),
+    "portfolio_membership_manager": (
+        "Portfolio Membership Manager",
+        "Manages analytical Project memberships without changing EWS hierarchy.",
+    ),
+    "portfolio_configuration_admin": (
+        "Portfolio Configuration Admin",
+        "Configures and publishes Portfolio Planning entry policies.",
+    ),
+}
+
+PORTFOLIO_EVALUATION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_evaluator": frozenset(
+        {
+            "portfolio_evaluation.read",
+            "portfolio_evaluation.create",
+            "portfolio_evaluation.edit",
+            "portfolio_evaluation.complete",
+            "portfolio_evaluation.reevaluate",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+            "portfolio_planning.readiness.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_prioritization_viewer": frozenset(
+        {
+            "portfolio_evaluation.read",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_evaluation_configuration_admin": frozenset(
+        {
+            "portfolio_evaluation.read",
+            "portfolio_evaluation.admin.configure",
+            "portfolio_evaluation.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_EVALUATION_ROLE_DEFINITIONS = {
+    "portfolio_evaluator": (
+        "Portfolio Evaluator",
+        "Scores eligible CAPITAL_OWNER Projects in their Portfolio context.",
+    ),
+    "portfolio_prioritization_viewer": (
+        "Portfolio Prioritization Viewer",
+        "Reads contextual Portfolio rankings and readiness without override authority.",
+    ),
+    "portfolio_evaluation_configuration_admin": (
+        "Portfolio Evaluation Configuration Admin",
+        "Configures and publishes Gate 07E matrices and ranking rules.",
     ),
 }
 
@@ -609,6 +712,34 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_PLANNING_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_EVALUATION_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -625,6 +756,13 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "strategic_gate.read",
             "strategic_gate.admin.configure",
             "strategic_gate.admin.publish",
+            "portfolio_project.read",
+            "portfolio_project.admin.configure",
+            "portfolio_project.admin.publish",
+            "portfolio_evaluation.read",
+            "portfolio_evaluation.admin.configure",
+            "portfolio_evaluation.admin.publish",
+            "portfolio_prioritization.read",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -636,6 +774,8 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **IDEA_ROLE_PERMISSIONS,
         **PROJECT_PROPOSAL_ROLE_PERMISSIONS,
         **STRATEGIC_GATE_ROLE_PERMISSIONS,
+        **PORTFOLIO_PLANNING_ROLE_PERMISSIONS,
+        **PORTFOLIO_EVALUATION_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

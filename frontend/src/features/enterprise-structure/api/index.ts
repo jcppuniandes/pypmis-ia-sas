@@ -23,8 +23,11 @@ import type {
   ProjectConfiguration,
   ProjectCreationOptions,
   ProjectCreationRequest,
+  ProjectGovernanceModel,
+  ProjectGovernancePolicy,
   ProjectRequestPayload,
   ProjectRequestPreview,
+  ProjectSourcePreview,
   ProjectPreview,
   ProjectTemplatePayload,
   ProjectWorkspaceOverview,
@@ -154,6 +157,32 @@ export const enterpriseStructureApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  updateProjectGovernancePolicy: (
+    token: string,
+    governanceModel: ProjectGovernanceModel,
+    payload: Record<string, unknown>
+  ) =>
+    apiFetch<ProjectGovernancePolicy>(`${adminRoot}/project-governance-models/${governanceModel}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  previewProjectGovernancePolicy: (
+    token: string,
+    payload: {
+      governance_model: ProjectGovernanceModel;
+      source_context_type?: string | null;
+      parent_workspace_id?: number | null;
+      project_type?: string | null;
+      template_id?: number | null;
+    }
+  ) =>
+    apiFetch<ProjectGovernancePolicy & { blockers: string[]; warnings: string[] }>(
+      `${adminRoot}/project-governance-models/preview`,
+      { method: "POST", token, body: JSON.stringify(payload) }
+    ),
 
   createNode: (token: string, payload: NodePayload) =>
     apiFetch<EnterpriseNode>(`${adminRoot}/nodes`, {
@@ -398,6 +427,22 @@ export const enterpriseStructureApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  previewProjectSource: (token: string, payload: ProjectRequestPayload) => {
+    const route =
+      payload.governance_model === "CONTRACTOR_DELIVERY"
+        ? "/api/v1/project-creation/from-contract/preview"
+        : "/api/v1/project-creation/direct/preview";
+    return apiFetch<ProjectSourcePreview>(route, { method: "POST", token, body: JSON.stringify(payload) });
+  },
+
+  createProjectFromSource: (token: string, payload: ProjectRequestPayload) => {
+    const route =
+      payload.governance_model === "CONTRACTOR_DELIVERY"
+        ? "/api/v1/project-creation/from-contract"
+        : "/api/v1/project-creation/direct";
+    return apiFetch<ProjectCreationRequest>(route, { method: "POST", token, body: JSON.stringify(payload) });
+  },
 
   updateProjectRequest: (token: string, requestId: number, version: number, payload: ProjectRequestPayload) =>
     apiFetch<ProjectCreationRequest>(`${projectCreationRoot}/${requestId}`, {

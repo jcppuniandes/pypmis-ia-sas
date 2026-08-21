@@ -40,6 +40,18 @@ from app.modules.enterprise_structure.project_configuration import (
     ProjectWorkspaceConfigurationService,
 )
 from app.modules.enterprise_structure.record_codes import next_record_code
+from app.modules.project_creation.governance import (
+    GOVERNANCE_LABELS,
+    SOURCE_BY_GOVERNANCE,
+    EffectiveProjectGovernancePolicy,
+    NormalizedProjectCreationSource,
+    ProjectGovernanceModel,
+    ProjectGovernancePolicyService,
+    ProjectSourceContextType,
+    activation_authorization_status,
+    normalize_project_source,
+    source_requirements_status,
+)
 from app.modules.project_creation.models import ProjectCreationRequest
 from app.modules.project_creation.schemas import (
     ProjectCreationOptionsOut,
@@ -53,6 +65,7 @@ from app.modules.project_creation.schemas import (
     ProjectRequestPayload,
     ProjectRequestPreviewOut,
     ProjectRequestUpdate,
+    ProjectSourcePreviewOut,
     ProjectTemplateOption,
 )
 from app.modules.project_workspace_initialization.models import ProjectWorkspaceInitialization
@@ -89,9 +102,14 @@ class ProjectCreationService:
                     version=1,
                 )
             )
+        ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).ensure_seed()
         self.db.commit()
 
-    def options(self, parent_workspace_id: int | None = None) -> ProjectCreationOptionsOut:
+    def options(
+        self,
+        parent_workspace_id: int | None = None,
+        context: EnterprisePermissionContext | None = None,
+    ) -> ProjectCreationOptionsOut:
         location_workspaces = self._eligible_locations()
         locations = []
         for workspace in location_workspaces:
@@ -150,33 +168,168 @@ class ProjectCreationService:
                 {"code": str(item.get("code", "")), "label": str(item.get("label", ""))}
                 for item in catalog.content_json.get("items", [])
             ]
+        role_codes = set(context.role_codes) if context else set()
+        organization_admin = "organization_admin" in role_codes
+        can_create_direct = organization_admin or "project_requestor" in role_codes
+        can_create_from_contract = organization_admin or "project_requestor" in role_codes
+        can_create_from_strategic_gate = organization_admin or "portfolio_intake_planner" in role_codes
+        allowed_models = []
+        for model in ProjectGovernanceModel:
+            permitted = {
+                ProjectGovernanceModel.CAPITAL_OWNER: can_create_from_strategic_gate,
+                ProjectGovernanceModel.CONTRACTOR_DELIVERY: can_create_from_contract,
+                ProjectGovernanceModel.DIRECT_INTERNAL: can_create_direct,
+            }[model]
+            if permitted:
+                allowed_models.append(
+                    {
+                        "code": model,
+                        "label": GOVERNANCE_LABELS[model],
+                        "source_context_type": SOURCE_BY_GOVERNANCE[model],
+                        "entry_path": "STRATEGIC_PROJECT_PLANNING_ENTRY"
+                        if model == ProjectGovernanceModel.CAPITAL_OWNER
+                        else "CREATE_PROJECT",
+                    }
+                )
         return ProjectCreationOptionsOut(
             locations=locations,
             templates=templates,
             managers=managers,
             strategic_objectives=objectives,
             classifications=classifications,
+            allowed_governance_models=allowed_models,
+            allowed_source_context_types=sorted({str(item["source_context_type"]) for item in allowed_models}),
+            can_create_direct=can_create_direct,
+            can_create_from_contract=can_create_from_contract,
+            can_create_from_strategic_gate=can_create_from_strategic_gate,
             blocked_reason=None if templates else "NO_PUBLISHED_PROJECT_TEMPLATE",
         )
 
-    def create_request(self, payload: ProjectRequestCreate) -> ProjectRequestOut:
-        issues, _context = self._validate_payload(payload, require_published=True)
-        self._raise_issues(issues)
+    def create_request(
+        self,
+        payload: ProjectRequestCreate,
+        *,
+        strategic_source: dict[str, Any] | None = None,
+    ) -> ProjectRequestOut:
+        source_values: dict[str, Any] | None = None
+        if strategic_source:
+            source_values = {
+                **strategic_source,
+                "governance_model": ProjectGovernanceModel.CAPITAL_OWNER,
+                "source_context_type": ProjectSourceContextType.STRATEGIC_GATE_DECISION,
+            }
+        elif payload.governance_model:
+            source_values = {
+                "governance_model": payload.governance_model,
+                "source_context_type": payload.source_context_type,
+                "source_context_id": payload.source_context_id,
+                "source_external_key": payload.source_external_key,
+                "idempotency_key": payload.idempotency_key,
+                "source_snapshot": payload.source_snapshot,
+            }
+        normalized_source = normalize_project_source(source_values) if source_values else None
+        if normalized_source:
+            existing = self._request_by_source(normalized_source)
+            if existing is not None:
+                return self._out(existing)
         request = ProjectCreationRequest(
             tenant_id=self.tenant_id,
-            request_number=self._reserve_request_number(),
+            request_number="PREVIEW",
             state=ProjectCreationState.draft,
             requestor_user_id=self.actor_id,
             revision_version=1,
             last_modified_by_user_id=self.actor_id,
             **self._payload_values(payload),
         )
+        if normalized_source:
+            self._apply_normalized_source(request, normalized_source)
+            effective = ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).resolve(
+                normalized_source.governance_model, payload.parent_workspace_id
+            )
+            request.creation_policy_id = effective.configuration.id
+            request.creation_policy_revision = effective.configuration.revision
+            request.creation_policy_hash = effective.configuration.content_hash
+        issues, _context = self._validate_request(request, require_published=True)
+        self._raise_issues(issues)
+        request.request_number = self._reserve_request_number()
         self.db.add(request)
         self.db.flush()
         self._event("project_creation.request_created", request, state_before=None, state_after="draft")
+        if normalized_source:
+            self._event(
+                "project_creation.source_validated",
+                request,
+                state_before=None,
+                state_after="draft",
+                extra={"source_hash": normalized_source.source_hash},
+            )
+            self._event(
+                "project_creation.governance_model_selected",
+                request,
+                state_before=None,
+                state_after="draft",
+                extra={"governance_model": normalized_source.governance_model},
+            )
         self.db.commit()
         self.db.refresh(request)
         return self._out(request)
+
+    def source_preview(self, payload: ProjectRequestCreate) -> ProjectSourcePreviewOut:
+        if not payload.governance_model:
+            raise HTTPException(status_code=422, detail="PROJECT_GOVERNANCE_MODEL_REQUIRED")
+        normalized = normalize_project_source(
+            {
+                "governance_model": payload.governance_model,
+                "source_context_type": payload.source_context_type,
+                "source_context_id": payload.source_context_id,
+                "source_external_key": payload.source_external_key,
+                "idempotency_key": payload.idempotency_key,
+                "source_snapshot": payload.source_snapshot,
+            }
+        )
+        effective = ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).resolve(
+            normalized.governance_model, payload.parent_workspace_id
+        )
+        probe = ProjectCreationRequest(
+            tenant_id=self.tenant_id,
+            request_number="PREVIEW",
+            state=ProjectCreationState.draft,
+            requestor_user_id=self.actor_id,
+            revision_version=1,
+            last_modified_by_user_id=self.actor_id,
+            **self._payload_values(payload),
+        )
+        self._apply_normalized_source(probe, normalized)
+        probe.creation_policy_id = effective.configuration.id
+        probe.creation_policy_revision = effective.configuration.revision
+        probe.creation_policy_hash = effective.configuration.content_hash
+        issues, _governance = self._validate_request(probe, require_published=True)
+        source_blockers, warnings = source_requirements_status(
+            normalized.governance_model,
+            normalized.source_context_type,
+            normalized.snapshot,
+            effective.content,
+            strategic_gate_decision_id=probe.strategic_gate_decision_id,
+        )
+        policy = effective.content
+        return ProjectSourcePreviewOut(
+            governance_model=normalized.governance_model,
+            source_context_type=normalized.source_context_type,
+            source_context_id=normalized.source_context_id,
+            source_external_key=normalized.source_external_key,
+            source_hash=normalized.source_hash,
+            effective_policy=policy,
+            source_workspace_id=effective.source_workspace_id,
+            resolution_chain=list(effective.resolution_chain),
+            required_fields=list(policy.get("required_fields", [])),
+            optional_fields=list(policy.get("optional_fields", [])),
+            required_source=list(policy.get("required_source_fields", [])),
+            initialization_requirements=list(policy.get("initialization_requirements", [])),
+            activation_requirements=list(policy.get("activation_requirements", [])),
+            warnings=warnings,
+            blockers=sorted({*issues, *source_blockers}),
+            persisted=False,
+        )
 
     def list_requests(
         self,
@@ -223,11 +376,24 @@ class ProjectCreationService:
         self._require_version(request, expected_version)
         if request.state not in {ProjectCreationState.draft, ProjectCreationState.returned}:
             raise HTTPException(status_code=409, detail="REQUEST_NOT_EDITABLE")
+        normalized_source = self._normalized_payload_source(payload)
+        if normalized_source:
+            existing = self._request_by_source(normalized_source)
+            if existing is not None and existing.id != request.id:
+                raise HTTPException(status_code=409, detail="PROJECT_SOURCE_ALREADY_HAS_ACTIVE_REQUEST")
         issues, _context = self._validate_payload(payload, require_published=True)
         self._raise_issues(issues)
         before = request.state
         for key, value in self._payload_values(payload).items():
             setattr(request, key, value)
+        if normalized_source:
+            self._apply_normalized_source(request, normalized_source)
+            effective = ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).resolve(
+                normalized_source.governance_model, payload.parent_workspace_id
+            )
+            request.creation_policy_id = effective.configuration.id
+            request.creation_policy_revision = effective.configuration.revision
+            request.creation_policy_hash = effective.configuration.content_hash
         request.state = ProjectCreationState.draft
         request.submission_snapshot_json = {}
         request.submission_hash = None
@@ -263,6 +429,13 @@ class ProjectCreationService:
         configuration = ProjectWorkspaceConfigurationService(self.db, self.tenant_id, self.actor_id)
         projected_project_number = configuration._number_preview(numbering)
         inherited = configuration._inherited_classifications(parent.id, template.content_json)
+        effective = governance.get("governance_policy")
+        effective_policy = dict(effective.content) if effective else dict(policy.content_json)
+        warnings = list(governance.get("warnings", []))
+        if request.governance_model and not activation_authorization_status(
+            request.governance_model, request.source_snapshot_json
+        ):
+            warnings.append("ACTIVATION_AUTHORIZATION_PENDING")
         return ProjectRequestPreviewOut(
             allowed=not issues,
             issues=issues,
@@ -277,6 +450,16 @@ class ProjectCreationService:
             initial_workspace_status=str(policy.content_json.get("initial_status", "pending")),
             template={"id": template.id, "code": template.code, "name": template.name},
             creation_policy={"id": policy.id, "code": policy.code, "name": policy.name},
+            governance_model=request.governance_model,
+            source_context_type=request.source_context_type,
+            effective_policy=effective_policy,
+            policy_source_workspace_id=effective.source_workspace_id if effective else None,
+            policy_resolution_chain=list(effective.resolution_chain) if effective else ["legacy"],
+            required_fields=list(effective_policy.get("required_fields", [])),
+            optional_fields=list(effective_policy.get("optional_fields", [])),
+            warnings=sorted(set(warnings)),
+            blockers=sorted(set(issues)),
+            activation_readiness="BLOCKED" if issues else "READY_FOR_INITIALIZATION",
             persisted=False,
         )
 
@@ -359,6 +542,12 @@ class ProjectCreationService:
         try:
             request = self._request(request_id, lock=True)
             if request.state == ProjectCreationState.created and request.materialized_workspace_id is not None:
+                planning_status = self._finalize_strategic_materialization(
+                    request,
+                    self.db.get(EnterpriseWorkspace, request.materialized_workspace_id),
+                )
+                if planning_status:
+                    self.db.commit()
                 return ProjectMaterializationOut(
                     result="ALREADY_CREATED",
                     request_id=request.id,
@@ -368,6 +557,7 @@ class ProjectCreationService:
                     project_number=request.materialized_project_number or "",
                     record_code=request.materialized_record_code or "",
                     mutation_count=0,
+                    portfolio_planning_status=planning_status,
                 )
             if request.state != ProjectCreationState.approved:
                 raise HTTPException(status_code=409, detail="REQUEST_MUST_BE_APPROVED")
@@ -435,6 +625,7 @@ class ProjectCreationService:
                 record_code=record_code,
                 workspace_id=workspace.id,
             )
+            planning_status = self._finalize_strategic_materialization(request, workspace)
             self.db.commit()
             return ProjectMaterializationOut(
                 result="CREATED",
@@ -445,6 +636,7 @@ class ProjectCreationService:
                 project_number=project_number,
                 record_code=record_code,
                 mutation_count=1,
+                portfolio_planning_status=planning_status,
             )
         except HTTPException:
             self.db.rollback()
@@ -514,6 +706,12 @@ class ProjectCreationService:
         initialization_state = (
             initialization.state if initialization else ("ACTIVATED" if workspace.status == "active" else "NOT_STARTED")
         )
+        governance_model = metadata.get("governance_model")
+        source_snapshot = dict(metadata.get("source_snapshot") or {})
+        source_reference = metadata.get("source_external_key") or metadata.get("source_context_id")
+        activation_readiness = str(metadata.get("activation_readiness") or "NOT_EVALUATED")
+        if initialization:
+            activation_readiness = str(initialization.state)
         role_codes = set(context.role_codes)
         return ProjectOverviewOut(
             workspace_id=workspace.id,
@@ -525,6 +723,19 @@ class ProjectCreationService:
             project_manager=manager.full_name if manager else "",
             template=str(metadata.get("template_code", "")),
             strategic_objectives=objectives,
+            governance_model=str(governance_model) if governance_model else None,
+            governance_label=GOVERNANCE_LABELS.get(str(governance_model), "Legacy / Not Classified"),
+            creation_source=str(metadata.get("source_context_type")) if metadata.get("source_context_type") else None,
+            source_reference=str(source_reference) if source_reference is not None else None,
+            source_snapshot=source_snapshot,
+            creation_policy={
+                "id": metadata.get("creation_policy_id"),
+                "revision": metadata.get("creation_policy_revision"),
+                "hash": metadata.get("creation_policy_hash"),
+            },
+            pending_reason=metadata.get("pending_reason"),
+            planning_stage=metadata.get("planning_stage"),
+            activation_readiness=activation_readiness,
             planned_start=_date_value(metadata.get("planned_start")),
             planned_finish=_date_value(metadata.get("planned_finish")),
             currency=str(metadata.get("currency_code", "")),
@@ -568,6 +779,15 @@ class ProjectCreationService:
             last_modified_by_user_id=self.actor_id,
             **self._payload_values(payload),
         )
+        normalized_source = self._normalized_payload_source(payload)
+        if normalized_source:
+            self._apply_normalized_source(probe, normalized_source)
+            effective = ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).resolve(
+                normalized_source.governance_model, payload.parent_workspace_id
+            )
+            probe.creation_policy_id = effective.configuration.id
+            probe.creation_policy_revision = effective.configuration.revision
+            probe.creation_policy_hash = effective.configuration.content_hash
         return self._validate_request(probe, require_published=require_published)
 
     def _validate_request(
@@ -594,6 +814,43 @@ class ProjectCreationService:
         template = self.db.scalar(template_statement)
         policy = self._latest_configuration("creation_policy", PROJECT_POLICY_CODE, published_only=True)
         numbering = self._latest_configuration("numbering_rule", PROJECT_NUMBERING_CODE, published_only=True)
+        governance_policy = None
+        effective_policy: dict[str, Any] = dict(policy.content_json) if policy else {}
+        warnings: list[str] = []
+        if request.governance_model:
+            if request.governance_model not in {str(item) for item in ProjectGovernanceModel}:
+                issues.append("PROJECT_GOVERNANCE_MODEL_INVALID")
+            else:
+                if request.creation_policy_id:
+                    configuration = self.db.scalar(
+                        select(AdminConfiguration).where(
+                            AdminConfiguration.id == request.creation_policy_id,
+                            AdminConfiguration.tenant_id == self.tenant_id,
+                            AdminConfiguration.kind == "project_governance_policy",
+                        )
+                    )
+                    if configuration is not None:
+                        # Historical requests keep the exact approved revision even
+                        # when a newer tenant policy is published.
+                        governance_policy = EffectiveProjectGovernancePolicy(
+                            configuration=configuration,
+                            content=dict(configuration.content_json or {}),
+                            source_workspace_id=configuration.content_json.get("scope_workspace_id"),
+                            resolution_chain=(str(configuration.content_json.get("scope", "tenant")),),
+                        )
+                        if request.creation_policy_revision not in (None, configuration.revision):
+                            issues.append("CREATION_POLICY_REVISION_MISMATCH")
+                        if request.creation_policy_hash not in (None, configuration.content_hash):
+                            issues.append("CREATION_POLICY_HASH_MISMATCH")
+                if governance_policy is None:
+                    try:
+                        governance_policy = ProjectGovernancePolicyService(
+                            self.db, self.tenant_id, self.actor_id
+                        ).resolve(request.governance_model, request.parent_workspace_id)
+                    except HTTPException:
+                        issues.append("PROJECT_GOVERNANCE_POLICY_NOT_PUBLISHED")
+                if governance_policy is not None:
+                    effective_policy = dict(governance_policy.content)
         if parent is None:
             issues.append("PARENT_WORKSPACE_NOT_FOUND")
         else:
@@ -615,9 +872,7 @@ class ProjectCreationService:
                 issues.append("PROJECT_TEMPLATE_NOT_APPLICABLE")
         if policy is None:
             issues.append("PROJECT_CREATION_POLICY_NOT_PUBLISHED")
-        elif parent is not None and parent.workspace_type_code not in policy.content_json.get(
-            "allowed_parent_types", []
-        ):
+        elif parent is not None and parent.workspace_type_code not in effective_policy.get("allowed_parent_types", []):
             issues.append("PROJECT_CREATION_POLICY_BLOCKS_PARENT")
         if numbering is None:
             issues.append("PROJECT_NUMBERING_NOT_PUBLISHED")
@@ -628,7 +883,7 @@ class ProjectCreationService:
                 UserAccount.status == "active",
             )
         )
-        if manager is None:
+        if effective_policy.get("project_manager_required", True) and manager is None:
             issues.append("PROJECT_MANAGER_REQUIRED")
         if not request.project_name.strip():
             issues.append("PROJECT_NAME_REQUIRED")
@@ -646,10 +901,20 @@ class ProjectCreationService:
                 )
             ).all()
         )
-        if not objective_codes:
+        objective_required = bool(effective_policy.get("strategic_objective_required", True))
+        if objective_required and not objective_codes:
             issues.append("STRATEGIC_OBJECTIVE_REQUIRED")
-        elif {item.code for item in objectives} != set(objective_codes):
+        elif objective_codes and {item.code for item in objectives} != set(objective_codes):
             issues.append("STRATEGIC_OBJECTIVE_INVALID")
+        source_blockers, source_warnings = source_requirements_status(
+            request.governance_model,
+            request.source_context_type,
+            request.source_snapshot_json,
+            effective_policy,
+            strategic_gate_decision_id=request.strategic_gate_decision_id,
+        )
+        issues.extend(source_blockers)
+        warnings.extend(source_warnings)
         selected_classifications = [
             {"category_set_code": "strategic-objective", "category_item_code": code, "source": "request"}
             for code in objective_codes
@@ -709,11 +974,15 @@ class ProjectCreationService:
             "selected_classifications": selected_classifications,
             "all_classifications": all_classifications,
             "modules": modules,
+            "governance_policy": governance_policy,
+            "effective_policy": effective_policy,
+            "warnings": warnings,
         }
 
     def _submission_snapshot(self, request: ProjectCreationRequest, governance: dict[str, Any]) -> dict[str, Any]:
         return {
             "request": _json_compatible(self._request_values(request)),
+            "source": self._source_values(request),
             "parent": self._workspace_fingerprint(governance["parent"]),
             "template": self._configuration_fingerprint(governance["template"]),
             "policy": self._configuration_fingerprint(governance["policy"]),
@@ -727,12 +996,41 @@ class ProjectCreationService:
             {
                 "submission_hash": request.submission_hash,
                 "request": _json_compatible(self._request_values(request)),
+                "source": self._source_values(request),
                 "parent": self._workspace_fingerprint(governance["parent"]),
                 "template": self._configuration_fingerprint(governance["template"]),
                 "policy": self._configuration_fingerprint(governance["policy"]),
                 "numbering": self._configuration_fingerprint(governance["numbering"]),
                 "modules": governance.get("modules", []),
                 "classifications": governance.get("all_classifications", []),
+            }
+        )
+
+    @staticmethod
+    def _source_values(request: ProjectCreationRequest) -> dict[str, Any]:
+        """Fingerprint immutable multi-source lineage protected by submit/approve hashes."""
+        return _json_compatible(
+            {
+                "governance_model": request.governance_model,
+                "source_context_type": request.source_context_type,
+                "source_context_id": request.source_context_id,
+                "source_external_key": request.source_external_key,
+                "idempotency_key": request.idempotency_key,
+                "source_snapshot": request.source_snapshot_json or {},
+                "source_hash": request.source_hash,
+                "creation_policy_id": request.creation_policy_id,
+                "creation_policy_revision": request.creation_policy_revision,
+                "creation_policy_hash": request.creation_policy_hash,
+                "strategic_gate_decision_id": request.strategic_gate_decision_id,
+                "source_project_proposal_id": request.source_project_proposal_id,
+                "source_idea_id": request.source_idea_id,
+                "source_decision_hash": request.source_decision_hash,
+                "source_readiness_hash": request.source_readiness_hash,
+                "strategic_target_portfolio_workspace_id": (request.strategic_target_portfolio_workspace_id),
+                "strategic_mapping_configuration_id": request.strategic_mapping_configuration_id,
+                "strategic_mapping_revision": request.strategic_mapping_revision,
+                "strategic_mapping_hash": request.strategic_mapping_hash,
+                "strategic_source_snapshot": request.strategic_source_snapshot_json or {},
             }
         )
 
@@ -743,6 +1041,17 @@ class ProjectCreationService:
         modules: list[str],
         project_number: str,
     ) -> dict[str, Any]:
+        governance_policy_record = (
+            self.db.get(AdminConfiguration, request.creation_policy_id) if request.creation_policy_id else None
+        )
+        governance_policy = dict(governance_policy_record.content_json or {}) if governance_policy_record else {}
+        source_blockers, _source_warnings = source_requirements_status(
+            request.governance_model,
+            request.source_context_type,
+            request.source_snapshot_json,
+            governance_policy,
+            strategic_gate_decision_id=request.strategic_gate_decision_id,
+        )
         explicit_fields = [
             field
             for field, value in {
@@ -761,7 +1070,7 @@ class ProjectCreationService:
             }.items()
             if value not in (None, "", [])
         ]
-        return {
+        metadata = {
             "project_number": project_number,
             "description": request.description,
             "project_manager_user_id": request.project_manager_user_id,
@@ -784,7 +1093,58 @@ class ProjectCreationService:
             "enabled_modules": modules,
             "creation_request_id": request.id,
             "creation_request_number": request.request_number,
+            "governance_model": request.governance_model,
+            "source_context_type": request.source_context_type,
+            "source_context_id": request.source_context_id,
+            "source_external_key": request.source_external_key,
+            "source_snapshot": dict(request.source_snapshot_json or {}),
+            "source_hash": request.source_hash,
+            "creation_policy_id": request.creation_policy_id,
+            "creation_policy_revision": request.creation_policy_revision,
+            "creation_policy_hash": request.creation_policy_hash,
+            "governance_policy_snapshot": governance_policy,
+            "pending_reason": governance_policy.get("pending_reason") if request.governance_model else None,
+            "planning_stage": governance_policy.get("planning_stage") if request.governance_model else None,
+            "activation_readiness": (
+                "BLOCKED"
+                if source_blockers
+                or not activation_authorization_status(request.governance_model, request.source_snapshot_json)
+                else "READY_FOR_INITIALIZATION"
+            ),
         }
+        if request.source_context_type == "STRATEGIC_GATE_DECISION":
+            metadata.update(
+                {
+                    "planning_origin": "STRATEGIC_GATE",
+                    "planning_stage": "PORTFOLIO_AND_FEL_PLANNING",
+                    "source_context_type": request.source_context_type,
+                    "strategic_gate_decision_id": request.strategic_gate_decision_id,
+                    "source_project_proposal_id": request.source_project_proposal_id,
+                    "source_idea_id": request.source_idea_id,
+                    "target_portfolio_workspace_id": request.strategic_target_portfolio_workspace_id,
+                }
+            )
+        return metadata
+
+    def _finalize_strategic_materialization(
+        self,
+        request: ProjectCreationRequest,
+        workspace: EnterpriseWorkspace | None,
+    ) -> str | None:
+        if request.source_context_type != "STRATEGIC_GATE_DECISION":
+            return None
+        if workspace is None:
+            raise HTTPException(status_code=409, detail="STRATEGIC_PROJECT_WORKSPACE_NOT_FOUND")
+        # Local import keeps Gate 05B independent while allowing the additive
+        # Gate 07D transaction to complete atomically with materialization.
+        from app.modules.portfolio_planning.service import PortfolioPlanningService
+
+        return PortfolioPlanningService(
+            self.db,
+            self.tenant_id,
+            self.actor_id,
+            context=None,
+        ).finalize_materialization(request, workspace)
 
     def _persist_classifications(
         self,
@@ -927,6 +1287,62 @@ class ProjectCreationService:
             statement = statement.where(AdminConfiguration.status == "published")
         return self.db.scalar(statement.order_by(AdminConfiguration.revision.desc()).limit(1))
 
+    def _request_by_source(
+        self,
+        source: NormalizedProjectCreationSource,
+    ) -> ProjectCreationRequest | None:
+        statement = select(ProjectCreationRequest).where(
+            ProjectCreationRequest.tenant_id == self.tenant_id,
+            ProjectCreationRequest.state.notin_([ProjectCreationState.cancelled, ProjectCreationState.rejected]),
+        )
+        if source.source_context_id is not None:
+            statement = statement.where(
+                ProjectCreationRequest.source_context_type == source.source_context_type,
+                ProjectCreationRequest.source_context_id == source.source_context_id,
+            )
+        elif source.idempotency_key:
+            statement = statement.where(ProjectCreationRequest.idempotency_key == source.idempotency_key)
+        elif source.source_external_key:
+            statement = statement.where(
+                ProjectCreationRequest.source_context_type == source.source_context_type,
+                ProjectCreationRequest.source_external_key == source.source_external_key,
+            )
+        else:
+            return None
+        return self.db.scalar(statement.order_by(ProjectCreationRequest.id.desc()).limit(1))
+
+    @staticmethod
+    def _normalized_payload_source(
+        payload: ProjectRequestPayload,
+    ) -> NormalizedProjectCreationSource | None:
+        if not payload.governance_model:
+            return None
+        return normalize_project_source(
+            {
+                "governance_model": payload.governance_model,
+                "source_context_type": payload.source_context_type,
+                "source_context_id": payload.source_context_id,
+                "source_external_key": payload.source_external_key,
+                "idempotency_key": payload.idempotency_key,
+                "source_snapshot": payload.source_snapshot,
+            }
+        )
+
+    @staticmethod
+    def _apply_normalized_source(
+        request: ProjectCreationRequest,
+        source: NormalizedProjectCreationSource,
+    ) -> None:
+        request.governance_model = source.governance_model
+        request.source_context_type = source.source_context_type
+        request.source_context_id = source.source_context_id
+        request.source_external_key = source.source_external_key
+        request.idempotency_key = source.idempotency_key
+        request.source_snapshot_json = dict(source.snapshot)
+        request.source_hash = source.source_hash
+        for field, value in source.strategic_fields.items():
+            setattr(request, field, value)
+
     def _request(self, request_id: int, *, lock: bool = False) -> ProjectCreationRequest:
         statement = select(ProjectCreationRequest).where(
             ProjectCreationRequest.tenant_id == self.tenant_id,
@@ -1000,6 +1416,11 @@ class ProjectCreationService:
             "actor_id": self.actor_id,
             "parent_workspace_id": request.parent_workspace_id,
             "project_template_config_id": request.project_template_config_id,
+            "governance_model": request.governance_model,
+            "source_context_type": request.source_context_type,
+            "source_context_id": request.source_context_id,
+            "source_external_key": request.source_external_key,
+            "source_hash": request.source_hash,
             "state_before": str(state_before) if state_before is not None else None,
             "state_after": str(state_after) if state_after is not None else None,
             "project_number": project_number,
@@ -1039,6 +1460,26 @@ class ProjectCreationService:
             template_name=template.name if template else "",
             project_manager_name=manager.full_name if manager else "",
             revision_version=request.revision_version,
+            governance_model=request.governance_model,
+            source_context_type=request.source_context_type,
+            source_context_id=request.source_context_id,
+            source_external_key=request.source_external_key,
+            idempotency_key=request.idempotency_key,
+            source_snapshot=dict(request.source_snapshot_json or {}),
+            source_hash=request.source_hash,
+            creation_policy_id=request.creation_policy_id,
+            creation_policy_revision=request.creation_policy_revision,
+            creation_policy_hash=request.creation_policy_hash,
+            strategic_gate_decision_id=request.strategic_gate_decision_id,
+            source_project_proposal_id=request.source_project_proposal_id,
+            source_idea_id=request.source_idea_id,
+            source_decision_hash=request.source_decision_hash,
+            source_readiness_hash=request.source_readiness_hash,
+            strategic_target_portfolio_workspace_id=request.strategic_target_portfolio_workspace_id,
+            strategic_mapping_configuration_id=request.strategic_mapping_configuration_id,
+            strategic_mapping_revision=request.strategic_mapping_revision,
+            strategic_mapping_hash=request.strategic_mapping_hash,
+            strategic_source_snapshot=dict(request.strategic_source_snapshot_json or {}),
             decision_reason=request.decision_reason,
             failure_reason=request.failure_reason,
             approved_by_user_id=request.approved_by_user_id,

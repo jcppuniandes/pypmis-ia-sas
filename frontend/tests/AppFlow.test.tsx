@@ -1315,11 +1315,13 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: "Portfolio Manager", exact: true }));
     [
       "Portfolio Structure",
-      "Project Intake from Ideas",
+      "Strategic Project Planning Entry",
+      "Portfolio Projects",
+      "Portfolio Evaluation",
       "Portfolio Budget Planning",
       "Portfolio Cash Flow",
       "Strategic Investment Map",
-      "Strategic Prioritization Matrix",
+      "Prioritization Matrix",
       "Gate Decision",
     ].forEach((submoduleName) => {
       expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();

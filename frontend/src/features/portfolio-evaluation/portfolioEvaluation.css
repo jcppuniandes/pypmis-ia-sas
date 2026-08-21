@@ -1,0 +1,205 @@
+.portfolioEvaluation {
+  color: #142532;
+  display: grid;
+  gap: 14px;
+}
+.portfolioEvaluation button,
+.portfolioEvaluation input,
+.portfolioEvaluation select,
+.portfolioEvaluation textarea {
+  font: inherit;
+}
+.evaluationQueues {
+  background: #f5f8fa;
+  border: 1px solid #d8e1e6;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+.evaluationQueues button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #526875;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px 10px;
+}
+.evaluationQueues button.active {
+  background: #0d2a3a;
+  color: white;
+}
+.evaluationWorkspaceGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(280px, 0.45fr) minmax(460px, 1fr);
+}
+.evaluationQueueList {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+.evaluationBlocker {
+  background: #fff5e6;
+  border-radius: 5px;
+  color: #8b4e00;
+  display: block;
+  margin-top: 6px;
+  padding: 6px;
+}
+.evaluationEditor {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+}
+.evaluationEditor > header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+.evaluationEditor h3 {
+  margin: 3px 0 0;
+}
+.evaluationEditor header span,
+.evaluationEditor label {
+  color: #607681;
+  font-size: 11px;
+  font-weight: 700;
+}
+.evaluationCriteria {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.evaluationCriteria article {
+  background: #f7fafb;
+  border: 1px solid #dde6ea;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+.evaluationCriteria article header {
+  display: flex;
+  justify-content: space-between;
+}
+.evaluationCriteria label,
+.evaluationComments {
+  display: grid;
+  gap: 4px;
+}
+.evaluationCriteria input,
+.evaluationComments textarea {
+  background: white;
+  border: 1px solid #cbd8df;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #142532;
+  padding: 7px 8px;
+  width: 100%;
+}
+.evaluationScore {
+  align-items: center;
+  background: #e9f6ef;
+  border-left: 4px solid #1b9c65;
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 10px;
+}
+.evaluationScore strong {
+  font-size: 24px;
+  grid-row: span 2;
+}
+.evaluationScore small {
+  color: #607681;
+}
+.prioritizationReadiness {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.prioritizationReadiness article {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+}
+.prioritizationReadiness span {
+  color: #607681;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.prioritizationTable {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 9px;
+  overflow-x: auto;
+}
+.prioritizationRow {
+  align-items: center;
+  border-top: 1px solid #e6ecef;
+  display: grid;
+  gap: 10px;
+  grid-template-columns:
+    60px minmax(210px, 1fr) repeat(3, minmax(80px, 0.35fr)) minmax(90px, 0.4fr) minmax(150px, 0.8fr)
+    minmax(100px, 0.45fr) minmax(120px, 0.55fr) 70px;
+  min-width: 1180px;
+  padding: 10px 13px;
+}
+.prioritizationRow.header {
+  background: #0d2a3a;
+  border: 0;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.prioritizationRow strong {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+.prioritizationRow small {
+  color: #607681;
+  display: block;
+}
+.evaluationPreview {
+  margin-top: 14px;
+}
+.evaluationPreview pre {
+  background: #f5f8fa;
+  border-radius: 8px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+@media (max-width: 1050px) {
+  .evaluationWorkspaceGrid {
+    grid-template-columns: 1fr;
+  }
+  .prioritizationReadiness {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .evaluationCriteria {
+    grid-template-columns: 1fr;
+  }
+  .prioritizationRow {
+    grid-template-columns: 52px 1fr 80px;
+  }
+  .prioritizationRow > *:nth-child(n + 4) {
+    display: none;
+  }
+}

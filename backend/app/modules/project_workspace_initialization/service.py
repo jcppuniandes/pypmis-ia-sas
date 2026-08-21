@@ -27,6 +27,11 @@ from app.modules.enterprise_structure.models import (
     EnterpriseWorkspaceClassification,
 )
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
+from app.modules.project_creation.governance import (
+    GOVERNANCE_LABELS,
+    activation_authorization_status,
+    source_requirements_status,
+)
 from app.modules.project_creation.models import ProjectCreationRequest
 from app.modules.project_workspace_initialization.models import ProjectWorkspaceInitialization
 from app.modules.project_workspace_initialization.schemas import (
@@ -379,6 +384,18 @@ class ProjectWorkspaceInitializationService:
         metadata = self._metadata(workspace)
         parent = self.db.get(EnterpriseWorkspace, workspace.parent_id) if workspace.parent_id else None
         template = self._template_from_metadata(metadata)
+        governance_model = metadata.get("governance_model")
+        governance_policy = dict(metadata.get("governance_policy_snapshot") or {})
+        source_snapshot = dict(metadata.get("source_snapshot") or {})
+        source_blockers, _source_warnings = source_requirements_status(
+            governance_model,
+            metadata.get("source_context_type"),
+            source_snapshot,
+            governance_policy,
+            strategic_gate_decision_id=metadata.get("strategic_gate_decision_id"),
+        )
+        strategic_objective_required = bool(governance_policy.get("strategic_objective_required", True))
+        allowed_parent_types = set(governance_policy.get("allowed_parent_types") or {"portfolio", "program"})
         manager_id = metadata.get("project_manager_user_id")
         manager = self.db.get(UserAccount, manager_id) if manager_id else None
         objective_codes = list(
@@ -468,9 +485,10 @@ class ProjectWorkspaceInitializationService:
             "parent": workspace.parent_id,
             "project_manager": metadata.get("project_manager_user_id"),
             "currency": metadata.get("currency_code"),
-            "strategic_objective": objective_codes,
             "status": workspace.status,
         }
+        if strategic_objective_required:
+            required_attributes["strategic_objective"] = objective_codes
         required_classifications = list(template.content_json.get("default_classifications", [])) if template else []
         classifications = {
             (item.category_set_code, item.category_item_code)
@@ -532,7 +550,7 @@ class ProjectWorkspaceInitializationService:
                     parent
                     and parent.tenant_id == self.tenant_id
                     and parent.status == "active"
-                    and parent.workspace_type_code in {"portfolio", "program"}
+                    and parent.workspace_type_code in allowed_parent_types
                 ),
                 "El padre pertenece al tenant y admite proyectos.",
                 True,
@@ -578,10 +596,36 @@ class ProjectWorkspaceInitializationService:
             ),
             self._check(
                 "strategic_objective_present",
-                bool(objective_codes) and set(objective_codes) == active_objective_codes,
-                "Existe al menos un objetivo estratégico activo.",
-                True,
-                {"objective_codes": objective_codes},
+                (not strategic_objective_required)
+                or (bool(objective_codes) and set(objective_codes) == active_objective_codes),
+                "La alineación estratégica cumple la política efectiva.",
+                strategic_objective_required,
+                {
+                    "objective_codes": objective_codes,
+                    "required": strategic_objective_required,
+                },
+            ),
+            self._check(
+                "governance_source_valid",
+                not source_blockers,
+                "La fuente de creación y su snapshot cumplen la política del modelo de gobierno.",
+                bool(governance_model),
+                {
+                    "governance_model": governance_model,
+                    "governance_label": GOVERNANCE_LABELS.get(str(governance_model), "Legacy / Not Classified"),
+                    "source_context_type": metadata.get("source_context_type"),
+                    "blockers": source_blockers,
+                },
+            ),
+            self._check(
+                "governance_activation_authorized",
+                activation_authorization_status(governance_model, source_snapshot),
+                "La autorización de activación corresponde al modelo de gobierno efectivo.",
+                bool(governance_model),
+                {
+                    "governance_model": governance_model,
+                    "activation_requirements": governance_policy.get("activation_requirements", []),
+                },
             ),
             self._check(
                 "required_classifications_valid",

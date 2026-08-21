@@ -238,6 +238,7 @@ export type ProjectConfiguration = {
   templates: ConfigurationVersion[];
   numbering_rule: ConfigurationVersion;
   creation_policy: ConfigurationVersion;
+  governance_models: ProjectGovernancePolicy[];
   classification_sets: ConfigurationVersion[];
   available_modules: ConfigurationVersion[];
   parent_options: ProjectParentOption[];
@@ -245,6 +246,23 @@ export type ProjectConfiguration = {
   summary: Record<string, number>;
   gate_status: "READY_FOR_PROJECT_CREATION_PROCESS" | "GATE05A_REWORK_REQUIRED";
   gate_05b_contract: Record<string, unknown>;
+  multi_source_status: "READY_FOR_MULTI_SOURCE_PROJECT_CREATION" | "REWORK_REQUIRED";
+};
+
+export type ProjectGovernanceModel = "CAPITAL_OWNER" | "CONTRACTOR_DELIVERY" | "DIRECT_INTERNAL";
+
+export type ProjectSourceContextType = "STRATEGIC_GATE_DECISION" | "CONTRACT_AWARD" | "DIRECT_AUTHORIZATION";
+
+export type ProjectGovernancePolicy = {
+  governance_model: ProjectGovernanceModel;
+  label: string;
+  configuration_id: number;
+  revision: number;
+  content_hash: string;
+  source_workspace_id: number | null;
+  source_workspace_name?: string | null;
+  resolution_chain?: string[];
+  content: Record<string, unknown>;
 };
 
 export type ProjectPreview = {
@@ -520,6 +538,12 @@ export type ProjectCreationState =
   | "cancelled";
 
 export type ProjectRequestPayload = {
+  governance_model: ProjectGovernanceModel | null;
+  source_context_type: ProjectSourceContextType | null;
+  source_context_id: number | null;
+  source_external_key: string | null;
+  idempotency_key: string | null;
+  source_snapshot: Record<string, unknown>;
   parent_workspace_id: number;
   project_template_config_id: number;
   project_name: string;
@@ -548,6 +572,10 @@ export type ProjectCreationRequest = ProjectRequestPayload & {
   template_code: string;
   template_name: string;
   project_manager_name: string;
+  source_hash: string | null;
+  creation_policy_id: number | null;
+  creation_policy_revision: number | null;
+  creation_policy_hash: string | null;
   revision_version: number;
   decision_reason: string | null;
   failure_reason: string | null;
@@ -579,6 +607,16 @@ export type ProjectCreationOptions = {
   managers: Array<{ id: number; name: string; email: string }>;
   strategic_objectives: CategoryItem[];
   classifications: Record<string, CategoryItem[]>;
+  allowed_governance_models: Array<{
+    code: ProjectGovernanceModel;
+    label: string;
+    source_context_type: ProjectSourceContextType;
+    required_fields?: string[];
+  }>;
+  allowed_source_context_types: ProjectSourceContextType[];
+  can_create_direct: boolean;
+  can_create_from_contract: boolean;
+  can_create_from_strategic_gate: boolean;
   blocked_reason: string | null;
 };
 
@@ -596,8 +634,37 @@ export type ProjectRequestPreview = {
   initial_workspace_status: string;
   template: Record<string, unknown>;
   creation_policy: Record<string, unknown>;
+  governance_model: ProjectGovernanceModel | null;
+  source_context_type: ProjectSourceContextType | null;
+  effective_policy: Record<string, unknown>;
+  policy_source_workspace_id: number | null;
+  policy_resolution_chain: string[];
+  required_fields: string[];
+  optional_fields: string[];
+  warnings: string[];
+  blockers: string[];
+  activation_readiness: string;
   persisted: false;
   notice: string;
+};
+
+export type ProjectSourcePreview = {
+  governance_model: ProjectGovernanceModel;
+  source_context_type: ProjectSourceContextType;
+  source_context_id: number | null;
+  source_external_key: string | null;
+  source_hash: string;
+  effective_policy: Record<string, unknown>;
+  source_workspace_id: number | null;
+  resolution_chain: string[];
+  required_fields: string[];
+  optional_fields: string[];
+  required_source: string[];
+  initialization_requirements: string[];
+  activation_requirements: string[];
+  warnings: string[];
+  blockers: string[];
+  persisted: false;
 };
 
 export type ProjectWorkspaceOverview = {
@@ -610,6 +677,15 @@ export type ProjectWorkspaceOverview = {
   project_manager: string;
   template: string;
   strategic_objectives: string[];
+  governance_model: ProjectGovernanceModel | null;
+  governance_label: string;
+  creation_source: ProjectSourceContextType | null;
+  source_reference: string | null;
+  source_snapshot: Record<string, unknown>;
+  creation_policy: Record<string, unknown>;
+  pending_reason: string | null;
+  planning_stage: string | null;
+  activation_readiness: string;
   planned_start: string | null;
   planned_finish: string | null;
   currency: string;

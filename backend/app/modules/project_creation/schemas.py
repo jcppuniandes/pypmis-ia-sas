@@ -3,8 +3,11 @@
 from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.modules.project_creation.governance import ProjectGovernanceModel, ProjectSourceContextType
 
 
 class ProjectCreationState(StrEnum):
@@ -21,6 +24,12 @@ class ProjectCreationState(StrEnum):
 
 
 class ProjectRequestPayload(BaseModel):
+    governance_model: ProjectGovernanceModel | None = None
+    source_context_type: ProjectSourceContextType | None = None
+    source_context_id: int | None = Field(default=None, ge=1)
+    source_external_key: str | None = Field(default=None, max_length=160)
+    idempotency_key: str | None = Field(default=None, max_length=160)
+    source_snapshot: dict[str, Any] = Field(default_factory=dict)
     parent_workspace_id: int
     project_template_config_id: int
     project_name: str = Field(min_length=1, max_length=180)
@@ -46,6 +55,8 @@ class ProjectRequestPayload(BaseModel):
         "priority",
         "country",
         "region",
+        "source_external_key",
+        "idempotency_key",
         mode="before",
     )
     @classmethod
@@ -96,6 +107,26 @@ class ProjectRequestOut(ProjectRequestPayload):
     template_name: str
     project_manager_name: str
     revision_version: int
+    governance_model: ProjectGovernanceModel | None = None
+    source_context_type: ProjectSourceContextType | None = None
+    source_context_id: int | None = None
+    source_external_key: str | None = None
+    idempotency_key: str | None = None
+    source_snapshot: dict[str, Any] = Field(default_factory=dict)
+    source_hash: str | None = None
+    creation_policy_id: int | None = None
+    creation_policy_revision: int | None = None
+    creation_policy_hash: str | None = None
+    strategic_gate_decision_id: int | None = None
+    source_project_proposal_id: int | None = None
+    source_idea_id: int | None = None
+    source_decision_hash: str | None = None
+    source_readiness_hash: str | None = None
+    strategic_target_portfolio_workspace_id: int | None = None
+    strategic_mapping_configuration_id: int | None = None
+    strategic_mapping_revision: int | None = None
+    strategic_mapping_hash: str | None = None
+    strategic_source_snapshot: dict = Field(default_factory=dict)
     decision_reason: str | None = None
     failure_reason: str | None = None
     approved_by_user_id: int | None = None
@@ -124,6 +155,16 @@ class ProjectRequestPreviewOut(BaseModel):
     initial_workspace_status: str
     template: dict[str, object]
     creation_policy: dict[str, object]
+    governance_model: ProjectGovernanceModel | None = None
+    source_context_type: ProjectSourceContextType | None = None
+    effective_policy: dict[str, Any] = Field(default_factory=dict)
+    policy_source_workspace_id: int | None = None
+    policy_resolution_chain: list[str] = Field(default_factory=list)
+    required_fields: list[str] = Field(default_factory=list)
+    optional_fields: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    blockers: list[str] = Field(default_factory=list)
+    activation_readiness: str = "NOT_EVALUATED"
     persisted: bool = False
     notice: str = "Preview only - final number assigned at creation"
 
@@ -156,7 +197,31 @@ class ProjectCreationOptionsOut(BaseModel):
     managers: list[ProjectManagerOption]
     strategic_objectives: list[dict[str, str]]
     classifications: dict[str, list[dict[str, str]]]
+    allowed_governance_models: list[dict[str, Any]] = Field(default_factory=list)
+    allowed_source_context_types: list[str] = Field(default_factory=list)
+    can_create_direct: bool = False
+    can_create_from_contract: bool = False
+    can_create_from_strategic_gate: bool = False
     blocked_reason: str | None = None
+
+
+class ProjectSourcePreviewOut(BaseModel):
+    governance_model: ProjectGovernanceModel
+    source_context_type: ProjectSourceContextType
+    source_context_id: int | None = None
+    source_external_key: str | None = None
+    source_hash: str
+    effective_policy: dict[str, Any]
+    source_workspace_id: int | None = None
+    resolution_chain: list[str]
+    required_fields: list[str]
+    optional_fields: list[str]
+    required_source: list[str]
+    initialization_requirements: list[str]
+    activation_requirements: list[str]
+    warnings: list[str]
+    blockers: list[str]
+    persisted: bool = False
 
 
 class ProjectMaterializationOut(BaseModel):
@@ -168,6 +233,7 @@ class ProjectMaterializationOut(BaseModel):
     project_number: str
     record_code: str
     mutation_count: int
+    portfolio_planning_status: str | None = None
 
 
 class ProjectOverviewOut(BaseModel):
@@ -180,6 +246,15 @@ class ProjectOverviewOut(BaseModel):
     project_manager: str
     template: str
     strategic_objectives: list[str]
+    governance_model: str | None = None
+    governance_label: str
+    creation_source: str | None = None
+    source_reference: str | None = None
+    source_snapshot: dict[str, Any] = Field(default_factory=dict)
+    creation_policy: dict[str, Any] = Field(default_factory=dict)
+    pending_reason: str | None = None
+    planning_stage: str | None = None
+    activation_readiness: str
     planned_start: date | None = None
     planned_finish: date | None = None
     currency: str

@@ -14,6 +14,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  gate07e-portfolio-evaluation-postgres:
+    name: Gate 07E Portfolio evaluation and prioritization (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 07E migration, lifecycle, concurrency and regressions
+        run: |
+          docker compose -p pypmis-gate07e -f docker-compose.gate07e.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate07e-test
+      - name: Destroy ephemeral Gate 07E environment
+        if: always()
+        run: docker compose -p pypmis-gate07e -f docker-compose.gate07e.yml down --remove-orphans
+
+  gate07d-project-governance-postgres:
+    name: Gate 07D + multi-source Project governance (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 07D and multi-source Project migration/lifecycle E2E
+        run: |
+          docker compose -p pypmis-gate07d -f docker-compose.gate07d.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate07d-test
+      - name: Destroy ephemeral Gate 07D environment
+        if: always()
+        run: docker compose -p pypmis-gate07d -f docker-compose.gate07d.yml down --remove-orphans
+
   gate06b-physical-creation-postgres:
     name: Gate 06B physical creation (PostgreSQL)
     runs-on: ubuntu-latest
@@ -181,8 +213,31 @@ jobs:
         run: |
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
+      - name: Apply and verify Gate 07E schema head
+        run: |
+          docker compose exec -T api alembic upgrade head
+          docker compose exec -T api alembic current | grep 20260820_0045
       - name: Run Playwright production smoke
         run: cd frontend && npm run test:e2e
+      - name: Run Gate 07E-H full USER and ADMIN flow three consecutive times
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          baseline_before="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py baseline | tail -n 1)"
+          fixture="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py seed --run-id "$run_id" --copies 3 | tail -n 1)"
+          cleanup() {
+            docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py teardown --run-id "$run_id"
+          }
+          trap cleanup EXIT
+          cd frontend
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-evaluation-closeout.spec.ts --repeat-each=3 --workers=1
+          cd ..
+          cleanup
+          trap - EXIT
+          baseline_after="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py baseline | tail -n 1)"
+          test "$baseline_before" = "$baseline_after"
       - name: Show service logs on failure
         if: failure()
         run: docker compose logs --tail=160 api frontend

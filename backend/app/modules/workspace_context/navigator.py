@@ -60,10 +60,55 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
             "Strategic Gate Decisions",
             permission_key="strategic_gate.read",
         ),
+        NavigationDefinition(
+            "portfolio-projects",
+            "Portfolio Projects",
+            permission_key="portfolio_project.read",
+        ),
+        NavigationDefinition(
+            "portfolio-evaluation",
+            "Portfolio Evaluation",
+            permission_key="portfolio_evaluation.read",
+        ),
+        NavigationDefinition(
+            "prioritization-matrix",
+            "Prioritization Matrix",
+            permission_key="portfolio_prioritization.read",
+        ),
     ),
     "project": (
         NavigationDefinition("home", "Home"),
         NavigationDefinition("overview", "Overview"),
+        NavigationDefinition(
+            "strategic-context",
+            "Strategic Context",
+            permission_key="portfolio_project.read",
+        ),
+        NavigationDefinition(
+            "portfolio-memberships",
+            "Portfolio Memberships",
+            permission_key="portfolio_project.read",
+        ),
+        NavigationDefinition(
+            "portfolio-planning-readiness",
+            "Portfolio Planning Readiness",
+            permission_key="portfolio_planning.readiness.read",
+        ),
+        NavigationDefinition(
+            "portfolio-evaluations",
+            "Portfolio Evaluations",
+            permission_key="portfolio_evaluation.read",
+        ),
+        NavigationDefinition(
+            "project-definition-readiness",
+            "Project Definition Readiness",
+            permission_key="project_definition.readiness.read",
+        ),
+        NavigationDefinition("project-governance-context", "Project Governance Context"),
+        NavigationDefinition("contract-source", "Contract Source"),
+        NavigationDefinition("authorization-source", "Authorization Source"),
+        NavigationDefinition("initialization-readiness", "Initialization Readiness"),
+        NavigationDefinition("activation-readiness", "Activation Readiness"),
         NavigationDefinition("scope", "Scope", definition_code="scope-manager"),
         NavigationDefinition("schedule", "Schedule", definition_code="schedule-manager"),
         NavigationDefinition("cost", "Cost", definition_code="cost-manager"),
@@ -127,6 +172,26 @@ class WorkspaceNavigatorService:
         enabled.difference_update(code for code, value in settings.items() if not value)
 
         planned = {self._slug(str(code)) for code in metadata.get("planned_modules", []) if str(code)}
+        strategic_project = workspace.workspace_type_code == "project" and (
+            dict(metadata.get("_project") or {}).get("planning_origin") == "STRATEGIC_GATE"
+            or bool(metadata.get("_portfolio_planning"))
+        )
+        project_metadata = dict(metadata.get("_project") or {})
+        governance_model = str(project_metadata.get("governance_model") or "")
+        strategic_project_items = {
+            "strategic-context",
+            "portfolio-memberships",
+            "portfolio-planning-readiness",
+            "portfolio-evaluations",
+            "project-definition-readiness",
+        }
+        governance_project_items = {
+            "project-governance-context",
+            "contract-source",
+            "authorization-source",
+            "initialization-readiness",
+            "activation-readiness",
+        }
         profile, show_planned = self._profile(workspace.workspace_type_code)
         items: list[WorkspaceNavigatorItemOut] = []
         for item in profile:
@@ -144,7 +209,33 @@ class WorkspaceNavigatorService:
                 state = "PLANNED"
                 planned.add(item.code)
                 reason = "Planned capability; no operational Module Definition exists"
-            if workspace.status in {"pending", "draft", "inactive"} and item.code not in {"home", "overview"}:
+            if item.code in strategic_project_items and not strategic_project:
+                state = "HIDDEN"
+                reason = "Strategic planning context is not attached to this Project"
+            if item.code == "project-governance-context" and governance_model not in {
+                "CONTRACTOR_DELIVERY",
+                "DIRECT_INTERNAL",
+            }:
+                state = "HIDDEN"
+                reason = "Generic governance context is used by non-strategic Project routes"
+            if item.code == "contract-source" and governance_model != "CONTRACTOR_DELIVERY":
+                state = "HIDDEN"
+                reason = "Contract source is only available for CONTRACTOR_DELIVERY"
+            if item.code == "authorization-source" and governance_model != "DIRECT_INTERNAL":
+                state = "HIDDEN"
+                reason = "Authorization source is only available for DIRECT_INTERNAL"
+            if item.code in {"initialization-readiness", "activation-readiness"} and governance_model not in {
+                "CONTRACTOR_DELIVERY",
+                "DIRECT_INTERNAL",
+            }:
+                state = "HIDDEN"
+                reason = "Governance-specific readiness is not attached to this Project"
+            pending_safe = {"home", "overview"}
+            if strategic_project:
+                pending_safe.update(strategic_project_items)
+            if governance_model in {"CONTRACTOR_DELIVERY", "DIRECT_INTERNAL"}:
+                pending_safe.update(governance_project_items)
+            if workspace.status in {"pending", "draft", "inactive"} and item.code not in pending_safe:
                 state = "HIDDEN"
                 reason = "Operational modules require an ACTIVE Workspace"
             if permission_key and permission_key not in user_permissions:

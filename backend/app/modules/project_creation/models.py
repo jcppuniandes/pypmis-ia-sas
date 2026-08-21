@@ -35,6 +35,32 @@ class ProjectCreationRequest(Base):
     country: Mapped[str | None] = mapped_column(String(120))
     region: Mapped[str | None] = mapped_column(String(120))
     strategic_objective_codes: Mapped[list[str]] = mapped_column(JSON, default=list)
+    governance_model: Mapped[str | None] = mapped_column(String(40), index=True)
+    source_context_type: Mapped[str | None] = mapped_column(String(48), index=True)
+    source_context_id: Mapped[int | None] = mapped_column(Integer, index=True)
+    source_external_key: Mapped[str | None] = mapped_column(String(160), index=True)
+    idempotency_key: Mapped[str | None] = mapped_column(String(160), index=True)
+    source_snapshot_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    source_hash: Mapped[str | None] = mapped_column(String(64))
+    creation_policy_id: Mapped[int | None] = mapped_column(ForeignKey("admin_configurations.id"), index=True)
+    creation_policy_revision: Mapped[int | None] = mapped_column(Integer)
+    creation_policy_hash: Mapped[str | None] = mapped_column(String(64))
+    strategic_gate_decision_id: Mapped[int | None] = mapped_column(
+        ForeignKey("strategic_gate_decisions.id"), index=True
+    )
+    source_project_proposal_id: Mapped[int | None] = mapped_column(ForeignKey("project_proposals.id"), index=True)
+    source_idea_id: Mapped[int | None] = mapped_column(ForeignKey("ideas.id"), index=True)
+    source_decision_hash: Mapped[str | None] = mapped_column(String(64))
+    source_readiness_hash: Mapped[str | None] = mapped_column(String(64))
+    strategic_target_portfolio_workspace_id: Mapped[int | None] = mapped_column(
+        ForeignKey("enterprise_workspaces.id"), index=True
+    )
+    strategic_mapping_configuration_id: Mapped[int | None] = mapped_column(
+        ForeignKey("admin_configurations.id"), index=True
+    )
+    strategic_mapping_revision: Mapped[int | None] = mapped_column(Integer)
+    strategic_mapping_hash: Mapped[str | None] = mapped_column(String(64))
+    strategic_source_snapshot_json: Mapped[dict] = mapped_column(JSON, default=dict)
     preview_record_code: Mapped[str | None] = mapped_column(String(255))
     preview_project_number: Mapped[str | None] = mapped_column(String(80))
     submission_snapshot_json: Mapped[dict] = mapped_column(JSON, default=dict)
@@ -57,4 +83,11 @@ class ProjectCreationRequest(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime)
     materialized_at: Mapped[datetime | None] = mapped_column(DateTime)
 
-    __table_args__ = (UniqueConstraint("tenant_id", "request_number", name="uq_project_creation_request_number"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "request_number", name="uq_project_creation_request_number"),
+        UniqueConstraint(
+            "tenant_id",
+            "strategic_gate_decision_id",
+            name="uq_project_creation_strategic_decision",
+        ),
+    )

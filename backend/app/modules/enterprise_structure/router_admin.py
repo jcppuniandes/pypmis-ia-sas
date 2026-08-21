@@ -1,5 +1,7 @@
 """ADMIN MODE routes for Enterprise Structure Configuration."""
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
@@ -26,6 +28,8 @@ from app.modules.enterprise_structure.project_configuration import ProjectWorksp
 from app.modules.enterprise_structure.project_schemas import (
     ProjectConfigurationOut,
     ProjectCreationPolicyUpdate,
+    ProjectGovernancePolicyPreviewRequest,
+    ProjectGovernancePolicyUpdate,
     ProjectNumberingUpdate,
     ProjectPreviewOut,
     ProjectPreviewRequest,
@@ -600,6 +604,39 @@ def configure_project_creation_policy(
         "admin.enterprise_structure.creation_policy.manage",
         organization_scope=True,
     ).configure_creation_policy(payload)
+
+
+@router.put("/project-governance-models/{governance_model}")
+def configure_project_governance_model(
+    governance_model: str,
+    payload: ProjectGovernancePolicyUpdate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> dict[str, Any]:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "project_governance_model.configure",
+        organization_scope=True,
+    ).configure_governance_policy(governance_model, payload)
+
+
+@router.post("/project-governance-models/preview")
+def preview_project_governance_model(
+    payload: ProjectGovernancePolicyPreviewRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> dict[str, Any]:
+    return _project_service(
+        db,
+        tenant_id,
+        user_id,
+        "project_governance_model.read",
+        organization_scope=True,
+    ).preview_governance_policy(payload)
 
 
 @router.post("/types/{type_code}/clone", response_model=ConfigurationVersionOut, status_code=201)

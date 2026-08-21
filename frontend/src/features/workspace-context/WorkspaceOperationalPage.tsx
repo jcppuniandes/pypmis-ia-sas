@@ -5,6 +5,9 @@ import CompactModuleHeader from "../enterprise-structure/components/CompactModul
 import IdeaLifecycleWorkspace from "../idea-demand/IdeaLifecycleWorkspace";
 import ProjectProposalWorkspace from "../project-proposal/ProjectProposalWorkspace";
 import StrategicGateWorkspace from "../strategic-gate/StrategicGateWorkspace";
+import PortfolioProjectsWorkspace from "../portfolio-planning/PortfolioProjectsWorkspace";
+import ProjectStrategicContext from "../portfolio-planning/ProjectStrategicContext";
+import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { workspaceContextApi } from "./api";
 import { WorkspaceContextProvider, useActiveWorkspaceContext } from "./WorkspaceContextProvider";
 import "./workspaceContext.css";
@@ -171,6 +174,21 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             <ProjectProposalWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "strategic-gate-decisions" ? (
             <StrategicGateWorkspace token={token} workspaceId={workspaceId} />
+          ) : current?.code === "portfolio-projects" ? (
+            <PortfolioProjectsWorkspace token={token} portfolioId={workspaceId} />
+          ) : current?.code === "portfolio-evaluation" ? (
+            <PortfolioEvaluationWorkspace token={token} portfolioId={workspaceId} />
+          ) : current?.code === "prioritization-matrix" ? (
+            <PortfolioEvaluationWorkspace token={token} portfolioId={workspaceId} view="prioritization" />
+          ) : current?.code === "portfolio-evaluations" ? (
+            <PortfolioEvaluationWorkspace token={token} projectId={workspaceId} />
+          ) : [
+              "strategic-context",
+              "portfolio-memberships",
+              "portfolio-planning-readiness",
+              "project-definition-readiness",
+            ].includes(current?.code || "") ? (
+            <ProjectStrategicContext token={token} projectId={workspaceId} />
           ) : current?.code === "home" ? (
             <>
               <div className="workspaceHomeFacts">

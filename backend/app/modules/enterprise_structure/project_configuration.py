@@ -27,6 +27,8 @@ from app.modules.enterprise_structure.models import EnterpriseWorkspaceClassific
 from app.modules.enterprise_structure.project_schemas import (
     ProjectConfigurationOut,
     ProjectCreationPolicyUpdate,
+    ProjectGovernancePolicyPreviewRequest,
+    ProjectGovernancePolicyUpdate,
     ProjectNumberingUpdate,
     ProjectParentOption,
     ProjectPreviewOut,
@@ -37,6 +39,7 @@ from app.modules.enterprise_structure.project_schemas import (
 )
 from app.modules.enterprise_structure.record_codes import next_record_code
 from app.modules.enterprise_structure.schemas import ConfigurationVersionOut
+from app.modules.project_creation.governance import ProjectGovernancePolicyService
 
 PROJECT_ALLOWED_PARENTS = ("portfolio", "program")
 PROJECT_NUMBERING_CODE = "project-workspace"
@@ -123,6 +126,7 @@ class ProjectWorkspaceConfigurationService:
         self._seed_creation_policy()
         self._seed_templates()
         self._seed_classification_proposals()
+        ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).ensure_seed()
         self.db.commit()
 
     def overview(self) -> ProjectConfigurationOut:
@@ -139,11 +143,13 @@ class ProjectWorkspaceConfigurationService:
         ]
         modules = self._published_modules()
         parents = self._parent_options()
+        governance_models = ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).list_policies()
         return ProjectConfigurationOut(
             project_type=_configuration_out(project_type),
             templates=[_configuration_out(item) for item in templates],
             numbering_rule=_configuration_out(numbering),
             creation_policy=_configuration_out(policy),
+            governance_models=governance_models,
             classification_sets=[_configuration_out(item) for item in classifications],
             available_modules=[_configuration_out(item) for item in modules],
             parent_options=parents,
@@ -167,6 +173,7 @@ class ProjectWorkspaceConfigurationService:
                 "materialization_endpoint": None,
                 "configuration_requires_core_revision": False,
             },
+            multi_source_status="READY_FOR_MULTI_SOURCE_PROJECT_CREATION",
         )
 
     def create_template(self, payload: ProjectTemplatePayload) -> ConfigurationVersionOut:
@@ -339,6 +346,21 @@ class ProjectWorkspaceConfigurationService:
         self._event("enterprise_structure.project_creation_policy.configured", record)
         self._commit("Project creation policy changed concurrently")
         return _configuration_out(record)
+
+    def configure_governance_policy(
+        self,
+        governance_model: str,
+        payload: ProjectGovernancePolicyUpdate,
+    ) -> dict[str, Any]:
+        values = payload.model_dump(exclude={"scope_workspace_id"})
+        return ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).configure(
+            governance_model,
+            values,
+            scope_workspace_id=payload.scope_workspace_id,
+        )
+
+    def preview_governance_policy(self, payload: ProjectGovernancePolicyPreviewRequest) -> dict[str, Any]:
+        return ProjectGovernancePolicyService(self.db, self.tenant_id, self.actor_id).preview(payload.model_dump())
 
     def preview(self, payload: ProjectPreviewRequest) -> ProjectPreviewOut:
         parent = self.db.scalar(

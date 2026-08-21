@@ -51,6 +51,11 @@ import ProjectProposalWorkspace from "./features/project-proposal/ProjectProposa
 import ProjectProposalAdminView from "./features/project-proposal/ProjectProposalAdminView";
 import StrategicGateWorkspace from "./features/strategic-gate/StrategicGateWorkspace";
 import StrategicGateAdminView from "./features/strategic-gate/StrategicGateAdminView";
+import StrategicPlanningEntryWorkspace from "./features/portfolio-planning/StrategicPlanningEntryWorkspace";
+import PortfolioProjectsWorkspace from "./features/portfolio-planning/PortfolioProjectsWorkspace";
+import PortfolioPlanningAdminView from "./features/portfolio-planning/PortfolioPlanningAdminView";
+import PortfolioEvaluationWorkspace from "./features/portfolio-evaluation/PortfolioEvaluationWorkspace";
+import PortfolioEvaluationAdminView from "./features/portfolio-evaluation/PortfolioEvaluationAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7508,6 +7513,18 @@ function AppShell() {
             {visibleControlView === "project-proposal-configuration" && <ProjectProposalAdminView token={token} />}
             {visibleControlView === "strategic-gate-decision" && <StrategicGateWorkspace token={token} />}
             {visibleControlView === "strategic-gate-configuration" && <StrategicGateAdminView token={token} />}
+            {visibleControlView === "strategic-project-planning-entry" && (
+              <StrategicPlanningEntryWorkspace token={token} />
+            )}
+            {visibleControlView === "portfolio-projects" && <PortfolioProjectsWorkspace token={token} />}
+            {visibleControlView === "portfolio-planning-configuration" && <PortfolioPlanningAdminView token={token} />}
+            {visibleControlView === "portfolio-evaluation" && <PortfolioEvaluationWorkspace token={token} />}
+            {visibleControlView === "strategic-prioritization-matrix" && (
+              <PortfolioEvaluationWorkspace token={token} view="prioritization" />
+            )}
+            {visibleControlView === "portfolio-evaluation-configuration" && (
+              <PortfolioEvaluationAdminView token={token} />
+            )}
             {(
               [
                 "workspace-types",

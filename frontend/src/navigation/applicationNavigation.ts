@@ -10,6 +10,11 @@ export type ControlFlowView =
   | "project-proposal-configuration"
   | "strategic-gate-decision"
   | "strategic-gate-configuration"
+  | "strategic-project-planning-entry"
+  | "portfolio-projects"
+  | "portfolio-planning-configuration"
+  | "portfolio-evaluation"
+  | "portfolio-evaluation-configuration"
   | "portfolio-structure"
   | "project-intake-from-ideas"
   | "portfolio-budget-planning"
@@ -164,11 +169,13 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
         label: "Portfolio Manager",
         submodules: [
           { key: "portfolio-structure", label: "Portfolio Structure" },
-          { key: "project-intake-from-ideas", label: "Project Intake from Ideas" },
+          { key: "strategic-project-planning-entry", label: "Strategic Project Planning Entry" },
+          { key: "portfolio-projects", label: "Portfolio Projects" },
+          { key: "portfolio-evaluation", label: "Portfolio Evaluation" },
           { key: "portfolio-budget-planning", label: "Portfolio Budget Planning" },
           { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
           { key: "strategic-investment-map", label: "Strategic Investment Map" },
-          { key: "strategic-prioritization-matrix", label: "Strategic Prioritization Matrix" },
+          { key: "strategic-prioritization-matrix", label: "Prioritization Matrix" },
           { key: "gate-decision", label: "Gate Decision" },
         ],
       },
@@ -408,6 +415,8 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "idea-demand-configuration", label: "Idea Lifecycle Configuration" },
       { key: "project-proposal-configuration", label: "Project Proposal Configuration" },
       { key: "strategic-gate-configuration", label: "Strategic Gate Decision" },
+      { key: "portfolio-planning-configuration", label: "Portfolio Planning Entry & Membership" },
+      { key: "portfolio-evaluation-configuration", label: "Portfolio Evaluation & Prioritization" },
     ],
   },
   {
@@ -452,7 +461,6 @@ export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "project-intake-from-ideas",
   "portfolio-budget-planning",
   "portfolio-cash-flow",
-  "strategic-prioritization-matrix",
   "join-venture",
   "vendors-list",
   "sales-contracts",

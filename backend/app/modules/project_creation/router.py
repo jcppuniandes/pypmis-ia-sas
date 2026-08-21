@@ -18,6 +18,7 @@ from app.modules.project_creation.schemas import (
     ProjectRequestOut,
     ProjectRequestPreviewOut,
     ProjectRequestUpdate,
+    ProjectSourcePreviewOut,
 )
 from app.modules.project_creation.service import ProjectCreationService
 
@@ -73,8 +74,19 @@ def options(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ProjectCreationOptionsOut:
-    service, _context = _authorized(db, tenant_id, user_id, "project_creation.request.create")
-    return service.options(parent_workspace_id)
+    service, context = _authorized(db, tenant_id, user_id, "project_creation.request.create")
+    return service.options(parent_workspace_id, context)
+
+
+@router.get("/project-creation/options", response_model=ProjectCreationOptionsOut)
+def generic_options(
+    parent_workspace_id: int | None = None,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectCreationOptionsOut:
+    service, context = _authorized(db, tenant_id, user_id, "project_creation.request.create")
+    return service.options(parent_workspace_id, context)
 
 
 @router.post(
@@ -89,7 +101,65 @@ def create_request(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ProjectRequestOut:
+    if payload.governance_model == "CONTRACTOR_DELIVERY":
+        require_enterprise_permission(db, tenant_id, user_id, "project_creation.contract_source.create")
+    if payload.governance_model == "DIRECT_INTERNAL":
+        require_enterprise_permission(db, tenant_id, user_id, "project_creation.direct.create")
     service, _context = _authorized(db, tenant_id, user_id, "project_creation.request.create")
+    return _etag(response, service.create_request(payload))
+
+
+@router.post("/project-creation/from-contract/preview", response_model=ProjectSourcePreviewOut)
+def preview_from_contract(
+    payload: ProjectRequestCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectSourcePreviewOut:
+    service, _context = _authorized(db, tenant_id, user_id, "project_creation.contract_source.create")
+    if payload.governance_model != "CONTRACTOR_DELIVERY":
+        raise HTTPException(status_code=422, detail="CONTRACTOR_DELIVERY_GOVERNANCE_REQUIRED")
+    return service.source_preview(payload)
+
+
+@router.post("/project-creation/from-contract", response_model=ProjectRequestOut, status_code=status.HTTP_201_CREATED)
+def create_from_contract(
+    payload: ProjectRequestCreate,
+    response: Response,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectRequestOut:
+    service, _context = _authorized(db, tenant_id, user_id, "project_creation.contract_source.create")
+    if payload.governance_model != "CONTRACTOR_DELIVERY":
+        raise HTTPException(status_code=422, detail="CONTRACTOR_DELIVERY_GOVERNANCE_REQUIRED")
+    return _etag(response, service.create_request(payload))
+
+
+@router.post("/project-creation/direct/preview", response_model=ProjectSourcePreviewOut)
+def preview_direct(
+    payload: ProjectRequestCreate,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectSourcePreviewOut:
+    service, _context = _authorized(db, tenant_id, user_id, "project_creation.direct.create")
+    if payload.governance_model != "DIRECT_INTERNAL":
+        raise HTTPException(status_code=422, detail="DIRECT_INTERNAL_GOVERNANCE_REQUIRED")
+    return service.source_preview(payload)
+
+
+@router.post("/project-creation/direct", response_model=ProjectRequestOut, status_code=status.HTTP_201_CREATED)
+def create_direct(
+    payload: ProjectRequestCreate,
+    response: Response,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> ProjectRequestOut:
+    service, _context = _authorized(db, tenant_id, user_id, "project_creation.direct.create")
+    if payload.governance_model != "DIRECT_INTERNAL":
+        raise HTTPException(status_code=422, detail="DIRECT_INTERNAL_GOVERNANCE_REQUIRED")
     return _etag(response, service.create_request(payload))
 
 

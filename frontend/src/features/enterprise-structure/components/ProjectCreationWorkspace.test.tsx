@@ -10,6 +10,8 @@ vi.mock("../api", () => ({
   enterpriseStructureApi: {
     projectCreationOptions: vi.fn(),
     createProjectRequest: vi.fn(),
+    previewProjectSource: vi.fn(),
+    createProjectFromSource: vi.fn(),
     projectRequestPreview: vi.fn(),
     projectRequests: vi.fn(),
     transitionProjectRequest: vi.fn(),
@@ -46,6 +48,27 @@ const options: ProjectCreationOptions = {
   managers: [{ id: 9, name: "Ana PM", email: "ana@example.com" }],
   strategic_objectives: [{ code: "growth", label: "Sustainable Growth" }],
   classifications: { region: [{ code: "andean", label: "Andean" }] },
+  allowed_governance_models: [
+    {
+      code: "CAPITAL_OWNER",
+      label: "Capital Owner",
+      source_context_type: "STRATEGIC_GATE_DECISION",
+    },
+    {
+      code: "CONTRACTOR_DELIVERY",
+      label: "Contractor Delivery",
+      source_context_type: "CONTRACT_AWARD",
+    },
+    {
+      code: "DIRECT_INTERNAL",
+      label: "Direct Internal",
+      source_context_type: "DIRECT_AUTHORIZATION",
+    },
+  ],
+  allowed_source_context_types: ["STRATEGIC_GATE_DECISION", "CONTRACT_AWARD", "DIRECT_AUTHORIZATION"],
+  can_create_direct: true,
+  can_create_from_contract: true,
+  can_create_from_strategic_gate: true,
   blocked_reason: null,
 };
 
@@ -55,6 +78,16 @@ const request: ProjectCreationRequest = {
   state: "draft",
   requestor_user_id: 2,
   requestor_name: "Ricardo",
+  governance_model: "DIRECT_INTERNAL",
+  source_context_type: "DIRECT_AUTHORIZATION",
+  source_context_id: null,
+  source_external_key: "AUTH-001",
+  idempotency_key: "AUTH-001",
+  source_snapshot: { authorization_reference: "AUTH-001", sponsor: "COO" },
+  source_hash: "source-hash",
+  creation_policy_id: 90,
+  creation_policy_revision: 1,
+  creation_policy_hash: "policy-hash",
   parent_workspace_id: 21,
   parent_name: "Capital Portfolio",
   parent_record_code: "001.001",
@@ -119,16 +152,36 @@ describe("ProjectCreationWorkspace", () => {
     expect(screen.getByText("P&P / Enterprise / Capital Portfolio · 001.001")).toBeInTheDocument();
   });
 
-  it("requires a strategic objective before saving", async () => {
+  it("uses governance independently from project type and requires the direct source", async () => {
     renderView("create");
     const save = await screen.findByRole("button", { name: /Guardar solicitud y previsualizar/ });
     expect(save).toBeDisabled();
-    fireEvent.click(screen.getByText("Sustainable Growth"));
+    expect(screen.getByRole("radio", { name: /Direct Internal/ })).toBeChecked();
+    fireEvent.change(screen.getByLabelText("Referencia de autorización"), { target: { value: "AUTH-001" } });
+    fireEvent.change(screen.getByLabelText("Patrocinador"), { target: { value: "COO" } });
     expect(save).toBeEnabled();
   });
 
   it("creates a draft and displays a non-persistent preview", async () => {
-    api.createProjectRequest.mockResolvedValue(request);
+    api.previewProjectSource.mockResolvedValue({
+      governance_model: "DIRECT_INTERNAL",
+      source_context_type: "DIRECT_AUTHORIZATION",
+      source_context_id: null,
+      source_external_key: "AUTH-001",
+      source_hash: "source-hash",
+      effective_policy: {},
+      source_workspace_id: null,
+      resolution_chain: ["tenant"],
+      required_fields: [],
+      optional_fields: [],
+      required_source: ["authorization_reference", "sponsor"],
+      initialization_requirements: [],
+      activation_requirements: [],
+      warnings: [],
+      blockers: [],
+      persisted: false,
+    });
+    api.createProjectFromSource.mockResolvedValue(request);
     api.projectRequestPreview.mockResolvedValue({
       allowed: true,
       issues: [],
@@ -143,12 +196,23 @@ describe("ProjectCreationWorkspace", () => {
       initial_workspace_status: "pending",
       template: {},
       creation_policy: {},
+      governance_model: "DIRECT_INTERNAL",
+      source_context_type: "DIRECT_AUTHORIZATION",
+      effective_policy: {},
+      policy_source_workspace_id: null,
+      policy_resolution_chain: ["tenant"],
+      required_fields: [],
+      optional_fields: [],
+      warnings: [],
+      blockers: [],
+      activation_readiness: "BLOCKED",
       persisted: false,
       notice: "Preview only - final number assigned at creation",
     });
     renderView("create");
     fireEvent.change(await screen.findByLabelText("Nombre del proyecto"), { target: { value: "Project Atlas" } });
-    fireEvent.click(screen.getByText("Sustainable Growth"));
+    fireEvent.change(screen.getByLabelText("Referencia de autorización"), { target: { value: "AUTH-001" } });
+    fireEvent.change(screen.getByLabelText("Patrocinador"), { target: { value: "COO" } });
     fireEvent.click(screen.getByRole("button", { name: /Guardar solicitud y previsualizar/ }));
     expect(await screen.findByText(/PCR-00007 · Project Atlas/)).toBeInTheDocument();
     expect(screen.getByText("PYP-PRJ-0001")).toBeInTheDocument();
@@ -195,6 +259,15 @@ describe("ProjectCreationWorkspace", () => {
       project_manager: "Ana PM",
       template: "PYP-PRJ-GENERAL",
       strategic_objectives: ["growth"],
+      governance_model: "DIRECT_INTERNAL",
+      governance_label: "Direct Internal",
+      creation_source: "DIRECT_AUTHORIZATION",
+      source_reference: "AUTH-001",
+      source_snapshot: { authorization_reference: "AUTH-001", sponsor: "COO" },
+      creation_policy: {},
+      pending_reason: "INITIALIZATION_REQUIRED",
+      planning_stage: "DIRECT_AUTHORIZATION",
+      activation_readiness: "BLOCKED",
       planned_start: "2026-09-01",
       planned_finish: "2027-08-31",
       currency: "COP",

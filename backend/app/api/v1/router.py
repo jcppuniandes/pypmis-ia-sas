@@ -262,6 +262,8 @@ from app.modules.enterprise_structure import router_user as enterprise_structure
 from app.modules.idea_demand import router as idea_demand_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
+from app.modules.portfolio_evaluation import router as portfolio_evaluation_router
+from app.modules.portfolio_planning import router as portfolio_planning_router
 from app.modules.project_creation import router as project_creation_router
 from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
@@ -285,6 +287,8 @@ router.include_router(admin_configuration_router.router, tags=["admin-configurat
 router.include_router(enterprise_structure_admin_router.router, tags=["enterprise-structure-admin"])
 router.include_router(enterprise_structure_user_router.router, tags=["enterprise-structure"])
 router.include_router(project_creation_router.router, tags=["project-creation"])
+router.include_router(portfolio_planning_router.router, tags=["portfolio-planning"])
+router.include_router(portfolio_evaluation_router.router, tags=["portfolio-evaluation"])
 router.include_router(physical_workspace_creation_router.router, tags=["physical-workspace-creation"])
 router.include_router(physical_workspace_initialization_router.router, tags=["physical-workspace-initialization"])
 router.include_router(project_workspace_initialization_router.router, tags=["project-workspace-initialization"])

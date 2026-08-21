@@ -33,6 +33,8 @@ vi.mock("../src/features/enterprise-structure/api", () => ({
     archiveProjectTemplate: vi.fn(),
     updateProjectNumbering: vi.fn(),
     updateProjectCreationPolicy: vi.fn(),
+    updateProjectGovernancePolicy: vi.fn(),
+    previewProjectGovernancePolicy: vi.fn(),
     createNode: vi.fn(),
     updateNode: vi.fn(),
     archiveNode: vi.fn(),
@@ -201,6 +203,44 @@ const projectData: ProjectConfiguration = {
       materialization_after_approval: true,
     },
   },
+  governance_models: [
+    {
+      governance_model: "CAPITAL_OWNER",
+      label: "Capital Owner",
+      configuration_id: 71,
+      revision: 1,
+      content_hash: "a".repeat(64),
+      source_workspace_id: null,
+      source_workspace_name: null,
+      resolution_chain: ["tenant"],
+      content: {
+        template_required: true,
+        project_manager_required: true,
+        strategic_objective_required: true,
+        portfolio_required: true,
+        fel_required: true,
+        approval_required: true,
+      },
+    },
+    {
+      governance_model: "CONTRACTOR_DELIVERY",
+      label: "Contractor Delivery",
+      configuration_id: 72,
+      revision: 1,
+      content_hash: "b".repeat(64),
+      source_workspace_id: null,
+      content: { contract_source_required: true, approval_required: true },
+    },
+    {
+      governance_model: "DIRECT_INTERNAL",
+      label: "Direct Internal",
+      configuration_id: 73,
+      revision: 1,
+      content_hash: "c".repeat(64),
+      source_workspace_id: null,
+      content: { approval_required: true },
+    },
+  ],
   classification_sets: [configuration("strategic-objective", "Strategic Objectives", "catalog")],
   available_modules: [configuration("scope-manager", "Scope Manager", "module_definition")],
   parent_options: [
@@ -217,6 +257,7 @@ const projectData: ProjectConfiguration = {
   },
   gate_status: "READY_FOR_PROJECT_CREATION_PROCESS",
   gate_05b_contract: { workspace_table: "enterprise_workspaces", materialization_endpoint: null },
+  multi_source_status: "READY_FOR_MULTI_SOURCE_PROJECT_CREATION",
 };
 
 afterEach(() => cleanup());

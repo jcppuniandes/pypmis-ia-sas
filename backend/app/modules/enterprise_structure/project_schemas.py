@@ -49,6 +49,37 @@ class ProjectCreationPolicyUpdate(BaseModel):
     materialization_after_approval: bool = True
 
 
+class ProjectGovernancePolicyUpdate(BaseModel):
+    allowed_source_context_types: list[str] = Field(default_factory=list)
+    allowed_parent_types: list[str] = Field(default_factory=lambda: ["portfolio", "program"])
+    required_fields: list[str] = Field(default_factory=list)
+    optional_fields: list[str] = Field(default_factory=list)
+    required_source_fields: list[str] = Field(default_factory=list)
+    template_required: bool = True
+    project_manager_required: bool = True
+    strategic_objective_required: bool = False
+    portfolio_required: bool = False
+    fel_required: bool = False
+    pdri_required: bool = False
+    fid_required_for_creation: bool = False
+    contract_source_required: bool = False
+    notice_to_proceed_required: bool = False
+    approval_required: bool = True
+    initialization_requirements: list[str] = Field(default_factory=list)
+    activation_requirements: list[str] = Field(default_factory=list)
+    pending_reason: str = "INITIALIZATION_REQUIRED"
+    planning_stage: str = "PROJECT_CREATION"
+    scope_workspace_id: int | None = None
+
+
+class ProjectGovernancePolicyPreviewRequest(BaseModel):
+    governance_model: str
+    source_context_type: str | None = None
+    parent_workspace_id: int | None = None
+    project_type: str | None = None
+    template_id: int | None = None
+
+
 class ProjectParentOption(BaseModel):
     id: int
     name: str
@@ -80,6 +111,7 @@ class ProjectConfigurationOut(BaseModel):
     templates: list[ConfigurationVersionOut]
     numbering_rule: ConfigurationVersionOut
     creation_policy: ConfigurationVersionOut
+    governance_models: list[dict[str, Any]] = Field(default_factory=list)
     classification_sets: list[ConfigurationVersionOut]
     available_modules: list[ConfigurationVersionOut]
     parent_options: list[ProjectParentOption]
@@ -87,6 +119,7 @@ class ProjectConfigurationOut(BaseModel):
     summary: dict[str, int]
     gate_status: str
     gate_05b_contract: dict[str, Any]
+    multi_source_status: str = "READY_FOR_MULTI_SOURCE_PROJECT_CREATION"
 
 
 class ProjectTemplateValidationOut(ConfigurationValidationOut):

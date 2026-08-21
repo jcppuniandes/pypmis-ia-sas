@@ -1,0 +1,43 @@
+services:
+  gate07e-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate07e
+      POSTGRES_USER: gate07e
+      POSTGRES_PASSWORD: gate07e
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate07e -d gate07e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate07e-test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate07e:gate07e@gate07e-db:5432/gate07e
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://gate07e:gate07e@gate07e-db:5432/gate07e
+      AUTO_CREATE_SCHEMA: "true"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate07e-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python tests/postgres/prepare_gate07e_migration_baseline.py
+        alembic stamp 20260820_0044
+        python tests/postgres/validate_gate07e_schema.py --expect 20260820_0044
+        alembic upgrade 20260820_0045
+        python tests/postgres/validate_gate07e_schema.py --expect 20260820_0045
+        pytest --no-cov -q tests/test_portfolio_planning_gate07d.py tests/test_portfolio_planning_gate07d_hardening.py tests/test_project_creation_process.py tests/test_strategic_gate_gate07c.py tests/test_workspace_context.py &&
+        pytest --no-cov -q tests/test_portfolio_evaluation_gate07e.py tests/postgres/test_portfolio_evaluation_postgres.py
+        alembic downgrade 20260820_0044
+        python tests/postgres/validate_gate07e_schema.py --expect 20260820_0044
+        alembic upgrade 20260820_0045
+        python tests/postgres/validate_gate07e_schema.py --expect 20260820_0045
+    depends_on:
+      gate07e-db:
+        condition: service_healthy

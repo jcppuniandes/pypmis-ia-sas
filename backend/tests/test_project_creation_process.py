@@ -802,3 +802,216 @@ def test_40_materialization_does_not_create_core_revision(gate: Gate) -> None:
     assert response.status_code == 200
     with SessionLocal() as db:
         assert db.scalar(select(func.count()).select_from(EnterpriseCoreRelease)) == before
+
+
+def _source_payload(gate: Gate, governance_model: str, reference: str, **overrides) -> dict:
+    if governance_model == "CONTRACTOR_DELIVERY":
+        source_context_type = "CONTRACT_AWARD"
+        snapshot = {
+            "client": "P&P Client",
+            "contract_number": reference,
+            "contractual_scope": "Engineering, procurement and construction delivery",
+            "contract_value": "4500000.00",
+            "mobilization_authorized": True,
+        }
+    else:
+        source_context_type = "DIRECT_AUTHORIZATION"
+        snapshot = {
+            "authorization_reference": reference,
+            "sponsor": "Chief Operating Officer",
+            "business_purpose": "Internal operational improvement",
+            "authorization_approved": True,
+        }
+    return _payload(
+        gate,
+        governance_model=governance_model,
+        source_context_type=source_context_type,
+        source_external_key=reference,
+        idempotency_key=reference,
+        source_snapshot=snapshot,
+        strategic_objective_codes=[],
+        **overrides,
+    )
+
+
+def _approve_source(gate: Gate, request: dict) -> dict:
+    request = _post_transition(gate, request, "submit", "requestor").json()
+    request = _post_transition(gate, request, "start-review", "reviewer").json()
+    response = _post_transition(gate, request, "approve", "approver")
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def test_41_options_expose_three_governance_models_independent_from_project_type(gate: Gate) -> None:
+    response = gate.client.get("/api/v1/project-creation/options", headers=gate.headers["admin"])
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert {item["code"] for item in body["allowed_governance_models"]} == {
+        "CAPITAL_OWNER",
+        "CONTRACTOR_DELIVERY",
+        "DIRECT_INTERNAL",
+    }
+    assert body["can_create_from_contract"] is True
+    assert body["can_create_direct"] is True
+
+
+def test_42_contract_source_preview_is_non_persistent_and_policy_resolved(gate: Gate) -> None:
+    reference = f"CTR-{uuid4().hex[:10]}"
+    before = None
+    with SessionLocal() as db:
+        before = db.scalar(select(func.count()).select_from(ProjectCreationRequest))
+    response = gate.client.post(
+        "/api/v1/project-creation/from-contract/preview",
+        headers=gate.headers["requestor"],
+        json=_source_payload(gate, "CONTRACTOR_DELIVERY", reference),
+    )
+    assert response.status_code == 200, response.text
+    preview = response.json()
+    assert preview["persisted"] is False
+    assert preview["blockers"] == []
+    assert preview["governance_model"] == "CONTRACTOR_DELIVERY"
+    assert preview["source_context_type"] == "CONTRACT_AWARD"
+    assert preview["effective_policy"]["strategic_objective_required"] is False
+    assert preview["source_hash"]
+    with SessionLocal() as db:
+        assert db.scalar(select(func.count()).select_from(ProjectCreationRequest)) == before
+
+
+def test_43_contract_source_creation_is_idempotent_and_traceable(gate: Gate) -> None:
+    reference = f"CTR-{uuid4().hex[:10]}"
+    payload = _source_payload(gate, "CONTRACTOR_DELIVERY", reference)
+    first = gate.client.post("/api/v1/project-creation/from-contract", headers=gate.headers["requestor"], json=payload)
+    second = gate.client.post("/api/v1/project-creation/from-contract", headers=gate.headers["requestor"], json=payload)
+    assert first.status_code == second.status_code == 201
+    assert second.json()["id"] == first.json()["id"]
+    request = first.json()
+    assert request["governance_model"] == "CONTRACTOR_DELIVERY"
+    assert request["source_external_key"] == reference
+    assert request["source_snapshot"]["contractual_scope"]
+    assert len(request["source_hash"]) == 64
+    assert request["creation_policy_revision"] >= 1
+    assert len(request["creation_policy_hash"]) == 64
+
+
+def test_44_direct_internal_and_project_type_are_separate_dimensions(gate: Gate) -> None:
+    reference = f"AUTH-{uuid4().hex[:10]}"
+    response = gate.client.post(
+        "/api/v1/project-creation/direct",
+        headers=gate.headers["requestor"],
+        json=_source_payload(gate, "DIRECT_INTERNAL", reference, project_type=None),
+    )
+    assert response.status_code == 201, response.text
+    request = response.json()
+    assert request["governance_model"] == "DIRECT_INTERNAL"
+    assert request["project_type"] is None
+    assert request["source_context_type"] == "DIRECT_AUTHORIZATION"
+    assert request["strategic_objective_codes"] == []
+
+
+def test_45_shared_four_eyes_materialization_creates_one_pending_project_for_contract(gate: Gate) -> None:
+    reference = f"CTR-{uuid4().hex[:10]}"
+    created_request = gate.client.post(
+        "/api/v1/project-creation/from-contract",
+        headers=gate.headers["requestor"],
+        json=_source_payload(gate, "CONTRACTOR_DELIVERY", reference),
+    )
+    assert created_request.status_code == 201, created_request.text
+    approved = _approve_source(gate, created_request.json())
+    materialized = gate.client.post(f"{ROOT}/{approved['id']}/materialize", headers=gate.headers["materializer"])
+    assert materialized.status_code == 200, materialized.text
+    workspace_id = materialized.json()["materialized_workspace_id"]
+    with SessionLocal() as db:
+        workspace = db.get(EnterpriseWorkspace, workspace_id)
+        metadata = workspace.defaults_json["_project"]
+        assert workspace.workspace_type_code == "project"
+        assert workspace.status == "pending"
+        assert metadata["governance_model"] == "CONTRACTOR_DELIVERY"
+        assert metadata["source_context_type"] == "CONTRACT_AWARD"
+        assert metadata["source_external_key"] == reference
+        assert metadata["pending_reason"] == "INITIALIZATION_AND_MOBILIZATION_REQUIRED"
+        assert metadata["activation_readiness"] == "READY_FOR_INITIALIZATION"
+    overview = gate.client.get(f"/api/v1/project-workspaces/{workspace_id}/overview", headers=gate.headers["admin"])
+    assert overview.status_code == 200, overview.text
+    assert overview.json()["governance_label"] == "Contractor Delivery"
+    assert overview.json()["creation_source"] == "CONTRACT_AWARD"
+
+
+def test_46_direct_project_remains_pending_when_authorization_is_not_approved(gate: Gate) -> None:
+    reference = f"AUTH-{uuid4().hex[:10]}"
+    payload = _source_payload(gate, "DIRECT_INTERNAL", reference)
+    payload["source_snapshot"]["authorization_approved"] = False
+    created_request = gate.client.post(
+        "/api/v1/project-creation/direct", headers=gate.headers["requestor"], json=payload
+    )
+    assert created_request.status_code == 201, created_request.text
+    approved = _approve_source(gate, created_request.json())
+    materialized = gate.client.post(f"{ROOT}/{approved['id']}/materialize", headers=gate.headers["materializer"])
+    assert materialized.status_code == 200, materialized.text
+    with SessionLocal() as db:
+        workspace = db.get(EnterpriseWorkspace, materialized.json()["materialized_workspace_id"])
+        assert workspace.status == "pending"
+        assert workspace.defaults_json["_project"]["activation_readiness"] == "BLOCKED"
+
+
+def test_47_source_adapter_rejects_cross_model_context_and_incomplete_sources(gate: Gate) -> None:
+    reference = f"AUTH-{uuid4().hex[:10]}"
+    mismatch = _source_payload(gate, "DIRECT_INTERNAL", reference)
+    mismatch["source_context_type"] = "CONTRACT_AWARD"
+    response = gate.client.post("/api/v1/project-creation/direct", headers=gate.headers["requestor"], json=mismatch)
+    assert response.status_code == 422
+    incomplete = _source_payload(gate, "CONTRACTOR_DELIVERY", f"CTR-{uuid4().hex[:10]}")
+    incomplete["source_snapshot"].pop("client")
+    response = gate.client.post(
+        "/api/v1/project-creation/from-contract", headers=gate.headers["requestor"], json=incomplete
+    )
+    assert response.status_code == 422
+
+
+def test_48_admin_previews_effective_policy_without_mutation(gate: Gate) -> None:
+    response = gate.client.post(
+        f"{ADMIN_ROOT}/project-governance-models/preview",
+        headers=gate.headers["admin"],
+        json={
+            "governance_model": "DIRECT_INTERNAL",
+            "source_context_type": "DIRECT_AUTHORIZATION",
+            "parent_workspace_id": gate.parent_id,
+            "project_type": "maintenance",
+            "template_id": gate.template_id,
+        },
+    )
+    assert response.status_code == 200, response.text
+    preview = response.json()
+    assert preview["persisted"] is False
+    assert preview["governance_model"] == "DIRECT_INTERNAL"
+    assert preview["effective_policy"]["strategic_objective_required"] is False
+    assert preview["resolution_chain"]
+
+
+def test_49_unprivileged_actor_cannot_use_multi_source_creation(gate: Gate) -> None:
+    response = gate.client.post(
+        "/api/v1/project-creation/direct",
+        headers=gate.headers["outsider"],
+        json=_source_payload(gate, "DIRECT_INTERNAL", f"AUTH-{uuid4().hex[:10]}"),
+    )
+    assert response.status_code == 403
+
+
+def test_50_draft_source_correction_rehashes_lineage_without_changing_identity(gate: Gate) -> None:
+    reference = f"AUTH-{uuid4().hex[:10]}"
+    payload = _source_payload(gate, "DIRECT_INTERNAL", reference)
+    created = gate.client.post(
+        "/api/v1/project-creation/direct", headers=gate.headers["requestor"], json=payload
+    ).json()
+    original_hash = created["source_hash"]
+    payload["source_snapshot"]["sponsor"] = "Chief Executive Officer"
+    response = gate.client.put(
+        f"{ROOT}/{created['id']}",
+        headers={**gate.headers["requestor"], "If-Match": str(created["revision_version"])},
+        json=payload,
+    )
+    assert response.status_code == 200, response.text
+    updated = response.json()
+    assert updated["id"] == created["id"]
+    assert updated["source_external_key"] == reference
+    assert updated["source_snapshot"]["sponsor"] == "Chief Executive Officer"
+    assert updated["source_hash"] != original_hash

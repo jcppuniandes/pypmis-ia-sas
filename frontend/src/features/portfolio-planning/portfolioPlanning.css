@@ -1,0 +1,232 @@
+.portfolioPlanning {
+  color: #142532;
+  display: grid;
+  gap: 14px;
+}
+.portfolioPlanning button,
+.portfolioPlanning input,
+.portfolioPlanning select,
+.portfolioPlanning textarea {
+  font: inherit;
+}
+.planningToolbar {
+  align-items: end;
+  background: #f5f8fa;
+  border: 1px solid #d8e1e6;
+  border-radius: 9px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px;
+}
+.planningToolbar label,
+.planningForm label {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+}
+.planningToolbar label {
+  max-width: 680px;
+}
+.planningToolbar span,
+.planningForm span,
+.planningCard dt,
+.planningAdminGrid aside span {
+  color: #607681;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.planningToolbar select,
+.planningForm select,
+.planningForm input,
+.planningAdminGrid textarea {
+  background: white;
+  border: 1px solid #cbd8df;
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  width: 100%;
+}
+.planningPrimary,
+.planningSecondary,
+.planningActions button {
+  align-items: center;
+  border: 1px solid #cbd8df;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 9px 13px;
+}
+.planningPrimary {
+  background: #0d2a3a;
+  border-color: #0d2a3a;
+  color: white;
+  font-weight: 700;
+}
+.planningSecondary,
+.planningActions button {
+  background: white;
+  color: #0d2a3a;
+}
+.planningPrimary:disabled,
+.planningSecondary:disabled,
+.planningActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.planningMessage {
+  background: #fff5e6;
+  border-left: 4px solid #d77a00;
+  border-radius: 6px;
+  padding: 10px 13px;
+}
+.planningGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.planningCard {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 16px;
+}
+.planningCard > header {
+  align-items: flex-start;
+  display: flex;
+  gap: 9px;
+  justify-content: space-between;
+}
+.planningCard h3 {
+  margin: 0 0 10px;
+}
+.planningCard dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 10px 0 0;
+}
+.planningCard dl div {
+  background: #f6f9fa;
+  border: 1px solid #e0e7eb;
+  border-radius: 7px;
+  padding: 9px;
+}
+.planningCard dd {
+  font-weight: 700;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.planningForm {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+.planningStatus > strong,
+.readinessCard > strong,
+.planningCard header > strong {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 11px;
+  padding: 5px 9px;
+}
+.ready {
+  background: #dff3e7;
+  color: #17623a;
+}
+.blocked {
+  background: #fff0dc;
+  color: #8b4e00;
+}
+.readinessCard span,
+.planningIssues span {
+  background: #fff5e6;
+  border-radius: 5px;
+  display: block;
+  font-size: 11px;
+  margin-top: 6px;
+  padding: 6px;
+}
+.planningActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.portfolioProjectRegister {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+}
+.planningEmpty {
+  align-items: center;
+  background: #f6f9fa;
+  border: 1px dashed #bdcbd3;
+  border-radius: 10px;
+  color: #607681;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  min-height: 150px;
+  padding: 20px;
+  text-align: center;
+}
+.planningAdminSections {
+  background: #f5f8fa;
+  border: 1px solid #d8e1e6;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+}
+.planningAdminSections button {
+  background: transparent;
+  border: 0;
+  color: #4c616e;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 8px;
+}
+.planningAdminGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(220px, 0.28fr) minmax(0, 1fr);
+}
+.planningAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.planningAdminGrid aside button {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  text-align: left;
+}
+.planningAdminGrid aside button.active {
+  background: #eaf7f6;
+  border-color: #159b9d;
+}
+.planningAdminGrid textarea {
+  font-family: Consolas, monospace;
+  margin-top: 10px;
+  resize: vertical;
+}
+@media (max-width: 900px) {
+  .planningGrid,
+  .planningAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .planningToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

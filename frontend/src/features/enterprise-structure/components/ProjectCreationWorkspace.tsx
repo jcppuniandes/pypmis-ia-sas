@@ -19,6 +19,7 @@ import { enterpriseStructureApi } from "../api";
 import type {
   ProjectCreationOptions,
   ProjectCreationRequest,
+  ProjectGovernanceModel,
   ProjectRequestPayload,
   ProjectRequestPreview,
   ProjectWorkspaceOverview,
@@ -37,6 +38,12 @@ type Props = {
 };
 
 const emptyPayload: ProjectRequestPayload = {
+  governance_model: null,
+  source_context_type: null,
+  source_context_id: null,
+  source_external_key: null,
+  idempotency_key: null,
+  source_snapshot: {},
   parent_workspace_id: 0,
   project_template_config_id: 0,
   project_name: "",
@@ -52,6 +59,18 @@ const emptyPayload: ProjectRequestPayload = {
   country: "CO",
   region: null,
   strategic_objective_codes: [],
+};
+
+const governanceLabels: Record<ProjectGovernanceModel, string> = {
+  CAPITAL_OWNER: "Capital Owner",
+  CONTRACTOR_DELIVERY: "Contractor Delivery",
+  DIRECT_INTERNAL: "Direct Internal",
+};
+
+const sourceLabels: Record<string, string> = {
+  STRATEGIC_GATE_DECISION: "Strategic Gate Decision",
+  CONTRACT_AWARD: "Contract Award",
+  DIRECT_AUTHORIZATION: "Direct Authorization",
 };
 
 const stateLabels: Record<string, string> = {
@@ -115,6 +134,14 @@ function RequestList({
             <div>
               <dt>Ubicación</dt>
               <dd>{request.parent_name}</dd>
+            </div>
+            <div>
+              <dt>Modelo de gobierno</dt>
+              <dd>{request.governance_model ? governanceLabels[request.governance_model] : "Legacy"}</dd>
+            </div>
+            <div>
+              <dt>Fuente</dt>
+              <dd>{request.source_context_type ? sourceLabels[request.source_context_type] : "No clasificada"}</dd>
             </div>
             <div>
               <dt>Plantilla</dt>
@@ -233,6 +260,22 @@ export function ProjectOverview({ token, workspaceId }: { token: string; workspa
           <strong>{overview.template}</strong>
         </div>
         <div>
+          <span>Modelo de gobierno</span>
+          <strong>{overview.governance_label}</strong>
+        </div>
+        <div>
+          <span>Fuente de creación</span>
+          <strong>{overview.creation_source ? sourceLabels[overview.creation_source] : "Legacy"}</strong>
+        </div>
+        <div>
+          <span>Referencia fuente</span>
+          <strong>{overview.source_reference || "Sin referencia"}</strong>
+        </div>
+        <div>
+          <span>Readiness de activación</span>
+          <strong>{overview.activation_readiness}</strong>
+        </div>
+        <div>
           <span>Presupuesto</span>
           <strong>
             {overview.estimated_budget || "Sin definir"} {overview.currency}
@@ -283,8 +326,13 @@ export default function ProjectCreationWorkspace({
       .projectCreationOptions(token, initialParentId)
       .then((result) => {
         setOptions(result);
+        const preferred =
+          result.allowed_governance_models.find((item) => item.code === "DIRECT_INTERNAL") ??
+          result.allowed_governance_models[0];
         setPayload((current) => ({
           ...current,
+          governance_model: preferred?.code ?? null,
+          source_context_type: preferred?.source_context_type ?? null,
           parent_workspace_id: initialParentId || result.locations[0]?.id || 0,
           project_template_config_id: result.templates[0]?.id || 0,
           project_manager_user_id: result.managers[0]?.id || 0,
@@ -306,6 +354,7 @@ export default function ProjectCreationWorkspace({
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (view === "requests" || view === "review") void loadRequests();
     // loadRequests is intentionally tied to view/token.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -334,7 +383,11 @@ export default function ProjectCreationWorkspace({
     event.preventDefault();
     setBusy(true);
     try {
-      const created = await enterpriseStructureApi.createProjectRequest(token, payload);
+      if (payload.governance_model === "CAPITAL_OWNER") {
+        throw new Error("Capital Owner se inicia desde Strategic Project Planning Entry para conservar Gate 07D.");
+      }
+      await enterpriseStructureApi.previewProjectSource(token, payload);
+      const created = await enterpriseStructureApi.createProjectFromSource(token, payload);
       setRequest(created);
       setPreview(await enterpriseStructureApi.projectRequestPreview(token, created.id));
       setError("");
@@ -343,6 +396,32 @@ export default function ProjectCreationWorkspace({
     } finally {
       setBusy(false);
     }
+  }
+
+  function selectGovernance(model: ProjectGovernanceModel) {
+    const selected = options?.allowed_governance_models.find((item) => item.code === model);
+    setRequest(null);
+    setPreview(null);
+    setPayload((current) => ({
+      ...current,
+      governance_model: model,
+      source_context_type: selected?.source_context_type ?? null,
+      source_context_id: null,
+      source_external_key: null,
+      idempotency_key: null,
+      source_snapshot: {},
+      strategic_objective_codes: [],
+    }));
+  }
+
+  function updateSourceSnapshot(key: string, value: string | boolean | null) {
+    setPayload((current) => ({
+      ...current,
+      source_snapshot: { ...current.source_snapshot, [key]: value },
+      ...(key === "contract_number" || key === "authorization_reference"
+        ? { source_external_key: String(value || ""), idempotency_key: String(value || "") }
+        : {}),
+    }));
   }
 
   async function submitDraft() {
@@ -503,9 +582,44 @@ export default function ProjectCreationWorkspace({
           </section>
         ) : (
           <form className="projectIntakeForm" onSubmit={createDraft}>
-            <section className="projectIntakeSection locationPicker">
+            <section className="projectIntakeSection governanceModelPicker">
               <header>
                 <span>1</span>
+                <div>
+                  <h3>Modelo de gobierno del proyecto</h3>
+                  <p>Define el origen, los campos y el readiness; es independiente del tipo de proyecto.</p>
+                </div>
+              </header>
+              <div className="governanceModelOptions" role="radiogroup" aria-label="Modelo de gobierno">
+                {options.allowed_governance_models.map((model) => (
+                  <label className={payload.governance_model === model.code ? "selected" : ""} key={model.code}>
+                    <input
+                      checked={payload.governance_model === model.code}
+                      name="governance-model"
+                      onChange={() => selectGovernance(model.code)}
+                      type="radio"
+                    />
+                    <span>
+                      <strong>{model.label}</strong>
+                      <small>{sourceLabels[model.source_context_type]}</small>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {payload.governance_model === "CAPITAL_OWNER" ? (
+                <div className="governanceRouteNotice" role="status">
+                  <ShieldCheck size={18} />
+                  <span>
+                    Esta ruta se crea desde <strong>Strategic Project Planning Entry</strong>; allí se conserva la
+                    decisión Gate 07D, el Portfolio objetivo y sus hashes de readiness.
+                  </span>
+                </div>
+              ) : null}
+            </section>
+
+            <section className="projectIntakeSection locationPicker">
+              <header>
+                <span>2</span>
                 <div>
                   <h3>Ubicación empresarial</h3>
                   <p>Seleccione un Portfolio o Program permitido por la composición publicada.</p>
@@ -541,7 +655,7 @@ export default function ProjectCreationWorkspace({
 
             <section className="projectIntakeSection">
               <header>
-                <span>2</span>
+                <span>3</span>
                 <div>
                   <h3>Identidad y gobierno</h3>
                   <p>La solicitud es independiente del Project Workspace que se creará al final.</p>
@@ -657,12 +771,119 @@ export default function ProjectCreationWorkspace({
               </div>
             </section>
 
+            {payload.governance_model === "CONTRACTOR_DELIVERY" ? (
+              <section className="projectIntakeSection sourceContextPanel">
+                <header>
+                  <span>4</span>
+                  <div>
+                    <h3>Contrato adjudicado</h3>
+                    <p>Captura la fuente contractual controlada sin crear un segundo registro de Project.</p>
+                  </div>
+                </header>
+                <div className="projectFormGrid">
+                  <label>
+                    Cliente
+                    <input
+                      required
+                      value={String(payload.source_snapshot.client ?? "")}
+                      onChange={(event) => updateSourceSnapshot("client", event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Número de contrato
+                    <input
+                      required
+                      value={String(payload.source_snapshot.contract_number ?? "")}
+                      onChange={(event) => updateSourceSnapshot("contract_number", event.target.value)}
+                    />
+                  </label>
+                  <label className="wide">
+                    Alcance contractual
+                    <textarea
+                      required
+                      rows={3}
+                      value={String(payload.source_snapshot.contractual_scope ?? "")}
+                      onChange={(event) => updateSourceSnapshot("contractual_scope", event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Valor contractual
+                    <input
+                      min="0"
+                      step="0.01"
+                      type="number"
+                      value={String(payload.source_snapshot.contract_value ?? "")}
+                      onChange={(event) => updateSourceSnapshot("contract_value", event.target.value || null)}
+                    />
+                  </label>
+                  <label className="projectBooleanField">
+                    <input
+                      checked={Boolean(payload.source_snapshot.mobilization_authorized)}
+                      onChange={(event) => updateSourceSnapshot("mobilization_authorized", event.target.checked)}
+                      type="checkbox"
+                    />
+                    Movilización autorizada
+                  </label>
+                </div>
+              </section>
+            ) : null}
+
+            {payload.governance_model === "DIRECT_INTERNAL" ? (
+              <section className="projectIntakeSection sourceContextPanel">
+                <header>
+                  <span>4</span>
+                  <div>
+                    <h3>Autorización interna directa</h3>
+                    <p>Registra el patrocinador y la autorización sin exigir contrato ni decisión estratégica.</p>
+                  </div>
+                </header>
+                <div className="projectFormGrid">
+                  <label>
+                    Referencia de autorización
+                    <input
+                      required
+                      value={String(payload.source_snapshot.authorization_reference ?? "")}
+                      onChange={(event) => updateSourceSnapshot("authorization_reference", event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Patrocinador
+                    <input
+                      required
+                      value={String(payload.source_snapshot.sponsor ?? "")}
+                      onChange={(event) => updateSourceSnapshot("sponsor", event.target.value)}
+                    />
+                  </label>
+                  <label className="wide">
+                    Propósito de negocio
+                    <textarea
+                      rows={3}
+                      value={String(payload.source_snapshot.business_purpose ?? "")}
+                      onChange={(event) => updateSourceSnapshot("business_purpose", event.target.value)}
+                    />
+                  </label>
+                  <label className="projectBooleanField">
+                    <input
+                      checked={Boolean(payload.source_snapshot.authorization_approved)}
+                      onChange={(event) => updateSourceSnapshot("authorization_approved", event.target.checked)}
+                      type="checkbox"
+                    />
+                    Autorización aprobada
+                  </label>
+                </div>
+              </section>
+            ) : null}
+
             <section className="projectIntakeSection">
               <header>
-                <span>3</span>
+                <span>{payload.governance_model === "CAPITAL_OWNER" ? "4" : "5"}</span>
                 <div>
                   <h3>Alineación estratégica</h3>
-                  <p>Debe asociar al menos un objetivo estratégico vigente.</p>
+                  <p>
+                    {payload.governance_model === "CAPITAL_OWNER"
+                      ? "Obligatoria y heredada de la decisión estratégica."
+                      : "Opcional para esta ruta de gobierno."}
+                  </p>
                 </div>
               </header>
               <div className="objectivePicker">
@@ -694,7 +915,20 @@ export default function ProjectCreationWorkspace({
                 <ShieldCheck size={16} /> Guardar crea una solicitud DRAFT. No crea el proyecto ni reserva Project
                 Number.
               </p>
-              <button disabled={busy || !payload.strategic_objective_codes.length} type="submit">
+              <button
+                disabled={
+                  busy ||
+                  !payload.governance_model ||
+                  payload.governance_model === "CAPITAL_OWNER" ||
+                  (payload.governance_model === "CONTRACTOR_DELIVERY" &&
+                    (!payload.source_snapshot.client ||
+                      !payload.source_snapshot.contract_number ||
+                      !payload.source_snapshot.contractual_scope)) ||
+                  (payload.governance_model === "DIRECT_INTERNAL" &&
+                    (!payload.source_snapshot.authorization_reference || !payload.source_snapshot.sponsor))
+                }
+                type="submit"
+              >
                 {busy ? <LoaderCircle className="spin" size={15} /> : <Plus size={15} />} Guardar solicitud y
                 previsualizar
               </button>
