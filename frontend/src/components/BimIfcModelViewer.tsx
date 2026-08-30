@@ -1464,6 +1464,15 @@ export default function BimIfcModelViewer({
     if (!canvas || !projectId || sourceType !== "ifc" || (!model && !run)) {
       return undefined;
     }
+    if (
+      model &&
+      model.source_size_bytes > IFC_BROWSER_CACHE_THRESHOLD_BYTES &&
+      viewerManifest?.geometry_strategy !== "backend_cache"
+    ) {
+      setStatus("IFC registrado. Prepara la cache backend antes de cargar la geometria de este modelo pesado.");
+      setRenderStats("Render directo suspendido: requiere cache backend");
+      return undefined;
+    }
     if (navigator.userAgent.toLowerCase().includes("jsdom")) {
       return undefined;
     }
