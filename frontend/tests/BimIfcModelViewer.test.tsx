@@ -311,7 +311,7 @@ describe("BimIfcModelViewer", () => {
     expect(within(viewer).queryByText(/inventory preview/i)).not.toBeInTheDocument();
   });
 
-  it("warns when an IFC is too large for direct browser rendering", () => {
+  it("keeps an oversized IFC out of direct browser rendering until its backend cache is prepared", async () => {
     const largeModel = { ...ifcModel, source_size_bytes: 145 * 1024 * 1024 };
 
     render(<BimIfcModelViewer projectId={1} model={largeModel} token="tok" />);
@@ -323,6 +323,9 @@ describe("BimIfcModelViewer", () => {
 
     expect(within(viewerHealth).getByText(/Requiere cache backend/i)).toBeInTheDocument();
     expect(within(viewerHealth).getByText(/preprocesar geometria/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(within(viewer).getByRole("status")).toHaveTextContent(/Prepara la cache backend/i)
+    );
   });
 
   it("lets the user prepare a backend geometry cache from the IFC viewer health panel", async () => {

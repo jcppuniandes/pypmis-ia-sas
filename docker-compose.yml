@@ -46,7 +46,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       LOG_FORMAT: ${LOG_FORMAT:-plain}
       METRICS_ENABLED: "true"
-      MAX_REQUEST_BODY_MB: "100"
+      # BIM coordination accepts source IFC files above the synchronous-takeoff threshold.
+      # Leave room for the multipart envelope around a 177 MB source model.
+      MAX_REQUEST_BODY_MB: "${MAX_REQUEST_BODY_MB:-256}"
       DOCUMENT_STORAGE_PATH: /app/storage/documents
       DOCUMENT_MAX_UPLOAD_MB: "50"
       DOCUMENT_MAX_ZIP_FILES: "200"
