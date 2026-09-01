@@ -433,6 +433,704 @@ PORTFOLIO_EVALUATION_ROLE_DEFINITIONS = {
     ),
 }
 
+PORTFOLIO_ANALYSIS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_analyst": frozenset(
+        {
+            "portfolio_analysis.read",
+            "portfolio_evaluation.read",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_analysis_viewer": frozenset(
+        {
+            "portfolio_analysis.read",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_analysis_configuration_admin": frozenset(
+        {
+            "portfolio_analysis.read",
+            "portfolio_analysis.admin.configure",
+            "portfolio_analysis.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_ANALYSIS_ROLE_DEFINITIONS = {
+    "portfolio_analyst": (
+        "Portfolio Analyst",
+        "Uses governed Portfolio Analysis, Investor Map and Scorecard views.",
+    ),
+    "portfolio_analysis_viewer": (
+        "Portfolio Analysis Viewer",
+        "Reads Portfolio Analysis without source mutation or configuration authority.",
+    ),
+    "portfolio_analysis_configuration_admin": (
+        "Portfolio Analysis Configuration Admin",
+        "Configures and publishes Gate 07F metric, map and scorecard rules.",
+    ),
+}
+
+PORTFOLIO_BUDGET_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_budget_planner": frozenset(
+        {
+            "portfolio_budget.read",
+            "portfolio_budget_target.create",
+            "portfolio_budget_target.publish",
+            "portfolio_budget_scenario.create",
+            "portfolio_budget_scenario.edit",
+            "portfolio_budget_scenario.freeze",
+            "portfolio_budget_scenario.void",
+            "portfolio_budget_scenario.force",
+            "portfolio_budget_scenario.compare",
+            "portfolio_dependency.read",
+            "portfolio_dependency.manage",
+            "portfolio_analysis.read",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_budget_viewer": frozenset(
+        {
+            "portfolio_budget.read",
+            "portfolio_budget_scenario.compare",
+            "portfolio_dependency.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_budget_configuration_admin": frozenset(
+        {
+            "portfolio_budget.read",
+            "portfolio_budget.admin.configure",
+            "portfolio_budget.admin.publish",
+            "portfolio_dependency.read",
+        }
+    ),
+}
+
+PORTFOLIO_BUDGET_ROLE_DEFINITIONS = {
+    "portfolio_budget_planner": (
+        "Portfolio Budget Planner",
+        "Creates governed Budget Targets and analytical Budget Scenarios without investment approval authority.",
+    ),
+    "portfolio_budget_viewer": (
+        "Portfolio Budget Viewer",
+        "Reads Portfolio Budget Planning, comparison and readiness outputs.",
+    ),
+    "portfolio_budget_configuration_admin": (
+        "Portfolio Budget Configuration Admin",
+        "Configures and publishes Gate 07G budget planning policies.",
+    ),
+}
+
+PORTFOLIO_RESOURCE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_resource_planner": frozenset(
+        {
+            "portfolio_resource.read",
+            "portfolio_resource_capacity.create",
+            "portfolio_resource_capacity.publish",
+            "portfolio_resource_demand.read",
+            "portfolio_resource_demand.create",
+            "portfolio_resource_demand.publish",
+            "portfolio_resource_scenario.create",
+            "portfolio_resource_scenario.edit",
+            "portfolio_resource_scenario.freeze",
+            "portfolio_resource_scenario.void",
+            "portfolio_resource_scenario.force",
+            "portfolio_resource_scenario.compare",
+            "portfolio_analysis.read",
+            "portfolio_prioritization.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_resource_viewer": frozenset(
+        {
+            "portfolio_resource.read",
+            "portfolio_resource_demand.read",
+            "portfolio_resource_scenario.compare",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_resource_configuration_admin": frozenset(
+        {
+            "portfolio_resource.read",
+            "portfolio_resource.admin.configure",
+            "portfolio_resource.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_RESOURCE_ROLE_DEFINITIONS = {
+    "portfolio_resource_planner": (
+        "Portfolio Resource Planner",
+        "Plans strategic Role/Pool capacity and governed Resource Scenarios without named assignments.",
+    ),
+    "portfolio_resource_viewer": (
+        "Portfolio Resource Viewer",
+        "Reads strategic capacity, demand, comparison and readiness outputs.",
+    ),
+    "portfolio_resource_configuration_admin": (
+        "Portfolio Resource Configuration Admin",
+        "Configures and publishes Gate 07H resource planning policies.",
+    ),
+}
+
+PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_recommendation_preparer": frozenset(
+        {
+            "portfolio_convergence.read",
+            "portfolio_convergence.create",
+            "portfolio_convergence.edit",
+            "portfolio_convergence.compare",
+            "portfolio_convergence.refresh",
+            "portfolio_recommendation.submit",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_recommendation_reviewer": frozenset(
+        {
+            "portfolio_convergence.read",
+            "portfolio_convergence.compare",
+            "portfolio_recommendation.return",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_recommender": frozenset(
+        {
+            "portfolio_convergence.read",
+            "portfolio_convergence.compare",
+            "portfolio_recommendation.recommend",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_convergence_viewer": frozenset(
+        {
+            "portfolio_convergence.read",
+            "portfolio_convergence.compare",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_convergence_configuration_admin": frozenset(
+        {
+            "portfolio_convergence.read",
+            "portfolio_convergence.admin.configure",
+            "portfolio_convergence.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_CONVERGENCE_ROLE_DEFINITIONS = {
+    "portfolio_recommendation_preparer": (
+        "Portfolio Recommendation Preparer",
+        "Prepares governed scenario convergence alternatives and submits them for review.",
+    ),
+    "portfolio_recommendation_reviewer": (
+        "Portfolio Recommendation Reviewer",
+        "Reviews convergence evidence and may return it to draft without recommendation authority.",
+    ),
+    "portfolio_recommender": (
+        "Portfolio Recommender",
+        "Issues a formal Portfolio recommendation without investment approval or FID authority.",
+    ),
+    "portfolio_convergence_viewer": (
+        "Portfolio Convergence Viewer",
+        "Reads scenario convergence, comparisons and recommendation readiness.",
+    ),
+    "portfolio_convergence_configuration_admin": (
+        "Portfolio Convergence Configuration Admin",
+        "Configures and publishes Gate 07I convergence and recommendation policies.",
+    ),
+}
+
+INVESTMENT_GATE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "investment_gate_preparer": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "investment_gate_preparation.create",
+            "investment_gate_preparation.edit",
+            "investment_gate_preparation.refresh",
+            "investment_gate_preparation.clone",
+            "investment_gate_preparation.void",
+            "investment_gate_evidence.add",
+            "portfolio_convergence.read",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_analysis.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_evidence_reviewer": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "investment_gate_preparation.freeze",
+            "investment_gate_evidence.validate",
+            "portfolio_convergence.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_gate_preparation_viewer": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "portfolio_convergence.read",
+            "portfolio_project.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_gate_configuration_admin": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "investment_gate_preparation.admin.configure",
+            "investment_gate_preparation.admin.publish",
+        }
+    ),
+    "investment_evidence_policy_admin": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "investment_evidence_policy.read",
+            "investment_evidence_policy.configure",
+            "investment_evidence_policy.publish",
+            "investment_evidence_provider.read",
+        }
+    ),
+    "investment_evidence_policy_viewer": frozenset(
+        {
+            "investment_gate_preparation.read",
+            "investment_evidence_policy.read",
+            "investment_evidence_provider.read",
+        }
+    ),
+}
+
+INVESTMENT_GATE_ROLE_DEFINITIONS = {
+    "investment_gate_preparer": (
+        "Investment Gate Preparer",
+        "Prepara paquetes y evidencia para decision de inversion, sin autoridad de aprobacion o FID.",
+    ),
+    "investment_evidence_reviewer": (
+        "Investment Evidence Reviewer",
+        "Valida evidencia con segregacion de funciones y congela paquetes completos.",
+    ),
+    "investment_gate_preparation_viewer": (
+        "Investment Gate Preparation Viewer",
+        "Consulta paquetes, cobertura, condiciones, historial y handoff de Gate 07J.",
+    ),
+    "investment_gate_configuration_admin": (
+        "Investment Gate Configuration Admin",
+        "Configura y publica perfiles y politicas de Investment Gate Preparation.",
+    ),
+    "investment_evidence_policy_admin": (
+        "Investment Evidence Policy Admin",
+        "Configura y publica matrices A/B/C y sus reglas de evidencia, sin autoridad de inversion o FID.",
+    ),
+    "investment_evidence_policy_viewer": (
+        "Investment Evidence Policy Viewer",
+        "Consulta matrices efectivas, registro de proveedores y brechas de evidencia.",
+    ),
+}
+
+PROJECT_DEFINITION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "project_definition_manager": frozenset(
+        {
+            "project_definition.read",
+            "project_definition.status.manage",
+            "project_definition_assessment.create",
+            "project_definition_assessment.edit",
+            "project_definition_assessment.complete",
+            "project_definition_assessment.reevaluate",
+            "project_definition_action.manage",
+            "project_definition_stage.submit",
+            "project_definition.refresh",
+            "investment_gate_preparation.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "definition_assessor": frozenset(
+        {
+            "project_definition.read",
+            "project_definition_assessment.create",
+            "project_definition_assessment.edit",
+            "project_definition_assessment.complete",
+            "project_definition_assessment.reevaluate",
+            "project_definition_action.manage",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "definition_reviewer": frozenset(
+        {
+            "project_definition.read",
+            "project_definition_stage.review",
+            "investment_gate_preparation.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "project_definition_viewer": frozenset({"project_definition.read", "investment_gate_preparation.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "project_definition_configuration_admin": frozenset(
+        {
+            "project_definition.read",
+            "project_definition.admin.configure",
+            "project_definition.admin.publish",
+        }
+    ),
+}
+
+PROJECT_DEFINITION_ROLE_DEFINITIONS = {
+    "project_definition_manager": (
+        "Project Definition Manager",
+        "Administra etapas FEL, readiness, gaps y evidencia sin autoridad de inversion o FID.",
+    ),
+    "definition_assessor": (
+        "Definition Assessor",
+        "Realiza assessments versionados de madurez y gestiona acciones de definicion.",
+    ),
+    "definition_reviewer": (
+        "Definition Reviewer",
+        "Revisa y completa etapas FEL con segregacion de funciones.",
+    ),
+    "project_definition_viewer": (
+        "Project Definition Viewer",
+        "Consulta FEL, maturity trend, readiness e historia.",
+    ),
+    "project_definition_configuration_admin": (
+        "Project Definition Configuration Admin",
+        "Configura y publica frameworks de definicion no propietarios.",
+    ),
+}
+
+FUNDS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "funding_manager": frozenset(
+        {
+            "funds.read",
+            "funding_source.create",
+            "funding_source.edit",
+            "funding_source.manage_status",
+            "fund.create",
+            "fund.edit",
+            "fund.authorize",
+            "fund.manage_status",
+            "funding_assignment.create",
+            "funding_assignment.edit",
+            "funding_assignment.reserve",
+            "funding_assignment.confirm",
+            "funding_assignment.release",
+            "funding_assignment.cancel",
+            "funding_readiness.read",
+            "funding_readiness.refresh",
+            "investment_gate_preparation.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "funding_planner": frozenset(
+        {
+            "funds.read",
+            "funding_source.create",
+            "funding_source.edit",
+            "fund.create",
+            "fund.edit",
+            "funding_assignment.create",
+            "funding_assignment.edit",
+            "funding_assignment.reserve",
+            "funding_assignment.release",
+            "funding_assignment.cancel",
+            "funding_readiness.read",
+            "funding_readiness.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "funding_reviewer": frozenset(
+        {"funds.read", "fund.authorize", "funding_assignment.confirm", "funding_readiness.read"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "funding_viewer": frozenset({"funds.read", "funding_readiness.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "funding_configuration_admin": frozenset(
+        {"funds.read", "funding_readiness.read", "funds.admin.configure", "funds.admin.publish"}
+    ),
+}
+
+FUNDS_ROLE_DEFINITIONS = {
+    "funding_manager": ("Funding Manager", "Administra Sources, Funds, Assignments y Funding Readiness sin FID."),
+    "funding_planner": ("Funding Planner", "Prepara Sources, Funds y reservas estrategicas."),
+    "funding_reviewer": ("Funding Reviewer", "Autoriza Funds y confirma asignaciones bajo Four-Eyes."),
+    "funding_viewer": ("Funding Viewer", "Consulta cobertura, condiciones, readiness e historia."),
+    "funding_configuration_admin": ("Funding Configuration Admin", "Configura y publica politicas de Funds Manager."),
+}
+
+RISK_READINESS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "risk_manager": frozenset(
+        {
+            "project_risk.read",
+            "project_risk.create",
+            "project_risk.edit",
+            "project_risk.manage_status",
+            "project_risk.accept",
+            "risk_readiness.read",
+            "risk_readiness_assessment.create",
+            "risk_readiness_assessment.edit",
+            "risk_readiness_assessment.complete",
+            "risk_readiness_assessment.reassess",
+            "risk_readiness.refresh",
+            "investment_gate_risk_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_owner": frozenset(
+        {
+            "project_risk.read",
+            "project_risk.create",
+            "project_risk.edit",
+            "project_risk.manage_status",
+            "risk_readiness.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_assessor": frozenset(
+        {
+            "project_risk.read",
+            "project_risk.create",
+            "project_risk.edit",
+            "project_risk.manage_status",
+            "risk_readiness.read",
+            "risk_readiness_assessment.create",
+            "risk_readiness_assessment.edit",
+            "risk_readiness_assessment.complete",
+            "risk_readiness_assessment.reassess",
+            "risk_readiness.refresh",
+            "investment_gate_risk_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_reviewer": frozenset({"project_risk.read", "risk_readiness.read", "investment_gate_risk_evidence.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_acceptance_authority": frozenset(
+        {
+            "project_risk.read",
+            "project_risk.accept",
+            "risk_readiness.read",
+            "investment_gate_risk_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_viewer": frozenset({"project_risk.read", "risk_readiness.read", "investment_gate_risk_evidence.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "risk_configuration_admin": frozenset(
+        {
+            "project_risk.read",
+            "risk_readiness.read",
+            "investment_gate_risk_evidence.read",
+            "risk_readiness.admin.configure",
+            "risk_readiness.admin.publish",
+        }
+    ),
+}
+
+RISK_READINESS_ROLE_DEFINITIONS = {
+    "risk_manager": ("Risk Manager", "Administra Project Risk y Risk Readiness sin ERM ni QRA."),
+    "risk_owner": ("Risk Owner", "Identifica y mantiene riesgos dentro de su alcance."),
+    "risk_assessor": ("Risk Assessor", "Evalua y completa assessments de Risk Readiness."),
+    "risk_reviewer": ("Risk Reviewer", "Consulta la evaluacion gobernada y su evidencia."),
+    "risk_acceptance_authority": (
+        "Risk Acceptance Authority",
+        "Acepta riesgo residual conforme a autoridad y segregacion de funciones.",
+    ),
+    "risk_viewer": ("Risk Viewer", "Consulta registros, readiness e historia."),
+    "risk_configuration_admin": (
+        "Risk Configuration Admin",
+        "Configura y publica politicas de Risk Readiness.",
+    ),
+}
+
+PERMIT_READINESS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "permit_manager": frozenset(
+        {
+            "permit.read",
+            "permit.create",
+            "permit.edit",
+            "permit.status.manage",
+            "permit.condition.manage",
+            "permit_readiness.read",
+            "permit_readiness.create",
+            "permit_readiness.edit",
+            "permit_readiness.complete",
+            "permit_readiness.reassess",
+            "permit_readiness.refresh",
+            "investment_gate_permit_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "permit_owner": frozenset(
+        {
+            "permit.read",
+            "permit.create",
+            "permit.edit",
+            "permit.status.manage",
+            "permit.condition.manage",
+            "permit_readiness.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "permit_assessor": frozenset(
+        {
+            "permit.read",
+            "permit_readiness.read",
+            "permit_readiness.create",
+            "permit_readiness.edit",
+            "permit_readiness.reassess",
+            "permit_readiness.refresh",
+            "investment_gate_permit_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "permit_reviewer": frozenset(
+        {
+            "permit.read",
+            "permit_readiness.read",
+            "permit_readiness.complete",
+            "investment_gate_permit_evidence.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "permit_viewer": frozenset({"permit.read", "permit_readiness.read", "investment_gate_permit_evidence.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "permit_configuration_admin": frozenset(
+        {
+            "permit.read",
+            "permit_readiness.read",
+            "investment_gate_permit_evidence.read",
+            "permit_readiness.admin.configure",
+            "permit_readiness.admin.publish",
+        }
+    ),
+}
+
+PERMIT_READINESS_ROLE_DEFINITIONS = {
+    "permit_manager": (
+        "Permit Manager",
+        "Administra permisos, condiciones y Permit Readiness sin actuar como regulador.",
+    ),
+    "permit_owner": ("Permit Owner", "Mantiene permisos y condiciones dentro de su alcance."),
+    "permit_assessor": ("Permit Assessor", "Evalua y refresca Permit Readiness."),
+    "permit_reviewer": ("Permit Reviewer", "Completa assessments bajo segregacion de funciones."),
+    "permit_viewer": ("Permit Viewer", "Consulta requisitos, registros, readiness e historia."),
+    "permit_configuration_admin": (
+        "Permit Configuration Admin",
+        "Configura y publica politicas de Permit Readiness.",
+    ),
+}
+
+INVESTMENT_DECISION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "investment_decision_preparer": frozenset(
+        {
+            "investment_decision.read",
+            "investment_decision.create",
+            "investment_decision.edit",
+            "investment_decision.submit",
+            "investment_decision.void",
+            "investment_gate_preparation.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_reviewer": frozenset(
+        {"investment_decision.read", "investment_decision.review", "investment_decision.void"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_maker": frozenset(
+        {"investment_decision.read", "investment_decision.decide"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_committee_member": frozenset(
+        {"investment_decision.read", "investment_decision.vote", "investment_decision.decide"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_committee_chair": frozenset(
+        {"investment_decision.read", "investment_decision.vote", "investment_decision.decide"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_viewer": frozenset({"investment_decision.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "investment_decision_configuration_admin": frozenset(
+        {
+            "investment_decision.read",
+            "investment_decision.admin.configure",
+            "investment_decision.admin.publish",
+        }
+    ),
+}
+
+INVESTMENT_DECISION_ROLE_DEFINITIONS = {
+    "investment_decision_preparer": ("Investment Decision Preparer", "Prepara y somete decisiones Gate 07K."),
+    "investment_decision_reviewer": ("Investment Decision Reviewer", "Revisa paquetes y checklist de Decision."),
+    "investment_decision_maker": ("Investment Decision Maker", "Registra decisiones formales dentro de su autoridad."),
+    "investment_decision_committee_member": ("Investment Decision Committee Member", "Emite votos formales de comite."),
+    "investment_decision_committee_chair": ("Investment Decision Committee Chair", "Preside el comite y sus reglas de voto."),
+    "investment_decision_viewer": ("Investment Decision Viewer", "Consulta Decision, paquete, historia y output."),
+    "investment_decision_configuration_admin": (
+        "Investment Decision Configuration Admin",
+        "Configura y publica la gobernanza de Investment Decision y FID.",
+    ),
+}
+
+POST_FID_GOVERNANCE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "post_fid_governance_manager": frozenset(
+        {
+            "post_fid_governance.read",
+            "post_fid_governance.evaluate",
+            "post_fid_governance.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "post_fid_governance_viewer": frozenset({"post_fid_governance.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "post_fid_governance_configuration_admin": frozenset(
+        {
+            "post_fid_governance.read",
+            "post_fid_governance.admin.configure",
+            "post_fid_governance.admin.publish",
+        }
+    ),
+}
+
+POST_FID_GOVERNANCE_ROLE_DEFINITIONS = {
+    "post_fid_governance_manager": (
+        "Post-FID Governance Manager",
+        "Evalua y refresca elegibilidad post-FID sin inicializar ni activar Projects.",
+    ),
+    "post_fid_governance_viewer": (
+        "Post-FID Governance Viewer",
+        "Consulta FID handoff, elegibilidad, condiciones e historia.",
+    ),
+    "post_fid_governance_configuration_admin": (
+        "Post-FID Governance Configuration Admin",
+        "Configura y publica la politica Gate 07L.",
+    ),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -740,6 +1438,160 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_ANALYSIS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_BUDGET_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_RESOURCE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_CONVERGENCE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in INVESTMENT_GATE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PROJECT_DEFINITION_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in FUNDS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in RISK_READINESS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PERMIT_READINESS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in INVESTMENT_DECISION_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in POST_FID_GOVERNANCE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -763,6 +1615,48 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "portfolio_evaluation.admin.configure",
             "portfolio_evaluation.admin.publish",
             "portfolio_prioritization.read",
+            "portfolio_analysis.read",
+            "portfolio_analysis.admin.configure",
+            "portfolio_analysis.admin.publish",
+            "portfolio_budget.read",
+            "portfolio_budget.admin.configure",
+            "portfolio_budget.admin.publish",
+            "portfolio_resource.read",
+            "portfolio_resource.admin.configure",
+            "portfolio_resource.admin.publish",
+            "portfolio_convergence.read",
+            "portfolio_convergence.admin.configure",
+            "portfolio_convergence.admin.publish",
+            "investment_gate_preparation.read",
+            "investment_gate_preparation.admin.configure",
+            "investment_gate_preparation.admin.publish",
+            "investment_evidence_policy.read",
+            "investment_evidence_policy.configure",
+            "investment_evidence_policy.publish",
+            "investment_evidence_provider.read",
+            "project_definition.read",
+            "project_definition.admin.configure",
+            "project_definition.admin.publish",
+            "funds.read",
+            "funding_readiness.read",
+            "funds.admin.configure",
+            "funds.admin.publish",
+            "project_risk.read",
+            "risk_readiness.read",
+            "investment_gate_risk_evidence.read",
+            "risk_readiness.admin.configure",
+            "risk_readiness.admin.publish",
+            "permit.read",
+            "permit_readiness.read",
+            "investment_gate_permit_evidence.read",
+            "permit_readiness.admin.configure",
+            "permit_readiness.admin.publish",
+            "investment_decision.read",
+            "investment_decision.admin.configure",
+            "investment_decision.admin.publish",
+            "post_fid_governance.read",
+            "post_fid_governance.admin.configure",
+            "post_fid_governance.admin.publish",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -776,6 +1670,17 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **STRATEGIC_GATE_ROLE_PERMISSIONS,
         **PORTFOLIO_PLANNING_ROLE_PERMISSIONS,
         **PORTFOLIO_EVALUATION_ROLE_PERMISSIONS,
+        **PORTFOLIO_ANALYSIS_ROLE_PERMISSIONS,
+        **PORTFOLIO_BUDGET_ROLE_PERMISSIONS,
+        **PORTFOLIO_RESOURCE_ROLE_PERMISSIONS,
+        **PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS,
+        **INVESTMENT_GATE_ROLE_PERMISSIONS,
+        **PROJECT_DEFINITION_ROLE_PERMISSIONS,
+        **FUNDS_ROLE_PERMISSIONS,
+        **RISK_READINESS_ROLE_PERMISSIONS,
+        **PERMIT_READINESS_ROLE_PERMISSIONS,
+        **INVESTMENT_DECISION_ROLE_PERMISSIONS,
+        **POST_FID_GOVERNANCE_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

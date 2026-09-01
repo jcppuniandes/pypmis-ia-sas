@@ -1,0 +1,170 @@
+{
+  "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07J_EVID_Investment_Evidence_Policy_20260830.docx",
+  "fonts_by_char_count": {
+    "Calibri": 13564
+  },
+  "direct_run_formatting_runs": 825,
+  "direct_paragraph_formatting_paragraphs": 775,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 2,
+      "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "Gate 07J-EVID",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "Investment Decision Evidence Matrix & Readiness Policy",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+      "style": "Normal"
+    },
+    {
+      "para_index": 6,
+      "text": "Fecha de corte: 30 de agosto de 2026",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "Repositorio: pypmis-ia-sas \u00b7 branch main",
+      "style": "Normal"
+    },
+    {
+      "para_index": 8,
+      "text": "Alembic: 20260830_0052 (head, sin migraci\u00f3n nueva)",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "Estado exclusivo: GATE07J_EVID_POLICY_VALIDATED",
+      "style": "Normal"
+    },
+    {
+      "para_index": 60,
+      "text": "RESULTADO EJECUTIVO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 62,
+      "text": "Capa",
+      "style": "Normal"
+    },
+    {
+      "para_index": 63,
+      "text": "Resultado",
+      "style": "Normal"
+    },
+    {
+      "para_index": 64,
+      "text": "Evidencia",
+      "style": "Normal"
+    },
+    {
+      "para_index": 83,
+      "text": "ALCANCE APLICADO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 85,
+      "text": "Capacidad inspeccionada",
+      "style": "Normal"
+    },
+    {
+      "para_index": 86,
+      "text": "Decisi\u00f3n de reutilizaci\u00f3n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 103,
+      "text": "Gate",
+      "style": "Normal"
+    },
+    {
+      "para_index": 104,
+      "text": "Contrato vigente",
+      "style": "Normal"
+    },
+    {
+      "para_index": 119,
+      "text": "Clase",
+      "style": "Normal"
+    },
+    {
+      "para_index": 120,
+      "text": "Sem\u00e1ntica",
+      "style": "Normal"
+    },
+    {
+      "para_index": 121,
+      "text": "Validaci\u00f3n",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "Gate 07J-EVID",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Investment Decision Evidence Matrix & Readiness Policy",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "Gate 07J-EVID",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Investment Decision Evidence Matrix & Readiness Policy",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Aplicaci\u00f3n: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

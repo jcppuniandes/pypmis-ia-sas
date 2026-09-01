@@ -15,9 +15,62 @@ export type ControlFlowView =
   | "portfolio-planning-configuration"
   | "portfolio-evaluation"
   | "portfolio-evaluation-configuration"
+  | "portfolio-analysis"
+  | "portfolio-analysis-configuration"
+  | "portfolio-budget-planning-configuration"
+  | "portfolio-resource-planning-configuration"
+  | "portfolio-scenario-convergence-configuration"
+  | "investment-gate-preparation-configuration"
+  | "investment-decision-evidence-policy"
+  | "project-definition-configuration"
   | "portfolio-structure"
   | "project-intake-from-ideas"
   | "portfolio-budget-planning"
+  | "portfolio-resource-planning"
+  | "portfolio-scenario-convergence"
+  | "investment-gate-preparation"
+  | "investment-decision-queue"
+  | "investment-decision-mine"
+  | "investment-decision-package"
+  | "investment-decision-evidence"
+  | "investment-decision-checklist"
+  | "investment-decision-conditions"
+  | "investment-decision-committee"
+  | "investment-decision-history"
+  | "investment-decision-output"
+  | "investment-decision-configuration"
+  | "post-fid-queue"
+  | "post-fid-handoff"
+  | "post-fid-eligibility-matrix"
+  | "post-fid-conditions"
+  | "post-fid-initialization-handoff"
+  | "post-fid-activation-handoff"
+  | "post-fid-history"
+  | "post-fid-governance-configuration"
+  | "project-definition-fel"
+  | "funds-overview"
+  | "funds-envelopes"
+  | "funds-coverage"
+  | "funds-readiness"
+  | "funds-history"
+  | "funds-manager-configuration"
+  | "risk-readiness-my"
+  | "risk-readiness-portfolio"
+  | "risk-readiness-register"
+  | "risk-readiness-assessments"
+  | "risk-readiness-treatments"
+  | "risk-readiness-residual"
+  | "risk-readiness-dashboard"
+  | "risk-readiness-history"
+  | "risk-readiness-configuration"
+  | "permit-readiness-my"
+  | "permit-readiness-register"
+  | "permit-readiness-requirements"
+  | "permit-readiness-conditions"
+  | "permit-readiness-project"
+  | "permit-readiness-portfolio"
+  | "permit-readiness-history"
+  | "permit-readiness-configuration"
   | "portfolio-cash-flow"
   | "strategic-prioritization-matrix"
   | "project-creator"
@@ -172,19 +225,69 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
           { key: "strategic-project-planning-entry", label: "Strategic Project Planning Entry" },
           { key: "portfolio-projects", label: "Portfolio Projects" },
           { key: "portfolio-evaluation", label: "Portfolio Evaluation" },
-          { key: "portfolio-budget-planning", label: "Portfolio Budget Planning" },
-          { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
-          { key: "strategic-investment-map", label: "Strategic Investment Map" },
+          { key: "portfolio-analysis", label: "Portfolio Analysis" },
           { key: "strategic-prioritization-matrix", label: "Prioritization Matrix" },
+          { key: "portfolio-budget-planning", label: "Portfolio Budget Planning" },
+          { key: "portfolio-resource-planning", label: "Portfolio Resource Planning" },
+          { key: "portfolio-scenario-convergence", label: "Portfolio Scenario Convergence" },
+          { key: "investment-gate-preparation", label: "Investment Gate Preparation" },
+          { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
           { key: "gate-decision", label: "Gate Decision" },
         ],
       },
       {
-        key: "funds",
-        label: "Funds",
+        key: "project-definition-manager",
+        label: "Project Definition / FEL Manager",
+        submodules: [{ key: "project-definition-fel", label: "Project Definition / FEL Manager" }],
+      },
+      {
+        key: "funds-manager",
+        label: "Funds Manager",
         submodules: [
-          { key: "funds-sources", label: "Funds Sources" },
-          { key: "funds-assignments", label: "Funds Assigments" },
+          { key: "funds-overview", label: "Overview" },
+          { key: "funds-sources", label: "Funding Sources" },
+          { key: "funds-envelopes", label: "Funds" },
+          { key: "funds-assignments", label: "Funding Assignments" },
+          { key: "funds-coverage", label: "Funding Coverage" },
+          { key: "funds-readiness", label: "Funding Readiness" },
+          { key: "funds-history", label: "History / Audit" },
+        ],
+      },
+      {
+        key: "investment-governance",
+        label: "Investment Governance",
+        submodules: [
+          { key: "risk-readiness-my", label: "My Risk Work" },
+          { key: "risk-readiness-portfolio", label: "Project Set Risk Readiness" },
+          { key: "risk-readiness-register", label: "Project Risk Register" },
+          { key: "risk-readiness-assessments", label: "Risk Assessments" },
+          { key: "risk-readiness-treatments", label: "Treatments" },
+          { key: "risk-readiness-residual", label: "Residual Risk & Acceptance" },
+          { key: "risk-readiness-dashboard", label: "Risk Readiness Dashboard" },
+          { key: "risk-readiness-history", label: "History / Audit" },
+          { key: "permit-readiness-my", label: "My Permit Work" },
+          { key: "permit-readiness-register", label: "Project Permit Register" },
+          { key: "permit-readiness-requirements", label: "Permit Requirements" },
+          { key: "permit-readiness-conditions", label: "Permit Conditions" },
+          { key: "permit-readiness-project", label: "Project Permit Readiness" },
+          { key: "permit-readiness-portfolio", label: "Project Set Permit Readiness" },
+          { key: "permit-readiness-history", label: "Permit History / Audit" },
+          { key: "investment-decision-queue", label: "Decision Queue" },
+          { key: "investment-decision-mine", label: "My Decisions" },
+          { key: "investment-decision-package", label: "Investment Decision Package" },
+          { key: "investment-decision-evidence", label: "Evidence Summary" },
+          { key: "investment-decision-checklist", label: "Decision Checklist" },
+          { key: "investment-decision-conditions", label: "Conditions" },
+          { key: "investment-decision-committee", label: "Committee / Votes" },
+          { key: "investment-decision-history", label: "Decision History" },
+          { key: "investment-decision-output", label: "Authorization Output" },
+          { key: "post-fid-queue", label: "Post-FID Queue" },
+          { key: "post-fid-handoff", label: "FID Handoff" },
+          { key: "post-fid-eligibility-matrix", label: "Project Eligibility Matrix" },
+          { key: "post-fid-conditions", label: "Post-FID Conditions" },
+          { key: "post-fid-initialization-handoff", label: "Initialization Handoff" },
+          { key: "post-fid-activation-handoff", label: "Activation Handoff" },
+          { key: "post-fid-history", label: "Post-FID History / Audit" },
         ],
       },
       {
@@ -417,6 +520,18 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "strategic-gate-configuration", label: "Strategic Gate Decision" },
       { key: "portfolio-planning-configuration", label: "Portfolio Planning Entry & Membership" },
       { key: "portfolio-evaluation-configuration", label: "Portfolio Evaluation & Prioritization" },
+      { key: "portfolio-analysis-configuration", label: "Portfolio Analysis Configuration" },
+      { key: "portfolio-budget-planning-configuration", label: "Portfolio Budget Planning Configuration" },
+      { key: "portfolio-resource-planning-configuration", label: "Portfolio Resource Planning Configuration" },
+      { key: "portfolio-scenario-convergence-configuration", label: "Portfolio Scenario Convergence Configuration" },
+      { key: "investment-gate-preparation-configuration", label: "Investment Gate Preparation Configuration" },
+      { key: "investment-decision-evidence-policy", label: "Investment Decision Evidence Policy" },
+      { key: "project-definition-configuration", label: "Project Definition / FEL Manager" },
+      { key: "funds-manager-configuration", label: "Funds Manager Configuration" },
+      { key: "risk-readiness-configuration", label: "Risk Readiness Configuration" },
+      { key: "permit-readiness-configuration", label: "Permit Readiness Configuration" },
+      { key: "investment-decision-configuration", label: "Investment Decision / FID Governance" },
+      { key: "post-fid-governance-configuration", label: "Post-FID Project Governance" },
     ],
   },
   {
@@ -459,7 +574,6 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
 export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "portfolio-structure",
   "project-intake-from-ideas",
-  "portfolio-budget-planning",
   "portfolio-cash-flow",
   "join-venture",
   "vendors-list",
@@ -469,8 +583,6 @@ export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "commitment-purchase-order",
   "commitment-po-changes",
   "commitment-po-payments",
-  "funds-sources",
-  "funds-assignments",
   "scope-items",
   "plan-items",
   "schedule-4d",
@@ -491,7 +603,6 @@ export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "po-changes",
   "po-payments",
   "earned-value-analysis",
-  "strategic-investment-map",
   "gate-decision",
   "meeting-minutes",
   "communications",

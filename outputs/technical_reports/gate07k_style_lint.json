@@ -1,0 +1,170 @@
+{
+  "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07K_Investment_Decision_FID_20260831.docx",
+  "fonts_by_char_count": {
+    "Calibri": 15634
+  },
+  "direct_run_formatting_runs": 849,
+  "direct_paragraph_formatting_paragraphs": 821,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 2,
+      "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "Gate 07K",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "Investment Decision / FID Governance and Decision Lifecycle",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+      "style": "Normal"
+    },
+    {
+      "para_index": 6,
+      "text": "Fecha de corte: 31 de agosto de 2026",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "Repositorio: pypmis-ia-sas \u00b7 branch main \u00b7 base fde6027",
+      "style": "Normal"
+    },
+    {
+      "para_index": 8,
+      "text": "Migraci\u00f3n: 20260831_0055",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "Perfiles: PYP-INV-SELECT \u00b7 PYP-FFA",
+      "style": "Normal"
+    },
+    {
+      "para_index": 10,
+      "text": "Estado exclusivo: GATE07K_INVESTMENT_DECISION_RELEASE_VALIDATED",
+      "style": "Normal"
+    },
+    {
+      "para_index": 93,
+      "text": "RESULTADO EJECUTIVO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 95,
+      "text": "Capa",
+      "style": "Normal"
+    },
+    {
+      "para_index": 96,
+      "text": "Resultado",
+      "style": "Normal"
+    },
+    {
+      "para_index": 97,
+      "text": "Evidencia",
+      "style": "Normal"
+    },
+    {
+      "para_index": 116,
+      "text": "Cap\u00edtulo",
+      "style": "Normal"
+    },
+    {
+      "para_index": 117,
+      "text": "Contenido",
+      "style": "Normal"
+    },
+    {
+      "para_index": 118,
+      "text": "Entregables",
+      "style": "Normal"
+    },
+    {
+      "para_index": 152,
+      "text": "CRITERIO DE CIERRE",
+      "style": "Normal"
+    },
+    {
+      "para_index": 154,
+      "text": "Elemento",
+      "style": "Normal"
+    },
+    {
+      "para_index": 155,
+      "text": "Entrada",
+      "style": "Normal"
+    },
+    {
+      "para_index": 156,
+      "text": "Salida / decisi\u00f3n",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "Gate 07K",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Investment Decision / FID Governance and Decision Lifecycle",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "Gate 07K",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Investment Decision / FID Governance and Decision Lifecycle",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Aplicaci\u00f3n: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

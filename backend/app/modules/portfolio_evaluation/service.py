@@ -357,11 +357,9 @@ class PortfolioEvaluationService:
         portfolio = self._workspace(portfolio_id)
         self._assert_workspace_type(portfolio, "portfolio")
         self._assert_scope(portfolio_id)
-        rows = self._ranking_rows(portfolio_id)
-        items = self._rank(rows)
+        items, output_hash = self.ranking_projection(portfolio_id)
         matrix = self._effective_configuration(portfolio, published_only=True)
         rules = dict((matrix.content_json if matrix else DEFAULT_CONFIGURATION).get("ranking_rules", {}))
-        output_hash = _hash([item.model_dump(mode="json") for item in items])
         self._event(
             "portfolio_prioritization.recomputed",
             "EnterpriseWorkspace",
@@ -376,6 +374,14 @@ class PortfolioEvaluationService:
             matrix_hash=output_hash,
             items=items,
         )
+
+    def ranking_projection(self, portfolio_id: int) -> tuple[list[PrioritizationItemOut], str]:
+        """Return Gate 07E's authoritative contextual rank without persisting parallel state."""
+        portfolio = self._workspace(portfolio_id)
+        self._assert_workspace_type(portfolio, "portfolio")
+        self._assert_scope(portfolio_id)
+        items = self._rank(self._ranking_rows(portfolio_id))
+        return items, _hash([item.model_dump(mode="json") for item in items])
 
     def prioritization_preview(self, portfolio_id: int, payload: PrioritizationPreviewIn) -> PrioritizationOut:
         portfolio = self._workspace(portfolio_id)
@@ -701,10 +707,13 @@ class PortfolioEvaluationService:
             "strategic_objectives": entry.get("strategic_objectives", []),
             "proposal_score": entry.get("proposal_score"),
             "rom_cost": entry.get("rom_cost"),
+            "currency": entry.get("currency") or entry.get("rom_currency") or entry.get("currency_code"),
             "target_start": entry.get("target_start"),
             "target_finish": entry.get("target_finish"),
             "expected_benefits": entry.get("expected_benefits"),
             "risk_summary": entry.get("risk_summary", []),
+            "sponsor": entry.get("sponsor"),
+            "project_manager": entry.get("project_manager"),
             "matrix": {
                 "id": matrix.id,
                 "revision": matrix.revision,

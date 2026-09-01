@@ -1,0 +1,170 @@
+{
+  "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07J_FEL_Project_Definition_20260826.docx",
+  "fonts_by_char_count": {
+    "Calibri": 10058
+  },
+  "direct_run_formatting_runs": 367,
+  "direct_paragraph_formatting_paragraphs": 337,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 2,
+      "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "Gate 07J-FEL",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "Project Definition / FEL Manager",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+      "style": "Normal"
+    },
+    {
+      "para_index": 6,
+      "text": "Fecha: 27 de agosto de 2026",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "Repositorio: pypmis-ia-sas - branch main",
+      "style": "Normal"
+    },
+    {
+      "para_index": 8,
+      "text": "Migraci\u00f3n: 20260826_0050 (head)",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "Estado: IMPLEMENTADO, DESPLEGADO Y VALIDADO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 204,
+      "text": "RESULTADO EJECUTIVO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 206,
+      "text": "Capa",
+      "style": "Normal"
+    },
+    {
+      "para_index": 207,
+      "text": "Resultado",
+      "style": "Normal"
+    },
+    {
+      "para_index": 208,
+      "text": "Evidencia",
+      "style": "Normal"
+    },
+    {
+      "para_index": 224,
+      "text": "Cap\u00edtulo",
+      "style": "Normal"
+    },
+    {
+      "para_index": 225,
+      "text": "Alcance",
+      "style": "Normal"
+    },
+    {
+      "para_index": 226,
+      "text": "Cobertura",
+      "style": "Normal"
+    },
+    {
+      "para_index": 245,
+      "text": "LECTURA DEL INFORME",
+      "style": "Normal"
+    },
+    {
+      "para_index": 247,
+      "text": "Configuraci\u00f3n publicada",
+      "style": "Normal"
+    },
+    {
+      "para_index": 248,
+      "text": "Project Definition / FEL",
+      "style": "Normal"
+    },
+    {
+      "para_index": 249,
+      "text": "Consumidor",
+      "style": "Normal"
+    },
+    {
+      "para_index": 259,
+      "text": "SEPARACI\u00d3N DE AUTORIDAD",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Project Definition / FEL Manager",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+        "style": "Normal"
+      },
+      {
+        "para_index": 6,
+        "text": "Fecha: 27 de agosto de 2026",
+        "style": "Normal"
+      },
+      {
+        "para_index": 7,
+        "text": "Repositorio: pypmis-ia-sas - branch main",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "Gate 07J-FEL",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Project Definition / FEL Manager",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Aplicaci\u00f3n: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

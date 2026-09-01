@@ -298,7 +298,18 @@ def gate06d():
 def test_project_property_facility_and_warehouse_contexts(gate06d):
     client, headers, ids, _tenant_id = gate06d
     expected = {
-        "project_active": {"Home", "Overview", "Scope", "Schedule", "Cost", "Documents", "Reports"},
+        "project_active": {
+            "Home",
+            "Overview",
+            "Project Definition / FEL",
+            "Project Funding",
+            "Investment Gate Preparation evidence linkage",
+            "Scope",
+            "Schedule",
+            "Cost",
+            "Documents",
+            "Reports",
+        },
         "property_active": {"Home", "Overview", "Real Estate Information", "Documents", "Related Workspaces"},
         "facility_active": {"Home", "Overview", "Documents", "Asset Manager", "Maintenance", "Space", "Utilities"},
         "warehouse_active": {"Home", "Overview", "Documents", "Inventory", "Receipts", "Issues", "Transfers"},

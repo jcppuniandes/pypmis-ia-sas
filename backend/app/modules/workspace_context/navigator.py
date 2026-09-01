@@ -75,6 +75,36 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
             "Prioritization Matrix",
             permission_key="portfolio_prioritization.read",
         ),
+        NavigationDefinition(
+            "portfolio-analysis",
+            "Portfolio Analysis",
+            permission_key="portfolio_analysis.read",
+        ),
+        NavigationDefinition(
+            "portfolio-budget-planning",
+            "Portfolio Budget Planning",
+            permission_key="portfolio_budget.read",
+        ),
+        NavigationDefinition(
+            "portfolio-resource-planning",
+            "Portfolio Resource Planning",
+            permission_key="portfolio_resource.read",
+        ),
+        NavigationDefinition(
+            "portfolio-scenario-convergence",
+            "Portfolio Scenario Convergence",
+            permission_key="portfolio_convergence.read",
+        ),
+        NavigationDefinition(
+            "funds-overview",
+            "Funds",
+            permission_key="funds.read",
+        ),
+        NavigationDefinition(
+            "investment-gate-preparation",
+            "Investment Gate Preparation",
+            permission_key="investment_gate_preparation.read",
+        ),
     ),
     "project": (
         NavigationDefinition("home", "Home"),
@@ -100,9 +130,19 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
             permission_key="portfolio_evaluation.read",
         ),
         NavigationDefinition(
-            "project-definition-readiness",
-            "Project Definition Readiness",
-            permission_key="project_definition.readiness.read",
+            "project-definition-fel",
+            "Project Definition / FEL",
+            permission_key="project_definition.read",
+        ),
+        NavigationDefinition(
+            "project-funding",
+            "Project Funding",
+            permission_key="funds.read",
+        ),
+        NavigationDefinition(
+            "investment-gate-evidence-linkage",
+            "Investment Gate Preparation evidence linkage",
+            permission_key="project_definition.read",
         ),
         NavigationDefinition("project-governance-context", "Project Governance Context"),
         NavigationDefinition("contract-source", "Contract Source"),

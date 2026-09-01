@@ -1,0 +1,295 @@
+.investmentEvidencePolicy {
+  display: grid;
+  gap: 14px;
+  color: #142434;
+}
+
+.evidencePolicyMessage,
+.evidencePolicyCallout {
+  border: 1px solid #bad8d5;
+  border-left: 4px solid #159a95;
+  border-radius: 9px;
+  background: #f0fbfa;
+  padding: 12px 14px;
+}
+
+.evidencePolicyMessage {
+  font-weight: 700;
+}
+.evidencePolicyCallout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.evidencePolicyCallout div {
+  display: grid;
+  gap: 4px;
+}
+.evidencePolicyCallout.danger {
+  border-color: #efc1ba;
+  border-left-color: #c74938;
+  background: #fff7f5;
+}
+
+.evidencePolicyCommandBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  border: 1px solid #cad5df;
+  border-radius: 10px;
+  background: #f7f9fb;
+  padding: 12px;
+}
+
+.evidencePolicyCommandBar label {
+  display: grid;
+  gap: 5px;
+  min-width: 180px;
+  color: #526577;
+  font-size: 12px;
+  font-weight: 800;
+}
+.evidencePolicyCommandBar select {
+  min-height: 36px;
+  border: 1px solid #bdc9d4;
+  border-radius: 6px;
+  background: white;
+  padding: 0 9px;
+}
+.evidencePolicyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-left: auto;
+}
+.evidencePolicyActions button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid #9fb0bd;
+  border-radius: 6px;
+  background: white;
+  padding: 0 11px;
+  font-weight: 800;
+}
+.evidencePolicyActions button:last-child {
+  background: #102b3a;
+  color: white;
+}
+.evidencePolicyActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.evidencePolicyTabs {
+  display: flex;
+  overflow-x: auto;
+  border: 1px solid #c8d3dc;
+  border-radius: 9px 9px 0 0;
+  background: #f5f8fa;
+}
+.evidencePolicyTabs button {
+  flex: 0 0 auto;
+  border: 0;
+  border-right: 1px solid #d7e0e6;
+  background: transparent;
+  padding: 11px 13px;
+  color: #314759;
+  font-size: 12px;
+  font-weight: 900;
+}
+.evidencePolicyTabs button.active {
+  background: #102b3a;
+  color: white;
+}
+
+.evidencePolicySurface {
+  overflow: hidden;
+  border: 1px solid #c8d3dc;
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: white;
+}
+.evidencePolicySurface > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dce4ea;
+  padding: 12px 15px;
+  background: #f8fafb;
+}
+.evidencePolicySurface > header div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 900;
+}
+.evidencePolicySurface > header strong {
+  color: #627487;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.evidencePolicySurface > :not(header) {
+  margin: 14px;
+}
+
+.evidencePolicyCards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.evidencePolicyCards article {
+  min-height: 92px;
+  border: 1px solid #d5dfe6;
+  border-radius: 9px;
+  background: #f8fafb;
+  padding: 12px;
+}
+.evidencePolicyCards span,
+.evidencePolicyCards small {
+  display: block;
+  color: #607487;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.evidencePolicyCards h3 {
+  margin: 8px 0 4px;
+  font-size: 19px;
+}
+.evidencePolicyCards p {
+  margin: 6px 0 0;
+  color: #526577;
+  font-size: 12px;
+}
+
+.evidencePolicyTableWrap {
+  overflow: auto;
+  margin: 0 !important;
+}
+.evidencePolicyTable {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.evidencePolicyTable th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #102b3a;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+.evidencePolicyTable td {
+  border-bottom: 1px solid #dce4ea;
+  padding: 10px;
+  vertical-align: middle;
+}
+.evidencePolicyTable tbody tr:nth-child(even) {
+  background: #f8fafb;
+}
+.evidencePolicyTable td strong,
+.evidencePolicyTable td small {
+  display: block;
+}
+.evidencePolicyTable td small {
+  max-width: 320px;
+  margin-top: 4px;
+  color: #607487;
+  line-height: 1.35;
+}
+
+.evidenceClass,
+.providerState {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.evidenceClassA,
+.providerState.unavailable {
+  background: #fde8e4;
+  color: #a73728;
+}
+.evidenceClassB {
+  background: #fff1cc;
+  color: #805a00;
+}
+.evidenceClassC {
+  background: #edf1f4;
+  color: #536575;
+}
+.providerState.available {
+  background: #dff4e8;
+  color: #17613d;
+}
+.providerState.reserved {
+  background: #fff1cc;
+  color: #805a00;
+}
+
+.evidencePolicyJson {
+  border: 1px solid #d5dfe6;
+  border-radius: 8px;
+  background: #f8fafb;
+}
+.evidencePolicyJson summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+.evidencePolicyJson textarea,
+.evidencePolicyJson pre {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 620px;
+  overflow: auto;
+  border: 0;
+  border-top: 1px solid #d5dfe6;
+  background: #0f1f2b;
+  color: #dff4ed;
+  padding: 14px;
+  font:
+    12px/1.45 Consolas,
+    monospace;
+  resize: vertical;
+}
+
+.evidencePolicyHistory {
+  display: grid;
+  gap: 8px;
+}
+.evidencePolicyHistory article {
+  display: grid;
+  grid-template-columns: 140px 120px 1fr;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #dce4ea;
+  padding: 10px 2px;
+}
+.evidencePolicyHistory span {
+  text-transform: uppercase;
+}
+.evidencePolicyGuardrail {
+  border-top: 1px solid #e3d4cf;
+  color: #7b433b;
+  font-size: 12px;
+  font-weight: 700;
+  padding-top: 10px;
+}
+
+@media (max-width: 960px) {
+  .evidencePolicyCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .evidencePolicyActions {
+    width: 100%;
+    margin-left: 0;
+  }
+}

@@ -15,12 +15,12 @@ concurrency:
 
 jobs:
   gate07e-portfolio-evaluation-postgres:
-    name: Gate 07E Portfolio evaluation and prioritization (PostgreSQL)
+    name: Gate 07E-07K Portfolio and Investment Decision gates (PostgreSQL)
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - name: Run Gate 07E migration, lifecycle, concurrency and regressions
+      - name: Run Gate 07E-07K migrations and governed Portfolio/FID acceptance
         run: |
           docker compose -p pypmis-gate07e -f docker-compose.gate07e.yml up \
             --build \
@@ -213,17 +213,18 @@ jobs:
         run: |
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
-      - name: Apply and verify Gate 07E schema head
+      - name: Apply and verify Gate 07L schema head
         run: |
           docker compose exec -T api alembic upgrade head
-          docker compose exec -T api alembic current | grep 20260820_0045
+          docker compose exec -T api alembic current | grep 20260901_0056
       - name: Run Playwright production smoke
         run: cd frontend && npm run test:e2e
-      - name: Run Gate 07E-H full USER and ADMIN flow three consecutive times
+      - name: Run Gate 07E-J-FEL governed USER/ADMIN flows three consecutive times
         shell: bash
         run: |
           set -euo pipefail
           run_id="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py prepare >/dev/null
           baseline_before="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py baseline | tail -n 1)"
           fixture="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py seed --run-id "$run_id" --copies 3 | tail -n 1)"
           cleanup() {
@@ -233,6 +234,25 @@ jobs:
           cd frontend
           E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
             npx playwright test portfolio-evaluation-closeout.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-analysis.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-budget.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-resource.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-convergence.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test investment-gate-preparation.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test project-definition-fel.spec.ts --repeat-each=3 --workers=1
+          cd ..
+          docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py \
+            funds-prerequisites --run-id "$run_id" >/dev/null
+          cd frontend
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test funds-manager.spec.ts --repeat-each=3 --workers=1
+          npx playwright test investment-evidence-policy.spec.ts --workers=1
           cd ..
           cleanup
           trap - EXIT

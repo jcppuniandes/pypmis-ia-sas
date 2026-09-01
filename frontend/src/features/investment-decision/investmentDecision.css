@@ -1,0 +1,219 @@
+.investmentDecision {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.decisionMessage {
+  background: #eaf5ff;
+  border-left: 4px solid #276da0;
+  color: #173e59;
+  padding: 9px 11px;
+}
+.decisionTabs,
+.decisionAdminTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.decisionTabs button,
+.decisionAdminTabs button,
+.decisionActions button,
+.decisionControls button {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  color: #102536;
+  font: inherit;
+  font-weight: 750;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.decisionTabs button.active,
+.decisionAdminTabs button.active {
+  background: #102536;
+  color: #fff;
+}
+.decisionControls,
+.decisionActions {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+}
+.decisionControls label,
+.decisionActions label {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+}
+.decisionControls select,
+.decisionActions select,
+.decisionActions input {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 5px 8px;
+}
+.decisionControls label {
+  min-width: 250px;
+}
+.decisionReadiness,
+.decisionSurface {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+.decisionReadiness {
+  align-items: center;
+  border-left: 5px solid #c2413b;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.decisionReadiness.ready {
+  border-left-color: #148158;
+}
+.decisionReadiness.stale {
+  border-left-color: #d17a00;
+}
+.decisionReadiness span,
+.decisionSurface header span,
+.decisionFacts span {
+  color: #667887;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.decisionReadiness h3,
+.decisionSurface h3 {
+  margin: 3px 0 7px;
+}
+.decisionFlags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.decisionFlags b {
+  background: #edf3f7;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 6px 9px;
+}
+.decisionFlags .fid {
+  background: #dff5e9;
+  color: #126744;
+}
+.decisionFlags .boundary {
+  background: #fff0e8;
+  color: #8e451d;
+}
+.decisionSurface header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.decisionFacts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 10px 0;
+}
+.decisionFacts article,
+.decisionCards article {
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+.decisionActions {
+  border: 0;
+  margin-top: 8px;
+  padding: 5px 0;
+}
+.decisionActions.formal {
+  border-top: 1px solid #d7e0e7;
+  padding-top: 10px;
+}
+.decisionActions button:disabled,
+.decisionControls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.decisionSurface pre {
+  background: #f4f7f9;
+  border-radius: 7px;
+  font-size: 0.71rem;
+  max-height: 520px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+.decisionCards {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.decisionCards article span,
+.decisionCards article small {
+  color: #5d7281;
+}
+.decisionGuardrail {
+  background: #fff0e8;
+  border-left: 4px solid #d17a00;
+  color: #7d4d00;
+  margin: 0;
+  padding: 9px 11px;
+}
+.decisionAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.decisionAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.decisionAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  text-align: left;
+}
+.decisionAdminGrid aside button.active {
+  border-left: 5px solid #276da0;
+}
+.decisionAdminGrid aside span {
+  color: #657887;
+  font-size: 0.72rem;
+}
+.decisionAdmin textarea {
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin-top: 8px;
+  padding: 9px;
+  resize: vertical;
+  width: 100%;
+}
+@media (max-width: 850px) {
+  .decisionAdminGrid {
+    grid-template-columns: 1fr;
+  }
+}

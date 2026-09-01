@@ -1,0 +1,397 @@
+.permitReadiness {
+  display: grid;
+  gap: 14px;
+  color: #122435;
+}
+.permitToolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #d8e1e8;
+  border-radius: 10px;
+}
+.permitToolbar nav,
+.permitFilterBar,
+.permitActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.permitToolbar button,
+.permitFilterBar button,
+.permitActions button,
+.permitCreate button {
+  border: 1px solid #b8c8d4;
+  border-radius: 7px;
+  padding: 8px 11px;
+  background: white;
+  color: #193247;
+  font-weight: 700;
+  cursor: pointer;
+}
+.permitToolbar button.active,
+.permitFilterBar button.active,
+.permitActions button:first-child,
+.permitCreate button {
+  background: #0b7380;
+  color: white;
+  border-color: #0b7380;
+}
+.permitSelectors {
+  display: flex;
+  gap: 8px;
+}
+.permitSelectors label {
+  display: grid;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #587084;
+  text-transform: uppercase;
+}
+.permitSelectors select,
+.permitCreate select,
+.permitCreate input,
+.permitSelectRow {
+  min-width: 180px;
+  border: 1px solid #bdcad4;
+  border-radius: 6px;
+  padding: 7px;
+  background: white;
+}
+.permitMessage {
+  border-left: 4px solid #0b8792;
+  background: #eef9fa;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+.permitHero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #d7e0e7;
+  border-left: 5px solid #b45309;
+  border-radius: 10px;
+  background: #fffaf2;
+}
+.permitHero.ready {
+  border-left-color: #16845b;
+  background: #f0faf6;
+}
+.permitHero span,
+.permitSurface header span,
+.permitMetricGrid span {
+  color: #63798a;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.permitHero h3,
+.permitSurface h3 {
+  margin: 5px 0;
+}
+.permitHero p {
+  margin: 0;
+  color: #506579;
+}
+.permitMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.permitMetricGrid article {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 9px;
+  align-items: center;
+  border: 1px solid #d8e1e8;
+  border-radius: 9px;
+  padding: 13px;
+  background: white;
+}
+.permitMetricGrid article svg {
+  color: #0b8792;
+  grid-row: span 2;
+}
+.permitMetricGrid strong {
+  font-size: 22px;
+}
+.permitIssues {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.permitIssues article {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-height: 72px;
+  padding: 12px;
+  border: 1px solid #d8e1e8;
+  border-radius: 8px;
+  background: white;
+}
+.permitIssues span {
+  color: #5d7080;
+  font-size: 12px;
+}
+.permitSurface {
+  overflow: auto;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  background: white;
+}
+.permitSurface > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e1e7eb;
+}
+.permitSurface table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.permitSurface th {
+  padding: 9px 10px;
+  text-align: left;
+  color: #526a7c;
+  background: #f5f8fa;
+  border-bottom: 1px solid #d8e1e8;
+  white-space: nowrap;
+}
+.permitSurface td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #edf1f4;
+  vertical-align: top;
+}
+.permitSurface td small {
+  display: block;
+  margin-top: 3px;
+  color: #6b7e8d;
+}
+.permitSurface tr.selected {
+  background: #edf9fa;
+}
+.permitFilterBar,
+.permitActions,
+.permitCreate {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5ebef;
+}
+.permitCreate {
+  display: flex;
+  gap: 8px;
+}
+.permitStatus {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 3px 7px;
+  background: #e8eef2;
+  color: #435b6d;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.permitStatus.ready,
+.permitStatus.approved,
+.permitStatus.satisfied {
+  background: #dff5e9;
+  color: #176743;
+}
+.permitStatus.blocked,
+.permitStatus.rejected,
+.permitStatus.suspended,
+.permitStatus.expired {
+  background: #fde5e5;
+  color: #9f2929;
+}
+.permitStatus.approved_with_conditions,
+.permitStatus.under_review,
+.permitStatus.submitted {
+  background: #fff0cc;
+  color: #8a5707;
+}
+.permitJson {
+  margin: 12px;
+  border: 1px solid #ccd8e0;
+  border-radius: 8px;
+  padding: 10px;
+}
+.permitJson summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+.permitJson pre {
+  max-height: 360px;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 6px;
+  background: #102433;
+  color: #dcebf2;
+  font-size: 11px;
+}
+.permitSelectRow {
+  margin: 10px 12px;
+}
+@media (max-width: 980px) {
+  .permitToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .permitMetricGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .permitIssues {
+    grid-template-columns: 1fr;
+  }
+}
+.permitAdminTabs {
+  display: flex;
+  overflow: auto;
+  gap: 4px;
+  padding: 7px;
+  border: 1px solid #d8e1e8;
+  border-radius: 9px;
+  background: white;
+}
+.permitAdminTabs button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: transparent;
+  color: #425c70;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.permitAdminTabs button.active {
+  background: #0d3347;
+  color: white;
+}
+.permitAdminGrid {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 12px;
+}
+.permitAdminGrid > aside {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+.permitAdminGrid > aside button {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  border: 1px solid #d3dfe7;
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+  cursor: pointer;
+}
+.permitAdminGrid > aside button.active {
+  border-color: #0b8792;
+  background: #edf9fa;
+}
+.permitAdminGrid > aside span {
+  color: #667c8c;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.permitPolicyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  padding: 12px;
+}
+.permitPolicyGrid article {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid #dbe3e9;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.permitPolicyGrid span {
+  color: #63798a;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.permitRule {
+  display: grid;
+  gap: 6px;
+  margin: 15px;
+  max-width: 480px;
+  font-weight: 800;
+}
+.permitRule input,
+.permitRule select {
+  border: 1px solid #bdcad4;
+  border-radius: 6px;
+  padding: 8px;
+}
+.permitConfigPre,
+.permitPublish {
+  margin: 12px;
+  padding: 13px;
+  border-radius: 8px;
+  background: #f4f7f9;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+.permitJson textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border: 0;
+  padding: 12px;
+  background: #102433;
+  color: #dcebf2;
+  font: 11px/1.5 monospace;
+}
+.permitAdminActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 12px;
+  border-top: 1px solid #e3e9ed;
+}
+.permitAdminActions button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  border: 1px solid #b9c8d3;
+  border-radius: 7px;
+  padding: 8px 10px;
+  background: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+.permitAdminActions button:last-of-type {
+  background: #0b7380;
+  color: white;
+  border-color: #0b7380;
+}
+.permitAdminActions select {
+  margin-left: auto;
+  border: 1px solid #bdcad4;
+  border-radius: 6px;
+  padding: 7px;
+}
+@media (max-width: 980px) {
+  .permitAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .permitAdminGrid > aside {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

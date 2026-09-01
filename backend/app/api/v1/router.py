@@ -259,14 +259,26 @@ from app.domain.schemas import (
 )
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
+from app.modules.funds_manager import router as funds_manager_router
 from app.modules.idea_demand import router as idea_demand_router
+from app.modules.investment_decision import router as investment_decision_router
+from app.modules.investment_evidence_policy import router as investment_evidence_policy_router
+from app.modules.investment_gate_preparation import router as investment_gate_preparation_router
+from app.modules.permit_readiness import router as permit_readiness_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
+from app.modules.portfolio_analysis import router as portfolio_analysis_router
+from app.modules.portfolio_budget import router as portfolio_budget_router
+from app.modules.portfolio_convergence import router as portfolio_convergence_router
 from app.modules.portfolio_evaluation import router as portfolio_evaluation_router
 from app.modules.portfolio_planning import router as portfolio_planning_router
+from app.modules.portfolio_resource import router as portfolio_resource_router
+from app.modules.post_fid_governance import router as post_fid_governance_router
 from app.modules.project_creation import router as project_creation_router
+from app.modules.project_definition import router as project_definition_router
 from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
+from app.modules.risk_readiness import router as risk_readiness_router
 from app.modules.strategic_gate import router as strategic_gate_router
 from app.modules.workspace_context import router as workspace_context_router
 from app.services.ai_insights import AIInsightService
@@ -286,9 +298,21 @@ router.include_router(admin_router.router, tags=["admin"])
 router.include_router(admin_configuration_router.router, tags=["admin-configuration"])
 router.include_router(enterprise_structure_admin_router.router, tags=["enterprise-structure-admin"])
 router.include_router(enterprise_structure_user_router.router, tags=["enterprise-structure"])
+router.include_router(funds_manager_router.router, tags=["funds-manager"])
 router.include_router(project_creation_router.router, tags=["project-creation"])
 router.include_router(portfolio_planning_router.router, tags=["portfolio-planning"])
 router.include_router(portfolio_evaluation_router.router, tags=["portfolio-evaluation"])
+router.include_router(portfolio_analysis_router.router, tags=["portfolio-analysis"])
+router.include_router(portfolio_budget_router.router, tags=["portfolio-budget"])
+router.include_router(portfolio_resource_router.router, tags=["portfolio-resource"])
+router.include_router(portfolio_convergence_router.router, tags=["portfolio-convergence"])
+router.include_router(investment_gate_preparation_router.router, tags=["investment-gate-preparation"])
+router.include_router(investment_decision_router.router, tags=["investment-decision"])
+router.include_router(investment_evidence_policy_router.router, tags=["investment-evidence-policy"])
+router.include_router(project_definition_router.router, tags=["project-definition"])
+router.include_router(risk_readiness_router.router, tags=["risk-readiness"])
+router.include_router(permit_readiness_router.router, tags=["permit-readiness"])
+router.include_router(post_fid_governance_router.router, tags=["post-fid-governance"])
 router.include_router(physical_workspace_creation_router.router, tags=["physical-workspace-creation"])
 router.include_router(physical_workspace_initialization_router.router, tags=["physical-workspace-initialization"])
 router.include_router(project_workspace_initialization_router.router, tags=["project-workspace-initialization"])

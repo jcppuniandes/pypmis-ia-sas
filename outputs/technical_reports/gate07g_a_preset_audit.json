@@ -1,0 +1,33 @@
+{
+  "preset": "standard_business_brief",
+  "first_page_pattern": "memo_masthead",
+  "file": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07G_A_OPC_Budget_Alignment_20260830.docx",
+  "tables": 29,
+  "inline_images": 3,
+  "checks": {
+    "single_portrait_section": true,
+    "letter_page_size": true,
+    "one_inch_margins": true,
+    "header_footer_distance": true,
+    "normal_11pt": true,
+    "heading1_16pt": true,
+    "heading2_13pt": true,
+    "heading_hierarchy": true,
+    "page_number_footer": true,
+    "image_alt_present": true,
+    "no_fake_bullets": true,
+    "no_placeholders": true,
+    "release_status": true,
+    "waterline_contract": true,
+    "dependency_contract": true,
+    "breakdown_contract": true,
+    "validation_evidence": true,
+    "stop_boundary": true,
+    "table_geometry": true,
+    "table_header_flags": true,
+    "table_cell_margins": true,
+    "table_rows_no_split": true
+  },
+  "result": "PASS",
+  "failed": []
+}

@@ -56,6 +56,29 @@ import PortfolioProjectsWorkspace from "./features/portfolio-planning/PortfolioP
 import PortfolioPlanningAdminView from "./features/portfolio-planning/PortfolioPlanningAdminView";
 import PortfolioEvaluationWorkspace from "./features/portfolio-evaluation/PortfolioEvaluationWorkspace";
 import PortfolioEvaluationAdminView from "./features/portfolio-evaluation/PortfolioEvaluationAdminView";
+import PortfolioAnalysisWorkspace from "./features/portfolio-analysis/PortfolioAnalysisWorkspace";
+import PortfolioAnalysisAdminView from "./features/portfolio-analysis/PortfolioAnalysisAdminView";
+import PortfolioBudgetWorkspace from "./features/portfolio-budget/PortfolioBudgetWorkspace";
+import PortfolioBudgetAdminView from "./features/portfolio-budget/PortfolioBudgetAdminView";
+import PortfolioResourceWorkspace from "./features/portfolio-resource/PortfolioResourceWorkspace";
+import PortfolioResourceAdminView from "./features/portfolio-resource/PortfolioResourceAdminView";
+import PortfolioConvergenceWorkspace from "./features/portfolio-convergence/PortfolioConvergenceWorkspace";
+import PortfolioConvergenceAdminView from "./features/portfolio-convergence/PortfolioConvergenceAdminView";
+import InvestmentGatePreparationWorkspace from "./features/investment-gate-preparation/InvestmentGatePreparationWorkspace";
+import InvestmentGatePreparationAdminView from "./features/investment-gate-preparation/InvestmentGatePreparationAdminView";
+import InvestmentEvidencePolicyAdminView from "./features/investment-evidence-policy/InvestmentEvidencePolicyAdminView";
+import ProjectDefinitionWorkspace from "./features/project-definition/ProjectDefinitionWorkspace";
+import ProjectDefinitionAdminView from "./features/project-definition/ProjectDefinitionAdminView";
+import FundsManagerWorkspace from "./features/funds-manager/FundsManagerWorkspace";
+import FundsManagerAdminView from "./features/funds-manager/FundsManagerAdminView";
+import RiskReadinessWorkspace from "./features/risk-readiness/RiskReadinessWorkspace";
+import RiskReadinessAdminView from "./features/risk-readiness/RiskReadinessAdminView";
+import PermitReadinessWorkspace from "./features/permit-readiness/PermitReadinessWorkspace";
+import PermitReadinessAdminView from "./features/permit-readiness/PermitReadinessAdminView";
+import InvestmentDecisionWorkspace from "./features/investment-decision/InvestmentDecisionWorkspace";
+import InvestmentDecisionAdminView from "./features/investment-decision/InvestmentDecisionAdminView";
+import PostFIDGovernanceWorkspace from "./features/post-fid-governance/PostFIDGovernanceWorkspace";
+import PostFIDGovernanceAdminView from "./features/post-fid-governance/PostFIDGovernanceAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7525,6 +7548,92 @@ function AppShell() {
             {visibleControlView === "portfolio-evaluation-configuration" && (
               <PortfolioEvaluationAdminView token={token} />
             )}
+            {visibleControlView === "portfolio-analysis" && <PortfolioAnalysisWorkspace token={token} />}
+            {visibleControlView === "portfolio-analysis-configuration" && <PortfolioAnalysisAdminView token={token} />}
+            {visibleControlView === "portfolio-budget-planning" && <PortfolioBudgetWorkspace token={token} />}
+            {visibleControlView === "portfolio-budget-planning-configuration" && (
+              <PortfolioBudgetAdminView token={token} />
+            )}
+            {visibleControlView === "portfolio-resource-planning" && <PortfolioResourceWorkspace token={token} />}
+            {visibleControlView === "portfolio-resource-planning-configuration" && (
+              <PortfolioResourceAdminView token={token} />
+            )}
+            {visibleControlView === "portfolio-scenario-convergence" && <PortfolioConvergenceWorkspace token={token} />}
+            {visibleControlView === "portfolio-scenario-convergence-configuration" && (
+              <PortfolioConvergenceAdminView token={token} />
+            )}
+            {visibleControlView === "investment-gate-preparation" && (
+              <InvestmentGatePreparationWorkspace token={token} />
+            )}
+            {visibleControlView === "investment-gate-preparation-configuration" && (
+              <InvestmentGatePreparationAdminView token={token} />
+            )}
+            {visibleControlView === "investment-decision-evidence-policy" && (
+              <InvestmentEvidencePolicyAdminView token={token} />
+            )}
+            {visibleControlView === "project-definition-fel" && <ProjectDefinitionWorkspace token={token} />}
+            {visibleControlView === "project-definition-configuration" && <ProjectDefinitionAdminView token={token} />}
+            {[
+              "funds-overview",
+              "funds-sources",
+              "funds-envelopes",
+              "funds-assignments",
+              "funds-coverage",
+              "funds-readiness",
+              "funds-history",
+            ].includes(visibleControlView) && <FundsManagerWorkspace initialView={visibleControlView} token={token} />}
+            {visibleControlView === "funds-manager-configuration" && <FundsManagerAdminView token={token} />}
+            {[
+              "risk-readiness-my",
+              "risk-readiness-portfolio",
+              "risk-readiness-register",
+              "risk-readiness-assessments",
+              "risk-readiness-treatments",
+              "risk-readiness-residual",
+              "risk-readiness-dashboard",
+              "risk-readiness-history",
+            ].includes(visibleControlView) && <RiskReadinessWorkspace initialView={visibleControlView} token={token} />}
+            {visibleControlView === "risk-readiness-configuration" && <RiskReadinessAdminView token={token} />}
+            {[
+              "permit-readiness-my",
+              "permit-readiness-register",
+              "permit-readiness-requirements",
+              "permit-readiness-conditions",
+              "permit-readiness-project",
+              "permit-readiness-portfolio",
+              "permit-readiness-history",
+            ].includes(visibleControlView) && (
+              <PermitReadinessWorkspace initialView={visibleControlView} token={token} />
+            )}
+            {visibleControlView === "permit-readiness-configuration" && <PermitReadinessAdminView token={token} />}
+            {[
+              "investment-decision-queue",
+              "investment-decision-mine",
+              "investment-decision-package",
+              "investment-decision-evidence",
+              "investment-decision-checklist",
+              "investment-decision-conditions",
+              "investment-decision-committee",
+              "investment-decision-history",
+              "investment-decision-output",
+            ].includes(visibleControlView) && (
+              <InvestmentDecisionWorkspace initialView={visibleControlView} token={token} />
+            )}
+            {visibleControlView === "investment-decision-configuration" && (
+              <InvestmentDecisionAdminView token={token} />
+            )}
+            {[
+              "post-fid-queue",
+              "post-fid-handoff",
+              "post-fid-eligibility-matrix",
+              "post-fid-conditions",
+              "post-fid-initialization-handoff",
+              "post-fid-activation-handoff",
+              "post-fid-history",
+            ].includes(visibleControlView) && (
+              <PostFIDGovernanceWorkspace initialView={visibleControlView} token={token} />
+            )}
+            {visibleControlView === "post-fid-governance-configuration" && <PostFIDGovernanceAdminView token={token} />}
             {(
               [
                 "workspace-types",

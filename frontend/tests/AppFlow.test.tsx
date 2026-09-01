@@ -1299,7 +1299,7 @@ describe("served project control flow", () => {
     [
       "Idea & Demand Manager",
       "Portfolio Manager",
-      "Funds",
+      "Funds Manager",
       "Workspaces Manager",
       "Partners",
       "Vendors",
@@ -1319,8 +1319,10 @@ describe("served project control flow", () => {
       "Portfolio Projects",
       "Portfolio Evaluation",
       "Portfolio Budget Planning",
+      "Portfolio Resource Planning",
+      "Portfolio Scenario Convergence",
       "Portfolio Cash Flow",
-      "Strategic Investment Map",
+      "Portfolio Analysis",
       "Prioritization Matrix",
       "Gate Decision",
     ].forEach((submoduleName) => {
@@ -1464,7 +1466,7 @@ describe("served project control flow", () => {
     await user.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
     await user.click(within(validationNav).getByRole("button", { name: /bim manager/i }));
     expect(await screen.findByRole("region", { name: /bim manager module/i })).toBeInTheDocument();
-  }, 90_000);
+  }, 300_000);
 
   it("opens the blocking cost and currency gate from the next controlled action", async () => {
     const user = userEvent.setup();

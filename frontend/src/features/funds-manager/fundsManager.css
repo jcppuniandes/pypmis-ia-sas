@@ -1,0 +1,330 @@
+.fundsManager {
+  display: grid;
+  gap: 16px;
+  color: #102535;
+}
+.fundsToolbar {
+  align-items: end;
+  background: #f7fafb;
+  border: 1px solid #d8e2e8;
+  border-radius: 10px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 9px;
+  position: sticky;
+  top: 0;
+  z-index: 8;
+}
+.fundsToolbar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.fundsToolbar button,
+.fundsActions button,
+.fundingCards button,
+.fundingInlineForm button,
+.fundingTableWrap button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #b7c8d2;
+  border-radius: 7px;
+  color: #123044;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 5px;
+  padding: 8px 10px;
+}
+.fundsToolbar button.active,
+.fundsActions button:last-child,
+.fundingInlineForm button {
+  background: #0c3349;
+  color: #fff;
+}
+.fundsToolbar label,
+.fundingInlineForm label,
+.fundsPolicyGrid label {
+  display: grid;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 4px;
+}
+.fundsToolbar select,
+.fundingInlineForm input,
+.fundingInlineForm select,
+.fundsPolicyGrid input,
+.fundsPolicyGrid select {
+  background: #fff;
+  border: 1px solid #bdccd5;
+  border-radius: 6px;
+  min-height: 36px;
+  padding: 7px;
+}
+.fundsMessage {
+  background: #eef8f6;
+  border-left: 4px solid #168d82;
+  border-radius: 7px;
+  padding: 10px 13px;
+}
+.fundingReadinessHero {
+  align-items: center;
+  background: #f7fafb;
+  border: 1px solid #d7e1e7;
+  border-left: 5px solid #b4552f;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+}
+.fundingReadinessHero.ready {
+  background: #edf9f4;
+  border-left-color: #138568;
+}
+.fundingReadinessHero span,
+.fundsSurface header span,
+.fundingCards article > span {
+  color: #617684;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.fundingReadinessHero h3,
+.fundsSurface h3 {
+  margin: 4px 0 6px;
+}
+.fundingReadinessHero p {
+  margin: 0;
+  max-width: 850px;
+}
+.fundingMetricGrid,
+.coverageStrip {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(6, minmax(135px, 1fr));
+  margin-top: 12px;
+}
+.fundingMetricGrid article,
+.coverageStrip article {
+  background: #fff;
+  border: 1px solid #d8e2e8;
+  border-radius: 9px;
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+}
+.fundingMetricGrid svg {
+  color: #168d82;
+}
+.fundingMetricGrid span,
+.coverageStrip span {
+  color: #657986;
+  font-size: 12px;
+}
+.fundingMetricGrid strong,
+.coverageStrip strong {
+  font-size: 17px;
+}
+.fundsBoundaries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.fundsBoundaries span {
+  background: #eef3f6;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 8px;
+}
+.fundsSurface {
+  background: #fff;
+  border: 1px solid #d8e2e8;
+  border-radius: 10px;
+  padding: 16px;
+}
+.fundsSurface > header {
+  align-items: center;
+  border-bottom: 1px solid #e5ecef;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+}
+.fundingInlineForm {
+  align-items: end;
+  background: #f7fafb;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 2fr 1.4fr 1fr auto;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+.fundingCards {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+}
+.fundingCards article {
+  border: 1px solid #dbe4e9;
+  border-radius: 9px;
+  display: grid;
+  gap: 6px;
+  padding: 13px;
+}
+.fundingCards h4 {
+  margin: 0;
+}
+.fundingCards small {
+  color: #657986;
+}
+.fundingCards article div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+.fundingTableWrap {
+  margin-top: 14px;
+  overflow-x: auto;
+}
+.fundingTableWrap table {
+  border-collapse: collapse;
+  min-width: 840px;
+  width: 100%;
+}
+.fundingTableWrap th {
+  background: #edf3f6;
+  color: #425e70;
+  font-size: 11px;
+  text-align: left;
+  text-transform: uppercase;
+}
+.fundingTableWrap th,
+.fundingTableWrap td {
+  border-bottom: 1px solid #dde6eb;
+  padding: 9px;
+  vertical-align: middle;
+}
+.readinessDetail {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.readinessDetail p {
+  background: #f7fafb;
+  border-radius: 7px;
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 11px;
+}
+.readinessDetail code {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.fundsBlocker {
+  background: #fff2ee;
+  border-left: 4px solid #b94b27;
+  padding: 8px 10px;
+}
+.fundsActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+.fundsActions button:disabled,
+.fundsToolbar button:disabled,
+.fundingInlineForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.fundsSurface pre {
+  background: #102535;
+  border-radius: 8px;
+  color: #eaf4f8;
+  max-height: 420px;
+  overflow: auto;
+  padding: 13px;
+  white-space: pre-wrap;
+}
+.fundsGuardrail {
+  background: #fff8e9;
+  border: 1px solid #edcf88;
+  border-radius: 8px;
+  color: #684b09;
+  margin: 0;
+  padding: 10px 13px;
+}
+.fundsEmpty {
+  color: #6b7e89;
+  font-style: italic;
+}
+.fundsAdminGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 250px minmax(0, 1fr);
+}
+.fundsAdminGrid aside {
+  display: grid;
+  gap: 7px;
+  height: fit-content;
+}
+.fundsAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #d4e0e6;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  text-align: left;
+}
+.fundsAdminGrid aside button.active {
+  border-left: 4px solid #168d82;
+}
+.fundsPolicyGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fundsPolicyGrid label:has(input[type="checkbox"]) {
+  align-items: center;
+  background: #f7fafb;
+  display: flex;
+  padding: 10px;
+}
+.fundsPolicyGrid .wide {
+  grid-column: 1 / -1;
+}
+.fundsJson textarea {
+  box-sizing: border-box;
+  font-family: Consolas, monospace;
+  margin-top: 8px;
+  width: 100%;
+}
+@media (max-width: 1050px) {
+  .fundingMetricGrid,
+  .coverageStrip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .fundsAdminGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .fundsToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .fundingMetricGrid,
+  .coverageStrip,
+  .fundingInlineForm,
+  .fundsPolicyGrid {
+    grid-template-columns: 1fr;
+  }
+}
