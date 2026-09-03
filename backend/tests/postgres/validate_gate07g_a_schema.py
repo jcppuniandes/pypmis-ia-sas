@@ -30,12 +30,8 @@ def validate(expected_revision: str) -> None:
         assert expected_revision == REVISION_AFTER
         assert "project_dependencies" in tables
         target_columns = {item["name"] for item in inspector.get_columns("portfolio_budget_targets")}
-        period_columns = {
-            item["name"] for item in inspector.get_columns("portfolio_budget_target_periods")
-        }
-        scenario_columns = {
-            item["name"] for item in inspector.get_columns("portfolio_budget_scenario_projects")
-        }
+        period_columns = {item["name"] for item in inspector.get_columns("portfolio_budget_target_periods")}
+        scenario_columns = {item["name"] for item in inspector.get_columns("portfolio_budget_scenario_projects")}
         assert {"capex_budget_target", "expense_budget_target"}.issubset(target_columns)
         assert {"capex_amount", "expense_amount"}.issubset(period_columns)
         assert {

@@ -3,6 +3,10 @@ export type InvestmentGateEvidence = {
   preparation_id: number;
   requirement_key: string;
   evidence_type: string;
+  classification: "A" | "B" | "C" | null;
+  blocking: boolean;
+  provider_key: string | null;
+  coverage_requirement: number | null;
   scope_type: string;
   scope_id: number | null;
   evidence_origin: "GOVERNED_SOURCE" | "MANUAL_REFERENCE";
@@ -18,6 +22,9 @@ export type InvestmentGateEvidence = {
   validation_note: string | null;
   warnings: string[];
   blockers: string[];
+  source_current: boolean | null;
+  source_readiness_status: string | null;
+  resolution_status: string;
   revision_version: number;
 };
 
@@ -33,6 +40,7 @@ export type InvestmentGateReadiness = {
   blocked_project_count: number;
   coverage_percent: number;
   category_summary: Record<string, Record<string, unknown>>;
+  evidence_coverage: Record<string, Record<string, unknown>>;
   warnings: string[];
   blockers: string[];
   investment_gate_preparation_ready: boolean;

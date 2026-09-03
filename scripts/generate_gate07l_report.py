@@ -62,21 +62,19 @@ def anchored_page_break(doc: Document) -> None:
 
 def title_page(doc: Document) -> None:
     section = doc.sections[0]
-    doc.settings.odd_and_even_pages_header_footer = True
-    for page_header in (section.header, section.even_page_header):
-        page_header.is_linked_to_previous = False
-        header = page_header.paragraphs[0]
-        header.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        set_run(
-            header.add_run("TECHNICAL REPORT · GATE 07L"),
-            size=8.5,
-            color="5F6B76",
-            bold=True,
-        )
-        add_bottom_rule(header, color="D9E1E8", size=6)
-    for page_footer in (section.footer, section.even_page_footer):
-        page_footer.is_linked_to_previous = False
-        add_page_number(page_footer.paragraphs[0])
+    doc.settings.odd_and_even_pages_header_footer = False
+    section.header.is_linked_to_previous = False
+    header = section.header.paragraphs[0]
+    header.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    set_run(
+        header.add_run("TECHNICAL REPORT · GATE 07L"),
+        size=8.5,
+        color="5F6B76",
+        bold=True,
+    )
+    add_bottom_rule(header, color="D9E1E8", size=6)
+    section.footer.is_linked_to_previous = False
+    add_page_number(section.footer.paragraphs[0])
 
     if LOGO.exists():
         paragraph = doc.add_paragraph()
@@ -109,7 +107,7 @@ def title_page(doc: Document) -> None:
         ("Fecha de corte", "1 de septiembre de 2026"),
         (
             "Repositorio",
-            "pypmis-ia-sas · branch main · base fde6027 · cambios sin commit",
+            "pypmis-ia-sas · main @ b57f951 · Gate 07L integrado en c7ec66e",
         ),
         ("Migración", "20260901_0056"),
         ("Dependencia de entrada", "Gate 07K · PYP-FFA · GO · FID vigente"),
@@ -697,9 +695,9 @@ def risks_closeout(doc: Document) -> None:
                 "Alertas de stale y blockers",
             ),
             (
-                "Cambios sin commit",
-                "Entrega aún no integrada a main remoto",
-                "Revisión y commit posterior autorizado",
+                "Artefactos finales",
+                "Informe regenerado fuera del commit de integración",
+                "Commit/publish sólo bajo instrucción expresa",
             ),
         ],
         [2700, 2700, 3960],

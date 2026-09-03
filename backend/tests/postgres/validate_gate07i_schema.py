@@ -24,9 +24,7 @@ def validate(expected_revision: str) -> None:
             return
         assert expected_revision == "20260826_0048"
         assert EXPECTED_TABLES.issubset(tables)
-        convergence_columns = {
-            item["name"] for item in inspector.get_columns("portfolio_scenario_convergences")
-        }
+        convergence_columns = {item["name"] for item in inspector.get_columns("portfolio_scenario_convergences")}
         assert {
             "convergence_revision",
             "required_budget_branch",
@@ -36,13 +34,9 @@ def validate(expected_revision: str) -> None:
             "recommendation_hash",
             "revision_version",
         }.issubset(convergence_columns)
-        checks = {
-            item.get("name")
-            for item in inspector.get_check_constraints("portfolio_scenario_convergences")
-        }
+        checks = {item.get("name") for item in inspector.get_check_constraints("portfolio_scenario_convergences")}
         alternative_checks = {
-            item.get("name")
-            for item in inspector.get_check_constraints("portfolio_converged_alternatives")
+            item.get("name") for item in inspector.get_check_constraints("portfolio_converged_alternatives")
         }
         assert "ck_portfolio_convergence_branch_required" in checks
         assert "ck_portfolio_convergence_recommended_evidence" in checks

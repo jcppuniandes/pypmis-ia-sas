@@ -19,11 +19,17 @@ const requirement = (evidenceType: string, classification: "A" | "B" | "C", prov
   classification,
   required: classification !== "C",
   blocking: classification === "A",
-  scope: evidenceType === "PERMIT_READINESS" ? "EACH_PROJECT" : "PROJECT_SET",
+  scope: ["PERMIT_READINESS", "BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"].includes(evidenceType)
+    ? "EACH_PROJECT"
+    : "PROJECT_SET",
   provider_key: provider || null,
   provider_required: classification === "A",
   validity_period_days: classification === "C" ? null : 180,
-  coverage_requirement: evidenceType === "PERMIT_READINESS" ? 100 : null,
+  coverage_requirement: ["PERMIT_READINESS", "BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"].includes(
+    evidenceType
+  )
+    ? 100
+    : null,
   allow_manual_reference: classification === "B",
   manual_validation_required: classification === "B",
   rationale: `Controlled ${evidenceType} evidence.`,
@@ -37,13 +43,20 @@ const content = {
   gate_profiles: {
     "PYP-INV-SELECT": {
       allow_valid_with_conditions: true,
-      requirements: [requirement("RISK_READINESS", "B"), requirement("LAND_ACCESS_READINESS", "C")],
+      requirements: [
+        requirement("BUSINESS_CASE_READINESS", "A", "BUSINESS_CASE_READINESS_PROVIDER"),
+        requirement("ECONOMIC_FINANCIAL_READINESS", "B", "ECONOMIC_FINANCIAL_READINESS_PROVIDER"),
+        requirement("RISK_READINESS", "B"),
+        requirement("LAND_ACCESS_READINESS", "C"),
+      ],
     },
     "PYP-FFA": {
       allow_valid_with_conditions: false,
       requirements: [
         requirement("PORTFOLIO_RECOMMENDATION", "A", "GATE07I_PORTFOLIO_RECOMMENDATION"),
         requirement("RISK_READINESS", "A", "RISK_READINESS_PROVIDER"),
+        requirement("BUSINESS_CASE_READINESS", "A", "BUSINESS_CASE_READINESS_PROVIDER"),
+        requirement("ECONOMIC_FINANCIAL_READINESS", "A", "ECONOMIC_FINANCIAL_READINESS_PROVIDER"),
         requirement("PERMIT_READINESS", "B"),
         requirement("CONTRACTING_STRATEGY_READINESS", "B"),
         requirement("EXECUTION_PLAN_READINESS", "B"),
@@ -117,6 +130,9 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
         supports_current_flag: true,
         supports_readiness: true,
         status: "AVAILABLE",
+        availability: "AVAILABLE",
+        contract_status: "VALID",
+        last_validation: "2026-09-03T00:00:00Z",
         version: "1.0",
         notes: "Validated Gate 07I contract",
         contract_valid: true,
@@ -134,11 +150,37 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
         supports_current_flag: false,
         supports_readiness: false,
         status: "UNAVAILABLE",
+        availability: "UNAVAILABLE",
+        contract_status: "INVALID",
+        last_validation: null,
         version: "1.0",
         notes: "Provider required; engine outside this gate",
         contract_valid: false,
         contract_issues: ["PROVIDER_UNAVAILABLE"],
       },
+      ...[
+        ["BUSINESS_CASE_READINESS_PROVIDER", "BUSINESS_CASE_READINESS", "BUSINESS_CASE_MANAGER"],
+        ["ECONOMIC_FINANCIAL_READINESS_PROVIDER", "ECONOMIC_FINANCIAL_READINESS", "ECONOMIC_FINANCIAL_MODEL"],
+      ].map(([provider_key, evidence_type, source_module]) => ({
+        provider_key,
+        evidence_type,
+        source_module,
+        source_contract: "ProviderEvidenceOut",
+        supports_portfolio_scope: false,
+        supports_project_scope: true,
+        supports_project_set_scope: true,
+        supports_hash: true,
+        supports_current_flag: true,
+        supports_readiness: true,
+        status: "AVAILABLE",
+        availability: "AVAILABLE",
+        contract_status: "VALID",
+        last_validation: "2026-09-03T00:00:00Z",
+        version: "1.0",
+        notes: "Gate 07M governed provider",
+        contract_valid: true,
+        contract_issues: [],
+      })),
     ];
     const gaps = [
       {
@@ -194,7 +236,22 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
           blocking_missing_sources: ["RISK_READINESS"],
           warnings: [],
           blockers: ["SOURCE_PROVIDER_MISSING"],
+          effective_classifications: {
+            BUSINESS_CASE_READINESS: ["A"],
+            ECONOMIC_FINANCIAL_READINESS: ["A"],
+          },
+          required_coverage: { BUSINESS_CASE_READINESS: 100, ECONOMIC_FINANCIAL_READINESS: 100 },
+          source_availability: {
+            BUSINESS_CASE_READINESS: "AVAILABLE",
+            ECONOMIC_FINANCIAL_READINESS: "AVAILABLE",
+          },
+          source_readiness: {
+            BUSINESS_CASE_READINESS: ["READY"],
+            ECONOMIC_FINANCIAL_READINESS: ["READY"],
+          },
+          source_current: { BUSINESS_CASE_READINESS: [true], ECONOMIC_FINANCIAL_READINESS: [true] },
           would_gate07j_be_ready: false,
+          would_be_ready_for_investment_gate: false,
           recommended_next_development: {
             next: "BUILD_MISSING_GOVERNED_PROVIDER",
             provider: "RISK_READINESS_PROVIDER",
@@ -202,7 +259,7 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
           can_design_investment_decision_gate: false,
           can_enter_fid: false,
           persisted: false,
-          final_output: "READY_FOR_INVESTMENT_DECISION_EVIDENCE_POLICY",
+          final_output: "READY_FOR_BUSINESS_CASE_AND_ECONOMIC_FINANCIAL_GATE_EVIDENCE",
         },
       })
     );
@@ -238,6 +295,8 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
     await expect(admin.getByRole("status")).toContainText("persisted=false");
     await expect(admin.getByText("SOURCE_PROVIDER_MISSING")).toBeVisible();
     await expect(admin.getByText(/RISK_READINESS_PROVIDER/).last()).toBeVisible();
+    await expect(admin.getByText("BUSINESS CASE READINESS", { exact: true }).first()).toBeVisible();
+    await expect(admin.getByText("ECONOMIC FINANCIAL READINESS", { exact: true }).first()).toBeVisible();
     await expect(admin.getByRole("heading", { name: "false" })).toBeVisible();
 
     await admin.getByRole("button", { name: "Save" }).click();

@@ -68,7 +68,9 @@ class ProjectDefinitionAssessment(Base):
         ),
         UniqueConstraint("tenant_id", "create_idempotency_key", name="uq_project_definition_assessment_create_key"),
         UniqueConstraint("tenant_id", "complete_idempotency_key", name="uq_project_definition_assessment_complete_key"),
-        UniqueConstraint("tenant_id", "reevaluate_idempotency_key", name="uq_project_definition_assessment_reevaluate_key"),
+        UniqueConstraint(
+            "tenant_id", "reevaluate_idempotency_key", name="uq_project_definition_assessment_reevaluate_key"
+        ),
         CheckConstraint(
             "status IN ('DRAFT','IN_PROGRESS','COMPLETED','SUPERSEDED','VOIDED')",
             name="ck_project_definition_assessment_status",
@@ -100,7 +102,9 @@ class ProjectFELStatus(Base):
     effective_framework_id: Mapped[int] = mapped_column(ForeignKey("admin_configurations.id"), index=True)
     effective_framework_revision: Mapped[int] = mapped_column(Integer)
     effective_framework_hash: Mapped[str] = mapped_column(String(64), index=True)
-    current_assessment_id: Mapped[int | None] = mapped_column(ForeignKey("project_definition_assessments.id"), index=True)
+    current_assessment_id: Mapped[int | None] = mapped_column(
+        ForeignKey("project_definition_assessments.id"), index=True
+    )
     latest_completed_assessment_id: Mapped[int | None] = mapped_column(
         ForeignKey("project_definition_assessments.id"), index=True
     )

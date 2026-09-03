@@ -66,6 +66,21 @@ services:
         python tests/postgres/validate_gate07l_schema.py --expect 20260831_0055
         alembic upgrade 20260901_0056
         python tests/postgres/validate_gate07l_schema.py --expect 20260901_0056
+        pytest --no-cov -q tests/postgres/test_post_fid_governance_postgres.py
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260901_0056
+        alembic upgrade 20260902_0057
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260902_0057
+        python tests/postgres/validate_gate07m_fin_schema.py --expect 20260902_0057
+        alembic upgrade 20260902_0058
+        python tests/postgres/validate_gate07m_fin_schema.py --expect 20260902_0058
+        pytest --no-cov -q tests/test_post_fid_governance_gate07l.py
+        pytest --no-cov -q tests/test_business_case_gate07m.py tests/postgres/test_business_case_postgres.py
+        pytest --no-cov -q tests/test_economic_financial_model_gate07m_fin.py tests/postgres/test_economic_financial_model_postgres.py
+        pytest --no-cov -q tests/test_investment_evidence_policy_gate07m_evid.py tests/postgres/test_investment_evidence_policy_postgres.py
+        alembic downgrade 20260902_0057
+        python tests/postgres/validate_gate07m_fin_schema.py --expect 20260902_0057
+        alembic upgrade 20260902_0058
+        python tests/postgres/validate_gate07m_fin_schema.py --expect 20260902_0058
         pytest --no-cov -q tests/test_portfolio_planning_gate07d.py tests/test_portfolio_planning_gate07d_hardening.py tests/test_project_creation_process.py tests/test_strategic_gate_gate07c.py tests/test_workspace_context.py
         pytest --no-cov -q \
           tests/test_portfolio_evaluation_gate07e.py \
@@ -76,35 +91,41 @@ services:
           tests/test_portfolio_convergence_gate07i.py \
           tests/test_investment_gate_preparation_gate07j.py \
           tests/test_investment_evidence_policy_gate07j_evid.py \
+          tests/test_investment_evidence_policy_gate07m_evid.py \
           tests/test_project_definition_gate07j_fel.py \
           tests/test_funds_manager_gate07j_fund.py \
           tests/test_risk_readiness_gate07j_risk.py \
           tests/test_permit_readiness_gate07j_permit.py \
           tests/test_investment_decision_gate07k.py \
-          tests/test_post_fid_governance_gate07l.py \
           tests/postgres/test_portfolio_evaluation_postgres.py \
           tests/postgres/test_portfolio_analysis_postgres.py \
           tests/postgres/test_portfolio_budget_postgres.py \
           tests/postgres/test_portfolio_resource_postgres.py \
           tests/postgres/test_portfolio_convergence_postgres.py \
           tests/postgres/test_investment_gate_preparation_postgres.py \
-          tests/postgres/test_investment_evidence_policy_postgres.py \
           tests/postgres/test_project_definition_postgres.py \
           tests/postgres/test_funds_manager_postgres.py \
           tests/postgres/test_risk_readiness_postgres.py \
           tests/postgres/test_permit_readiness_postgres.py \
-          tests/postgres/test_investment_decision_postgres.py \
-          tests/postgres/test_post_fid_governance_postgres.py
+          tests/postgres/test_investment_decision_postgres.py
+        alembic downgrade 20260901_0056
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260901_0056
+        alembic upgrade 20260902_0057
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260902_0057
         alembic downgrade 20260831_0055
         python tests/postgres/validate_gate07l_schema.py --expect 20260831_0055
         alembic upgrade 20260901_0056
         python tests/postgres/validate_gate07l_schema.py --expect 20260901_0056
+        alembic upgrade 20260902_0057
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260902_0057
         alembic downgrade 20260831_0054
         python tests/postgres/validate_gate07k_schema.py --expect 20260831_0054
         alembic upgrade 20260831_0055
         python tests/postgres/validate_gate07k_schema.py --expect 20260831_0055
         alembic upgrade 20260901_0056
         python tests/postgres/validate_gate07l_schema.py --expect 20260901_0056
+        alembic upgrade 20260902_0057
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260902_0057
         alembic downgrade 20260830_0053
         python tests/postgres/validate_gate07j_permit_schema.py --expect 20260830_0053
         alembic upgrade 20260831_0054
@@ -121,6 +142,8 @@ services:
         python tests/postgres/validate_gate07k_schema.py --expect 20260831_0055
         alembic upgrade 20260901_0056
         python tests/postgres/validate_gate07l_schema.py --expect 20260901_0056
+        alembic upgrade 20260902_0057
+        python tests/postgres/validate_gate07m_bc_schema.py --expect 20260902_0057
     depends_on:
       gate07e-db:
         condition: service_healthy

@@ -1,10 +1,10 @@
 {
   "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07L_Post_FID_Project_Governance_20260901.docx",
   "fonts_by_char_count": {
-    "Calibri": 15131
+    "Calibri": 15147
   },
-  "direct_run_formatting_runs": 755,
-  "direct_paragraph_formatting_paragraphs": 724,
+  "direct_run_formatting_runs": 754,
+  "direct_paragraph_formatting_paragraphs": 722,
   "heading_like_paragraphs_not_heading_style": [
     {
       "para_index": 2,
@@ -33,7 +33,7 @@
     },
     {
       "para_index": 7,
-      "text": "Repositorio: pypmis-ia-sas \u00b7 branch main \u00b7 base fde6027 \u00b7 cambios sin commit",
+      "text": "Repositorio: pypmis-ia-sas \u00b7 main @ b57f951 \u00b7 Gate 07L integrado en c7ec66e",
       "style": "Normal"
     },
     {
@@ -52,57 +52,57 @@
       "style": "Normal"
     },
     {
-      "para_index": 76,
+      "para_index": 74,
       "text": "RESULTADO EJECUTIVO",
       "style": "Normal"
     },
     {
-      "para_index": 78,
+      "para_index": 76,
       "text": "Capa",
       "style": "Normal"
     },
     {
-      "para_index": 79,
+      "para_index": 77,
       "text": "Resultado",
       "style": "Normal"
     },
     {
-      "para_index": 80,
+      "para_index": 78,
       "text": "Evidencia",
       "style": "Normal"
     },
     {
-      "para_index": 99,
+      "para_index": 97,
       "text": "Cap\u00edtulo",
       "style": "Normal"
     },
     {
-      "para_index": 100,
+      "para_index": 98,
       "text": "Contenido",
       "style": "Normal"
     },
     {
-      "para_index": 101,
+      "para_index": 99,
       "text": "Entregables",
       "style": "Normal"
     },
     {
-      "para_index": 129,
+      "para_index": 127,
       "text": "CRITERIO DE CIERRE",
       "style": "Normal"
     },
     {
-      "para_index": 131,
+      "para_index": 129,
       "text": "Elemento",
       "style": "Normal"
     },
     {
-      "para_index": 132,
+      "para_index": 130,
       "text": "Antes",
       "style": "Normal"
     },
     {
-      "para_index": 133,
+      "para_index": 131,
       "text": "Despu\u00e9s / decisi\u00f3n",
       "style": "Normal"
     }

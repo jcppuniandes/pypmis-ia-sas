@@ -52,6 +52,8 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
   const [portfolios, setPortfolios] = useState<Array<Record<string, unknown>>>([]);
   const [portfolioId, setPortfolioId] = useState(0);
   const [gateProfile, setGateProfile] = useState("PYP-FFA");
+  const [projectType, setProjectType] = useState("COMMERCIAL");
+  const [governanceModel, setGovernanceModel] = useState("CAPITAL_OWNER");
   const [preview, setPreview] = useState<EvidencePolicyPreview | null>(null);
   const [message, setMessage] = useState("");
   const parsed = useMemo(() => parseContent(content), [content]);
@@ -112,7 +114,9 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         selected,
         portfolioId || null,
         gateProfile,
-        parsed
+        parsed,
+        projectType,
+        governanceModel
       );
       setPreview(result);
       setSection("Preview");
@@ -136,6 +140,7 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
               <th>Scope</th>
               <th>Validity</th>
               <th>Coverage</th>
+              <th>Manual evidence</th>
             </tr>
           </thead>
           <tbody>
@@ -156,6 +161,7 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                 <td>{item.scope}</td>
                 <td>{item.validity_period_days ? `${item.validity_period_days} days` : "Contextual"}</td>
                 <td>{item.coverage_requirement == null ? "—" : `${item.coverage_requirement}%`}</td>
+                <td>{item.allow_manual_reference ? "Allowed · controlled" : "Not allowed"}</td>
               </tr>
             ))}
           </tbody>
@@ -192,6 +198,8 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                 <th>Evidence</th>
                 <th>Resolution</th>
                 <th>Provider</th>
+                <th>Governance model</th>
+                <th>Coverage</th>
                 <th>Rationale</th>
               </tr>
             </thead>
@@ -203,6 +211,8 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                   <td>{String(item.evidence_type)}</td>
                   <td>{String(item.classification)}</td>
                   <td>{String(item.provider_key || "—")}</td>
+                  <td>{String((item.governance_model_filter as string[])?.join(", ") || "All")}</td>
+                  <td>{item.coverage_requirement == null ? "—" : `${String(item.coverage_requirement)}%`}</td>
                   <td>{String(item.rationale)}</td>
                 </tr>
               ))}
@@ -221,6 +231,7 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                 <th>Source Module</th>
                 <th>Contract</th>
                 <th>Status</th>
+                <th>Contract / availability</th>
                 <th>Supported Scope</th>
                 <th>Version</th>
                 <th>Hash / Current / Readiness</th>
@@ -237,6 +248,13 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                   <td>{item.source_contract}</td>
                   <td>
                     <span className={`providerState ${item.status.toLowerCase()}`}>{item.status}</span>
+                  </td>
+                  <td>
+                    <strong>{item.contract_status}</strong>
+                    <small>
+                      {item.availability} ·{" "}
+                      {item.last_validation ? new Date(item.last_validation).toLocaleString() : "—"}
+                    </small>
                   </td>
                   <td>
                     {[
@@ -309,9 +327,27 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
               <h3>{preview.missing_required_provider_count}</h3>
             </article>
             <article>
-              <span>Gate 07J readiness</span>
-              <h3>{preview.would_gate07j_be_ready ? "READY" : "BLOCKED"}</h3>
+              <span>Investment Gate readiness</span>
+              <h3>{preview.would_be_ready_for_investment_gate ? "READY" : "BLOCKED"}</h3>
             </article>
+          </div>
+          <div className="evidencePolicyCards">
+            {(["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"] as const).map((evidenceType) => (
+              <article key={evidenceType}>
+                <span>{evidenceType.replace(/_/g, " ")}</span>
+                <h3>{((preview.effective_classifications || {})[evidenceType] || ["—"]).join(" / ")}</h3>
+                <b>
+                  Provider {(preview.source_availability || {})[evidenceType] || "NOT CONFIGURED"} · coverage{" "}
+                  {(preview.required_coverage || {})[evidenceType] == null
+                    ? "N/A"
+                    : `${(preview.required_coverage || {})[evidenceType]}%`}
+                </b>
+                <p>
+                  Readiness {((preview.source_readiness || {})[evidenceType] || ["NOT EVALUATED"]).join(", ")} · current{" "}
+                  {((preview.source_current || {})[evidenceType] || []).map(String).join(", ") || "not evaluated"}
+                </p>
+              </article>
+            ))}
           </div>
           <div className="evidencePolicyCallout danger">
             <strong>No silent fallback</strong>
@@ -440,6 +476,44 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
             <option value="PYP-FFA">PYP-FFA</option>
           </select>
         </label>
+        <label>
+          Project Type
+          <select
+            aria-label="Evidence policy Project Type"
+            value={projectType}
+            onChange={(event) => setProjectType(event.target.value)}
+          >
+            <option value="COMMERCIAL">COMMERCIAL</option>
+            <option value="PUBLIC">PUBLIC / NON-REVENUE</option>
+            <option value="MIXED">MIXED</option>
+            <option value="INTERNAL">INTERNAL / COMPLIANCE</option>
+          </select>
+        </label>
+        <label>
+          Governance Model
+          <select
+            aria-label="Evidence policy Governance Model"
+            value={governanceModel}
+            onChange={(event) => setGovernanceModel(event.target.value)}
+          >
+            <option value="CAPITAL_OWNER">CAPITAL_OWNER</option>
+            <option value="CONTRACTOR_DELIVERY">CONTRACTOR_DELIVERY</option>
+            <option value="DIRECT_INTERNAL">DIRECT_INTERNAL</option>
+          </select>
+        </label>
+        <label>
+          Effective from
+          <input
+            aria-label="Evidence policy effective from"
+            disabled={selected?.status !== "draft"}
+            onChange={(event) => {
+              if (!parsed) return;
+              setContent(JSON.stringify({ ...parsed, effective_from: event.target.value || null }, null, 2));
+            }}
+            type="datetime-local"
+            value={String(parsed?.effective_from || "").slice(0, 16)}
+          />
+        </label>
         <div aria-label="Evidence policy actions" className="evidencePolicyActions" role="group">
           <button
             disabled={!selected || selected.status !== "published"}
@@ -490,8 +564,8 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         {sectionContent()}
       </div>
       <p className="evidencePolicyGuardrail">
-        STOP boundary: no Risk, Permit, Contracting, Execution Plan, Schedule or Cost Estimate engine; no Investment
-        Decision, FID, GO/HOLD/RECYCLE/KILL, Project activation or execution.
+        STOP boundary: no Business Case or FIN recalculation, no Investment Decision/FID redesign, no
+        GO/HOLD/RECYCLE/KILL, Project activation or execution.
       </p>
     </section>
   );

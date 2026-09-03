@@ -163,9 +163,7 @@ def demand_profiles(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> list[DemandProfileOut]:
-    return _authorized(db, tenant_id, user_id, "portfolio_resource_demand.read", VIEW_ROLES).demand_profiles(
-        project_id
-    )
+    return _authorized(db, tenant_id, user_id, "portfolio_resource_demand.read", VIEW_ROLES).demand_profiles(project_id)
 
 
 @router.post("/projects/{project_id}/resource-demand-profiles", response_model=DemandProfileOut)
@@ -191,9 +189,7 @@ def demand_profile(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> DemandProfileOut:
-    return _authorized(db, tenant_id, user_id, "portfolio_resource_demand.read", VIEW_ROLES).demand_profile(
-        profile_id
-    )
+    return _authorized(db, tenant_id, user_id, "portfolio_resource_demand.read", VIEW_ROLES).demand_profile(profile_id)
 
 
 @router.put("/project-resource-demand-profiles/{profile_id}", response_model=DemandProfileOut)
@@ -249,9 +245,9 @@ def create_scenario(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ResourceScenarioOut:
-    result = _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.create", PLANNER_ROLES
-    ).create_scenario(portfolio_id, payload)
+    result = _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.create", PLANNER_ROLES).create_scenario(
+        portfolio_id, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -276,9 +272,9 @@ def update_scenario(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ResourceScenarioOut:
-    result = _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES
-    ).update_scenario(scenario_id, expected_version, payload)
+    result = _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES).update_scenario(
+        scenario_id, expected_version, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -295,7 +291,13 @@ def _lifecycle(
 ) -> ResourceScenarioOut:
     permission = "portfolio_resource_scenario.create" if action == "clone" else f"portfolio_resource_scenario.{action}"
     service = _authorized(db, tenant_id, user_id, permission, PLANNER_ROLES)
-    method = service.clone_scenario if action == "clone" else service.freeze_scenario if action == "freeze" else service.void_scenario
+    method = (
+        service.clone_scenario
+        if action == "clone"
+        else service.freeze_scenario
+        if action == "freeze"
+        else service.void_scenario
+    )
     result = method(scenario_id, expected_version, payload.idempotency_key)
     _etag(response, result.revision_version)
     return result
@@ -354,9 +356,9 @@ def select_project(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ResourceScenarioOut:
-    result = _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.force", PLANNER_ROLES
-    ).select_project(scenario_id, project_id, expected_version, payload)
+    result = _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.force", PLANNER_ROLES).select_project(
+        scenario_id, project_id, expected_version, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -375,9 +377,9 @@ def adjust_timing(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ResourceScenarioOut:
-    result = _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES
-    ).adjust_timing(scenario_id, project_id, expected_version, payload)
+    result = _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES).adjust_timing(
+        scenario_id, project_id, expected_version, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -403,9 +405,9 @@ def refresh_preview(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ScenarioRefreshPreviewOut:
-    return _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES
-    ).refresh_preview(scenario_id)
+    return _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES).refresh_preview(
+        scenario_id
+    )
 
 
 @router.post("/portfolio-resource-scenarios/{scenario_id}/refresh", response_model=ResourceScenarioOut)
@@ -418,9 +420,9 @@ def apply_refresh(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ResourceScenarioOut:
-    result = _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES
-    ).apply_refresh(scenario_id, expected_version, payload.expected_source_hash, payload.idempotency_key)
+    result = _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.edit", PLANNER_ROLES).apply_refresh(
+        scenario_id, expected_version, payload.expected_source_hash, payload.idempotency_key
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -433,9 +435,9 @@ def compare(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ScenarioComparisonOut:
-    return _authorized(
-        db, tenant_id, user_id, "portfolio_resource_scenario.compare", VIEW_ROLES
-    ).compare(portfolio_id, payload.scenario_ids)
+    return _authorized(db, tenant_id, user_id, "portfolio_resource_scenario.compare", VIEW_ROLES).compare(
+        portfolio_id, payload.scenario_ids
+    )
 
 
 @router.get(

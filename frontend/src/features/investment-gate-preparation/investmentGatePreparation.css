@@ -204,6 +204,48 @@
   font-size: 0.68rem;
   padding: 4px;
 }
+.evidenceGrid article em.warning {
+  background: #fff8dd;
+  color: #7a5b00;
+}
+.evidenceGrid article.gate07mEvidence {
+  border-top: 4px solid #1b7f79;
+  grid-column: span 2;
+}
+.gateEvidenceSource {
+  background: #f7fafb;
+  border: 1px solid #d7e0e7;
+  border-radius: 7px;
+  margin-top: 7px;
+  padding: 7px 9px;
+}
+.gateEvidenceSource summary {
+  color: #075e5a;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+.gateEvidenceSource dl {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+}
+.gateEvidenceSource dt {
+  color: #657887;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.gateEvidenceSource dd {
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin: 2px 0 0;
+}
+.gateEvidenceSource pre {
+  max-height: 280px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
 .evidenceActions {
   display: flex;
   flex-wrap: wrap;
@@ -304,5 +346,8 @@
   }
   .conditionList article {
     grid-template-columns: 1fr;
+  }
+  .evidenceGrid article.gate07mEvidence {
+    grid-column: span 1;
   }
 }

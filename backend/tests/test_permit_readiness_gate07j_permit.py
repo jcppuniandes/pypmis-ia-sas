@@ -278,7 +278,7 @@ def test_contextual_classification_preserves_class_b_and_elevates_mining_ffa() -
         provider = PROVIDER_REGISTRY["PERMIT_READINESS_PROVIDER"]
         assert provider["status"] == "AVAILABLE"
         assert provider["source_module"] == "PERMIT_READINESS"
-        assert policy._next_development([]) == {"next": "READY_TO_DESIGN_GATE07K"}
+        assert policy._next_development([]) == {"next": "READY_TO_REVALIDATE_NEW_FID_PATH"}
     finally:
         db.close()
 

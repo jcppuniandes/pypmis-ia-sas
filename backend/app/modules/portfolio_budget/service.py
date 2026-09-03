@@ -744,8 +744,7 @@ class PortfolioBudgetService:
             "capex_delta": second.summary.selected_capex - first.summary.selected_capex,
             "expense_delta": second.summary.selected_expense - first.summary.selected_expense,
             "unclassified_delta": second.summary.selected_unclassified - first.summary.selected_unclassified,
-            "unmet_dependency_delta": second.summary.unmet_mandatory_count
-            - first.summary.unmet_mandatory_count,
+            "unmet_dependency_delta": second.summary.unmet_mandatory_count - first.summary.unmet_mandatory_count,
         }
         self._event(
             "portfolio_budget.scenarios_compared", "EnterpriseWorkspace", portfolio_id, {"scenario_ids": scenario_ids}
@@ -807,9 +806,7 @@ class PortfolioBudgetService:
         position: int | None = None
         projects: list[WaterlineProjectOut] = []
         for row in rows:
-            demand, capex, expense, unclassified = self._waterline_row_amounts(
-                record, row, target, selected_period
-            )
+            demand, capex, expense, unclassified = self._waterline_row_amounts(record, row, target, selected_period)
             if self._included(row.selection_state):
                 cumulative += demand
                 selected_capex += capex
@@ -965,9 +962,7 @@ class PortfolioBudgetService:
     def project_dependency(self, dependency_id: int) -> ProjectDependencyOut:
         return self._dependency_out(self._dependency(dependency_id))
 
-    def create_project_dependency(
-        self, portfolio_id: int, payload: ProjectDependencyCreateIn
-    ) -> ProjectDependencyOut:
+    def create_project_dependency(self, portfolio_id: int, payload: ProjectDependencyCreateIn) -> ProjectDependencyOut:
         self._portfolio(portfolio_id)
         retry = self.db.scalar(
             select(ProjectDependency).where(
@@ -993,9 +988,7 @@ class PortfolioBudgetService:
         )
         if duplicate is not None:
             raise HTTPException(status_code=409, detail={"code": "ACTIVE_PROJECT_DEPENDENCY_ALREADY_EXISTS"})
-        if payload.dependency_strength == "MANDATORY" and self._creates_dependency_cycle(
-            predecessor.id, successor.id
-        ):
+        if payload.dependency_strength == "MANDATORY" and self._creates_dependency_cycle(predecessor.id, successor.id):
             raise HTTPException(status_code=409, detail={"code": "PROJECT_DEPENDENCY_CYCLE"})
         record = ProjectDependency(
             tenant_id=self.tenant_id,
@@ -1031,8 +1024,7 @@ class PortfolioBudgetService:
         duplicate = self.db.scalar(
             select(ProjectDependency.id).where(
                 ProjectDependency.tenant_id == self.tenant_id,
-                ProjectDependency.predecessor_project_workspace_id
-                == record.predecessor_project_workspace_id,
+                ProjectDependency.predecessor_project_workspace_id == record.predecessor_project_workspace_id,
                 ProjectDependency.successor_project_workspace_id == record.successor_project_workspace_id,
                 ProjectDependency.dependency_type == payload.dependency_type,
                 ProjectDependency.status == "ACTIVE",
@@ -1562,9 +1554,7 @@ class PortfolioBudgetService:
         current = overview or self._analysis(record.portfolio_workspace_id, require_budget=False)
         proposed_source = self._source_hash_from_analysis(record, target, current)
         source_current = proposed_source == record.source_hash
-        if not source_current and rows and all(
-            item.budget_breakdown_source == "LEGACY_UNCLASSIFIED" for item in rows
-        ):
+        if not source_current and rows and all(item.budget_breakdown_source == "LEGACY_UNCLASSIFIED" for item in rows):
             source_current = self._legacy_source_hash_from_analysis(record, target, current) == record.source_hash
         warnings: list[str] = []
         blockers: list[str] = []
@@ -1631,7 +1621,9 @@ class PortfolioBudgetService:
             updated_at=record.updated_at,
             frozen_at=record.frozen_at,
             voided_at=record.voided_at,
-            projects=[self._project_out(item, dependencies["projects"].get(item.project_workspace_id)) for item in rows],
+            projects=[
+                self._project_out(item, dependencies["projects"].get(item.project_workspace_id)) for item in rows
+            ],
             summary=summary,
             period_view=self._period_view(record, rows, target),
             strategic_balance=self._strategic_balance(rows),
@@ -1694,12 +1686,8 @@ class PortfolioBudgetService:
             expense_variance=expense_target - selected_expense if expense_target is not None else None,
             mandatory_dependency_count=int(dependency_summary.get("mandatory_dependency_count") or 0),
             unmet_mandatory_count=int(dependency_summary.get("unmet_mandatory_count") or 0),
-            optional_dependency_warning_count=int(
-                dependency_summary.get("optional_dependency_warning_count") or 0
-            ),
-            forced_dependency_conflict_count=int(
-                dependency_summary.get("forced_dependency_conflict_count") or 0
-            ),
+            optional_dependency_warning_count=int(dependency_summary.get("optional_dependency_warning_count") or 0),
+            forced_dependency_conflict_count=int(dependency_summary.get("forced_dependency_conflict_count") or 0),
         )
 
     def _period_view(
@@ -1727,9 +1715,7 @@ class PortfolioBudgetService:
                     capex_target=target.capex_budget_target,
                     expense_target=target.expense_budget_target,
                     capex_variance=(
-                        Decimal(target.capex_budget_target) - capex
-                        if target.capex_budget_target is not None
-                        else None
+                        Decimal(target.capex_budget_target) - capex if target.capex_budget_target is not None else None
                     ),
                     expense_variance=(
                         Decimal(target.expense_budget_target) - expense
@@ -1790,9 +1776,7 @@ class PortfolioBudgetService:
                 ),
                 approximation=scenario.time_phasing_method == "LINEAR_BY_PROJECT_DATES",
                 capex_demand=capex_by_period[item.period_key].quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
-                expense_demand=expense_by_period[item.period_key].quantize(
-                    Decimal("0.01"), rounding=ROUND_HALF_UP
-                ),
+                expense_demand=expense_by_period[item.period_key].quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
                 unclassified_demand=unclassified_by_period[item.period_key].quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
                 ),
@@ -2453,19 +2437,13 @@ class PortfolioBudgetService:
                     ProjectDependency.tenant_id == self.tenant_id,
                     ProjectDependency.status == "ACTIVE",
                     ProjectDependency.dependency_strength == "MANDATORY",
-                    *(
-                        [ProjectDependency.id != exclude_dependency_id]
-                        if exclude_dependency_id is not None
-                        else []
-                    ),
+                    *([ProjectDependency.id != exclude_dependency_id] if exclude_dependency_id is not None else []),
                 )
             ).all()
         )
         outgoing: dict[int, set[int]] = {}
         for item in records:
-            outgoing.setdefault(item.predecessor_project_workspace_id, set()).add(
-                item.successor_project_workspace_id
-            )
+            outgoing.setdefault(item.predecessor_project_workspace_id, set()).add(item.successor_project_workspace_id)
         pending = [successor_id]
         visited: set[int] = set()
         while pending:
@@ -2524,8 +2502,14 @@ class PortfolioBudgetService:
                     predecessor = row_by_id[edge.predecessor_project_workspace_id]
                     if self._included(predecessor.selection_state):
                         continue
-                    issue = "OPTIONAL_DEPENDENCY_WARNING" if edge.dependency_strength == "OPTIONAL" else "UNMET_DEPENDENCY"
-                    if edge.dependency_strength == "MANDATORY" and row.selection_state == "FORCED_IN" and predecessor.selection_state == "FORCED_OUT":
+                    issue = (
+                        "OPTIONAL_DEPENDENCY_WARNING" if edge.dependency_strength == "OPTIONAL" else "UNMET_DEPENDENCY"
+                    )
+                    if (
+                        edge.dependency_strength == "MANDATORY"
+                        and row.selection_state == "FORCED_IN"
+                        and predecessor.selection_state == "FORCED_OUT"
+                    ):
                         issue = "FORCED_DEPENDENCY_CONFLICT"
                         forced_conflicts += 1
                     if edge.dependency_strength == "OPTIONAL":
@@ -2543,9 +2527,7 @@ class PortfolioBudgetService:
                         }
                     )
                 direct_missing = {
-                    item["predecessor_project_workspace_id"]
-                    for item in details
-                    if item["strength"] == "MANDATORY"
+                    item["predecessor_project_workspace_id"] for item in details if item["strength"] == "MANDATORY"
                 }
                 visited: set[int] = set()
                 pending = [
@@ -2600,9 +2582,7 @@ class PortfolioBudgetService:
                 "details": details,
             }
         summary = {
-            "mandatory_dependency_count": sum(
-                item.dependency_strength == "MANDATORY" for item in dependencies
-            ),
+            "mandatory_dependency_count": sum(item.dependency_strength == "MANDATORY" for item in dependencies),
             "unmet_mandatory_count": unmet_count,
             "optional_dependency_warning_count": optional_count,
             "forced_dependency_conflict_count": forced_conflicts,

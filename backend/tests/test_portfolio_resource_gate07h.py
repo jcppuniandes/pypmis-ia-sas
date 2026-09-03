@@ -264,9 +264,7 @@ def test_draft_staleness_refresh_and_frozen_history_are_controlled():
 
 @pytest.mark.parametrize("governance_model", ["CONTRACTOR_DELIVERY", "DIRECT_INTERNAL", "LEGACY"])
 def test_non_capital_owner_demand_and_resource_planning_are_excluded(governance_model: str):
-    db, tenant_id, actor_id, portfolio, _projects, excluded = _fixture(
-        projects=1, excluded_model=governance_model
-    )
+    db, tenant_id, actor_id, portfolio, _projects, excluded = _fixture(projects=1, excluded_model=governance_model)
     try:
         service = PortfolioResourceService(db, tenant_id, actor_id)
         with pytest.raises(HTTPException) as exc:

@@ -75,9 +75,7 @@ class PostFIDProjectEligibility(Base):
             name="uq_post_fid_eligibility_operation",
         ),
         CheckConstraint(
-            "eligibility_status IN ("
-            + ",".join(f"'{value}'" for value in ELIGIBILITY_STATUSES)
-            + ")",
+            "eligibility_status IN (" + ",".join(f"'{value}'" for value in ELIGIBILITY_STATUSES) + ")",
             name="ck_post_fid_eligibility_status",
         ),
         CheckConstraint(

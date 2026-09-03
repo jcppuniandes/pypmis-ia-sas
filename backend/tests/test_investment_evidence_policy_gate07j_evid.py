@@ -98,7 +98,7 @@ def test_contextual_matrix_has_no_silent_fallback_and_mixed_project_types() -> N
         assert "SOURCE_STALE" in preview.blockers
         assert preview.persisted is False
         assert preview.can_enter_fid is False
-        assert preview.recommended_next_development == {"next": "READY_TO_DESIGN_GATE07K"}
+        assert preview.recommended_next_development == {"next": "READY_TO_REVALIDATE_NEW_FID_PATH"}
 
         selection = service.preview(
             portfolio_id=portfolio.id,
@@ -283,6 +283,28 @@ def test_existing_frozen_preparation_is_not_reinterpreted_after_policy_publish()
         assert unchanged.preparation_source_hash == original_source_hash
         assert unchanged.source_snapshot.get("evidence_policy") is None
         assert [(item.requirement_key, item.status) for item in unchanged.evidence] == original_evidence
+
+        preview = gate.refresh_preview(preparation.id)
+        assert preview.persisted is False
+        assert preview.policy_changes["changed"] is True
+        assert preview.policy_changes["requires_explicit_refresh"] is True
+        assert {
+            "business-case-readiness",
+            "economic-financial-readiness",
+        }.issubset(preview.policy_changes["requirement_changes"])
+        refreshed = gate.refresh(
+            preparation.id,
+            unchanged.revision_version,
+            preview.proposed_source_hash,
+            f"gate07m-evid-refresh-{uuid4()}",
+        )
+        refreshed_policy = dict(refreshed.source_snapshot.get("evidence_policy") or {})
+        assert refreshed_policy["policy_id"] == policy.id
+        assert refreshed_policy["policy_hash"] == policy.content_hash
+        assert {
+            "BUSINESS_CASE_READINESS",
+            "ECONOMIC_FINANCIAL_READINESS",
+        }.issubset({item.evidence_type for item in refreshed.evidence})
     finally:
         db.close()
 

@@ -35,6 +35,7 @@ export type EvidencePolicyContent = {
   applicable_governance_models: string[];
   gate_profiles: Record<string, { allow_valid_with_conditions: boolean; requirements: EvidenceRequirement[] }>;
   project_type_overrides: Array<Record<string, unknown>>;
+  effective_from?: string | null;
   blocking_policy: Record<string, unknown>;
   validity_policy: Record<string, unknown>;
   coverage_policy: Record<string, unknown>;
@@ -47,6 +48,9 @@ export type EvidenceProvider = {
   source_module: string;
   source_contract: string;
   status: "AVAILABLE" | "UNAVAILABLE" | "RESERVED";
+  availability: string;
+  contract_status: string;
+  last_validation: string | null;
   version: string;
   supports_portfolio_scope: boolean;
   supports_project_scope: boolean;
@@ -78,6 +82,7 @@ export type EvidencePolicyOverview = {
   required_adr_decisions: Array<Record<string, unknown>>;
   allowed_actions: string[];
   boundaries: string[];
+  release_contract: Record<string, unknown>;
 };
 
 export type EvidencePolicyPreview = {
@@ -97,7 +102,13 @@ export type EvidencePolicyPreview = {
   blocking_missing_sources: string[];
   warnings: string[];
   blockers: string[];
+  effective_classifications: Record<string, string[]>;
+  required_coverage: Record<string, number | null>;
+  source_availability: Record<string, string>;
+  source_readiness: Record<string, string[]>;
+  source_current: Record<string, boolean[]>;
   would_gate07j_be_ready: boolean;
+  would_be_ready_for_investment_gate: boolean;
   recommended_next_development: Record<string, unknown>;
   can_design_investment_decision_gate: boolean;
   can_enter_fid: false;

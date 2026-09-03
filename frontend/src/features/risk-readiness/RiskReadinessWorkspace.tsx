@@ -120,10 +120,7 @@ export default function RiskReadinessWorkspace({ token, initialView }: { token: 
   useEffect(() => void load(), [portfolioId, projectId]);
 
   const selectedRisk = useMemo(() => risks.find((item) => item.id === selectedRiskId) || null, [risks, selectedRiskId]);
-  const filteredRisks = useMemo(
-    () => risks.filter((item) => matchesRiskFilter(item, riskFilter)),
-    [riskFilter, risks]
-  );
+  const filteredRisks = useMemo(() => risks.filter((item) => matchesRiskFilter(item, riskFilter)), [riskFilter, risks]);
 
   async function execute<T>(work: () => Promise<T>, success: string) {
     try {

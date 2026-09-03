@@ -172,16 +172,19 @@ class PortfolioResourceService:
         if replay is not None:
             return self._capacity_out(replay)
         self._validate_capacity_payload(payload, policy)
-        revision = int(
-            self.db.scalar(
-                select(func.coalesce(func.max(PortfolioResourceCapacityPlan.plan_revision), 0)).where(
-                    PortfolioResourceCapacityPlan.tenant_id == self.tenant_id,
-                    PortfolioResourceCapacityPlan.portfolio_workspace_id == portfolio_id,
-                    PortfolioResourceCapacityPlan.logical_code == "RESOURCE-CAPACITY",
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.coalesce(func.max(PortfolioResourceCapacityPlan.plan_revision), 0)).where(
+                        PortfolioResourceCapacityPlan.tenant_id == self.tenant_id,
+                        PortfolioResourceCapacityPlan.portfolio_workspace_id == portfolio_id,
+                        PortfolioResourceCapacityPlan.logical_code == "RESOURCE-CAPACITY",
+                    )
                 )
+                or 0
             )
-            or 0
-        ) + 1
+            + 1
+        )
         record = PortfolioResourceCapacityPlan(
             tenant_id=self.tenant_id,
             portfolio_workspace_id=portfolio_id,
@@ -243,7 +246,11 @@ class PortfolioResourceService:
         if not self._capacity_periods(record.id):
             raise HTTPException(status_code=422, detail={"code": "CAPACITY_PERIODS_REQUIRED"})
         for previous in self._capacity_records(record.portfolio_workspace_id):
-            if previous.id != record.id and previous.status == "PUBLISHED" and previous.logical_code == record.logical_code:
+            if (
+                previous.id != record.id
+                and previous.status == "PUBLISHED"
+                and previous.logical_code == record.logical_code
+            ):
                 previous.status = "SUPERSEDED"
                 previous.updated_by = self.actor_id
                 previous.updated_at = utc_now()
@@ -279,16 +286,19 @@ class PortfolioResourceService:
             return self._demand_out(replay)
         policy = self._tenant_policy(require_published=True)
         self._validate_demand_payload(payload, policy)
-        revision = int(
-            self.db.scalar(
-                select(func.coalesce(func.max(ProjectResourceDemandProfile.profile_revision), 0)).where(
-                    ProjectResourceDemandProfile.tenant_id == self.tenant_id,
-                    ProjectResourceDemandProfile.project_workspace_id == project_id,
-                    ProjectResourceDemandProfile.logical_code == "RESOURCE-DEMAND",
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.coalesce(func.max(ProjectResourceDemandProfile.profile_revision), 0)).where(
+                        ProjectResourceDemandProfile.tenant_id == self.tenant_id,
+                        ProjectResourceDemandProfile.project_workspace_id == project_id,
+                        ProjectResourceDemandProfile.logical_code == "RESOURCE-DEMAND",
+                    )
                 )
+                or 0
             )
-            or 0
-        ) + 1
+            + 1
+        )
         record = ProjectResourceDemandProfile(
             tenant_id=self.tenant_id,
             project_workspace_id=project_id,
@@ -298,7 +308,9 @@ class PortfolioResourceService:
             profile_revision=revision,
             source_type=payload.source_type,
             source_reference=payload.source_reference,
-            source_hash=_hash({"type": payload.source_type, "reference": payload.source_reference, "as_of": payload.as_of_date}),
+            source_hash=_hash(
+                {"type": payload.source_type, "reference": payload.source_reference, "as_of": payload.as_of_date}
+            ),
             as_of_date=payload.as_of_date,
             planning_start=payload.planning_start,
             planning_finish=payload.planning_finish,
@@ -332,7 +344,9 @@ class PortfolioResourceService:
         record.planning_finish = payload.planning_finish
         record.generation_method = payload.generation_method
         record.approximation = payload.generation_method != "EXPLICIT_PERIOD_PROFILE"
-        record.source_hash = _hash({"type": payload.source_type, "reference": payload.source_reference, "as_of": payload.as_of_date})
+        record.source_hash = _hash(
+            {"type": payload.source_type, "reference": payload.source_reference, "as_of": payload.as_of_date}
+        )
         record.updated_by = self.actor_id
         record.updated_at = utc_now()
         record.revision_version += 1
@@ -352,7 +366,11 @@ class PortfolioResourceService:
         if not self._demand_periods(record.id):
             raise HTTPException(status_code=422, detail={"code": "DEMAND_PERIODS_REQUIRED"})
         for previous in self._demand_records(record.project_workspace_id):
-            if previous.id != record.id and previous.status == "PUBLISHED" and previous.logical_code == record.logical_code:
+            if (
+                previous.id != record.id
+                and previous.status == "PUBLISHED"
+                and previous.logical_code == record.logical_code
+            ):
                 previous.status = "SUPERSEDED"
                 previous.updated_by = self.actor_id
                 previous.updated_at = utc_now()
@@ -582,16 +600,19 @@ class PortfolioResourceService:
         if existing is not None:
             return self._scenario_out(existing)
         self._check_version(source.revision_version, expected_version)
-        revision = int(
-            self.db.scalar(
-                select(func.max(PortfolioResourceScenario.scenario_revision)).where(
-                    PortfolioResourceScenario.tenant_id == self.tenant_id,
-                    PortfolioResourceScenario.portfolio_workspace_id == source.portfolio_workspace_id,
-                    PortfolioResourceScenario.logical_code == source.logical_code,
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.max(PortfolioResourceScenario.scenario_revision)).where(
+                        PortfolioResourceScenario.tenant_id == self.tenant_id,
+                        PortfolioResourceScenario.portfolio_workspace_id == source.portfolio_workspace_id,
+                        PortfolioResourceScenario.logical_code == source.logical_code,
+                    )
                 )
+                or source.scenario_revision
             )
-            or source.scenario_revision
-        ) + 1
+            + 1
+        )
         clone = PortfolioResourceScenario(
             tenant_id=self.tenant_id,
             portfolio_workspace_id=source.portfolio_workspace_id,
@@ -618,7 +639,9 @@ class PortfolioResourceService:
         self.db.flush()
         self._copy_scenario_rows(source.id, clone.id)
         self._recalculate_scenario(clone)
-        self._event("portfolio_resource.scenario_cloned", "PortfolioResourceScenario", clone.id, {"source_id": source.id})
+        self._event(
+            "portfolio_resource.scenario_cloned", "PortfolioResourceScenario", clone.id, {"source_id": source.id}
+        )
         self.db.commit()
         return self._scenario_out(clone)
 
@@ -633,7 +656,9 @@ class PortfolioResourceService:
             raise HTTPException(status_code=409, detail={"code": "FOUR_EYES_REQUIRED"})
         readiness = self._scenario_readiness(record, historical=False)
         if readiness.status != "READY":
-            raise HTTPException(status_code=409, detail={"code": "RESOURCE_SCENARIO_NOT_READY", "blockers": readiness.blockers})
+            raise HTTPException(
+                status_code=409, detail={"code": "RESOURCE_SCENARIO_NOT_READY", "blockers": readiness.blockers}
+            )
         record.status = "FROZEN"
         record.freeze_idempotency_key = idempotency_key
         record.frozen_at = utc_now()
@@ -809,8 +834,7 @@ class PortfolioResourceService:
                 "date_shifts": shifts,
                 "peak_utilization_delta": _decimal_or_zero(right.summary.peak_utilization)
                 - _decimal_or_zero(left.summary.peak_utilization),
-                "overloaded_period_delta": right.summary.overloaded_period_count
-                - left.summary.overloaded_period_count,
+                "overloaded_period_delta": right.summary.overloaded_period_count - left.summary.overloaded_period_count,
                 "overloaded_role_delta": right.summary.overloaded_role_count - left.summary.overloaded_role_count,
             },
             role_demand_delta=role_delta,
@@ -833,7 +857,11 @@ class PortfolioResourceService:
             blockers.append("READY_FOR_PORTFOLIO_RESOURCE_PLANNING_REQUIRED")
         if not plans:
             blockers.append("PUBLISHED_CAPACITY_PLAN_REQUIRED")
-        minimum = int(dict(self._policy(portfolio_id, require_published=False).get("readiness", {})).get("minimum_frozen_scenarios", 1))
+        minimum = int(
+            dict(self._policy(portfolio_id, require_published=False).get("readiness", {})).get(
+                "minimum_frozen_scenarios", 1
+            )
+        )
         if len(ready) < minimum:
             blockers.append("READY_FROZEN_RESOURCE_SCENARIO_REQUIRED")
         if any(item.summary.overloaded_period_count for item in ready):
@@ -926,8 +954,7 @@ class PortfolioResourceService:
             if capacity
             else {},
             ready_frozen_scenario_refs=[
-                {"id": item.id, "logical_code": item.logical_code, "revision": item.scenario_revision}
-                for item in ready
+                {"id": item.id, "logical_code": item.logical_code, "revision": item.scenario_revision} for item in ready
             ],
             scenario_hashes=[item.scenario_hash for item in ready],
             gate07f_analysis_hash=analysis.dataset.analysis_hash,
@@ -965,7 +992,13 @@ class PortfolioResourceService:
     ) -> ConfigurationPreviewOut:
         workspace = self._portfolio(portfolio_id) if portfolio_id else None
         record = self._configuration(configuration_id) if configuration_id else None
-        effective = deepcopy(content_override if content_override is not None else record.content_json if record else DEFAULT_CONFIGURATION)
+        effective = deepcopy(
+            content_override
+            if content_override is not None
+            else record.content_json
+            if record
+            else DEFAULT_CONFIGURATION
+        )
         issues = self._configuration_issues(effective)
         readiness_preview: dict | None = None
         warnings: list[str] = []
@@ -1009,16 +1042,19 @@ class PortfolioResourceService:
     def clone_configuration(self, configuration_id: int, expected_version: int) -> AdminConfiguration:
         source = self._configuration(configuration_id, lock=True)
         self._check_version(source.version, expected_version)
-        revision = int(
-            self.db.scalar(
-                select(func.coalesce(func.max(AdminConfiguration.revision), 0)).where(
-                    AdminConfiguration.tenant_id == self.tenant_id,
-                    AdminConfiguration.kind == CONFIGURATION_KIND,
-                    AdminConfiguration.code == source.code,
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.coalesce(func.max(AdminConfiguration.revision), 0)).where(
+                        AdminConfiguration.tenant_id == self.tenant_id,
+                        AdminConfiguration.kind == CONFIGURATION_KIND,
+                        AdminConfiguration.code == source.code,
+                    )
                 )
+                or 0
             )
-            or 0
-        ) + 1
+            + 1
+        )
         clone = AdminConfiguration(
             tenant_id=self.tenant_id,
             kind=CONFIGURATION_KIND,
@@ -1247,14 +1283,18 @@ class PortfolioResourceService:
                     status="NO_CAPACITY_DEFINED",
                 )
             )
-        return sorted(cells, key=lambda item: (item.resource_role_key, item.period_start, item.period_key)), sorted(set(issues))
+        return sorted(cells, key=lambda item: (item.resource_role_key, item.period_start, item.period_key)), sorted(
+            set(issues)
+        )
 
     def _scenario_out(self, record: PortfolioResourceScenario) -> ResourceScenarioOut:
         rows = self._scenario_rows(record.id)
         projects = [self._project_out(item) for item in rows]
         heatmap, unit_issues = self._capacity_demand(record)
         summary = self._summary(projects, heatmap)
-        readiness = self._scenario_readiness(record, historical=record.status == "FROZEN", summary=summary, unit_issues=unit_issues)
+        readiness = self._scenario_readiness(
+            record, historical=record.status == "FROZEN", summary=summary, unit_issues=unit_issues
+        )
         return ResourceScenarioOut(
             id=record.id,
             tenant_id=record.tenant_id,
@@ -1324,7 +1364,11 @@ class PortfolioResourceService:
     ) -> ResourceScenarioSummaryOut:
         selected = [item for item in projects if PortfolioResourceService._included(item.selection_state)]
         utilizations = [item.utilization_percent for item in heatmap if item.utilization_percent is not None]
-        overloaded = [item for item in heatmap if item.status in {"OVERLOADED", "NO_CAPACITY_DEFINED"} and item.selected_demand > 0]
+        overloaded = [
+            item
+            for item in heatmap
+            if item.status in {"OVERLOADED", "NO_CAPACITY_DEFINED"} and item.selected_demand > 0
+        ]
         covered = [item for item in selected if item.demand_covered]
         return ResourceScenarioSummaryOut(
             selected_count=len(selected),
@@ -1412,7 +1456,9 @@ class PortfolioResourceService:
             profile = self._published_demand(project_id)
             new_hash = profile.demand_hash if profile else ""
             if before.resource_demand_hash != new_hash:
-                demand_changes.append({"project_id": project_id, "before": before.resource_demand_hash, "after": new_hash})
+                demand_changes.append(
+                    {"project_id": project_id, "before": before.resource_demand_hash, "after": new_hash}
+                )
             if before.source_project_start != after.target_start or before.source_project_finish != after.target_finish:
                 date_changes.append(
                     {
@@ -1630,7 +1676,10 @@ class PortfolioResourceService:
     ) -> str:
         capacity = self._capacity(scenario.capacity_plan_id)
         demand_hashes = [
-            (item.project_workspace_id, (self._published_demand(item.project_workspace_id) or _EmptyDemand()).demand_hash)
+            (
+                item.project_workspace_id,
+                (self._published_demand(item.project_workspace_id) or _EmptyDemand()).demand_hash,
+            )
             for item in analysis.dataset.rows
         ]
         return _hash(
@@ -1639,9 +1688,7 @@ class PortfolioResourceService:
                 "prioritization_hash": analysis.dataset.source_prioritization_hash,
                 "membership_set_hash": analysis.dataset.membership_set_hash,
                 "evaluation_set_hash": analysis.dataset.evaluation_set_hash,
-                "configuration_hash": _hash(
-                    self._policy(scenario.portfolio_workspace_id, require_published=False)
-                ),
+                "configuration_hash": _hash(self._policy(scenario.portfolio_workspace_id, require_published=False)),
                 "capacity_plan_hash": capacity.capacity_hash,
                 "demand_hashes": sorted(demand_hashes),
                 "source_project_dates": sorted(

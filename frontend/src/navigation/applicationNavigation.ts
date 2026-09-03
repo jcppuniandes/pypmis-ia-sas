@@ -47,6 +47,49 @@ export type ControlFlowView =
   | "post-fid-activation-handoff"
   | "post-fid-history"
   | "post-fid-governance-configuration"
+  | "business-case-my"
+  | "business-case-overview"
+  | "business-case-current-revision"
+  | "business-case-strategic"
+  | "business-case-alternatives"
+  | "business-case-benefits"
+  | "business-case-project-definition"
+  | "business-case-financial"
+  | "business-case-budget-resources"
+  | "business-case-funding"
+  | "business-case-risk-permits"
+  | "business-case-execution"
+  | "business-case-assumptions"
+  | "business-case-recommendation"
+  | "business-case-readiness"
+  | "business-case-material-changes"
+  | "business-case-decision-snapshots"
+  | "business-case-history"
+  | "business-case-configuration"
+  | "financial-model-my-models"
+  | "financial-model-overview"
+  | "financial-model-current-version"
+  | "financial-model-assumptions"
+  | "financial-model-economic-case"
+  | "financial-model-financial-case"
+  | "financial-model-capex-opex"
+  | "financial-model-revenue-benefits"
+  | "financial-model-capital-structure"
+  | "financial-model-funding-linkage"
+  | "financial-model-investors"
+  | "financial-model-debt"
+  | "financial-model-cash-flow"
+  | "financial-model-debt-service"
+  | "financial-model-indicators"
+  | "financial-model-covenants"
+  | "financial-model-scenarios"
+  | "financial-model-sensitivities"
+  | "financial-model-break-even"
+  | "financial-model-readiness"
+  | "financial-model-source-lineage"
+  | "financial-model-compare-versions"
+  | "financial-model-history-audit"
+  | "financial-model-configuration"
   | "project-definition-fel"
   | "funds-overview"
   | "funds-envelopes"
@@ -233,6 +276,59 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
           { key: "investment-gate-preparation", label: "Investment Gate Preparation" },
           { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
           { key: "gate-decision", label: "Gate Decision" },
+        ],
+      },
+      {
+        key: "business-case-manager",
+        label: "Business Case Manager",
+        submodules: [
+          { key: "business-case-my", label: "My Business Cases" },
+          { key: "business-case-overview", label: "Business Case Overview" },
+          { key: "business-case-current-revision", label: "Current Revision" },
+          { key: "business-case-strategic", label: "Strategic Case" },
+          { key: "business-case-alternatives", label: "Alternatives" },
+          { key: "business-case-benefits", label: "Benefits & Value" },
+          { key: "business-case-project-definition", label: "Project Definition" },
+          { key: "business-case-financial", label: "Economic & Financial Model" },
+          { key: "business-case-budget-resources", label: "Budget / Resources" },
+          { key: "business-case-funding", label: "Funding" },
+          { key: "business-case-risk-permits", label: "Risk / Permits" },
+          { key: "business-case-execution", label: "Execution Case" },
+          { key: "business-case-assumptions", label: "Assumptions & Constraints" },
+          { key: "business-case-recommendation", label: "Recommendation" },
+          { key: "business-case-readiness", label: "Business Case Readiness" },
+          { key: "business-case-material-changes", label: "Material Changes" },
+          { key: "business-case-decision-snapshots", label: "Decision Snapshots" },
+          { key: "business-case-history", label: "History / Audit" },
+        ],
+      },
+      {
+        key: "economic-financial-model",
+        label: "Economic & Financial Model",
+        submodules: [
+          { key: "financial-model-my-models", label: "My Models" },
+          { key: "financial-model-overview", label: "Overview" },
+          { key: "financial-model-current-version", label: "Current Version" },
+          { key: "financial-model-assumptions", label: "Assumptions" },
+          { key: "financial-model-economic-case", label: "Economic Case" },
+          { key: "financial-model-financial-case", label: "Financial Case" },
+          { key: "financial-model-capex-opex", label: "CAPEX / OPEX" },
+          { key: "financial-model-revenue-benefits", label: "Revenue / Benefits" },
+          { key: "financial-model-capital-structure", label: "Capital Structure" },
+          { key: "financial-model-funding-linkage", label: "Funding Linkage" },
+          { key: "financial-model-investors", label: "Investors" },
+          { key: "financial-model-debt", label: "Debt" },
+          { key: "financial-model-cash-flow", label: "Cash Flow" },
+          { key: "financial-model-debt-service", label: "Debt Service" },
+          { key: "financial-model-indicators", label: "Indicators" },
+          { key: "financial-model-covenants", label: "Covenants" },
+          { key: "financial-model-scenarios", label: "Scenarios" },
+          { key: "financial-model-sensitivities", label: "Sensitivities" },
+          { key: "financial-model-break-even", label: "Break-Even" },
+          { key: "financial-model-readiness", label: "Readiness" },
+          { key: "financial-model-source-lineage", label: "Source Lineage" },
+          { key: "financial-model-compare-versions", label: "Compare Versions" },
+          { key: "financial-model-history-audit", label: "History / Audit" },
         ],
       },
       {
@@ -532,6 +628,8 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "permit-readiness-configuration", label: "Permit Readiness Configuration" },
       { key: "investment-decision-configuration", label: "Investment Decision / FID Governance" },
       { key: "post-fid-governance-configuration", label: "Post-FID Project Governance" },
+      { key: "business-case-configuration", label: "Business Case Manager" },
+      { key: "financial-model-configuration", label: "Economic & Financial Model" },
     ],
   },
   {

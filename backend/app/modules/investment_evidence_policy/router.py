@@ -128,6 +128,8 @@ def configuration_preview(
         project_ids=payload.project_workspace_ids,
         configuration_id=configuration_id,
         content_override=payload.content_json,
+        project_type_code=payload.project_type_code,
+        governance_model=payload.governance_model,
     )
 
 
@@ -179,6 +181,8 @@ def effective_preview(
         project_ids=payload.project_workspace_ids,
         configuration_id=payload.configuration_id,
         content_override=payload.content_json,
+        project_type_code=payload.project_type_code,
+        governance_model=payload.governance_model,
     )
 
 

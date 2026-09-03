@@ -213,10 +213,10 @@ jobs:
         run: |
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
-      - name: Apply and verify Gate 07L schema head
+      - name: Apply and verify Gate 07M-FIN schema head
         run: |
           docker compose exec -T api alembic upgrade head
-          docker compose exec -T api alembic current | grep 20260901_0056
+          docker compose exec -T api alembic current | grep 20260902_0058
       - name: Run Playwright production smoke
         run: cd frontend && npm run test:e2e
       - name: Run Gate 07E-J-FEL governed USER/ADMIN flows three consecutive times

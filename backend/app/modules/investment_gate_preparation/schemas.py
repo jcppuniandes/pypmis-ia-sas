@@ -74,6 +74,10 @@ class EvidenceItemOut(BaseModel):
     preparation_id: int
     requirement_key: str
     evidence_type: str
+    classification: str | None = None
+    blocking: bool = False
+    provider_key: str | None = None
+    coverage_requirement: float | None = None
     scope_type: str
     scope_id: int | None
     evidence_revision: int
@@ -96,6 +100,9 @@ class EvidenceItemOut(BaseModel):
     validation_note: str | None
     warnings: list[str]
     blockers: list[str]
+    source_current: bool | None = None
+    source_readiness_status: str | None = None
+    resolution_status: str
     revision_version: int
 
 
@@ -111,6 +118,7 @@ class PreparationReadinessOut(BaseModel):
     blocked_project_count: int
     coverage_percent: float
     category_summary: dict
+    evidence_coverage: dict = Field(default_factory=dict)
     warnings: list[str]
     blockers: list[str]
     investment_gate_preparation_ready: bool
@@ -174,6 +182,7 @@ class RefreshPreviewOut(BaseModel):
     proposed_source_hash: str
     source_current: bool
     source_revision_changes: dict
+    policy_changes: dict = Field(default_factory=dict)
     project_set_changes: dict
     evidence_changes: list[dict]
     blockers_added: list[str]
@@ -219,6 +228,8 @@ class HandoffOut(BaseModel):
     permit_summary: dict
     contracting_summary: dict
     execution_plan_summary: dict
+    business_case_summary: dict
+    economic_financial_summary: dict
     open_conditions: list[dict]
     warnings: list[str]
     blockers: list[str]

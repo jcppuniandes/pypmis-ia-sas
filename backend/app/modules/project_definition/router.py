@@ -204,9 +204,9 @@ def reevaluate(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> AssessmentOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_assessment.reevaluate", ASSESSOR_ROLES
-    ).reevaluate(assessment_id, payload.idempotency_key)
+    result = _authorized(db, tenant_id, user_id, "project_definition_assessment.reevaluate", ASSESSOR_ROLES).reevaluate(
+        assessment_id, payload.idempotency_key
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -230,9 +230,9 @@ def create_action(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> DefinitionActionOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_action.manage", ASSESSOR_ROLES
-    ).create_action(project_id, payload)
+    result = _authorized(db, tenant_id, user_id, "project_definition_action.manage", ASSESSOR_ROLES).create_action(
+        project_id, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -247,9 +247,9 @@ def update_action(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> DefinitionActionOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_action.manage", ASSESSOR_ROLES
-    ).update_action(action_id, expected_version, payload)
+    result = _authorized(db, tenant_id, user_id, "project_definition_action.manage", ASSESSOR_ROLES).update_action(
+        action_id, expected_version, payload
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -274,9 +274,9 @@ def submit_review(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ProjectFELStatusOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_stage.submit", MANAGER_ROLES
-    ).submit_stage_review(project_id, expected_version, payload.idempotency_key)
+    result = _authorized(db, tenant_id, user_id, "project_definition_stage.submit", MANAGER_ROLES).submit_stage_review(
+        project_id, expected_version, payload.idempotency_key
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -291,9 +291,9 @@ def complete_stage(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ProjectFELStatusOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_stage.review", REVIEWER_ROLES
-    ).complete_stage(project_id, expected_version, payload.idempotency_key)
+    result = _authorized(db, tenant_id, user_id, "project_definition_stage.review", REVIEWER_ROLES).complete_stage(
+        project_id, expected_version, payload.idempotency_key
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -308,9 +308,9 @@ def return_stage(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ProjectFELStatusOut:
-    result = _authorized(
-        db, tenant_id, user_id, "project_definition_stage.review", REVIEWER_ROLES
-    ).return_stage(project_id, expected_version, payload.idempotency_key, payload.note)
+    result = _authorized(db, tenant_id, user_id, "project_definition_stage.review", REVIEWER_ROLES).return_stage(
+        project_id, expected_version, payload.idempotency_key, payload.note
+    )
     _etag(response, result.revision_version)
     return result
 
@@ -349,7 +349,9 @@ def investment_gate_evidence(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> InvestmentGateEvidenceOut:
-    return _authorized(db, tenant_id, user_id, "project_definition.read", VIEW_ROLES).investment_gate_evidence(project_id)
+    return _authorized(db, tenant_id, user_id, "project_definition.read", VIEW_ROLES).investment_gate_evidence(
+        project_id
+    )
 
 
 @router.get("/project-definition/admin/configurations", response_model=list[AdminConfigurationOut])
@@ -368,7 +370,9 @@ def configuration_preview(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ConfigurationPreviewOut:
-    return _authorized(db, tenant_id, user_id, "project_definition.admin.configure", CONFIG_ROLES).configuration_preview(
+    return _authorized(
+        db, tenant_id, user_id, "project_definition.admin.configure", CONFIG_ROLES
+    ).configuration_preview(
         payload.project_workspace_id,
         payload.project_type,
         payload.governance_model,
@@ -411,7 +415,9 @@ def update_configuration(
     return result
 
 
-@router.post("/project-definition/admin/configurations/{configuration_id}/publish", response_model=AdminConfigurationOut)
+@router.post(
+    "/project-definition/admin/configurations/{configuration_id}/publish", response_model=AdminConfigurationOut
+)
 def publish_configuration(
     configuration_id: int,
     response: Response,

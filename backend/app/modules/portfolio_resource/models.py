@@ -50,15 +50,16 @@ class PortfolioResourceCapacityPlan(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "tenant_id", "portfolio_workspace_id", "logical_code", "plan_revision",
+            "tenant_id",
+            "portfolio_workspace_id",
+            "logical_code",
+            "plan_revision",
             name="uq_portfolio_resource_capacity_revision",
         ),
         UniqueConstraint("tenant_id", "create_idempotency_key", name="uq_resource_capacity_create_key"),
         UniqueConstraint("tenant_id", "publish_idempotency_key", name="uq_resource_capacity_publish_key"),
         CheckConstraint("status IN ('DRAFT','PUBLISHED','SUPERSEDED')", name="ck_resource_capacity_status"),
-        CheckConstraint(
-            "period_granularity IN ('YEAR','QUARTER','MONTH')", name="ck_resource_capacity_granularity"
-        ),
+        CheckConstraint("period_granularity IN ('YEAR','QUARTER','MONTH')", name="ck_resource_capacity_granularity"),
         CheckConstraint("planning_horizon_end >= planning_horizon_start", name="ck_resource_capacity_horizon"),
         Index("ix_resource_capacity_tenant_portfolio", "tenant_id", "portfolio_workspace_id"),
     )
@@ -84,7 +85,10 @@ class PortfolioResourceCapacityPeriod(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "tenant_id", "capacity_plan_id", "resource_role_key", "period_key",
+            "tenant_id",
+            "capacity_plan_id",
+            "resource_role_key",
+            "period_key",
             name="uq_resource_capacity_role_period",
         ),
         CheckConstraint("capacity_value >= 0", name="ck_resource_capacity_non_negative"),
@@ -124,7 +128,10 @@ class ProjectResourceDemandProfile(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "tenant_id", "project_workspace_id", "logical_code", "profile_revision",
+            "tenant_id",
+            "project_workspace_id",
+            "logical_code",
+            "profile_revision",
             name="uq_project_resource_demand_revision",
         ),
         UniqueConstraint("tenant_id", "create_idempotency_key", name="uq_resource_demand_create_key"),
@@ -164,7 +171,10 @@ class ProjectResourceDemandPeriod(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "tenant_id", "demand_profile_id", "resource_role_key", "period_key",
+            "tenant_id",
+            "demand_profile_id",
+            "resource_role_key",
+            "period_key",
             name="uq_resource_demand_role_period",
         ),
         CheckConstraint("demand_value >= 0", name="ck_resource_demand_non_negative"),
@@ -211,7 +221,10 @@ class PortfolioResourceScenario(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "tenant_id", "portfolio_workspace_id", "logical_code", "scenario_revision",
+            "tenant_id",
+            "portfolio_workspace_id",
+            "logical_code",
+            "scenario_revision",
             name="uq_portfolio_resource_scenario_revision",
         ),
         UniqueConstraint("tenant_id", "create_idempotency_key", name="uq_resource_scenario_create_key"),
@@ -299,9 +312,11 @@ def _protect_published_capacity(_mapper, _connection, target: PortfolioResourceC
     state = inspect(target)
     previous = state.attrs.status.history.deleted[0] if state.attrs.status.history.deleted else target.status
     changed = {attribute.key for attribute in state.attrs if attribute.history.has_changes()}
-    if previous == "PUBLISHED" and target.status == "SUPERSEDED" and changed <= {
-        "status", "updated_at", "updated_by", "revision_version"
-    }:
+    if (
+        previous == "PUBLISHED"
+        and target.status == "SUPERSEDED"
+        and changed <= {"status", "updated_at", "updated_by", "revision_version"}
+    ):
         return
     if previous in {"PUBLISHED", "SUPERSEDED"} and changed:
         raise ValueError("Published Portfolio Resource Capacity Plans are immutable")
@@ -312,9 +327,11 @@ def _protect_published_demand(_mapper, _connection, target: ProjectResourceDeman
     state = inspect(target)
     previous = state.attrs.status.history.deleted[0] if state.attrs.status.history.deleted else target.status
     changed = {attribute.key for attribute in state.attrs if attribute.history.has_changes()}
-    if previous == "PUBLISHED" and target.status == "SUPERSEDED" and changed <= {
-        "status", "updated_at", "updated_by", "revision_version"
-    }:
+    if (
+        previous == "PUBLISHED"
+        and target.status == "SUPERSEDED"
+        and changed <= {"status", "updated_at", "updated_by", "revision_version"}
+    ):
         return
     if previous in {"PUBLISHED", "SUPERSEDED"} and changed:
         raise ValueError("Published Project Resource Demand Profiles are immutable")

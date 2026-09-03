@@ -58,6 +58,8 @@ EVIDENCE_TYPES = {
     "PROJECT_DEFINITION_READINESS",
     "FEL_STAGE_READINESS",
     "PDRI_OR_DEFINITION_ASSESSMENT",
+    "BUSINESS_CASE_READINESS",
+    "ECONOMIC_FINANCIAL_READINESS",
     "RISK_READINESS",
     "FUNDING_READINESS",
     "PERMIT_READINESS",
@@ -73,6 +75,8 @@ MISSING_BLOCKERS = {
     "PROJECT_DEFINITION_READINESS": "MISSING_DEFINITION_READINESS",
     "FEL_STAGE_READINESS": "MISSING_DEFINITION_READINESS",
     "PDRI_OR_DEFINITION_ASSESSMENT": "MISSING_PDRI_OR_DEFINITION_ASSESSMENT",
+    "BUSINESS_CASE_READINESS": "MISSING_BUSINESS_CASE_READINESS",
+    "ECONOMIC_FINANCIAL_READINESS": "MISSING_ECONOMIC_FINANCIAL_READINESS",
     "RISK_READINESS": "MISSING_RISK_READINESS",
     "FUNDING_READINESS": "MISSING_FUNDING_READINESS",
     "PERMIT_READINESS": "MISSING_PERMIT_READINESS",
@@ -602,7 +606,20 @@ class InvestmentGatePreparationService:
         if profile is None:
             raise HTTPException(status_code=409, detail={"code": "PUBLISHED_APPLICABLE_GATE_PROFILE_REQUIRED"})
         contract = self._gate07i_contract(record.portfolio_workspace_id)
-        proposed = self._current_preparation_hash(record, contract, profile.content_hash)
+        next_policy = InvestmentEvidencePolicyService(
+            self.db, self.tenant_id, self.actor_id, self.context
+        ).published_snapshot(
+            record.portfolio_workspace_id,
+            record.profile_code,
+            list(contract.get("selected_project_set_reference", [])),
+        )
+        current_policy = dict(record.source_snapshot_json.get("evidence_policy") or {}) or None
+        proposed = self._current_preparation_hash(
+            record,
+            contract,
+            profile.content_hash,
+            evidence_policy_hash=dict(next_policy or {}).get("policy_hash"),
+        )
         old_projects = set(record.source_snapshot_json.get("selected_project_ids", []))
         new_projects = set(contract.get("selected_project_set_reference", []))
         current_blockers = set(record.blockers_json or [])
@@ -622,6 +639,7 @@ class InvestmentGatePreparationService:
                 "recommendation_hash_changed": record.source_recommendation_hash != contract["recommendation_hash"],
                 "profile_revision": [record.profile_revision, profile.revision],
             },
+            policy_changes=self._policy_changes(current_policy, next_policy),
             project_set_changes={
                 "added": sorted(new_projects - old_projects),
                 "removed": sorted(old_projects - new_projects),
@@ -656,7 +674,19 @@ class InvestmentGatePreparationService:
         if profile is None:
             raise HTTPException(status_code=409, detail={"code": "PUBLISHED_APPLICABLE_GATE_PROFILE_REQUIRED"})
         contract = self._gate07i_contract(record.portfolio_workspace_id)
-        proposed = self._current_preparation_hash(record, contract, profile.content_hash)
+        next_policy = InvestmentEvidencePolicyService(
+            self.db, self.tenant_id, self.actor_id, self.context
+        ).published_snapshot(
+            record.portfolio_workspace_id,
+            record.profile_code,
+            list(contract.get("selected_project_set_reference", [])),
+        )
+        proposed = self._current_preparation_hash(
+            record,
+            contract,
+            profile.content_hash,
+            evidence_policy_hash=dict(next_policy or {}).get("policy_hash"),
+        )
         if proposed != expected_source_hash:
             raise HTTPException(status_code=412, detail={"code": "STALE_INVESTMENT_GATE_SOURCE"})
         record.investment_gate_profile_id = profile.id
@@ -670,7 +700,7 @@ class InvestmentGatePreparationService:
         record.source_snapshot_json = self._source_snapshot(
             contract,
             profile,
-            deepcopy(record.source_snapshot_json.get("evidence_policy")),
+            next_policy,
         )
         record.conditions_json = self._merge_conditions(record.conditions_json, contract)
         self._sync_requirements(record, self._profile_content(record, profile), contract)
@@ -880,6 +910,8 @@ class InvestmentGatePreparationService:
             permit_summary=dict(summary.get("Permits", {})),
             contracting_summary=dict(summary.get("Contracting", {})),
             execution_plan_summary=dict(summary.get("Execution Planning", {})),
+            business_case_summary=self._evidence_source_summary(record, "BUSINESS_CASE_READINESS"),
+            economic_financial_summary=self._evidence_source_summary(record, "ECONOMIC_FINANCIAL_READINESS"),
             open_conditions=[item for item in record.conditions_json or [] if item.get("preparation_status") == "OPEN"],
             warnings=list(record.warnings_json or []),
             blockers=[],
@@ -1267,6 +1299,7 @@ class InvestmentGatePreparationService:
         valid_items: set[tuple[str, str]] = set()
         required_items = 0
         categories: dict[str, dict[str, int]] = {}
+        coverage_buckets: dict[str, dict[str, Any]] = {}
         for item in items:
             try:
                 requirement = self._requirement(profile_content, item.requirement_key, item.scope_id)
@@ -1280,32 +1313,48 @@ class InvestmentGatePreparationService:
             if requirement:
                 required_items += 1
                 bucket["required"] += 1
+                if requirement.get("classification") == "A":
+                    coverage = coverage_buckets.setdefault(
+                        item.evidence_type,
+                        {
+                            "required": 0,
+                            "valid": 0,
+                            "coverage_requirement": float(requirement.get("coverage_requirement") or 100),
+                        },
+                    )
+                    coverage["required"] += 1
                 if effective == "VALID":
                     valid_items.add((item.requirement_key, item.scope_key))
                     bucket["valid"] += 1
+                    if requirement.get("classification") == "A":
+                        coverage_buckets[item.evidence_type]["valid"] += 1
                 else:
                     bucket["blocked"] += 1
-                    item_blockers = set(item.blockers_json or [])
-                    if "SOURCE_PROVIDER_MISSING" in item_blockers:
-                        blockers.append("SOURCE_PROVIDER_MISSING")
-                    elif "PROVIDER_CONTRACT_INVALID" in item_blockers:
-                        blockers.append("PROVIDER_CONTRACT_INVALID")
-                    elif "SCOPE_UNSUPPORTED" in item_blockers:
-                        blockers.append("SCOPE_UNSUPPORTED")
-                    elif "MINIMUM_READINESS_NOT_MET" in item_blockers:
-                        blockers.append("MINIMUM_READINESS_NOT_MET")
-                    elif effective == "EXPIRED":
-                        blockers.append("EVIDENCE_EXPIRED")
-                    elif effective == "STALE":
-                        blockers.append("EVIDENCE_STALE")
-                    elif "EVIDENCE_SCOPE_MISMATCH" in set(item.blockers_json or []) or (
-                        item.scope_reference_hash and item.scope_reference_hash != record.recommended_project_set_hash
-                    ):
-                        blockers.append("EVIDENCE_SCOPE_MISMATCH")
-                    elif "INSUFFICIENT_FEL_MATURITY" in set(item.blockers_json or []):
-                        blockers.append("INSUFFICIENT_FEL_MATURITY")
+                    if not requirement.get("blocking"):
+                        warnings.append(f"NON_BLOCKING_EVIDENCE_{item.evidence_type}_{effective}")
                     else:
-                        blockers.append(MISSING_BLOCKERS.get(item.evidence_type, "MISSING_REQUIRED_EVIDENCE"))
+                        item_blockers = set(item.blockers_json or [])
+                        if "SOURCE_PROVIDER_MISSING" in item_blockers:
+                            blockers.append("SOURCE_PROVIDER_MISSING")
+                        elif "PROVIDER_CONTRACT_INVALID" in item_blockers:
+                            blockers.append("PROVIDER_CONTRACT_INVALID")
+                        elif "SCOPE_UNSUPPORTED" in item_blockers:
+                            blockers.append("SCOPE_UNSUPPORTED")
+                        elif "MINIMUM_READINESS_NOT_MET" in item_blockers:
+                            blockers.append("MINIMUM_READINESS_NOT_MET")
+                        elif effective == "EXPIRED":
+                            blockers.append("EVIDENCE_EXPIRED")
+                        elif effective == "STALE":
+                            blockers.append("EVIDENCE_STALE")
+                        elif "EVIDENCE_SCOPE_MISMATCH" in set(item.blockers_json or []) or (
+                            item.scope_reference_hash
+                            and item.scope_reference_hash != record.recommended_project_set_hash
+                        ):
+                            blockers.append("EVIDENCE_SCOPE_MISMATCH")
+                        elif "INSUFFICIENT_FEL_MATURITY" in set(item.blockers_json or []):
+                            blockers.append("INSUFFICIENT_FEL_MATURITY")
+                        else:
+                            blockers.append(MISSING_BLOCKERS.get(item.evidence_type, "MISSING_REQUIRED_EVIDENCE"))
             elif effective not in {"VALID", "NOT_REQUIRED"}:
                 warnings.append(f"OPTIONAL_EVIDENCE_{item.evidence_type}_{effective}")
         project = self._project_readiness(record, profile_content)
@@ -1331,6 +1380,17 @@ class InvestmentGatePreparationService:
             key: {**value, "status": "VALID" if value["required"] == value["valid"] else "BLOCKED"}
             for key, value in categories.items()
         }
+        evidence_coverage = {}
+        for evidence_type, value in coverage_buckets.items():
+            coverage_percent = round((value["valid"] / value["required"]) * 100, 2) if value["required"] else 100.0
+            threshold = float(value["coverage_requirement"])
+            evidence_coverage[evidence_type] = {
+                **value,
+                "coverage_percent": coverage_percent,
+                "status": "VALID" if coverage_percent >= threshold else "BLOCKED",
+            }
+            if coverage_percent < threshold:
+                blockers.append(f"EVIDENCE_COVERAGE_INCOMPLETE:{evidence_type}")
         final_warnings = sorted(set(warnings))
         final_blockers = sorted(set(blockers))
         if not historical and record.status != "FROZEN":
@@ -1351,6 +1411,7 @@ class InvestmentGatePreparationService:
             blocked_project_count=project.blocked_project_count,
             coverage_percent=project.coverage_percent,
             category_summary=category_summary,
+            evidence_coverage=evidence_coverage,
             warnings=final_warnings,
             blockers=final_blockers,
             investment_gate_preparation_ready=frozen_ready,
@@ -1378,6 +1439,7 @@ class InvestmentGatePreparationService:
                 for item in profile.get("requirements", [])
                 if item.get("scope") in {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"}
                 and self._resolved_requirement(item, project_id).get("required")
+                and self._resolved_requirement(item, project_id).get("blocking")
                 and self._resolved_requirement(item, project_id).get("classification") != "C"
             }
             rows = [
@@ -1408,7 +1470,14 @@ class InvestmentGatePreparationService:
             projects=projects,
         )
 
-    def _current_preparation_hash(self, record: InvestmentGatePreparation, contract: dict, profile_hash: str) -> str:
+    def _current_preparation_hash(
+        self,
+        record: InvestmentGatePreparation,
+        contract: dict,
+        profile_hash: str,
+        *,
+        evidence_policy_hash: str | None = None,
+    ) -> str:
         evidence_hashes = [
             {
                 "requirement_key": item.requirement_key,
@@ -1426,9 +1495,9 @@ class InvestmentGatePreparationService:
                 "resource_planning_hash": contract.get("resource_planning_hash"),
                 "analysis_hash": contract.get("analysis_hash"),
                 "profile_hash": profile_hash,
-                "evidence_policy_hash": dict(record.source_snapshot_json.get("evidence_policy") or {}).get(
-                    "policy_hash"
-                ),
+                "evidence_policy_hash": evidence_policy_hash
+                if evidence_policy_hash is not None
+                else dict(record.source_snapshot_json.get("evidence_policy") or {}).get("policy_hash"),
                 "evidence": evidence_hashes,
             }
         )
@@ -1490,17 +1559,44 @@ class InvestmentGatePreparationService:
             frozen_by=record.frozen_by,
             frozen_at=record.frozen_at,
             voided_at=record.voided_at,
-            evidence=[self._evidence_out(item, record) for item in self._evidence_records(record.id)],
+            evidence=[
+                self._evidence_out(item, record, self._profile_content(record, profile))
+                for item in self._evidence_records(record.id)
+            ],
             readiness=readiness,
             allowed_actions=self._allowed_actions(record, readiness),
         )
 
-    def _evidence_out(self, item: InvestmentGateEvidenceItem, record: InvestmentGatePreparation) -> EvidenceItemOut:
+    def _evidence_out(
+        self,
+        item: InvestmentGateEvidenceItem,
+        record: InvestmentGatePreparation,
+        profile_content: dict,
+    ) -> EvidenceItemOut:
+        try:
+            requirement = self._requirement(profile_content, item.requirement_key, item.scope_id)
+        except HTTPException:
+            requirement = {}
+        source = next((value for value in item.evidence_refs_json or [] if isinstance(value, dict)), {})
+        source_current = source.get("source_current")
+        source_readiness = source.get("readiness_status") or source.get("overall_readiness")
+        effective_status = self._effective_evidence_status(item, record)
+        resolution_status = effective_status
+        if effective_status == "STALE" or source_current is False:
+            resolution_status = "STALE"
+        elif source_readiness == "BLOCKED" or (
+            effective_status in {"INVALID", "NOT_AVAILABLE", "MISSING"} and item.blockers_json
+        ):
+            resolution_status = "BLOCKED"
         return EvidenceItemOut(
             id=item.id,
             preparation_id=item.preparation_id,
             requirement_key=item.requirement_key,
             evidence_type=item.evidence_type,
+            classification=requirement.get("classification"),
+            blocking=bool(requirement.get("blocking")),
+            provider_key=requirement.get("provider_key"),
+            coverage_requirement=requirement.get("coverage_requirement"),
             scope_type=item.scope_type,
             scope_id=item.scope_id,
             evidence_revision=item.evidence_revision,
@@ -1509,7 +1605,7 @@ class InvestmentGatePreparationService:
             source_record_id=item.source_record_id,
             source_hash=item.source_hash,
             scope_reference_hash=item.scope_reference_hash,
-            status=self._effective_evidence_status(item, record),
+            status=effective_status,
             evidence_date=item.evidence_date,
             valid_until=item.valid_until,
             issuer=item.issuer,
@@ -1523,12 +1619,20 @@ class InvestmentGatePreparationService:
             validation_note=item.validation_note,
             warnings=list(item.warnings_json or []),
             blockers=list(item.blockers_json or []),
+            source_current=source_current if isinstance(source_current, bool) else None,
+            source_readiness_status=str(source_readiness) if source_readiness is not None else None,
+            resolution_status=resolution_status,
             revision_version=item.revision_version,
         )
 
     @staticmethod
     def _allowed_actions(record: InvestmentGatePreparation, readiness: PreparationReadinessOut) -> list[str]:
-        actions = ["can_view_investment_gate_preparation", "can_view_handoff"]
+        actions = [
+            "can_view_investment_gate_preparation",
+            "can_view_handoff",
+            "can_view_business_case_evidence",
+            "can_view_economic_financial_evidence",
+        ]
         if record.status in {"DRAFT", "IN_PREPARATION", "READY_FOR_REVIEW"}:
             actions.extend(
                 [
@@ -1987,6 +2091,8 @@ class InvestmentGatePreparationService:
             "PROJECT_DEFINITION_READINESS": "Project Definition / FEL",
             "FEL_STAGE_READINESS": "Project Definition / FEL",
             "PDRI_OR_DEFINITION_ASSESSMENT": "Definition Maturity",
+            "BUSINESS_CASE_READINESS": "Business Case",
+            "ECONOMIC_FINANCIAL_READINESS": "Economic / Financial",
             "RISK_READINESS": "Risk",
             "FUNDING_READINESS": "Funding",
             "PERMIT_READINESS": "Permits",
@@ -1994,6 +2100,68 @@ class InvestmentGatePreparationService:
             "EXECUTION_PLAN_READINESS": "Execution Planning",
         }
         return mapping.get(evidence_type, "Other Evidence")
+
+    def _evidence_source_summary(self, record: InvestmentGatePreparation, evidence_type: str) -> dict:
+        rows = [item for item in self._evidence_records(record.id) if item.evidence_type == evidence_type]
+        references = []
+        for item in rows:
+            references.append(
+                {
+                    "evidence_item_id": item.id,
+                    "scope_type": item.scope_type,
+                    "scope_id": item.scope_id,
+                    "source_module": item.source_module,
+                    "source_record_id": item.source_record_id,
+                    "source_hash": item.source_hash,
+                    "status": self._effective_evidence_status(item, record),
+                    "evidence_refs": deepcopy(item.evidence_refs_json or []),
+                    "warnings": deepcopy(item.warnings_json or []),
+                    "blockers": deepcopy(item.blockers_json or []),
+                }
+            )
+        return {
+            "evidence_type": evidence_type,
+            "frozen": record.status == "FROZEN",
+            "reference_count": len(references),
+            "references": references,
+            "summary_hash": _hash(references),
+        }
+
+    @staticmethod
+    def _policy_changes(current: dict | None, proposed: dict | None) -> dict:
+        current_value = dict(current or {})
+        proposed_value = dict(proposed or {})
+
+        def requirements(snapshot: dict) -> dict[str, dict]:
+            return {
+                str(item.get("requirement_key")): {
+                    "evidence_type": item.get("evidence_type"),
+                    "classification": item.get("classification"),
+                    "blocking": bool(item.get("blocking")),
+                    "provider_key": item.get("provider_key"),
+                    "coverage_requirement": item.get("coverage_requirement"),
+                }
+                for item in snapshot.get("requirements", [])
+            }
+
+        before = requirements(current_value)
+        after = requirements(proposed_value)
+        changed = {
+            key: {"from": before.get(key), "to": after.get(key)}
+            for key in sorted(set(before) | set(after))
+            if before.get(key) != after.get(key)
+        }
+        return {
+            "changed": current_value.get("policy_hash") != proposed_value.get("policy_hash"),
+            "current_policy_id": current_value.get("policy_id"),
+            "current_policy_revision": current_value.get("policy_revision"),
+            "current_policy_hash": current_value.get("policy_hash"),
+            "proposed_policy_id": proposed_value.get("policy_id"),
+            "proposed_policy_revision": proposed_value.get("policy_revision"),
+            "proposed_policy_hash": proposed_value.get("policy_hash"),
+            "requirement_changes": changed,
+            "requires_explicit_refresh": bool(changed),
+        }
 
     def _package_payload(self, record: InvestmentGatePreparation, readiness: PreparationReadinessOut) -> dict:
         return {

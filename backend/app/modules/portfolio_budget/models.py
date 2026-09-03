@@ -274,12 +274,8 @@ class ProjectDependency(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id"), index=True)
-    predecessor_project_workspace_id: Mapped[int] = mapped_column(
-        ForeignKey("enterprise_workspaces.id"), index=True
-    )
-    successor_project_workspace_id: Mapped[int] = mapped_column(
-        ForeignKey("enterprise_workspaces.id"), index=True
-    )
+    predecessor_project_workspace_id: Mapped[int] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
+    successor_project_workspace_id: Mapped[int] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
     dependency_type: Mapped[str] = mapped_column(String(40), default="PREREQUISITE", index=True)
     dependency_strength: Mapped[str] = mapped_column(String(20), default="MANDATORY", index=True)
     description: Mapped[str] = mapped_column(Text, default="")
@@ -298,9 +294,7 @@ class ProjectDependency(Base):
 
     __table_args__ = (
         UniqueConstraint("tenant_id", "create_idempotency_key", name="uq_project_dependency_create_key"),
-        UniqueConstraint(
-            "tenant_id", "deactivate_idempotency_key", name="uq_project_dependency_deactivate_key"
-        ),
+        UniqueConstraint("tenant_id", "deactivate_idempotency_key", name="uq_project_dependency_deactivate_key"),
         CheckConstraint(
             "predecessor_project_workspace_id <> successor_project_workspace_id",
             name="ck_project_dependency_not_self",

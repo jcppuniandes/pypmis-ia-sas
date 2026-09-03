@@ -257,6 +257,8 @@ from app.domain.schemas import (
     WorkPackageOut,
     WorkPackageReadinessUpdate,
 )
+from app.modules.business_case import router as business_case_router
+from app.modules.economic_financial_model import router as economic_financial_model_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
 from app.modules.funds_manager import router as funds_manager_router
@@ -313,6 +315,8 @@ router.include_router(project_definition_router.router, tags=["project-definitio
 router.include_router(risk_readiness_router.router, tags=["risk-readiness"])
 router.include_router(permit_readiness_router.router, tags=["permit-readiness"])
 router.include_router(post_fid_governance_router.router, tags=["post-fid-governance"])
+router.include_router(business_case_router.router, tags=["business-case"])
+router.include_router(economic_financial_model_router.router, tags=["economic-financial-model"])
 router.include_router(physical_workspace_creation_router.router, tags=["physical-workspace-creation"])
 router.include_router(physical_workspace_initialization_router.router, tags=["physical-workspace-initialization"])
 router.include_router(project_workspace_initialization_router.router, tags=["project-workspace-initialization"])

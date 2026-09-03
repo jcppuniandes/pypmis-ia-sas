@@ -5,7 +5,12 @@ import CompactModuleHeader from "../enterprise-structure/components/CompactModul
 import { portfolioPlanningApi } from "../portfolio-planning/api";
 import "../portfolio-planning/portfolioPlanning.css";
 import { investmentGatePreparationApi } from "./api";
-import type { InvestmentGateOverview, InvestmentGatePreparation, ProjectReadiness } from "./types";
+import type {
+  InvestmentGateEvidence,
+  InvestmentGateOverview,
+  InvestmentGatePreparation,
+  ProjectReadiness,
+} from "./types";
 import "./investmentGatePreparation.css";
 
 type View = "preparations" | "evidence" | "projects" | "conditions" | "history";
@@ -16,6 +21,41 @@ const views: Array<[View, string]> = [
   ["conditions", "Conditions"],
   ["history", "History"],
 ];
+
+const gate07mEvidence = new Set(["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"]);
+
+function EvidenceSourceDetails({ item }: { item: InvestmentGateEvidence }) {
+  if (!gate07mEvidence.has(item.evidence_type)) return null;
+  const sourceLabel = item.evidence_type === "BUSINESS_CASE_READINESS" ? "Business Case" : "Economic / Financial";
+  return (
+    <details className="gateEvidenceSource">
+      <summary>View {sourceLabel} source</summary>
+      <dl>
+        <div>
+          <dt>Classification</dt>
+          <dd>{item.classification || "—"}</dd>
+        </div>
+        <div>
+          <dt>Provider</dt>
+          <dd>{item.provider_key || "—"}</dd>
+        </div>
+        <div>
+          <dt>Readiness</dt>
+          <dd>{item.source_readiness_status || item.resolution_status}</dd>
+        </div>
+        <div>
+          <dt>Current</dt>
+          <dd>{item.source_current == null ? "Not evaluated" : item.source_current ? "YES" : "NO"}</dd>
+        </div>
+        <div>
+          <dt>Coverage</dt>
+          <dd>{item.coverage_requirement == null ? "N/A" : `${item.coverage_requirement}%`}</dd>
+        </div>
+      </dl>
+      <pre>{JSON.stringify(item.evidence_refs, null, 2)}</pre>
+    </details>
+  );
+}
 
 export default function InvestmentGatePreparationWorkspace({
   token,
@@ -288,16 +328,26 @@ export default function InvestmentGatePreparationWorkspace({
           </header>
           <div className="evidenceGrid">
             {preparation?.evidence.map((item) => (
-              <article className={item.status.toLowerCase()} key={item.id}>
+              <article
+                className={`${item.status.toLowerCase()} ${gate07mEvidence.has(item.evidence_type) ? "gate07mEvidence" : ""}`}
+                key={item.id}
+              >
                 <div>
-                  <strong>{item.requirement_key}</strong>
-                  <b>{item.status}</b>
+                  <strong>
+                    {item.evidence_type === "BUSINESS_CASE_READINESS"
+                      ? "Business Case Readiness"
+                      : item.evidence_type === "ECONOMIC_FINANCIAL_READINESS"
+                        ? "Economic / Financial Readiness"
+                        : item.requirement_key}
+                  </strong>
+                  <b>{item.resolution_status || item.status}</b>
                 </div>
                 <span>
-                  {item.evidence_type} · {item.scope_type}
+                  Class {item.classification || "—"} · {item.blocking ? "Blocking" : "Non-blocking"} · {item.scope_type}
                   {item.scope_id ? ` #${item.scope_id}` : ""}
                 </span>
                 <small>{item.summary}</small>
+                <EvidenceSourceDetails item={item} />
                 {item.evidence_origin === "MANUAL_REFERENCE" && item.scope_id ? (
                   <div className="evidenceActions">
                     <select
@@ -356,9 +406,20 @@ export default function InvestmentGatePreparationWorkspace({
                 {item.blockers.map((blocker) => (
                   <em key={blocker}>{blocker}</em>
                 ))}
+                {item.warnings.map((warning) => (
+                  <em className="warning" key={warning}>
+                    {warning}
+                  </em>
+                ))}
               </article>
             ))}
           </div>
+          {readiness?.evidence_coverage ? (
+            <details className="gateEvidenceSource">
+              <summary>Class A coverage controls</summary>
+              <pre>{JSON.stringify(readiness.evidence_coverage, null, 2)}</pre>
+            </details>
+          ) : null}
         </section>
       ) : null}
 

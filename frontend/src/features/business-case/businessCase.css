@@ -1,0 +1,201 @@
+.businessCase {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.businessCaseMessage {
+  background: #eaf5ff;
+  border-left: 4px solid #276da0;
+  color: #173e59;
+  padding: 9px 11px;
+}
+.businessCaseTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.businessCaseTabs button,
+.businessCaseControls button,
+.createSurface button {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  color: #102536;
+  font: inherit;
+  font-weight: 750;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.businessCaseTabs button.active {
+  background: #102536;
+  color: #fff;
+}
+.businessCaseControls {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+}
+.businessCaseControls.compact {
+  border: 0;
+  padding: 10px 0 0;
+}
+.businessCaseControls label,
+.businessCaseProjectPicker,
+.createSurface label,
+.businessCaseEditor label {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+  min-width: min(360px, 100%);
+}
+.businessCaseControls select,
+.businessCaseProjectPicker input,
+.createSurface input,
+.businessCaseEditor input,
+.businessCaseEditor textarea {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 5px 8px;
+  width: 100%;
+}
+.businessCaseControls button:disabled,
+.createSurface button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.businessCaseSurface {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+.businessCaseSurface > header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.businessCaseSurface header span,
+.businessCaseFacts span {
+  color: #667887;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.businessCaseSurface h3 {
+  margin: 3px 0 7px;
+}
+.businessCaseFacts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 10px 0;
+}
+.businessCaseFacts article,
+.businessCaseLineage article {
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+.businessCaseLineage {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.businessCaseLineage h4 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.businessCaseLineage code {
+  color: #5d7281;
+  overflow-wrap: anywhere;
+}
+.businessCaseSurface pre {
+  background: #f4f7f9;
+  border-radius: 7px;
+  font-size: 0.71rem;
+  max-height: 520px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+.businessCaseEditor {
+  display: grid;
+  gap: 9px;
+}
+.businessCaseGuardrail {
+  background: #fff0e8;
+  border-left: 4px solid #d17a00;
+  color: #7d4d00;
+  margin: 0;
+  padding: 9px 11px;
+}
+.createSurface {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.createSurface h3,
+.createSurface p {
+  flex-basis: 100%;
+  margin: 0;
+}
+.businessCaseAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.businessCaseAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.businessCaseAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  text-align: left;
+}
+.businessCaseAdminGrid aside button.active {
+  border-left: 5px solid #276da0;
+}
+.businessCaseAdminGrid aside span {
+  color: #657887;
+  font-size: 0.72rem;
+}
+.businessCaseAdmin textarea {
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin-top: 8px;
+  padding: 9px;
+  resize: vertical;
+  width: 100%;
+}
+.businessCaseProjectPicker {
+  margin: 10px 0;
+}
+@media (max-width: 850px) {
+  .businessCaseAdminGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "file": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07M_EVID_Policy_Update_20260903.docx",
+  "checks": {
+    "all_images_have_alt": true,
+    "heading_levels_present": true,
+    "tables_have_header_rows": true,
+    "document_title_present": true,
+    "document_language_content": true
+  },
+  "result": "PASS",
+  "failed": []
+}

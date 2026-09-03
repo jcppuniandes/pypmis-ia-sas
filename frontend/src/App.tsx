@@ -79,6 +79,10 @@ import InvestmentDecisionWorkspace from "./features/investment-decision/Investme
 import InvestmentDecisionAdminView from "./features/investment-decision/InvestmentDecisionAdminView";
 import PostFIDGovernanceWorkspace from "./features/post-fid-governance/PostFIDGovernanceWorkspace";
 import PostFIDGovernanceAdminView from "./features/post-fid-governance/PostFIDGovernanceAdminView";
+import BusinessCaseWorkspace from "./features/business-case/BusinessCaseWorkspace";
+import BusinessCaseAdminView from "./features/business-case/BusinessCaseAdminView";
+import EconomicFinancialModelWorkspace from "./features/economic-financial-model/EconomicFinancialModelWorkspace";
+import EconomicFinancialModelAdminView from "./features/economic-financial-model/EconomicFinancialModelAdminView";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
@@ -7634,6 +7638,34 @@ function AppShell() {
               <PostFIDGovernanceWorkspace initialView={visibleControlView} token={token} />
             )}
             {visibleControlView === "post-fid-governance-configuration" && <PostFIDGovernanceAdminView token={token} />}
+            {[
+              "business-case-my",
+              "business-case-overview",
+              "business-case-current-revision",
+              "business-case-strategic",
+              "business-case-alternatives",
+              "business-case-benefits",
+              "business-case-project-definition",
+              "business-case-financial",
+              "business-case-budget-resources",
+              "business-case-funding",
+              "business-case-risk-permits",
+              "business-case-execution",
+              "business-case-assumptions",
+              "business-case-recommendation",
+              "business-case-readiness",
+              "business-case-material-changes",
+              "business-case-decision-snapshots",
+              "business-case-history",
+            ].includes(visibleControlView) && <BusinessCaseWorkspace initialView={visibleControlView} token={token} />}
+            {visibleControlView === "business-case-configuration" && <BusinessCaseAdminView token={token} />}
+            {visibleControlView.startsWith("financial-model-") &&
+              visibleControlView !== "financial-model-configuration" && (
+                <EconomicFinancialModelWorkspace initialView={visibleControlView} token={token} />
+              )}
+            {visibleControlView === "financial-model-configuration" && (
+              <EconomicFinancialModelAdminView token={token} />
+            )}
             {(
               [
                 "workspace-types",

@@ -67,18 +67,10 @@ def run() -> None:
         )
         == 10
         and sum(p.style.name == "Heading 2" for p in doc.paragraphs) == 8,
-        "single_running_header_footer": doc.settings.odd_and_even_pages_header_footer
-        and section.header.paragraphs[0].text
-        == section.even_page_header.paragraphs[0].text
-        and section.footer.paragraphs[0].text
-        == section.even_page_footer.paragraphs[0].text,
+        "single_running_header_footer": not doc.settings.odd_and_even_pages_header_footer,
         "header_present": "TECHNICAL REPORT · GATE 07L"
         in section.header.paragraphs[0].text,
-        "even_header_present": "TECHNICAL REPORT · GATE 07L"
-        in section.even_page_header.paragraphs[0].text,
         "footer_present": "P&Pmis Construction AI" in section.footer.paragraphs[0].text,
-        "even_footer_present": "P&Pmis Construction AI"
-        in section.even_page_footer.paragraphs[0].text,
         "image_alt_present": all(
             shape._inline.docPr.get("descr") for shape in doc.inline_shapes
         ),

@@ -24,9 +24,7 @@ def test_gate07i_postgresql_schema_and_formal_recommendation_lifecycle() -> None
         service = PortfolioConvergenceService(db, tenant_id, actor_id)
         convergence = _convergence(service, portfolio.id, budget_scenario.id, resource_scenario.id)
         alternative = convergence.alternatives[0]
-        convergence = service.submit_review(
-            convergence.id, convergence.revision_version, f"pg-submit-{uuid4()}"
-        )
+        convergence = service.submit_review(convergence.id, convergence.revision_version, f"pg-submit-{uuid4()}")
         convergence = service.recommend(
             convergence.id,
             convergence.revision_version,

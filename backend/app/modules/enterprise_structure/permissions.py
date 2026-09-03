@@ -1061,9 +1061,7 @@ INVESTMENT_DECISION_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         {"investment_decision.read", "investment_decision.review", "investment_decision.void"}
     )
     | WORKSPACE_OPERATION_PERMISSIONS,
-    "investment_decision_maker": frozenset(
-        {"investment_decision.read", "investment_decision.decide"}
-    )
+    "investment_decision_maker": frozenset({"investment_decision.read", "investment_decision.decide"})
     | WORKSPACE_OPERATION_PERMISSIONS,
     "investment_decision_committee_member": frozenset(
         {"investment_decision.read", "investment_decision.vote", "investment_decision.decide"}
@@ -1088,7 +1086,10 @@ INVESTMENT_DECISION_ROLE_DEFINITIONS = {
     "investment_decision_reviewer": ("Investment Decision Reviewer", "Revisa paquetes y checklist de Decision."),
     "investment_decision_maker": ("Investment Decision Maker", "Registra decisiones formales dentro de su autoridad."),
     "investment_decision_committee_member": ("Investment Decision Committee Member", "Emite votos formales de comite."),
-    "investment_decision_committee_chair": ("Investment Decision Committee Chair", "Preside el comite y sus reglas de voto."),
+    "investment_decision_committee_chair": (
+        "Investment Decision Committee Chair",
+        "Preside el comite y sus reglas de voto.",
+    ),
     "investment_decision_viewer": ("Investment Decision Viewer", "Consulta Decision, paquete, historia y output."),
     "investment_decision_configuration_admin": (
         "Investment Decision Configuration Admin",
@@ -1105,8 +1106,7 @@ POST_FID_GOVERNANCE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
         }
     )
     | WORKSPACE_OPERATION_PERMISSIONS,
-    "post_fid_governance_viewer": frozenset({"post_fid_governance.read"})
-    | WORKSPACE_OPERATION_PERMISSIONS,
+    "post_fid_governance_viewer": frozenset({"post_fid_governance.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
     "post_fid_governance_configuration_admin": frozenset(
         {
             "post_fid_governance.read",
@@ -1128,6 +1128,101 @@ POST_FID_GOVERNANCE_ROLE_DEFINITIONS = {
     "post_fid_governance_configuration_admin": (
         "Post-FID Governance Configuration Admin",
         "Configura y publica la politica Gate 07L.",
+    ),
+}
+
+BUSINESS_CASE_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "business_case_preparer": frozenset(
+        {
+            "business_case.read",
+            "business_case.create",
+            "business_case.edit",
+            "business_case.submit_review",
+            "business_case.create_revision",
+            "business_case.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_case_reviewer": frozenset(
+        {
+            "business_case.read",
+            "business_case.review",
+            "business_case.complete",
+            "business_case.snapshot",
+            "business_case.material_change.review",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_case_viewer": frozenset({"business_case.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_case_configuration_admin": frozenset(
+        {"business_case.read", "business_case.admin.configure", "business_case.admin.publish"}
+    ),
+}
+
+BUSINESS_CASE_ROLE_DEFINITIONS = {
+    "business_case_preparer": ("Business Case Preparer", "Prepara y mantiene revisiones longitudinales Gate 07M-BC."),
+    "business_case_reviewer": ("Business Case Reviewer", "Revisa, completa y congela evidencia de Business Case."),
+    "business_case_viewer": ("Business Case Viewer", "Consulta Business Cases, readiness e historia."),
+    "business_case_configuration_admin": (
+        "Business Case Configuration Admin",
+        "Configura y publica mapping, readiness, SoD, freshness e inheritance Gate 07M-BC.",
+    ),
+}
+
+ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "financial_model_owner": frozenset(
+        {
+            "economic_financial_model.read",
+            "economic_financial_model.create",
+            "economic_financial_model.create_version",
+            "economic_financial_model.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "financial_model_preparer": frozenset(
+        {
+            "economic_financial_model.read",
+            "economic_financial_model.create",
+            "economic_financial_model.edit",
+            "economic_financial_model.calculate",
+            "economic_financial_model.submit_review",
+            "economic_financial_model.create_version",
+            "economic_financial_model.refresh",
+            "economic_financial_model.scenario.manage",
+            "economic_financial_model.sensitivity.run",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "financial_model_reviewer": frozenset(
+        {"economic_financial_model.read", "economic_financial_model.review", "economic_financial_model.complete"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "financial_model_finance_reviewer": frozenset(
+        {"economic_financial_model.read", "economic_financial_model.review", "economic_financial_model.complete"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "financial_model_viewer": frozenset({"economic_financial_model.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "financial_model_configuration_admin": frozenset(
+        {
+            "economic_financial_model.read",
+            "economic_financial_model.admin.configure",
+            "economic_financial_model.admin.publish",
+        }
+    ),
+}
+
+ECONOMIC_FINANCIAL_MODEL_ROLE_DEFINITIONS = {
+    "financial_model_owner": ("Financial Model Owner", "Responsable del modelo economico-financiero del Project."),
+    "financial_model_preparer": ("Financial Model Preparer", "Prepara, calcula y somete versiones Gate 07M-FIN."),
+    "financial_model_reviewer": ("Financial Model Reviewer", "Revisa y completa modelos con Four-Eyes."),
+    "financial_model_finance_reviewer": (
+        "Financial Model Finance Reviewer",
+        "Ejecuta la revision financiera final aplicable a PYP-FFA.",
+    ),
+    "financial_model_viewer": ("Financial Model Viewer", "Consulta modelos, readiness, escenarios e historia."),
+    "financial_model_configuration_admin": (
+        "Financial Model Configuration Admin",
+        "Configura y publica la politica Gate 07M-FIN.",
     ),
 }
 
@@ -1592,6 +1687,34 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in BUSINESS_CASE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in ECONOMIC_FINANCIAL_MODEL_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
@@ -1657,6 +1780,12 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "post_fid_governance.read",
             "post_fid_governance.admin.configure",
             "post_fid_governance.admin.publish",
+            "business_case.read",
+            "business_case.admin.configure",
+            "business_case.admin.publish",
+            "economic_financial_model.read",
+            "economic_financial_model.admin.configure",
+            "economic_financial_model.admin.publish",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -1681,6 +1810,8 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PERMIT_READINESS_ROLE_PERMISSIONS,
         **INVESTMENT_DECISION_ROLE_PERMISSIONS,
         **POST_FID_GOVERNANCE_ROLE_PERMISSIONS,
+        **BUSINESS_CASE_ROLE_PERMISSIONS,
+        **ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

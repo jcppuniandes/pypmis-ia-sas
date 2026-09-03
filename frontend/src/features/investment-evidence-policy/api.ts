@@ -14,7 +14,9 @@ export const investmentEvidencePolicyApi = {
     configuration: EvidencePolicyConfiguration,
     portfolioId: number | null,
     gateProfileCode: string,
-    content: EvidencePolicyContent
+    content: EvidencePolicyContent,
+    projectTypeCode?: string,
+    governanceModel?: string
   ) =>
     apiFetch<EvidencePolicyPreview>(`/api/v1/investment-evidence-policy/configurations/${configuration.id}/preview`, {
       method: "POST",
@@ -25,6 +27,8 @@ export const investmentEvidencePolicyApi = {
         project_workspace_ids: [],
         configuration_id: configuration.id,
         content_json: content,
+        project_type_code: projectTypeCode || null,
+        governance_model: governanceModel || null,
       }),
     }),
   clone: (token: string, configuration: EvidencePolicyConfiguration) =>

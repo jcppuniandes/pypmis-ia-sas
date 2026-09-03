@@ -1,5 +1,7 @@
 """Typed API contracts for Gate 07J-EVID governance policy."""
 
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,6 +17,8 @@ class EffectivePreviewIn(BaseModel):
     project_workspace_ids: list[int] = Field(default_factory=list, max_length=1000)
     configuration_id: int | None = Field(default=None, gt=0)
     content_json: dict | None = None
+    project_type_code: str | None = Field(default=None, max_length=80)
+    governance_model: str | None = Field(default=None, max_length=80)
 
 
 class PolicyConfigurationOut(BaseModel):
@@ -45,6 +49,9 @@ class ProviderOut(BaseModel):
     supports_current_flag: bool
     supports_readiness: bool
     status: str
+    availability: str
+    contract_status: str
+    last_validation: datetime | None
     version: str
     notes: str
     contract_valid: bool
@@ -68,7 +75,13 @@ class PolicyPreviewOut(BaseModel):
     blocking_missing_sources: list[str]
     warnings: list[str]
     blockers: list[str]
+    effective_classifications: dict[str, list[str]] = Field(default_factory=dict)
+    required_coverage: dict[str, float | None] = Field(default_factory=dict)
+    source_availability: dict[str, str] = Field(default_factory=dict)
+    source_readiness: dict[str, list[str]] = Field(default_factory=dict)
+    source_current: dict[str, list[bool]] = Field(default_factory=dict)
     would_gate07j_be_ready: bool
+    would_be_ready_for_investment_gate: bool = False
     recommended_next_development: dict
     can_design_investment_decision_gate: bool
     can_enter_fid: bool = False
@@ -83,3 +96,4 @@ class PolicyOverviewOut(BaseModel):
     required_adr_decisions: list[dict]
     allowed_actions: list[str]
     boundaries: list[str]
+    release_contract: dict = Field(default_factory=dict)

@@ -200,23 +200,19 @@ def waterline(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> WaterlineOut:
-    return _authorized(db, tenant_id, user_id, "portfolio_budget.read", VIEW_ROLES).waterline(
-        scenario_id, period_key
-    )
+    return _authorized(db, tenant_id, user_id, "portfolio_budget.read", VIEW_ROLES).waterline(scenario_id, period_key)
 
 
-@router.get(
-    "/portfolio-budget-scenarios/{scenario_id}/dependencies", response_model=ScenarioDependencyOut
-)
+@router.get("/portfolio-budget-scenarios/{scenario_id}/dependencies", response_model=ScenarioDependencyOut)
 def scenario_dependencies(
     scenario_id: int,
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ) -> ScenarioDependencyOut:
-    return _authorized(
-        db, tenant_id, user_id, "portfolio_dependency.read", VIEW_ROLES
-    ).scenario_dependencies(scenario_id)
+    return _authorized(db, tenant_id, user_id, "portfolio_dependency.read", VIEW_ROLES).scenario_dependencies(
+        scenario_id
+    )
 
 
 @router.get("/portfolios/{portfolio_id}/project-dependencies", response_model=list[ProjectDependencyOut])

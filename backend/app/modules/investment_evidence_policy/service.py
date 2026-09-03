@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from copy import deepcopy
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import HTTPException
@@ -19,6 +19,9 @@ from sqlalchemy.orm import Session
 
 from app.core.time import utc_now
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace, SecurityEvent
+from app.modules.business_case.models import BusinessCaseDecisionSnapshot
+from app.modules.business_case.service import BusinessCaseService
+from app.modules.economic_financial_model.service import EconomicFinancialModelService
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
 from app.modules.funds_manager.service import FundsManagerService
 from app.modules.investment_evidence_policy.schemas import (
@@ -34,8 +37,8 @@ from app.modules.risk_readiness.service import RiskReadinessService
 
 CONFIGURATION_KIND = "investment_evidence_policy"
 DEFAULT_CODE = "pyp-investment-decision-evidence-policy"
-READY_OUTPUT = "READY_FOR_INVESTMENT_DECISION_EVIDENCE_POLICY"
-VALIDATED_RELEASE = "GATE07J_EVID_POLICY_VALIDATED"
+READY_OUTPUT = "READY_FOR_BUSINESS_CASE_AND_ECONOMIC_FINANCIAL_GATE_EVIDENCE"
+VALIDATED_RELEASE = "GATE07M_EVID_POLICY_UPDATE_VALIDATED"
 
 CLASSIFICATIONS = {"A", "B", "C"}
 SCOPES = {"PORTFOLIO", "PROJECT_SET", "EACH_PROJECT", "SELECTED_PROJECTS_ONLY"}
@@ -46,9 +49,11 @@ EVIDENCE_TYPES = (
     "PROJECT_DEFINITION_READINESS",
     "FEL_STAGE_READINESS",
     "PDRI_OR_DEFINITION_ASSESSMENT",
+    "BUSINESS_CASE_READINESS",
     "FUNDING_READINESS",
     "RISK_READINESS",
     "PERMIT_READINESS",
+    "ECONOMIC_FINANCIAL_READINESS",
     "CONTRACTING_STRATEGY_READINESS",
     "EXECUTION_PLAN_READINESS",
     "SCHEDULE_MATURITY",
@@ -96,6 +101,9 @@ def _provider(
         "status": status,
         "version": "1.0",
         "notes": notes,
+        "availability": status,
+        "contract_status": "VALID" if status == "AVAILABLE" else "INVALID",
+        "last_validation": "2026-09-03T00:00:00+00:00" if status == "AVAILABLE" else None,
         "contract_fields": sorted(REQUIRED_PROVIDER_FIELDS) if status == "AVAILABLE" else [],
     }
 
@@ -156,6 +164,22 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
         "InvestmentGatePermitEvidenceOut",
         {"PROJECT_SET", "EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
         notes="Validated Gate 07J-PERMIT Project and Project Set Permit Readiness evidence.",
+    ),
+    "BUSINESS_CASE_READINESS_PROVIDER": _provider(
+        "BUSINESS_CASE_READINESS_PROVIDER",
+        "BUSINESS_CASE_READINESS",
+        "BUSINESS_CASE_MANAGER",
+        "BusinessCaseEvidenceContract.v1",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes="Gate 07M-BC governed Business Case revision/readiness adapter; no duplicate Business Case domain.",
+    ),
+    "ECONOMIC_FINANCIAL_READINESS_PROVIDER": _provider(
+        "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+        "ECONOMIC_FINANCIAL_READINESS",
+        "ECONOMIC_FINANCIAL_MODEL",
+        "ProviderEvidenceOut",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes="Validated Gate 07M-FIN Project economic-financial readiness evidence.",
     ),
 }
 
@@ -270,6 +294,30 @@ def _matrix(profile: str) -> list[dict[str, Any]]:
             coverage=100,
             rationale="PDRI or equivalent assessment is reused from FEL; no duplicate scoring engine.",
             order=60,
+        ),
+        _requirement(
+            "BUSINESS_CASE_READINESS",
+            "A",
+            scope="EACH_PROJECT",
+            blocking=True,
+            provider_key="BUSINESS_CASE_READINESS_PROVIDER",
+            coverage=100,
+            rationale="A current, completed and READY governed Business Case is required per applicable Project.",
+            order=64,
+        ),
+        _requirement(
+            "ECONOMIC_FINANCIAL_READINESS",
+            "A" if ffa else "B",
+            scope="EACH_PROJECT",
+            blocking=ffa,
+            provider_key="ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+            coverage=100,
+            rationale=(
+                "FFA requires the authoritative FIN overall readiness; selection accepts preliminary governed evidence."
+                if ffa
+                else "Selection accepts governed preliminary economics or controlled Class B evidence by Project Type."
+            ),
+            order=66,
         ),
         _requirement(
             "FUNDING_READINESS",
@@ -400,6 +448,8 @@ DEFAULT_POLICY: dict[str, Any] = {
     "inherit_to_descendants": True,
     "policy_code": "PYP-INVESTMENT-EVIDENCE",
     "policy_name": "Investment Decision Evidence Policy",
+    "effective_from": None,
+    "policy_update": "GATE07M_EVID",
     "applicable_governance_models": ["CAPITAL_OWNER"],
     "gate_profiles": {
         "PYP-INV-SELECT": {"allow_valid_with_conditions": True, "requirements": _matrix("PYP-INV-SELECT")},
@@ -419,7 +469,85 @@ DEFAULT_POLICY: dict[str, Any] = {
             "allow_manual_reference": False,
             "manual_validation_required": False,
             "rationale": "Mining FFA requires a structured current permit source; manual evidence cannot substitute it.",
-        }
+        },
+        {
+            "gate_profile_code": "PYP-INV-SELECT",
+            "project_type_filter": ["INTERNAL", "COMPLIANCE", "INTERNAL_COMPLIANCE"],
+            "governance_model_filter": ["CAPITAL_OWNER"],
+            "evidence_type": "ECONOMIC_FINANCIAL_READINESS",
+            "classification": "C",
+            "required": False,
+            "blocking": False,
+            "provider_key": None,
+            "provider_required": False,
+            "allow_manual_reference": False,
+            "manual_validation_required": False,
+            "coverage_requirement": None,
+            "rationale": "Internal/compliance selection does not require FIN unless a published override enables it.",
+        },
+        {
+            "gate_profile_code": "PYP-FFA",
+            "project_type_filter": ["INTERNAL", "COMPLIANCE", "INTERNAL_COMPLIANCE"],
+            "governance_model_filter": ["CAPITAL_OWNER"],
+            "evidence_type": "ECONOMIC_FINANCIAL_READINESS",
+            "classification": "C",
+            "required": False,
+            "blocking": False,
+            "provider_key": None,
+            "provider_required": False,
+            "allow_manual_reference": False,
+            "manual_validation_required": False,
+            "coverage_requirement": None,
+            "rationale": "Internal/compliance FFA keeps FIN policy-flexible and does not force commercial metrics.",
+        },
+        {
+            "gate_profile_code": "PYP-FFA",
+            "project_type_filter": ["PUBLIC", "NON_REVENUE", "PUBLIC_ECONOMIC_APPRAISAL"],
+            "governance_model_filter": ["CAPITAL_OWNER"],
+            "evidence_type": "ECONOMIC_FINANCIAL_READINESS",
+            "classification": "A",
+            "required": True,
+            "blocking": True,
+            "provider_key": "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+            "provider_required": True,
+            "allow_manual_reference": False,
+            "manual_validation_required": False,
+            "coverage_requirement": 100,
+            "required_readiness_dimensions": ["ECONOMIC_READINESS"],
+            "rationale": "Public/non-revenue FFA consumes FIN overall readiness with economic appraisal applicability.",
+        },
+        {
+            "gate_profile_code": "PYP-FFA",
+            "project_type_filter": ["COMMERCIAL", "REVENUE", "COMMERCIAL_PROJECT"],
+            "governance_model_filter": ["CAPITAL_OWNER"],
+            "evidence_type": "ECONOMIC_FINANCIAL_READINESS",
+            "classification": "A",
+            "required": True,
+            "blocking": True,
+            "provider_key": "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+            "provider_required": True,
+            "allow_manual_reference": False,
+            "manual_validation_required": False,
+            "coverage_requirement": 100,
+            "required_readiness_dimensions": ["FINANCIAL_MODEL_READINESS"],
+            "rationale": "Commercial/revenue FFA consumes authoritative FIN overall and financial readiness.",
+        },
+        {
+            "gate_profile_code": "PYP-FFA",
+            "project_type_filter": ["MIXED", "MIXED_PROJECT"],
+            "governance_model_filter": ["CAPITAL_OWNER"],
+            "evidence_type": "ECONOMIC_FINANCIAL_READINESS",
+            "classification": "A",
+            "required": True,
+            "blocking": True,
+            "provider_key": "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+            "provider_required": True,
+            "allow_manual_reference": False,
+            "manual_validation_required": False,
+            "coverage_requirement": 100,
+            "required_readiness_dimensions": ["ECONOMIC_READINESS", "FINANCIAL_MODEL_READINESS"],
+            "rationale": "Mixed FFA consumes authoritative FIN overall readiness across economic and financial dimensions.",
+        },
     ],
     "blocking_policy": {"class_A_failure": "BLOCK", "class_B_invalid": "BLOCK_WHEN_REQUIREMENT_BLOCKING"},
     "validity_policy": {"no_global_expiration": True},
@@ -429,6 +557,46 @@ DEFAULT_POLICY: dict[str, Any] = {
     "capex_expense_reuse": "BUDGET_FEASIBILITY_DETAIL",
     "release_status": "DRAFT",
 }
+
+
+def gate07m_evid_policy_update(source: dict[str, Any]) -> dict[str, Any]:
+    """Merge the Gate 07M evidence rows into an existing policy without replacing unrelated rules."""
+
+    updated = deepcopy(source)
+    updated["policy_update"] = "GATE07M_EVID"
+    updated.setdefault("effective_from", None)
+    models = list(updated.get("applicable_governance_models", []))
+    if "CAPITAL_OWNER" not in models:
+        models.append("CAPITAL_OWNER")
+    updated["applicable_governance_models"] = models
+    for profile_code in ("PYP-INV-SELECT", "PYP-FFA"):
+        profile = updated.setdefault("gate_profiles", {}).setdefault(
+            profile_code,
+            {"allow_valid_with_conditions": profile_code == "PYP-INV-SELECT", "requirements": []},
+        )
+        rows = [
+            deepcopy(item)
+            for item in profile.get("requirements", [])
+            if item.get("evidence_type") not in {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+        ]
+        required_updates = [
+            deepcopy(item)
+            for item in DEFAULT_POLICY["gate_profiles"][profile_code]["requirements"]
+            if item.get("evidence_type") in {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+        ]
+        profile["requirements"] = sorted(rows + required_updates, key=lambda item: int(item.get("order", 0)))
+    overrides = [
+        deepcopy(item)
+        for item in updated.get("project_type_overrides", [])
+        if item.get("evidence_type") not in {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+    ]
+    gate07m_overrides = [
+        deepcopy(item)
+        for item in DEFAULT_POLICY["project_type_overrides"]
+        if item.get("evidence_type") in {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+    ]
+    updated["project_type_overrides"] = overrides + gate07m_overrides
+    return updated
 
 
 class InvestmentEvidencePolicyService:
@@ -475,7 +643,8 @@ class InvestmentEvidencePolicyService:
     def overview(self) -> PolicyOverviewOut:
         records = self.configurations()
         providers = self.providers()
-        content = next((item.content_json for item in records if item.status == "published"), DEFAULT_POLICY)
+        effective = self._effective_configuration(None)
+        content = effective.content_json if effective else DEFAULT_POLICY
         return PolicyOverviewOut(
             configurations=[PolicyConfigurationOut.model_validate(item) for item in records],
             providers=providers,
@@ -492,10 +661,13 @@ class InvestmentEvidencePolicyService:
             ],
             boundaries=[
                 "NO_CLASS_A_TO_CLASS_B_FALLBACK",
+                "NO_SILENT_POLICY_UPGRADE",
+                "NO_BUSINESS_CASE_OR_FIN_RECALCULATION",
                 "NO_RISK_PERMIT_CONTRACTING_EXECUTION_OR_SCHEDULE_ENGINE",
                 "NO_INVESTMENT_DECISION_OR_FID",
                 "NO_PROJECT_INITIALIZATION_ACTIVATION_OR_EXECUTION",
             ],
+            release_contract=self._release_contract(effective, content),
         )
 
     def configurations(self) -> list[AdminConfiguration]:
@@ -580,10 +752,16 @@ class InvestmentEvidencePolicyService:
 
     def publish_configuration(self, configuration_id: int, expected_version: int) -> AdminConfiguration:
         record = self._configuration(configuration_id, lock=True)
+        if record.status == "published":
+            return record
         self._check_version(record.version, expected_version)
         if record.status != "draft":
             raise HTTPException(status_code=409, detail={"code": "POLICY_NOT_DRAFT"})
-        self._validate_policy(record.content_json)
+        content = deepcopy(record.content_json)
+        if not content.get("effective_from"):
+            content["effective_from"] = utc_now().isoformat()
+        self._validate_policy(content)
+        effective_from = _effective_datetime(content)
         scope = dict(record.content_json.get("scope", {}))
         for previous in self.configurations():
             if (
@@ -591,18 +769,27 @@ class InvestmentEvidencePolicyService:
                 and previous.status == "published"
                 and previous.code == record.code
                 and dict(previous.content_json.get("scope", {})) == scope
+                and effective_from <= utc_now()
             ):
                 previous.status = "superseded"
                 previous.version += 1
                 self._event("investment_evidence_policy.superseded", "AdminConfiguration", previous.id, {})
-        content = deepcopy(record.content_json)
         content["release_status"] = VALIDATED_RELEASE
         record.content_json = content
         record.content_hash = _hash(content)
         record.status = "published"
         record.published_at = utc_now()
         record.version += 1
-        self._event("investment_evidence_policy.published", "AdminConfiguration", record.id, {})
+        self._event(
+            "investment_evidence_policy.published",
+            "AdminConfiguration",
+            record.id,
+            {
+                "policy_hash": record.content_hash,
+                "effective_from": content["effective_from"],
+                "evidence_types": ["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"],
+            },
+        )
         self.db.commit()
         return record
 
@@ -614,6 +801,8 @@ class InvestmentEvidencePolicyService:
         project_ids: list[int],
         configuration_id: int | None,
         content_override: dict | None,
+        project_type_code: str | None = None,
+        governance_model: str | None = None,
     ) -> PolicyPreviewOut:
         record = self._configuration(configuration_id) if configuration_id else None
         content = deepcopy(
@@ -621,7 +810,13 @@ class InvestmentEvidencePolicyService:
         )
         self._validate_policy(content)
         projects, contract = self._preview_projects(portfolio_id, project_ids)
-        matrix = self._effective_matrix(content, gate_profile_code, projects)
+        matrix = self._effective_matrix(
+            content,
+            gate_profile_code,
+            projects,
+            preview_project_type=project_type_code,
+            preview_governance_model=governance_model,
+        )
         evidence = self._current_evidence(matrix, portfolio_id, contract)
         missing = self._missing_provider_analysis(content, gate_profile_code, projects)
         blockers = sorted(
@@ -638,6 +833,58 @@ class InvestmentEvidencePolicyService:
             {item["evidence_type"] for item in missing if item.get("blocking") and item["gap_status"] != "NONE"}
         )
         next_step = self._next_development(missing)
+        relevant_types = {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+        effective_classifications = {
+            evidence_type: sorted(
+                {str(item["classification"]) for item in matrix if item["evidence_type"] == evidence_type}
+            )
+            for evidence_type in relevant_types
+        }
+        required_coverage = {
+            evidence_type: next(
+                (
+                    float(item["coverage_requirement"])
+                    for item in matrix
+                    if item["evidence_type"] == evidence_type and item.get("coverage_requirement") is not None
+                ),
+                None,
+            )
+            for evidence_type in relevant_types
+        }
+        source_availability = {
+            evidence_type: next(
+                (
+                    str(item.get("provider_status") or "MISSING")
+                    for item in matrix
+                    if item["evidence_type"] == evidence_type
+                ),
+                "NOT_CONFIGURED",
+            )
+            for evidence_type in relevant_types
+        }
+        source_readiness = {
+            evidence_type: sorted(
+                {
+                    str(item.get("status") or "NOT_EVALUATED")
+                    for item in evidence
+                    if item["evidence_type"] == evidence_type
+                }
+            )
+            for evidence_type in relevant_types
+        }
+        source_current = {
+            evidence_type: sorted(
+                {
+                    bool(item["source_current"])
+                    for item in evidence
+                    if item["evidence_type"] == evidence_type and item.get("source_current") is not None
+                }
+            )
+            for evidence_type in relevant_types
+        }
+        would_be_ready = not blockers and all(
+            not item.get("blocking") or item.get("status") in {"VALID", "NOT_REQUIRED"} for item in evidence
+        )
         return PolicyPreviewOut(
             policy={
                 "id": record.id if record else None,
@@ -645,6 +892,7 @@ class InvestmentEvidencePolicyService:
                 "hash": _hash(content),
                 "status": record.status if record else "draft",
                 "code": content.get("policy_code"),
+                "effective_from": content.get("effective_from"),
             },
             gate_profile_code=gate_profile_code,
             portfolio_workspace_id=portfolio_id,
@@ -663,8 +911,13 @@ class InvestmentEvidencePolicyService:
             blocking_missing_sources=blocking_missing,
             warnings=warnings,
             blockers=blockers,
-            would_gate07j_be_ready=not blockers
-            and all(not item.get("blocking") or item.get("status") in {"VALID", "NOT_REQUIRED"} for item in evidence),
+            effective_classifications=effective_classifications,
+            required_coverage=required_coverage,
+            source_availability=source_availability,
+            source_readiness=source_readiness,
+            source_current=source_current,
+            would_gate07j_be_ready=would_be_ready,
+            would_be_ready_for_investment_gate=would_be_ready,
             recommended_next_development=next_step,
             can_design_investment_decision_gate=not blocking_missing,
             can_enter_fid=False,
@@ -717,7 +970,7 @@ class InvestmentEvidencePolicyService:
             "gate_profile_code": gate_profile_code,
             "requirements": requirements,
             "effective_matrix": matrix,
-            "provider_registry_snapshot": [item.model_dump() for item in self.providers()],
+            "provider_registry_snapshot": [item.model_dump(mode="json") for item in self.providers()],
             "project_contexts": [self._project_context(item) for item in projects],
             "captured_at": utc_now().isoformat(),
             "final_output": READY_OUTPUT,
@@ -1015,6 +1268,121 @@ class InvestmentEvidencePolicyService:
                 ),
                 evidence_refs=[value],
             )
+        if provider_key == "BUSINESS_CASE_READINESS_PROVIDER" and scope_id is not None:
+            business_service = BusinessCaseService(self.db, self.tenant_id, self.actor_id, self.context)
+            case = business_service.by_project(scope_id)
+            revision = case.current_revision
+            if revision is None:
+                return None
+            readiness = business_service.readiness(case.id)
+            warnings = list(readiness.warnings)
+            blockers = list(readiness.blockers)
+            source_current = bool(readiness.source_current)
+            if revision.status != "COMPLETED":
+                blockers.append("BUSINESS_CASE_REVISION_NOT_COMPLETED")
+            if revision.material_change_status == "MATERIAL_CHANGE_REVIEW_REQUIRED":
+                blockers.append("MATERIAL_CHANGE_REVIEW_REQUIRED")
+            if any(
+                bool(item.get("blocking", True))
+                and str(item.get("status", "OPEN")).upper() not in {"CLOSED", "RESOLVED"}
+                for item in revision.unresolved_concerns_json
+            ):
+                blockers.append("BUSINESS_CASE_UNRESOLVED_BLOCKING_CONCERN")
+            try:
+                financial_service = EconomicFinancialModelService(self.db, self.tenant_id, self.actor_id, self.context)
+                financial_model = financial_service.by_project(scope_id)
+                financial = financial_service.provider_evidence(financial_model.id)
+                if revision.economic_financial_model_hash != financial.model_hash:
+                    source_current = False
+                    blockers.append("BUSINESS_CASE_FIN_REFERENCE_STALE")
+            except HTTPException:
+                financial = None
+            decision_snapshot = self.db.scalar(
+                select(BusinessCaseDecisionSnapshot)
+                .where(
+                    BusinessCaseDecisionSnapshot.tenant_id == self.tenant_id,
+                    BusinessCaseDecisionSnapshot.business_case_id == case.id,
+                    BusinessCaseDecisionSnapshot.business_case_revision_id == revision.id,
+                )
+                .order_by(BusinessCaseDecisionSnapshot.created_at.desc())
+            )
+            status = (
+                "STALE"
+                if not source_current
+                else "READY"
+                if revision.status == "COMPLETED" and readiness.status == "READY" and not blockers
+                else "BLOCKED"
+            )
+            contract_value = {
+                "provider_key": "BUSINESS_CASE_READINESS_PROVIDER",
+                "source_module": "BUSINESS_CASE_MANAGER",
+                "evidence_type": "BUSINESS_CASE_READINESS",
+                "project_workspace_id": scope_id,
+                "business_case_id": case.id,
+                "business_case_number": case.business_case_number,
+                "business_case_revision_id": revision.id,
+                "revision_number": revision.revision_number,
+                "revision_purpose": revision.purpose,
+                "business_case_hash": revision.content_hash,
+                "business_case_source_hash": revision.source_snapshot_hash,
+                "as_of_date": revision.as_of_date.isoformat(),
+                "fel_stage_code": revision.fel_stage_code,
+                "selected_alternative": dict(revision.recommendation_json or {}).get("selected_alternative"),
+                "material_change_status": revision.material_change_status,
+                "readiness_status": status,
+                "source_current": source_current,
+                "decision_snapshot_reference": (
+                    {
+                        "id": decision_snapshot.id,
+                        "type": decision_snapshot.snapshot_type,
+                        "hash": decision_snapshot.snapshot_hash,
+                    }
+                    if decision_snapshot
+                    else None
+                ),
+                "warnings": sorted(set(warnings)),
+                "blockers": sorted(set(blockers)),
+                "can_supply_investment_gate_evidence": bool(status == "READY" and source_current),
+            }
+            return self._normalized_provider_payload(
+                evidence_type="BUSINESS_CASE_READINESS",
+                scope=scope,
+                readiness_status=status,
+                source_current=source_current,
+                evidence_hash=str(revision.content_hash),
+                as_of_date=revision.as_of_date.isoformat(),
+                warnings=contract_value["warnings"],
+                blockers=contract_value["blockers"],
+                source_module="BUSINESS_CASE_MANAGER",
+                source_record_id=str(revision.id),
+                summary=(
+                    f"Governed Business Case {case.business_case_number} revision {revision.revision_number}; "
+                    f"readiness {status}."
+                ),
+                evidence_refs=[contract_value],
+            )
+        if provider_key == "ECONOMIC_FINANCIAL_READINESS_PROVIDER" and scope_id is not None:
+            service = EconomicFinancialModelService(self.db, self.tenant_id, self.actor_id, self.context)
+            model = service.by_project(scope_id)
+            governed = service.provider_evidence(model.id)
+            value = governed.model_dump(mode="json")
+            return self._normalized_provider_payload(
+                evidence_type="ECONOMIC_FINANCIAL_READINESS",
+                scope=scope,
+                readiness_status=str(governed.overall_readiness),
+                source_current=bool(governed.source_current),
+                evidence_hash=str(governed.model_hash),
+                as_of_date=governed.as_of_date.isoformat(),
+                warnings=list(governed.warnings),
+                blockers=list(governed.blockers),
+                source_module="ECONOMIC_FINANCIAL_MODEL",
+                source_record_id=str(governed.model_version_id),
+                summary=(
+                    f"Governed {governed.model_type} economic-financial model; "
+                    f"funding reconciliation {governed.funding_reconciliation_status}."
+                ),
+                evidence_refs=[value],
+            )
         return None
 
     @staticmethod
@@ -1056,7 +1424,13 @@ class InvestmentEvidencePolicyService:
         return [by_id[item] for item in project_ids if item in by_id]
 
     def _effective_matrix(
-        self, content: dict, gate_profile_code: str, projects: list[EnterpriseWorkspace]
+        self,
+        content: dict,
+        gate_profile_code: str,
+        projects: list[EnterpriseWorkspace],
+        *,
+        preview_project_type: str | None = None,
+        preview_governance_model: str | None = None,
     ) -> list[dict]:
         profile = content.get("gate_profiles", {}).get(gate_profile_code)
         if profile is None:
@@ -1082,10 +1456,27 @@ class InvestmentEvidencePolicyService:
                             rationale="Governance model is outside the published policy applicability.",
                         )
                 else:
-                    context = {"project_workspace_id": None, "project_type": None, "governance_model": None}
+                    project_type = str(preview_project_type or "").upper() or None
+                    governance_model = str(preview_governance_model or "").upper() or None
+                    context = {
+                        "project_workspace_id": None,
+                        "project_type": project_type,
+                        "governance_model": governance_model,
+                    }
+                    if project_type:
+                        effective = self._apply_override_values(
+                            content,
+                            gate_profile_code,
+                            effective,
+                            project_type,
+                            governance_model or "CAPITAL_OWNER",
+                        )
                     applicable_models = set(content.get("applicable_governance_models", []))
                     project_models = {self._governance_model(item) for item in projects}
-                    if projects and applicable_models and not (project_models & applicable_models):
+                    outside_policy = bool(projects and applicable_models and not (project_models & applicable_models))
+                    if governance_model and governance_model not in applicable_models:
+                        outside_policy = True
+                    if outside_policy:
                         effective.update(
                             classification="C",
                             required=False,
@@ -1111,8 +1502,22 @@ class InvestmentEvidencePolicyService:
         requirement: dict,
         project: EnterpriseWorkspace,
     ) -> dict:
-        project_type = self._project_type(project)
-        governance = self._governance_model(project)
+        return self._apply_override_values(
+            content,
+            gate_profile_code,
+            requirement,
+            self._project_type(project),
+            self._governance_model(project),
+        )
+
+    @staticmethod
+    def _apply_override_values(
+        content: dict,
+        gate_profile_code: str,
+        requirement: dict,
+        project_type: str,
+        governance: str,
+    ) -> dict:
         for override in content.get("project_type_overrides", []):
             types = {str(item).upper() for item in override.get("project_type_filter", [])}
             models = {str(item).upper() for item in override.get("governance_model_filter", [])}
@@ -1178,6 +1583,53 @@ class InvestmentEvidencePolicyService:
             "NOT REQUIRED": sorted({item["evidence_type"] for item in matrix if item["classification"] == "C"}),
         }
 
+    def _release_contract(self, record: AdminConfiguration | None, content: dict) -> dict:
+        missing = self._missing_provider_analysis(content)
+
+        def profile_matrix(profile_code: str) -> list[dict]:
+            return [
+                {
+                    "evidence_type": item["evidence_type"],
+                    "classification": item["classification"],
+                    "provider_key": item.get("provider_key"),
+                    "blocking": item["blocking"],
+                    "scope": item["scope"],
+                    "coverage_requirement": item.get("coverage_requirement"),
+                }
+                for item in self._effective_matrix(content, profile_code, [])
+            ]
+
+        blockers = sorted(
+            {
+                item["evidence_type"]
+                for item in missing
+                if item.get("classification") == "A" and item.get("gap_status") != "NONE"
+            }
+        )
+        return {
+            "policy_id": record.id if record else None,
+            "policy_revision": record.revision if record else None,
+            "policy_hash": record.content_hash if record else _hash(content),
+            "effective_from": content.get("effective_from"),
+            "business_case_provider_key": "BUSINESS_CASE_READINESS_PROVIDER",
+            "business_case_provider_status": PROVIDER_REGISTRY["BUSINESS_CASE_READINESS_PROVIDER"]["status"],
+            "economic_financial_provider_key": "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
+            "economic_financial_provider_status": PROVIDER_REGISTRY["ECONOMIC_FINANCIAL_READINESS_PROVIDER"]["status"],
+            "PYP_INV_SELECT_effective_policy": profile_matrix("PYP-INV-SELECT"),
+            "PYP_FFA_effective_policy": profile_matrix("PYP-FFA"),
+            "Project_Type_overrides": deepcopy(content.get("project_type_overrides", [])),
+            "Governance_Model_applicability": deepcopy(content.get("applicable_governance_models", [])),
+            "missing_provider_count": len(blockers),
+            "missing_providers": blockers,
+            "historical_compatibility_status": "PRESERVED_BY_PREPARATION_AND_DECISION_SNAPSHOTS",
+            "Gate07J_integration_status": "AVAILABLE",
+            "Gate07K_package_integration_status": "AVAILABLE",
+            "warnings": [],
+            "blockers": blockers,
+            "final_output": READY_OUTPUT if not blockers else "GATE07M_EVID_POLICY_UPDATE_REWORK_REQUIRED",
+            "exclusive_status": VALIDATED_RELEASE if not blockers else "GATE07M_EVID_POLICY_UPDATE_REWORK_REQUIRED",
+        }
+
     @staticmethod
     def _gap_status(requirement: dict, provider: dict | None) -> str:
         if requirement.get("classification") != "A":
@@ -1217,7 +1669,7 @@ class InvestmentEvidencePolicyService:
         priority = {"RISK_READINESS": 1, "PERMIT_READINESS": 2}
         candidates = [item for item in missing if item.get("blocking") and item.get("gap_status") != "NONE"]
         if not candidates:
-            return {"next": "READY_TO_DESIGN_GATE07K"}
+            return {"next": "READY_TO_REVALIDATE_NEW_FID_PATH"}
         selected = min(candidates, key=lambda item: (priority.get(item["evidence_type"], 99), item["evidence_type"]))
         return {"next": "BUILD_MISSING_GOVERNED_PROVIDER", "provider": selected["provider"]}
 
@@ -1241,6 +1693,10 @@ class InvestmentEvidencePolicyService:
         if "CAPITAL_OWNER" not in set(content.get("applicable_governance_models", [])):
             issues.append("CAPITAL_OWNER_POLICY_REQUIRED")
         profiles = content.get("gate_profiles", {})
+        try:
+            _effective_datetime(content)
+        except (TypeError, ValueError):
+            issues.append("INVALID_EFFECTIVE_FROM")
         for profile_code in ("PYP-INV-SELECT", "PYP-FFA"):
             profile = profiles.get(profile_code)
             if not profile:
@@ -1273,6 +1729,19 @@ class InvestmentEvidencePolicyService:
                 coverage = row.get("coverage_requirement")
                 if coverage is not None and not 0 <= float(coverage) <= 100:
                     issues.append(f"INVALID_COVERAGE:{profile_code}:{key}")
+            rows_by_type = {str(row.get("evidence_type")): row for row in profile.get("requirements", [])}
+            business_case = rows_by_type.get("BUSINESS_CASE_READINESS")
+            financial = rows_by_type.get("ECONOMIC_FINANCIAL_READINESS")
+            if business_case is None:
+                issues.append(f"MISSING_BUSINESS_CASE_READINESS:{profile_code}")
+            if financial is None:
+                issues.append(f"MISSING_ECONOMIC_FINANCIAL_READINESS:{profile_code}")
+            if business_case and business_case.get("classification") != "A":
+                issues.append(f"BUSINESS_CASE_CLASS_A_REQUIRED:{profile_code}")
+            if profile_code == "PYP-FFA" and financial and financial.get("classification") != "A":
+                issues.append("PYP_FFA_FIN_CLASS_A_REQUIRED")
+            if profile_code == "PYP-INV-SELECT" and financial and financial.get("classification") != "B":
+                issues.append("PYP_INV_SELECT_FIN_CLASS_B_REQUIRED")
         for override in content.get("project_type_overrides", []):
             if override.get("classification") not in CLASSIFICATIONS:
                 issues.append("INVALID_PROJECT_TYPE_OVERRIDE")
@@ -1298,6 +1767,8 @@ class InvestmentEvidencePolicyService:
         path_ids = {item.id for item in self._workspace_path(workspace)}
         candidates: list[tuple[int, int, AdminConfiguration]] = []
         for record in records:
+            if _effective_datetime(record.content_json) > utc_now():
+                continue
             scope = dict(record.content_json.get("scope", {}))
             scope_type = str(scope.get("type") or "tenant")
             scope_id = scope.get("workspace_id")
@@ -1406,6 +1877,19 @@ def _hash(payload: Any) -> str:
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":"), default=_json_default).encode("utf-8")
     ).hexdigest()
+
+
+def _effective_datetime(content: dict) -> datetime:
+    value = content.get("effective_from")
+    if value in {None, ""}:
+        return datetime.min
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(UTC).replace(tzinfo=None)
+    return parsed
 
 
 def _json_default(value: Any) -> str:
