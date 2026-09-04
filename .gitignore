@@ -50,3 +50,7 @@ backups/
 Thumbs.db
 *.tsbuildinfo
 ~$*.docx
+
+# Local render and accessibility artifacts used to inspect generated reports
+outputs/technical_reports/render_*/
+outputs/technical_reports/*_a11y*.json

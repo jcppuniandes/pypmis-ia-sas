@@ -52,6 +52,7 @@ from app.modules.economic_financial_model.schemas import (
     RefreshPreviewOut,
 )
 from app.modules.funds_manager.models import Fund, FundingAssignment, FundingReadinessSnapshot
+from app.modules.funds_manager.service import FundsManagerService
 from app.modules.portfolio_budget.models import PortfolioBudgetScenario, PortfolioBudgetScenarioProject
 
 CONFIGURATION_KIND = "economic_financial_model_configuration"
@@ -1127,16 +1128,28 @@ class EconomicFinancialModelService:
     def refresh(self, model_id: int, idempotency_key: str) -> ModelVersionOut:
         model = self._model(model_id, lock=True)
         current = self._current_version(model)
-        if current.source_current:
+        source_current, _changes = self._source_current(current)
+        if source_current:
             raise HTTPException(status_code=409, detail={"code": "MODEL_SOURCE_ALREADY_CURRENT"})
         if current.status not in {"COMPLETED", "VOIDED"}:
             raise HTTPException(status_code=409, detail={"code": "COMPLETE_OR_VOID_CURRENT_VERSION_FIRST"})
+        current_funding = None
+        if current.funding_readiness_id:
+            referenced_funding = self._funding_readiness(current.funding_readiness_id)
+            current_funding = FundsManagerService(self.db, self.tenant_id, self.actor_id).readiness(
+                referenced_funding.portfolio_workspace_id,
+                project_id=referenced_funding.project_workspace_id,
+            )
+            if not current_funding.source_current:
+                raise HTTPException(status_code=409, detail={"code": "CURRENT_READY_FUNDING_SNAPSHOT_REQUIRED"})
         version = self._new_version(
             model,
             "REVALIDATION",
             idempotency_key=idempotency_key,
             source=current,
-            source_values=None,
+            source_values={
+                "funding_readiness_id": current_funding.snapshot_id if current_funding else None,
+            },
             case_revision=self._business_case_revision(
                 self._business_case(model.project_workspace_id, model.business_case_id)
             ),
@@ -1584,10 +1597,26 @@ class EconomicFinancialModelService:
         case = self._business_case(model.project_workspace_id, model.business_case_id)
         current_case = self._business_case_revision(case)
         changes: list[dict] = []
-        if (
+        business_case_changed = (
             current_case.id != version.business_case_revision_id
             or current_case.content_hash != version.business_case_hash
-        ):
+        )
+        # A completed Business Case revision may legitimately move forward after
+        # FIN has completed in order to capture the exact governed FIN hash.  In
+        # that case the two aggregates form a closed, auditable link: FIN still
+        # points to the prior approved Business Case source and the current
+        # Business Case points back to this precise FIN result.  Treating that
+        # bridge as stale made it impossible for both Class A providers to be
+        # current at the same time.
+        current_case_links_this_version = (
+            current_case.status == "COMPLETED"
+            and current_case.readiness_status == "READY"
+            and current_case.financial_model_status == "AVAILABLE"
+            and current_case.economic_financial_model_id == model.id
+            and current_case.economic_financial_model_version == version.version_number
+            and current_case.economic_financial_model_hash == version.model_hash
+        )
+        if business_case_changed and not current_case_links_this_version:
             changes.append(
                 {"source": "business_case", "before": version.business_case_hash, "after": current_case.content_hash}
             )
@@ -1599,12 +1628,21 @@ class EconomicFinancialModelService:
                 )
         if version.funding_readiness_id:
             funding = self._funding_readiness(version.funding_readiness_id)
-            if funding.funding_readiness_hash != version.funding_readiness_hash or not funding.source_current:
+            current_funding = FundsManagerService(self.db, self.tenant_id, self.actor_id).readiness(
+                funding.portfolio_workspace_id,
+                project_id=funding.project_workspace_id,
+            )
+            if (
+                funding.funding_readiness_hash != version.funding_readiness_hash
+                or not funding.source_current
+                or not current_funding.source_current
+                or current_funding.funding_readiness_hash != version.funding_readiness_hash
+            ):
                 changes.append(
                     {
                         "source": "funding_readiness",
                         "before": version.funding_readiness_hash,
-                        "after": funding.funding_readiness_hash,
+                        "after": current_funding.funding_readiness_hash,
                     }
                 )
         return not changes, changes
@@ -1621,8 +1659,8 @@ class EconomicFinancialModelService:
     ) -> EconomicFinancialModelVersion:
         values = source_values or {}
         number = 1 if source is None else source.version_number + 1
-        budget_id = values.get("budget_scenario_id") if source is None else source.budget_scenario_id
-        funding_id = values.get("funding_readiness_id") if source is None else source.funding_readiness_id
+        budget_id = values.get("budget_scenario_id", source.budget_scenario_id if source else None)
+        funding_id = values.get("funding_readiness_id", source.funding_readiness_id if source else None)
         references, hashes, snapshot_hash = self._source_bundle(model, case_revision, budget_id, funding_id)
         record = EconomicFinancialModelVersion(
             tenant_id=self.tenant_id,

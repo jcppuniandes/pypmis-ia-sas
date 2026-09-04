@@ -1,0 +1,109 @@
+services:
+  gate07m-fid-redis:
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate07m-fid-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate07e
+      POSTGRES_USER: gate07e
+      POSTGRES_PASSWORD: gate07e
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate07e -d gate07e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate07m-fid-test:
+    profiles: ["validation"]
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate07e:gate07e@gate07m-fid-db:5432/gate07e
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://gate07e:gate07e@gate07m-fid-db:5432/gate07e
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate07m-fid-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+      GATE07M_FID_EVIDENCE_PATH: /evidence/gate07m_fid_e2e_postgresql.json
+    volumes:
+      - ./outputs/technical_reports:/evidence
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python tests/postgres/prepare_gate07e_migration_baseline.py
+        alembic stamp 20260820_0044
+        alembic upgrade head
+        alembic current | grep 20260902_0058
+        python tests/postgres/validate_gate07m_fin_schema.py --expect 20260902_0058
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest --no-cov -q -rA tests/test_gate07m_fid_e2e.py
+        python -c 'from app.database.session import engine; connection=engine.connect(); connection.exec_driver_sql("DROP SCHEMA public CASCADE"); connection.exec_driver_sql("CREATE SCHEMA public"); connection.commit(); connection.close()'
+        python tests/postgres/prepare_gate07e_migration_baseline.py
+        alembic stamp 20260820_0044
+        alembic upgrade head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest --no-cov -q \
+          tests/test_post_fid_governance_gate07l.py \
+          tests/postgres/test_post_fid_governance_postgres.py
+        pytest --no-cov -q \
+          tests/test_investment_evidence_policy_gate07m_evid.py \
+          tests/test_economic_financial_model_gate07m_fin.py \
+          tests/test_investment_decision_gate07k.py \
+          tests/postgres/test_investment_evidence_policy_postgres.py \
+          tests/postgres/test_economic_financial_model_postgres.py \
+          tests/postgres/test_investment_decision_postgres.py
+    depends_on:
+      gate07m-fid-db:
+        condition: service_healthy
+
+  gate07m-fid-api:
+    profiles: ["browser"]
+    build:
+      context: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate07e:gate07e@gate07m-fid-db:5432/gate07e
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate07m-fid-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      REDIS_URL: redis://gate07m-fid-redis:6379/0
+      CORS_ORIGINS: http://localhost:15173,http://127.0.0.1:15173
+    ports:
+      - "18000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2).read()"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      gate07m-fid-db:
+        condition: service_healthy
+      gate07m-fid-redis:
+        condition: service_healthy
+
+  gate07m-fid-frontend:
+    profiles: ["browser"]
+    build:
+      context: ./frontend
+    environment:
+      VITE_DEV_PROXY_TARGET: http://gate07m-fid-api:8000
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    volumes:
+      - ./outputs/technical_reports:/evidence
+    ports:
+      - "15173:5173"
+    depends_on:
+      gate07m-fid-api:
+        condition: service_healthy

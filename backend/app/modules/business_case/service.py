@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from copy import deepcopy
+from datetime import datetime
 from typing import Any
 
 from fastapi import HTTPException
@@ -688,6 +689,10 @@ class BusinessCaseService:
         )
         proposal = proposal or self._proposal(case.source_project_proposal_id)
         refs, hashes = self._source_bundle(case.project_workspace_id, proposal.id)
+        financial_ref = refs.get("economic_financial_model") or {}
+        financial_as_of_date = financial_ref.get("as_of_date")
+        if isinstance(financial_as_of_date, str):
+            financial_as_of_date = datetime.fromisoformat(financial_as_of_date)
         if source:
             narrative = {
                 "title": source.title,
@@ -737,23 +742,23 @@ class BusinessCaseService:
             source_references_json=refs,
             source_hashes_json=hashes,
             source_snapshot_hash=_hash({"references": refs, "hashes": hashes}),
-            economic_financial_model_id=(refs.get("economic_financial_model") or {}).get(
-                "id", source.economic_financial_model_id if source else None
-            ),
-            economic_financial_model_version=(refs.get("economic_financial_model") or {}).get(
+            economic_financial_model_id=financial_ref.get("id", source.economic_financial_model_id if source else None),
+            economic_financial_model_version=financial_ref.get(
                 "version", source.economic_financial_model_version if source else None
             ),
             economic_financial_model_hash=hashes.get(
                 "economic_financial_model", source.economic_financial_model_hash if source else None
             ),
-            financial_model_status=(refs.get("economic_financial_model") or {}).get(
+            financial_model_status=financial_ref.get(
                 "financial_model_status", source.financial_model_status if source else "NOT_AVAILABLE"
             ),
-            economic_financial_readiness=(refs.get("economic_financial_model") or {}).get(
+            economic_financial_readiness=financial_ref.get(
                 "readiness", source.economic_financial_readiness if source else None
             ),
-            economic_financial_as_of_date=(refs.get("economic_financial_model") or {}).get(
-                "as_of_date", source.economic_financial_as_of_date if source else None
+            economic_financial_as_of_date=(
+                financial_as_of_date
+                if financial_as_of_date is not None
+                else (source.economic_financial_as_of_date if source else None)
             ),
             readiness_status="NOT_STARTED",
             readiness_hash=_hash({"status": "NOT_STARTED", "sources": hashes}),
@@ -873,7 +878,7 @@ class BusinessCaseService:
                     "version": financial_version.version_number,
                     "readiness": financial_version.overall_readiness,
                     "financial_model_status": "AVAILABLE",
-                    "as_of_date": financial_version.as_of_date,
+                    "as_of_date": financial_version.as_of_date.isoformat(),
                 }
                 hashes["economic_financial_model"] = financial_version.model_hash
         risk = self.db.scalar(

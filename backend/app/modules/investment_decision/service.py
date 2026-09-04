@@ -916,7 +916,14 @@ class InvestmentDecisionService:
                 "outcome": record.outcome,
                 "rationale": record.rationale,
                 "conditions": record.conditions_json,
-                "authorized_amount": record.authorized_amount,
+                # Numeric(18, 2) reloads ``100000000`` as ``100000000.00``.
+                # Canonicalize before hashing so a valid FID remains current
+                # after the database round trip on both SQLite and PostgreSQL.
+                "authorized_amount": (
+                    str(Decimal(record.authorized_amount).quantize(Decimal("0.01")))
+                    if record.authorized_amount is not None
+                    else None
+                ),
                 "authorized_currency": record.authorized_currency,
                 "decided_at": timestamp,
             }

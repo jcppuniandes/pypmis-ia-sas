@@ -1,0 +1,178 @@
+{
+  "release_status": "GATE07M_FID_E2E_RELEASE_VALIDATED",
+  "final_output": "NEW_PYP_FFA_FID_PATH_FULL_STACK_VALIDATED",
+  "next": "READY_TO_ENTER_OPERATIONAL_MACROPROCESSES_REVIEW",
+  "database_dialect": "postgresql",
+  "policy": {
+    "id": 787,
+    "revision": 1,
+    "hash": "a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392",
+    "effective_from": "2026-09-03T12:34:44.035309"
+  },
+  "project": {
+    "id": 3,
+    "code": "G07F-PRJ-7f5905a918",
+    "governance_model": "CAPITAL_OWNER",
+    "project_type": "COMMERCIAL",
+    "profile": "PYP-FFA",
+    "status_after": "pending"
+  },
+  "portfolio": {
+    "id": 2,
+    "code": "G07F-PF-61b9ea37f8",
+    "name": "Gate 07F Portfolio 61b9ea37f8"
+  },
+  "budget": {
+    "scenario_id": 1,
+    "hash": "0996cf89cabeae3c995036202016399274d242255f15e4f371b4cf8d2337d30a",
+    "amount": "100000000"
+  },
+  "resource": {
+    "scenario_id": 1,
+    "hash": "390894f797f33e902f17bd2f028b1564028c92dee8bf9908e376cc2012681e72"
+  },
+  "convergence": {
+    "id": 1,
+    "hash": "79c0cd2a6f9198bdca04e6da0bf581f2c0ef35ec3713cd42004dbfa1c80cb21c"
+  },
+  "funding": {
+    "snapshot_id": 1,
+    "hash": "682f4903f90a4de89060ddc19b8bafc0d986791b11edd4c543dd094ce402557e",
+    "confirmed_amount": "100000000.00",
+    "coverage_percent": "100.0000",
+    "sources": [
+      {
+        "key": "SPONSOR",
+        "source_id": 1,
+        "source_type": "CORPORATE_CAPEX",
+        "instrument_type": "SPONSOR_EQUITY",
+        "amount": "20000000"
+      },
+      {
+        "key": "EXTERNAL",
+        "source_id": 2,
+        "source_type": "JV_CONTRIBUTION",
+        "instrument_type": "EXTERNAL_INVESTOR_EQUITY",
+        "amount": "15000000"
+      },
+      {
+        "key": "SENIOR",
+        "source_id": 3,
+        "source_type": "BANK_LOAN",
+        "instrument_type": "BANK_LOAN",
+        "amount": "50000000"
+      },
+      {
+        "key": "DEVELOPMENT",
+        "source_id": 4,
+        "source_type": "DEVELOPMENT_BANK",
+        "instrument_type": "DEVELOPMENT_BANK_LOAN",
+        "amount": "10000000"
+      },
+      {
+        "key": "GRANT",
+        "source_id": 5,
+        "source_type": "GRANT",
+        "instrument_type": "GRANT",
+        "amount": "5000000"
+      }
+    ]
+  },
+  "fel": {
+    "FEL-1_assessment_hash": "6bfd838a59788ef8a4d2f5b260fe62e927c21d13b4d8f5b2a56d85b3d7115047",
+    "FEL-2_assessment_hash": "f60aed6db72d080e6b259f3e0c70b5fb6ca80fe23fd9c95872cd61704061c10e",
+    "FEL-3_assessment_hash": "0138a496c734e74dbaf4c1e7be6b986dc514fe0ee4bff5e25791cd1fbdb70ac1"
+  },
+  "risk": {
+    "assessment_id": 1,
+    "hash": "aa12a8466f484b33ec01a7ce3d257545c8755904e4c214557904ebd878922bab"
+  },
+  "permit": {
+    "classification": "B",
+    "handling": "INDEPENDENTLY_VALIDATED_REFERENCE"
+  },
+  "business_case": {
+    "id": 1,
+    "revision_id": 2,
+    "hash": "fcf8a025937c69068da3ad92e901ea328ae589730394d6ff95ec279318b1e87d",
+    "status": "COMPLETED",
+    "readiness": "READY",
+    "fin_hash": "eaa38a9fd0aa167fe3c1025de0d4ee72fe8b80e29d766e00c9b5c792e207c874"
+  },
+  "financial_model": {
+    "id": 1,
+    "version_id": 1,
+    "hash": "eaa38a9fd0aa167fe3c1025de0d4ee72fe8b80e29d766e00c9b5c792e207c874",
+    "status": "COMPLETED",
+    "readiness": "READY",
+    "npv": "11119459.053343",
+    "irr": "0.1597532016",
+    "equity_irr": "None",
+    "moic": "2.00000000",
+    "minimum_dscr": "1.73913043",
+    "llcr": "1.93814991",
+    "funding_reconciliation": "RECONCILED",
+    "instruments": {
+      "SPONSOR": 1,
+      "EXTERNAL": 2,
+      "SENIOR": 3,
+      "DEVELOPMENT": 4,
+      "GRANT": 5
+    }
+  },
+  "gate07j": {
+    "preparation_id": 1,
+    "status": "FROZEN",
+    "hash": "2d599bce470138230e193016bf09eff1ebc39510383b645a0122c9af854f5c24",
+    "readiness": "READY",
+    "coverage_percent": 100.0,
+    "class_a_count": 11,
+    "class_a_valid": 11
+  },
+  "gate07k": {
+    "decision_id": 1,
+    "decision_hash": "ed8e5d6603ca50a005061391e877d116590c0094f924514e22594a325c52d012",
+    "source_package_hash": "3bb0590b57847c71ba8e39dc2ca54e9bfd2a8659f120e850def29ccfb1573102",
+    "status": "DECIDED",
+    "outcome": "GO",
+    "is_fid": true,
+    "full_funds_authorized": true,
+    "investment_authorized": true,
+    "can_activate_project": false
+  },
+  "gate07l": {
+    "eligibility_status": "READY_FOR_PROJECT_WORKSPACE_INITIALIZATION",
+    "eligibility_hash": "fa58d1c5625556bf87fe85680115f76dde693770fb550859dcbbd68b43fdd35f",
+    "can_initialize": true,
+    "can_activate": false
+  },
+  "negative_fin_stale": {
+    "trigger": "SPONSOR_FUNDING_SOURCE_SUSPENDED",
+    "source_id": 1,
+    "provider_source_current": false,
+    "provider_readiness": "STALE",
+    "gate07j_would_be_ready": false,
+    "frozen_preparation_hash_unchanged": true,
+    "historical_decision_hash_unchanged": true,
+    "recovery": {
+      "funding_snapshot_id": 2,
+      "funding_readiness_hash": "3209f10575335d0446f0a87b4dca970fb2c40fe671b2afb7ffb4a27c2d873c02",
+      "financial_model_version_id": 2,
+      "financial_model_hash": "d30f9a31f444afa915f86aefbab5148c629b88a8013cec7b057ac1ac2e56009b",
+      "business_case_revision_id": 3,
+      "business_case_fin_hash": "d30f9a31f444afa915f86aefbab5148c629b88a8013cec7b057ac1ac2e56009b",
+      "provider_source_current": true,
+      "provider_readiness": "READY"
+    }
+  },
+  "project_14_hash_before": null,
+  "project_14_hash_after": null,
+  "performance": {
+    "provider_resolution_ms": 3964.188,
+    "gate07j_readiness_ms": 408.086,
+    "gate07j_freeze_ms": 607.914,
+    "gate07k_package_load_ms": 918.409,
+    "gate07k_decide_ms": 454.71,
+    "gate07l_evaluate_ms": 1094.37
+  }
+}

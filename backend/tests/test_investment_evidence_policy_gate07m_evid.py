@@ -1,7 +1,7 @@
 """Gate 07M-EVID policy update contract and scale tests."""
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -71,6 +71,40 @@ def test_gate07m_provider_registration_and_contextual_policy() -> None:
         preview_governance_model="CONTRACTOR_DELIVERY",
     )
     assert _row(contractor, "ECONOMIC_FINANCIAL_READINESS")["classification"] == "C"
+
+
+def test_effective_policy_switches_at_utc_boundary(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A timezone-aware test clock selects rev 1 exactly at the governed instant."""
+    old = SimpleNamespace(
+        id=786,
+        revision=9,
+        content_json={"effective_from": "2026-01-01T00:00:00Z", "scope": {"type": "tenant"}},
+    )
+    policy_787 = SimpleNamespace(
+        id=787,
+        revision=1,
+        content_json={
+            "effective_from": "2026-09-03T12:34:44.035309",
+            "scope": {"type": "tenant"},
+        },
+    )
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [old, policy_787]
+    service = InvestmentEvidencePolicyService(db, 1, 1)
+
+    monkeypatch.setattr(
+        "app.modules.investment_evidence_policy.service.utc_now",
+        lambda: datetime(2026, 9, 3, 12, 34, 44, 35308, tzinfo=UTC).replace(tzinfo=None),
+    )
+    assert service._effective_configuration(None).id == 786
+
+    monkeypatch.setattr(
+        "app.modules.investment_evidence_policy.service.utc_now",
+        lambda: datetime(2026, 9, 3, 12, 34, 44, 35309, tzinfo=UTC).replace(tzinfo=None),
+    )
+    selected = service._effective_configuration(None)
+    assert selected.id == 787
+    assert selected.revision == 1
 
 
 def test_business_case_provider_detects_stale_fin_reference(monkeypatch: pytest.MonkeyPatch) -> None:

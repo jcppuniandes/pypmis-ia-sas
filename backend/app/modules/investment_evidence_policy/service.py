@@ -1765,9 +1765,10 @@ class InvestmentEvidencePolicyService:
         if not records:
             return None
         path_ids = {item.id for item in self._workspace_path(workspace)}
-        candidates: list[tuple[int, int, AdminConfiguration]] = []
+        candidates: list[tuple[int, datetime, int, AdminConfiguration]] = []
         for record in records:
-            if _effective_datetime(record.content_json) > utc_now():
+            effective_at = _effective_datetime(record.content_json)
+            if effective_at > utc_now():
                 continue
             scope = dict(record.content_json.get("scope", {}))
             scope_type = str(scope.get("type") or "tenant")
@@ -1777,8 +1778,12 @@ class InvestmentEvidencePolicyService:
                 if scope_id not in path_ids:
                     continue
                 specificity = {"enterprise": 1, "business-unit": 2, "portfolio": 3}.get(scope_type, 0)
-            candidates.append((specificity, record.revision, record))
-        return max(candidates, key=lambda item: item[:2])[2] if candidates else None
+            # Within the same scope, the most recently effective policy wins.
+            # Revision numbers are local to a configuration identity and cannot
+            # order two independently published policy records (for example an
+            # old rev 9 versus policy 787 rev 1 at its effective boundary).
+            candidates.append((specificity, effective_at, record.revision, record))
+        return max(candidates, key=lambda item: item[:3])[3] if candidates else None
 
     def _configuration(self, configuration_id: int | None, *, lock: bool = False) -> AdminConfiguration:
         statement = select(AdminConfiguration).where(

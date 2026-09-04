@@ -240,6 +240,36 @@ def test_commercial_model_lifecycle_readiness_provider_and_immutability() -> Non
         provider = service.provider_evidence(created.id)
         assert provider.can_supply_investment_gate_evidence is True
         assert provider.model_hash == completed.model_hash
+
+        # Close the governed BC -> FIN link with a new immutable BC revision.
+        # FIN must remain current only when that revision references this exact
+        # model/version/hash; otherwise the two Class A providers can never be
+        # valid simultaneously.
+        case_after_fin = business_service.get(case.id)
+        linked_revision = business_service.refresh(
+            case.id,
+            case_after_fin.revision_version,
+            f"gate07m-fin-link-refresh-{uuid4()}",
+        )
+        assert linked_revision.economic_financial_model_id == created.id
+        assert linked_revision.economic_financial_model_version == completed.version_number
+        assert linked_revision.economic_financial_model_hash == completed.model_hash
+        linked_review = business_service.submit_review(
+            linked_revision.id,
+            linked_revision.revision_version,
+            f"gate07m-fin-link-submit-{uuid4()}",
+        )
+        linked_complete = business_service.complete_revision(
+            linked_review.id,
+            linked_review.revision_version,
+            f"gate07m-fin-link-complete-{uuid4()}",
+            reviewer.id,
+        )
+        assert linked_complete.readiness_status == "READY"
+        assert service.refresh_preview(created.id).source_changes == []
+        linked_provider = service.provider_evidence(created.id)
+        assert linked_provider.can_supply_investment_gate_evidence is True
+        assert linked_provider.source_current is True
         with pytest.raises(HTTPException) as captured:
             service.update_version(completed.id, completed.revision_version, {"base_currency": "COP"})
         assert captured.value.detail["code"] == "DRAFT_FIN_MODEL_VERSION_REQUIRED"
