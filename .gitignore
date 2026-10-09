@@ -63,3 +63,6 @@ outputs/technical_reports/*_a11y*.json
 outputs/.qa/wave2b-risk-basic-data/
 outputs/.qa/wave3b-owner-capability/
 outputs/.qa/qra-foundation/
+
+# Local repository backup exceeds GitHub's regular Git file-size limit.
+outputs/.qa/strategic-hardening/baseline-9cb0969.zip

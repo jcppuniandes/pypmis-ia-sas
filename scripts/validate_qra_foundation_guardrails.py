@@ -41,7 +41,7 @@ def main():
         assert f'provider_key="{key}"' not in gate_defaults
     assert "QRA_FOUNDATION_READINESS_PROVIDER" not in registry
     app = read("frontend/src/App.tsx")
-    for view in ("qra-foundation", "qra-methodology-configuration"):
+    for view in ("qra-foundation", "qra-methodology-source-readiness"):
         assert view in read("frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts")
         assert view in read("frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx")
         assert view not in app

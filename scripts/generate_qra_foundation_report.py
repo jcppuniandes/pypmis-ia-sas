@@ -163,7 +163,8 @@ def main() -> None:
     base.update_field_settings(document)
     document.save(OUTPUT)
     print(f"created={OUTPUT}")
-    print(f"sections={len(re.findall(r'^## \\d+\\. ', SOURCE.read_text(encoding='utf-8'), re.MULTILINE))}")
+    section_count = len(re.findall(r"^## \d+\. ", SOURCE.read_text(encoding="utf-8"), re.MULTILINE))
+    print(f"sections={section_count}")
     print(f"status={status}")
 
 
