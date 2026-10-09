@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-09-15T07:35:00-05:00",
+  "typescript_exit": 0,
+  "build_exit": 0,
+  "eslint_exit": 0,
+  "eslint_errors": 0,
+  "eslint_warnings": 9,
+  "prettier_exit": 0,
+  "focal_gate07k_tests": 3,
+  "commands": {
+    "typescript": "frontend/node_modules/.bin/tsc.CMD",
+    "build": "frontend/node_modules/.bin/vite.CMD build",
+    "eslint": "frontend/node_modules/.bin/eslint.CMD src --max-warnings=10",
+    "prettier": "frontend/node_modules/.bin/prettier.CMD --check src e2e/strategic-workflow-navigation.spec.ts tests/AppFlow.test.tsx",
+    "focal_gate07k": "frontend/node_modules/.bin/vitest.CMD run src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx"
+  },
+  "notes": [
+    "TypeScript, Vite build, ESLint and Prettier completed with exit code 0 after the final USER to ADMIN routing-race patch and AppFlow test optimization.",
+    "The nine residual ESLint warnings are confined to the pre-existing BIM IFC viewer and remain below the CI warning budget of ten.",
+    "The Gate 07K focal frontend suite passed three of three tests after hardening the asynchronous assertion."
+  ]
+}

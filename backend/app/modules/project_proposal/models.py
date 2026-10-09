@@ -34,6 +34,11 @@ class ProjectProposal(Base):
     proposal_number: Mapped[str] = mapped_column(String(40), index=True)
     source_idea_id: Mapped[int] = mapped_column(ForeignKey("ideas.id"), index=True)
     accepted_idea_evaluation_id: Mapped[int] = mapped_column(ForeignKey("idea_evaluations.id"), index=True)
+    source_business_analysis_id: Mapped[int | None] = mapped_column(ForeignKey("business_analyses.id"), index=True)
+    source_business_analysis_hash: Mapped[str | None] = mapped_column(String(64))
+    business_analysis_configuration_id: Mapped[int | None] = mapped_column(ForeignKey("admin_configurations.id"))
+    business_analysis_configuration_revision: Mapped[int | None] = mapped_column(Integer)
+    business_analysis_configuration_hash: Mapped[str | None] = mapped_column(String(64))
     owning_workspace_id: Mapped[int] = mapped_column(ForeignKey("enterprise_workspaces.id"), index=True)
     target_portfolio_workspace_id: Mapped[int | None] = mapped_column(
         ForeignKey("enterprise_workspaces.id"), index=True

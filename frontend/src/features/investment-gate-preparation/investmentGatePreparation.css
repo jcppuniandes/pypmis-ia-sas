@@ -119,6 +119,63 @@
   background: #fff0e8;
   color: #9a3d16;
 }
+.gateStageSummary {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+}
+.gateStageSummary article {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+}
+.gateStageSummary article > span,
+.gateContextPanel dt {
+  color: #667887;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.gateStageSummary p {
+  background: #eaf5ff;
+  border-left: 4px solid #276da0;
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 8px 10px;
+}
+.gateStatus {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.7rem;
+  max-width: max-content;
+  padding: 4px 7px;
+}
+.gateStatus-ready,
+.gateStatus-satisfied,
+.gateStatus-available,
+.gateStatus-current {
+  background: #dff5e9;
+  color: #126744;
+}
+.gateStatus-blocked,
+.gateStatus-not-satisfied,
+.gateStatus-stale,
+.gateStatus-not-evaluable,
+.gateStatus-not-ready-for-investment-decision {
+  background: #fff0ee;
+  color: #8d2c27;
+}
+.gateStatus-constrained,
+.gateStatus-warning,
+.gateStatus-not-evaluated,
+.gateStatus-not-applicable {
+  background: #fff8dd;
+  color: #725600;
+}
 .gateSurface header {
   align-items: center;
   display: flex;
@@ -198,6 +255,24 @@
   font-size: 0.72rem;
   font-weight: 800;
 }
+.evidenceMetadata {
+  display: grid !important;
+  gap: 5px;
+  grid-template-columns: repeat(2, minmax(115px, 1fr));
+}
+.evidenceMetadata span {
+  background: #edf3f7;
+  border-radius: 5px;
+  color: #526979;
+  display: grid;
+  font-size: 0.65rem;
+  gap: 2px;
+  padding: 5px;
+}
+.evidenceMetadata b {
+  color: #102536;
+  font-size: 0.72rem;
+}
 .evidenceGrid article em {
   background: #fff0ee;
   color: #8d2c27;
@@ -245,6 +320,138 @@
   max-height: 280px;
   overflow: auto;
   white-space: pre-wrap;
+}
+.gateMatrixNotice {
+  background: #f0f8fb;
+  border-left: 4px solid #1b7f79;
+  color: #315667;
+  padding: 8px 10px;
+}
+.gateMatrixWrap {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  overflow: auto;
+}
+.gateMatrix {
+  border-collapse: collapse;
+  font-size: 0.69rem;
+  min-width: 1750px;
+  width: 100%;
+}
+.gateMatrix th,
+.gateMatrix td {
+  border-bottom: 1px solid #dfe7ec;
+  padding: 7px;
+  text-align: left;
+  vertical-align: top;
+}
+.gateMatrix th {
+  background: #102536;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.gateMatrix td strong,
+.gateMatrix td small {
+  display: block;
+}
+.gateMatrix td small {
+  color: #667887;
+  margin-top: 3px;
+}
+.gateMatrix details summary {
+  color: #075e5a;
+  cursor: pointer;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.gateMatrix pre {
+  max-height: 220px;
+  min-width: 260px;
+}
+.criterionGroups,
+.gateContextLayout {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  margin-top: 12px;
+}
+.criterionGroups > section,
+.gateContextPanel {
+  background: #f7f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  min-width: 0;
+  padding: 9px;
+}
+.criterionGroups header,
+.gateContextPanel header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.criterionGroups h4,
+.gateContextPanel h4 {
+  margin: 0 0 8px;
+}
+.criterionGroups header > span,
+.gateContextPanel header > span {
+  background: #dfe9ef;
+  border-radius: 999px;
+  padding: 3px 7px;
+}
+.criterionGroups article,
+.gateContextPanel article {
+  background: #fff;
+  border: 1px solid #dfe7ec;
+  border-radius: 6px;
+  display: grid;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 7px;
+}
+.criterionGroups article > div {
+  display: grid;
+}
+.criterionGroups article span,
+.criterionGroups article small,
+.gateContextPanel article span,
+.gateContextPanel article small {
+  color: #607585;
+  font-size: 0.69rem;
+}
+.gateContextPanel dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+.gateContextPanel dl > div {
+  border-bottom: 1px solid #dfe7ec;
+  display: grid;
+  gap: 3px;
+  padding-bottom: 6px;
+}
+.gateContextPanel dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.gateIssueColumns {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.gateIssueColumns > div {
+  display: grid;
+  gap: 4px;
+}
+.gateIssueColumns span {
+  background: #fff;
+  border: 1px solid #dfe7ec;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+  padding: 5px;
 }
 .evidenceActions {
   display: flex;
@@ -341,6 +548,9 @@
   padding: 9px 11px;
 }
 @media (max-width: 850px) {
+  .gateStageSummary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .gateAdminGrid {
     grid-template-columns: 1fr;
   }
@@ -349,5 +559,11 @@
   }
   .evidenceGrid article.gate07mEvidence {
     grid-column: span 1;
+  }
+}
+@media (max-width: 520px) {
+  .gateStageSummary,
+  .gateIssueColumns {
+    grid-template-columns: 1fr;
   }
 }

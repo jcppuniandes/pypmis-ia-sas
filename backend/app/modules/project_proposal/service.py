@@ -21,6 +21,8 @@ from app.domain.models import (
     SecurityRolePermission,
     UserAccount,
 )
+from app.modules.business_analysis.models import BusinessAnalysis
+from app.modules.business_analysis.service import BusinessAnalysisService
 from app.modules.enterprise_structure.models import EnterpriseStrategicObjective
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext, ensure_enterprise_permissions
 from app.modules.idea_demand.models import Idea, IdeaEvaluation
@@ -232,7 +234,8 @@ class ProjectProposalService:
         config, sources, _path, config_record = self._effective_configuration(workspace)
         matrix = self._effective_matrix(workspace)
         evaluation = self._accepted_evaluation(idea, required=False)
-        source_values, mapped_values = self._mapping_values(idea, evaluation)
+        business_analysis = self._source_business_analysis(idea)
+        source_values, mapped_values = self._mapping_values(idea, evaluation, business_analysis)
         blockers = self._source_blockers(idea, config)
         warnings: list[str] = []
         if mapped_values.get("rom_cost") is None:
@@ -254,6 +257,20 @@ class ProjectProposalService:
                 "score": str(evaluation.total_score) if evaluation else None,
                 "created_at": evaluation.created_at.isoformat() if evaluation else None,
             },
+            business_analysis=(
+                {
+                    "id": business_analysis.id,
+                    "analysis_number": business_analysis.analysis_number,
+                    "status": business_analysis.status,
+                    "completion_hash": business_analysis.completion_hash,
+                    "configuration_id": business_analysis.configuration_id,
+                    "configuration_revision": business_analysis.configuration_revision,
+                    "configuration_hash": business_analysis.configuration_hash,
+                    "recommended_option_id": business_analysis.recommended_option_id,
+                }
+                if business_analysis is not None
+                else None
+            ),
             mapping={
                 "configuration_id": config_record.id,
                 "revision": config_record.revision,
@@ -315,13 +332,21 @@ class ProjectProposalService:
         if blockers:
             raise HTTPException(status_code=409, detail={"reason": "SOURCE_IDEA_NOT_READY", "blockers": blockers})
         evaluation = self._accepted_evaluation(idea)
-        source_values, mapped = self._mapping_values(idea, evaluation)
+        business_analysis = self._source_business_analysis(idea)
+        source_values, mapped = self._mapping_values(idea, evaluation, business_analysis)
         mapping = config.get("idea_to_proposal_mapping", {})
         proposal = ProjectProposal(
             tenant_id=self.tenant_id,
             proposal_number=self._reserve_number(),
             source_idea_id=idea.id,
             accepted_idea_evaluation_id=evaluation.id,
+            source_business_analysis_id=business_analysis.id if business_analysis else None,
+            source_business_analysis_hash=business_analysis.completion_hash if business_analysis else None,
+            business_analysis_configuration_id=business_analysis.configuration_id if business_analysis else None,
+            business_analysis_configuration_revision=(
+                business_analysis.configuration_revision if business_analysis else None
+            ),
+            business_analysis_configuration_hash=(business_analysis.configuration_hash if business_analysis else None),
             owning_workspace_id=idea.owning_workspace_id,
             target_portfolio_workspace_id=idea.target_portfolio_workspace_id,
             name=str(mapped["name"]),
@@ -337,9 +362,9 @@ class ProjectProposalService:
             preliminary_duration_days=None,
             target_start_date=None,
             target_finish_date=None,
-            key_risks_json=[],
-            assumptions_json=[],
-            constraints_json=[],
+            key_risks_json=list(mapped.get("key_risks_json", [])),
+            assumptions_json=list(mapped.get("assumptions_json", [])),
+            constraints_json=list(mapped.get("constraints_json", [])),
             strategic_objective_codes=list(mapped["strategic_objective_codes"]),
             sponsor_user_id=int(mapped["sponsor_user_id"]),
             proposal_owner_user_id=int(mapped["proposal_owner_user_id"]),
@@ -364,7 +389,12 @@ class ProjectProposalService:
             proposal,
             None,
             "DRAFT",
-            {"source_idea_id": idea.id, "accepted_idea_evaluation_id": evaluation.id},
+            {
+                "source_idea_id": idea.id,
+                "accepted_idea_evaluation_id": evaluation.id,
+                "source_business_analysis_id": business_analysis.id if business_analysis else None,
+                "source_business_analysis_hash": business_analysis.completion_hash if business_analysis else None,
+            },
         )
         self.db.commit()
         self.db.refresh(proposal)
@@ -790,6 +820,29 @@ class ProjectProposalService:
             blockers.append("NO_ACCEPTED_IDEA_EVALUATION")
         if not idea.strategic_objective_codes:
             blockers.append("NO_STRATEGIC_OBJECTIVE")
+        if BusinessAnalysisService.requirement_for_idea(idea):
+            analysis = self._source_business_analysis(idea)
+            if analysis is None:
+                blockers.append("BUSINESS_ANALYSIS_REQUIRED")
+            elif analysis.status != "COMPLETED":
+                blockers.append("BUSINESS_ANALYSIS_NOT_COMPLETED")
+            else:
+                readiness = BusinessAnalysisService(
+                    self.db,
+                    self.tenant_id,
+                    self.actor_id,
+                    self.context,
+                ).readiness_for_record(analysis)
+                if "STALE_SOURCE_IDEA" in readiness.blockers:
+                    blockers.append("BUSINESS_ANALYSIS_SOURCE_STALE")
+                if "STALE_EVALUATION_MATRIX" in readiness.blockers:
+                    blockers.append("BUSINESS_ANALYSIS_CONFIGURATION_STALE")
+                readiness_other_blockers = set(readiness.blockers) - {
+                    "STALE_SOURCE_IDEA",
+                    "STALE_EVALUATION_MATRIX",
+                }
+                if not analysis.completion_hash or readiness_other_blockers:
+                    blockers.append("BUSINESS_ANALYSIS_READINESS_MISSING")
         maximum = int(config.get("max_active_proposals_per_idea", 1))
         active_count = int(
             self.db.scalar(
@@ -805,7 +858,22 @@ class ProjectProposalService:
             blockers.append("MAX_ACTIVE_PROPOSALS_REACHED")
         return blockers
 
-    def _mapping_values(self, idea: Idea, evaluation: IdeaEvaluation | None) -> tuple[dict, dict]:
+    def _mapping_values(
+        self,
+        idea: Idea,
+        evaluation: IdeaEvaluation | None,
+        business_analysis: BusinessAnalysis | None,
+    ) -> tuple[dict, dict]:
+        analysis_content = dict(business_analysis.content_json or {}) if business_analysis else {}
+        analysis_options = list(analysis_content.get("options") or [])
+        recommended = next(
+            (
+                item
+                for item in analysis_options
+                if str(item.get("id")) == str(analysis_content.get("recommended_option_id") or "")
+            ),
+            {},
+        )
         source = {
             "idea_id": idea.id,
             "idea_number": idea.idea_number,
@@ -821,17 +889,35 @@ class ProjectProposalService:
             "requestor_user_id": idea.requestor_user_id,
             "accepted_evaluation_id": evaluation.id if evaluation else None,
             "accepted_evaluation_score": str(evaluation.total_score) if evaluation else None,
+            "business_analysis_id": business_analysis.id if business_analysis else None,
+            "business_analysis_number": business_analysis.analysis_number if business_analysis else None,
+            "business_analysis_hash": business_analysis.completion_hash if business_analysis else None,
+            "business_analysis_configuration_id": business_analysis.configuration_id if business_analysis else None,
+            "business_analysis_configuration_revision": (
+                business_analysis.configuration_revision if business_analysis else None
+            ),
+            "business_analysis_configuration_hash": (
+                business_analysis.configuration_hash if business_analysis else None
+            ),
+            "recommended_option_id": business_analysis.recommended_option_id if business_analysis else None,
         }
         responsible = idea.owner_user_id or idea.requestor_user_id
         mapped = {
             "name": idea.title,
-            "business_need": idea.description,
-            "business_justification": idea.expected_benefit or idea.description,
+            "business_need": str(analysis_content.get("statement") or idea.description),
+            "business_justification": str(
+                analysis_content.get("recommendation_rationale") or idea.expected_benefit or idea.description
+            ),
             "project_objectives_json": [
                 {"code": code, "statement": code.replace("-", " ").title()} for code in idea.strategic_objective_codes
             ],
-            "preliminary_scope": idea.description,
-            "expected_benefits": idea.expected_benefit or "Benefit definition required",
+            "preliminary_scope": str(recommended.get("scope_concept") or idea.description),
+            "expected_benefits": str(
+                recommended.get("expected_benefits")
+                or analysis_content.get("desired_outcomes", {}).get("business_outcomes")
+                or idea.expected_benefit
+                or "Benefit definition required"
+            ),
             "rom_cost": idea.estimated_value,
             "currency_code": idea.currency_code,
             "strategic_objective_codes": list(idea.strategic_objective_codes or []),
@@ -839,8 +925,23 @@ class ProjectProposalService:
             "proposal_owner_user_id": responsible,
             "target_portfolio_workspace_id": idea.target_portfolio_workspace_id,
             "origin_idea_score": evaluation.total_score if evaluation else None,
+            "key_risks_json": list(recommended.get("major_risks") or []),
+            "assumptions_json": list(analysis_content.get("assumptions") or []),
+            "constraints_json": list(analysis_content.get("constraints") or []),
         }
         return source, mapped
+
+    def _source_business_analysis(self, idea: Idea) -> BusinessAnalysis | None:
+        return self.db.scalar(
+            select(BusinessAnalysis)
+            .where(
+                BusinessAnalysis.tenant_id == self.tenant_id,
+                BusinessAnalysis.source_idea_id == idea.id,
+                BusinessAnalysis.status != "VOIDED",
+            )
+            .order_by(BusinessAnalysis.id.desc())
+            .limit(1)
+        )
 
     def _required_field_blockers(self, proposal: ProjectProposal) -> list[str]:
         config = self._configuration_snapshot(proposal)
@@ -1344,6 +1445,11 @@ class ProjectProposalService:
             source_idea_number=idea.idea_number,
             source_idea_title=idea.title,
             accepted_idea_evaluation_id=proposal.accepted_idea_evaluation_id,
+            source_business_analysis_id=proposal.source_business_analysis_id,
+            source_business_analysis_hash=proposal.source_business_analysis_hash,
+            business_analysis_configuration_id=proposal.business_analysis_configuration_id,
+            business_analysis_configuration_revision=proposal.business_analysis_configuration_revision,
+            business_analysis_configuration_hash=proposal.business_analysis_configuration_hash,
             owning_workspace_id=proposal.owning_workspace_id,
             owning_workspace_name=workspace.name,
             target_portfolio_workspace_id=proposal.target_portfolio_workspace_id,

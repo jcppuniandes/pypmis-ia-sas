@@ -1,0 +1,13 @@
+time="2026-10-07T15:53:59-05:00" level=warning msg="Found orphan containers (pypmis-ia-sas-gate07b-test-1, pypmis-ia-sas-gate07b-db-1, pypmis-ia-sas-gate07a-test-1, pypmis-ia-sas-gate07a-db-1) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container pypmis-ia-sas-api-1 Recreate 
+ Container pypmis-ia-sas-beat-1 Recreate 
+ Container pypmis-ia-sas-worker-1 Recreate 
+ Container pypmis-ia-sas-beat-1 Recreated 
+ Container pypmis-ia-sas-worker-1 Recreated 
+ Container pypmis-ia-sas-api-1 Recreated 
+ Container pypmis-ia-sas-api-1 Starting 
+ Container pypmis-ia-sas-worker-1 Starting 
+ Container pypmis-ia-sas-beat-1 Starting 
+ Container pypmis-ia-sas-beat-1 Started 
+ Container pypmis-ia-sas-worker-1 Started 
+ Container pypmis-ia-sas-api-1 Started 

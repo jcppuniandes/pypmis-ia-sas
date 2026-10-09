@@ -1357,6 +1357,11 @@ export default function BimIfcModelViewer({
   const sourceName = model?.source_file_name ?? run?.source_file_name;
   const sourceType = model?.source_type ?? run?.source_type;
   const canLoadModel = Boolean(projectId && sourceType === "ifc" && (model || run));
+  const requiresBackendGeometryCache = Boolean(
+    model &&
+    model.source_size_bytes > IFC_BROWSER_CACHE_THRESHOLD_BYTES &&
+    viewerManifest?.geometry_strategy !== "backend_cache"
+  );
   const treeGroups = useMemo(() => buildIfcTreeGroups(lines), [lines]);
   const filteredTreeLines = useMemo(() => {
     const query = compact(treeSearch).toLowerCase();
@@ -1464,11 +1469,7 @@ export default function BimIfcModelViewer({
     if (!canvas || !projectId || sourceType !== "ifc" || (!model && !run)) {
       return undefined;
     }
-    if (
-      model &&
-      model.source_size_bytes > IFC_BROWSER_CACHE_THRESHOLD_BYTES &&
-      viewerManifest?.geometry_strategy !== "backend_cache"
-    ) {
+    if (requiresBackendGeometryCache) {
       setStatus("IFC registrado. Prepara la cache backend antes de cargar la geometria de este modelo pesado.");
       setRenderStats("Render directo suspendido: requiere cache backend");
       return undefined;
@@ -2169,6 +2170,7 @@ export default function BimIfcModelViewer({
     lines,
     model,
     projectId,
+    requiresBackendGeometryCache,
     run,
     sourceName,
     sourceType,
@@ -2908,9 +2910,13 @@ export default function BimIfcModelViewer({
           tabIndex={canLoadModel ? 0 : -1}
         >
           <canvas aria-label="IFC geometric model viewer" data-testid="ifc-geometry-viewer-canvas" ref={canvasRef} />
-          {canLoadModel && !hasRenderableGeometry ? (
+          {canLoadModel && (!hasRenderableGeometry || requiresBackendGeometryCache) ? (
             <div className="bimViewerEmptyOverlay" role="status">
-              <strong>Modelo registrado sin geometria renderizable</strong>
+              <strong>
+                {requiresBackendGeometryCache
+                  ? "Modelo registrado: cache backend requerida"
+                  : "Modelo registrado sin geometria renderizable"}
+              </strong>
               <span>{displayStatus}</span>
               {georeferenceLabel ? <small>{georeferenceLabel}</small> : null}
               <small>

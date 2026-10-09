@@ -1,0 +1,1 @@
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInRlbmFudF9pZCI6MSwiZW1haWwiOiJhZG1pbkBkZW1vLmxvY2FsIiwiZXhwIjoxNzg5NDUxNTQ4fQ.TrJyoklCKUuVWRa84evSM_neYzjoiR7CHHTRFyLcG2w","token_type":"bearer","expires_in":28800,"tenant_id":1,"user":{"id":1,"email":"admin@demo.local","full_name":"Pypmis Admin","title":"Tenant Administrator","status":"active"}}

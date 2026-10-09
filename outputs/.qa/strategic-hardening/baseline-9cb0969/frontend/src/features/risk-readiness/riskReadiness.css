@@ -1,0 +1,364 @@
+.riskReadiness {
+  display: grid;
+  gap: 16px;
+  color: #142332;
+}
+.riskToolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-end;
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+  padding: 10px;
+}
+.riskToolbar nav,
+.riskAdminTabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.riskToolbar button,
+.riskAdminTabs button,
+.riskActions button,
+.riskSurface button,
+.riskDetail button {
+  border: 1px solid #cbd6df;
+  background: #fff;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 700;
+  color: #263949;
+  cursor: pointer;
+}
+.riskToolbar button.active,
+.riskAdminTabs button.active,
+.riskActions button:last-child {
+  background: #102a3a;
+  color: #fff;
+  border-color: #102a3a;
+}
+.riskSelectors {
+  display: flex;
+  gap: 8px;
+}
+.riskSelectors label,
+.riskField {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.riskSelectors select,
+.riskField input,
+.riskField select,
+.riskCreate input,
+.riskCreate select {
+  border: 1px solid #cbd6df;
+  border-radius: 6px;
+  padding: 7px;
+  background: #fff;
+}
+.riskMessage {
+  padding: 10px 12px;
+  border-left: 4px solid #178f8a;
+  background: #eaf7f6;
+  border-radius: 6px;
+}
+.riskHero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2bc84;
+  background: #fff6e9;
+}
+.riskHero.ready {
+  border-color: #7cc6a5;
+  background: #eefaf5;
+}
+.riskHero span,
+.riskSurface header span,
+.riskPolicyGrid span {
+  color: #647786;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.riskHero h3 {
+  margin: 4px 0;
+}
+.riskMetricGrid,
+.riskPolicyGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.riskMetricGrid article,
+.riskPolicyGrid article {
+  display: grid;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 9px;
+  padding: 14px;
+}
+.riskMetricGrid svg {
+  color: #168f89;
+}
+.riskMetricGrid strong {
+  font-size: 22px;
+}
+.riskSurface {
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+  padding: 14px;
+  overflow: auto;
+}
+.riskSurface header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.riskSurface h3 {
+  margin: 2px 0;
+}
+.riskSurface table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+.riskSurface th,
+.riskSurface td {
+  padding: 9px;
+  border-bottom: 1px solid #e5ebef;
+  text-align: left;
+  vertical-align: top;
+}
+.riskSurface tbody tr {
+  cursor: pointer;
+}
+.riskSurface tbody tr:hover,
+.riskSurface tbody tr.selected {
+  background: #eef8f8;
+}
+.riskStatus {
+  display: inline-flex;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #edf1f4;
+  color: #3c4d59;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.riskStatus.ready,
+.riskStatus.low,
+.riskStatus.completed,
+.riskStatus.published {
+  background: #dff3e8;
+  color: #117247;
+}
+.riskStatus.high,
+.riskStatus.blocked,
+.riskStatus.invalid,
+.riskStatus.critical {
+  background: #fde4df;
+  color: #a62e20;
+}
+.riskStatus.moderate,
+.riskStatus.stale,
+.riskStatus.expired,
+.riskStatus.in-progress {
+  background: #fff0d4;
+  color: #955b00;
+}
+.riskIssues,
+.riskTags {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.riskIssues span,
+.riskTags span {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #eef2f5;
+  font-size: 12px;
+  font-weight: 700;
+}
+.riskIssues .blocker {
+  background: #fde4df;
+  color: #9b281d;
+}
+.riskIssues .warning {
+  background: #fff0d4;
+  color: #875500;
+}
+.riskClear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #117247;
+}
+.riskCreate {
+  display: grid;
+  grid-template-columns: 2fr 1fr 0.65fr 0.65fr auto;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f5f8fa;
+  border-radius: 8px;
+}
+.riskCreate label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.riskCreate button {
+  background: #102a3a;
+  color: #fff;
+}
+.riskFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.riskFilters button {
+  padding: 6px 9px;
+  font-size: 12px;
+}
+.riskFilters button.active {
+  background: #102a3a;
+  border-color: #102a3a;
+  color: #fff;
+}
+.riskSplit {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+  gap: 12px;
+}
+.riskTableWrap {
+  overflow: auto;
+}
+.riskDetail {
+  border-left: 3px solid #168f89;
+  background: #f6f9fa;
+  border-radius: 7px;
+  padding: 14px;
+}
+.riskDetail h3 {
+  margin: 4px 0;
+}
+.riskDetail dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+}
+.riskDetail dt {
+  font-weight: 800;
+}
+.riskDetail dd {
+  margin: 0;
+}
+.riskDetail button {
+  width: 100%;
+  margin-top: 8px;
+}
+.riskBoundary {
+  font-size: 12px;
+  color: #60717e;
+  text-align: right;
+}
+.riskAdminTabs {
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 9px;
+  padding: 8px;
+}
+.riskAdminGrid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 12px;
+}
+.riskAdminGrid > aside {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.riskAdminGrid > aside button {
+  display: grid;
+  text-align: left;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid #d8e0e7;
+  background: #fff;
+  border-radius: 8px;
+}
+.riskAdminGrid > aside button.active {
+  border-color: #178f8a;
+  background: #edf9f8;
+}
+.riskAdminGrid > aside span {
+  font-size: 12px;
+  color: #667986;
+}
+.riskJson textarea {
+  width: 100%;
+  min-height: 360px;
+  margin-top: 8px;
+  font:
+    12px/1.45 ui-monospace,
+    monospace;
+}
+.riskActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.riskSurface pre {
+  max-height: 430px;
+  overflow: auto;
+  background: #102a3a;
+  color: #e9f4f3;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.riskMatrix td,
+.riskMatrix th {
+  text-align: center !important;
+}
+.riskMatrix .riskStatus {
+  justify-content: center;
+  min-width: 64px;
+}
+@media (max-width: 1000px) {
+  .riskToolbar,
+  .riskSelectors {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .riskMetricGrid,
+  .riskPolicyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .riskSplit,
+  .riskAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .riskCreate {
+    grid-template-columns: 1fr 1fr;
+  }
+}

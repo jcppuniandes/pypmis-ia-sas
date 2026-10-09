@@ -110,6 +110,8 @@ class IdeaOut(BaseModel):
     owning_workspace_id: int
     owning_workspace_name: str
     target_portfolio_workspace_id: int | None
+    source_capital_demand_id: int | None
+    source_capital_demand_snapshot_hash: str | None
     strategic_objective_codes: list[str]
     requestor_user_id: int
     requestor_name: str

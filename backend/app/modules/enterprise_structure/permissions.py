@@ -1,6 +1,7 @@
 """Specific RBAC evaluation for Enterprise Structure endpoints."""
 
 from dataclasses import dataclass
+from threading import RLock
 
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -252,6 +253,176 @@ IDEA_ROLE_DEFINITIONS = {
     "idea_owner": ("Idea Owner", "Owns and evaluates assigned ideas."),
     "idea_decision_maker": ("Idea Decision Maker", "Accepts or rejects evaluated ideas."),
     "idea_configuration_admin": ("Idea Configuration Admin", "Configures and publishes the Idea lifecycle."),
+}
+
+CAPITAL_PLANNING_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "capital_planning_cycle_manager": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.cycle.create",
+            "capital_planning.cycle.close",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_author": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.demand.create",
+            "capital_planning.demand.edit",
+            "capital_planning.demand.submit",
+            "capital_planning.allocation.read",
+            "capital_planning.allocation.create",
+            "capital_planning.allocation.edit",
+            "capital_planning.allocation.submit",
+            "capital_planning.bucket.classify",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_reviewer": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.demand.review",
+            "capital_planning.allocation.read",
+            "capital_planning.allocation.review",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_endorser": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.demand.endorse",
+            "capital_planning.allocation.read",
+            "capital_planning.allocation.endorse",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_originator": frozenset(
+        {"capital_planning.read", "capital_planning.idea.originate", "idea.read", "idea.create"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_viewer": frozenset({"capital_planning.read", "capital_planning.allocation.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_allocation_author": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.allocation.read",
+            "capital_planning.allocation.create",
+            "capital_planning.allocation.edit",
+            "capital_planning.allocation.submit",
+            "capital_planning.bucket.classify",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_allocation_reviewer": frozenset(
+        {"capital_planning.read", "capital_planning.allocation.read", "capital_planning.allocation.review"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_allocation_endorser": frozenset(
+        {"capital_planning.read", "capital_planning.allocation.read", "capital_planning.allocation.endorse"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_bucket_classifier": frozenset(
+        {"capital_planning.read", "capital_planning.allocation.read", "capital_planning.bucket.classify"}
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "capital_planning_config_admin": frozenset(
+        {
+            "capital_planning.read",
+            "capital_planning.admin.configure",
+            "capital_planning.admin.publish",
+            "capital_planning.admin.bucket.configure",
+            "capital_planning.admin.bucket.publish",
+        }
+    ),
+}
+
+CAPITAL_PLANNING_ROLE_DEFINITIONS = {
+    "capital_planning_cycle_manager": (
+        "Capital Planning Cycle Manager",
+        "Creates and governs Capital Planning Cycles without configuring reusable policy.",
+    ),
+    "capital_planning_author": (
+        "Capital Demand Author",
+        "Creates, edits and submits Strategic Capital Demands.",
+    ),
+    "capital_planning_reviewer": (
+        "Capital Demand Reviewer",
+        "Reviews, returns and defers Strategic Capital Demands.",
+    ),
+    "capital_planning_endorser": (
+        "Capital Demand Endorser",
+        "Independently endorses governed capital needs without approving investment.",
+    ),
+    "capital_planning_originator": (
+        "Capital Demand Idea Originator",
+        "Explicitly originates Ideas from eligible endorsed Demands.",
+    ),
+    "capital_planning_viewer": (
+        "Capital Planning Viewer",
+        "Reads authorized cycles, demands, lineage and history.",
+    ),
+    "capital_planning_allocation_author": (
+        "Strategic Allocation Plan Author",
+        "Creates and edits governed Strategic Capital Allocation Plans without approving Budget or Funding.",
+    ),
+    "capital_planning_allocation_reviewer": (
+        "Strategic Allocation Plan Reviewer",
+        "Reviews and returns Strategic Capital Allocation Plans independently.",
+    ),
+    "capital_planning_allocation_endorser": (
+        "Strategic Allocation Plan Endorser",
+        "Endorses strategic allocation intent under separation of duties.",
+    ),
+    "capital_planning_bucket_classifier": (
+        "Strategic Capital Bucket Classifier",
+        "Classifies eligible Demands and Project contexts into one primary Bucket.",
+    ),
+    "capital_planning_config_admin": (
+        "Capital Planning Configuration Admin",
+        "Configures and publishes reusable Capital Planning policy without live transaction rights.",
+    ),
+}
+
+BUSINESS_ANALYSIS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "business_analysis_author": frozenset(
+        {
+            "business_analysis.read",
+            "business_analysis.create",
+            "business_analysis.edit",
+            "business_analysis.submit",
+            "idea.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_analysis_reviewer": frozenset({"business_analysis.read", "business_analysis.review", "idea.read"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_analysis_viewer": frozenset({"business_analysis.read", "idea.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    "business_analysis_config_admin": frozenset(
+        {
+            "business_analysis.read",
+            "business_analysis.admin.configure",
+            "business_analysis.admin.publish",
+        }
+    ),
+}
+
+BUSINESS_ANALYSIS_ROLE_DEFINITIONS = {
+    "business_analysis_author": (
+        "Business Analysis Author",
+        "Creates and submits governed Business Analysis records.",
+    ),
+    "business_analysis_reviewer": (
+        "Business Analysis Reviewer",
+        "Reviews, returns and completes Business Analysis under separation of duties.",
+    ),
+    "business_analysis_viewer": (
+        "Business Analysis Viewer",
+        "Reads authorized Business Analysis records and their history.",
+    ),
+    "business_analysis_config_admin": (
+        "Business Analysis Configuration Admin",
+        "Configures and publishes reusable Business Analysis policy.",
+    ),
 }
 
 PROJECT_PROPOSAL_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
@@ -665,6 +836,119 @@ PORTFOLIO_CONVERGENCE_ROLE_DEFINITIONS = {
     "portfolio_convergence_configuration_admin": (
         "Portfolio Convergence Configuration Admin",
         "Configures and publishes Gate 07I convergence and recommendation policies.",
+    ),
+}
+
+PORTFOLIO_REVIEW_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "portfolio_review_viewer": frozenset(
+        {
+            "portfolio_review.read",
+            "portfolio_project.read",
+            "portfolio_evaluation.read",
+            "portfolio_analysis.read",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_convergence.read",
+            "investment_gate_preparation.read",
+            "investment_decision.read",
+            "capital_planning.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_preparer": frozenset(
+        {
+            "portfolio_review.read",
+            "portfolio_review.create",
+            "portfolio_review.prepare",
+            "portfolio_review.freeze_snapshot",
+            "portfolio_review.action.create",
+            "portfolio_review.action.update",
+            "portfolio_project.read",
+            "portfolio_evaluation.read",
+            "portfolio_analysis.read",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_convergence.read",
+            "investment_gate_preparation.read",
+            "investment_decision.read",
+            "capital_planning.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_authority": frozenset(
+        {
+            "portfolio_review.read",
+            "portfolio_review.conduct",
+            "portfolio_review.complete",
+            "portfolio_review.action.approve",
+            "portfolio_review.action.dispatch",
+            "portfolio_project.read",
+            "portfolio_evaluation.read",
+            "portfolio_analysis.read",
+            "portfolio_budget.read",
+            "portfolio_resource.read",
+            "portfolio_convergence.read",
+            "investment_gate_preparation.read",
+            "investment_decision.read",
+            "capital_planning.read",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_board_member": frozenset(
+        {
+            "portfolio_review.read",
+            "portfolio_review.conduct",
+            "portfolio_review.action.approve",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_action_owner": frozenset({"portfolio_review.read", "portfolio_review.action.update"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_action_approver": frozenset({"portfolio_review.read", "portfolio_review.action.approve"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_action_dispatcher": frozenset({"portfolio_review.read", "portfolio_review.action.dispatch"})
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "portfolio_review_configuration_admin": frozenset(
+        {
+            "portfolio_review.read",
+            "portfolio_review.admin.configure",
+            "portfolio_review.admin.publish",
+        }
+    ),
+}
+
+PORTFOLIO_REVIEW_ROLE_DEFINITIONS = {
+    "portfolio_review_viewer": (
+        "Portfolio Review Viewer",
+        "Reads governed Review Sessions, snapshots, matrices, actions and history.",
+    ),
+    "portfolio_review_preparer": (
+        "Portfolio Review Preparer",
+        "Creates and prepares sessions and freezes source evidence without decision authority.",
+    ),
+    "portfolio_review_authority": (
+        "Portfolio Review Authority",
+        "Conducts and completes Portfolio Reviews independently from preparation.",
+    ),
+    "portfolio_review_board_member": (
+        "Portfolio Review Board Member",
+        "Participates in Review conduct and action approval under configured governance.",
+    ),
+    "portfolio_review_action_owner": (
+        "Portfolio Review Action Owner",
+        "Tracks accepted governance actions without source-domain mutation authority.",
+    ),
+    "portfolio_review_action_approver": (
+        "Portfolio Review Action Approver",
+        "Approves actions independently from their creator.",
+    ),
+    "portfolio_review_action_dispatcher": (
+        "Portfolio Review Action Dispatcher",
+        "Records authorized request-only dispatch toward a source authority.",
+    ),
+    "portfolio_review_configuration_admin": (
+        "Portfolio Review Configuration Admin",
+        "Configures and publishes reusable Periodic Portfolio Review policy only.",
     ),
 }
 
@@ -1226,6 +1510,106 @@ ECONOMIC_FINANCIAL_MODEL_ROLE_DEFINITIONS = {
     ),
 }
 
+STRATEGIC_BENEFITS_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "benefits_plan_author": frozenset(
+        {
+            "benefits_plan.read",
+            "benefits_plan.create",
+            "benefits_plan.edit",
+            "benefits_plan.submit",
+            "benefits_plan.create_revision",
+            "benefits_plan.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "benefits_plan_reviewer": frozenset(
+        {
+            "benefits_plan.read",
+            "benefits_plan.review",
+            "benefits_plan.complete",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "benefits_plan_viewer": frozenset({"benefits_plan.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    # ADMIN configuration authority is deliberately separate from live Project
+    # plan access; organization_admin remains the explicit break-glass role.
+    "benefits_plan_config_admin": frozenset(
+        {
+            "benefits_plan.admin.configure",
+            "benefits_plan.admin.publish",
+        }
+    ),
+}
+
+STRATEGIC_BENEFITS_ROLE_DEFINITIONS = {
+    "benefits_plan_author": (
+        "Strategic Benefits Plan Author",
+        "Creates, edits and submits governed Project Strategic Benefits Plan versions.",
+    ),
+    "benefits_plan_reviewer": (
+        "Strategic Benefits Plan Reviewer",
+        "Reviews, returns and completes Benefits Plans under separation of duties.",
+    ),
+    "benefits_plan_viewer": (
+        "Strategic Benefits Plan Viewer",
+        "Reads authorized Benefits Plans, stable Benefit identities, measures and history.",
+    ),
+    "benefits_plan_config_admin": (
+        "Strategic Benefits Configuration Admin",
+        "Configures and publishes reusable Benefits Plan policy without live-record authority.",
+    ),
+}
+
+COMMERCIAL_STRATEGY_ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    "commercial_strategy_author": frozenset(
+        {
+            "commercial_strategy.read",
+            "commercial_strategy.create",
+            "commercial_strategy.edit",
+            "commercial_strategy.submit",
+            "commercial_strategy.create_revision",
+            "commercial_strategy.refresh",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "commercial_strategy_reviewer": frozenset(
+        {
+            "commercial_strategy.read",
+            "commercial_strategy.review",
+            "commercial_strategy.complete",
+        }
+    )
+    | WORKSPACE_OPERATION_PERMISSIONS,
+    "commercial_strategy_viewer": frozenset({"commercial_strategy.read"}) | WORKSPACE_OPERATION_PERMISSIONS,
+    # Deliberately no transaction read/create/edit rights: ADMIN configuration
+    # authority does not grant access to live Project commercial records.
+    "commercial_strategy_config_admin": frozenset(
+        {
+            "commercial_strategy.admin.configure",
+            "commercial_strategy.admin.publish",
+        }
+    ),
+}
+
+COMMERCIAL_STRATEGY_ROLE_DEFINITIONS = {
+    "commercial_strategy_author": (
+        "Commercial Strategy Author",
+        "Creates, edits and submits Project commercial strategy versions.",
+    ),
+    "commercial_strategy_reviewer": (
+        "Commercial Strategy Reviewer",
+        "Reviews, returns and completes commercial strategy under separation of duties.",
+    ),
+    "commercial_strategy_viewer": (
+        "Commercial Strategy Viewer",
+        "Reads authorized Project commercial strategy records and history.",
+    ),
+    "commercial_strategy_config_admin": (
+        "Commercial Strategy Configuration Admin",
+        "Configures and publishes reusable commercial strategy policy without live-record authority.",
+    ),
+}
+
 REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.revision.create": frozenset({"structure_editor"}),
     "admin.enterprise_structure.revision.edit": frozenset({"structure_editor"}),
@@ -1235,6 +1619,97 @@ REVISION_DUTY_ROLES: dict[str, frozenset[str]] = {
     "admin.enterprise_structure.publish": frozenset({"structure_publisher"}),
     "admin.enterprise_structure.rollback": frozenset({"structure_publisher"}),
 }
+
+# SQLite ignores SELECT ... FOR UPDATE.  The local/test runtime can issue its
+# first permission-protected requests concurrently, so serialize only the
+# idempotent bootstrap inside this process. PostgreSQL still has the tenant-row
+# lock below for cross-process safety.
+# Wave 2B reuses existing duties. Preparing or validating Basic Data does not
+# confer final-review authority, and configuration-only roles get no live duty.
+_BASIC_DATA_PREPARATION = frozenset(
+    {
+        "basic_data.read",
+        "basic_data.item.create",
+        "basic_data.item.edit",
+        "basic_data.item.validate",
+        "basic_data.assessment.create",
+        "basic_data.assessment.submit",
+    }
+)
+_BASIC_DATA_REVIEW = frozenset(
+    {
+        "basic_data.read",
+        "basic_data.assessment.review",
+        "basic_data.assessment.complete",
+    }
+)
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_manager"] |= (
+    _BASIC_DATA_PREPARATION | _BASIC_DATA_REVIEW | {"risk_governance.read"}
+)
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_assessor"] |= _BASIC_DATA_PREPARATION | {"risk_governance.read"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_reviewer"] |= _BASIC_DATA_REVIEW | {"risk_governance.read"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_viewer"] |= {"basic_data.read", "risk_governance.read"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_configuration_admin"] |= {
+    "basic_data.read",
+    "basic_data.admin.configure",
+    "basic_data.admin.publish",
+    "risk_governance.read",
+}
+for _wave2b_risk_role in RISK_READINESS_ROLE_PERMISSIONS:
+    RISK_READINESS_ROLE_PERMISSIONS[_wave2b_risk_role] |= {"risk_governance.read"}
+RISK_READINESS_ROLE_PERMISSIONS["risk_configuration_admin"] |= {
+    "risk_governance.admin.configure",
+    "risk_governance.admin.publish",
+}
+
+# Wave 3B reuses definition duties; ADMIN-only configuration is not preparation.
+_OWNER_CAPABILITY_PREPARATION = frozenset(
+    {
+        "owner_capability.read",
+        "owner_capability.assessment.create",
+        "owner_capability.assessment.edit",
+        "owner_capability.assessment.submit",
+        "owner_capability.mitigation.edit",
+    }
+)
+_OWNER_CAPABILITY_REVIEW = frozenset(
+    {
+        "owner_capability.read",
+        "owner_capability.assessment.review",
+        "owner_capability.assessment.complete",
+    }
+)
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_manager"] |= (
+    _OWNER_CAPABILITY_PREPARATION | _OWNER_CAPABILITY_REVIEW
+)
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_assessor"] |= _OWNER_CAPABILITY_PREPARATION
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_reviewer"] |= _OWNER_CAPABILITY_REVIEW
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_viewer"] |= {"owner_capability.read"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_configuration_admin"] |= {
+    "owner_capability.read",
+    "owner_capability.admin.configure",
+    "owner_capability.admin.publish",
+}
+
+# Existing definition duties prepare/review QRA inputs, not investment decisions.
+_QRA_PREPARATION = frozenset({"qra_foundation.read"}) | frozenset(
+    f"{resource}.{action}"
+    for resource in ("qra_cost_source", "qra_schedule_source", "qra_model")
+    for action in ("create", "edit", "submit")
+)
+_QRA_REVIEW = frozenset({
+    "qra_foundation.read", "qra_cost_source.review", "qra_schedule_source.review",
+    "qra_model.review", "qra_model.approve",
+})
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_manager"] |= _QRA_PREPARATION | _QRA_REVIEW
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_assessor"] |= _QRA_PREPARATION
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_reviewer"] |= _QRA_REVIEW
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_viewer"] |= {"qra_foundation.read"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_configuration_admin"] |= {
+    "qra_foundation.read", "qra_methodology.admin.configure", "qra_methodology.admin.publish",
+}
+
+_PERMISSION_SEED_LOCK = RLock()
 
 
 @dataclass(frozen=True)
@@ -1253,9 +1728,13 @@ def require_enterprise_permission(
     permission_key: str,
     *,
     allowed_role_codes: frozenset[str] | None = None,
+    bootstrap: bool = True,
 ) -> EnterprisePermissionContext:
-    ensure_enterprise_permissions(db, tenant_id, user_id)
-    db.commit()
+    # Existing callers retain their bootstrap behavior. New governed read
+    # surfaces can opt out after explicit provisioning and remain read-only.
+    if bootstrap:
+        ensure_enterprise_permissions(db, tenant_id, user_id)
+        db.commit()
     user = db.scalar(
         select(UserAccount).where(
             UserAccount.id == user_id,
@@ -1297,8 +1776,11 @@ def require_enterprise_permission(
             db.scalars(
                 select(SecurityRolePermission.role_id)
                 .join(PermissionCatalog, PermissionCatalog.id == SecurityRolePermission.permission_id)
+                .join(SecurityRole, SecurityRole.id == SecurityRolePermission.role_id)
                 .where(
                     SecurityRolePermission.tenant_id == tenant_id,
+                    SecurityRole.tenant_id == tenant_id,
+                    SecurityRole.status == "active",
                     SecurityRolePermission.role_id.in_(role_ids),
                     PermissionCatalog.key == permission_key,
                     PermissionCatalog.status == "active",
@@ -1348,6 +1830,11 @@ def require_organization_scope(context: EnterprisePermissionContext) -> None:
 
 
 def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> None:
+    with _PERMISSION_SEED_LOCK:
+        _ensure_enterprise_permissions_unlocked(db, tenant_id, user_id)
+
+
+def _ensure_enterprise_permissions_unlocked(db: Session, tenant_id: int, user_id: int) -> None:
     db.execute(select(Tenant.id).where(Tenant.id == tenant_id).with_for_update()).scalar_one()
     permissions = {item.key: item for item in db.scalars(select(PermissionCatalog)).all()}
     for key, resource, action, description, risk_level in PERMISSION_SEED:
@@ -1463,7 +1950,35 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in BUSINESS_ANALYSIS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     for role_code, (name, description) in IDEA_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in CAPITAL_PLANNING_ROLE_DEFINITIONS.items():
         if role_code in roles:
             continue
         role = SecurityRole(
@@ -1576,6 +2091,20 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.flush()
         roles[role.code] = role
     for role_code, (name, description) in PORTFOLIO_CONVERGENCE_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in PORTFOLIO_REVIEW_ROLE_DEFINITIONS.items():
         if role_code in roles:
             continue
         role = SecurityRole(
@@ -1715,16 +2244,64 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         db.add(role)
         db.flush()
         roles[role.code] = role
+    for role_code, (name, description) in STRATEGIC_BENEFITS_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
+    for role_code, (name, description) in COMMERCIAL_STRATEGY_ROLE_DEFINITIONS.items():
+        if role_code in roles:
+            continue
+        role = SecurityRole(
+            tenant_id=tenant_id,
+            code=role_code,
+            name=name,
+            description=description,
+            is_system=True,
+            status="active",
+        )
+        db.add(role)
+        db.flush()
+        roles[role.code] = role
     grants_by_role = {
         "organization_admin": {item[0] for item in PERMISSION_SEED},
         "configuration_admin": {item[0] for item in PERMISSION_SEED if item[0].startswith("admin.")}
         | {
+            "risk_governance.read",
+            "risk_governance.admin.configure",
+            "risk_governance.admin.publish",
+            "basic_data.read",
+            "basic_data.admin.configure",
+            "basic_data.admin.publish",
+            "owner_capability.read",
+            "owner_capability.admin.configure",
+            "owner_capability.admin.publish",
+            "qra_foundation.read",
+            "qra_methodology.admin.configure",
+            "qra_methodology.admin.publish",
             "enterprise_structure.read",
             "enterprise_structure.read_history",
             "enterprise_structure.export",
             "idea.read",
             "idea.admin.configure",
             "idea.admin.publish",
+            "capital_planning.read",
+            "capital_planning.admin.configure",
+            "capital_planning.admin.publish",
+            "capital_planning.admin.bucket.configure",
+            "capital_planning.admin.bucket.publish",
+            "business_analysis.read",
+            "business_analysis.admin.configure",
+            "business_analysis.admin.publish",
             "project_proposal.read",
             "project_proposal.admin.configure",
             "project_proposal.admin.publish",
@@ -1750,6 +2327,9 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "portfolio_convergence.read",
             "portfolio_convergence.admin.configure",
             "portfolio_convergence.admin.publish",
+            "portfolio_review.read",
+            "portfolio_review.admin.configure",
+            "portfolio_review.admin.publish",
             "investment_gate_preparation.read",
             "investment_gate_preparation.admin.configure",
             "investment_gate_preparation.admin.publish",
@@ -1786,6 +2366,10 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
             "economic_financial_model.read",
             "economic_financial_model.admin.configure",
             "economic_financial_model.admin.publish",
+            "benefits_plan.admin.configure",
+            "benefits_plan.admin.publish",
+            "commercial_strategy.admin.configure",
+            "commercial_strategy.admin.publish",
         },
         "auditor": {"enterprise_structure.read", "enterprise_structure.read_history", "enterprise_structure.export"},
         "viewer": {"enterprise_structure.read"} | WORKSPACE_OPERATION_PERMISSIONS,
@@ -1795,6 +2379,8 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS,
         **PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS,
         **IDEA_ROLE_PERMISSIONS,
+        **CAPITAL_PLANNING_ROLE_PERMISSIONS,
+        **BUSINESS_ANALYSIS_ROLE_PERMISSIONS,
         **PROJECT_PROPOSAL_ROLE_PERMISSIONS,
         **STRATEGIC_GATE_ROLE_PERMISSIONS,
         **PORTFOLIO_PLANNING_ROLE_PERMISSIONS,
@@ -1803,6 +2389,7 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **PORTFOLIO_BUDGET_ROLE_PERMISSIONS,
         **PORTFOLIO_RESOURCE_ROLE_PERMISSIONS,
         **PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS,
+        **PORTFOLIO_REVIEW_ROLE_PERMISSIONS,
         **INVESTMENT_GATE_ROLE_PERMISSIONS,
         **PROJECT_DEFINITION_ROLE_PERMISSIONS,
         **FUNDS_ROLE_PERMISSIONS,
@@ -1812,6 +2399,8 @@ def ensure_enterprise_permissions(db: Session, tenant_id: int, user_id: int) -> 
         **POST_FID_GOVERNANCE_ROLE_PERMISSIONS,
         **BUSINESS_CASE_ROLE_PERMISSIONS,
         **ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS,
+        **STRATEGIC_BENEFITS_ROLE_PERMISSIONS,
+        **COMMERCIAL_STRATEGY_ROLE_PERMISSIONS,
     }
     for role_code, permission_keys in grants_by_role.items():
         role = roles.get(role_code)

@@ -158,8 +158,9 @@ def test_gate07a_full_lifecycle_readiness_and_audit() -> None:
         assert idea["state"] == "ACCEPTED"
         readiness = client.get(f"/api/v1/ideas/{idea['id']}/proposal-readiness", headers=headers)
         assert readiness.status_code == 200
-        assert readiness.json()["status"] == "READY_FOR_PROJECT_PROPOSAL"
-        assert readiness.json()["can_create_project_proposal"] is True
+        assert readiness.json()["status"] == "READY_FOR_BUSINESS_ANALYSIS"
+        assert readiness.json()["can_create_project_proposal"] is False
+        assert "start_business_analysis" in idea["allowed_actions"]
         history = client.get(f"/api/v1/ideas/{idea['id']}/history", headers=headers).json()
         assert {item["event_type"] for item in history} >= {
             "idea.created",

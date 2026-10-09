@@ -1,0 +1,25 @@
+{
+  "gate": "02A",
+  "method": "row-count and deterministic MD5 fingerprint comparison before and after the real PostgreSQL dry-run",
+  "equal": true,
+  "before": {
+    "admin_configurations": {"rows": 22, "fingerprint": "fe485113d3f3d0b2f94508c750a52b4b"},
+    "workspace_classifications": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_structure_links": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"},
+    "workspaces": {"rows": 3, "fingerprint": "4eaab8e65e242bb49748b7c0c664b302"},
+    "security_events": {"rows": 8, "fingerprint": "5d13a00e451ec8997873ae1f7e0486c6"},
+    "tenants": {"rows": 1, "fingerprint": "867a116aff96915b6a4259d7cc18ad0e"},
+    "user_accounts": {"rows": 9, "fingerprint": "91e65fa8289c9604133d664b6600bff4"},
+    "workspace_module_settings": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"}
+  },
+  "after": {
+    "admin_configurations": {"rows": 22, "fingerprint": "fe485113d3f3d0b2f94508c750a52b4b"},
+    "workspace_classifications": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_structure_links": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"},
+    "workspaces": {"rows": 3, "fingerprint": "4eaab8e65e242bb49748b7c0c664b302"},
+    "security_events": {"rows": 8, "fingerprint": "5d13a00e451ec8997873ae1f7e0486c6"},
+    "tenants": {"rows": 1, "fingerprint": "867a116aff96915b6a4259d7cc18ad0e"},
+    "user_accounts": {"rows": 9, "fingerprint": "91e65fa8289c9604133d664b6600bff4"},
+    "workspace_module_settings": {"rows": 0, "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"}
+  }
+}

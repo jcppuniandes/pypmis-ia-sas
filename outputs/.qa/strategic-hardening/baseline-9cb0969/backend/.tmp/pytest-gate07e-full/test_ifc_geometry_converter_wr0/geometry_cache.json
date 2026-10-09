@@ -1,0 +1,1 @@
+{"engine":"ifcopenshell-geometry","products":[{"express_id":20,"global_id":"GUID-COLUMN-001","ifc_class":"IfcColumn","mesh":{"indices":[0,1,2],"vertices":[0.0,0.0,0.0,1.234568,0.0,0.0,0.0,2.0,0.0]},"name":"Concrete Column"}],"stats":{"mesh_count":1,"product_count":1,"triangle_count":1},"version":1}

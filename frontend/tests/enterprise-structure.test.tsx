@@ -338,13 +338,19 @@ describe("Nivel 2A Enterprise Structure", () => {
   });
 
   it("places configuration in ADMIN MODE and Explorer in USER MODE", () => {
-    const adminModule = ADMIN_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "enterprise-structure");
-    expect(adminModule?.submodules.map((item) => item.key)).toContain("enterprise-structure-configuration");
+    const adminFoundation = ADMIN_MODE_NAVIGATION_BLUEPRINT.find(
+      (item) => item.key === "enterprise-strategy-manager"
+    )?.modules.find((item) => item.isFoundation);
+    expect(adminFoundation?.submodules.map((item) => item.key)).toContain("enterprise-structure-configuration");
 
-    const userModule = USER_MODE_NAVIGATION_BLUEPRINT.flatMap((item) => item.modules).find(
-      (item) => item.key === "enterprise-structure-workspace-manager"
-    );
-    expect(userModule?.submodules).toEqual([{ key: "enterprise-explorer", label: "Enterprise Explorer" }]);
+    const userFoundation = USER_MODE_NAVIGATION_BLUEPRINT.find(
+      (item) => item.key === "enterprise-strategy-manager"
+    )?.modules.find((item) => item.isFoundation);
+    expect(userFoundation?.submodules.map((item) => item.key)).toEqual([
+      "enterprise-strategy-overview",
+      "enterprise-explorer",
+      "workspace-context",
+    ]);
   });
 
   it("adds only the Facility Manager and Property Manager macroprocesses from the workbook", () => {

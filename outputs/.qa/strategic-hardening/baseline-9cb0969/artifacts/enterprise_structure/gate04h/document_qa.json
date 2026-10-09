@@ -1,0 +1,187 @@
+{
+  "renderer": "Microsoft Word COM to PDF + pypdfium2",
+  "official_renderer": "FAILED_MISSING_LIBREOFFICE",
+  "pdf": {
+    "pages": [
+      {
+        "page": 1,
+        "characters": 720,
+        "words": 104,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 2,
+        "characters": 1481,
+        "words": 212,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 3,
+        "characters": 1283,
+        "words": 185,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 4,
+        "characters": 1417,
+        "words": 200,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 5,
+        "characters": 1050,
+        "words": 148,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 6,
+        "characters": 1289,
+        "words": 179,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 7,
+        "characters": 1381,
+        "words": 185,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 8,
+        "characters": 1134,
+        "words": 186,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 9,
+        "characters": 1270,
+        "words": 173,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 10,
+        "characters": 860,
+        "words": 121,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 11,
+        "characters": 1211,
+        "words": 177,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 12,
+        "characters": 1042,
+        "words": 58,
+        "blank": false,
+        "edge_violations": 0
+      },
+      {
+        "page": 13,
+        "characters": 1249,
+        "words": 174,
+        "blank": false,
+        "edge_violations": 0
+      }
+    ],
+    "page_count": 13,
+    "blank_pages": [],
+    "edge_violations": 0
+  },
+  "docx": {
+    "tables": [
+      {
+        "table": 1,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 2,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 3,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 4,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 5,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 6,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 7,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 8,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 9,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      },
+      {
+        "table": 10,
+        "grid_sum": 9360,
+        "table_width": 9360,
+        "table_indent": 120,
+        "fixed_geometry": true
+      }
+    ],
+    "table_count": 10,
+    "all_tables_fixed_9360": true,
+    "all_table_indents_120": true,
+    "page_margins_dxa": {
+      "top": 1440,
+      "right": 1440,
+      "bottom": 1440,
+      "left": 1440
+    },
+    "required_styles_present": true
+  },
+  "visual_review": "PASS_WORD_COM_FALLBACK"
+}

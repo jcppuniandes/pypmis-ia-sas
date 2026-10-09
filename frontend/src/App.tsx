@@ -42,57 +42,25 @@ import NextActionPanel from "./components/NextActionPanel";
 import OpcGapReadinessPanel from "./components/OpcGapReadinessPanel";
 import OrganizationSecurityView, { type OrganizationSecurityViewKey } from "./components/OrganizationSecurityView";
 import AdminConfigurationView, { type AdminConfigurationViewKey } from "./components/AdminConfigurationView";
-import AdminEnterpriseStructurePage from "./features/enterprise-structure/pages/AdminEnterpriseStructurePage";
-import EnterpriseExplorerPage from "./features/enterprise-structure/pages/EnterpriseExplorerPage";
 import WorkspaceOperationalPage from "./features/workspace-context/WorkspaceOperationalPage";
-import IdeaLifecycleWorkspace from "./features/idea-demand/IdeaLifecycleWorkspace";
-import IdeaDemandAdminView from "./features/idea-demand/IdeaDemandAdminView";
-import ProjectProposalWorkspace from "./features/project-proposal/ProjectProposalWorkspace";
-import ProjectProposalAdminView from "./features/project-proposal/ProjectProposalAdminView";
-import StrategicGateWorkspace from "./features/strategic-gate/StrategicGateWorkspace";
-import StrategicGateAdminView from "./features/strategic-gate/StrategicGateAdminView";
-import StrategicPlanningEntryWorkspace from "./features/portfolio-planning/StrategicPlanningEntryWorkspace";
-import PortfolioProjectsWorkspace from "./features/portfolio-planning/PortfolioProjectsWorkspace";
-import PortfolioPlanningAdminView from "./features/portfolio-planning/PortfolioPlanningAdminView";
-import PortfolioEvaluationWorkspace from "./features/portfolio-evaluation/PortfolioEvaluationWorkspace";
-import PortfolioEvaluationAdminView from "./features/portfolio-evaluation/PortfolioEvaluationAdminView";
-import PortfolioAnalysisWorkspace from "./features/portfolio-analysis/PortfolioAnalysisWorkspace";
-import PortfolioAnalysisAdminView from "./features/portfolio-analysis/PortfolioAnalysisAdminView";
-import PortfolioBudgetWorkspace from "./features/portfolio-budget/PortfolioBudgetWorkspace";
-import PortfolioBudgetAdminView from "./features/portfolio-budget/PortfolioBudgetAdminView";
-import PortfolioResourceWorkspace from "./features/portfolio-resource/PortfolioResourceWorkspace";
-import PortfolioResourceAdminView from "./features/portfolio-resource/PortfolioResourceAdminView";
-import PortfolioConvergenceWorkspace from "./features/portfolio-convergence/PortfolioConvergenceWorkspace";
-import PortfolioConvergenceAdminView from "./features/portfolio-convergence/PortfolioConvergenceAdminView";
-import InvestmentGatePreparationWorkspace from "./features/investment-gate-preparation/InvestmentGatePreparationWorkspace";
-import InvestmentGatePreparationAdminView from "./features/investment-gate-preparation/InvestmentGatePreparationAdminView";
-import InvestmentEvidencePolicyAdminView from "./features/investment-evidence-policy/InvestmentEvidencePolicyAdminView";
-import ProjectDefinitionWorkspace from "./features/project-definition/ProjectDefinitionWorkspace";
-import ProjectDefinitionAdminView from "./features/project-definition/ProjectDefinitionAdminView";
-import FundsManagerWorkspace from "./features/funds-manager/FundsManagerWorkspace";
-import FundsManagerAdminView from "./features/funds-manager/FundsManagerAdminView";
-import RiskReadinessWorkspace from "./features/risk-readiness/RiskReadinessWorkspace";
-import RiskReadinessAdminView from "./features/risk-readiness/RiskReadinessAdminView";
-import PermitReadinessWorkspace from "./features/permit-readiness/PermitReadinessWorkspace";
-import PermitReadinessAdminView from "./features/permit-readiness/PermitReadinessAdminView";
-import InvestmentDecisionWorkspace from "./features/investment-decision/InvestmentDecisionWorkspace";
-import InvestmentDecisionAdminView from "./features/investment-decision/InvestmentDecisionAdminView";
-import PostFIDGovernanceWorkspace from "./features/post-fid-governance/PostFIDGovernanceWorkspace";
-import PostFIDGovernanceAdminView from "./features/post-fid-governance/PostFIDGovernanceAdminView";
-import BusinessCaseWorkspace from "./features/business-case/BusinessCaseWorkspace";
-import BusinessCaseAdminView from "./features/business-case/BusinessCaseAdminView";
-import EconomicFinancialModelWorkspace from "./features/economic-financial-model/EconomicFinancialModelWorkspace";
-import EconomicFinancialModelAdminView from "./features/economic-financial-model/EconomicFinancialModelAdminView";
+import StrategicViewOutlet from "./features/enterprise-strategy/StrategicViewOutlet";
+import {
+  strategicNodeForView,
+  strategicRouteForView,
+  strategicRouteMatch,
+} from "./features/enterprise-strategy/navigation/strategicNavigationBlueprint";
 import ProductLogo from "./components/ProductLogo";
 import {
   ADMIN_MODE_NAVIGATION_BLUEPRINT,
   BIM_MANAGER_SUBMODULE_LABEL,
   EMPTY_SUBMODULE_VIEWS,
   USER_MODE_NAVIGATION_BLUEPRINT,
+  flattenNavigationViews,
   type ApplicationMode,
   type ControlFlowView,
   type MacroprocessNavigationItem,
   type ModuleNavigationItem,
+  type NavigationViewItem,
 } from "./navigation/applicationNavigation";
 import ProjectControlsHandbook from "./components/ProjectControlsHandbook";
 import ProjectCreateDrawer from "./components/ProjectCreateDrawer";
@@ -244,10 +212,8 @@ function frontendValidationMode(): boolean {
 const FRONTEND_VALIDATION_VIEWS: ControlFlowView[] = [
   "dashboard",
   "opc-gap",
-  ...USER_MODE_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
-    macroprocess.modules.flatMap((module) => module.submodules.map((item) => item.key))
-  ),
-  ...ADMIN_MODE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules.map((item) => item.key)),
+  ...flattenNavigationViews(USER_MODE_NAVIGATION_BLUEPRINT).map((item) => item.key),
+  ...flattenNavigationViews(ADMIN_MODE_NAVIGATION_BLUEPRINT).map((item) => item.key),
 ];
 const APU_SOURCE_OPTIONS = [
   { key: "", label: "Todas las fuentes" },
@@ -261,6 +227,70 @@ function focusedControlView(view: ControlFlowView): ControlFlowView {
   return FRONTEND_VALIDATION_VIEWS.includes(view) ? view : "dashboard";
 }
 
+function navigationItemContainsView(item: NavigationViewItem, activeView: ControlFlowView): boolean {
+  return (
+    item.key === activeView || (item.children ?? []).some((child) => navigationItemContainsView(child, activeView))
+  );
+}
+
+function NavigationViewBranch({
+  activeView,
+  depth = 0,
+  item,
+  onNavigate,
+}: {
+  activeView: ControlFlowView;
+  depth?: number;
+  item: NavigationViewItem;
+  onNavigate: (view: ControlFlowView) => void;
+}) {
+  const branchActive = navigationItemContainsView(item, activeView);
+  const hasChildren = Boolean(item.children?.length);
+  const [manualExpanded, setManualExpanded] = useState<boolean | null>(null);
+  const expanded = manualExpanded ?? branchActive;
+  const childListId = `${item.key}-${depth}-children`;
+
+  return (
+    <div className={branchActive ? "navigatorViewBranch active" : "navigatorViewBranch"} data-depth={depth}>
+      <button
+        aria-controls={hasChildren ? childListId : undefined}
+        aria-current={!hasChildren && item.key === activeView ? "page" : undefined}
+        aria-expanded={hasChildren ? expanded : undefined}
+        className={branchActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
+        onClick={() => {
+          onNavigate(item.key);
+          if (hasChildren) setManualExpanded(!expanded);
+        }}
+        title={item.description}
+        type="button"
+      >
+        <span>{item.label}</span>
+        {item.count !== undefined ? <strong>{item.count}</strong> : null}
+        {hasChildren ? <ChevronDown aria-hidden="true" className={expanded ? "expanded" : ""} size={15} /> : null}
+      </button>
+      {hasChildren ? (
+        <div
+          aria-label={`Submódulos de ${item.label}`}
+          className="navigatorNestedList"
+          hidden={!expanded}
+          id={childListId}
+          role="group"
+        >
+          {item.children?.map((child) => (
+            <NavigationViewBranch
+              activeView={activeView}
+              depth={depth + 1}
+              item={child}
+              key={`${child.key}-${child.label}`}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function ModuleNavigationGroups({
   activeView,
   items,
@@ -271,17 +301,24 @@ function ModuleNavigationGroups({
   onNavigate: (view: ControlFlowView) => void;
 }) {
   const activeModuleKey = items.find((module) =>
-    module.submodules.some((submodule) => submodule.key === activeView)
+    module.submodules.some((submodule) => navigationItemContainsView(submodule, activeView))
   )?.key;
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
   return items.map((module) => {
-    const moduleActive = module.submodules.some((submodule) => submodule.key === activeView);
-    const moduleExpanded = expandedModules[module.key] ?? module.key === activeModuleKey;
+    const moduleActive = module.submodules.some((submodule) => navigationItemContainsView(submodule, activeView));
+    const moduleExpanded =
+      expandedModules[module.key] ?? (module.key === activeModuleKey || Boolean(module.isFoundation));
     const submoduleListId = `${module.key}-submodules`;
     return (
-      <div className={moduleActive ? "navigatorModule active" : "navigatorModule"} key={module.key}>
+      <div
+        className={`${moduleActive ? "navigatorModule active" : "navigatorModule"}${
+          module.isFoundation ? " foundation" : ""
+        }`}
+        key={module.key}
+      >
         <button
+          aria-label={module.label}
           aria-controls={submoduleListId}
           aria-expanded={moduleExpanded}
           className="navigatorModuleButton"
@@ -293,7 +330,11 @@ function ModuleNavigationGroups({
           }
           type="button"
         >
-          <span className="navigatorModuleCopy">{module.label}</span>
+          <span className="navigatorModuleCopy">
+            {module.phase !== undefined ? <small>Phase {module.phase}</small> : null}
+            {module.label}
+            {module.badge ? <em>{module.badge}</em> : null}
+          </span>
           <ChevronDown aria-hidden="true" className={moduleExpanded ? "expanded" : ""} size={17} />
         </button>
         <div
@@ -303,21 +344,14 @@ function ModuleNavigationGroups({
           id={submoduleListId}
           role="group"
         >
-          {module.submodules.map((submodule) => {
-            const submoduleActive = submodule.key === activeView;
-            return (
-              <button
-                aria-current={submoduleActive ? "page" : undefined}
-                className={submoduleActive ? "navigatorSubmoduleItem active" : "navigatorSubmoduleItem"}
-                key={submodule.key}
-                onClick={() => onNavigate(submodule.key)}
-                type="button"
-              >
-                <span>{submodule.label}</span>
-                {submodule.count !== undefined ? <strong>{submodule.count}</strong> : null}
-              </button>
-            );
-          })}
+          {module.submodules.map((submodule) => (
+            <NavigationViewBranch
+              activeView={activeView}
+              item={submodule}
+              key={`${submodule.key}-${submodule.label}`}
+              onNavigate={onNavigate}
+            />
+          ))}
         </div>
       </div>
     );
@@ -334,13 +368,15 @@ function ModuleNavigationItems({
   onNavigate: (view: ControlFlowView) => void;
 }) {
   const activeMacroprocessKey = items.find((macroprocess) =>
-    macroprocess.modules.some((module) => module.submodules.some((submodule) => submodule.key === activeView))
+    macroprocess.modules.some((module) =>
+      module.submodules.some((submodule) => navigationItemContainsView(submodule, activeView))
+    )
   )?.key;
   const [expandedMacroprocesses, setExpandedMacroprocesses] = useState<Record<string, boolean>>({});
 
   return items.map((macroprocess) => {
     const macroprocessActive = macroprocess.modules.some((module) =>
-      module.submodules.some((submodule) => submodule.key === activeView)
+      module.submodules.some((submodule) => navigationItemContainsView(submodule, activeView))
     );
     const macroprocessExpanded =
       expandedMacroprocesses[macroprocess.key] ??
@@ -383,15 +419,25 @@ function ModuleNavigationItems({
   });
 }
 
-function ApplicationModeToggle({ mode, onToggle }: { mode: ApplicationMode; onToggle: () => void }) {
+function ApplicationModeToggle({
+  canConfigure,
+  mode,
+  onToggle,
+}: {
+  canConfigure: boolean;
+  mode: ApplicationMode;
+  onToggle: () => void;
+}) {
   const nextModeLabel = mode === "user" ? "ADMIN MODE" : "USER MODE";
+  const adminAccessRequired = mode === "user" && !canConfigure;
   return (
     <button
       aria-label={`Cambiar a ${nextModeLabel}`}
       aria-pressed={mode === "admin"}
       className={`applicationModeToggle ${mode}`}
+      disabled={adminAccessRequired}
       onClick={onToggle}
-      title={`Cambiar a ${nextModeLabel}`}
+      title={adminAccessRequired ? "ADMIN MODE requiere permiso can_configure" : `Cambiar a ${nextModeLabel}`}
       type="button"
     >
       <span>Modo actual</span>
@@ -412,7 +458,7 @@ function WorkspaceNavigation({
   validationMode,
 }: {
   activeView: ControlFlowView;
-  adminItems: ModuleNavigationItem[];
+  adminItems: MacroprocessNavigationItem[];
   applicationMode: ApplicationMode;
   baselineOnlyEvm: boolean;
   onNavigate: (view: ControlFlowView) => void;
@@ -429,16 +475,14 @@ function WorkspaceNavigation({
     >
       <div className="navigatorHeader">
         <strong>{adminMode ? "ADMIN MODE" : "USER MODE"}</strong>
-        <span>{adminMode ? "Módulos + submódulos" : "Macroprocesos + módulos"}</span>
+        <span>Macroprocesos + módulos + submódulos</span>
       </div>
       {adminMode ? (
         <>
           <div className="navigatorDivider">
-            <span>Módulos</span>
+            <span>Macroprocesos</span>
           </div>
-          <div aria-label="Módulos de ADMIN MODE" className="navigatorModuleList navigatorAdminModuleList" role="group">
-            <ModuleNavigationGroups activeView={activeView} items={adminItems} onNavigate={onNavigate} />
-          </div>
+          <ModuleNavigationItems activeView={activeView} items={adminItems} onNavigate={onNavigate} />
         </>
       ) : (
         <>
@@ -471,6 +515,8 @@ function WorkspaceNavigation({
 }
 
 function routeControlView(pathname: string): ControlFlowView | null {
+  const strategic = strategicRouteMatch(pathname);
+  if (strategic) return strategic.view;
   return pathname.replace(/\/+$/, "").endsWith("/app/schedule-control") ? "schedule-control" : null;
 }
 
@@ -1059,7 +1105,10 @@ function AppShell() {
   const [processFlowBoard, setProcessFlowBoard] = useState<ProcessFlowBoard | null>(null);
   const [projectDrawerOpen, setProjectDrawerOpen] = useState(false);
   const [moduleNavigationCollapsed, setModuleNavigationCollapsed] = useState(false);
-  const [applicationMode, setApplicationMode] = useState<ApplicationMode>("user");
+  const [preferredApplicationMode, setApplicationMode] = useState<ApplicationMode>(
+    () => strategicRouteMatch(location.pathname)?.mode ?? "user"
+  );
+  const applicationMode = strategicRouteMatch(location.pathname)?.mode ?? preferredApplicationMode;
   const [currencyAction, setCurrencyAction] = useState(false);
   const [projectDraft, setProjectDraft] = useState({
     calendar_base: "5x8 Colombia",
@@ -3003,19 +3052,30 @@ function AppShell() {
     const nextView = FRONTEND_VALIDATION_MODE ? focusedControlView(view) : view;
     setActiveControlView(nextView);
     const routedView = routeControlView(location.pathname);
+    const strategicRoute = strategicRouteForView(nextView, applicationMode);
+    if (strategicRoute && location.pathname.replace(/\/+$/, "") !== strategicRoute) {
+      navigate(strategicRoute);
+    }
     if (!FRONTEND_VALIDATION_MODE && nextView === "schedule-control" && routedView !== "schedule-control") {
       navigate("/app/schedule-control");
     }
-    if ((FRONTEND_VALIDATION_MODE || nextView !== "schedule-control") && routedView) {
+    if (!strategicRoute && (FRONTEND_VALIDATION_MODE || nextView !== "schedule-control") && routedView) {
       navigate("/app");
     }
     document.getElementById("control-flow-content")?.scrollIntoView?.({ block: "start", behavior: "smooth" });
   }
 
   function handleApplicationModeToggle() {
+    if (applicationMode === "user" && !canConfigure) return;
     const nextMode: ApplicationMode = applicationMode === "user" ? "admin" : "user";
+    const nextView: ControlFlowView = nextMode === "admin" ? "admin" : "dashboard";
     setApplicationMode(nextMode);
-    handleControlFlowNavigate(nextMode === "admin" ? "admin" : "dashboard");
+    setActiveControlView(nextView);
+    // A mode switch is an application-level transition, not a strategic
+    // deep-link navigation. Flush it so a still-pending route transition from
+    // the previous mode cannot restore the old USER/ADMIN pathname afterward.
+    navigate("/app", { flushSync: true, replace: true });
+    document.getElementById("control-flow-content")?.scrollIntoView?.({ block: "start", behavior: "smooth" });
   }
 
   const constraintsByPackage = useMemo(() => {
@@ -3443,21 +3503,25 @@ function AppShell() {
     "window-analysis-37": windowAnalysisResult ? `${windowAnalysisResult.summary.net_delay_days ?? 0} dias` : "open",
     "work-packages": dashboard.awp_summary.total_packages,
   };
+  function withNavigationStatus(submodule: NavigationViewItem): NavigationViewItem {
+    return {
+      ...submodule,
+      count: navigationStatusByView[submodule.key],
+      children: submodule.children?.map(withNavigationStatus),
+    };
+  }
   const templateUserNavigationItems = USER_MODE_NAVIGATION_BLUEPRINT.map((macroprocess) => ({
     ...macroprocess,
     modules: macroprocess.modules.map((module) => ({
       ...module,
-      submodules: module.submodules.map((submodule) => ({
-        ...submodule,
-        count: navigationStatusByView[submodule.key],
-      })),
+      submodules: module.submodules.map(withNavigationStatus),
     })),
   }));
-  const templateAdminNavigationItems = ADMIN_MODE_NAVIGATION_BLUEPRINT.map((module) => ({
-    ...module,
-    submodules: module.submodules.map((submodule) => ({
-      ...submodule,
-      count: navigationStatusByView[submodule.key],
+  const templateAdminNavigationItems = ADMIN_MODE_NAVIGATION_BLUEPRINT.map((macroprocess) => ({
+    ...macroprocess,
+    modules: macroprocess.modules.map((module) => ({
+      ...module,
+      submodules: module.submodules.map(withNavigationStatus),
     })),
   }));
   const activeModuleGuide: Partial<
@@ -3599,13 +3663,20 @@ function AppShell() {
     },
   };
   const activeTemplateSubmodule = [
-    ...USER_MODE_NAVIGATION_BLUEPRINT.flatMap((macroprocess) =>
-      macroprocess.modules.flatMap((module) => module.submodules)
-    ),
-    ...ADMIN_MODE_NAVIGATION_BLUEPRINT.flatMap((module) => module.submodules),
+    ...flattenNavigationViews(USER_MODE_NAVIGATION_BLUEPRINT),
+    ...flattenNavigationViews(ADMIN_MODE_NAVIGATION_BLUEPRINT),
   ].find((submodule) => submodule.key === visibleControlView);
+  const activeStrategicNode = strategicNodeForView(visibleControlView, applicationMode)?.node;
   const currentModuleGuide =
     activeModuleGuide[visibleControlView] ??
+    (activeStrategicNode
+      ? {
+          action: "Continue through actions and readiness conditions authorized by the existing backend.",
+          objective: activeStrategicNode.description,
+          state: activeStrategicNode.isFoundation ? "Foundation prerequisite" : `Phase ${activeStrategicNode.phase}`,
+          title: activeStrategicNode.label,
+        }
+      : null) ??
     (activeTemplateSubmodule
       ? {
           action: "",
@@ -3672,7 +3743,11 @@ function AppShell() {
         <header className="appBrandBar" aria-label="Application brand">
           <ProductLogo compact />
           <div className="appBrandActions">
-            <ApplicationModeToggle mode={applicationMode} onToggle={handleApplicationModeToggle} />
+            <ApplicationModeToggle
+              canConfigure={canConfigure}
+              mode={applicationMode}
+              onToggle={handleApplicationModeToggle}
+            />
             <span className="appBrandTagline">Project Controls Intelligence Platform</span>
           </div>
         </header>
@@ -3699,7 +3774,11 @@ function AppShell() {
             </p>
           </div>
           <div className="headerActions">
-            <ApplicationModeToggle mode={applicationMode} onToggle={handleApplicationModeToggle} />
+            <ApplicationModeToggle
+              canConfigure={canConfigure}
+              mode={applicationMode}
+              onToggle={handleApplicationModeToggle}
+            />
             <div className="contextSwitch">
               <label>
                 <span>Project</span>
@@ -4108,7 +4187,7 @@ function AppShell() {
             />
           )}
 
-          {!emptySubmoduleActive && (
+          {!emptySubmoduleActive && visibleControlView !== "enterprise-strategy-overview" && (
             <section className="moduleGuide" aria-label="Current module guide">
               <div className="moduleGuideIntro">
                 <span>Current module</span>
@@ -4129,6 +4208,13 @@ function AppShell() {
           )}
 
           <section aria-live="polite" className="viewPanel workspaceSection" id="control-flow-content">
+            <StrategicViewOutlet
+              canConfigure={canConfigure}
+              mode={applicationMode}
+              onNavigate={handleControlFlowNavigate}
+              token={token}
+              view={visibleControlView}
+            />
             {visibleControlView === "opc-gap" && <OpcGapReadinessPanel analysis={opcGapAnalysis} />}
 
             {visibleControlView === "project-creator" && (
@@ -7530,154 +7616,9 @@ function AppShell() {
                 view={visibleControlView as OrganizationSecurityViewKey}
               />
             )}
-            {visibleControlView === "enterprise-structure-configuration" && (
-              <AdminEnterpriseStructurePage canConfigure={canConfigure} token={token} />
-            )}
-            {visibleControlView === "enterprise-explorer" && <EnterpriseExplorerPage token={token} />}
-            {visibleControlView === "idea-lifecycle" && <IdeaLifecycleWorkspace token={token} />}
-            {visibleControlView === "idea-demand-configuration" && <IdeaDemandAdminView token={token} />}
-            {visibleControlView === "project-proposal" && <ProjectProposalWorkspace token={token} />}
-            {visibleControlView === "project-proposal-configuration" && <ProjectProposalAdminView token={token} />}
-            {visibleControlView === "strategic-gate-decision" && <StrategicGateWorkspace token={token} />}
-            {visibleControlView === "strategic-gate-configuration" && <StrategicGateAdminView token={token} />}
-            {visibleControlView === "strategic-project-planning-entry" && (
-              <StrategicPlanningEntryWorkspace token={token} />
-            )}
-            {visibleControlView === "portfolio-projects" && <PortfolioProjectsWorkspace token={token} />}
-            {visibleControlView === "portfolio-planning-configuration" && <PortfolioPlanningAdminView token={token} />}
-            {visibleControlView === "portfolio-evaluation" && <PortfolioEvaluationWorkspace token={token} />}
-            {visibleControlView === "strategic-prioritization-matrix" && (
-              <PortfolioEvaluationWorkspace token={token} view="prioritization" />
-            )}
-            {visibleControlView === "portfolio-evaluation-configuration" && (
-              <PortfolioEvaluationAdminView token={token} />
-            )}
-            {visibleControlView === "portfolio-analysis" && <PortfolioAnalysisWorkspace token={token} />}
-            {visibleControlView === "portfolio-analysis-configuration" && <PortfolioAnalysisAdminView token={token} />}
-            {visibleControlView === "portfolio-budget-planning" && <PortfolioBudgetWorkspace token={token} />}
-            {visibleControlView === "portfolio-budget-planning-configuration" && (
-              <PortfolioBudgetAdminView token={token} />
-            )}
-            {visibleControlView === "portfolio-resource-planning" && <PortfolioResourceWorkspace token={token} />}
-            {visibleControlView === "portfolio-resource-planning-configuration" && (
-              <PortfolioResourceAdminView token={token} />
-            )}
-            {visibleControlView === "portfolio-scenario-convergence" && <PortfolioConvergenceWorkspace token={token} />}
-            {visibleControlView === "portfolio-scenario-convergence-configuration" && (
-              <PortfolioConvergenceAdminView token={token} />
-            )}
-            {visibleControlView === "investment-gate-preparation" && (
-              <InvestmentGatePreparationWorkspace token={token} />
-            )}
-            {visibleControlView === "investment-gate-preparation-configuration" && (
-              <InvestmentGatePreparationAdminView token={token} />
-            )}
-            {visibleControlView === "investment-decision-evidence-policy" && (
-              <InvestmentEvidencePolicyAdminView token={token} />
-            )}
-            {visibleControlView === "project-definition-fel" && <ProjectDefinitionWorkspace token={token} />}
-            {visibleControlView === "project-definition-configuration" && <ProjectDefinitionAdminView token={token} />}
-            {[
-              "funds-overview",
-              "funds-sources",
-              "funds-envelopes",
-              "funds-assignments",
-              "funds-coverage",
-              "funds-readiness",
-              "funds-history",
-            ].includes(visibleControlView) && <FundsManagerWorkspace initialView={visibleControlView} token={token} />}
-            {visibleControlView === "funds-manager-configuration" && <FundsManagerAdminView token={token} />}
-            {[
-              "risk-readiness-my",
-              "risk-readiness-portfolio",
-              "risk-readiness-register",
-              "risk-readiness-assessments",
-              "risk-readiness-treatments",
-              "risk-readiness-residual",
-              "risk-readiness-dashboard",
-              "risk-readiness-history",
-            ].includes(visibleControlView) && <RiskReadinessWorkspace initialView={visibleControlView} token={token} />}
-            {visibleControlView === "risk-readiness-configuration" && <RiskReadinessAdminView token={token} />}
-            {[
-              "permit-readiness-my",
-              "permit-readiness-register",
-              "permit-readiness-requirements",
-              "permit-readiness-conditions",
-              "permit-readiness-project",
-              "permit-readiness-portfolio",
-              "permit-readiness-history",
-            ].includes(visibleControlView) && (
-              <PermitReadinessWorkspace initialView={visibleControlView} token={token} />
-            )}
-            {visibleControlView === "permit-readiness-configuration" && <PermitReadinessAdminView token={token} />}
-            {[
-              "investment-decision-queue",
-              "investment-decision-mine",
-              "investment-decision-package",
-              "investment-decision-evidence",
-              "investment-decision-checklist",
-              "investment-decision-conditions",
-              "investment-decision-committee",
-              "investment-decision-history",
-              "investment-decision-output",
-            ].includes(visibleControlView) && (
-              <InvestmentDecisionWorkspace initialView={visibleControlView} token={token} />
-            )}
-            {visibleControlView === "investment-decision-configuration" && (
-              <InvestmentDecisionAdminView token={token} />
-            )}
-            {[
-              "post-fid-queue",
-              "post-fid-handoff",
-              "post-fid-eligibility-matrix",
-              "post-fid-conditions",
-              "post-fid-initialization-handoff",
-              "post-fid-activation-handoff",
-              "post-fid-history",
-            ].includes(visibleControlView) && (
-              <PostFIDGovernanceWorkspace initialView={visibleControlView} token={token} />
-            )}
-            {visibleControlView === "post-fid-governance-configuration" && <PostFIDGovernanceAdminView token={token} />}
-            {[
-              "business-case-my",
-              "business-case-overview",
-              "business-case-current-revision",
-              "business-case-strategic",
-              "business-case-alternatives",
-              "business-case-benefits",
-              "business-case-project-definition",
-              "business-case-financial",
-              "business-case-budget-resources",
-              "business-case-funding",
-              "business-case-risk-permits",
-              "business-case-execution",
-              "business-case-assumptions",
-              "business-case-recommendation",
-              "business-case-readiness",
-              "business-case-material-changes",
-              "business-case-decision-snapshots",
-              "business-case-history",
-            ].includes(visibleControlView) && <BusinessCaseWorkspace initialView={visibleControlView} token={token} />}
-            {visibleControlView === "business-case-configuration" && <BusinessCaseAdminView token={token} />}
-            {visibleControlView.startsWith("financial-model-") &&
-              visibleControlView !== "financial-model-configuration" && (
-                <EconomicFinancialModelWorkspace initialView={visibleControlView} token={token} />
-              )}
-            {visibleControlView === "financial-model-configuration" && (
-              <EconomicFinancialModelAdminView token={token} />
-            )}
-            {(
-              [
-                "workspace-types",
-                "enterprise-workspace-structure",
-                "workspace-defaults",
-                "module-catalog-activation",
-                "workspace-navigation-profiles",
-                "master-catalogs",
-                "numbering-rules",
-                "process-definitions",
-              ] as ControlFlowView[]
-            ).includes(visibleControlView) && (
+            {(["master-catalogs", "numbering-rules", "process-definitions"] as ControlFlowView[]).includes(
+              visibleControlView
+            ) && (
               <AdminConfigurationView
                 canConfigure={canConfigure}
                 key={visibleControlView}

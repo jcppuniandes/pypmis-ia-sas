@@ -1,0 +1,44 @@
+P&Pmis Controlled CORE Apply
+Release: ES-PYP-CORE-RECONCILED-20260809
+Tenant: pyp-ingenieria-proyectos
+Actor: admin@demo.local
+Result: SUCCESS
+Idempotent replay: NO
+Input SHA-256: 04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025
+Source snapshot SHA-256: cfdcef74e928708b59e16b3b3a63a5867222a1328dd0bcac79d1cd0fb29ad966
+
+Summary
+- adopt: 3
+- classification_create: 26
+- conflict: 0
+- create: 44
+- objective_create: 7
+- tenant_update: 1
+- unchanged: 0
+- update: 0
+- workspace_create: 11
+
+Tenant identity
+- id: 1
+- name: Demo Energy Infrastructure -> P&P Ingeniería y Proyectos
+- slug: demo-energy -> pyp-ingenieria-proyectos
+- currency: COP
+
+Workspaces
+- ADOPT     id=1   ENT-PYP            01               enterprise     P&P Ingeniería y Proyectos
+- CREATE    id=4   BU-PYP-CONS        01.01            business-unit  Consultoría en Gestión de Proyectos y Activos
+- ADOPT     id=3   BU-PYP-PMO         01.02            business-unit  PMO como Servicio (PMO aaS)
+- CREATE    id=5   BU-PYP-TEC         01.03            business-unit  Tecnología e Innovación
+- ADOPT     id=2   BU-PYP-CONST       01.04            business-unit  Gerencia de Construcción
+- CREATE    id=6   PF-PYP-CONS        01.01.01         portfolio      Consultoría y Control de Proyectos
+- CREATE    id=7   PF-PYP-ASSET       01.01.02         portfolio      Gestión de Activos, Propiedades y Facilities
+- CREATE    id=8   PF-PYP-PMO         01.02.01         portfolio      PMO como Servicio
+- CREATE    id=9   PF-PYP-TEC         01.03.01         portfolio      Tecnología e Innovación
+- CREATE    id=10  PF-PYP-CONST       01.04.01         portfolio      Gerencia de Construcción
+- CREATE    id=11  PG-PYP-PMO-MIN     01.02.01.01      program        Programa PMO Minería
+- CREATE    id=12  PG-PYP-TEC-IMP     01.03.01.01      program        Programa de Implementaciones Tecnológicas
+- CREATE    id=13  PG-PYP-PPMIS       01.03.01.02      program        Programa de Desarrollo P&Pmis Construction AI
+- CREATE    id=14  PRJ-PYP-PPMIS      01.03.01.02.01   project        Desarrollo P&Pmis Construction AI
+
+Audit SecurityEvent: 9
+Publish CORE: NOT EXECUTED

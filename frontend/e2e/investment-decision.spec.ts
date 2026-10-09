@@ -34,7 +34,43 @@ function decisionFixture(overrides: Record<string, unknown> = {}) {
     source_package_hash: "k".repeat(64),
     source_profile_hash: "r".repeat(64),
     source_policy_hash: "e".repeat(64),
-    decision_package_snapshot: { evidence_summary: { risk: "VALID" } },
+    decision_package_snapshot: {
+      evidence_summary: { risk: "VALID" },
+      preparation: { preparation_number: "IGP-00001" },
+      criterion_policy_snapshot: { policy_revision: 4, policy_hash: "e".repeat(64) },
+      criterion_evaluations: [
+        {
+          criterion_code: "BC-MUST-01",
+          criterion_name: "Business Case strategic case",
+          criterion_type: "MUST_MEET",
+          result: "SATISFIED",
+          required: true,
+          blocking: true,
+        },
+        {
+          criterion_code: "FIN-HURDLE-01",
+          criterion_name: "Economic hurdle",
+          criterion_type: "DECISION_HURDLE",
+          result: "SATISFIED",
+          required: true,
+          blocking: true,
+        },
+      ],
+      portfolio_context_snapshot: { rank_authority: "PORTFOLIO", governed_rank: 2 },
+      success_criteria_candidates: [
+        { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+      ],
+      evidence_readiness_status: "READY",
+      business_evaluation_status: "READY",
+      portfolio_context_status: "AVAILABLE",
+      decision_package_status: "READY_FOR_INVESTMENT_DECISION",
+      formal_decision_authority: "GATE07K",
+      automatic_decision: false,
+      conditions: [],
+    },
+    success_criteria_snapshot: [
+      { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+    ],
     configuration_hash: "c".repeat(64),
     configuration_snapshot: {},
     authority_model: "SINGLE_DECISION_MAKER",
@@ -67,6 +103,9 @@ function decisionFixture(overrides: Record<string, unknown> = {}) {
       quorum_met: true,
       voting_rule_met: true,
       segregation_of_duties_valid: true,
+      mandatory_criteria_satisfied: true,
+      decision_hurdles_satisfied: true,
+      criterion_blockers: [],
       blockers: [],
       warnings: [],
       final_output: "READY_FOR_INVESTMENT_DECISION",
@@ -107,7 +146,43 @@ test("Gate 07K USER and ADMIN browser flow preserves FID and downstream boundari
     source_package_hash: "k".repeat(64),
     source_profile_hash: "r".repeat(64),
     source_policy_hash: "e".repeat(64),
-    decision_package_snapshot: { evidence_summary: { risk: "VALID" } },
+    decision_package_snapshot: {
+      evidence_summary: { risk: "VALID" },
+      preparation: { preparation_number: "IGP-00001" },
+      criterion_policy_snapshot: { policy_revision: 4, policy_hash: "e".repeat(64) },
+      criterion_evaluations: [
+        {
+          criterion_code: "BC-MUST-01",
+          criterion_name: "Business Case strategic case",
+          criterion_type: "MUST_MEET",
+          result: "SATISFIED",
+          required: true,
+          blocking: true,
+        },
+        {
+          criterion_code: "FIN-HURDLE-01",
+          criterion_name: "Economic hurdle",
+          criterion_type: "DECISION_HURDLE",
+          result: "SATISFIED",
+          required: true,
+          blocking: true,
+        },
+      ],
+      portfolio_context_snapshot: { rank_authority: "PORTFOLIO", governed_rank: 2 },
+      success_criteria_candidates: [
+        { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+      ],
+      evidence_readiness_status: "READY",
+      business_evaluation_status: "READY",
+      portfolio_context_status: "AVAILABLE",
+      decision_package_status: "READY_FOR_INVESTMENT_DECISION",
+      formal_decision_authority: "GATE07K",
+      automatic_decision: false,
+      conditions: [],
+    },
+    success_criteria_snapshot: [
+      { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+    ],
     configuration_hash: "c".repeat(64),
     configuration_snapshot: {},
     authority_model: "SINGLE_DECISION_MAKER",
@@ -140,6 +215,9 @@ test("Gate 07K USER and ADMIN browser flow preserves FID and downstream boundari
       quorum_met: true,
       voting_rule_met: true,
       segregation_of_duties_valid: true,
+      mandatory_criteria_satisfied: true,
+      decision_hurdles_satisfied: true,
+      criterion_blockers: [],
       blockers: [],
       warnings: [],
       final_output: "READY_FOR_INVESTMENT_DECISION",
@@ -196,20 +274,34 @@ test("Gate 07K USER and ADMIN browser flow preserves FID and downstream boundari
   await login(page);
   await expand(page, /^enterprise strategy manager$/i);
   await expand(page, /^investment governance$/i);
+  await expand(page, /^investment decision \/ fid$/i);
   await page
-    .getByRole("group", { name: "Submódulos de Investment Governance" })
+    .getByRole("group", { name: "Submódulos de Investment Decision / FID" })
     .getByRole("button", { name: "Decision Queue" })
     .click();
   const user = page.getByRole("region", { name: "Investment Decision / FID", exact: true });
   await expect(user.getByText("FID NO")).toBeVisible();
   await expect(user.getByText("Project activation NO")).toBeVisible();
+  await user.getByRole("button", { name: "Decision Package" }).click();
+  const frozenInputs = user.getByRole("region", { name: "Frozen Gate 07J decision inputs" });
+  await expect(frozenInputs).toContainText("Mandatory criteria");
+  await expect(frozenInputs).toContainText("Decision hurdles");
+  await expect(frozenInputs).toContainText("PORTFOLIO");
+  await expect(frozenInputs).toContainText("Frozen FID success criteria");
+  await expect(frozenInputs).toContainText("Reliability uplift");
+  await expect(frozenInputs).toContainText("never means automatic GO");
   await user.getByRole("button", { name: "Authorization Output" }).click();
   await expect(user.getByText(/"can_activate_project": false/)).toBeVisible();
   await expect(user.getByRole("button", { name: /activate project|issue ntp|execute project/i })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Cambiar a ADMIN MODE" }).click();
+  await expect(page.getByRole("navigation", { name: "Admin mode navigation" })).toBeVisible();
   await expand(page, /^enterprise strategy manager$/i);
-  await page.getByRole("button", { name: /^investment decision \/ fid governance$/i }).click();
+  await expand(page, /^investment governance$/i);
+  await page
+    .getByRole("group", { name: "Submódulos de Investment Governance" })
+    .getByRole("button", { name: /^investment decision \/ fid$/i })
+    .click();
   const admin = page.getByRole("region", { name: "Investment Decision / FID Governance", exact: true });
   await expect(
     admin.getByRole("navigation", { name: "Investment Decision configuration sections" }).getByRole("button")
@@ -301,8 +393,9 @@ test("Gate 07K browser renders FID, alternate outcomes, quorum and stale evidenc
   await login(page);
   await expand(page, /^enterprise strategy manager$/i);
   await expand(page, /^investment governance$/i);
+  await expand(page, /^investment decision \/ fid$/i);
   await page
-    .getByRole("group", { name: "Submódulos de Investment Governance" })
+    .getByRole("group", { name: "Submódulos de Investment Decision / FID" })
     .getByRole("button", { name: "Decision Queue" })
     .click();
 

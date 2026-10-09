@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import BusinessCaseAdminView from "./BusinessCaseAdminView";
 import BusinessCaseWorkspace from "./BusinessCaseWorkspace";
+import { BUSINESS_CASE_ADMIN_SECTIONS } from "./adminSections";
 
 const api = vi.hoisted(() => ({
   list: vi.fn(),
@@ -47,6 +48,50 @@ const revision = {
   delivery_json: { currency: "USD" },
   unresolved_concerns_json: [],
   recommendation_json: { status: "NOT_PREPARED", is_decision: false },
+  five_case_json: {
+    strategic_case: {
+      question: "Why intervene?",
+      summary: "The governed need and strategic alignment support intervention.",
+      key_findings: [{ code: "STR-01" }],
+      assumptions: [],
+      warnings: [],
+      blockers: [],
+      case_conclusion: "Strategically justified",
+      case_readiness: "READY",
+    },
+    economic_case: { summary: "Preferred option is referenced from BA.", case_readiness: "IN_PROGRESS" },
+    commercial_case: { summary: "Commercial Strategy remains authoritative.", case_readiness: "BLOCKED" },
+    financial_case: { summary: "FIN remains authoritative for metrics.", case_readiness: "NOT_STARTED" },
+    management_case: { summary: "FEL and delivery evidence are referenced.", case_readiness: "IN_PROGRESS" },
+  },
+  five_case_readiness_json: {
+    strategic_case: "READY",
+    economic_case: "IN_PROGRESS",
+    commercial_case: "BLOCKED",
+    financial_case: "NOT_STARTED",
+    management_case: "IN_PROGRESS",
+    overall_business_case_readiness: "BLOCKED",
+  },
+  source_evidence_matrix_json: [
+    {
+      case: "strategic_case",
+      source_module: "PROJECT_PROPOSAL",
+      source_id: 3,
+      source_version_id: 1,
+      source_hash: "a".repeat(64),
+      source_status: "READY_FOR_STRATEGIC_GATE",
+      source_readiness: "READY",
+      source_current: true,
+      as_of_date: "2026-09-02T12:00:00",
+      blocking: true,
+    },
+  ],
+  gate_context_json: { gate_profile: "PYP-FFA", governance_model: "CAPITAL_OWNER" },
+  source_current: true,
+  five_case_hash: "1".repeat(64),
+  source_bundle_hash: "2".repeat(64),
+  business_case_hash: "3".repeat(64),
+  legacy_layout: false,
   source_references_json: { proposal: { id: 3, status: "READY_FOR_STRATEGIC_GATE" } },
   source_hashes_json: { proposal: "a".repeat(64) },
   source_snapshot_hash: "b".repeat(64),
@@ -144,9 +189,23 @@ describe("Gate 07M-BC Business Case Manager", () => {
   it("renders governed lineage and the expected next boundary", async () => {
     render(<BusinessCaseWorkspace initialView="business-case-overview" token="token" />);
     expect(await screen.findByRole("heading", { name: "Business Case Manager" })).toBeInTheDocument();
-    expect(await screen.findByText("BC-00001 · R1")).toBeInTheDocument();
+    expect((await screen.findAllByText("BC-00001 · R1")).length).toBeGreaterThan(0);
     expect(screen.getByText("Output / NEXT").parentElement).toHaveTextContent("COMPLETE_GOVERNED_BUSINESS_CASE");
-    expect(screen.getByText("proposal")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Five Case readiness summary" })).toHaveTextContent(
+      "Strategic CaseREADY"
+    );
+    expect(screen.getByRole("navigation", { name: "Business Case views" }).querySelectorAll("button")).toHaveLength(10);
+  });
+
+  it("renders a governed Case and the normalized read-only evidence matrix", async () => {
+    const onNavigate = vi.fn();
+    render(<BusinessCaseWorkspace initialView="business-case-strategic" onNavigate={onNavigate} token="token" />);
+    expect(await screen.findByText("Strategically justified")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Strategic Case source evidence" })).toHaveTextContent(
+      "Project Proposal"
+    );
+    fireEvent.click(screen.getByRole("button", { name: "View Source Project Proposal" }));
+    expect(onNavigate).toHaveBeenCalledWith("project-proposal");
   });
 
   it("shows refresh preview as non-persistent", async () => {
@@ -156,10 +215,12 @@ describe("Gate 07M-BC Business Case Manager", () => {
     expect(api.previewRefresh).toHaveBeenCalledWith("token", 7);
   });
 
-  it("renders all 26 ADMIN sections and executes a dry-run", async () => {
+  it("renders the extended ADMIN sections and executes a dry-run", async () => {
     render(<BusinessCaseAdminView token="token" />);
     const tabs = await screen.findByRole("navigation", { name: "Business Case configuration sections" });
-    expect(within(tabs).getAllByRole("button")).toHaveLength(26);
+    expect(within(tabs).getAllByRole("button")).toHaveLength(BUSINESS_CASE_ADMIN_SECTIONS.length);
+    expect(within(tabs).getByRole("button", { name: "Case Applicability" })).toBeInTheDocument();
+    expect(within(tabs).getByRole("button", { name: "Overall Readiness Rules" })).toBeInTheDocument();
     expect(within(tabs).getByRole("button", { name: "Material Change Rules" })).toBeInTheDocument();
     const previewButtons = screen.getAllByRole("button", { name: "Preview" });
     fireEvent.click(previewButtons[previewButtons.length - 1]);

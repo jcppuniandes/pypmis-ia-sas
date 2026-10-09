@@ -1,0 +1,263 @@
+name: Pilot Readiness CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "guided-*"
+      - "feature/**"
+      - "fix/**"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate07e-portfolio-evaluation-postgres:
+    name: Gate 07E-07K Portfolio and Investment Decision gates (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 07E-07K migrations and governed Portfolio/FID acceptance
+        run: |
+          docker compose -p pypmis-gate07e -f docker-compose.gate07e.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate07e-test
+      - name: Destroy ephemeral Gate 07E environment
+        if: always()
+        run: docker compose -p pypmis-gate07e -f docker-compose.gate07e.yml down --remove-orphans
+
+  gate07d-project-governance-postgres:
+    name: Gate 07D + multi-source Project governance (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 07D and multi-source Project migration/lifecycle E2E
+        run: |
+          docker compose -p pypmis-gate07d -f docker-compose.gate07d.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate07d-test
+      - name: Destroy ephemeral Gate 07D environment
+        if: always()
+        run: docker compose -p pypmis-gate07d -f docker-compose.gate07d.yml down --remove-orphans
+
+  gate06b-physical-creation-postgres:
+    name: Gate 06B physical creation (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 06B migrations, process and materialization E2E
+        run: |
+          docker compose -p pypmis-gate06b -f docker-compose.gate06b.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate06b-test
+      - name: Destroy ephemeral Gate 06B environment
+        if: always()
+        run: docker compose -p pypmis-gate06b -f docker-compose.gate06b.yml down --remove-orphans
+
+  gate06a-physical-workspace-postgres:
+    name: Gate 06A physical workspace (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 06A migrations, E2E and concurrency
+        run: |
+          docker compose -p pypmis-gate06a -f docker-compose.gate06a.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate06a-test
+      - name: Destroy ephemeral Gate 06A environment
+        if: always()
+        run: docker compose -p pypmis-gate06a -f docker-compose.gate06a.yml down --remove-orphans
+
+  project-workspace-initialization-postgres-e2e:
+    name: project-workspace-initialization-postgres-e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate 05C PostgreSQL lifecycle, rollback and concurrency acceptance
+        run: |
+          docker compose -p pypmis-gate05c -f docker-compose.gate05c.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate05c-test
+      - name: Destroy ephemeral environment
+        if: always()
+        run: docker compose -p pypmis-gate05c -f docker-compose.gate05c.yml down --remove-orphans
+
+  enterprise-structure-postgres-e2e:
+    name: enterprise-structure-postgres-e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Gate 04H evidence directory
+        # The backend image runs as its non-root appuser (UID 999), while the
+        # bind-mounted directory and its tracked evidence files are owned by
+        # the GitHub runner user. Grant write access only to this disposable
+        # evidence tree so the E2E process can replace its JSON/CSV outputs.
+        run: |
+          install -d -m 0777 artifacts/enterprise_structure/gate04h
+          chmod -R a+rwX artifacts/enterprise_structure/gate04h
+      - name: Run migrations, PostgreSQL E2E, concurrency, SoD and benchmark
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -p pypmis-gate04h -f docker-compose.gate04h.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from gate04h-test 2>&1 \
+            | tee artifacts/enterprise_structure/gate04h/postgres_e2e_log.txt
+      - name: Destroy ephemeral environment
+        if: always()
+        run: docker compose -p pypmis-gate04h -f docker-compose.gate04h.yml down --remove-orphans
+      - name: Preserve Gate 04H evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-structure-gate04h
+          path: artifacts/enterprise_structure/gate04h/
+          if-no-files-found: error
+
+  backend-lint:
+    name: Backend lint (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      # Keep formatting stable across runner image updates.
+      - run: pip install ruff==0.16.3
+      - run: ruff format --check backend/app/ backend/tests/
+      - run: ruff check backend/app/ backend/tests/ --output-format=github
+
+  frontend-lint:
+    name: Frontend lint (ESLint + Prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run format:check
+      # Ola 2 extracted the legacy main.tsx monolith; tighten the warning budget
+      # as remaining views are cleaned up further. Lower to 0 once all warnings
+      # are addressed.
+      - run: cd frontend && npm run lint -- --max-warnings=10
+      - run: cd frontend && npm run test -- --run
+
+  verify:
+    name: Build + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build stack
+        run: docker compose up -d --build
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U pypmis -d pypmis 2>/dev/null; do sleep 2; done'
+          echo "Waiting for Redis..."
+          timeout 30 bash -c 'until docker compose exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 2; done'
+          echo "All services ready."
+      - name: Run database migrations
+        run: docker compose exec -T api alembic upgrade head
+      - name: Verify applied migration revision
+        run: docker compose exec -T api alembic current
+      - name: Run backend tests
+        run: docker compose exec -T api pytest
+      - name: Run frontend build
+        run: docker compose exec -T frontend npm run build
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=120 api worker frontend
+
+  e2e:
+    name: Browser E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [verify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start stack
+        # The E2E smoke logs in with the seeded demo tenant and walks the full
+        # guided control flow, so seed data goes on and validation mode off.
+        env:
+          SEED_DEMO_DATA: "true"
+          VITE_FRONTEND_VALIDATION_MODE: "false"
+        run: docker compose up -d --build
+      - name: Wait for app
+        run: |
+          timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
+      - name: Apply and verify Gate 07M-FIN schema head
+        run: |
+          docker compose exec -T api alembic upgrade head
+          docker compose exec -T api alembic current | grep 20260902_0058
+      - name: Run Playwright production smoke
+        run: cd frontend && npm run test:e2e
+      - name: Run Gate 07E-J-FEL governed USER/ADMIN flows three consecutive times
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py prepare >/dev/null
+          baseline_before="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py baseline | tail -n 1)"
+          fixture="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py seed --run-id "$run_id" --copies 3 | tail -n 1)"
+          cleanup() {
+            docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py teardown --run-id "$run_id"
+          }
+          trap cleanup EXIT
+          cd frontend
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-evaluation-closeout.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-analysis.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-budget.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-resource.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test portfolio-convergence.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test investment-gate-preparation.spec.ts --repeat-each=3 --workers=1
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test project-definition-fel.spec.ts --repeat-each=3 --workers=1
+          cd ..
+          docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py \
+            funds-prerequisites --run-id "$run_id" >/dev/null
+          cd frontend
+          E2E_GATE07E_FIXTURE="$fixture" E2E_API_URL="http://127.0.0.1:8000" \
+            npx playwright test funds-manager.spec.ts --repeat-each=3 --workers=1
+          npx playwright test investment-evidence-policy.spec.ts --workers=1
+          cd ..
+          cleanup
+          trap - EXIT
+          baseline_after="$(docker compose exec -T api python tests/postgres/gate07e_browser_fixture.py baseline | tail -n 1)"
+          test "$baseline_before" = "$baseline_after"
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=160 api frontend

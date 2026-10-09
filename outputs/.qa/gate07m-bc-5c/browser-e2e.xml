@@ -1,0 +1,6 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="22.478939999999998">
+<testsuite name="business-case.spec.ts" timestamp="2026-09-18T11:36:02.415Z" hostname="chromium" tests="1" failures="0" skipped="0" time="17.852" errors="0">
+<testcase name="Gate 07M-BC-5C USER and ADMIN expose Five Case synthesis without duplicating sources" classname="business-case.spec.ts" time="17.852">
+</testcase>
+</testsuite>
+</testsuites>

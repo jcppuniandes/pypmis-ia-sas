@@ -1,0 +1,787 @@
+{
+  "diff": [
+    {
+      "action": "update",
+      "entity": "node",
+      "key": "ENT-PYP",
+      "reason": "Controlled fields differ"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "BU-PYP-CONS",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "BU-PYP-PMO",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "BU-PYP-TEC",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "BU-PYP-CONST",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONS-GEST",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONS-CTRL",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONS-CONT",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONS-ASSET",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-PMO-GEN",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-PMO-MIN",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-TEC-PPM",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-TEC-BIM",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-TEC-BI",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-TEC-PPMIS",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONST-VIAS",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONST-INM",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONST-RED",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONST-FAC",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PF-PYP-CONST-OYM",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PG-PYP-PMO-MIN",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PG-PYP-TEC-IMP",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PG-PYP-PPMIS",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "node",
+      "key": "PRJ-PYP-PPMIS",
+      "reason": "New external_key"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-01",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-02",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-03",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-04",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-05",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-06",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "strategic_objective",
+      "key": "OBJ-PYP-07",
+      "reason": "New strategic objective"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-GEST:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-GEST:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-CTRL:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-CTRL:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-CONT:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-CONT:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONS-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-PPM:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-PPM:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-BIM:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-BIM:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-BI:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-BI:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-TEC-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-INM:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-INM:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-RED:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-RED:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-FAC:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-FAC:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-OYM:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PF-PYP-CONST-OYM:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PG-PYP-TEC-IMP:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "reason": "New assignment"
+    },
+    {
+      "action": "create",
+      "entity": "classification",
+      "key": "PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "reason": "New assignment"
+    }
+  ],
+  "findings": [
+    {
+      "code": "REQUIRED_CLASSIFICATION_MISSING",
+      "message": "Required categories are missing: responsible-area.",
+      "recommendation": "Assign every category required by the published workspace type.",
+      "reference": "BU-PYP-CONS",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "REQUIRED_CLASSIFICATION_MISSING",
+      "message": "Required categories are missing: responsible-area.",
+      "recommendation": "Assign every category required by the published workspace type.",
+      "reference": "BU-PYP-CONST",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "REQUIRED_CLASSIFICATION_MISSING",
+      "message": "Required categories are missing: responsible-area.",
+      "recommendation": "Assign every category required by the published workspace type.",
+      "reference": "BU-PYP-PMO",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "REQUIRED_CLASSIFICATION_MISSING",
+      "message": "Required categories are missing: responsible-area.",
+      "recommendation": "Assign every category required by the published workspace type.",
+      "reference": "BU-PYP-TEC",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-01",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-02",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-03",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-04",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-05",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-06",
+      "section": "classifications",
+      "severity": "ERROR"
+    },
+    {
+      "code": "CATEGORY_NOT_APPLICABLE",
+      "message": "The category is not applicable to the workspace type.",
+      "recommendation": "Use a category allowed by the published catalog.",
+      "reference": "ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-07",
+      "section": "classifications",
+      "severity": "ERROR"
+    }
+  ],
+  "input_hash": "10c47aee1d159de7582c45a25a5d4be5acc04929d653fbad4287e3852513beb6",
+  "release_code": "ES-PYP-CORE-20260806",
+  "summary": {
+    "classifications": 60,
+    "conflict": 0,
+    "create": 90,
+    "errors": 24,
+    "info": 0,
+    "links": 0,
+    "nodes": 24,
+    "strategic_objectives": 7,
+    "unchanged": 0,
+    "update": 1,
+    "warnings": 0
+  },
+  "tenant_code": "DEMO-ENERGY",
+  "topological_order": [
+    "ENT-PYP",
+    "BU-PYP-CONS",
+    "BU-PYP-PMO",
+    "BU-PYP-TEC",
+    "BU-PYP-CONST",
+    "PF-PYP-CONS-GEST",
+    "PF-PYP-CONS-CTRL",
+    "PF-PYP-CONS-CONT",
+    "PF-PYP-CONS-ASSET",
+    "PF-PYP-PMO-GEN",
+    "PF-PYP-PMO-MIN",
+    "PF-PYP-TEC-PPM",
+    "PF-PYP-TEC-BIM",
+    "PF-PYP-TEC-BI",
+    "PF-PYP-TEC-PPMIS",
+    "PF-PYP-CONST-VIAS",
+    "PF-PYP-CONST-INM",
+    "PF-PYP-CONST-RED",
+    "PF-PYP-CONST-FAC",
+    "PF-PYP-CONST-OYM",
+    "PG-PYP-PMO-MIN",
+    "PG-PYP-TEC-IMP",
+    "PG-PYP-PPMIS",
+    "PRJ-PYP-PPMIS"
+  ],
+  "valid": false
+}

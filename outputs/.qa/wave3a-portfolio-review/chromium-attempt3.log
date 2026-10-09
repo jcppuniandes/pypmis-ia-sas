@@ -1,0 +1,53 @@
+
+Running 2 tests using 1 worker
+
+
+
+[1A[2K(node:15204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K(node:15204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[1/2] [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy
+[1A[2K  1) [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy 
+
+    [31mTest timeout of 360000ms exceeded.[39m
+
+    Error: locator.selectOption: Test timeout of 360000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('region', { name: 'Periodic Portfolio Review workspace' }).getByRole('region', { name: 'Portfolio Review Actions', exact: true }).getByLabel('Action type', { exact: true })[22m
+
+
+      160 |         const actions = workspace.getByRole("region", { name: "Portfolio Review Actions", exact: true });
+      161 |         for (const actionType of ["HOLD_FOR_CAPACITY", "REQUEST_REASSESSMENT", "REBALANCE_CAPITAL"]) {
+    > 162 |           await actions.getByLabel("Action type", { exact: true }).selectOption(actionType);
+          |                                                                    ^
+      163 |           await actions.getByLabel("Subject type", { exact: true }).selectOption("PROJECT");
+      164 |           await actions.getByLabel("Subject ID", { exact: true }).fill(String(matrix.items[0].project_workspace_id));
+      165 |           await actions.getByLabel("Owner user ID", { exact: true }).fill(String(authority!.id));
+        at C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\frontend\e2e\portfolio-review.spec.ts:162:68
+
+    Error Context: ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+[1A[2K(node:8500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:8500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[2/2] [chromium] › e2e\portfolio-review.spec.ts:353:3 › Wave 3A real Chromium and PostgreSQL release › direct ADMIN route denies a USER without configuration permission
+[1A[2K  1 failed
+    [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy 
+  1 passed (8.2m)

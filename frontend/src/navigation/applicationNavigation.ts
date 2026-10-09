@@ -1,11 +1,39 @@
+import { buildStrategicMacroprocess } from "../features/enterprise-strategy/navigation/strategicNavigationBlueprint";
+import type { StrategicControlClassification } from "../features/enterprise-strategy/navigation/strategicControlClassification";
+
 export const SCOPE_MANAGER_MODULE_LABEL = "Scope Manager";
 export const BIM_MANAGER_SUBMODULE_LABEL = "BIM Manager";
 
 export type ControlFlowView =
   | "dashboard"
   | "opc-gap"
+  | "enterprise-strategy-overview"
+  | "workspace-context"
+  | "foundation-strategic-objectives"
+  | "risk-governance-configuration"
+  | "basic-data-readiness"
+  | "basic-data-configuration"
+  | "owner-capability-readiness"
+  | "owner-capability-configuration"
+  | "qra-foundation"
+  | "qra-schedule-source-readiness"
+  | "qra-model-definition"
+  | "qra-foundation-history"
+  | "qra-methodology-source-readiness"
+  | "capital-planning-cycles"
+  | "capital-demand-pipeline"
+  | "capital-demand-my"
+  | "capital-demand-review"
+  | "capital-demand-endorsed"
+  | "capital-demand-history"
+  | "strategic-capital-allocation"
+  | "strategic-capital-allocation-history"
+  | "capital-planning-configuration"
+  | "strategic-capital-bucket-configuration"
   | "idea-lifecycle"
   | "idea-demand-configuration"
+  | "business-analysis-options"
+  | "business-analysis-configuration"
   | "project-proposal"
   | "project-proposal-configuration"
   | "strategic-gate-decision"
@@ -16,7 +44,22 @@ export type ControlFlowView =
   | "portfolio-evaluation"
   | "portfolio-evaluation-configuration"
   | "portfolio-analysis"
+  | "portfolio-investor-map"
+  | "portfolio-scorecard"
   | "portfolio-analysis-configuration"
+  | "portfolio-review-sessions"
+  | "portfolio-review-overview"
+  | "portfolio-review-snapshot"
+  | "portfolio-review-allocation"
+  | "portfolio-review-project-matrix"
+  | "portfolio-review-budget-resources"
+  | "portfolio-review-gate-fid"
+  | "portfolio-review-exceptions"
+  | "portfolio-review-conclusions"
+  | "portfolio-review-actions"
+  | "portfolio-review-history"
+  | "portfolio-review-trends"
+  | "portfolio-review-configuration"
   | "portfolio-budget-planning-configuration"
   | "portfolio-resource-planning-configuration"
   | "portfolio-scenario-convergence-configuration"
@@ -49,6 +92,10 @@ export type ControlFlowView =
   | "post-fid-governance-configuration"
   | "business-case-my"
   | "business-case-overview"
+  | "business-case-economic"
+  | "business-case-commercial"
+  | "business-case-management"
+  | "business-case-sources-evidence"
   | "business-case-current-revision"
   | "business-case-strategic"
   | "business-case-alternatives"
@@ -66,6 +113,38 @@ export type ControlFlowView =
   | "business-case-decision-snapshots"
   | "business-case-history"
   | "business-case-configuration"
+  | "strategic-benefits-my"
+  | "strategic-benefits-overview"
+  | "strategic-benefits-strategic-alignment"
+  | "strategic-benefits-outputs"
+  | "strategic-benefits-outcomes"
+  | "strategic-benefits-register"
+  | "strategic-benefits-measures"
+  | "strategic-benefits-owners"
+  | "strategic-benefits-baselines-targets"
+  | "strategic-benefits-expected-value"
+  | "strategic-benefits-dependencies"
+  | "strategic-benefits-assumptions-constraints"
+  | "strategic-benefits-risk-references"
+  | "strategic-benefits-traceability"
+  | "strategic-benefits-readiness"
+  | "strategic-benefits-history"
+  | "benefits-configuration"
+  | "commercial-strategy-my"
+  | "commercial-strategy-overview"
+  | "commercial-strategy-context"
+  | "commercial-strategy-procurement"
+  | "commercial-strategy-packages"
+  | "commercial-strategy-contracting-model"
+  | "commercial-strategy-market"
+  | "commercial-strategy-supply-chain"
+  | "commercial-strategy-risk-allocation"
+  | "commercial-strategy-payment-incentives"
+  | "commercial-strategy-assumptions"
+  | "commercial-strategy-recommendation"
+  | "commercial-strategy-readiness"
+  | "commercial-strategy-history"
+  | "commercial-strategy-configuration"
   | "financial-model-my-models"
   | "financial-model-overview"
   | "financial-model-current-version"
@@ -222,202 +301,69 @@ export type ApplicationMode = "user" | "admin";
 export type NavigationViewItem = {
   key: ControlFlowView;
   label: string;
+  classification?: StrategicControlClassification;
   count?: string | number;
+  description?: string;
+  route?: string;
+  phase?: number;
+  isFoundation?: boolean;
+  badge?: string;
+  children?: NavigationViewItem[];
 };
 
 export type ModuleNavigationItem = {
   key: string;
   label: string;
+  classification?: StrategicControlClassification;
   submodules: NavigationViewItem[];
+  description?: string;
+  phase?: number;
+  isFoundation?: boolean;
+  badge?: string;
 };
 
 export type MacroprocessNavigationItem = {
   key: string;
   label: string;
+  classification?: StrategicControlClassification;
   modules: ModuleNavigationItem[];
+  description?: string;
 };
 
-export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
+const PROJECT_WORKSPACE_GOVERNANCE_MODULES: ModuleNavigationItem[] = [
   {
-    key: "enterprise-strategy-manager",
-    label: "Enterprise Strategy Manager",
-    modules: [
-      {
-        key: "idea-demand-manager",
-        label: "Idea & Demand Manager",
-        submodules: [
-          { key: "idea-lifecycle", label: "Idea Lifecycle" },
-          { key: "project-proposal", label: "Project Proposal" },
-        ],
-      },
-      {
-        key: "strategic-gate-decision",
-        label: "Strategic Gate Decision",
-        submodules: [{ key: "strategic-gate-decision", label: "Strategic Gate Decision" }],
-      },
-      {
-        key: "enterprise-structure-workspace-manager",
-        label: "Enterprise Structure & Workspace Manager",
-        submodules: [{ key: "enterprise-explorer", label: "Enterprise Explorer" }],
-      },
-      {
-        key: "portfolio-manager",
-        label: "Portfolio Manager",
-        submodules: [
-          { key: "portfolio-structure", label: "Portfolio Structure" },
-          { key: "strategic-project-planning-entry", label: "Strategic Project Planning Entry" },
-          { key: "portfolio-projects", label: "Portfolio Projects" },
-          { key: "portfolio-evaluation", label: "Portfolio Evaluation" },
-          { key: "portfolio-analysis", label: "Portfolio Analysis" },
-          { key: "strategic-prioritization-matrix", label: "Prioritization Matrix" },
-          { key: "portfolio-budget-planning", label: "Portfolio Budget Planning" },
-          { key: "portfolio-resource-planning", label: "Portfolio Resource Planning" },
-          { key: "portfolio-scenario-convergence", label: "Portfolio Scenario Convergence" },
-          { key: "investment-gate-preparation", label: "Investment Gate Preparation" },
-          { key: "portfolio-cash-flow", label: "Portfolio Cash Flow" },
-          { key: "gate-decision", label: "Gate Decision" },
-        ],
-      },
-      {
-        key: "business-case-manager",
-        label: "Business Case Manager",
-        submodules: [
-          { key: "business-case-my", label: "My Business Cases" },
-          { key: "business-case-overview", label: "Business Case Overview" },
-          { key: "business-case-current-revision", label: "Current Revision" },
-          { key: "business-case-strategic", label: "Strategic Case" },
-          { key: "business-case-alternatives", label: "Alternatives" },
-          { key: "business-case-benefits", label: "Benefits & Value" },
-          { key: "business-case-project-definition", label: "Project Definition" },
-          { key: "business-case-financial", label: "Economic & Financial Model" },
-          { key: "business-case-budget-resources", label: "Budget / Resources" },
-          { key: "business-case-funding", label: "Funding" },
-          { key: "business-case-risk-permits", label: "Risk / Permits" },
-          { key: "business-case-execution", label: "Execution Case" },
-          { key: "business-case-assumptions", label: "Assumptions & Constraints" },
-          { key: "business-case-recommendation", label: "Recommendation" },
-          { key: "business-case-readiness", label: "Business Case Readiness" },
-          { key: "business-case-material-changes", label: "Material Changes" },
-          { key: "business-case-decision-snapshots", label: "Decision Snapshots" },
-          { key: "business-case-history", label: "History / Audit" },
-        ],
-      },
-      {
-        key: "economic-financial-model",
-        label: "Economic & Financial Model",
-        submodules: [
-          { key: "financial-model-my-models", label: "My Models" },
-          { key: "financial-model-overview", label: "Overview" },
-          { key: "financial-model-current-version", label: "Current Version" },
-          { key: "financial-model-assumptions", label: "Assumptions" },
-          { key: "financial-model-economic-case", label: "Economic Case" },
-          { key: "financial-model-financial-case", label: "Financial Case" },
-          { key: "financial-model-capex-opex", label: "CAPEX / OPEX" },
-          { key: "financial-model-revenue-benefits", label: "Revenue / Benefits" },
-          { key: "financial-model-capital-structure", label: "Capital Structure" },
-          { key: "financial-model-funding-linkage", label: "Funding Linkage" },
-          { key: "financial-model-investors", label: "Investors" },
-          { key: "financial-model-debt", label: "Debt" },
-          { key: "financial-model-cash-flow", label: "Cash Flow" },
-          { key: "financial-model-debt-service", label: "Debt Service" },
-          { key: "financial-model-indicators", label: "Indicators" },
-          { key: "financial-model-covenants", label: "Covenants" },
-          { key: "financial-model-scenarios", label: "Scenarios" },
-          { key: "financial-model-sensitivities", label: "Sensitivities" },
-          { key: "financial-model-break-even", label: "Break-Even" },
-          { key: "financial-model-readiness", label: "Readiness" },
-          { key: "financial-model-source-lineage", label: "Source Lineage" },
-          { key: "financial-model-compare-versions", label: "Compare Versions" },
-          { key: "financial-model-history-audit", label: "History / Audit" },
-        ],
-      },
-      {
-        key: "project-definition-manager",
-        label: "Project Definition / FEL Manager",
-        submodules: [{ key: "project-definition-fel", label: "Project Definition / FEL Manager" }],
-      },
-      {
-        key: "funds-manager",
-        label: "Funds Manager",
-        submodules: [
-          { key: "funds-overview", label: "Overview" },
-          { key: "funds-sources", label: "Funding Sources" },
-          { key: "funds-envelopes", label: "Funds" },
-          { key: "funds-assignments", label: "Funding Assignments" },
-          { key: "funds-coverage", label: "Funding Coverage" },
-          { key: "funds-readiness", label: "Funding Readiness" },
-          { key: "funds-history", label: "History / Audit" },
-        ],
-      },
-      {
-        key: "investment-governance",
-        label: "Investment Governance",
-        submodules: [
-          { key: "risk-readiness-my", label: "My Risk Work" },
-          { key: "risk-readiness-portfolio", label: "Project Set Risk Readiness" },
-          { key: "risk-readiness-register", label: "Project Risk Register" },
-          { key: "risk-readiness-assessments", label: "Risk Assessments" },
-          { key: "risk-readiness-treatments", label: "Treatments" },
-          { key: "risk-readiness-residual", label: "Residual Risk & Acceptance" },
-          { key: "risk-readiness-dashboard", label: "Risk Readiness Dashboard" },
-          { key: "risk-readiness-history", label: "History / Audit" },
-          { key: "permit-readiness-my", label: "My Permit Work" },
-          { key: "permit-readiness-register", label: "Project Permit Register" },
-          { key: "permit-readiness-requirements", label: "Permit Requirements" },
-          { key: "permit-readiness-conditions", label: "Permit Conditions" },
-          { key: "permit-readiness-project", label: "Project Permit Readiness" },
-          { key: "permit-readiness-portfolio", label: "Project Set Permit Readiness" },
-          { key: "permit-readiness-history", label: "Permit History / Audit" },
-          { key: "investment-decision-queue", label: "Decision Queue" },
-          { key: "investment-decision-mine", label: "My Decisions" },
-          { key: "investment-decision-package", label: "Investment Decision Package" },
-          { key: "investment-decision-evidence", label: "Evidence Summary" },
-          { key: "investment-decision-checklist", label: "Decision Checklist" },
-          { key: "investment-decision-conditions", label: "Conditions" },
-          { key: "investment-decision-committee", label: "Committee / Votes" },
-          { key: "investment-decision-history", label: "Decision History" },
-          { key: "investment-decision-output", label: "Authorization Output" },
-          { key: "post-fid-queue", label: "Post-FID Queue" },
-          { key: "post-fid-handoff", label: "FID Handoff" },
-          { key: "post-fid-eligibility-matrix", label: "Project Eligibility Matrix" },
-          { key: "post-fid-conditions", label: "Post-FID Conditions" },
-          { key: "post-fid-initialization-handoff", label: "Initialization Handoff" },
-          { key: "post-fid-activation-handoff", label: "Activation Handoff" },
-          { key: "post-fid-history", label: "Post-FID History / Audit" },
-        ],
-      },
-      {
-        key: "workspaces-manager",
-        label: "Workspaces Manager",
-        submodules: [
-          { key: "project-creator", label: "Project Creator" },
-          { key: "setup", label: "Asset Creator/Receipt" },
-        ],
-      },
-      {
-        key: "partners",
-        label: "Partners",
-        submodules: [{ key: "join-venture", label: "Join Venture" }],
-      },
-      {
-        key: "vendors",
-        label: "Vendors",
-        submodules: [{ key: "vendors-list", label: "Vendors List" }],
-      },
-      {
-        key: "commitments",
-        label: "Commitments",
-        submodules: [
-          { key: "sales-contracts", label: "Sales Contracts" },
-          { key: "sc-changes", label: "SC Changes" },
-          { key: "sc-payments", label: "SC Payments" },
-          { key: "commitment-purchase-order", label: "Purchase Order" },
-          { key: "commitment-po-changes", label: "PO Changes" },
-          { key: "commitment-po-payments", label: "PO Payments" },
-        ],
-      },
+    key: "workspaces-manager",
+    label: "Workspaces Manager",
+    submodules: [
+      { key: "project-creator", label: "Project Creator" },
+      { key: "setup", label: "Asset Creator/Receipt" },
     ],
   },
+  {
+    key: "partners",
+    label: "Partners",
+    submodules: [{ key: "join-venture", label: "Join Venture" }],
+  },
+  {
+    key: "vendors",
+    label: "Vendors",
+    submodules: [{ key: "vendors-list", label: "Vendors List" }],
+  },
+  {
+    key: "commitments",
+    label: "Commitments",
+    submodules: [
+      { key: "sales-contracts", label: "Sales Contracts" },
+      { key: "sc-changes", label: "SC Changes" },
+      { key: "sc-payments", label: "SC Payments" },
+      { key: "commitment-purchase-order", label: "Purchase Order" },
+      { key: "commitment-po-changes", label: "PO Changes" },
+      { key: "commitment-po-payments", label: "PO Payments" },
+    ],
+  },
+];
+
+const NON_STRATEGIC_USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
   {
     key: "project-control-manager",
     label: "Project Control Manager",
@@ -606,32 +552,19 @@ export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
   },
 ];
 
-export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
+export const USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
+  buildStrategicMacroprocess("user"),
   {
-    key: "enterprise-strategy-manager",
-    label: "Enterprise Strategy Manager",
-    submodules: [
-      { key: "idea-demand-configuration", label: "Idea Lifecycle Configuration" },
-      { key: "project-proposal-configuration", label: "Project Proposal Configuration" },
-      { key: "strategic-gate-configuration", label: "Strategic Gate Decision" },
-      { key: "portfolio-planning-configuration", label: "Portfolio Planning Entry & Membership" },
-      { key: "portfolio-evaluation-configuration", label: "Portfolio Evaluation & Prioritization" },
-      { key: "portfolio-analysis-configuration", label: "Portfolio Analysis Configuration" },
-      { key: "portfolio-budget-planning-configuration", label: "Portfolio Budget Planning Configuration" },
-      { key: "portfolio-resource-planning-configuration", label: "Portfolio Resource Planning Configuration" },
-      { key: "portfolio-scenario-convergence-configuration", label: "Portfolio Scenario Convergence Configuration" },
-      { key: "investment-gate-preparation-configuration", label: "Investment Gate Preparation Configuration" },
-      { key: "investment-decision-evidence-policy", label: "Investment Decision Evidence Policy" },
-      { key: "project-definition-configuration", label: "Project Definition / FEL Manager" },
-      { key: "funds-manager-configuration", label: "Funds Manager Configuration" },
-      { key: "risk-readiness-configuration", label: "Risk Readiness Configuration" },
-      { key: "permit-readiness-configuration", label: "Permit Readiness Configuration" },
-      { key: "investment-decision-configuration", label: "Investment Decision / FID Governance" },
-      { key: "post-fid-governance-configuration", label: "Post-FID Project Governance" },
-      { key: "business-case-configuration", label: "Business Case Manager" },
-      { key: "financial-model-configuration", label: "Economic & Financial Model" },
-    ],
+    key: "project-workspace-governance",
+    label: "Project Workspace Governance",
+    description:
+      "Alternate Project creation and commercial Workspace capabilities kept outside the universal strategic Idea flow.",
+    modules: PROJECT_WORKSPACE_GOVERNANCE_MODULES,
   },
+  ...NON_STRATEGIC_USER_MODE_NAVIGATION_BLUEPRINT,
+];
+
+const PLATFORM_ADMINISTRATION_MODULES: ModuleNavigationItem[] = [
   {
     key: "organization-security",
     label: "Organization & Security",
@@ -642,16 +575,6 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
       { key: "group-creator", label: "Group Creator" },
       { key: "permissions", label: "Permissions" },
       { key: "access-control", label: "Access Control" },
-    ],
-  },
-  {
-    key: "enterprise-structure",
-    label: "Enterprise Structure",
-    submodules: [
-      { key: "enterprise-structure-configuration", label: "Enterprise Structure Configuration" },
-      { key: "workspace-defaults", label: "Workspace Defaults & Inheritance" },
-      { key: "module-catalog-activation", label: "Module Catalog & Activation" },
-      { key: "workspace-navigation-profiles", label: "Workspace Navigation Profiles" },
     ],
   },
   {
@@ -668,6 +591,26 @@ export const ADMIN_MODE_NAVIGATION_BLUEPRINT: ModuleNavigationItem[] = [
     submodules: [{ key: "process-definitions", label: "Process Definitions" }],
   },
 ];
+
+export const ADMIN_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[] = [
+  buildStrategicMacroprocess("admin"),
+  {
+    key: "platform-administration",
+    label: "Platform Administration",
+    description: "Organization, security and shared platform configuration.",
+    modules: PLATFORM_ADMINISTRATION_MODULES,
+  },
+];
+
+export function flattenNavigationViews(items: MacroprocessNavigationItem[]) {
+  const flattenItem = (item: NavigationViewItem): NavigationViewItem[] => [
+    item,
+    ...(item.children ?? []).flatMap(flattenItem),
+  ];
+  return items.flatMap((macroprocess) =>
+    macroprocess.modules.flatMap((module) => module.submodules.flatMap(flattenItem))
+  );
+}
 
 export const EMPTY_SUBMODULE_VIEWS = new Set<ControlFlowView>([
   "portfolio-structure",

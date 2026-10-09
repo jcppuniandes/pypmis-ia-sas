@@ -1081,6 +1081,48 @@ def ensure_demo_users(db: Session, tenant_id: int) -> None:
         for email, role in project_roles:
             ensure_membership(db, tenant_id, project.id, users[email].id, role)
     db.commit()
+    # Provision reusable Review policy at tenant bootstrap, never on a viewer GET.
+    from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
+    from app.modules.portfolio_review.service import PortfolioReviewService
+
+    admin = users[demo_admin_email]
+    PortfolioReviewService(
+        db,
+        tenant_id,
+        admin.id,
+        EnterprisePermissionContext(
+            user=admin,
+            organization_wide=True,
+            scope_unit_ids=frozenset(),
+            workspace_ids=frozenset(),
+            role_codes=frozenset({"organization_admin"}),
+        ),
+    ).ensure_seed()
+
+    # Provision reusable Wave 2B catalogs explicitly, with no live evidence.
+    from app.modules.basic_data.service import BasicDataService
+    from app.modules.risk_governance.service import RiskGovernanceService
+
+    wave2b_context = EnterprisePermissionContext(
+        user=admin,
+        organization_wide=True,
+        scope_unit_ids=frozenset(),
+        workspace_ids=frozenset(),
+        role_codes=frozenset({"organization_admin"}),
+    )
+    RiskGovernanceService(db, tenant_id, admin.id, wave2b_context).ensure_seed()
+    BasicDataService(db, tenant_id, admin.id, wave2b_context).ensure_seed()
+
+    # Owner Capability has empty configuration only; no fabricated assessment.
+    from app.modules.owner_capability.service import OwnerCapabilityService
+
+    OwnerCapabilityService(db, tenant_id, admin.id, wave2b_context).ensure_seed()
+
+    # Explicit fixture/demo provisioning only. Production startup keeps demo
+    # seeding disabled and uses the narrow bootstrap CLI for existing tenants.
+    from app.modules.qra_foundation.service import QraFoundationService
+
+    QraFoundationService(db, tenant_id, admin.id, wave2b_context).ensure_seed()
 
 
 def ensure_local_credential(db: Session, tenant_id: int, user_id: int, password: str) -> None:

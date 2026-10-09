@@ -1,0 +1,169 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pypmis}
+      POSTGRES_USER: ${POSTGRES_USER:-pypmis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pypmis} -d ${POSTGRES_DB:-pypmis}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      APP_ENVIRONMENT: production
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+      COMMIT_SHA: ${COMMIT_SHA:-vps}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pypmis}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-pypmis}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      CORS_ORIGINS: ${CORS_ORIGINS:?CORS_ORIGINS is required}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?AUTH_SECRET_KEY is required}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
+      DOCS_ENABLED: "false"
+      HSTS_ENABLED: ${HSTS_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+      METRICS_ENABLED: "true"
+      METRICS_TOKEN: ${METRICS_TOKEN:?METRICS_TOKEN is required}
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-300}
+      LOGIN_RATE_LIMIT_REQUESTS: ${LOGIN_RATE_LIMIT_REQUESTS:-10}
+      RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS:-60}
+      MAX_REQUEST_BODY_MB: ${MAX_REQUEST_BODY_MB:-25}
+      DOCUMENT_STORAGE_PATH: /app/storage/documents
+      DOCUMENT_ALLOWED_EXTENSIONS: ${DOCUMENT_ALLOWED_EXTENSIONS:-.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.jpg,.jpeg,.png,.csv,.txt,.xml,.xer}
+      DOCUMENT_MAX_UPLOAD_MB: ${DOCUMENT_MAX_UPLOAD_MB:-50}
+      DOCUMENT_MAX_ZIP_FILES: ${DOCUMENT_MAX_ZIP_FILES:-200}
+      DOCUMENT_MAX_ZIP_UNCOMPRESSED_MB: ${DOCUMENT_MAX_ZIP_UNCOMPRESSED_MB:-250}
+      DOCUMENT_SCAN_MODE: ${DOCUMENT_SCAN_MODE:-local}
+      DOCUMENT_CLAMAV_HOST: ${DOCUMENT_CLAMAV_HOST:-clamav}
+      DOCUMENT_CLAMAV_PORT: ${DOCUMENT_CLAMAV_PORT:-3310}
+      OIDC_ENABLED: ${OIDC_ENABLED:-false}
+      OIDC_ISSUER_URL: ${OIDC_ISSUER_URL:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_AUTHORIZATION_URL: ${OIDC_AUTHORIZATION_URL:-}
+      OIDC_TOKEN_URL: ${OIDC_TOKEN_URL:-}
+      OIDC_JWKS_URL: ${OIDC_JWKS_URL:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
+      AI_PROVIDER: ${AI_PROVIDER:-disabled}
+      AI_MODEL: ${AI_MODEL:-claude-haiku-4-5-20251001}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_MAX_TOKENS: ${AI_MAX_TOKENS:-512}
+      AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-30}
+    expose:
+      - "8000"
+    volumes:
+      - document_storage:/app/storage/documents
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2).read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./backend
+    command: celery -A app.workers.celery_app worker --loglevel=${LOG_LEVEL:-INFO} -Q control-core
+    restart: unless-stopped
+    environment:
+      APP_ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pypmis}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-pypmis}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?AUTH_SECRET_KEY is required}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build:
+      context: ./backend
+    command: celery -A app.workers.celery_app beat --loglevel=${LOG_LEVEL:-INFO}
+    restart: unless-stopped
+    environment:
+      APP_ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pypmis}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-pypmis}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?AUTH_SECRET_KEY is required}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.vps
+      args:
+        VITE_API_URL: ""
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    volumes:
+      - ./deploy/vps/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
+  document_storage:
+  caddy_data:
+  caddy_config:

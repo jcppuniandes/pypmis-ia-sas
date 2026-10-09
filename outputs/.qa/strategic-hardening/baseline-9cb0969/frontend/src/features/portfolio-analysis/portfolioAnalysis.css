@@ -1,0 +1,411 @@
+.portfolioAnalysis {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.analysisToolbar,
+.analysisFilters {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.analysisToolbar nav {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+}
+
+.analysisToolbar button,
+.analysisFilters button,
+.analysisToolbar nav button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cdd7df;
+  border-radius: 7px;
+  color: #102536;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 6px;
+  min-height: 36px;
+  padding: 7px 11px;
+}
+
+.analysisToolbar nav button.active {
+  background: #102536;
+  border-color: #102536;
+  color: #fff;
+}
+
+.analysisToolbar label,
+.analysisFilters label {
+  color: #536878;
+  display: grid;
+  font-size: 0.76rem;
+  font-weight: 800;
+  gap: 3px;
+  min-width: 155px;
+}
+
+.analysisToolbar select,
+.analysisFilters select,
+.analysisStructuredConfig select,
+.analysisStructuredConfig input {
+  background: #fff;
+  border: 1px solid #cdd7df;
+  border-radius: 7px;
+  color: #102536;
+  min-height: 36px;
+  padding: 6px 8px;
+}
+
+.analysisFilters > svg {
+  align-self: center;
+  color: #0f8f8a;
+}
+
+.analysisSummaryGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+}
+
+.analysisSummaryGrid article,
+.analysisDistributionGrid article,
+.analysisSurface,
+.analysisReadiness,
+.analysisEmpty,
+.analysisAdminEditor {
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+}
+
+.analysisSummaryGrid article {
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+}
+
+.analysisSummaryGrid span,
+.analysisSectionHeader span,
+.analysisReadiness header span {
+  color: #617384;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.analysisSummaryGrid strong {
+  color: #102536;
+  font-size: 1.28rem;
+}
+
+.analysisOverview {
+  display: grid;
+  gap: 12px;
+}
+
+.analysisDistributionGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+}
+
+.analysisDistributionGrid article {
+  padding: 12px;
+}
+
+.analysisDistributionGrid h3 {
+  color: #102536;
+  font-size: 0.86rem;
+  margin: 0 0 9px;
+  text-transform: capitalize;
+}
+
+.analysisDistributionGrid article div {
+  align-items: center;
+  border-top: 1px solid #edf1f4;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.analysisReadiness {
+  border-left: 4px solid #0f8f8a;
+  display: grid;
+  gap: 9px;
+  padding: 13px 15px;
+}
+
+.analysisReadiness header,
+.analysisReadiness > div,
+.analysisSectionHeader {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.analysisReadiness > div span {
+  background: #eef5f5;
+  border-radius: 999px;
+  color: #214255;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 9px;
+}
+
+.analysisSurface,
+.analysisAdminEditor {
+  min-width: 0;
+  padding: 14px;
+}
+
+.analysisSectionHeader h3 {
+  color: #102536;
+  margin: 2px 0 0;
+}
+
+.analysisEncoding {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.analysisEncoding span {
+  background: #eef4f7;
+  border-radius: 999px;
+  color: #334b5c;
+  font-size: 0.72rem;
+  padding: 5px 8px;
+  text-transform: none;
+}
+
+.analysisWarning {
+  background: #fff6e8;
+  border-left: 3px solid #d17a00;
+  color: #7c4700;
+  margin-top: 10px;
+  padding: 8px 10px;
+}
+
+.investorMapChart {
+  min-height: 420px;
+  width: 100%;
+}
+
+.analysisPointList {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.analysisPointList button {
+  align-items: center;
+  background: #f8fafb;
+  border: 1px solid #d8e0e7;
+  border-radius: 8px;
+  color: #102536;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto auto auto 1fr;
+  padding: 9px;
+  text-align: left;
+}
+
+.analysisPointList small {
+  color: #617384;
+  grid-column: 2 / -1;
+}
+
+.analysisAccessibilityNote {
+  color: #617384;
+  font-size: 0.78rem;
+  margin: 10px 0 0;
+}
+
+.scorecardScroll {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.scorecardScroll table {
+  border-collapse: collapse;
+  min-width: 1500px;
+  width: 100%;
+}
+
+.scorecardScroll th,
+.scorecardScroll td {
+  border-bottom: 1px solid #e2e8ed;
+  padding: 9px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.scorecardScroll th {
+  background: #eef4f7;
+  color: #334b5c;
+  font-size: 0.73rem;
+  text-transform: uppercase;
+}
+
+.scorecardScroll th button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  padding: 0;
+  text-transform: inherit;
+}
+
+.scorecardScroll tbody tr {
+  cursor: pointer;
+}
+
+.scorecardScroll tbody tr:hover,
+.scorecardScroll tbody tr:focus-within {
+  background: #f1f8f8;
+}
+
+.analysisDrawer {
+  background: #fff;
+  border-left: 1px solid #d8e0e7;
+  bottom: 0;
+  box-shadow: -12px 0 30px rgb(15 35 51 / 14%);
+  max-width: 520px;
+  overflow-y: auto;
+  padding: 18px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: min(92vw, 520px);
+  z-index: 80;
+}
+
+.analysisDrawer header {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.analysisDrawer header h3 {
+  margin: 3px 0 12px;
+}
+
+.analysisDrawer dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.analysisDrawer dl div {
+  background: #f4f7f9;
+  border-radius: 7px;
+  padding: 9px;
+}
+
+.analysisDrawer dt {
+  color: #617384;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.analysisDrawer dd {
+  color: #102536;
+  font-weight: 800;
+  margin: 4px 0 0;
+}
+
+.analysisDrawer pre,
+.evaluationPreview pre {
+  font-size: 0.72rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.analysisEmpty {
+  color: #536878;
+  display: grid;
+  gap: 5px;
+  padding: 24px;
+  text-align: center;
+}
+
+.analysisAdminGrid {
+  align-items: start;
+}
+
+.analysisStructuredConfig {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(170px, 1fr));
+  margin-top: 14px;
+}
+
+.analysisStructuredConfig label {
+  color: #536878;
+  display: grid;
+  font-size: 0.74rem;
+  font-weight: 800;
+  gap: 4px;
+}
+
+.analysisStructuredConfig .wide {
+  grid-column: 1 / -1;
+}
+
+.analysisJsonEditor {
+  margin-top: 13px;
+}
+
+.analysisJsonEditor textarea {
+  border: 1px solid #cdd7df;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin-top: 8px;
+  padding: 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .analysisSummaryGrid,
+  .analysisDistributionGrid {
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+  }
+
+  .analysisStructuredConfig {
+    grid-template-columns: repeat(2, minmax(170px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .analysisSummaryGrid,
+  .analysisDistributionGrid,
+  .analysisStructuredConfig {
+    grid-template-columns: 1fr;
+  }
+
+  .analysisStructuredConfig .wide {
+    grid-column: auto;
+  }
+
+  .analysisToolbar nav {
+    flex-basis: 100%;
+  }
+}

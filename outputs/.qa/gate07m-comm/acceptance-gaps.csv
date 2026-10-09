@@ -1,0 +1,46 @@
+acceptance_criterion,baseline_status,evidence,gap_or_risk,required_proof
+Commercial Strategy domain,GAP,Initial module inventory had no backend/app/modules/commercial_strategy,New aggregate/API/UI required,Unit plus PostgreSQL plus browser happy path
+Canonical Project identity reused,READY_TO_REUSE,EnterpriseWorkspace at backend/app/domain/models.py:486-509,Must validate workspace_type_code=project and tenant,FK plus negative cross-tenant/wrong-type tests
+Versioned lifecycle,GAP,BusinessCase pattern at models.py:71-158 only,COMM-specific DRAFT→IN_REVIEW→COMPLETED and terminal states absent,Lifecycle transition tests
+COMPLETED immutable,GAP,Reusable listener pattern at business_case/models.py:193-206,COMM has no terminal immutability yet,ORM update/delete negative tests
+Material change creates new version,GAP,Refresh/new revision patterns in BC and FIN,COMM source delta/apply absent,STALE recovery test preserving historical row
+Procurement Approach,GAP,Only operational RFQ procurement_method exists,Strategic governed catalog/selection absent,ADMIN catalog plus USER selection test
+Packaging Strategy,GAP,Operational RFQPackage exists at domain/models.py:1587-1606,Conceptual package aggregate absent,Package CRUD under DRAFT and no RFQ rows created
+Contracting Model,GAP,Operational Contract.contract_type exists at domain/models.py:1406-1409,Strategic catalog/selection absent,ADMIN catalog plus USER recommendation test
+Market Capability Assessment,GAP,No strategic model found,Criteria and deterministic threshold absent,Blocking threshold negative test
+Supply Chain Constraints,GAP,No strategic model found,Required constraints/status absent,Required-field/readiness tests
+Risk Allocation Strategy,GAP,Risk Register authority exists separately,Commercial allocation matrix absent,Incomplete/high-risk allocation blocker tests
+Payment Mechanism,GAP,PaymentCertificate is operational and excluded,Strategic payment catalog/selection absent,Missing mechanism blocker test
+Incentive Strategy,GAP,No strategic model found,Config catalog and recommendation absent,Policy applicability test
+Commercial Recommendation,GAP,No COMM aggregate found,Formal recommendation fields absent,Missing recommendation blocker test
+Commercial Readiness,GAP,Registry lacks COMMERCIAL_READINESS_PROVIDER at baseline,Dimensions/evaluator/provider absent,READY and BLOCKED deterministic tests
+Backend blockers deterministic,GAP,Risk/Permit/FIN provide reusable evaluator patterns,COMM blocker codes absent,Parameterized blocker contract tests
+Source-current semantics,GAP,BC source bundle at service.py:799-939 and FIN source_current exist,COMM hashes/deltas absent,Source mutation produces STALE without historical mutation
+Refresh Preview persisted=false,GAP,BC/Risk/Permit preview patterns exist,COMM preview absent,Database before/after equality assertion
+COMMERCIAL_READINESS_PROVIDER AVAILABLE,GAP,PROVIDER_REGISTRY service.py:111-184 lacks key,Provider registration absent,Registry/API assertion with status AVAILABLE
+Provider contract,GAP,Generic required fields at registry service.py:68-77,Prompt-specific COMM contract absent,Schema and supply-rule tests
+Future BC source contract,GAP,BusinessCase current source bundle has no commercial reference,Future mapping schema absent without Five Case implementation,Contract object/test only; no Five Case UI
+No Gate07J policy mutation,BASELINE_PASS,Published policy unchanged and no COMM provider existed,Risk when adding provider near policy code,Snapshot/diff published policy before/after registration
+CAPITAL_OWNER applicability,GAP,Other modules default CAPITAL_OWNER,COMM policy absent,Effective config happy path
+CONTRACTOR_DELIVERY unaffected by default,GAP,Governance model preserved by strategic hardening,COMM default disable/unaffected proof absent,Negative applicability regression
+DIRECT_INTERNAL unaffected by default,GAP,Governance model preserved by strategic hardening,COMM default disable/unaffected proof absent,Negative applicability regression
+Legacy compatibility,GAP,Strategic hardening validates LEGACY_UNCLASSIFIED,COMM compatibility behavior absent,Historical read and no retroactive requirement tests
+ADMIN configuration only,GAP,Generic ADMIN guard available,COMM ADMIN surface/permissions absent,API and browser contamination tests
+USER live records only,GAP,Generic USER classification available,COMM USER surface/permissions absent,API and browser contamination tests
+Direct-route security,PARTIAL,StrategicViewOutlet guards registered views generically,COMM nodes/renderers absent,Direct USER/ADMIN deep-link tests
+API permission separation,GAP,Enterprise RBAC infrastructure exists,COMM permissions/role mappings absent,Config-admin denied live and author denied admin tests
+SoD,GAP,BC/FIN/ProjectDefinition patterns exist,COMM author/reviewer policy absent,Same-actor denied and independent reviewer happy path
+ETag,GAP,If-Match patterns exist; prompt requires 412 ETAG_MISMATCH,COMM endpoints absent,Stale If-Match returns exact 412 code
+Idempotency,GAP,Unique-key patterns exist in BC/FIN/BA,COMM operation keys absent,Retry create/revision/submit/complete/void/apply without duplicate
+SecurityEvent,GAP,SecurityEvent model and helpers exist,COMM event taxonomy absent,Lifecycle/config event assertions
+Migration reversible,GAP_IF_PERSISTENCE,Alembic head confirmed 20260910_0059,COMM persistence requires next single head 0060,SQLite supported plus PostgreSQL up/down/up
+No Procurement execution,AT_RISK,Existing RFQ API performs operational procurement,Name/package similarity risks accidental coupling,Assert COMM flow creates no RFQPackage/RFQBid
+No Contract object,AT_RISK,Existing Contract model at domain/models.py:1396-1411,Must mean no new COMM Contract or write into operational table,Schema diff plus database row-count invariant
+No Vendor Master duplication,BASELINE_PASS,No strategic vendor master found,Implementation could introduce supplier entities,Schema inventory and exclusion assertion
+No Five Case implementation,BASELINE_PASS,BusinessCase remains existing longitudinal domain,Future mapping could expand scope,Navigation/schema absence assertion
+Browser USER,GAP,No COMM E2E at baseline,Full live workflow absent,Real-stack USER E2E
+Browser ADMIN,GAP,No COMM E2E at baseline,Config lifecycle absent,Real-stack ADMIN E2E
+Regression,BASELINE_NOT_GREEN,Hardening evidence: 626 cases with 8 inherited failures,Need zero new failures and preserve all prior cases,Differential JUnit plus focused gates
+Historical compatibility,GAP,Existing histories and provider policy are present,COMM integration must not alter prior records,Before/after fixture hashes and historical reads
+Navigation blueprint source of truth,BASELINE_PASS,strategicNavigationBlueprint.ts drives phase 6 and StrategicViewOutlet,COMM nodes still absent,Blueprint uniqueness/classification tests
+App.tsx not expanded,BASELINE_PASS,StrategicViewOutlet centralizes rendering at lines 260-291,Implementation could add special routing,Diff review plus routing test

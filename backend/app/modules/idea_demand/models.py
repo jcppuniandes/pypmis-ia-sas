@@ -32,6 +32,11 @@ class Idea(Base):
     target_portfolio_workspace_id: Mapped[int | None] = mapped_column(
         ForeignKey("enterprise_workspaces.id"), index=True
     )
+    # Nullable by design: historical and policy-enabled standalone Ideas remain
+    # valid.  New demand-originated Ideas set these fields through the existing
+    # Idea service; no migration backfill is performed.
+    source_capital_demand_id: Mapped[int | None] = mapped_column(ForeignKey("strategic_capital_demands.id"), index=True)
+    source_capital_demand_snapshot_hash: Mapped[str | None] = mapped_column(String(64), index=True)
     strategic_objective_codes: Mapped[list[str]] = mapped_column(JSON, default=list)
     requestor_user_id: Mapped[int] = mapped_column(ForeignKey("user_accounts.id"), index=True)
     owner_user_id: Mapped[int | None] = mapped_column(ForeignKey("user_accounts.id"), index=True)

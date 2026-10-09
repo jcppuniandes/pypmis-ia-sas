@@ -109,6 +109,18 @@ class BusinessCaseRevisionOut(BaseModel):
     revision_version: int
     created_at: datetime
     updated_at: datetime
+    # Gate07M-BC-5C is an additive synthesis contract.  These values are
+    # calculated by the Business Case service from the governed source bundle;
+    # they deliberately are not ORM columns or duplicate source-owned domains.
+    five_case_json: dict[str, Any] = Field(default_factory=dict)
+    five_case_readiness_json: dict[str, str] = Field(default_factory=dict)
+    source_evidence_matrix_json: list[dict[str, Any]] = Field(default_factory=list)
+    gate_context_json: dict[str, Any] = Field(default_factory=dict)
+    source_current: bool = True
+    five_case_hash: str | None = None
+    source_bundle_hash: str | None = None
+    business_case_hash: str | None = None
+    legacy_layout: bool = False
 
 
 class BusinessCaseOut(BaseModel):
@@ -156,6 +168,11 @@ class RefreshPreviewOut(BaseModel):
     material_change_status: str
     recommended_purpose: str
     persisted: bool = False
+    source_changes_by_case: dict[str, list[dict[str, Any]]] = Field(default_factory=dict)
+    case_readiness_delta: dict[str, dict[str, str]] = Field(default_factory=dict)
+    five_case_delta: dict[str, Any] = Field(default_factory=dict)
+    new_warnings: list[str] = Field(default_factory=list)
+    new_blockers: list[str] = Field(default_factory=list)
 
 
 class DecisionSnapshotOut(BaseModel):

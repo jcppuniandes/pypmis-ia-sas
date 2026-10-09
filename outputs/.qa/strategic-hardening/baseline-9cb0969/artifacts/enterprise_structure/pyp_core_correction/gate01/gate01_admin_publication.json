@@ -1,0 +1,44 @@
+{
+  "scope": "responsible-area revision 2 only",
+  "authorization": "PROMPT_01_ADMIN_PUBLISH_DRYRUN_UI_NODECODE_v2",
+  "tenant": "demo-energy",
+  "actor_user_id": 1,
+  "published_revision": {
+    "id": 22,
+    "revision": 2,
+    "status": "published",
+    "version": 3,
+    "expected_hash": "ccfdccd6367a3d9de68e7e5d2b38c521e92ef90a1971236da5b4fe16f4d3ddb7",
+    "published_hash": "ccfdccd6367a3d9de68e7e5d2b38c521e92ef90a1971236da5b4fe16f4d3ddb7",
+    "published_at": "2026-08-09T15:37:54.114860",
+    "applicable_types": [
+      "business-unit",
+      "portfolio",
+      "program",
+      "project",
+      "property",
+      "facility"
+    ],
+    "preserved_items": ["corporate", "capital-projects", "operations"],
+    "added_items": ["consulting", "pmo-aas", "technology", "construction"]
+  },
+  "previous_revision": {
+    "id": 18,
+    "revision": 1,
+    "status": "published",
+    "version": 1,
+    "content_hash": "8cfcc66700593a8f38b63a27e4ee9d2cebadd10198e8d528652d138a359c08be",
+    "published_at": "2026-08-06T18:26:22.727051",
+    "remains_immutable": true
+  },
+  "audit_event": {
+    "id": 8,
+    "event_type": "enterprise_structure.configuration_published",
+    "outcome": "success",
+    "target_type": "AdminConfiguration",
+    "target_id": 22,
+    "occurred_at": "2026-08-09T15:37:54.122663"
+  },
+  "core_structure_apply_executed": false,
+  "core_structure_published": false
+}

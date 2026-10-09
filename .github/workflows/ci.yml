@@ -14,6 +14,257 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  qra-foundation-postgres:
+    name: QRA Foundation source methodology and model (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate QRA Foundation architecture boundaries
+        run: python scripts/validate_qra_foundation_guardrails.py
+      - name: Run PostgreSQL acceptance and reversible migration
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/qra-foundation
+          docker compose -p pypmis-qra-ci -f docker-compose.qra-foundation.yml up \
+            --build --abort-on-container-exit --exit-code-from qra-validation \
+            qra-validation 2>&1 | tee outputs/.qa/qra-foundation/postgres-validation.log
+      - name: Destroy isolated QRA acceptance environment
+        if: always()
+        run: docker compose -p pypmis-qra-ci -f docker-compose.qra-foundation.yml down --remove-orphans
+      - name: Preserve QRA PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-foundation-postgres-validation
+          path: outputs/.qa/qra-foundation/postgres-validation.log
+          if-no-files-found: error
+
+  qra-foundation-browser:
+    name: QRA Foundation USER and ADMIN real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [qra-foundation-postgres, backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start isolated QRA API and frontend
+        run: |
+          docker compose -p pypmis-qra-browser-ci -f docker-compose.qra-foundation.yml \
+            --profile browser up -d --build qra-browser-frontend
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8816/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5519 >/dev/null; do sleep 2; done'
+      - name: Validate governed USER and ADMIN lifecycles
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5519
+          E2E_API_URL: http://127.0.0.1:8816
+        run: cd frontend && npx playwright test qra-foundation.spec.ts --project=chromium --workers=1
+      - name: Preserve QRA browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-foundation-browser-evidence
+          path: frontend/test-results/
+          if-no-files-found: ignore
+      - name: Destroy isolated QRA browser environment
+        if: always()
+        run: docker compose -p pypmis-qra-browser-ci -f docker-compose.qra-foundation.yml --profile browser down --remove-orphans
+
+  wave3b-owner-capability-postgres:
+    name: Wave 3B Owner Capability Readiness (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wave 3B authority and migration boundaries
+        run: python scripts/validate_wave3b_release_guardrails.py
+      - name: Run reversible migration and governed Owner Capability acceptance
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/wave3b-owner-capability
+          docker compose -p pypmis-wave3b-ci -f docker-compose.wave3b.yml up \
+            --build --abort-on-container-exit --exit-code-from wave3b-validation \
+            wave3b-validation 2>&1 | tee outputs/.qa/wave3b-owner-capability/postgres-validation.log
+      - name: Destroy ephemeral Wave 3B validation environment
+        if: always()
+        run: docker compose -p pypmis-wave3b-ci -f docker-compose.wave3b.yml down --remove-orphans
+      - name: Preserve Wave 3B PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave3b-postgres-validation
+          path: outputs/.qa/wave3b-owner-capability/postgres-validation.log
+          if-no-files-found: error
+
+  wave3b-owner-capability-browser:
+    name: Wave 3B USER and ADMIN real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [wave3b-owner-capability-postgres, backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start isolated real API and production frontend
+        run: |
+          docker compose -p pypmis-wave3b-browser-ci -f docker-compose.wave3b.yml \
+            --profile browser up -d --build wave3b-browser-frontend
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8815/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5518 >/dev/null; do sleep 2; done'
+      - name: Run full governed Owner Capability USER and ADMIN workflows
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5518
+          E2E_API_URL: http://127.0.0.1:8815
+        run: cd frontend && npx playwright test owner-capability.spec.ts --project=chromium --workers=1
+      - name: Preserve real Chromium evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave3b-owner-capability-browser-evidence
+          path: frontend/test-results/
+          if-no-files-found: ignore
+      - name: Destroy isolated browser environment
+        if: always()
+        run: docker compose -p pypmis-wave3b-browser-ci -f docker-compose.wave3b.yml --profile browser down --remove-orphans
+
+  wave2b-risk-basic-data-postgres:
+    name: Wave 2B Risk Governance and Basic Data (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wave 2B architecture and migration boundaries
+        run: python scripts/validate_wave2b_release_guardrails.py
+      - name: Run reversible migration and governed evidence acceptance
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/wave2b-risk-basic-data
+          docker compose -p pypmis-wave2b-ci -f docker-compose.wave2b.yml up \
+            --build --abort-on-container-exit --exit-code-from wave2b-validation \
+            wave2b-validation 2>&1 | tee outputs/.qa/wave2b-risk-basic-data/postgres-validation.log
+      - name: Destroy ephemeral Wave 2B validation environment
+        if: always()
+        run: docker compose -p pypmis-wave2b-ci -f docker-compose.wave2b.yml down --remove-orphans
+      - name: Preserve Wave 2B PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave2b-postgres-validation
+          path: outputs/.qa/wave2b-risk-basic-data/postgres-validation.log
+          if-no-files-found: error
+
+  wave2b-browser:
+    name: Wave 2B USER and ADMIN real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [wave2b-risk-basic-data-postgres, backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start isolated real API and production frontend
+        run: |
+          docker compose -p pypmis-wave2b-browser-ci -f docker-compose.wave2b.yml \
+            --profile browser up -d --build wave2b-browser-frontend
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8814/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5517 >/dev/null; do sleep 2; done'
+      - name: Run USER Basic Data and both ADMIN policy surfaces
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5517
+          E2E_API_URL: http://127.0.0.1:8814
+        run: cd frontend && npx playwright test wave2b-risk-basic-data.spec.ts --project=chromium --workers=1
+      - name: Preserve Chromium evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave2b-browser-evidence
+          path: frontend/test-results/
+          if-no-files-found: ignore
+      - name: Destroy isolated browser environment
+        if: always()
+        run: docker compose -p pypmis-wave2b-browser-ci -f docker-compose.wave2b.yml --profile browser down --remove-orphans
+
+  wave3a-periodic-portfolio-review-postgres:
+    name: Wave 3A Periodic Portfolio Review (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wave 3A architectural release guardrails
+        run: python scripts/validate_wave3a_release_guardrails.py
+      - name: Run Wave 3A migration, governance lifecycle and authority boundaries
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/wave3a-portfolio-review
+          docker compose -p pypmis-wave3a-ci -f docker-compose.wave3a.yml up \
+            --build --abort-on-container-exit \
+            --exit-code-from wave3a-validation wave3a-validation 2>&1 \
+            | tee outputs/.qa/wave3a-portfolio-review/postgres-validation.log
+      - name: Destroy ephemeral Wave 3A environment
+        if: always()
+        run: docker compose -p pypmis-wave3a-ci -f docker-compose.wave3a.yml down --remove-orphans
+      - name: Preserve Wave 3A PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave3a-postgres-validation
+          path: outputs/.qa/wave3a-portfolio-review/postgres-validation.log
+          if-no-files-found: error
+
+  wave2a-strategic-capital-allocation-postgres:
+    name: Wave 2A Strategic Capital Buckets and Allocation (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wave 2A architectural release guardrails
+        run: python scripts/validate_wave2a_release_guardrails.py
+      - name: Run Wave 2A migration, allocation lifecycle and authority boundaries
+        run: |
+          docker compose -p pypmis-wave2a-ci -f docker-compose.wave2a.yml up \
+            --build --abort-on-container-exit \
+            --exit-code-from wave2a-validation wave2a-validation
+      - name: Destroy ephemeral Wave 2A environment
+        if: always()
+        run: docker compose -p pypmis-wave2a-ci -f docker-compose.wave2a.yml down --remove-orphans
+
+  wave1-capital-planning-postgres:
+    name: Wave 1 Strategic Capital Planning and Demand (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wave 1 architectural release guardrails
+        run: python scripts/validate_wave1_release_guardrails.py
+      - name: Run Wave 1 migration, lifecycle and boundary acceptance
+        run: |
+          docker compose -p pypmis-wave1-ci -f docker-compose.wave1.yml --profile validation up \
+            --build --abort-on-container-exit \
+            --exit-code-from wave1-validation wave1-validation
+      - name: Destroy ephemeral Wave 1 environment
+        if: always()
+        run: docker compose -p pypmis-wave1-ci -f docker-compose.wave1.yml --profile validation down --remove-orphans
+
   gate07e-portfolio-evaluation-postgres:
     name: Gate 07E-07K Portfolio and Investment Decision gates (PostgreSQL)
     runs-on: ubuntu-latest
@@ -213,12 +464,33 @@ jobs:
         run: |
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:8000/api/v1/health/ready >/dev/null; do sleep 2; done'
           timeout 90 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
-      - name: Apply and verify Gate 07M-FIN schema head
+      - name: Apply and verify QRA Foundation additive schema head
         run: |
           docker compose exec -T api alembic upgrade head
-          docker compose exec -T api alembic current | grep 20260902_0058
+          docker compose exec -T api alembic current | grep 20261009_0067
       - name: Run Playwright production smoke
-        run: cd frontend && npm run test:e2e
+        run: cd frontend && npm run test:e2e -- --grep-invert "Wave 3A real|Wave 2B real|Wave 3B real|QRA Foundation real"
+      - name: Start disposable Wave 3A USER and ADMIN browser stack
+        run: |
+          docker compose -p pypmis-wave3a-browser-ci -f docker-compose.wave3a.yml \
+            --profile browser up -d --build wave3a-browser-frontend
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8813/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5516 >/dev/null; do sleep 2; done'
+      - name: Run Wave 3A real Chromium governance and direct-route security
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5516
+          E2E_API_URL: http://127.0.0.1:8813
+        run: cd frontend && npx playwright test portfolio-review.spec.ts --project=chromium --workers=1
+      - name: Destroy disposable Wave 3A browser stack
+        if: always()
+        run: docker compose -p pypmis-wave3a-browser-ci -f docker-compose.wave3a.yml --profile browser down --remove-orphans
+      - name: Preserve Wave 3A browser failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave3a-browser-failure-traces
+          path: frontend/test-results/
+          if-no-files-found: ignore
       - name: Run Gate 07E-J-FEL governed USER/ADMIN flows three consecutive times
         shell: bash
         run: |

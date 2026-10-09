@@ -49,12 +49,12 @@ def validate(expected_revision: str) -> None:
             "material_change_status",
             "content_hash",
         }.issubset(revision_columns)
-        revision_indexes = {item["name"] for item in inspector.get_indexes("business_case_revisions")}
+        revision_indexes = {tuple(item["column_names"]) for item in inspector.get_indexes("business_case_revisions")}
         assert {
-            "ix_business_case_revisions_as_of",
-            "ix_business_case_revisions_fel_stage",
-            "ix_business_case_revisions_financial_model",
-            "ix_business_case_revisions_financial_hash",
+            ("as_of_date",),
+            ("fel_stage_code",),
+            ("economic_financial_model_id",),
+            ("economic_financial_model_hash",),
         }.issubset(revision_indexes)
 
 

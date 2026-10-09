@@ -1,0 +1,12 @@
+
+  VITE v8.0.12  ready in 1064 ms
+
+  ➜  Local:   http://127.0.0.1:15173/
+  ➜  press h + enter to show help
+4:24:31 p. m. [vite] (client) hmr update /src/features/capital-allocation/StrategicCapitalAllocationWorkspace.tsx
+4:25:54 p. m. [vite] (client) hmr update /src/features/capital-allocation/StrategicCapitalAllocationWorkspace.tsx
+4:26:13 p. m. [vite] (client) hmr update /src/features/capital-allocation/StrategicCapitalAllocationWorkspace.tsx
+12:59:43 p. m. [vite] (client) hmr update /src/App.tsx
+12:59:48 p. m. [vite] (client) hmr update /src/App.tsx, /src/features/enterprise-strategy/StrategicViewOutlet.tsx, /src/features/workspace-context/WorkspaceOperationalPage.tsx, /src/features/enterprise-strategy/EnterpriseStrategyLanding.tsx
+1:00:29 p. m. [vite] (client) hmr update /src/App.tsx, /src/features/enterprise-strategy/StrategicViewOutlet.tsx, /src/features/workspace-context/WorkspaceOperationalPage.tsx, /src/features/enterprise-strategy/EnterpriseStrategyLanding.tsx
+1:12:59 p. m. [vite] (client) hmr update /src/features/enterprise-strategy/StrategicViewOutlet.tsx

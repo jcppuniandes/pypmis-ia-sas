@@ -1,3 +1,45 @@
+export type FiveCaseReadinessStatus = "NOT_STARTED" | "IN_PROGRESS" | "READY" | "BLOCKED" | "STALE" | "NOT_APPLICABLE";
+
+export type BusinessCaseSourceEvidence = {
+  case?: string;
+  source_module?: string;
+  source_id?: string | number | null;
+  source_version_id?: string | number | null;
+  source_hash?: string | null;
+  source_status?: string | null;
+  source_readiness?: string | null;
+  as_of_date?: string | null;
+  source_current?: boolean;
+  blocking?: boolean;
+  view?: string | null;
+};
+
+export type FiveCaseSection = {
+  question?: string;
+  summary?: string;
+  source_references?: BusinessCaseSourceEvidence[] | Record<string, unknown>;
+  source_hashes?: Record<string, string>;
+  source_readiness?: string | Record<string, unknown>;
+  findings?: unknown[] | Record<string, unknown>;
+  key_findings?: unknown[] | Record<string, unknown>;
+  assumptions?: unknown[] | Record<string, unknown>;
+  warnings?: string[];
+  blockers?: string[];
+  conclusion?: string;
+  case_conclusion?: string;
+  readiness?: FiveCaseReadinessStatus | string;
+  case_readiness?: FiveCaseReadinessStatus | string;
+  [key: string]: unknown;
+};
+
+export type FiveCaseModel = {
+  strategic_case?: FiveCaseSection;
+  economic_case?: FiveCaseSection;
+  commercial_case?: FiveCaseSection;
+  financial_case?: FiveCaseSection;
+  management_case?: FiveCaseSection;
+};
+
 export type BusinessCaseRevision = {
   id: number;
   business_case_id: number;
@@ -20,6 +62,18 @@ export type BusinessCaseRevision = {
   delivery_json: Record<string, unknown>;
   unresolved_concerns_json: Array<Record<string, unknown>>;
   recommendation_json: Record<string, unknown>;
+  /** Gate07M-BC-5C structured synthesis. Optional keeps pre-5C revisions readable. */
+  five_case_json?: FiveCaseModel | null;
+  /** Backend-owned readiness by Case and overall; absent on legacy revisions. */
+  five_case_readiness_json?: Record<string, FiveCaseReadinessStatus | string> | null;
+  /** Normalized read-only lineage matrix; legacy revisions are derived from source_references_json. */
+  source_evidence_matrix_json?: BusinessCaseSourceEvidence[] | null;
+  gate_context_json?: Record<string, unknown> | null;
+  source_current?: boolean | null;
+  five_case_hash?: string | null;
+  source_bundle_hash?: string | null;
+  business_case_hash?: string | null;
+  legacy_layout?: boolean;
   source_references_json: Record<string, Record<string, unknown>>;
   source_hashes_json: Record<string, string>;
   source_snapshot_hash: string;
@@ -88,6 +142,11 @@ export type RefreshPreview = {
   source_changes: Array<Record<string, unknown>>;
   material_change_status: string;
   recommended_purpose: string;
+  source_changes_by_case?: Record<string, Array<Record<string, unknown>>>;
+  case_readiness_delta?: Record<string, unknown>;
+  five_case_delta?: Record<string, unknown>;
+  new_warnings?: string[];
+  new_blockers?: string[];
   persisted: false;
 };
 

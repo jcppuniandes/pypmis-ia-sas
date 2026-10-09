@@ -1,0 +1,32 @@
+4:42:05 p. m. [vite] (client) Re-optimizing dependencies because vite config has changed
+
+  VITE v8.0.12  ready in 2031 ms
+
+  ➜  Local:   http://127.0.0.1:5181/
+  ➜  press h + enter to show help
+4:42:06 p. m. [vite] (client) [optimizer] scanning dependencies...
+4:42:08 p. m. [vite] (client) [optimizer] bundling dependencies...
+10:06:37 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisWorkspace.tsx
+7:52:27 a. m. [vite] (client) hmr update /src/App.tsx, /src/features/workspace-context/WorkspaceOperationalPage.tsx, /src/features/enterprise-strategy/EnterpriseStrategyLanding.tsx
+7:52:44 a. m. [vite] (client) hmr update /src/App.tsx
+12:45:46 p. m. [vite] (client) hmr update /src/App.tsx
+12:46:06 p. m. [vite] (client) hmr update /src/App.tsx
+12:46:24 p. m. [vite] (client) hmr update /src/App.tsx
+12:46:50 p. m. [vite] (client) hmr update /src/App.tsx
+12:47:48 p. m. [vite] (client) hmr update /src/App.tsx
+12:51:53 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisAdminView.tsx
+12:53:43 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisAdminView.tsx
+12:54:14 p. m. [vite] (client) hmr update /src/features/business-analysis/businessAnalysis.css
+1:05:48 p. m. [vite] (client) hmr update /src/App.tsx
+1:06:21 p. m. [vite] (client) hmr update /src/App.tsx
+1:06:56 p. m. [vite] (client) hmr update /src/App.tsx
+1:07:19 p. m. [vite] (client) hmr update /src/App.tsx
+1:10:50 p. m. [vite] (client) hmr update /src/App.tsx, /src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx, /src/features/project-proposal/ProjectProposalWorkspace.tsx, /src/features/strategic-gate/StrategicGateWorkspace.tsx, /src/features/enterprise-structure/pages/AdminEnterpriseStructurePage.tsx, /src/features/idea-demand/IdeaLifecycleWorkspace.tsx, /src/features/business-analysis/BusinessAnalysisWorkspace.tsx, /src/components/AdminConfigurationView.tsx and 50 more
+1:10:59 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisWorkspace.tsx
+1:11:09 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisWorkspace.tsx
+1:11:18 p. m. [vite] (client) hmr update /src/features/business-analysis/businessAnalysis.css
+1:12:40 p. m. [vite] (client) hmr update /src/App.tsx
+1:18:58 p. m. [vite] (client) hmr update /src/App.tsx
+7:05:53 p. m. [vite] (client) hmr update /src/App.tsx, /src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx, /src/features/project-proposal/ProjectProposalWorkspace.tsx, /src/features/strategic-gate/StrategicGateWorkspace.tsx, /src/features/enterprise-structure/pages/AdminEnterpriseStructurePage.tsx, /src/features/idea-demand/IdeaLifecycleWorkspace.tsx, /src/features/business-analysis/BusinessAnalysisWorkspace.tsx, /src/components/AdminConfigurationView.tsx and 50 more
+7:05:57 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisAdminView.tsx
+7:05:57 p. m. [vite] (client) hmr update /src/features/business-analysis/BusinessAnalysisWorkspace.tsx

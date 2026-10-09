@@ -1,0 +1,158 @@
+.financialModel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.financialModelMessage {
+  background: #eaf5ff;
+  border-left: 4px solid #276da0;
+  color: #173e59;
+  padding: 9px 11px;
+}
+.financialModelTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.financialModelTabs button,
+.financialModelControls button,
+.financialModelCreate button {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  color: #102536;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.financialModelTabs button.active {
+  background: #102536;
+  color: #fff;
+}
+.financialModelControls {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+}
+.financialModelControls.compact {
+  border: 0;
+  padding: 10px 0 0;
+}
+.financialModelControls label,
+.financialModelCreate label,
+.financialModelPreviewInputs label {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+  min-width: 220px;
+}
+.financialModelControls select,
+.financialModelCreate input,
+.financialModelPreviewInputs input {
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 5px 8px;
+}
+.financialModelSurface,
+.financialModelCreate {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+.financialModelSurface > header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.financialModelSurface header span {
+  color: #667887;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.financialModelSurface h3 {
+  margin: 3px 0 7px;
+}
+.financialModelSurface pre {
+  background: #f4f7f9;
+  border-radius: 7px;
+  max-height: 520px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+.financialModelTableWrap {
+  overflow: auto;
+}
+.financialModelTableWrap table {
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  width: 100%;
+}
+.financialModelTableWrap th,
+.financialModelTableWrap td {
+  border-bottom: 1px solid #dce4ea;
+  max-width: 240px;
+  padding: 8px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.financialModelAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.financialModelAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.financialModelAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  text-align: left;
+}
+.financialModelAdminGrid aside button.active {
+  border-left: 5px solid #276da0;
+}
+.financialModelAdminGrid aside span {
+  color: #657887;
+  font-size: 0.72rem;
+}
+.financialModelAdmin textarea {
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  padding: 9px;
+  width: 100%;
+}
+.financialModelPreviewInputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+@media (max-width: 850px) {
+  .financialModelAdminGrid {
+    grid-template-columns: 1fr;
+  }
+}

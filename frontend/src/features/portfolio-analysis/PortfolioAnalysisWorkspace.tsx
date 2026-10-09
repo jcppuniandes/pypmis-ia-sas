@@ -265,10 +265,18 @@ function OverviewView({ overview }: { overview: PortfolioAnalysisOverview }) {
   );
 }
 
-export default function PortfolioAnalysisWorkspace({ token, portfolioId }: { token: string; portfolioId?: number }) {
+export default function PortfolioAnalysisWorkspace({
+  token,
+  portfolioId,
+  initialView = "overview",
+}: {
+  token: string;
+  portfolioId?: number;
+  initialView?: View;
+}) {
   const [portfolios, setPortfolios] = useState<Array<Record<string, unknown>>>([]);
   const [selectedId, setSelectedId] = useState(portfolioId || 0);
-  const [view, setView] = useState<View>("overview");
+  const [view, setView] = useState<View>(initialView);
   const [filters, setFilters] = useState<AnalysisFilters>({});
   const [overview, setOverview] = useState<PortfolioAnalysisOverview | null>(null);
   const [detail, setDetail] = useState<ProjectAnalysisDetail | null>(null);

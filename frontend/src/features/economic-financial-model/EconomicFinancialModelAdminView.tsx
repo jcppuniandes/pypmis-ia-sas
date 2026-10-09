@@ -1,4 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect --
+ * This governed workspace synchronizes an API-backed draft when its token changes.
+ * State updates remain scoped to the effect-owned load lifecycle.
+ */
 import { Copy, Eye, Save, Send } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";

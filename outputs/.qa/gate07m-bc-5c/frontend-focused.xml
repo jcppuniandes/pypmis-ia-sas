@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="20" failures="0" errors="0" time="24.717">
+    <testsuite name="src/features/business-case/BusinessCaseWorkspace.test.tsx" timestamp="2026-09-18T00:48:54.544Z" hostname="LAPTOP-4TR3E31D" tests="4" failures="0" errors="0" skipped="0" time="2.8982645">
+        <testcase classname="src/features/business-case/BusinessCaseWorkspace.test.tsx" name="Gate 07M-BC Business Case Manager &gt; renders governed lineage and the expected next boundary" time="0.8437844">
+        </testcase>
+        <testcase classname="src/features/business-case/BusinessCaseWorkspace.test.tsx" name="Gate 07M-BC Business Case Manager &gt; renders a governed Case and the normalized read-only evidence matrix" time="0.6600554">
+        </testcase>
+        <testcase classname="src/features/business-case/BusinessCaseWorkspace.test.tsx" name="Gate 07M-BC Business Case Manager &gt; shows refresh preview as non-persistent" time="0.3972356">
+        </testcase>
+        <testcase classname="src/features/business-case/BusinessCaseWorkspace.test.tsx" name="Gate 07M-BC Business Case Manager &gt; renders the extended ADMIN sections and executes a dry-run" time="0.9910543">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" timestamp="2026-09-18T00:48:54.594Z" hostname="LAPTOP-4TR3E31D" tests="6" failures="0" errors="0" skipped="0" time="2.1316057">
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks a direct ADMIN configuration view without can_configure" time="1.712882">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; renders the ADMIN configuration view with can_configure" time="0.0368953">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; resolves Commercial Strategy USER and ADMIN views through the canonical outlet" time="0.0658049">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks the direct Commercial Strategy ADMIN route without can_configure" time="0.1188605">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; resolves Strategic Benefits USER and ADMIN views through the canonical outlet" time="0.0372764">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks the direct Benefits ADMIN route without can_configure" time="0.1463354">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" timestamp="2026-09-18T00:48:54.610Z" hostname="LAPTOP-4TR3E31D" tests="10" failures="0" errors="0" skipped="0" time="0.2204828">
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; orders USER and ADMIN navigation by business phase with Foundation first" time="0.0139864">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; models Budget and Resources as parallel predecessors of Scenario Convergence" time="0.0042729">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; models all eight evidence contributors converging into Investment Gate Preparation" time="0.0032613">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; keeps route and breadcrumb metadata deterministic for deep links" time="0.0574968">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; classifies every strategic control and keeps USER and ADMIN responsibilities separated" time="0.0038927">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; enforces the existing can_configure permission on direct ADMIN routes" time="0.1166255">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; places Strategic Benefits between Business Case and Commercial Strategy with canonical deep links" time="0.0032566">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; keeps Commercial Strategy in Phase 6 with canonical USER deep links and ADMIN separation" time="0.0067763">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; preserves CAPITAL_OWNER applicability without forcing owner-only phases on alternate governance models" time="0.0014191">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; orders Workspace Navigator entries without changing backend state or permissions" time="0.0031702">
+        </testcase>
+    </testsuite>
+</testsuites>

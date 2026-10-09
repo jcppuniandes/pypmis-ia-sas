@@ -11,7 +11,15 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit & { token?: string } = {}): Promise<T> {
+export type ApiFetchResult<T> = {
+  data: T;
+  response: Response;
+};
+
+export async function apiFetchWithResponse<T>(
+  path: string,
+  options: RequestInit & { token?: string } = {}
+): Promise<ApiFetchResult<T>> {
   const { token, ...init } = options;
   const headers: Record<string, string> = {
     ...(init.headers as Record<string, string>),
@@ -27,8 +35,13 @@ export async function apiFetch<T>(path: string, options: RequestInit & { token?:
     const detail = await response.text().catch(() => response.statusText);
     throw new ApiError(response.status, detail);
   }
-  if (response.status === 204) return undefined as T;
-  return response.json() as Promise<T>;
+  const data = response.status === 204 ? (undefined as T) : ((await response.json()) as T);
+  return { data, response };
+}
+
+export async function apiFetch<T>(path: string, options: RequestInit & { token?: string } = {}): Promise<T> {
+  const result = await apiFetchWithResponse<T>(path, options);
+  return result.data;
 }
 
 export async function apiFetchFile(path: string, options: RequestInit & { token?: string } = {}): Promise<Blob> {

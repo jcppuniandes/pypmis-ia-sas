@@ -11,6 +11,9 @@ export type DecisionReadiness = {
   quorum_met: boolean;
   voting_rule_met: boolean;
   segregation_of_duties_valid: boolean;
+  mandatory_criteria_satisfied?: boolean;
+  decision_hurdles_satisfied?: boolean;
+  criterion_blockers?: string[];
   blockers: string[];
   warnings: string[];
   final_output: string;
@@ -46,6 +49,7 @@ export type InvestmentDecision = {
   source_profile_hash: string;
   source_policy_hash: string | null;
   decision_package_snapshot: Record<string, unknown>;
+  success_criteria_snapshot?: Array<Record<string, unknown>>;
   configuration_hash: string;
   configuration_snapshot: Record<string, unknown>;
   authority_model: "SINGLE_DECISION_MAKER" | "COMMITTEE";

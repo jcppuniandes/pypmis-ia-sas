@@ -1,0 +1,9 @@
+ISO-10303-21;
+HEADER;
+FILE_SCHEMA(('IFC4X3'));
+ENDSEC;
+DATA;
+#10=IFCPROJECT('PROJECTGUID',$,'Geometry Project',$,$,$,$,$,$);
+#50=IFCSLAB('GUID-SLAB-001',$,'Losa maciza',$,$,$,$,$,$);
+ENDSEC;
+END-ISO-10303-21;

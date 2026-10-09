@@ -1,0 +1,37 @@
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | > pypmis-ai-saas-frontend@0.1.0 build
+wave3a-browser-frontend-1  | > tsc && vite build --outDir /tmp/wave3a-browser-dist
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | vite v8.0.12 building client environment for production...
+wave3a-browser-frontend-1  | [2K
+transforming...✓ 2464 modules transformed.
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | (!) outDir /tmp/wave3a-browser-dist is not inside project root and will not be emptied.
+wave3a-browser-frontend-1  | Use --emptyOutDir to override.
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | rendering chunks...
+wave3a-browser-frontend-1  | computing gzip size...
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/index.html                                0.84 kB │ gzip:   0.41 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/web-ifc-DaBphSR1.wasm          1,303.94 kB │ gzip: 483.17 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/index-BJX2auck.css               328.97 kB │ gzip:  55.35 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/rolldown-runtime-S-ySWqyJ.js       0.69 kB │ gzip:   0.42 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/vendor-icons-CsPc1CfB.js          30.62 kB │ gzip:   9.79 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/BimIfcModelViewer-BRvJCXBM.js     65.16 kB │ gzip:  19.92 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/vendor-react-tDpHMTze.js         217.02 kB │ gzip:  69.06 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/vendor-charts-Cqw4gRBM.js        357.78 kB │ gzip: 103.98 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/bim-three-B0sOmHx6.js            517.24 kB │ gzip: 130.16 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/index-CMHSno8R.js              1,313.30 kB │ gzip: 275.40 kB
+wave3a-browser-frontend-1  | ../tmp/wave3a-browser-dist/assets/bim-ifc-engine-BMlRrRK6.js     3,539.80 kB │ gzip: 391.48 kB
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | ✓ built in 22.46s
+wave3a-browser-frontend-1  | npm notice
+wave3a-browser-frontend-1  | npm notice New minor version of npm available! 11.6.2 -> 11.21.0
+wave3a-browser-frontend-1  | npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.0
+wave3a-browser-frontend-1  | npm notice To update run: npm install -g npm@11.21.0
+wave3a-browser-frontend-1  | npm notice
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  | > pypmis-ai-saas-frontend@0.1.0 preview
+wave3a-browser-frontend-1  | > vite preview --host 0.0.0.0 --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/wave3a-browser-dist
+wave3a-browser-frontend-1  | 
+wave3a-browser-frontend-1  |   ➜  Local:   http://localhost:5173/
+wave3a-browser-frontend-1  |   ➜  Network: http://172.24.0.4:5173/

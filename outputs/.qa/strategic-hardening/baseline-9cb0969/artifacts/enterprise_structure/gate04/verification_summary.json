@@ -1,0 +1,100 @@
+{
+  "gate": "04",
+  "name": "Workspace Structure Revision Manager",
+  "verified_at": "2026-08-10T12:44:00-05:00",
+  "source_prompt": {
+    "path": "C:\\Users\\Ricardo\\Downloads\\PROMPT_04_WORKSPACE_STRUCTURE_REVISION_MANAGER.md",
+    "sha256": "24542e052d8cc21c0d0e347aa08f12330ba5c802294f978dd6d7f16b6f662575"
+  },
+  "implementation": {
+    "model": "full editable snapshot in EnterpriseCoreRelease",
+    "migration": "20260810_0032 (head)",
+    "modified_files": 12,
+    "new_files": 5,
+    "project_creator_started": false
+  },
+  "published_baseline": {
+    "id": 1,
+    "release_code": "ES-PYP-CORE-RECONCILED-20260809",
+    "state": "published",
+    "revision_number": 1,
+    "workspaces": 14,
+    "strategic_objectives": 7,
+    "classifications": 26,
+    "links": 0,
+    "content_fingerprint_prefix": "58be6cce288d",
+    "drafts_created_in_local_postgresql": 0
+  },
+  "isolated_gate04_scenario": {
+    "draft_release_code": "ES-PYP-CORE-REV-002",
+    "previous_release_id": 1,
+    "record_code_preview": "01.01.01.01",
+    "descendant_recoding": [
+      "01.01.01.01 -> 01.02.01.01",
+      "01.01.01.01.01 -> 01.02.01.01.01"
+    ],
+    "validation": {
+      "valid": true,
+      "errors": 0,
+      "conflicts": 0
+    },
+    "diff": {
+      "added": 1,
+      "modified": 1,
+      "moved": 1,
+      "archived": 1,
+      "classification_changes": 1,
+      "unchanged": 1
+    },
+    "approval_required": true,
+    "successor_publish": "PASS",
+    "second_publish_idempotent": "PASS",
+    "logical_rollback": "PASS",
+    "published_immutability": "PASS",
+    "base_release_change_guard": "PASS"
+  },
+  "quality": {
+    "backend_gate04": "9 passed in 6.72s",
+    "backend_hierarchy_importer_regression": "20 passed in 23.85s",
+    "backend_gate03_publish_regression": "24 passed in 236.37s",
+    "backend_ruff": "118 files formatted; all checks passed",
+    "frontend_targeted": "10 passed",
+    "frontend_full": "142 passed in 82.52s",
+    "frontend_format": "PASS",
+    "frontend_lint": "0 errors; pre-existing warnings remain below CI threshold",
+    "frontend_build": "PASS; 2343 modules transformed",
+    "git_diff_check": "PASS"
+  },
+  "localhost": {
+    "application": "http://127.0.0.1:5173/app",
+    "api": "http://127.0.0.1:8000",
+    "api_ready": true,
+    "database": "ok",
+    "redis": "ok",
+    "docker_services_running": 6,
+    "browser_console_errors": 0,
+    "admin_qa": "PASS",
+    "user_qa": "PASS"
+  },
+  "report": {
+    "docx": "C:\\Users\\Ricardo\\Documents\\P&P\\P&Pmis Construction AI\\Diseño\\Resumen de Sprint\\Informe_Tecnico_PPMIS_Workspace_Revision_Manager_Gate04_2026-08-10.docx",
+    "size_bytes": 100649,
+    "paragraphs": 120,
+    "tables": 45,
+    "rendered_pages": 13,
+    "blank_pages": 0,
+    "edge_violations": 0,
+    "structural_qa": "PASS",
+    "visual_qa": "PASS",
+    "render_note": "Official renderer unavailable because LibreOffice is not installed; Microsoft Word PDF export plus pypdfium2 rasterization used as verified fallback."
+  },
+  "rbac_permissions": [
+    "admin.enterprise_structure.revision.create",
+    "admin.enterprise_structure.revision.edit",
+    "admin.enterprise_structure.revision.validate",
+    "admin.enterprise_structure.revision.compare",
+    "admin.enterprise_structure.revision.approve",
+    "admin.enterprise_structure.publish",
+    "admin.enterprise_structure.rollback"
+  ]
+}

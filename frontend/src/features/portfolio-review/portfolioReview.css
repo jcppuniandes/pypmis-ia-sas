@@ -1,0 +1,877 @@
+.portfolioReview {
+  color: #102331;
+  display: grid;
+  gap: 12px;
+}
+
+.reviewBoundary,
+.reviewMessage,
+.reviewAuthorityNote,
+.reviewReadOnlyBanner,
+.reviewWarning,
+.reviewPreviewFlag,
+.reviewGuardrail {
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 10px 12px;
+}
+
+.reviewBoundary,
+.reviewAuthorityNote {
+  align-items: flex-start;
+  background: #eef8f7;
+  border: 1px solid #afd9d5;
+  color: #155d5b;
+  display: flex;
+  gap: 9px;
+}
+
+.reviewBoundary.admin {
+  background: #f4f0fa;
+  border-color: #cdbce4;
+  color: #5d3a7c;
+}
+
+.reviewMessage,
+.reviewWarning {
+  background: #fff6e8;
+  border: 1px solid #e5c38e;
+  color: #84520c;
+}
+
+.reviewSelector {
+  align-items: end;
+  background: #f7fafb;
+  border: 1px solid #cedae2;
+  border-radius: 9px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(110px, 0.45fr) minmax(145px, 0.55fr) minmax(280px, 1.5fr) auto auto;
+  padding: 10px;
+}
+
+.reviewSelector label,
+.reviewFormGrid label,
+.reviewInlineForm label,
+.reviewActionForm label,
+.reviewMatrixFilters label,
+.reviewAdminPreview label,
+.reviewDrawer > label {
+  color: #536b77;
+  display: grid;
+  font-size: 10px;
+  font-weight: 850;
+  gap: 4px;
+  text-transform: uppercase;
+}
+
+.reviewSelector input,
+.reviewSelector select,
+.reviewFormGrid input,
+.reviewFormGrid select,
+.reviewInlineForm input,
+.reviewInlineForm select,
+.reviewInlineForm textarea,
+.reviewActionForm input,
+.reviewActionForm select,
+.reviewActionForm textarea,
+.reviewMatrixFilters input,
+.reviewAdminPreview input,
+.reviewDrawer textarea,
+.reviewActionQueue select {
+  background: #fff;
+  border: 1px solid #b9c9d1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #183646;
+  font: inherit;
+  font-size: 12px;
+  min-width: 0;
+  padding: 7px;
+  width: 100%;
+}
+
+.reviewPrimary,
+.reviewSecondary,
+.reviewLifecycle button,
+.reviewSurface button,
+.reviewDrawer button,
+.reviewAdminPreview button,
+.reviewAdminLayout button {
+  align-items: center;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  gap: 6px;
+  justify-content: center;
+  padding: 8px 10px;
+}
+
+.reviewPrimary,
+.reviewLifecycle .complete {
+  background: #087b77;
+  border: 1px solid #087b77;
+  color: #fff;
+}
+
+.reviewSecondary,
+.reviewLifecycle button,
+.reviewSurface button,
+.reviewDrawer button,
+.reviewAdminPreview button,
+.reviewAdminLayout button {
+  background: #fff;
+  border: 1px solid #aebfc8;
+  color: #173646;
+}
+
+.portfolioReview button:disabled,
+.portfolioReview input:disabled,
+.portfolioReview select:disabled,
+.portfolioReview textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.reviewTabs,
+.reviewConfigSections {
+  background: #f6f9fa;
+  border: 1px solid #cbd8df;
+  border-radius: 9px;
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.reviewTabs button,
+.reviewConfigSections button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #536975;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+  padding: 8px 9px;
+  white-space: nowrap;
+}
+
+.reviewTabs button.active,
+.reviewConfigSections button.active {
+  background: #123547;
+  color: #fff;
+}
+
+.reviewEmpty {
+  color: #657985;
+  padding: 24px;
+  text-align: center;
+}
+
+.reviewEmpty.compact {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 18px;
+}
+
+.reviewEmpty h3 {
+  color: #173646;
+  margin: 8px 0 4px;
+}
+
+.reviewSessionHeader,
+.reviewSurface {
+  background: #fff;
+  border: 1px solid #cddae1;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.reviewSessionHeader {
+  align-items: start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 14px;
+}
+
+.reviewSessionHeader > div > span,
+.reviewSurfaceHeader span,
+.reviewAdminLayout article > span,
+.reviewDrawer header span {
+  color: #627985;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.reviewSessionHeader h2,
+.reviewSurfaceHeader h3,
+.reviewAdminLayout h3,
+.reviewDrawer h3 {
+  margin: 3px 0;
+}
+
+.reviewSessionHeader p {
+  color: #607681;
+  font-size: 11px;
+  margin: 4px 0 0;
+}
+
+.reviewSessionMeta {
+  align-items: flex-end;
+  display: grid;
+  font-size: 10px;
+  gap: 4px;
+  justify-items: end;
+}
+
+.reviewStatus {
+  background: #e9eef1;
+  border-radius: 999px;
+  color: #536975;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 850;
+  padding: 3px 7px;
+  width: fit-content;
+}
+
+.reviewStatus.status-completed,
+.reviewStatus.status-ready,
+.reviewStatus.status-current,
+.reviewStatus.status-published,
+.reviewStatus.status-portfolio-balanced,
+.reviewStatus.status-within-range,
+.reviewStatus.status-completed,
+.reviewStatus.status-accepted {
+  background: #ddf2e6;
+  color: #087044;
+}
+
+.reviewStatus.status-draft,
+.reviewStatus.status-preparing,
+.reviewStatus.status-ready-for-review,
+.reviewStatus.status-in-review,
+.reviewStatus.status-returned,
+.reviewStatus.status-open,
+.reviewStatus.status-in-progress,
+.reviewStatus.status-required,
+.reviewStatus.status-under-target {
+  background: #fff0d8;
+  color: #875500;
+}
+
+.reviewStatus.status-cancelled,
+.reviewStatus.status-stale,
+.reviewStatus.status-blocked,
+.reviewStatus.status-rejected,
+.reviewStatus.status-over-target,
+.reviewStatus.status-unclassified-exposure {
+  background: #fbe3e3;
+  color: #982626;
+}
+
+.sourceCurrent {
+  color: #087044;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.sourceStale {
+  color: #a42626;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.reviewLifecycle {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.reviewSurface {
+  padding-bottom: 12px;
+}
+
+.reviewSurface > p,
+.reviewSurface > .reviewSplit,
+.reviewSurface > .reviewMetricGrid,
+.reviewSurface > .reviewSnapshotFacts,
+.reviewSurface > .reviewReadOnlyBanner,
+.reviewSurface > .reviewWarning,
+.reviewSurface > .reviewPreviewFlag,
+.reviewSurface > .reviewRecordGrid,
+.reviewSurface > .reviewAlerts,
+.reviewSurface > .reviewActionQueue,
+.reviewSurface > .reviewInlineForm,
+.reviewSurface > .reviewActionForm,
+.reviewSurface > .reviewMatrixFilters,
+.reviewSurface > .reviewCompatibility,
+.reviewSurface > .reviewGateBoundary,
+.reviewSurface > .reviewConclusionList,
+.reviewSurface > .reviewActionSemantics,
+.reviewSurface > .reviewChangeList,
+.reviewSurface > .reviewExceptionCritical {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.reviewSurfaceHeader {
+  align-items: center;
+  border-bottom: 1px solid #d9e2e7;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 11px 13px;
+}
+
+.reviewMetricGrid,
+.reviewSnapshotFacts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
+}
+
+.reviewMetricGrid article,
+.reviewSnapshotFacts article {
+  background: #f5f8fa;
+  border: 1px solid #dbe4e9;
+  border-radius: 7px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.reviewMetricGrid span,
+.reviewSnapshotFacts span {
+  color: #647b87;
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.reviewMetricGrid strong,
+.reviewSnapshotFacts strong {
+  font-size: 15px;
+}
+
+.reviewSplit {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.reviewSplit > article,
+.reviewCompatibility {
+  background: #f8fafb;
+  border: 1px solid #d9e2e7;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.reviewSplit h4,
+.reviewCompatibility h4,
+.reviewChangeList h4 {
+  margin: 0 0 9px;
+}
+
+.reviewAgenda {
+  display: grid;
+  gap: 5px;
+}
+
+.reviewAgenda > div {
+  align-items: center;
+  border-bottom: 1px solid #e4eaee;
+  display: flex;
+  font-size: 11px;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.reviewRecordGrid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  margin: 0;
+}
+
+.reviewRecordGrid > div {
+  border-bottom: 1px solid #e2e8ec;
+  display: grid;
+  gap: 2px;
+  padding: 5px 0;
+}
+
+.reviewRecordGrid dt {
+  color: #687f8a;
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.reviewRecordGrid dd {
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.reviewTableWrap {
+  margin: 0 12px;
+  overflow-x: auto;
+}
+
+.reviewTableWrap.wideTable {
+  max-height: 560px;
+}
+
+.reviewTableWrap table {
+  border-collapse: collapse;
+  font-size: 10px;
+  min-width: 100%;
+  width: max-content;
+}
+
+.reviewTableWrap th {
+  background: #edf2f5;
+  color: #506a77;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  position: sticky;
+  text-align: left;
+  text-transform: uppercase;
+  top: 0;
+  z-index: 1;
+}
+
+.reviewTableWrap th,
+.reviewTableWrap td {
+  border-bottom: 1px solid #dce4e9;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.reviewTableWrap tr.selected,
+.reviewTableWrap tr.unclassified {
+  background: #fff8e8;
+}
+
+.reviewTableWrap td strong,
+.reviewTableWrap td small {
+  display: block;
+}
+
+.reviewTableWrap td small {
+  color: #6c808a;
+  margin-top: 3px;
+}
+
+.reviewPreviewFlag,
+.reviewReadOnlyBanner {
+  background: #edf6fb;
+  border: 1px solid #b8d7e8;
+  color: #205e7b;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.reviewChangeList {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.reviewChangeList article {
+  align-items: center;
+  background: #f8fafb;
+  border-left: 3px solid #c68518;
+  display: grid;
+  font-size: 11px;
+  gap: 3px;
+  grid-template-columns: minmax(160px, 1fr) auto;
+  padding: 8px 10px;
+}
+
+.reviewChangeList small {
+  color: #667d88;
+  grid-column: 1 / -1;
+}
+
+.reviewAlerts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.reviewAlerts section {
+  border-radius: 7px;
+  display: grid;
+  font-size: 11px;
+  gap: 4px;
+  padding: 9px;
+}
+
+.reviewAlerts h4 {
+  margin: 0 0 3px;
+}
+
+.reviewAlerts .blockers,
+.reviewExceptionCritical {
+  background: #fff0ee;
+  border: 1px solid #f2bab3;
+  color: #8f2727;
+}
+
+.reviewAlerts .warnings {
+  background: #fff8e9;
+  border: 1px solid #e8cd91;
+  color: #78520f;
+}
+
+.reviewGuardrail {
+  background: #f5f7f8;
+  border-left: 3px solid #78909c;
+  color: #4d6571;
+  margin-bottom: 0;
+  margin-top: 12px;
+}
+
+.reviewGateBoundary {
+  align-items: center;
+  background: #f7f2fb;
+  border: 1px solid #d4c4e5;
+  border-radius: 8px;
+  color: #5d3b77;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 11px;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 9px;
+}
+
+.reviewGateBoundary b {
+  margin-left: auto;
+}
+
+.reviewMatrixFilters {
+  align-items: end;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(3, minmax(120px, 1fr)) auto auto;
+  margin-bottom: 10px;
+}
+
+.reviewMatrixFilters .checkbox {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+
+.reviewMatrixFilters .checkbox input {
+  width: auto;
+}
+
+.reviewInlineForm,
+.reviewActionForm {
+  background: #f7fafb;
+  border: 1px solid #d5e0e5;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+}
+
+.reviewInlineForm {
+  grid-template-columns: minmax(210px, 0.6fr) minmax(300px, 1.4fr) auto;
+}
+
+.reviewActionForm {
+  grid-template-columns: repeat(6, minmax(110px, 1fr));
+}
+
+.reviewInlineForm .wide,
+.reviewActionForm .wide {
+  grid-column: auto;
+}
+
+.reviewConclusionList,
+.reviewActionQueue {
+  display: grid;
+  gap: 8px;
+}
+
+.reviewConclusionList article,
+.reviewActionQueue article {
+  background: #f8fafb;
+  border: 1px solid #d8e1e6;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.reviewConclusionList p,
+.reviewActionQueue p {
+  font-size: 11px;
+  margin: 6px 0;
+}
+
+.reviewActionQueue article > header,
+.reviewActionQueue article > footer,
+.reviewActionMeta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: space-between;
+}
+
+.reviewActionQueue h4 {
+  margin: 3px 0;
+}
+
+.reviewActionMeta {
+  color: #647a85;
+  font-size: 10px;
+  justify-content: flex-start;
+  margin: 7px 0;
+}
+
+.reviewActionQueue select {
+  max-width: 150px;
+}
+
+.reviewActionSemantics {
+  background: #eef8f7;
+  border: 1px solid #afd9d5;
+  border-radius: 8px;
+  color: #155d5b;
+  display: grid;
+  font-size: 11px;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.reviewTimeline {
+  display: grid;
+  gap: 8px;
+}
+
+.reviewTimeline > div {
+  border-left: 2px solid #8eabb8;
+  display: grid;
+  font-size: 10px;
+  gap: 2px;
+  padding-left: 9px;
+}
+
+.reviewTimeline span,
+.reviewTimeline small,
+.reviewMuted {
+  color: #687e89;
+  font-size: 10px;
+}
+
+.reviewDrawerBackdrop {
+  align-items: stretch;
+  background: rgba(16, 35, 49, 0.48);
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 80;
+}
+
+.reviewDrawer {
+  background: #fff;
+  box-shadow: -20px 0 50px rgba(16, 35, 49, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 580px;
+  overflow-y: auto;
+  padding: 18px;
+  width: min(94vw, 580px);
+}
+
+.reviewDrawer.wide {
+  max-width: 860px;
+  width: min(96vw, 860px);
+}
+
+.reviewDrawer > header,
+.reviewDrawer > footer {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.reviewDrawer > footer {
+  border-top: 1px solid #dce4e9;
+  justify-content: flex-end;
+  padding-top: 12px;
+}
+
+.reviewFormGrid {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reviewConfigSections {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.reviewDrawer > label textarea {
+  min-height: 320px;
+  resize: vertical;
+}
+
+.reviewAdminPreview {
+  align-items: end;
+  background: #f8f6fb;
+  border: 1px solid #d8cee6;
+  border-radius: 9px;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(2, minmax(180px, 0.7fr)) auto minmax(230px, 1fr);
+  padding: 10px;
+}
+
+.reviewAdminPreview article {
+  background: #fff;
+  border: 1px solid #d5c8e4;
+  border-radius: 7px;
+  display: grid;
+  font-size: 10px;
+  gap: 2px;
+  padding: 8px;
+}
+
+.reviewAdminLayout {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.6fr);
+}
+
+.reviewAdminLayout > aside {
+  display: grid;
+  gap: 8px;
+}
+
+.reviewAdminLayout > aside > article,
+.reviewAdminScope {
+  background: #fff;
+  border: 1px solid #d5dde3;
+  border-radius: 8px;
+  padding: 11px;
+}
+
+.reviewAdminLayout > aside > article.selected {
+  border-color: #77559a;
+  box-shadow: 0 0 0 1px #77559a;
+}
+
+.reviewAdminLayout article > header,
+.reviewAdminLayout article > footer,
+.reviewAdminLayout article > div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.reviewAdminLayout article > footer {
+  color: #647a85;
+  font-size: 10px;
+  margin: 8px 0;
+}
+
+.reviewAdminLayout article p,
+.reviewAdminScope p {
+  color: #607681;
+  font-size: 11px;
+}
+
+.reviewAdminScope > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reviewAdminScope > div > span {
+  background: #f2eef7;
+  border: 1px solid #d9cce6;
+  border-radius: 999px;
+  color: #5d3b77;
+  font-size: 10px;
+  font-weight: 750;
+  padding: 5px 8px;
+}
+
+@media (max-width: 1100px) {
+  .reviewSelector,
+  .reviewAdminPreview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reviewMetricGrid,
+  .reviewSnapshotFacts {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+  }
+
+  .reviewActionForm {
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+  }
+
+  .reviewInlineForm {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .reviewSelector,
+  .reviewSplit,
+  .reviewAlerts,
+  .reviewFormGrid,
+  .reviewMatrixFilters,
+  .reviewAdminLayout,
+  .reviewAdminPreview,
+  .reviewActionForm {
+    grid-template-columns: 1fr;
+  }
+
+  .reviewMetricGrid,
+  .reviewSnapshotFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reviewSessionHeader {
+    display: grid;
+  }
+
+  .reviewSessionMeta {
+    align-items: start;
+    justify-items: start;
+  }
+}

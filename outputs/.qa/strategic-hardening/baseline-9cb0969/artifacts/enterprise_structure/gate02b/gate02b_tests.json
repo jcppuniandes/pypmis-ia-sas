@@ -1,0 +1,30 @@
+{
+  "backend": {
+    "enterprise_structure_importer_auth_selected": "35 passed",
+    "result": "PASS",
+    "ruff": "PASS"
+  },
+  "frontend": {
+    "build": "PASS",
+    "enterprise_structure_tests": "8 passed",
+    "eslint": "PASS with 8 pre-existing BIM viewer warnings and 0 errors",
+    "prettier": "PASS",
+    "result": "PASS"
+  },
+  "migration": {
+    "from": "20260809_0029",
+    "postgresql": "PASS",
+    "to": "20260809_0030 (head)"
+  },
+  "required_apply_cases": {
+    "actor_missing_or_unauthorized_blocked": true,
+    "cross_tenant_blocked": true,
+    "first_apply_and_identity_preservation": true,
+    "hash_mismatch_rollback": true,
+    "idempotent_second_apply": true,
+    "rollback_during_classifications": true,
+    "rollback_during_workspace_create": true,
+    "snapshot_changed_rollback": true
+  },
+  "status": "PASS"
+}

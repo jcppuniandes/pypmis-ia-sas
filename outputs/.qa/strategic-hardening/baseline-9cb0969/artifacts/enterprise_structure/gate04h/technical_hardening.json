@@ -1,0 +1,22 @@
+{
+  "status": "IMPLEMENTED_AND_VERIFIED",
+  "checked_at": "2026-08-12",
+  "items": {
+    "optimistic_concurrency": "revision_version with SQLAlchemy atomic versioning and populate_existing refresh",
+    "http_contract": "required If-Match on revision mutations",
+    "conflict": "409 REVISION_VERSION_CONFLICT without silent merge",
+    "validation_invalidation": "post-validation mutation yields HASH_MISMATCH",
+    "approval_invalidation": "post-approval mutation yields APPROVAL_INVALIDATED",
+    "four_eyes": "approver and publisher must be different users",
+    "sod": ["structure_editor", "structure_approver", "structure_publisher"],
+    "sod_no_bypass": "legacy organization administrator has no revision-duty bypass",
+    "actor_traceability": "last_modified_by_user_id",
+    "etag": "GET and mutation responses expose revision version",
+    "no_physical_delete": "verified in PostgreSQL E2E",
+    "audit": "all required revision actions emit audit evidence",
+    "ci": "enterprise-structure-postgres-e2e job with disposable PostgreSQL",
+    "ephemeral_bootstrap": "guarded PostgreSQL-only schema preparation plus Alembic 0033 upgrade",
+    "snapshot_storage": "RETAIN_FULL_SNAPSHOT; Delta/Change Set remains outside Gate 04H"
+  },
+  "scope_exclusions_respected": true
+}

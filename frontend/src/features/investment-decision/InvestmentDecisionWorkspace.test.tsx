@@ -34,7 +34,43 @@ const decision = {
   source_package_hash: "k".repeat(64),
   source_profile_hash: "r".repeat(64),
   source_policy_hash: "e".repeat(64),
-  decision_package_snapshot: { evidence_summary: { risk: "VALID" } },
+  decision_package_snapshot: {
+    evidence_summary: { risk: "VALID" },
+    preparation: { preparation_number: "IGP-00001" },
+    criterion_policy_snapshot: { policy_revision: 4, policy_hash: "e".repeat(64) },
+    criterion_evaluations: [
+      {
+        criterion_code: "BC-MUST-01",
+        criterion_name: "Business Case strategic case",
+        criterion_type: "MUST_MEET",
+        result: "SATISFIED",
+        required: true,
+        blocking: true,
+      },
+      {
+        criterion_code: "FIN-HURDLE-01",
+        criterion_name: "Economic hurdle",
+        criterion_type: "DECISION_HURDLE",
+        result: "SATISFIED",
+        required: true,
+        blocking: true,
+      },
+    ],
+    portfolio_context_snapshot: { rank_authority: "PORTFOLIO", governed_rank: 2 },
+    success_criteria_candidates: [
+      { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+    ],
+    evidence_readiness_status: "READY",
+    business_evaluation_status: "READY",
+    portfolio_context_status: "AVAILABLE",
+    decision_package_status: "READY_FOR_INVESTMENT_DECISION",
+    formal_decision_authority: "GATE07K",
+    automatic_decision: false,
+    conditions: [],
+  },
+  success_criteria_snapshot: [
+    { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+  ],
   configuration_hash: "c".repeat(64),
   configuration_snapshot: {},
   authority_model: "SINGLE_DECISION_MAKER",
@@ -67,6 +103,9 @@ const decision = {
     quorum_met: true,
     voting_rule_met: true,
     segregation_of_duties_valid: true,
+    mandatory_criteria_satisfied: true,
+    decision_hurdles_satisfied: true,
+    criterion_blockers: [],
     blockers: [],
     warnings: [],
     final_output: "READY_FOR_INVESTMENT_DECISION",
@@ -121,7 +160,7 @@ describe("Gate 07K Investment Decision / FID", () => {
   it("shows all nine USER views and preserves the no-FID/no-activation boundary", async () => {
     render(<InvestmentDecisionWorkspace initialView="investment-decision-queue" token="token" />);
     expect(await screen.findByRole("heading", { name: "Investment Decision / FID" })).toBeInTheDocument();
-    expect(screen.getByText("FID NO")).toBeInTheDocument();
+    expect(await screen.findByText("FID NO", {}, { timeout: 15_000 })).toBeInTheDocument();
     expect(screen.getByText("Project activation NO")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Investment Decision views" });
     expect(within(nav).getAllByRole("button")).toHaveLength(9);
@@ -135,6 +174,18 @@ describe("Gate 07K Investment Decision / FID", () => {
     expect(await screen.findByRole("heading", { name: "Authorization Output" })).toBeInTheDocument();
     expect(screen.getByText(/INVESTMENT_DECISION_PENDING/)).toBeInTheDocument();
     expect(screen.getByText(/"can_activate_project": false/)).toBeInTheDocument();
+  });
+
+  it("shows the frozen Gate07J criteria, Portfolio context and FID success criteria", async () => {
+    render(<InvestmentDecisionWorkspace initialView="investment-decision-package" token="token" />);
+    const summary = await screen.findByRole("region", { name: "Frozen Gate 07J decision inputs" });
+    expect(summary).toHaveTextContent("IGP-00001");
+    expect(summary).toHaveTextContent("Mandatory criteria");
+    expect(summary).toHaveTextContent("Decision hurdles");
+    expect(summary).toHaveTextContent("PORTFOLIO");
+    expect(summary).toHaveTextContent("Frozen FID success criteria");
+    expect(summary).toHaveTextContent("Reliability uplift");
+    expect(summary).toHaveTextContent("never means automatic GO");
   });
 
   it("exposes all 20 ADMIN sections and non-persistent dry-run", async () => {

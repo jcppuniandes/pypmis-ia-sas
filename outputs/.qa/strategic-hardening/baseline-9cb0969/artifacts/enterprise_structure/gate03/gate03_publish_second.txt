@@ -1,0 +1,20 @@
+P&Pmis Controlled CORE Publish
+Release: ES-PYP-CORE-RECONCILED-20260809
+Tenant: 1 · pyp-ingenieria-proyectos
+Actor: admin@demo.local
+Result: ALREADY_PUBLISHED
+State: published
+Mutations: 0
+Raw SHA-256: 04721cc014524cda3b481bc26aebb13a4b10bb274baf732e9e4cd35542a0e025
+Canonical SHA-256: c2d68fa4bc20c1ad0c30e5b0edc99ba1b51971cde7376d99bc1f4460aadccf9d
+Content fingerprint: 58be6cce288d4067f83f43bd9ac850da76f20784b4f113aac50398a6bf70c828
+
+Published snapshot
+- Workspaces: 14
+- Strategic Objectives: 7
+- Classifications: 26
+- Links: 0
+- Operational statuses: {'active': 1, 'draft': 13}
+- Operational status transitions: NONE
+- SecurityEvent: NONE (safe replay)
+- Published at: 2026-08-10T15:55:52.883614

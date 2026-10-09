@@ -1,0 +1,13 @@
+{
+  "actor_id": 1,
+  "effective_from": "2026-09-03T12:34:44.035309",
+  "migration_head": "20260902_0058",
+  "mode": "controlled-apply",
+  "new_schema_required": false,
+  "policy_hash": "a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392",
+  "policy_id": 787,
+  "policy_revision": 1,
+  "release_status": "GATE07M_EVID_POLICY_UPDATE_VALIDATED",
+  "source_hash": "db35b9448f8f49a66eb296c8bf77cfcd37707998fe34666fdcc69a97761583c8",
+  "tenant_id": 1
+}

@@ -1,0 +1,51 @@
+services:
+  gate07d-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gate07d
+      POSTGRES_USER: gate07d
+      POSTGRES_PASSWORD: gate07d
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate07d -d gate07d"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  gate07d-test:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://gate07d:gate07d@gate07d-db:5432/gate07d
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://gate07d:gate07d@gate07d-db:5432/gate07d
+      AUTO_CREATE_SCHEMA: "true"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: gate07d-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python tests/postgres/prepare_gate07d_migration_baseline.py
+        alembic stamp 20260813_0042
+        python tests/postgres/validate_gate07d_schema.py --expect 20260813_0042
+        alembic upgrade 20260820_0043
+        python tests/postgres/validate_gate07d_schema.py --expect 20260820_0043
+        python tests/postgres/validate_project_governance_schema.py --expect 20260820_0043
+        alembic upgrade 20260820_0044
+        python tests/postgres/validate_project_governance_schema.py --expect 20260820_0044
+        pytest --no-cov -q tests/test_portfolio_planning_gate07d.py tests/test_portfolio_planning_gate07d_hardening.py tests/test_project_creation_process.py tests/test_strategic_gate_gate07c.py tests/test_workspace_context.py
+        alembic downgrade 20260820_0043
+        python tests/postgres/validate_project_governance_schema.py --expect 20260820_0043
+        alembic upgrade 20260820_0044
+        python tests/postgres/validate_project_governance_schema.py --expect 20260820_0044
+        alembic downgrade 20260813_0042
+        python tests/postgres/validate_gate07d_schema.py --expect 20260813_0042
+        alembic upgrade 20260820_0044
+        python tests/postgres/validate_gate07d_schema.py --expect 20260820_0044
+        python tests/postgres/validate_project_governance_schema.py --expect 20260820_0044
+        pytest --no-cov -q tests/test_portfolio_planning_gate07d.py tests/test_project_creation_process.py
+    depends_on:
+      gate07d-db:
+        condition: service_healthy

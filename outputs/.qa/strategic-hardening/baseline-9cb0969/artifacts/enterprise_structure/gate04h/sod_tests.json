@@ -1,0 +1,17 @@
+{
+  "results": {
+    "approver_approve": "PASS",
+    "approver_edit": "PASS",
+    "cross_tenant": "PASS",
+    "editor_approve": "PASS",
+    "editor_edit": "PASS",
+    "editor_publish": "PASS",
+    "expired_assignment": "PASS",
+    "invalid_scope": "PASS",
+    "organization_admin_has_no_revision_duty_bypass": "PASS",
+    "publisher_approve": "PASS",
+    "publisher_publish": "PASS",
+    "same_user_approve_publish": "covered_by_four_eyes_test"
+  },
+  "status": "PASS"
+}

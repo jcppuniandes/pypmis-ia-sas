@@ -59,6 +59,15 @@ CONFIGURATION_KINDS = {
     "strategic_gate_configuration",
 }
 
+# These aggregates have dedicated RBAC/scope/SoD/ETag/idempotency authority.
+# A legacy tenant-configurator grant must never bypass their command boundary.
+GOVERNED_CONFIGURATION_APIS = {
+    "risk_governance_policy": "/api/v1/risk-governance/admin/configurations",
+    "basic_data_readiness_configuration": "/api/v1/basic-data/admin/configurations",
+    "owner_capability_readiness_configuration": "/api/v1/owner-capability/admin/configurations",
+    "qra_methodology_configuration": "/api/v1/qra-foundation/admin/configurations",
+}
+
 CONFIGURATION_SEED = (
     (
         "workspace_type",
@@ -208,6 +217,7 @@ def update_configuration(
 ) -> AdminConfigurationOut:
     actor = require_tenant_configurator(db, tenant_id, user_id)
     record = _configuration(db, tenant_id, configuration_id)
+    _require_legacy_mutation_allowed(record.kind)
     _require_draft(record)
     require_current_version(record, payload.expected_version)
     if payload.name is not None:
@@ -233,6 +243,7 @@ def publish_configuration(
 ) -> AdminConfigurationOut:
     actor = require_tenant_configurator(db, tenant_id, user_id)
     record = _configuration(db, tenant_id, configuration_id)
+    _require_legacy_mutation_allowed(record.kind)
     _require_draft(record)
     _validate_content(record.kind, record.content_json)
     record.status = "published"
@@ -258,6 +269,7 @@ def clone_configuration(
 ) -> AdminConfigurationOut:
     actor = require_tenant_configurator(db, tenant_id, user_id)
     source = _configuration(db, tenant_id, configuration_id)
+    _require_legacy_mutation_allowed(source.kind)
     if source.status != "published":
         raise HTTPException(status_code=409, detail="Only a published revision can be cloned")
     next_revision = (
@@ -814,9 +826,24 @@ def _require_draft(record: AdminConfiguration) -> None:
 
 def _normalized_kind(value: str) -> str:
     kind = value.strip().lower().replace("-", "_")
+    _require_legacy_mutation_allowed(kind)
     if kind not in CONFIGURATION_KINDS:
         raise HTTPException(status_code=422, detail=f"Unsupported configuration kind: {value}")
     return kind
+
+
+def _require_legacy_mutation_allowed(kind: str) -> None:
+    dedicated_api = GOVERNED_CONFIGURATION_APIS.get(kind)
+    if dedicated_api is not None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "code": "GOVERNED_CONFIGURATION_API_REQUIRED",
+                "configuration_kind": kind,
+                "dedicated_api": dedicated_api,
+                "message": "Use the dedicated governed API; legacy commands cannot bypass policy authority.",
+            },
+        )
 
 
 def _normalized_code(value: str) -> str:

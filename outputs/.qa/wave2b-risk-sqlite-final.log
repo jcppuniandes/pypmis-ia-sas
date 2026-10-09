@@ -1,0 +1,57 @@
+..................                                                       [100%]
+=================================== PASSES ====================================
+_ test_wave2b_risk_http_read_only_direct_route_security_etag_idempotency_and_no_seed_on_get _
+---------------------------- Captured stderr call -----------------------------
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"6e3dcc1b-080a-4fc6-9288-6b42b39e89bb","method":"GET","path":"/api/v1/risk-governance/effective","status_code":200,"duration_ms":244.11,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: GET http://testserver/api/v1/risk-governance/effective?workspace_id=74 \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"16ae8c3f-0d74-4afd-a5f7-34e5ed770384","method":"GET","path":"/api/v1/risk-governance/admin/configurations","status_code":403,"duration_ms":30.53,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: GET http://testserver/api/v1/risk-governance/admin/configurations \"HTTP/1.1 403 Forbidden\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"fa98da90-921a-4282-9ca8-01072a7f8793","method":"POST","path":"/api/v1/risk-governance/admin/configurations/2/clone","status_code":403,"duration_ms":50.26,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone \"HTTP/1.1 403 Forbidden\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"c8963847-b906-4296-8495-877193ffbfa3","method":"GET","path":"/api/v1/risk-governance/effective","status_code":403,"duration_ms":40.64,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: GET http://testserver/api/v1/risk-governance/effective?workspace_id=75 \"HTTP/1.1 403 Forbidden\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"d35515ca-5b03-4731-84e1-a379d84a5477","method":"POST","path":"/api/v1/risk-governance/admin/configurations/2/clone","status_code":200,"duration_ms":139.67,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"b34817fa-e025-4aed-853e-36058e98f3d1","method":"POST","path":"/api/v1/risk-governance/admin/configurations/2/clone","status_code":200,"duration_ms":41.58,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"9524bcd3-a90e-45bf-9352-c7fea5323af4","method":"GET","path":"/api/v1/risk-governance/admin/configurations/23","status_code":200,"duration_ms":72.73,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: GET http://testserver/api/v1/risk-governance/admin/configurations/23 \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"5f4d87f4-7cbc-4b17-81d5-0352f5eed49b","method":"PUT","path":"/api/v1/risk-governance/admin/configurations/23","status_code":412,"duration_ms":62.87,"client_host":"testclient"}
+{"timestamp":"2026-10-07T17:13:27-0500","level":"INFO","logger":"httpx","message":"HTTP Request: PUT http://testserver/api/v1/risk-governance/admin/configurations/23 \"HTTP/1.1 412 Precondition Failed\""}
+------------------------------ Captured log call ------------------------------
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/risk-governance/effective?workspace_id=74 "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/risk-governance/admin/configurations "HTTP/1.1 403 Forbidden"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone "HTTP/1.1 403 Forbidden"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/risk-governance/effective?workspace_id=75 "HTTP/1.1 403 Forbidden"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/risk-governance/admin/configurations/2/clone "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/risk-governance/admin/configurations/23 "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/risk-governance/admin/configurations/23 "HTTP/1.1 412 Precondition Failed"
+=========================== short test summary info ===========================
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_inheritance_effective_dates_context_overrides_and_history
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_version_successor_future_policy_and_no_implicit_default_merge
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_canonical_project_classifiers_do_not_equate_mining_with_capital_owner
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_published_immutable_sod_etag_and_idempotency_exact_receipts
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[EQUALS-5-5-AT_THRESHOLD]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[NOT_EQUALS-5-4-WITHIN_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[GREATER_THAN-5-6-WITHIN_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[GREATER_THAN_OR_EQUAL-5-4-OUTSIDE_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[LESS_THAN-5-4-WITHIN_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[LESS_THAN_OR_EQUAL-5-5-AT_THRESHOLD]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[WITHIN_RANGE-value6-7-WITHIN_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_numeric_controlled_operators_return_context_never_decisions[OUTSIDE_RANGE-value7-9-WITHIN_APPETITE]
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_category_boolean_currency_units_and_invalid_operator_no_code
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_scoped_read_inherited_policy_cannot_escape_mutate_or_retarget
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_http_read_only_direct_route_security_etag_idempotency_and_no_seed_on_get
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_context_specificity_themes_categories_and_statement_filters_are_backend_owned
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_remaining_category_boolean_operators_and_invalid_duration
+PASSED tests/test_risk_governance_wave2b.py::test_wave2b_risk_policy_publication_preserves_real_completed_risk_readiness_evidence
+18 passed in 265.81s (0:04:25)

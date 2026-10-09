@@ -1,0 +1,95 @@
+ Container pypmis-wave3a-wave3a-migration-db-1 Starting 
+ Container pypmis-wave3a-wave3a-db-1 Starting 
+ Container pypmis-wave3a-wave3a-db-1 Started 
+ Container pypmis-wave3a-wave3a-migration-db-1 Started 
+ Image pypmis-wave3a-wave3a-validation Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 631B 0.4s done
+#1 DONE 0.4s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 609B 0.6s done
+#2 DONE 0.8s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 3.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 157B 0.1s done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [ 1/12] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 0.4s done
+#6 DONE 0.4s
+
+#5 [internal] load build context
+#5 transferring context: 382.72kB 1.5s done
+#5 DONE 1.6s
+
+#7 [ 4/12] RUN pip install --no-cache-dir -r requirements.txt
+#7 CACHED
+
+#8 [ 5/12] COPY pyproject.toml ./
+#8 CACHED
+
+#9 [ 6/12] COPY alembic.ini ./
+#9 CACHED
+
+#10 [ 2/12] WORKDIR /app
+#10 CACHED
+
+#11 [ 3/12] COPY requirements.txt .
+#11 CACHED
+
+#12 [ 7/12] COPY gunicorn.conf.py ./
+#12 CACHED
+
+#13 [ 8/12] COPY alembic ./alembic
+#13 DONE 0.9s
+
+#14 [ 9/12] COPY app ./app
+#14 DONE 2.5s
+
+#15 [10/12] COPY tests ./tests
+#15 DONE 2.0s
+
+#16 [11/12] COPY config ./config
+#16 DONE 0.3s
+
+#17 [12/12] RUN mkdir -p /app/storage/documents     && useradd --system --create-home --home-dir /app appuser     && chown -R appuser /app
+#17 5.319 useradd: warning: the home directory /app already exists.
+#17 5.319 useradd: Not copying any file from skel directory into it.
+#17 DONE 14.5s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 7.1s done
+#18 exporting manifest sha256:cbaf336ad3108e2fc7f9f186a3d6f8ee9507819013866b32730d87dd9d88812c 0.1s done
+#18 exporting config sha256:5d231f8ef43680296c7e1003029552f7af0bfec2027f22676d372340fe3f3cb8
+#18 exporting config sha256:5d231f8ef43680296c7e1003029552f7af0bfec2027f22676d372340fe3f3cb8 0.2s done
+#18 exporting attestation manifest sha256:e343a80a6fa4cac32b6eaa26e5cfb4e863740d69726bbf92ff24865ac222ffc3
+#18 exporting attestation manifest sha256:e343a80a6fa4cac32b6eaa26e5cfb4e863740d69726bbf92ff24865ac222ffc3 0.3s done
+#18 exporting manifest list sha256:760c3cea030856486c3b7ee6879fef927475ea57c40f3f1dec415d8a34a41f87
+#18 exporting manifest list sha256:760c3cea030856486c3b7ee6879fef927475ea57c40f3f1dec415d8a34a41f87 0.2s done
+#18 naming to docker.io/library/pypmis-wave3a-wave3a-validation:latest
+#18 naming to docker.io/library/pypmis-wave3a-wave3a-validation:latest 0.2s done
+#18 unpacking to docker.io/library/pypmis-wave3a-wave3a-validation:latest
+#18 unpacking to docker.io/library/pypmis-wave3a-wave3a-validation:latest 6.6s done
+#18 DONE 15.3s
+
+#19 resolving provenance for metadata file
+#19 DONE 0.4s
+ Image pypmis-wave3a-wave3a-validation Built 
+ Container pypmis-wave3a-wave3a-db-1 Waiting 
+ Container pypmis-wave3a-wave3a-migration-db-1 Waiting 
+ Container pypmis-wave3a-wave3a-db-1 Healthy 
+ Container pypmis-wave3a-wave3a-migration-db-1 Healthy 
+ Container pypmis-wave3a-wave3a-validation-run-5260399c03de Creating 
+ Container pypmis-wave3a-wave3a-validation-run-5260399c03de Created 
+.                                                                        [100%]
+1 passed in 89.16s (0:01:29)

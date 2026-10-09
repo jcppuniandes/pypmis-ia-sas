@@ -1,0 +1,118 @@
+name: pypmis-wave3b
+
+services:
+  wave3b-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave3b
+      POSTGRES_USER: wave3b
+      POSTGRES_PASSWORD: wave3b
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U wave3b -d wave3b]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3b-migration-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave3b_migration
+      POSTGRES_USER: wave3b
+      POSTGRES_PASSWORD: wave3b
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U wave3b -d wave3b_migration]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3b-validation:
+    build: {context: ./backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave3b:wave3b@wave3b-db:5432/wave3b
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://wave3b:wave3b@wave3b-db:5432/wave3b
+      PYPMIS_WAVE3B_MIGRATION_DATABASE_URL: postgresql+psycopg://wave3b:wave3b@wave3b-migration-db:5432/wave3b_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave3b-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.main; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest -o addopts= --no-cov -q -rA tests/postgres/test_wave3b_migration_postgres.py
+        pytest -o addopts= --no-cov -q -rA tests/postgres/test_wave3b_owner_capability_postgres.py
+    depends_on:
+      wave3b-db: {condition: service_healthy}
+      wave3b-migration-db: {condition: service_healthy}
+
+  wave3b-browser-db:
+    image: postgres:16-alpine
+    profiles: [browser]
+    environment:
+      POSTGRES_DB: wave3b_browser
+      POSTGRES_USER: wave3b
+      POSTGRES_PASSWORD: wave3b
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U wave3b -d wave3b_browser]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3b-browser-api:
+    build: {context: ./backend}
+    profiles: [browser]
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave3b:wave3b@wave3b-browser-db:5432/wave3b_browser
+      REDIS_URL: redis://wave3b-browser-redis:6379/0
+      PYPMIS_WAVE3B_BROWSER_FIXTURE: disposable-only
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: wave3b-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5518,http://localhost:5518
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    ports: ["127.0.0.1:8815:8000"]
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -m tests.provision_wave3b_browser
+        alembic stamp head
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      wave3b-browser-db: {condition: service_healthy}
+      wave3b-browser-redis: {condition: service_healthy}
+
+  wave3b-browser-redis:
+    image: redis:7-alpine
+    profiles: [browser]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3b-browser-frontend:
+    build: {context: ./frontend}
+    profiles: [browser]
+    environment:
+      VITE_API_URL: http://127.0.0.1:8815
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        npm run build -- --outDir /tmp/wave3b-browser-dist
+        npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/wave3b-browser-dist
+    ports: ["127.0.0.1:5518:5173"]
+    volumes: ["./frontend:/app:ro", /app/node_modules]
+    depends_on: [wave3b-browser-api]

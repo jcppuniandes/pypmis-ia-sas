@@ -1,0 +1,32 @@
+{
+  "gate": "02B",
+  "integrity": {
+    "broken_parents": 0,
+    "cross_tenant_parent_references": 0,
+    "cycles": 0,
+    "duplicate_external_keys": 0,
+    "duplicate_record_codes": 0
+  },
+  "reconciliation": {
+    "BU-PYP-CONST": 2,
+    "BU-PYP-PMO": 3,
+    "ENT-PYP": 1
+  },
+  "result": "PASS",
+  "tenant": {
+    "currency": "COP",
+    "id": 1,
+    "name": "P&P Ingeniería y Proyectos",
+    "slug": "pyp-ingenieria-proyectos"
+  },
+  "totals": {
+    "classifications": 26,
+    "external_keys_not_null": 14,
+    "links": 0,
+    "property_or_facility_nodes": 0,
+    "record_codes_unique": 14,
+    "root_nodes": 1,
+    "strategic_objectives": 7,
+    "workspaces": 14
+  }
+}

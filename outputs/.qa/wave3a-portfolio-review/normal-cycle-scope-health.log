@@ -1,0 +1,5 @@
+
+StatusCode Content
+---------- -------
+       200 {"status":"ready","checks":{"api":"ok","database":"ok","redis":"ok"},"latency":{"database_ms":5.2,"redis_ms"…
+

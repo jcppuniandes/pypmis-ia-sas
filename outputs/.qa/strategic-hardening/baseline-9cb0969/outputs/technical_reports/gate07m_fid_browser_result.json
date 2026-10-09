@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "base_url": "http://host.docker.internal:15173",
+  "happy_path": true,
+  "negative_fin_stale": true,
+  "historical_fid": true,
+  "source_drilldown": true,
+  "page_errors": [],
+  "console_problems": [],
+  "unexpected_responses": []
+}

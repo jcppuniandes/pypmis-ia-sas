@@ -1,0 +1,104 @@
+export type ProjectRisk = {
+  id: number;
+  project_workspace_id: number;
+  risk_number: string;
+  title: string;
+  description: string;
+  risk_category: string;
+  status: string;
+  identified_date: string;
+  risk_owner_id: number | null;
+  cause: string;
+  event: string;
+  impact_description: string;
+  likelihood_before: number | null;
+  impact_before: number | null;
+  inherent_rating: string | null;
+  treatment_required: boolean;
+  treatment_strategy: string | null;
+  treatment_description: string | null;
+  treatment_owner_id: number | null;
+  target_treatment_date: string | null;
+  treatment_status: string | null;
+  likelihood_after: number | null;
+  impact_after: number | null;
+  residual_rating: string | null;
+  residual_acceptance_required: boolean;
+  accepted_by: number | null;
+  accepted_at: string | null;
+  acceptance_comment: string | null;
+  acceptance_authority_level: string | null;
+  due_date: string | null;
+  source_reference: string | null;
+  evidence_refs_json: Array<Record<string, unknown>>;
+  revision_version: number;
+};
+
+export type ProjectReadiness = {
+  project_workspace_id: number;
+  assessment_id: number | null;
+  assessment_hash: string | null;
+  as_of_date: string | null;
+  valid_until: string | null;
+  active_risk_count: number;
+  high_count: number;
+  critical_count: number;
+  unowned_high_critical_count: number;
+  untreated_high_critical_count: number;
+  overdue_treatment_count: number;
+  unaccepted_residual_count: number;
+  evidence_coverage: number;
+  warnings: string[];
+  blockers: string[];
+  readiness_status: string;
+  risk_readiness_hash: string | null;
+  source_current: boolean;
+  allowed_actions: Record<string, boolean>;
+};
+
+export type PortfolioReadiness = {
+  portfolio_workspace_id: number;
+  recommended_project_set_hash: string;
+  required_project_count: number;
+  valid_project_count: number;
+  blocked_project_count: number;
+  stale_project_count: number;
+  expired_project_count: number;
+  coverage_percent: number;
+  aggregate_high_count: number;
+  aggregate_critical_count: number;
+  aggregate_unaccepted_residual_count: number;
+  warnings: string[];
+  blockers: string[];
+  readiness_status: string;
+  risk_readiness_hash: string;
+  project_readiness: ProjectReadiness[];
+};
+
+export type RiskAssessment = {
+  id: number;
+  assessment_number: string;
+  assessment_version: number;
+  as_of_date: string;
+  valid_until: string;
+  status: string;
+  readiness_status: string;
+  total_active_risks: number;
+  high_risk_count: number;
+  critical_risk_count: number;
+  blockers_json: string[];
+  warnings_json: string[];
+  risk_readiness_hash: string | null;
+  revision_version: number;
+};
+
+export type RiskConfiguration = {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  revision: number;
+  version: number;
+  content_json: Record<string, unknown>;
+  content_hash: string;
+};

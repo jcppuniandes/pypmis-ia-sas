@@ -1,0 +1,109 @@
+.wave2b {
+  color: #173443;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.wave2b article,
+.wave2bEditor {
+  border: 1px solid #d5e0e5;
+  border-radius: 10px;
+  padding: 16px;
+  background: white;
+  min-width: 0;
+}
+.wave2bBoundary {
+  padding: 12px;
+  border-left: 4px solid #168d94;
+  background: #edf8f8;
+  border-radius: 6px;
+}
+.wave2bMessage {
+  padding: 12px;
+  background: #fff5db;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+.wave2bToolbar,
+.wave2bTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+}
+.wave2b label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.wave2b input,
+.wave2b select,
+.wave2b textarea {
+  border: 1px solid #b9ccd5;
+  border-radius: 6px;
+  padding: 8px;
+  width: 100%;
+  color: inherit;
+  background: white;
+  box-sizing: border-box;
+}
+.wave2b button {
+  border: 1px solid #bdd0d7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: #173443;
+  cursor: pointer;
+}
+.wave2b button[aria-current="page"] {
+  background: #173443;
+  color: white;
+}
+.wave2b button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.wave2bTabs span {
+  padding: 6px 10px;
+  background: #f1f6f7;
+  font-size: 12px;
+  border-radius: 5px;
+}
+.wave2bCards,
+.wave2bForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.wave2b pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 340px;
+  overflow: auto;
+  font-size: 12px;
+  background: #f5f8fa;
+  padding: 12px;
+}
+.wave2b small {
+  overflow-wrap: anywhere;
+}
+.wave2bEditor header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wave2b table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.wave2b td,
+.wave2b th {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #dbe4e8;
+  overflow-wrap: anywhere;
+}
+.wave2bTableScroll {
+  overflow: auto;
+}

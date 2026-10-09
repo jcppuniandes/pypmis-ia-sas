@@ -1,0 +1,534 @@
+.workspaceOperationalShell {
+  background: #f3f6f8;
+  color: #102532;
+  min-height: 100vh;
+  padding: 14px;
+}
+
+.workspaceHeader {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cad7dd;
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(180px, 1fr) minmax(160px, 210px) minmax(360px, auto);
+  margin: 0 auto;
+  max-width: 1540px;
+  padding: 12px 16px;
+}
+.workspaceHeader > div,
+.workspaceSwitcher {
+  min-width: 0;
+}
+
+.workspaceSwitcher {
+  display: grid;
+  gap: 4px;
+}
+.workspaceSwitcher span {
+  color: #6b7d87;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.workspaceSwitcher select {
+  background: #f7fafb;
+  border: 1px solid #c5d4da;
+  border-radius: 7px;
+  color: #19333f;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 750;
+  min-height: 34px;
+  padding: 5px 8px;
+  width: 100%;
+}
+
+.workspaceBack {
+  align-items: center;
+  color: #1b596d;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.workspaceHeader h1 {
+  font-size: 1.25rem;
+  margin: 2px 0 0;
+}
+.workspaceHeader > div > span {
+  color: #607581;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.workspaceHeader dl {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+}
+.workspaceHeader dl div {
+  min-width: 78px;
+}
+.workspaceHeader dt {
+  color: #6b7d87;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.workspaceHeader dd {
+  font-size: 0.79rem;
+  font-weight: 800;
+  margin: 2px 0 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspaceBreadcrumb {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 8px auto;
+  max-width: 1540px;
+  padding: 0 4px;
+}
+.workspaceBreadcrumb span {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  font-size: 0.75rem;
+}
+.workspaceBreadcrumb a {
+  color: #285e6e;
+  font-weight: 700;
+  text-decoration: none;
+}
+.workspaceBreadcrumb b {
+  color: #9aaab2;
+}
+
+.workspaceOperationalGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 228px minmax(0, 1fr);
+  margin: 0 auto;
+  max-width: 1540px;
+}
+
+.workspaceNavigator {
+  align-self: start;
+  background: #fff;
+  border: 1px solid #cad7dd;
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  position: sticky;
+  top: 10px;
+}
+.workspaceNavigator header {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  padding: 8px;
+}
+.workspaceNavigator button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: #203641;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 7px 9px;
+  text-align: left;
+}
+.workspaceNavigator button:hover:not(:disabled),
+.workspaceNavigator button.active {
+  background: #e6f4f3;
+  color: #075d61;
+}
+.workspaceNavigator button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+.workspaceNavigator button span {
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+.workspaceNavigator button small {
+  color: #6a7d86;
+  font-size: 0.58rem;
+  font-weight: 900;
+}
+
+.workspaceOperationalContent {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.workspaceHomeFacts {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.workspaceHomeFacts article,
+.workspaceHomeSection,
+.workspaceHomeEmptyGrid article,
+.workspaceBridge,
+.workspacePlanned,
+.workspaceCapabilityEmpty {
+  background: #fff;
+  border: 1px solid #d4dfe4;
+  border-radius: 10px;
+}
+.workspaceHomeFacts article {
+  display: grid;
+  gap: 5px;
+  min-height: 120px;
+  padding: 14px;
+}
+.workspaceHomeFacts article svg {
+  color: #0d8f8b;
+}
+.workspaceHomeFacts span {
+  color: #657984;
+  font-size: 0.66rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.workspaceHomeFacts strong {
+  font-size: 1rem;
+}
+.workspaceHomeFacts small {
+  color: #526873;
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+.workspaceHomeSection {
+  padding: 14px;
+}
+.workspaceHomeSection header {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+}
+.workspaceHomeSection h2 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+.workspaceHomeSection.planned {
+  border-left: 4px solid #d58d12;
+}
+.workspaceModuleChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+.workspaceModuleChips span {
+  background: #e7f3f2;
+  border: 1px solid #bcdedc;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 6px 9px;
+}
+.workspaceHomeSection.planned .workspaceModuleChips span {
+  background: #fff6df;
+  border-color: #efd599;
+}
+.workspaceModuleChips em {
+  color: #6a7b84;
+  font-size: 0.75rem;
+}
+.workspaceHomeEmptyGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.workspaceHomeEmptyGrid article {
+  padding: 12px;
+}
+.workspaceHomeEmptyGrid h3 {
+  font-size: 0.8rem;
+  margin: 0 0 6px;
+}
+.workspaceHomeEmptyGrid p {
+  color: #657984;
+  font-size: 0.72rem;
+  margin: 0;
+}
+.workspaceBridge,
+.workspacePlanned,
+.workspaceCapabilityEmpty {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+  min-height: 280px;
+  padding: 30px;
+  text-align: center;
+}
+.workspaceBridge h2,
+.workspacePlanned h2,
+.workspaceCapabilityEmpty h2 {
+  margin: 8px 0 0;
+}
+.workspaceBridge p,
+.workspacePlanned p,
+.workspaceCapabilityEmpty p {
+  color: #5b6f79;
+  margin: 5px 0 14px;
+}
+.workspaceBridge a {
+  background: #102a3a;
+  border-radius: 7px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 9px 12px;
+  text-decoration: none;
+}
+.workspaceContextLoading,
+.workspaceContextError {
+  align-content: center;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-height: 100vh;
+}
+.workspaceContextError a {
+  color: #0b6c77;
+  font-weight: 800;
+}
+
+@media (max-width: 1350px) {
+  .workspaceHeader {
+    grid-template-columns: auto minmax(220px, 1fr) minmax(180px, 230px);
+  }
+  .workspaceHeader dl {
+    border-top: 1px solid #e2e9ec;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-top: 9px;
+  }
+}
+
+.myWorkspacesPage {
+  display: grid;
+  gap: 12px;
+}
+.workspaceDirectoryBack {
+  align-items: center;
+  align-self: start;
+  background: transparent;
+  border: 0;
+  color: #155c6c;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  gap: 6px;
+  justify-self: start;
+}
+.myWorkspacesFilters {
+  background: #fff;
+  border: 1px solid #d1dde2;
+  border-radius: 10px;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  padding: 12px;
+}
+.myWorkspacesFilters label {
+  display: grid;
+  gap: 4px;
+}
+.myWorkspacesFilters span {
+  color: #607580;
+  font-size: 0.63rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.myWorkspacesFilters input,
+.myWorkspacesFilters select {
+  background: #f8fafb;
+  border: 1px solid #cbd8de;
+  border-radius: 7px;
+  color: #142e3a;
+  font: inherit;
+  font-size: 0.75rem;
+  min-height: 34px;
+  padding: 5px 7px;
+}
+.recentWorkspaces,
+.myWorkspacesResults {
+  background: #fff;
+  border: 1px solid #d1dde2;
+  border-radius: 10px;
+  padding: 12px;
+}
+.recentWorkspaces > header,
+.myWorkspacesResults > header {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.recentWorkspaces > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.recentWorkspaces button {
+  background: #f3f9f9;
+  border: 1px solid #c2dcdd;
+  border-radius: 8px;
+  color: #183440;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 2px;
+  min-width: 190px;
+  padding: 9px;
+  text-align: left;
+}
+.recentWorkspaces button span {
+  color: #637781;
+  font-size: 0.68rem;
+}
+.myWorkspaceCards {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.myWorkspaceCards article {
+  border: 1px solid #d6e0e4;
+  border-radius: 9px;
+  display: grid;
+  gap: 11px;
+  padding: 13px;
+}
+.myWorkspaceCardTitle {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto 1fr auto;
+}
+.myWorkspaceCardTitle span {
+  color: #637983;
+  font-size: 0.62rem;
+  font-weight: 850;
+}
+.myWorkspaceCardTitle h3 {
+  font-size: 0.9rem;
+  margin: 1px 0 0;
+}
+.myWorkspaceCardTitle b {
+  background: #e3f4eb;
+  border-radius: 999px;
+  color: #14633c;
+  font-size: 0.6rem;
+  padding: 5px 7px;
+}
+.myWorkspaceCardTitle b[data-status="PENDING"] {
+  background: #fff0cc;
+  color: #7d5200;
+}
+.myWorkspaceCardTitle b[data-status="ARCHIVED"] {
+  background: #e8ecee;
+  color: #53656e;
+}
+.myWorkspaceCards dl {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+}
+.myWorkspaceCards dt {
+  color: #6a7e87;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.myWorkspaceCards dd {
+  align-items: center;
+  display: flex;
+  font-size: 0.72rem;
+  font-weight: 700;
+  gap: 4px;
+  margin: 2px 0 0;
+}
+.myWorkspaceCards article > button {
+  align-items: center;
+  background: #102a3a;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  gap: 6px;
+  justify-self: start;
+  padding: 8px 10px;
+}
+.myWorkspaceCards article > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.myWorkspacesEmpty {
+  color: #687b84;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1000px) {
+  .workspaceHeader {
+    grid-template-columns: 1fr;
+  }
+  .workspaceHeader dl {
+    flex-wrap: wrap;
+  }
+  .workspaceOperationalGrid {
+    grid-template-columns: 1fr;
+  }
+  .workspaceNavigator {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    position: static;
+  }
+  .workspaceNavigator header {
+    grid-column: 1 / -1;
+  }
+  .workspaceHomeFacts,
+  .workspaceHomeEmptyGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .myWorkspacesFilters,
+  .myWorkspaceCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .workspaceHomeFacts,
+  .workspaceHomeEmptyGrid {
+    grid-template-columns: 1fr;
+  }
+  .myWorkspacesFilters,
+  .myWorkspaceCards {
+    grid-template-columns: 1fr;
+  }
+}

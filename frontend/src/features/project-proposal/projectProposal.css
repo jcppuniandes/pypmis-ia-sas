@@ -85,6 +85,15 @@
   overflow: hidden;
   align-self: start;
 }
+
+.proposalLineage {
+  background: #eef7f6;
+  border-left: 3px solid #008f8a;
+  color: #2d4c59;
+  font-size: 0.8rem;
+  margin: 10px 0;
+  padding: 8px 10px;
+}
 .proposalRegister {
   display: flex;
   flex-direction: column;

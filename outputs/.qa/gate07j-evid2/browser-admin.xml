@@ -1,0 +1,6 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="22.939649">
+<testsuite name="investment-evidence-policy.spec.ts" timestamp="2026-09-21T00:38:02.485Z" hostname="chromium" tests="1" failures="0" skipped="0" time="17.904" errors="0">
+<testcase name="Gate 07J-EVID Investment Decision Evidence Policy browser › ADMIN clone, preview, ETag recovery and publish preserve the FID boundary" classname="investment-evidence-policy.spec.ts" time="17.904">
+</testcase>
+</testsuite>
+</testsuites>

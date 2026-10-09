@@ -257,7 +257,11 @@ from app.domain.schemas import (
     WorkPackageOut,
     WorkPackageReadinessUpdate,
 )
+from app.modules.basic_data import router as basic_data_router
+from app.modules.business_analysis import router as business_analysis_router
 from app.modules.business_case import router as business_case_router
+from app.modules.capital_planning import router as capital_planning_router
+from app.modules.commercial_strategy import router as commercial_strategy_router
 from app.modules.economic_financial_model import router as economic_financial_model_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
@@ -266,6 +270,8 @@ from app.modules.idea_demand import router as idea_demand_router
 from app.modules.investment_decision import router as investment_decision_router
 from app.modules.investment_evidence_policy import router as investment_evidence_policy_router
 from app.modules.investment_gate_preparation import router as investment_gate_preparation_router
+from app.modules.owner_capability import router as owner_capability_router
+from app.modules.qra_foundation import router as qra_foundation_router
 from app.modules.permit_readiness import router as permit_readiness_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
@@ -275,12 +281,15 @@ from app.modules.portfolio_convergence import router as portfolio_convergence_ro
 from app.modules.portfolio_evaluation import router as portfolio_evaluation_router
 from app.modules.portfolio_planning import router as portfolio_planning_router
 from app.modules.portfolio_resource import router as portfolio_resource_router
+from app.modules.portfolio_review import router as portfolio_review_router
 from app.modules.post_fid_governance import router as post_fid_governance_router
 from app.modules.project_creation import router as project_creation_router
 from app.modules.project_definition import router as project_definition_router
 from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
+from app.modules.risk_governance import router as risk_governance_router
 from app.modules.risk_readiness import router as risk_readiness_router
+from app.modules.strategic_benefits import router as strategic_benefits_router
 from app.modules.strategic_gate import router as strategic_gate_router
 from app.modules.workspace_context import router as workspace_context_router
 from app.services.ai_insights import AIInsightService
@@ -308,20 +317,32 @@ router.include_router(portfolio_analysis_router.router, tags=["portfolio-analysi
 router.include_router(portfolio_budget_router.router, tags=["portfolio-budget"])
 router.include_router(portfolio_resource_router.router, tags=["portfolio-resource"])
 router.include_router(portfolio_convergence_router.router, tags=["portfolio-convergence"])
+router.include_router(portfolio_review_router.router, tags=["portfolio-review"])
 router.include_router(investment_gate_preparation_router.router, tags=["investment-gate-preparation"])
 router.include_router(investment_decision_router.router, tags=["investment-decision"])
 router.include_router(investment_evidence_policy_router.router, tags=["investment-evidence-policy"])
 router.include_router(project_definition_router.router, tags=["project-definition"])
 router.include_router(risk_readiness_router.router, tags=["risk-readiness"])
+router.include_router(risk_governance_router.router, tags=["risk-governance"])
+router.include_router(basic_data_router.router, prefix="/basic-data", tags=["basic-data"])
+router.include_router(owner_capability_router.router, prefix="/owner-capability", tags=["owner-capability"])
+router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
 router.include_router(permit_readiness_router.router, tags=["permit-readiness"])
 router.include_router(post_fid_governance_router.router, tags=["post-fid-governance"])
 router.include_router(business_case_router.router, tags=["business-case"])
+router.include_router(strategic_benefits_router.router, tags=["strategic-benefits"])
+router.include_router(strategic_benefits_router.project_router, tags=["strategic-benefits"])
+router.include_router(commercial_strategy_router.router, tags=["commercial-strategy"])
+router.include_router(commercial_strategy_router.project_router, tags=["commercial-strategy"])
 router.include_router(economic_financial_model_router.router, tags=["economic-financial-model"])
 router.include_router(physical_workspace_creation_router.router, tags=["physical-workspace-creation"])
 router.include_router(physical_workspace_initialization_router.router, tags=["physical-workspace-initialization"])
 router.include_router(project_workspace_initialization_router.router, tags=["project-workspace-initialization"])
 router.include_router(workspace_context_router.router, tags=["workspace-context"])
+router.include_router(capital_planning_router.router, tags=["capital-planning"])
 router.include_router(idea_demand_router.router, tags=["idea-demand"])
+router.include_router(business_analysis_router.router, tags=["business-analysis"])
+router.include_router(business_analysis_router.idea_router, tags=["business-analysis"])
 router.include_router(project_proposal_router.router, tags=["project-proposal"])
 router.include_router(project_proposal_router.idea_router, tags=["project-proposal"])
 router.include_router(strategic_gate_router.router, tags=["strategic-gate"])

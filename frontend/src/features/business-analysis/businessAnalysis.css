@@ -1,0 +1,651 @@
+.baWorkspace {
+  color: #132532;
+  display: grid;
+  gap: 14px;
+}
+
+.baWorkspace button,
+.baWorkspace input,
+.baWorkspace select,
+.baWorkspace textarea {
+  font: inherit;
+}
+
+.baPrimary,
+.baSecondary,
+.baLinkButton,
+.baActions button,
+.baQueues button,
+.baDrawer button {
+  align-items: center;
+  border: 1px solid #c7d3da;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 7px;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.baPrimary {
+  background: #07334a;
+  border-color: #07334a;
+  color: white;
+}
+
+.baSecondary,
+.baActions button,
+.baDrawer button {
+  background: white;
+  color: #183343;
+}
+
+.baQueues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.baQueues button {
+  background: #f6f9fa;
+  border-color: transparent;
+  font-size: 0.82rem;
+}
+
+.baQueues button.active {
+  background: #dff2f1;
+  border-color: #8bc8c4;
+  color: #006e72;
+  font-weight: 700;
+}
+
+.baToolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.baToolbar input,
+.baDrawer input,
+.baDrawer select,
+.baDrawer textarea {
+  background: white;
+  border: 1px solid #cbd6dc;
+  border-radius: 6px;
+  color: #132532;
+  padding: 9px 10px;
+  width: 100%;
+}
+
+.baToolbar input {
+  max-width: 360px;
+}
+
+.baToolbar span,
+.baDetail small,
+.baDetail span,
+.baDrawer p {
+  color: #60727e;
+  font-size: 0.78rem;
+}
+
+.baMessage {
+  background: #fff4df;
+  border-left: 4px solid #c57500;
+  padding: 10px 12px;
+}
+
+.baGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 2fr);
+}
+
+.baRegister,
+.baDetail {
+  background: white;
+  border: 1px solid #d5dfe4;
+  border-radius: 9px;
+  min-width: 0;
+}
+
+.baRegister {
+  align-content: start;
+  display: grid;
+  max-height: 74vh;
+  overflow: auto;
+  padding: 7px;
+}
+
+.baLoadMore {
+  justify-content: center;
+  margin: 0.65rem;
+  min-height: 2.4rem;
+}
+
+.baRow {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #e6ecef;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  padding: 12px 10px;
+  text-align: left;
+}
+
+.baRow:hover,
+.baRow.selected {
+  background: #eaf6f5;
+}
+
+.baRow.selected {
+  box-shadow: inset 3px 0 #00958f;
+}
+
+.baState {
+  background: #e8eff2;
+  border-radius: 999px;
+  color: #40545f;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 7px;
+  width: fit-content;
+}
+
+.baState.state-completed {
+  background: #dcf4e5;
+  color: #147342;
+}
+
+.baState.state-returned,
+.baState.state-voided {
+  background: #fde5e2;
+  color: #a52c1d;
+}
+
+.baState.state-in_review,
+.baState.state-submitted {
+  background: #e6efff;
+  color: #275da8;
+}
+
+.baDetail {
+  padding: 16px;
+}
+
+.baDetailHeader,
+.baOptions > header {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.baDetail h3,
+.baDetail h4 {
+  margin: 3px 0;
+}
+
+.baSections {
+  display: flex;
+  gap: 6px;
+  margin: 15px 0;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.baSections a {
+  background: #f1f5f7;
+  border-radius: 999px;
+  color: #324b59;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  padding: 5px 9px;
+  text-decoration: none;
+}
+
+.baSections > span {
+  background: #f1f5f7;
+  border-radius: 999px;
+  color: #324b59;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  padding: 5px 9px;
+}
+
+.baSectionButtons button {
+  background: #f1f5f7;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: #324b59;
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  padding: 5px 9px;
+}
+
+.baSectionButtons button.active {
+  background: #dff2f1;
+  border-color: #75bbb7;
+  color: #006e72;
+  font-weight: 800;
+}
+
+.baFacts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.baFacts article {
+  background: #f8fafb;
+  border: 1px solid #dce5e9;
+  border-radius: 7px;
+  display: grid;
+  gap: 5px;
+  min-height: 98px;
+  padding: 11px;
+}
+
+.baFacts article > svg {
+  color: #008f8a;
+}
+
+.baFacts strong,
+.baFacts small {
+  overflow-wrap: anywhere;
+}
+
+.baOptions,
+.baReadiness,
+.baRecommendation,
+.baHistory {
+  border-top: 1px solid #e1e8eb;
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.baOptions > div {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.baOptions article {
+  border: 1px solid #d5dfe4;
+  border-radius: 7px;
+  padding: 10px;
+}
+
+.baOptions article.recommended {
+  background: #ebf8f1;
+  border-color: #71bd91;
+}
+
+.baRecommendation {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+}
+
+.baRecommendation > svg {
+  color: #008f8a;
+  margin-top: 4px;
+}
+
+.baRecommendation div {
+  display: grid;
+  gap: 4px;
+}
+
+.baRecommendation p {
+  margin: 0;
+}
+
+.baReadiness {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.baReadiness > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.baReadiness > div:first-child {
+  display: grid;
+}
+
+.baReadiness > div:last-child span {
+  background: #fff0da;
+  border-radius: 4px;
+  color: #8c5200;
+  padding: 4px 7px;
+}
+
+.baActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.baLinkButton {
+  background: #e4f4f3;
+  color: #006f72;
+  text-decoration: none;
+}
+
+.baHistory header,
+.baHistory p {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.baAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.baAdminGrid > article {
+  background: white;
+  border: 1px solid #d5dfe4;
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+}
+
+.baAdminGrid h3,
+.baAdminGrid p {
+  margin: 0;
+}
+
+.baAdminGrid footer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.baAdminGrid footer strong {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.baConfigPreview {
+  align-items: end;
+  background: white;
+  border: 1px solid #d5dfe4;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(260px, 1fr) 180px auto auto;
+  padding: 14px;
+}
+
+.baConfigPreview > div,
+.baConfigPreview output {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+}
+
+.baConfigPreview p,
+.baBoundary {
+  margin: 3px 0 0;
+}
+
+.baConfigPreview label,
+.baConfigPreview output {
+  display: grid;
+  gap: 4px;
+}
+
+.baBoundary {
+  border-top: 1px solid #d5dfe4;
+  padding-top: 12px;
+}
+
+.baStructuredEditor {
+  display: grid;
+  gap: 12px;
+}
+
+.baMatrixHeader,
+.baMatrixRow {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(180px, 1.5fr) 100px auto;
+}
+
+.baMatrixHeader {
+  color: #536a77;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0 4px;
+  text-transform: uppercase;
+}
+
+.baMatrixRow {
+  border-top: 1px solid #e3eaed;
+  padding-top: 8px;
+}
+
+.baMatrixRow button {
+  color: #9e2b21;
+}
+
+.baSectionReadOnly,
+.baAdvancedJson {
+  background: #f7f9fa;
+  border: 1px solid #d8e2e7;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.baSectionReadOnly h4,
+.baSectionReadOnly p {
+  margin: 0 0 8px;
+}
+
+.baSectionReadOnly pre,
+.baAdvancedJson pre {
+  background: #132532;
+  border-radius: 6px;
+  color: #eaf5f4;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.75rem;
+  max-height: 260px;
+  overflow: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
+.baAdvancedJson summary {
+  color: #294553;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.baHistory p {
+  border-bottom: 1px solid #edf1f3;
+  margin: 0;
+  padding: 7px 0;
+}
+
+.baEmpty {
+  align-items: center;
+  color: #647782;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-height: 180px;
+  padding: 24px;
+  text-align: center;
+}
+
+.baDrawerBackdrop {
+  align-items: stretch;
+  background: rgb(5 22 31 / 58%);
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 1200;
+}
+
+.baDrawer {
+  background: white;
+  box-shadow: -10px 0 30px rgb(0 0 0 / 15%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 620px;
+  overflow: auto;
+  padding: 20px;
+  width: min(94vw, 620px);
+}
+
+.baDrawer.baEditor {
+  max-width: 900px;
+  width: min(96vw, 900px);
+}
+
+.baDrawer > header,
+.baDrawer > footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.baDrawer h3 {
+  margin: 3px 0;
+}
+
+.baDrawer label {
+  display: grid;
+  gap: 5px;
+}
+
+.baDrawer label > span,
+.baDrawer legend {
+  color: #294553;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.baDrawer textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.baEditorScroll {
+  display: grid;
+  gap: 12px;
+  overflow: auto;
+}
+
+.baEditor fieldset {
+  border: 1px solid #d8e2e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 13px;
+}
+
+.baEditor legend {
+  padding: 0 5px;
+}
+
+.baFormGrid,
+.baRatings {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.baChecks {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.baChecks label {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.baChecks input {
+  width: auto;
+}
+
+.baOptionEditor {
+  background: #f8fafb;
+  border: 1px solid #d8e2e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.baDanger {
+  color: #a52c1d !important;
+  justify-self: start;
+}
+
+@media (max-width: 980px) {
+  .baGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .baRegister {
+    max-height: 300px;
+  }
+
+  .baAdminGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .baConfigPreview {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .baFacts,
+  .baOptions > div,
+  .baFormGrid,
+  .baRatings,
+  .baChecks,
+  .baAdminGrid,
+  .baConfigPreview {
+    grid-template-columns: 1fr;
+  }
+
+  .baMatrixHeader {
+    display: none;
+  }
+
+  .baMatrixRow {
+    grid-template-columns: 1fr;
+  }
+
+  .baToolbar,
+  .baReadiness {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

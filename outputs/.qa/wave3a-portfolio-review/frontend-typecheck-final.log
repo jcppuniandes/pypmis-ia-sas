@@ -1,0 +1,2 @@
+Wave3A final TypeScript verification: tsc --noEmit
+RESULT typecheck=0

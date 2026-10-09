@@ -1,0 +1,351 @@
+.portfolioBudget {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.budgetToolbar,
+.budgetTargetForm,
+.budgetScenarioForm {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 10px 12px;
+}
+.budgetDependencyForm {
+  align-items: end;
+  background: #f8fafb;
+  border: 1px solid #d8e0e7;
+  border-radius: 9px;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(6, minmax(135px, 1fr));
+  margin-top: 10px;
+  padding: 10px;
+}
+.budgetWaterlineFilters {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  margin: 10px 0;
+}
+.budgetWaterlineFilters label {
+  color: #536878;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+}
+.budgetWaterlineFilters select {
+  background: #fff;
+  border: 1px solid #cbd6de;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.budgetDependencyForm label {
+  color: #536878;
+  display: grid;
+  font-size: 0.74rem;
+  font-weight: 800;
+  gap: 3px;
+}
+.budgetDependencyForm input,
+.budgetDependencyForm select {
+  background: #fff;
+  border: 1px solid #cbd6de;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.budgetDependencyForm button {
+  min-height: 34px;
+}
+.budgetGridScroll tr.belowWaterline td {
+  background: #f5f7f9;
+  color: #607383;
+}
+.budgetGridScroll progress {
+  accent-color: #0f8f8a;
+  display: block;
+  height: 7px;
+  margin-top: 4px;
+  width: 150px;
+}
+.budgetToolbar nav {
+  display: flex;
+  flex: 1;
+  gap: 5px;
+}
+.budgetToolbar button,
+.budgetTargetForm button,
+.budgetScenarioForm button,
+.budgetActions button,
+.budgetSectionHeader button,
+.budgetGridScroll button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cbd6de;
+  border-radius: 7px;
+  color: #102536;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 750;
+  gap: 5px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.budgetToolbar nav button.active,
+.budgetScenarioTabs button.active {
+  background: #102536;
+  border-color: #102536;
+  color: #fff;
+}
+.budgetToolbar label,
+.budgetTargetForm label,
+.budgetScenarioForm label,
+.budgetPolicyGrid label {
+  color: #536878;
+  display: grid;
+  font-size: 0.74rem;
+  font-weight: 800;
+  gap: 3px;
+}
+.budgetToolbar select,
+.budgetTargetForm input,
+.budgetScenarioForm input,
+.budgetScenarioForm select,
+.budgetPolicyGrid input,
+.budgetPolicyGrid select,
+.budgetGridScroll select,
+.budgetGridScroll input {
+  background: #fff;
+  border: 1px solid #cbd6de;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.budgetSurface,
+.budgetReadiness {
+  background: #fff;
+  border: 1px solid #d8e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+.budgetSectionHeader {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+.budgetSectionHeader span,
+.budgetReadiness > span {
+  color: #637584;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.budgetSectionHeader h3,
+.budgetReadiness h3 {
+  margin: 2px 0 0;
+}
+.budgetActions,
+.budgetChips,
+.budgetBoundary,
+.budgetComparePicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.budgetChips span,
+.budgetBoundary span {
+  background: #eef4f7;
+  border-radius: 999px;
+  color: #304b5c;
+  font-size: 0.75rem;
+  padding: 6px 9px;
+}
+.budgetChips span.ready {
+  background: #e4f5ed;
+  color: #146c49;
+}
+.budgetChips span.blocked,
+.budgetChips span.stale {
+  background: #fff0e8;
+  color: #9a3d16;
+}
+.budgetOverview {
+  display: grid;
+  gap: 11px;
+}
+.budgetReadiness {
+  border-left: 4px solid #0f8f8a;
+}
+.budgetReadiness p {
+  margin: 7px 0;
+}
+.budgetReadiness small {
+  display: block;
+  color: #9a3d16;
+}
+.budgetCardList,
+.budgetScenarioTabs {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 11px;
+}
+.budgetCardList article,
+.budgetScenarioTabs button {
+  background: #f8fafb;
+  border: 1px solid #d8e0e7;
+  border-radius: 8px;
+  color: #102536;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  text-align: left;
+}
+.budgetCardList article > span,
+.budgetScenarioTabs span {
+  color: #617384;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.budgetCardList article > strong {
+  font-size: 1.1rem;
+}
+.budgetWarning,
+.budgetBlocker {
+  border-left: 3px solid #d17a00;
+  margin-top: 8px;
+  padding: 7px 9px;
+}
+.budgetWarning {
+  background: #fff7e9;
+  color: #805000;
+}
+.budgetBlocker {
+  background: #fff0ee;
+  border-color: #c2413b;
+  color: #8d2c27;
+}
+.budgetGridScroll {
+  margin-top: 10px;
+  overflow: auto;
+}
+.budgetGridScroll table,
+.budgetSplit table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+.budgetGridScroll table {
+  min-width: 1500px;
+}
+.budgetGridScroll th,
+.budgetGridScroll td,
+.budgetSplit th,
+.budgetSplit td {
+  border-bottom: 1px solid #e2e8ed;
+  padding: 7px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.budgetGridScroll th,
+.budgetSplit th {
+  background: #eef4f7;
+  color: #334b5c;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+.budgetSplit {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1.3fr 1fr;
+  margin-top: 12px;
+}
+.budgetSplit section {
+  background: #f8fafb;
+  border-radius: 8px;
+  padding: 10px;
+}
+.budgetSplit h4 {
+  margin: 0 0 8px;
+}
+.budgetSplit pre,
+.budgetSurface pre {
+  font-size: 0.72rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+.budgetComparePicker {
+  margin: 10px 0;
+}
+.budgetComparePicker label {
+  background: #f4f7f9;
+  border-radius: 7px;
+  padding: 7px 9px;
+}
+.budgetAdminGrid {
+  align-items: start;
+}
+.budgetPolicyGrid {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  margin-top: 12px;
+}
+.budgetPolicyGrid .wide {
+  grid-column: 1 / -1;
+}
+.budgetJson {
+  margin-top: 12px;
+}
+.budgetJson textarea {
+  border: 1px solid #cbd6de;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin-top: 7px;
+  padding: 9px;
+  resize: vertical;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .budgetSplit {
+    grid-template-columns: 1fr;
+  }
+  .budgetPolicyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .budgetDependencyForm {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .budgetWaterlineFilters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 620px) {
+  .budgetPolicyGrid {
+    grid-template-columns: 1fr;
+  }
+  .budgetPolicyGrid .wide {
+    grid-column: auto;
+  }
+  .budgetToolbar nav {
+    flex-basis: 100%;
+    overflow-x: auto;
+  }
+  .budgetDependencyForm {
+    grid-template-columns: 1fr;
+  }
+  .budgetWaterlineFilters {
+    grid-template-columns: 1fr;
+  }
+}

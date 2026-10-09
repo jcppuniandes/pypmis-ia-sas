@@ -624,6 +624,7 @@ class ScheduleImport(Base):
         self.cost_loaded_activity_count = self.cost_loaded_activity_count or 0
         self.cost_loaded_activity_percent = self.cost_loaded_activity_percent or 0
         self.cost_source_summary = self.cost_source_summary or {}
+        self.source_metadata = self.source_metadata or {}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     tenant_id: Mapped[int] = mapped_column(index=True)
@@ -643,6 +644,9 @@ class ScheduleImport(Base):
     cost_loaded_activity_count: Mapped[int] = mapped_column(Integer, default=0)
     cost_loaded_activity_percent: Mapped[float] = mapped_column(Float, default=0)
     cost_source_summary: Mapped[dict] = mapped_column(JSON, default=dict)
+    # Captured from new manual source imports only. Legacy imports remain
+    # empty; readiness consumers must never invent calendars or durations.
+    source_metadata: Mapped[dict] = mapped_column(JSON, default=dict)
     imported_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 

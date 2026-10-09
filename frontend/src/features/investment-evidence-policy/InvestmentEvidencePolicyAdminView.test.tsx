@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   overview: vi.fn(),
   preview: vi.fn(),
   clone: vi.fn(),
+  cloneGate07jEvid2: vi.fn(),
   save: vi.fn(),
   publish: vi.fn(),
   portfolioOptions: vi.fn(),
@@ -185,26 +186,37 @@ describe("Gate 07J-EVID Investment Decision Evidence Policy", () => {
       persisted: false,
       final_output: "READY_FOR_INVESTMENT_DECISION_EVIDENCE_POLICY",
     });
+    mocks.cloneGate07jEvid2.mockResolvedValue({
+      ...draft,
+      id: 802,
+      revision: 2,
+      content_json: {
+        ...content,
+        decision_criterion_policy: { policy_code: "GATE07J-EVID-2", criteria_by_profile: {} },
+      },
+    });
   });
 
   it("shows the contextual matrix and controlled provider registry", async () => {
     const user = userEvent.setup();
     render(<InvestmentEvidencePolicyAdminView token="token" />);
-    expect(await screen.findByRole("heading", { name: "Investment Decision Evidence Policy" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Evidence Matrix" }));
+    expect(await screen.findByRole("heading", { name: "Evidence & Decision Policy" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Evidence Policy" }));
     const matrix = screen.getByRole("table");
     expect(within(matrix).getAllByText("A · Governed source required").length).toBeGreaterThan(0);
     expect(within(matrix).getByText("C · Not required")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Provider Registry" }));
     expect(screen.getByText("GATE07I_PORTFOLIO_RECOMMENDATION")).toBeInTheDocument();
     expect(screen.getByText("RISK_READINESS_PROVIDER")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /approve investment|fid|go|hold|kill/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /approve investment|\bfid\b|\bgo\b|\bhold\b|\bkill\b/i })
+    ).not.toBeInTheDocument();
   });
 
   it("runs a non-persistent preview and exposes the deterministic next provider", async () => {
     const user = userEvent.setup();
     render(<InvestmentEvidencePolicyAdminView token="token" />);
-    await screen.findByRole("heading", { name: "Investment Decision Evidence Policy" });
+    await screen.findByRole("heading", { name: "Evidence & Decision Policy" });
     await user.click(
       within(screen.getByRole("group", { name: "Evidence policy actions" })).getByRole("button", {
         name: "Preview",
@@ -215,5 +227,23 @@ describe("Gate 07J-EVID Investment Decision Evidence Policy", () => {
     expect(screen.getByText("SOURCE_PROVIDER_MISSING")).toBeInTheDocument();
     expect(screen.getAllByText(/RISK_READINESS_PROVIDER/)).not.toHaveLength(0);
     expect(screen.getByText("false")).toBeInTheDocument();
+  });
+
+  it("uses the dedicated idempotent Gate07J-EVID-2 clone operation", async () => {
+    const published = { ...draft, status: "published" as const };
+    mocks.overview.mockResolvedValueOnce({
+      configurations: [published],
+      providers,
+      missing_providers: [],
+      required_adr_decisions: [],
+      allowed_actions: [],
+      boundaries: ["NO_CLASS_A_TO_CLASS_B_FALLBACK", "NO_INVESTMENT_DECISION_OR_FID"],
+    });
+    const user = userEvent.setup();
+    render(<InvestmentEvidencePolicyAdminView token="token" />);
+    const actions = await screen.findByRole("group", { name: "Evidence policy actions" });
+    await user.click(within(actions).getByRole("button", { name: "Clone Gate07J-EVID-2 DRAFT" }));
+    await waitFor(() => expect(mocks.cloneGate07jEvid2).toHaveBeenCalledWith("token", published));
+    expect(screen.getByRole("status")).toHaveTextContent("clone-evid2 completed");
   });
 });

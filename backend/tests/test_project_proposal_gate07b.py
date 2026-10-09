@@ -108,7 +108,15 @@ def _accepted_idea(*, state: str = "ACCEPTED", with_objective: bool = True) -> t
             state=state,
             screening_json={},
             routing_json={},
-            configuration_snapshot_json={"effective": idea_config.content_json},
+            # Preserve the pre-Gate-07A-BA snapshot so this suite proves that
+            # grandfathered proposals remain valid after the new gate ships.
+            configuration_snapshot_json={
+                "effective": {
+                    key: value
+                    for key, value in idea_config.content_json.items()
+                    if key != "business_analysis_required_by_governance_model"
+                }
+            },
             attachment_refs_json=[{"reference": "IDEA-EVIDENCE-07B"}],
             accepted_evaluation_id=None,
             decision_reason="Accepted for Project Proposal" if state == "ACCEPTED" else None,

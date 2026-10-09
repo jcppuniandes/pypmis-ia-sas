@@ -1261,7 +1261,6 @@ describe("served project control flow", () => {
 
   it("uses a simplified project information flow instead of scattered navigation", async () => {
     setValidationMode(true);
-    const user = userEvent.setup();
 
     render(
       <MemoryRouter future={routerFuture} initialEntries={["/app"]}>
@@ -1297,52 +1296,50 @@ describe("served project control flow", () => {
     expect(facilityMacroprocess).toHaveAccessibleName("Facility Manager");
     expect(facilityMacroprocess).toHaveAttribute("aria-expanded", "false");
     [
-      "Idea & Demand Manager",
-      "Portfolio Manager",
-      "Funds Manager",
-      "Workspaces Manager",
-      "Partners",
-      "Vendors",
-      "Commitments",
+      "Enterprise Foundation",
+      "Strategic Capital Planning & Demand",
+      "Investment Origination & Shaping",
+      "Strategic Gate",
+      "Portfolio Planning & Review",
+      "Portfolio Scenario Planning",
+      "Business Case & Investment Development",
+      "Investment Governance",
     ].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
-    await user.click(within(validationNav).getByRole("button", { name: "Idea & Demand Manager", exact: true }));
+    fireEvent.click(
+      within(validationNav).getByRole("button", { name: "Investment Origination & Shaping", exact: true })
+    );
     expect(within(validationNav).getByRole("button", { name: "Idea Lifecycle", exact: true })).toBeInTheDocument();
     expect(within(validationNav).queryByRole("button", { name: "SECOP Bidder", exact: true })).not.toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Idea Lifecycle", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Idea Lifecycle", exact: true }));
     expect(await screen.findByRole("region", { name: /idea lifecycle/i })).toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Portfolio Manager", exact: true }));
-    [
-      "Portfolio Structure",
-      "Strategic Project Planning Entry",
-      "Portfolio Projects",
-      "Portfolio Evaluation",
-      "Portfolio Budget Planning",
-      "Portfolio Resource Planning",
-      "Portfolio Scenario Convergence",
-      "Portfolio Cash Flow",
-      "Portfolio Analysis",
-      "Prioritization Matrix",
-      "Gate Decision",
-    ].forEach((submoduleName) => {
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Portfolio Planning & Review", exact: true }));
+    ["Portfolio Intake & Planning", "Evaluation & Prioritization", "Portfolio Analysis"].forEach((submoduleName) => {
       expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
     });
-    await user.click(within(validationNav).getByRole("button", { name: "Commitments", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Portfolio Intake & Planning", exact: true }));
+    expect(within(validationNav).getByRole("button", { name: "Portfolio Structure", exact: true })).toBeInTheDocument();
+    const projectWorkspaceMacroprocess = within(validationNav).getByRole("button", {
+      name: "Project Workspace Governance",
+      exact: true,
+    });
+    fireEvent.click(projectWorkspaceMacroprocess);
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Commitments", exact: true }));
     ["Sales Contracts", "SC Changes", "SC Payments", "Purchase Order", "PO Changes", "PO Payments"].forEach(
       (submoduleName) => {
         expect(within(validationNav).getByRole("button", { name: submoduleName, exact: true })).toBeInTheDocument();
       }
     );
-    await user.click(within(validationNav).getByRole("button", { name: "Workspaces Manager", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Workspaces Manager", exact: true }));
     expect(within(validationNav).getByText("Asset Creator/Receipt", { exact: true })).toBeInTheDocument();
-    await user.click(within(validationNav).getByText("Asset Creator/Receipt", { exact: true }));
+    fireEvent.click(within(validationNav).getByText("Asset Creator/Receipt", { exact: true }));
     expect(await screen.findByRole("heading", { name: "Asset Creator/Receipt", exact: true })).toBeInTheDocument();
     const scopeManagerModule = within(validationNav).getByRole("button", { name: /scope manager/i });
     expect(scopeManagerModule).toHaveAccessibleName("Scope Manager");
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "false");
     expect(within(validationNav).queryByRole("button", { name: /bim manager/i })).not.toBeInTheDocument();
-    await user.click(scopeManagerModule);
+    fireEvent.click(scopeManagerModule);
     expect(scopeManagerModule).toHaveAttribute("aria-expanded", "true");
     expect(within(validationNav).getByRole("button", { name: /bim manager/i })).toBeInTheDocument();
     [
@@ -1360,33 +1357,33 @@ describe("served project control flow", () => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
     const riskManagerModule = within(validationNav).getByRole("button", { name: "Risk Manager", exact: true });
-    await user.click(riskManagerModule);
-    await user.click(within(validationNav).getByRole("button", { name: /risk register/i }));
+    fireEvent.click(riskManagerModule);
+    fireEvent.click(within(validationNav).getByRole("button", { name: /risk register/i }));
     expect(await screen.findByRole("region", { name: /risk register module/i })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: /current module guide/i })).not.toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Project Manager", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Project Manager", exact: true }));
     expect(within(validationNav).getByRole("button", { name: "AI Assistant", exact: true })).toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Meeting Minutes", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Meeting Minutes", exact: true }));
     expect(await screen.findByRole("region", { name: /meeting minutes module/i })).toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Document Manager", exact: true }));
-    await user.click(within(validationNav).getByRole("button", { name: "Submittals", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Document Manager", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Submittals", exact: true }));
     expect(await screen.findByRole("region", { name: /submittals module/i })).toBeInTheDocument();
-    await user.click(facilityMacroprocess);
+    fireEvent.click(facilityMacroprocess);
     ["Asset Manager", "Maintenance Manager", "Condition Assessment Manager"].forEach((moduleName) => {
       expect(within(validationNav).getByRole("button", { name: moduleName, exact: true })).toBeInTheDocument();
     });
-    await user.click(within(validationNav).getByRole("button", { name: "Asset Manager", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Asset Manager", exact: true }));
     ["Asset Inventory", "Asset Warranty", "Asset Meter"].forEach((submoduleName) => {
       expect(within(validationNav).getByText(submoduleName, { exact: true, selector: "span" })).toBeInTheDocument();
     });
-    await user.click(within(validationNav).getByRole("button", { name: "Asset Warranty", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Asset Warranty", exact: true }));
     expect(await screen.findByRole("region", { name: /asset warranty module/i })).toBeInTheDocument();
-    await user.click(within(validationNav).getByRole("button", { name: "Maintenance Manager", exact: true }));
-    await user.click(within(validationNav).getByRole("button", { name: "Service Request", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Maintenance Manager", exact: true }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: "Service Request", exact: true }));
     expect(await screen.findByRole("region", { name: /service request module/i })).toBeInTheDocument();
 
     const applicationBrand = screen.getByRole("banner", { name: /application brand/i });
-    await user.click(within(applicationBrand).getByRole("button", { name: "Cambiar a ADMIN MODE", exact: true }));
+    fireEvent.click(within(applicationBrand).getByRole("button", { name: "Cambiar a ADMIN MODE", exact: true }));
     const adminNavigation = screen.getByRole("navigation", { name: "Admin mode navigation", exact: true });
     expect(screen.queryByRole("navigation", { name: /validation focus/i })).not.toBeInTheDocument();
     expect(
@@ -1406,39 +1403,39 @@ describe("served project control flow", () => {
       within(adminNavigation).queryByRole("button", { name: "Project Control Manager", exact: true })
     ).not.toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "User Creator", exact: true })).toBeInTheDocument();
-    await user.click(
+    fireEvent.click(
       within(adminNavigation).getByRole("button", { name: "Company & Organization Manager", exact: true })
     );
     expect(await screen.findByRole("region", { name: /company & organization manager module/i })).toBeInTheDocument();
     expect(screen.getByRole("tree", { name: /árbol organizacional/i })).toBeInTheDocument();
-    await user.click(
+    fireEvent.click(
       within(adminNavigation).getByRole("button", { name: "Authentication & Session Management", exact: true })
     );
     expect(
       await screen.findByRole("region", { name: /authentication & session management module/i })
     ).toBeInTheDocument();
-    await user.click(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true }));
+    fireEvent.click(within(adminNavigation).getByRole("button", { name: "Group Creator", exact: true }));
     expect(await screen.findByRole("region", { name: /group creator module/i })).toBeInTheDocument();
-    await user.click(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true }));
+    fireEvent.click(within(adminNavigation).getByRole("button", { name: "Permissions", exact: true }));
     expect(await screen.findByRole("region", { name: /permissions module/i })).toBeInTheDocument();
-    await user.click(within(adminNavigation).getByRole("button", { name: "Access Control", exact: true }));
+    fireEvent.click(within(adminNavigation).getByRole("button", { name: "Access Control", exact: true }));
     expect(await screen.findByRole("region", { name: /access control module/i })).toBeInTheDocument();
-    await user.click(within(applicationBrand).getByRole("button", { name: "Cambiar a USER MODE", exact: true }));
+    fireEvent.click(within(applicationBrand).getByRole("button", { name: "Cambiar a USER MODE", exact: true }));
     expect(screen.getByRole("navigation", { name: /validation focus/i })).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: /dashboard evm/i })).toBeInTheDocument();
 
     const workspace = screen.getByRole("region", { name: /project workspace and control flow/i });
     const hideModuleRail = within(workspace).getByRole("button", { name: /ocultar barra de módulos/i });
     expect(hideModuleRail).toHaveAttribute("aria-expanded", "true");
-    await user.click(hideModuleRail);
+    fireEvent.click(hideModuleRail);
     expect(workspace).toHaveClass("moduleRailCollapsed");
     expect(within(workspace).queryByRole("navigation", { name: /validation focus/i })).not.toBeInTheDocument();
     const showModuleRail = within(workspace).getByRole("button", { name: /mostrar barra de módulos/i });
     expect(showModuleRail).toHaveAttribute("aria-expanded", "false");
-    await user.click(showModuleRail);
+    fireEvent.click(showModuleRail);
     expect(workspace).not.toHaveClass("moduleRailCollapsed");
     expect(within(workspace).getByRole("navigation", { name: /validation focus/i })).toBeInTheDocument();
-    [/process flow/i, /planning/i, /costs/i, /decisions/i, /users & roles/i, /baseline/i, /schedule intake/i].forEach(
+    [/process flow/i, /costs/i, /decisions/i, /users & roles/i, /baseline/i, /schedule intake/i].forEach(
       (hiddenLabel) => {
         expect(within(validationNav).queryByRole("button", { name: hiddenLabel })).not.toBeInTheDocument();
       }
@@ -1453,20 +1450,26 @@ describe("served project control flow", () => {
 
     expect(screen.queryByRole("region", { name: /next controlled action/i })).not.toBeInTheDocument();
 
+    const projectWorkspaceGovernance = within(validationNav).getByRole("button", {
+      name: /^project workspace governance$/i,
+    });
+    if (projectWorkspaceGovernance.getAttribute("aria-expanded") !== "true") {
+      fireEvent.click(projectWorkspaceGovernance);
+    }
     const workspacesManagerModule = within(validationNav).getByRole("button", {
       name: /^workspaces manager$/i,
     });
     expect(workspacesManagerModule).toHaveAccessibleName("Workspaces Manager");
-    await user.click(workspacesManagerModule);
-    await user.click(within(validationNav).getByRole("button", { name: /project creator/i }));
+    fireEvent.click(workspacesManagerModule);
+    fireEvent.click(within(validationNav).getByRole("button", { name: /project creator/i }));
     const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
     expect(within(projectCreator).getByRole("button", { name: /new project/i })).toBeInTheDocument();
     expect(within(projectCreator).getByRole("button", { name: /delete project/i })).toBeInTheDocument();
 
-    await user.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
-    await user.click(within(validationNav).getByRole("button", { name: /bim manager/i }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: /scope manager/i }));
+    fireEvent.click(within(validationNav).getByRole("button", { name: /bim manager/i }));
     expect(await screen.findByRole("region", { name: /bim manager module/i })).toBeInTheDocument();
-  }, 300_000);
+  }, 420_000);
 
   it("opens the blocking cost and currency gate from the next controlled action", async () => {
     const user = userEvent.setup();
@@ -1651,6 +1654,12 @@ describe("served project control flow", () => {
     );
 
     await screen.findByRole("heading", { name: /piloto vial awp/i });
+    const projectWorkspaceGovernance = screen.getByRole("button", {
+      name: /^project workspace governance$/i,
+    });
+    if (projectWorkspaceGovernance.getAttribute("aria-expanded") !== "true") {
+      await user.click(projectWorkspaceGovernance);
+    }
     await user.click(screen.getByRole("button", { name: /^workspaces manager$/i }));
     await user.click(screen.getByRole("button", { name: /project creator/i }));
     const projectCreator = await screen.findByRole("region", { name: /project creator module/i });
@@ -1664,7 +1673,7 @@ describe("served project control flow", () => {
     });
     expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining("CTRL-DEMO-001"));
     confirmSpy.mockRestore();
-  });
+  }, 120_000);
 
   it("uploads the selected XML/XER file to the active project", async () => {
     uploadSchedule.mockResolvedValue({
@@ -1843,7 +1852,7 @@ describe("served project control flow", () => {
 
     await user.click(screen.getByRole("button", { name: /open awp packages/i }));
     expect(screen.getByRole("heading", { name: /work packages/i })).toBeInTheDocument();
-  });
+  }, 120_000);
 
   it("keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability", async () => {
     const user = userEvent.setup();

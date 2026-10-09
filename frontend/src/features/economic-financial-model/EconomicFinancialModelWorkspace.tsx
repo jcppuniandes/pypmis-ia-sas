@@ -1,4 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect --
+ * Route selection and API-backed detail state are intentionally synchronized by effects.
+ */
 import { Calculator, CheckCircle2, Send } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";

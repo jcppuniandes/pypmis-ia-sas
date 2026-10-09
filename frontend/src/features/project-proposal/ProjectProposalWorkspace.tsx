@@ -297,6 +297,7 @@ export default function ProjectProposalWorkspace({ token, workspaceId }: { token
                 </strong>
                 <small>
                   {proposal.owning_workspace_name} · Source {proposal.source_idea_number}
+                  {proposal.source_business_analysis_id ? ` · BA ${proposal.source_business_analysis_id}` : ""}
                 </small>
               </button>
             ))
@@ -320,6 +321,12 @@ export default function ProjectProposalWorkspace({ token, workspaceId }: { token
                   {selected.status.replace(/_/g, " ")}
                 </span>
               </header>
+              {selected.source_business_analysis_id ? (
+                <p className="proposalLineage">
+                  Idea {selected.source_idea_number} → Business Analysis {selected.source_business_analysis_id} →
+                  Project Proposal {selected.proposal_number}
+                </p>
+              ) : null}
 
               <div className="proposalFacts">
                 <article>

@@ -1,0 +1,127 @@
+{
+  "renderer": "Microsoft Word COM SaveAs2 PDF + pypdfium2",
+  "official_renderer": "UNAVAILABLE_MISSING_LIBREOFFICE",
+  "pdf": {
+    "page_count": 11,
+    "blank_pages": [],
+    "edge_violations": 0,
+    "pages": [
+      {
+        "page": 1,
+        "characters": 416,
+        "words": 54,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&PMIS CONSTRUCTION AI",
+        "last_line": "Aplicación http://127.0.0.1:5173/app"
+      },
+      {
+        "page": 2,
+        "characters": 1573,
+        "words": 213,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 2"
+      },
+      {
+        "page": 3,
+        "characters": 1738,
+        "words": 234,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 3"
+      },
+      {
+        "page": 4,
+        "characters": 1204,
+        "words": 161,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 4"
+      },
+      {
+        "page": 5,
+        "characters": 1100,
+        "words": 147,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 5"
+      },
+      {
+        "page": 6,
+        "characters": 1111,
+        "words": 157,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 6"
+      },
+      {
+        "page": 7,
+        "characters": 1105,
+        "words": 178,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 7"
+      },
+      {
+        "page": 8,
+        "characters": 1078,
+        "words": 172,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 8"
+      },
+      {
+        "page": 9,
+        "characters": 702,
+        "words": 107,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 9"
+      },
+      {
+        "page": 10,
+        "characters": 1018,
+        "words": 137,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 10"
+      },
+      {
+        "page": 11,
+        "characters": 1350,
+        "words": 164,
+        "blank": false,
+        "edge_violations": 0,
+        "first_line": "P&Pmis Construction AI | Informe técnico Gate 04H",
+        "last_line": "Uso interno | 12 de agosto de 2026 | Página 11"
+      }
+    ]
+  },
+  "docx": {
+    "zip_test": null,
+    "tables": 20,
+    "manual_page_breaks": 10,
+    "text_characters": 11076,
+    "final_state_present": true,
+    "stale_state_present": false
+  },
+  "contact_sheet": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\artifacts\\enterprise_structure\\gate04h\\rendered_final\\contact-sheet.png",
+  "visual_review": "PASS_ALL_11_PAGES",
+  "visual_findings": {
+    "clipped_text": 0,
+    "overlapping_elements": 0,
+    "split_or_broken_tables": 0,
+    "inconsistent_headers_or_footers": 0,
+    "layout_result": "PASS"
+  }
+}

@@ -1,0 +1,1126 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 1264 >>
+stream
+q 0.97 g 0 0 595 842 re f Q
+q 0.97 G 0.5 w 0 0 595 842 re S Q
+BT
+0.28 g
+/F2 13 Tf
+54 720 Td (P&Pmis Ai SaaS) Tj
+ET
+BT
+0 g
+/F2 24 Tf
+54 676 Td (Estado actual de la app) Tj
+ET
+BT
+0.25 g
+/F1 13 Tf
+54 640 Td (Diagnostico tecnico y operativo verificado) Tj
+ET
+q 0.91 g 54 548 487 70 re f Q
+q 0.62 G 0.5 w 54 548 487 70 re S Q
+BT
+0 g
+/F2 15 Tf
+68 586 Td (Operativa localmente para piloto) Tj
+ET
+BT
+0.2 g
+/F1 9 Tf
+68 565 Td (Stack Docker arriba, API ready, frontend disponible, migraciones alineadas y E2E validado.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 496 Td (Fecha: 2026-05-15) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 480 Td (Repositorio: D:/Documentos/GitHub/pypmis ia sas) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+54 464 Td (Entorno: Docker Compose local) Tj
+ET
+q 0.94 g 54 710 487 70 re f Q
+q 0.65 G 0.5 w 54 710 487 70 re S Q
+BT
+0 g
+/F2 10 Tf
+66 763 Td (Alcance) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 747 Td (Este informe resume el estado observado y las correcciones aplicadas durante la) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 735 Td (revision. No reemplaza una auditoria de seguridad productiva ni un proceso de) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 723 Td (release formal.) Tj
+ET
+q 0.82 G 0.5 w 54 42 m 541 42 l S Q
+BT
+0.35 g
+/F1 7 Tf
+54 28 Td (P&Pmis Ai SaaS - Estado actual verificado) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+501 28 Td (Pagina 1) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 6938 >>
+stream
+BT
+0 g
+/F2 15 Tf
+54 776 Td (Resumen ejecutivo) Tj
+ET
+q 0.96 g 54 694 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 54 694 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+62 735 Td (Estado general) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+62 717 Td (Operativa) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+62 703 Td (Local / piloto) Tj
+ET
+q 0.96 g 219.33333333333334 694 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 219.33333333333334 694 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+227.33333333333334 735 Td (Readiness demo) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+227.33333333333334 717 Td (94.2%) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+227.33333333333334 703 Td (CTRL-DEMO-001) Tj
+ET
+q 0.96 g 384.6666666666667 694 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 384.6666666666667 694 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+392.6666666666667 735 Td (Backend tests) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+392.6666666666667 717 Td (112/112) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+392.6666666666667 703 Td (pytest OK) Tj
+ET
+q 0.96 g 54 624 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 54 624 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+62 665 Td (Frontend tests) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+62 647 Td (26/26) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+62 633 Td (Vitest OK) Tj
+ET
+q 0.96 g 219.33333333333334 624 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 219.33333333333334 624 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+227.33333333333334 665 Td (E2E) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+227.33333333333334 647 Td (1/1) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+227.33333333333334 633 Td (Playwright OK) Tj
+ET
+q 0.96 g 384.6666666666667 624 156.33333333333334 58 re f Q
+q 0.68 G 0.5 w 384.6666666666667 624 156.33333333333334 58 re S Q
+BT
+0.2 g
+/F2 7.5 Tf
+392.6666666666667 665 Td (Alembic) Tj
+ET
+BT
+0 g
+/F2 14 Tf
+392.6666666666667 647 Td (0017) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+392.6666666666667 633 Td (head aplicado) Tj
+ET
+q 0.94 g 54 530 487 82 re f Q
+q 0.65 G 0.5 w 54 530 487 82 re S Q
+BT
+0 g
+/F2 10 Tf
+66 595 Td (Lectura rapida) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 579 Td (La aplicacion queda utilizable en local para demostracion/piloto: servicios) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 567 Td (levantados, login demo funcional, dashboard, Cost Manager, RFQ, Document Control,) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 555 Td (AWP e Integrated Control responden. La rama sigue con muchos cambios sin commit y) Tj
+ET
+BT
+0 g
+/F1 8.5 Tf
+66 543 Td (debe cerrarse como release antes de publicar.) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 514 Td (Servicios y datos) Tj
+ET
+q 0.9 g 54 466 487 24 re f Q
+q 0.55 G 0.5 w 54 466 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 481 Td (Area) Tj
+ET
+q 0.68 G 0.5 w 184 490 m 184 466 l S Q
+BT
+0 g
+/F2 7 Tf
+189 481 Td (Estado) Tj
+ET
+q 0.68 G 0.5 w 254 490 m 254 466 l S Q
+BT
+0 g
+/F2 7 Tf
+259 481 Td (Evidencia) Tj
+ET
+q 0.78 G 0.5 w 54 434 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 456 Td (Docker Compose) Tj
+ET
+q 0.84 G 0.5 w 184 466 m 184 434 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 456 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 466 m 254 434 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 456 Td (api, db, redis, worker, beat y frontend arriba. API, DB y Redis) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+259 445.6 Td (con health healthy.) Tj
+ET
+q 0.78 G 0.5 w 54 402 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 424 Td (URLs) Tj
+ET
+q 0.84 G 0.5 w 184 434 m 184 402 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 424 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 434 m 254 402 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 424 Td (Frontend http://localhost:5173, API http://localhost:8000,) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+259 413.6 Td (OpenAPI http://localhost:8000/docs.) Tj
+ET
+q 0.78 G 0.5 w 54 370 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 392 Td (Base de datos) Tj
+ET
+q 0.84 G 0.5 w 184 402 m 184 370 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 392 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 402 m 254 370 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 392 Td (91 proyectos, 9 usuarios, 1929 audit logs en el entorno local) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+259 381.6 Td (revisado.) Tj
+ET
+q 0.78 G 0.5 w 54 342 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 360 Td (Migraciones) Tj
+ET
+q 0.84 G 0.5 w 184 370 m 184 342 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 360 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 370 m 254 342 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 360 Td (Alembic current y heads reportan 20260514_0017 \(head\).) Tj
+ET
+q 0.78 G 0.5 w 54 314 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 332 Td (Autenticacion demo) Tj
+ET
+q 0.84 G 0.5 w 184 342 m 184 314 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 332 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 342 m 254 314 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 332 Td (Usuario admin / ana.control@demo.local con clave 1234.) Tj
+ET
+q 0.78 G 0.5 w 54 286 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 304 Td (Readiness piloto) Tj
+ET
+q 0.84 G 0.5 w 184 314 m 184 286 l S Q
+BT
+0 g
+/F2 7.4 Tf
+189 304 Td (OK) Tj
+ET
+q 0.84 G 0.5 w 254 314 m 254 286 l S Q
+BT
+0 g
+/F1 7.4 Tf
+259 304 Td (Proyecto CTRL-DEMO-001 en ready con score 94.2%.) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 272 Td (Verificaciones ejecutadas) Tj
+ET
+q 0.9 g 54 224 487 24 re f Q
+q 0.55 G 0.5 w 54 224 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 239 Td (Comando) Tj
+ET
+q 0.68 G 0.5 w 276 248 m 276 224 l S Q
+BT
+0 g
+/F2 7 Tf
+281 239 Td (Resultado) Tj
+ET
+q 0.68 G 0.5 w 341 248 m 341 224 l S Q
+BT
+0 g
+/F2 7 Tf
+346 239 Td (Notas) Tj
+ET
+q 0.78 G 0.5 w 54 192 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 214 Td (docker compose exec -T api pytest) Tj
+ET
+q 0.84 G 0.5 w 276 224 m 276 192 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 214 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 224 m 341 192 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 214 Td (112 tests backend pasaron. Persisten) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+346 203.6 Td (warnings de datetime.utcnow.) Tj
+ET
+q 0.78 G 0.5 w 54 164 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 182 Td (docker compose exec -T api ruff check .) Tj
+ET
+q 0.84 G 0.5 w 276 192 m 276 164 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 182 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 192 m 341 164 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 182 Td (Sin errores de lint backend.) Tj
+ET
+q 0.78 G 0.5 w 54 136 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 154 Td (docker compose exec -T frontend npm run test) Tj
+ET
+q 0.84 G 0.5 w 276 164 m 276 136 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 154 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 164 m 341 136 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 154 Td (7 archivos, 26 tests frontend pasaron.) Tj
+ET
+q 0.78 G 0.5 w 54 104 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 126 Td (docker compose exec -T frontend npm run build) Tj
+ET
+q 0.84 G 0.5 w 276 136 m 276 104 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 126 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 136 m 341 104 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 126 Td (Build Vite/TypeScript OK. Warning de chunk) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+346 115.6 Td (JS mayor a 500 kB.) Tj
+ET
+q 0.78 G 0.5 w 54 62 487 42 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 94 Td (docker compose exec -T -e) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+59 83.6 Td (E2E_API_URL=http://api:8000 frontend npm run) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+59 73.2 Td (test:e2e) Tj
+ET
+q 0.84 G 0.5 w 276 104 m 276 62 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 94 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 104 m 341 62 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 94 Td (Playwright cubre login, Integrated Control y) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+346 83.6 Td (AWP.) Tj
+ET
+q 0.82 G 0.5 w 54 42 m 541 42 l S Q
+BT
+0.35 g
+/F1 7 Tf
+54 28 Td (P&Pmis Ai SaaS - Estado actual verificado) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+501 28 Td (Pagina 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 6134 >>
+stream
+q 0.9 g 54 756 487 24 re f Q
+q 0.55 G 0.5 w 54 756 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 771 Td (Comando) Tj
+ET
+q 0.68 G 0.5 w 276 780 m 276 756 l S Q
+BT
+0 g
+/F2 7 Tf
+281 771 Td (Resultado) Tj
+ET
+q 0.68 G 0.5 w 341 780 m 341 756 l S Q
+BT
+0 g
+/F2 7 Tf
+346 771 Td (Notas) Tj
+ET
+q 0.78 G 0.5 w 54 714 487 42 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 746 Td (powershell -ExecutionPolicy Bypass -File) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+59 735.6 Td (.\\tools\\smoke_check.ps1) Tj
+ET
+q 0.84 G 0.5 w 276 756 m 276 714 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 746 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 756 m 341 714 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 746 Td (Health, liveness, readiness, metricas, auth,) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+346 735.6 Td (proyectos, dashboard, Cost Manager, RFQ,) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+346 725.2 Td (Document Control y frontend.) Tj
+ET
+q 0.78 G 0.5 w 54 686 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 704 Td (docker compose exec -T api alembic current) Tj
+ET
+q 0.84 G 0.5 w 276 714 m 276 686 l S Q
+BT
+0 g
+/F2 7.4 Tf
+281 704 Td (PASS) Tj
+ET
+q 0.84 G 0.5 w 341 714 m 341 686 l S Q
+BT
+0 g
+/F1 7.4 Tf
+346 704 Td (20260514_0017 \(head\).) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 672 Td (Correcciones aplicadas en esta pasada) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 648 Td (- Se alineo Alembic con la base local mediante stamp head despues de confirmar que las) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 635 Td (  tablas de 0015, 0016 y 0017 ya existian por AUTO_CREATE_SCHEMA.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 620 Td (- Se cambio la clave demo por defecto en README y scripts de gates/smoke de demo123 a) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 607 Td (  1234, que es la clave real del entorno.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 592 Td (- Se cambio el Dockerfile del frontend a la imagen oficial) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 579 Td (  mcr.microsoft.com/playwright:v1.57.0-noble para poder ejecutar Playwright dentro del) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 566 Td (  contenedor.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 551 Td (- Se agrego en el E2E una ruta opcional E2E_API_URL para que el navegador dentro de Docker) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 538 Td (  redirija las llamadas de localhost:8000 hacia api:8000.) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 519 Td (Alcance funcional observado) Tj
+ET
+q 0.9 g 54 471 487 24 re f Q
+q 0.55 G 0.5 w 54 471 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 486 Td (Modulo) Tj
+ET
+q 0.68 G 0.5 w 174 495 m 174 471 l S Q
+BT
+0 g
+/F2 7 Tf
+179 486 Td (Estado) Tj
+ET
+q 0.68 G 0.5 w 246 495 m 246 471 l S Q
+BT
+0 g
+/F2 7 Tf
+251 486 Td (Comentario operativo) Tj
+ET
+q 0.78 G 0.5 w 54 443 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 461 Td (Login / Roles) Tj
+ET
+q 0.84 G 0.5 w 174 471 m 174 443 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 461 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 471 m 246 443 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 461 Td (JWT, usuario demo, membresias y permisos por proyecto.) Tj
+ET
+q 0.78 G 0.5 w 54 415 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 433 Td (Projects / Admin) Tj
+ET
+q 0.84 G 0.5 w 174 443 m 174 415 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 433 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 443 m 246 415 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 433 Td (Creacion de usuarios, roles y asignacion de miembros por proyecto.) Tj
+ET
+q 0.78 G 0.5 w 54 387 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 405 Td (Schedule / Baseline) Tj
+ET
+q 0.84 G 0.5 w 174 415 m 174 387 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 405 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 415 m 246 387 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 405 Td (Carga XML/XER, quality gate y mapping base para control.) Tj
+ET
+q 0.78 G 0.5 w 54 359 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 377 Td (Dashboard) Tj
+ET
+q 0.84 G 0.5 w 174 387 m 174 359 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 377 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 387 m 246 359 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 377 Td (KPIs EVM, Cost Manager, RFQ, Document Control y resumen AWP.) Tj
+ET
+q 0.78 G 0.5 w 54 327 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 349 Td (Integrated Control) Tj
+ET
+q 0.84 G 0.5 w 174 359 m 174 327 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 349 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 359 m 246 327 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 349 Td (Matriz integrada, auditor de control, paquetes draft, recost y) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+251 338.6 Td (politicas.) Tj
+ET
+q 0.78 G 0.5 w 54 295 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 317 Td (Cost Manager) Tj
+ET
+q 0.84 G 0.5 w 174 327 m 174 295 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 317 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 327 m 246 295 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 317 Td (BAC, incurrido desde actas/almacen, comprometido, funding y cash) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+251 306.6 Td (flow.) Tj
+ET
+q 0.78 G 0.5 w 54 267 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 285 Td (AWP Workface) Tj
+ET
+q 0.84 G 0.5 w 174 295 m 174 267 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 285 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 295 m 246 267 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 285 Td (Paquetes, POC, restricciones y readiness de liberacion.) Tj
+ET
+q 0.78 G 0.5 w 54 235 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 257 Td (Document Control) Tj
+ET
+q 0.84 G 0.5 w 174 267 m 174 235 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 257 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 267 m 246 235 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 257 Td (Registro documental, reviews, transmittals, mail y adjuntos) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+251 246.6 Td (protegidos.) Tj
+ET
+q 0.78 G 0.5 w 54 207 487 28 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 225 Td (Integraciones) Tj
+ET
+q 0.84 G 0.5 w 174 235 m 174 207 l S Q
+BT
+0 g
+/F2 7.4 Tf
+179 225 Td (Operativo) Tj
+ET
+q 0.84 G 0.5 w 246 235 m 246 207 l S Q
+BT
+0 g
+/F1 7.4 Tf
+251 225 Td (Manifest, exports, packages, workbooks y tokens gobernados.) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 193 Td (Riesgos y deuda pendiente) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 169 Td (- La rama main esta 51 commits por delante de origin/main y mantiene un arbol de trabajo) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 156 Td (  grande sin commit: debe ordenarse antes de release.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 141 Td (- ESLint frontend aun reporta 2 warnings react-hooks/set-state-in-effect en) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 128 Td (  frontend/src/App.tsx:447 y 469.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 113 Td (- El bundle frontend principal queda sobre 500 kB minificado; conviene code splitting) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 100 Td (  cuando se estabilice la UI.) Tj
+ET
+q 0.82 G 0.5 w 54 42 m 541 42 l S Q
+BT
+0.35 g
+/F1 7 Tf
+54 28 Td (P&Pmis Ai SaaS - Estado actual verificado) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+501 28 Td (Pagina 3) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 2947 >>
+stream
+BT
+0 g
+/F1 9 Tf
+66 780 Td (- La suite backend reporta warnings por datetime.utcnow; no rompe tests, pero es deuda de) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 767 Td (  compatibilidad futura con Python.) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 752 Td (- El estado actual es adecuado para piloto local; para produccion faltan secretos reales,) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 739 Td (  AUTO_CREATE_SCHEMA=false, SEED_DEMO_DATA=false, OIDC/SSO, observabilidad externa y) Tj
+ET
+BT
+0 g
+/F1 9 Tf
+66 726 Td (  backup/restore probado en entorno destino.) Tj
+ET
+BT
+0 g
+/F2 15 Tf
+54 707 Td (Siguiente cierre recomendado) Tj
+ET
+q 0.9 g 54 659 487 24 re f Q
+q 0.55 G 0.5 w 54 659 487 24 re S Q
+BT
+0 g
+/F2 7 Tf
+59 674 Td (Prioridad) Tj
+ET
+q 0.68 G 0.5 w 124 683 m 124 659 l S Q
+BT
+0 g
+/F2 7 Tf
+129 674 Td (Accion) Tj
+ET
+q 0.68 G 0.5 w 349 683 m 349 659 l S Q
+BT
+0 g
+/F2 7 Tf
+354 674 Td (Criterio de cierre) Tj
+ET
+q 0.78 G 0.5 w 54 627 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 649 Td (Alta) Tj
+ET
+q 0.84 G 0.5 w 124 659 m 124 627 l S Q
+BT
+0 g
+/F2 7.4 Tf
+129 649 Td (Agrupar y commitear los cambios actuales en una) Tj
+ET
+BT
+0 g
+/F2 7.4 Tf
+129 638.6 Td (serie legible.) Tj
+ET
+q 0.84 G 0.5 w 349 659 m 349 627 l S Q
+BT
+0 g
+/F1 7.4 Tf
+354 649 Td (git status limpio salvo artefactos) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+354 638.6 Td (generados intencionalmente.) Tj
+ET
+q 0.78 G 0.5 w 54 595 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 617 Td (Alta) Tj
+ET
+q 0.84 G 0.5 w 124 627 m 124 595 l S Q
+BT
+0 g
+/F2 7.4 Tf
+129 617 Td (Ejecutar backup/restore rehearsal del entorno) Tj
+ET
+BT
+0 g
+/F2 7.4 Tf
+129 606.6 Td (piloto.) Tj
+ET
+q 0.84 G 0.5 w 349 627 m 349 595 l S Q
+BT
+0 g
+/F1 7.4 Tf
+354 617 Td (Restore probado y documentado con) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+354 606.6 Td (hash/fecha.) Tj
+ET
+q 0.78 G 0.5 w 54 563 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 585 Td (Media) Tj
+ET
+q 0.84 G 0.5 w 124 595 m 124 563 l S Q
+BT
+0 g
+/F2 7.4 Tf
+129 585 Td (Reducir warnings React en App.tsx.) Tj
+ET
+q 0.84 G 0.5 w 349 595 m 349 563 l S Q
+BT
+0 g
+/F1 7.4 Tf
+354 585 Td (npm run lint sin warnings o con) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+354 574.6 Td (presupuesto explicitamente aceptado.) Tj
+ET
+q 0.78 G 0.5 w 54 531 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 553 Td (Media) Tj
+ET
+q 0.84 G 0.5 w 124 563 m 124 531 l S Q
+BT
+0 g
+/F2 7.4 Tf
+129 553 Td (Dividir el bundle frontend.) Tj
+ET
+q 0.84 G 0.5 w 349 563 m 349 531 l S Q
+BT
+0 g
+/F1 7.4 Tf
+354 553 Td (Build sin warning de chunk o limite) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+354 542.6 Td (justificado.) Tj
+ET
+q 0.78 G 0.5 w 54 499 487 32 re S Q
+BT
+0 g
+/F1 7.4 Tf
+59 521 Td (Media) Tj
+ET
+q 0.84 G 0.5 w 124 531 m 124 499 l S Q
+BT
+0 g
+/F2 7.4 Tf
+129 521 Td (Preparar configuracion productiva.) Tj
+ET
+q 0.84 G 0.5 w 349 531 m 349 499 l S Q
+BT
+0 g
+/F1 7.4 Tf
+354 521 Td (Secrets, hosts, CORS, docs off,) Tj
+ET
+BT
+0 g
+/F1 7.4 Tf
+354 510.6 Td (migraciones y OIDC revisados.) Tj
+ET
+q 0.82 G 0.5 w 54 42 m 541 42 l S Q
+BT
+0.35 g
+/F1 7 Tf
+54 28 Td (P&Pmis Ai SaaS - Estado actual verificado) Tj
+ET
+BT
+0.35 g
+/F1 7 Tf
+501 28 Td (Pagina 4) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+11 0 obj
+<< /Type /Pages /Kids [7 0 R 8 0 R 9 0 R 10 0 R] /Count 4 >>
+endobj
+12 0 obj
+<< /Type /Catalog /Pages 11 0 R >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000001476 00000 n 
+0000008466 00000 n 
+0000014652 00000 n 
+0000017651 00000 n 
+0000017788 00000 n 
+0000017925 00000 n 
+0000018062 00000 n 
+0000018200 00000 n 
+0000018277 00000 n 
+trailer
+<< /Size 13 /Root 12 0 R >>
+startxref
+18328
+%%EOF

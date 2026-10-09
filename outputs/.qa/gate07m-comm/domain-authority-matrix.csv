@@ -1,0 +1,28 @@
+concept,commercial_strategy_authority,authoritative_source,boundary_rule,baseline_evidence,status_before_implementation
+Commercial delivery approach,OWNS,CommercialContractingStrategy,Versioned and hashable strategic content,No commercial_strategy module in initial rg inventory,GAP
+Procurement approach,OWNS,CommercialContractingStrategy plus ADMIN catalog,Strategic selection only; never execute solicitation,Existing RFQ operational API is separate at backend/app/api/v1/routers/rfq.py:122-375,GAP
+Packaging strategy,OWNS,CommercialContractingStrategyVersion,Conceptual packages independent from WBS and RFQ packages,Operational RFQPackage exists at domain/models.py:1587-1606,GAP
+Contracting model,OWNS,CommercialContractingStrategy plus ADMIN catalog,Model selection only; no Contract entity creation,Operational Contract exists at domain/models.py:1396-1411,GAP
+Market capability assessment,OWNS,CommercialContractingStrategyVersion,Aggregate market capacity criteria; no supplier shortlist,No strategic market assessment aggregate found,GAP
+Supply-chain constraints,OWNS,CommercialContractingStrategyVersion,Strategic constraints only; no supplier/vendor master,No strategic supply-chain model found,GAP
+Commercial risk allocation,OWNS,CommercialContractingStrategyVersion,May reference Risk but must not mutate Risk Register,Risk domain is authoritative at modules/risk_readiness,GAP
+Payment mechanism strategy,OWNS,CommercialContractingStrategy plus ADMIN catalog,High-level mechanism only; no payment transaction,PaymentCertificate exists separately at domain/models.py:1542-1561,GAP
+Incentive philosophy,OWNS,CommercialContractingStrategy plus ADMIN catalog,Conceptual terms only; no contract administration,No strategic incentive model found,GAP
+Commercial assumptions and constraints,OWNS,CommercialContractingStrategyVersion,May expose lineage to FIN but not calculate FIN,FIN authority exists at modules/economic_financial_model,GAP
+Commercial recommendation,OWNS,CommercialContractingStrategyVersion,Formal recommended combination plus rationale/tradeoffs/conditions,No COMM recommendation aggregate found,GAP
+Commercial readiness,OWNS,Backend readiness evaluator,Frontend only renders dimensions warnings and blockers,No COMM provider found in initial registry,GAP
+Business Analysis recommendation,CONSUMES,BusinessAnalysis,Reference and hash; never reopen or recalculate BA,business_analysis module and 0059 lineage exist,AVAILABLE
+Project Proposal,CONSUMES,ProjectProposal,Reference and hash; no retroactive mutation,business_case/service.py:304-311 consumes proposal,AVAILABLE
+FEL stage and maturity,CONSUMES,ProjectDefinition/FEL,Policy-driven applicability; no global hardcode,project_definition/service.py:764-793 exposes governed evidence,AVAILABLE
+Business Case,CONSUMES_FUTURE_REFERENCE,BusinessCase,Prepare mapping only; no Five Case implementation,business_case/models.py:30-206 is longitudinal authority,AVAILABLE
+Budget approval,DOES_NOT_OWN,Portfolio Budget and investment governance,Read-only context; never approve budget,business_case/service.py:799-817 already consumes scenario,BOUNDARY
+Funding capacity,DOES_NOT_OWN,Funds Manager,Read-only context; never assign funding,business_case/service.py:837-847 consumes readiness,BOUNDARY
+FIN calculations,DOES_NOT_OWN,EconomicFinancialModel,No NPV IRR WACC DSCR LLCR MOIC calculation,economic_financial_model/models.py:103-115 owns metrics,BOUNDARY
+Risk Register,DOES_NOT_OWN,Risk Readiness,Reference risk IDs only,risk_readiness service owns ProjectRisk,BOUNDARY
+Project schedule,DOES_NOT_OWN,Schedule controls,May note market windows but not schedule authority,Schedule models remain in app/domain/models.py,BOUNDARY
+Project cost control,DOES_NOT_OWN,Cost and control modules,Estimated value band is descriptive nullable context only,Cost models remain in app/domain/models.py,BOUNDARY
+Vendor or supplier master,DOES_NOT_OWN,Future operational procurement,Do not create master or shortlist,No strategic vendor authority exists,BOUNDARY
+Procurement execution,DOES_NOT_OWN,Existing/future RFQ procurement operations,No RFQ RFP ITT tender bid evaluation selection or award,RFQ API already exists and must remain isolated,BOUNDARY
+Contract administration,DOES_NOT_OWN,Operational Contract domain,No Contract PO commitment invoice payment change order or supplier performance,Contract/PO/payment models exist separately,BOUNDARY
+FID decision,DOES_NOT_OWN,Gate07K Investment Decision,Provider may supply evidence only,investment_decision domain is separate,BOUNDARY
+Gate07J policy classification,DOES_NOT_OWN,Investment Evidence Policy,Provider registration does not make it Class A/B,provider registry and policy are co-located but distinct,BOUNDARY

@@ -1,0 +1,584 @@
+.strategicGate {
+  color: #142532;
+  display: grid;
+  gap: 14px;
+}
+
+.strategicGate button,
+.strategicGate input,
+.strategicGate select,
+.strategicGate textarea {
+  font: inherit;
+}
+
+.gatePrimary,
+.gateSecondary,
+.gateActions button,
+.gateDecisionBox button,
+.gateAdminGrid button,
+.gateAdminPreview button,
+.proposalGateDecisions button {
+  align-items: center;
+  border: 1px solid #cbd8df;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 9px 13px;
+}
+
+.gatePrimary {
+  background: #0d2a3a;
+  border-color: #0d2a3a;
+  color: white;
+  font-weight: 700;
+}
+
+.gateSecondary {
+  background: white;
+  color: #0d2a3a;
+}
+
+.gateQueues,
+.gateAdminSections {
+  background: #f5f8fa;
+  border: 1px solid #d8e1e6;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+}
+
+.gateQueues button {
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: #4c616e;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 11px;
+}
+
+.gateQueues button.active {
+  background: #0d2a3a;
+  color: white;
+}
+
+.gateToolbar {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.gateToolbar input,
+.gateDrawer input,
+.gateDrawer select,
+.gateDrawer textarea,
+.gateAdminPreview select {
+  background: white;
+  border: 1px solid #cbd8df;
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.gateToolbar input {
+  max-width: 360px;
+}
+
+.gateToolbar span {
+  color: #607681;
+  font-size: 12px;
+}
+
+.gateMessage {
+  background: #fff5e6;
+  border-left: 4px solid #d77a00;
+  border-radius: 6px;
+  padding: 10px 13px;
+}
+
+.gateWorkspaceGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(245px, 0.32fr) minmax(0, 1fr);
+}
+
+.gateRegister,
+.gateDetail,
+.gateAdminGrid > article,
+.gateAdminPreview {
+  background: white;
+  border: 1px solid #d8e1e6;
+  border-radius: 10px;
+}
+
+.gateRegister {
+  align-content: start;
+  display: grid;
+  max-height: 920px;
+  overflow: auto;
+  padding: 7px;
+}
+
+.gateRow {
+  background: white;
+  border: 0;
+  border-bottom: 1px solid #edf1f3;
+  cursor: pointer;
+  display: grid;
+  gap: 5px;
+  padding: 13px 11px;
+  text-align: left;
+}
+
+.gateRow.selected {
+  background: #eaf7f6;
+  border-left: 4px solid #159b9d;
+}
+
+.gateRow small {
+  color: #607681;
+}
+
+.gateChip {
+  background: #e8eef5;
+  border-radius: 999px;
+  color: #29495c;
+  font-size: 10px;
+  font-weight: 800;
+  justify-self: start;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.gateChip.state-decided,
+.gateChip.state-published,
+.gateChip.state-approve {
+  background: #dff3e7;
+  color: #17623a;
+}
+
+.gateChip.state-voided,
+.gateChip.state-reject {
+  background: #fae6e6;
+  color: #9b1c1c;
+}
+
+.gateDetail {
+  min-width: 0;
+  padding: 16px;
+}
+
+.gateDetail > header,
+.gateDrawer > header,
+.proposalGateDecisions > header {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.gateDetail > header span,
+.gateDrawer header span {
+  color: #607681;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.gateDetail h3,
+.gateDrawer h3 {
+  margin: 4px 0 0;
+}
+
+.gateFacts {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 15px 0;
+}
+
+.gateFacts article {
+  background: #f6f9fa;
+  border: 1px solid #dbe4e8;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.gateFacts span,
+.gateFacts small,
+.gateReadinessBand small,
+.portfolioReadiness small {
+  color: #607681;
+  font-size: 11px;
+}
+
+.gateReadinessBand,
+.portfolioReadiness {
+  align-items: center;
+  background: #edf8f4;
+  border: 1px solid #b7dfcf;
+  border-left: 4px solid #169767;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(190px, 1fr) auto;
+  padding: 12px;
+}
+
+.gateReadinessBand div,
+.portfolioReadiness div {
+  display: grid;
+  gap: 2px;
+}
+
+.gateSections {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.gateSections details {
+  border: 1px solid #dbe4e8;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.gateSections summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.gateSections pre,
+.gateAdminPreview pre {
+  background: #0d2a3a;
+  border-radius: 7px;
+  color: #e9f4f6;
+  font:
+    11px/1.45 Consolas,
+    monospace;
+  max-height: 260px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.gateChecklist {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.gateChecklist article {
+  border-left: 3px solid #159b9d;
+  display: grid;
+  gap: 3px;
+  padding: 7px 9px;
+}
+
+.gateChecklist article.fail {
+  border-color: #ba3a3a;
+}
+
+.gateChecklist small {
+  color: #607681;
+}
+
+.gateCriteria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.gateCriteria span {
+  background: #e8eef5;
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 5px 9px;
+}
+
+.gateDecisionBox {
+  background: #f7fafb;
+  border: 1px solid #cddbe1;
+  border-radius: 9px;
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.gateDecisionBox h4 {
+  margin: 0;
+}
+
+.gateDecisionBox textarea,
+.gateDecisionBox input {
+  border: 1px solid #cbd8df;
+  border-radius: 7px;
+  padding: 9px;
+}
+
+.gateDecisionBox > div,
+.gateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.gateDecisionBox .outcome-approve {
+  background: #17623a;
+  color: white;
+}
+
+.gateDecisionBox .outcome-reject {
+  background: #9b1c1c;
+  color: white;
+}
+
+.gateDecisionBox .outcome-defer {
+  background: #7a5a00;
+  color: white;
+}
+
+.gateActions {
+  margin: 14px 0;
+}
+
+.gateActions .danger {
+  color: #9b1c1c;
+}
+
+.portfolioReadiness {
+  background: #f7f9fa;
+  border-color: #d6e0e5;
+  border-left-color: #81939d;
+}
+
+.portfolioReadiness.ready {
+  background: #eaf7ef;
+  border-color: #b7dfc2;
+  border-left-color: #16834f;
+}
+
+.gateEmpty {
+  align-items: center;
+  color: #607681;
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+  min-height: 170px;
+  padding: 24px;
+  text-align: center;
+}
+
+.gateDrawerBackdrop {
+  align-items: flex-start;
+  background: rgb(5 20 28 / 58%);
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  padding: 20px;
+  position: fixed;
+  z-index: 80;
+}
+
+.gateDrawer {
+  background: white;
+  border-radius: 11px;
+  box-shadow: 0 18px 55px rgb(0 0 0 / 28%);
+  display: grid;
+  gap: 13px;
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 18px;
+  width: min(580px, calc(100vw - 40px));
+}
+
+.gateDrawer > label {
+  display: grid;
+  gap: 5px;
+}
+
+.gateDrawer > label > span {
+  color: #435963;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.gateDrawer > footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.gatePreview {
+  background: #f4f8fa;
+  border: 1px solid #d5e1e6;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 12px;
+}
+
+.gatePreview article {
+  display: grid;
+  gap: 3px;
+}
+
+.gatePreview p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.gateAdminSections span {
+  background: white;
+  border-radius: 6px;
+  color: #506671;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 9px;
+}
+
+.gateAdminGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gateAdminGrid > article {
+  display: grid;
+  gap: 7px;
+  padding: 15px;
+}
+
+.gateAdminGrid > article > div,
+.gateAdminPreview > div,
+.proposalGateDecisions > header > div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.gateAdminGrid h3,
+.gateAdminGrid p {
+  margin: 0;
+}
+
+.gateAdminGrid footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.gateAdminPreview {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+}
+
+.gateAdminPreview p {
+  margin: 2px 0 0;
+}
+
+.gateJsonEditor {
+  min-height: 520px;
+  font:
+    12px/1.5 Consolas,
+    monospace !important;
+}
+
+.proposalGateDecisions {
+  background: #f7fafb;
+  border: 1px solid #d5e0e5;
+  border-radius: 9px;
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.proposalGateDecisions header > div > div {
+  display: grid;
+  gap: 2px;
+}
+
+.proposalGateDecisions header span,
+.proposalDecisionHistory small,
+.proposalDecisionPreview small {
+  color: #607681;
+  font-size: 11px;
+}
+
+.proposalDecisionHistory {
+  display: grid;
+  gap: 6px;
+}
+
+.proposalDecisionHistory article {
+  background: white;
+  border-left: 3px solid #159b9d;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+}
+
+.proposalDecisionPreview {
+  background: #eaf7f6;
+  border-radius: 7px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.proposalDecisionMessage {
+  color: #7a5a00;
+  margin: 0;
+}
+
+@media (max-width: 1040px) {
+  .gateWorkspaceGrid,
+  .gateAdminGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .gateRegister {
+    max-height: 360px;
+  }
+
+  .gateFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .gateFacts,
+  .gateChecklist,
+  .gatePreview {
+    grid-template-columns: 1fr;
+  }
+
+  .gateReadinessBand,
+  .portfolioReadiness {
+    grid-template-columns: auto 1fr;
+  }
+
+  .gateReadinessBand small,
+  .portfolioReadiness small {
+    grid-column: 1 / -1;
+  }
+}

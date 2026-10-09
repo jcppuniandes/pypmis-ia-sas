@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "final_gate_state": "READY_FOR_PROJECT_CREATOR",
+  "checked_at": "2026-08-12",
+  "backend": {
+    "pytest": "229 passed, 2 skipped",
+    "coverage_percent": 85.34,
+    "coverage_required_percent": 75,
+    "ruff_format": "122 files already formatted",
+    "ruff_check": "PASS"
+  },
+  "frontend": {
+    "prettier": "PASS",
+    "eslint": "PASS with 8 warnings within max-warnings=10",
+    "vitest": "24 files, 143 tests passed",
+    "typescript_vite_build": "PASS",
+    "playwright": "1 production smoke passed, 1 BIM-data scenario skipped by declared fixture guard"
+  },
+  "enterprise_structure": {
+    "postgres_e2e": "PASS",
+    "postgres_tests": "3 passed",
+    "gate02a_importer": "PASS in full backend regression",
+    "gate02b_apply": "PASS in full backend regression",
+    "gate03_publish_rollback": "PASS in full backend regression and PostgreSQL E2E",
+    "gate04_revision_manager": "PASS in unit, frontend and PostgreSQL E2E",
+    "organization_security": "PASS",
+    "admin_enterprise_structure": "PASS",
+    "user_enterprise_explorer": "PASS",
+    "snapshot_benchmark": "COMPLETE for 100, 1000 and 10000 nodes"
+  },
+  "runtime": {
+    "alembic": "20260810_0033 (head)",
+    "api_health": "ready",
+    "frontend_http": 200,
+    "services_running": 6,
+    "persistent_images_rebuilt": true
+  }
+}

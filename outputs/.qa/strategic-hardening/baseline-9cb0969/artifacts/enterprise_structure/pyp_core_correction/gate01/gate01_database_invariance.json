@@ -1,0 +1,21 @@
+{
+  "check": "database fingerprints before and after the successful dry-run",
+  "equal": true,
+  "before": {
+    "admin_configurations": {"rows": 22, "md5": "fe485113d3f3d0b2f94508c750a52b4b"},
+    "enterprise_workspace_classifications": {"rows": 0, "md5": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_workspace_links": {"rows": 0, "md5": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_workspaces": {"rows": 3, "md5": "4eaab8e65e242bb49748b7c0c664b302"},
+    "security_events": {"rows": 8, "md5": "5d13a00e451ec8997873ae1f7e0486c6"},
+    "tenants": {"rows": 1, "md5": "867a116aff96915b6a4259d7cc18ad0e"}
+  },
+  "after": {
+    "admin_configurations": {"rows": 22, "md5": "fe485113d3f3d0b2f94508c750a52b4b"},
+    "enterprise_workspace_classifications": {"rows": 0, "md5": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_workspace_links": {"rows": 0, "md5": "d41d8cd98f00b204e9800998ecf8427e"},
+    "enterprise_workspaces": {"rows": 3, "md5": "4eaab8e65e242bb49748b7c0c664b302"},
+    "security_events": {"rows": 8, "md5": "5d13a00e451ec8997873ae1f7e0486c6"},
+    "tenants": {"rows": 1, "md5": "867a116aff96915b6a4259d7cc18ad0e"}
+  },
+  "base_mutations_reported_by_importer": 0
+}

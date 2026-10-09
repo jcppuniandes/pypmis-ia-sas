@@ -195,6 +195,31 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
         recommended_action: "BUILD_MISSING_GOVERNED_PROVIDER",
       },
     ];
+    const decisionCriterionPolicy = {
+      policy_code: "GATE07J-EVID-2",
+      effective_from: "2026-09-20T00:00:00Z",
+      controlled_operators: ["IS_READY", "GREATER_THAN_OR_EQUAL"],
+      evidence_quality_states: ["HIGH", "ACCEPTABLE", "LOW", "NOT_AVAILABLE"],
+      unsafe_expression_execution: false,
+      formal_decision_authority: "GATE07K",
+      portfolio_rank_authority: "PORTFOLIO",
+      criteria_by_profile: {
+        "PYP-FFA": [
+          {
+            criterion_code: "BC-MUST-01",
+            criterion_name: "Business Case strategic case",
+            criterion_type: "MUST_MEET",
+            source_evidence_type: "BUSINESS_CASE_READINESS",
+            source_field: "source_readiness_status",
+            operator: "IS_READY",
+            expected_state: "READY",
+            required: true,
+            blocking: true,
+          },
+        ],
+      },
+    };
+    let usedDedicatedClone = false;
     let staleOnce = true;
 
     await page.route("**/api/v1/strategic-project-planning/portfolio-options", (route) =>
@@ -212,8 +237,16 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
         },
       })
     );
-    await page.route("**/api/v1/investment-evidence-policy/configurations/701/clone", async (route) => {
-      const draft = { ...configurations[0], id: 702, revision: 2, version: 1, status: "draft" };
+    await page.route("**/api/v1/investment-evidence-policy/configurations/701/clone-gate07j-evid2", async (route) => {
+      usedDedicatedClone = true;
+      const draft = {
+        ...configurations[0],
+        id: 702,
+        revision: 2,
+        version: 1,
+        status: "draft",
+        content_json: { ...content, decision_criterion_policy: decisionCriterionPolicy },
+      };
       configurations = [draft, configurations[0]];
       await route.fulfill({ json: draft });
     });
@@ -250,6 +283,18 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
             ECONOMIC_FINANCIAL_READINESS: ["READY"],
           },
           source_current: { BUSINESS_CASE_READINESS: [true], ECONOMIC_FINANCIAL_READINESS: [true] },
+          decision_criterion_policy: decisionCriterionPolicy,
+          decision_criteria: decisionCriterionPolicy.criteria_by_profile["PYP-FFA"],
+          criterion_validation_issues: [],
+          decision_criterion_taxonomy: [
+            "READINESS_CHECK",
+            "MUST_MEET",
+            "DECISION_HURDLE",
+            "PRIORITIZATION",
+            "SUCCESS_CRITERION",
+          ],
+          controlled_operators: decisionCriterionPolicy.controlled_operators,
+          evidence_quality_states: decisionCriterionPolicy.evidence_quality_states,
           would_gate07j_be_ready: false,
           would_be_ready_for_investment_gate: false,
           recommended_next_development: {
@@ -279,15 +324,24 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
 
     await login(page);
     await page.getByRole("button", { name: "Cambiar a ADMIN MODE" }).click();
+    await expect(page.getByRole("navigation", { name: "Admin mode navigation" })).toBeVisible();
     await expand(page, /^enterprise strategy manager$/i);
-    await page.getByRole("button", { name: /^investment decision evidence policy$/i }).click();
-    const admin = page.getByRole("region", { name: "Investment Decision Evidence Policy" });
-    await expect(admin.getByRole("heading", { name: "Investment Decision Evidence Policy" })).toBeVisible();
+    await expand(page, /^investment governance$/i);
+    await page
+      .getByRole("group", { name: "Submódulos de Investment Governance" })
+      .getByRole("button", { name: /^evidence & decision policy$/i })
+      .click();
+    const admin = page.getByRole("region", { name: "Evidence & Decision Policy" });
+    await expect(admin.getByRole("heading", { name: "Evidence & Decision Policy" })).toBeVisible();
 
-    await admin.getByRole("button", { name: "Clone DRAFT" }).click();
+    await admin.getByRole("button", { name: "Clone Gate07J-EVID-2 DRAFT" }).click();
     await expect(admin.getByLabel("Policy revision")).toHaveValue("702");
-    await admin.getByRole("button", { name: "Evidence Matrix" }).click();
+    expect(usedDedicatedClone).toBe(true);
+    await admin.getByRole("button", { name: "Evidence Policy" }).click();
     await expect(admin.getByText("A · Governed source required").first()).toBeVisible();
+    await admin.getByRole("button", { name: "Decision Criteria" }).click();
+    await expect(admin.getByRole("cell", { name: "MUST_MEET" })).toBeVisible();
+    await expect(admin.getByText("BC-MUST-01")).toBeVisible();
     await admin.getByRole("button", { name: "Project Type Overrides" }).click();
     await expect(admin.getByRole("cell", { name: "MINING", exact: true })).toBeVisible();
 
@@ -303,9 +357,14 @@ test.describe("Gate 07J-EVID Investment Decision Evidence Policy browser", () =>
     await expect(admin.getByRole("status")).toContainText("ETAG_MISMATCH");
     await admin.getByRole("button", { name: "Save" }).click();
     await expect(admin.getByRole("status")).toContainText("save completed");
-    await admin.getByRole("button", { name: "Publish" }).click();
+    await admin
+      .getByRole("group", { name: "Evidence policy actions" })
+      .getByRole("button", { name: "Publish" })
+      .click();
     await expect(admin.getByRole("status")).toContainText("publish completed");
-    await expect(admin.getByRole("button", { name: /approve investment|enter fid|go|hold|kill/i })).toHaveCount(0);
+    await expect(
+      admin.getByRole("button", { name: /approve investment|enter fid|\bgo\b|\bhold\b|\bkill\b/i })
+    ).toHaveCount(0);
     expect(browserErrors).toEqual([]);
     expect(unexpectedResponses).toEqual([]);
   });

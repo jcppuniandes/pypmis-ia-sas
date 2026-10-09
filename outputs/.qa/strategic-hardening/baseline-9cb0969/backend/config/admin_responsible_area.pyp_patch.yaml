@@ -1,0 +1,27 @@
+metadata:
+  tenant_code: DEMO-ENERGY
+  configuration_type: catalog
+  catalog_code: responsible-area
+  release_code: ADM-RESP-AREA-PYP-20260806
+  release_name: Responsible Area - extensión P&P Ingeniería y Proyectos
+  status: DRAFT
+  description: >-
+    Clonar la revisión publicada del catálogo responsible-area y agregar cuatro
+    valores. No eliminar ni renombrar valores existentes. Publicar solo con
+    aprobación funcional.
+preserve_existing_items: true
+items_to_add:
+  - code: consulting
+    name: Consultoría en Gestión de Proyectos y Activos
+    active: true
+  - code: pmo-aas
+    name: PMO como Servicio (PMO aaS)
+    active: true
+  - code: technology
+    name: Tecnología e Innovación
+    active: true
+  - code: construction
+    name: Gerencia de Construcción
+    active: true
+required_applicability:
+  - BUSINESS_UNIT

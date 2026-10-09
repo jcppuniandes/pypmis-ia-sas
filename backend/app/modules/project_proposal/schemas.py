@@ -106,6 +106,11 @@ class ProjectProposalOut(BaseModel):
     source_idea_number: str
     source_idea_title: str
     accepted_idea_evaluation_id: int
+    source_business_analysis_id: int | None
+    source_business_analysis_hash: str | None
+    business_analysis_configuration_id: int | None
+    business_analysis_configuration_revision: int | None
+    business_analysis_configuration_hash: str | None
     owning_workspace_id: int
     owning_workspace_name: str
     target_portfolio_workspace_id: int | None
@@ -152,6 +157,7 @@ class ProposalPreviewOut(BaseModel):
     proposal_number_preview: str
     source_idea: dict
     accepted_evaluation: dict
+    business_analysis: dict | None
     mapping: dict
     mapped_fields: dict
     owning_workspace: dict

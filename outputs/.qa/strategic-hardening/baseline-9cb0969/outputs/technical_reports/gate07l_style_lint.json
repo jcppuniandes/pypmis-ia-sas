@@ -1,0 +1,170 @@
+{
+  "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07L_Post_FID_Project_Governance_20260901.docx",
+  "fonts_by_char_count": {
+    "Calibri": 15147
+  },
+  "direct_run_formatting_runs": 754,
+  "direct_paragraph_formatting_paragraphs": 722,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 2,
+      "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "Gate 07L",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "Post-FID Project Governance and Activation Eligibility",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+      "style": "Normal"
+    },
+    {
+      "para_index": 6,
+      "text": "Fecha de corte: 1 de septiembre de 2026",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "Repositorio: pypmis-ia-sas \u00b7 main @ b57f951 \u00b7 Gate 07L integrado en c7ec66e",
+      "style": "Normal"
+    },
+    {
+      "para_index": 8,
+      "text": "Migraci\u00f3n: 20260901_0056",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "Dependencia de entrada: Gate 07K \u00b7 PYP-FFA \u00b7 GO \u00b7 FID vigente",
+      "style": "Normal"
+    },
+    {
+      "para_index": 10,
+      "text": "Estado exclusivo: GATE07L_POST_FID_GOVERNANCE_RELEASE_VALIDATED",
+      "style": "Normal"
+    },
+    {
+      "para_index": 74,
+      "text": "RESULTADO EJECUTIVO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 76,
+      "text": "Capa",
+      "style": "Normal"
+    },
+    {
+      "para_index": 77,
+      "text": "Resultado",
+      "style": "Normal"
+    },
+    {
+      "para_index": 78,
+      "text": "Evidencia",
+      "style": "Normal"
+    },
+    {
+      "para_index": 97,
+      "text": "Cap\u00edtulo",
+      "style": "Normal"
+    },
+    {
+      "para_index": 98,
+      "text": "Contenido",
+      "style": "Normal"
+    },
+    {
+      "para_index": 99,
+      "text": "Entregables",
+      "style": "Normal"
+    },
+    {
+      "para_index": 127,
+      "text": "CRITERIO DE CIERRE",
+      "style": "Normal"
+    },
+    {
+      "para_index": 129,
+      "text": "Elemento",
+      "style": "Normal"
+    },
+    {
+      "para_index": 130,
+      "text": "Antes",
+      "style": "Normal"
+    },
+    {
+      "para_index": 131,
+      "text": "Despu\u00e9s / decisi\u00f3n",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "Gate 07L",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Post-FID Project Governance and Activation Eligibility",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "Gate 07L",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Post-FID Project Governance and Activation Eligibility",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Aplicaci\u00f3n: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

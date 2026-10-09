@@ -1,0 +1,188 @@
+P&Pmis Enterprise Structure - Nivel 2B dry-run
+Tenant: DEMO-ENERGY
+Release: ES-PYP-CORE-20260806
+Input hash: 10c47aee1d159de7582c45a25a5d4be5acc04929d653fbad4287e3852513beb6
+Result: BLOCKED
+
+Summary
+  nodes: 24
+  strategic_objectives: 7
+  classifications: 60
+  links: 0
+  errors: 24
+  warnings: 0
+  info: 0
+  create: 90
+  update: 1
+  unchanged: 0
+  conflict: 0
+
+Findings
+  [!] ERROR REQUIRED_CLASSIFICATION_MISSING classifications/BU-PYP-CONS
+      Required categories are missing: responsible-area.
+      Recommendation: Assign every category required by the published workspace type.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-06
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR REQUIRED_CLASSIFICATION_MISSING classifications/BU-PYP-CONST
+      Required categories are missing: responsible-area.
+      Recommendation: Assign every category required by the published workspace type.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR REQUIRED_CLASSIFICATION_MISSING classifications/BU-PYP-PMO
+      Required categories are missing: responsible-area.
+      Recommendation: Assign every category required by the published workspace type.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR REQUIRED_CLASSIFICATION_MISSING classifications/BU-PYP-TEC
+      Required categories are missing: responsible-area.
+      Recommendation: Assign every category required by the published workspace type.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-01
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-02
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-03
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-04
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-05
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-06
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+  [!] ERROR CATEGORY_NOT_APPLICABLE classifications/ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-07
+      The category is not applicable to the workspace type.
+      Recommendation: Use a category allowed by the published catalog.
+
+Diff
+  update    node                   ENT-PYP - Controlled fields differ
+  create    node                   BU-PYP-CONS - New external_key
+  create    node                   BU-PYP-PMO - New external_key
+  create    node                   BU-PYP-TEC - New external_key
+  create    node                   BU-PYP-CONST - New external_key
+  create    node                   PF-PYP-CONS-GEST - New external_key
+  create    node                   PF-PYP-CONS-CTRL - New external_key
+  create    node                   PF-PYP-CONS-CONT - New external_key
+  create    node                   PF-PYP-CONS-ASSET - New external_key
+  create    node                   PF-PYP-PMO-GEN - New external_key
+  create    node                   PF-PYP-PMO-MIN - New external_key
+  create    node                   PF-PYP-TEC-PPM - New external_key
+  create    node                   PF-PYP-TEC-BIM - New external_key
+  create    node                   PF-PYP-TEC-BI - New external_key
+  create    node                   PF-PYP-TEC-PPMIS - New external_key
+  create    node                   PF-PYP-CONST-VIAS - New external_key
+  create    node                   PF-PYP-CONST-INM - New external_key
+  create    node                   PF-PYP-CONST-RED - New external_key
+  create    node                   PF-PYP-CONST-FAC - New external_key
+  create    node                   PF-PYP-CONST-OYM - New external_key
+  create    node                   PG-PYP-PMO-MIN - New external_key
+  create    node                   PG-PYP-TEC-IMP - New external_key
+  create    node                   PG-PYP-PPMIS - New external_key
+  create    node                   PRJ-PYP-PPMIS - New external_key
+  create    strategic_objective    OBJ-PYP-01 - New strategic objective
+  create    strategic_objective    OBJ-PYP-02 - New strategic objective
+  create    strategic_objective    OBJ-PYP-03 - New strategic objective
+  create    strategic_objective    OBJ-PYP-04 - New strategic objective
+  create    strategic_objective    OBJ-PYP-05 - New strategic objective
+  create    strategic_objective    OBJ-PYP-06 - New strategic objective
+  create    strategic_objective    OBJ-PYP-07 - New strategic objective
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         ENT-PYP:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         BU-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         BU-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         BU-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         BU-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PF-PYP-CONS-GEST:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONS-GEST:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         PF-PYP-CONS-CTRL:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-CONS-CTRL:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-CONS-CONT:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-CONS-CONT:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-CONS-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONS-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-PMO-GEN:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PF-PYP-TEC-PPM:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-TEC-PPM:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PF-PYP-TEC-BIM:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PF-PYP-TEC-BIM:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-TEC-BI:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-TEC-BI:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PF-PYP-TEC-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-TEC-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST-VIAS:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PF-PYP-CONST-INM:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONST-INM:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST-RED:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONST-RED:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST-FAC:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST-FAC:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         PF-PYP-CONST-OYM:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST-OYM:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PG-PYP-TEC-IMP:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+
+Topological order
+  ENT-PYP -> BU-PYP-CONS -> BU-PYP-PMO -> BU-PYP-TEC -> BU-PYP-CONST -> PF-PYP-CONS-GEST -> PF-PYP-CONS-CTRL -> PF-PYP-CONS-CONT -> PF-PYP-CONS-ASSET -> PF-PYP-PMO-GEN -> PF-PYP-PMO-MIN -> PF-PYP-TEC-PPM -> PF-PYP-TEC-BIM -> PF-PYP-TEC-BI -> PF-PYP-TEC-PPMIS -> PF-PYP-CONST-VIAS -> PF-PYP-CONST-INM -> PF-PYP-CONST-RED -> PF-PYP-CONST-FAC -> PF-PYP-CONST-OYM -> PG-PYP-PMO-MIN -> PG-PYP-TEC-IMP -> PG-PYP-PPMIS -> PRJ-PYP-PPMIS

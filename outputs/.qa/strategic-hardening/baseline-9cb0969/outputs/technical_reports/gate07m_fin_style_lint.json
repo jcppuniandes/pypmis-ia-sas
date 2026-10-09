@@ -1,0 +1,170 @@
+{
+  "input": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07M_FIN_Economic_Financial_Model_20260902.docx",
+  "fonts_by_char_count": {
+    "Calibri": 13937
+  },
+  "direct_run_formatting_runs": 667,
+  "direct_paragraph_formatting_paragraphs": 637,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 2,
+      "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "Gate 07M-FIN",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "Project Economic & Financial Model & Economic-Financial Readiness",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+      "style": "Normal"
+    },
+    {
+      "para_index": 6,
+      "text": "Fecha de corte: 2 de septiembre de 2026",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "Repositorio: pypmis-ia-sas \u00b7 rama main \u00b7 baseline b57f951",
+      "style": "Normal"
+    },
+    {
+      "para_index": 8,
+      "text": "Migraci\u00f3n: 20260902_0058 \u00b7 sucesora reversible de 20260902_0057",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "Motor: PPMIS-FIN-1.0 \u00b7 Decimal determinista",
+      "style": "Normal"
+    },
+    {
+      "para_index": 10,
+      "text": "Salida: READY_FOR_GOVERNED_ECONOMIC_FINANCIAL_EVIDENCE",
+      "style": "Normal"
+    },
+    {
+      "para_index": 11,
+      "text": "Estado exclusivo: GATE07M_FIN_RELEASE_VALIDATED",
+      "style": "Normal"
+    },
+    {
+      "para_index": 12,
+      "text": "NEXT: UPDATE_GATE07J_EVID_FOR_BUSINESS_CASE_AND_ECONOMIC_FINANCIAL_READINESS",
+      "style": "Normal"
+    },
+    {
+      "para_index": 82,
+      "text": "RESULTADO EJECUTIVO",
+      "style": "Normal"
+    },
+    {
+      "para_index": 84,
+      "text": "Capa",
+      "style": "Normal"
+    },
+    {
+      "para_index": 85,
+      "text": "Estado",
+      "style": "Normal"
+    },
+    {
+      "para_index": 86,
+      "text": "Evidencia",
+      "style": "Normal"
+    },
+    {
+      "para_index": 102,
+      "text": "Cap\u00edtulo",
+      "style": "Normal"
+    },
+    {
+      "para_index": 103,
+      "text": "Contenido",
+      "style": "Normal"
+    },
+    {
+      "para_index": 104,
+      "text": "Entregables",
+      "style": "Normal"
+    },
+    {
+      "para_index": 129,
+      "text": "CRITERIO DE EVIDENCIA",
+      "style": "Normal"
+    },
+    {
+      "para_index": 131,
+      "text": "Autoridad",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "Gate 07M-FIN",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "Project Economic & Financial Model & Economic-Financial Readiness",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Aplicaci\u00f3n: P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "INFORME T\u00c9CNICO DE IMPLEMENTACI\u00d3N",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "Gate 07M-FIN",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "Project Economic & Financial Model & Economic-Financial Readiness",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Aplicaci\u00f3n: ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "P&Pmis Construction AI",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

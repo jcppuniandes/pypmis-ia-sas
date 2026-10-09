@@ -1,0 +1,12 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');
+FILE_SCHEMA(('IFC4'));
+ENDSEC;
+DATA;
+#10=IFCPROJECT('PROJECTGUID',$,'Geo Project',$,$,$,$,$,$);
+#20=IFCSITE('SITEGUID',$,'Main Site',$,$,$,$,$,.ELEMENT.,(4,38,24,0),(-74,5,12,0),2600.5,$,$);
+#30=IFCPROJECTEDCRS('EPSG:3116',$,'MAGNA-SIRGAS / Colombia Bogota zone',$,$,$,$);
+#31=IFCMAPCONVERSION($,#30,1000.25,2000.5,15.0,1.0,0.0,1.0);
+ENDSEC;
+END-ISO-10303-21;

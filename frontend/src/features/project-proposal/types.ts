@@ -34,6 +34,11 @@ export type ProjectProposal = {
   source_idea_number: string;
   source_idea_title: string;
   accepted_idea_evaluation_id: number;
+  source_business_analysis_id: number | null;
+  source_business_analysis_hash: string | null;
+  business_analysis_configuration_id: number | null;
+  business_analysis_configuration_revision: number | null;
+  business_analysis_configuration_hash: string | null;
   owning_workspace_id: number;
   owning_workspace_name: string;
   target_portfolio_workspace_id: number | null;
@@ -88,6 +93,7 @@ export type ProposalPreview = {
   proposal_number_preview: string;
   source_idea: Record<string, unknown>;
   accepted_evaluation: Record<string, unknown>;
+  business_analysis: Record<string, unknown> | null;
   mapping: Record<string, unknown>;
   mapped_fields: Record<string, unknown>;
   owning_workspace: Record<string, unknown>;

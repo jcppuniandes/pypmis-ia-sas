@@ -1,0 +1,60 @@
+
+Running 2 tests using 1 worker
+
+
+[1A[2K(node:27020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:27020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[1/2] [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy
+[1A[2K  1) [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: getByRole('region', { name: 'Periodic Portfolio Review workspace' }).getByRole('region', { name: 'Selected Portfolio Review Session' })
+    Expected substring: [32m"IN_REVIEW"[39m
+    Received string:    [31m"QUARTERLYPRV-000003Wave 3A governed portfolio · review 9/5/2026READY_FOR_REVIEWRevision 3Snapshot 7ebf8f2b95ef…SOURCE CURRENT"[39m
+    Timeout: 30000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 30000ms[22m
+    [2m  - waiting for getByRole('region', { name: 'Periodic Portfolio Review workspace' }).getByRole('region', { name: 'Selected Portfolio Review Session' })[22m
+    [2m    32 × locator resolved to <section class="reviewSessionHeader" aria-label="Selected Portfolio Review Session">…</section>[22m
+    [2m       - unexpected value "QUARTERLYPRV-000003Wave 3A governed portfolio · review 9/5/2026READY_FOR_REVIEWRevision 3Snapshot 7ebf8f2b95ef…SOURCE CURRENT"[22m
+
+
+      127 |       await authorityWorkspace.getByLabel("Review Session", { exact: true }).selectOption(String(created.id));
+      128 |       await authorityWorkspace.getByRole("button", { name: "Start Review" }).click();
+    > 129 |       await expect(authorityWorkspace.getByRole("region", { name: "Selected Portfolio Review Session" })).toContainText(
+          |                                                                                                           ^
+      130 |         "IN_REVIEW"
+      131 |       );
+      132 |       await workspace.getByRole("button", { name: "Refresh", exact: true }).click();
+        at C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\frontend\e2e\portfolio-review.spec.ts:129:107
+
+    Error Context: ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts-final\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts-final\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\outputs\.qa\wave3a-portfolio-review\browser-artifacts-final\portfolio-review-Wave-3A-r-72024-MIN-publishes-scoped-policy-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+[1A[2K(node:25852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K(node:25852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[2/2] [chromium] › e2e\portfolio-review.spec.ts:353:3 › Wave 3A real Chromium and PostgreSQL release › direct ADMIN route denies a USER without configuration permission
+[1A[2K  1 failed
+    [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy 
+  1 passed (4.4m)

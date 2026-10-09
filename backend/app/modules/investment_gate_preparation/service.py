@@ -21,6 +21,11 @@ from app.core.time import utc_now
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace, SecurityEvent
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
 from app.modules.funds_manager.service import FundsManagerService
+from app.modules.investment_evidence_policy.decision_criteria import (
+    MANDATORY_CRITERION_TYPES,
+    evaluate_criteria,
+    success_criteria_candidates,
+)
 from app.modules.investment_evidence_policy.service import InvestmentEvidencePolicyService
 from app.modules.investment_gate_preparation.models import (
     InvestmentGateEvidenceItem,
@@ -60,6 +65,7 @@ EVIDENCE_TYPES = {
     "PDRI_OR_DEFINITION_ASSESSMENT",
     "BUSINESS_CASE_READINESS",
     "ECONOMIC_FINANCIAL_READINESS",
+    "BENEFITS_PLAN_READINESS",
     "RISK_READINESS",
     "FUNDING_READINESS",
     "PERMIT_READINESS",
@@ -689,6 +695,8 @@ class InvestmentGatePreparationService:
         )
         if proposed != expected_source_hash:
             raise HTTPException(status_code=412, detail={"code": "STALE_INVESTMENT_GATE_SOURCE"})
+        previous_source_hash = record.preparation_source_hash
+        source_was_stale = proposed != previous_source_hash
         record.investment_gate_profile_id = profile.id
         record.profile_revision = profile.revision
         record.profile_hash = profile.content_hash
@@ -710,6 +718,26 @@ class InvestmentGatePreparationService:
         self._recalculate(record, contract=contract, profile=profile)
         self._touch(record)
         self._event("investment_gate_preparation.refresh_applied", "InvestmentGatePreparation", record.id, {})
+        self._event(
+            "gate_preparation.refreshed",
+            "InvestmentGatePreparation",
+            record.id,
+            {
+                "previous_source_hash": previous_source_hash,
+                "current_source_hash": record.preparation_source_hash,
+            },
+        )
+        if source_was_stale:
+            self._event(
+                "gate_source.stale",
+                "InvestmentGatePreparation",
+                record.id,
+                {
+                    "previous_source_hash": previous_source_hash,
+                    "resolved_source_hash": proposed,
+                    "status": "REVALIDATED_BY_EXPLICIT_REFRESH",
+                },
+            )
         self.db.commit()
         return self._preparation_out(record)
 
@@ -794,6 +822,34 @@ class InvestmentGatePreparationService:
             record.id,
             {"final_output": READY_OUTPUT, "can_enter_fid": False},
         )
+        self._event(
+            "gate_preparation.frozen",
+            "InvestmentGatePreparation",
+            record.id,
+            {
+                "preparation_hash": record.preparation_hash,
+                "criterion_policy_hash": readiness.criterion_policy.get("policy_hash"),
+                "formal_decision_authority": "GATE07K",
+            },
+        )
+        if readiness.criterion_evaluations:
+            self._event(
+                "gate_criterion.evaluated",
+                "InvestmentGatePreparation",
+                record.id,
+                {
+                    "criterion_count": len(readiness.criterion_evaluations),
+                    "unresolved_mandatory": readiness.unresolved_mandatory_criteria,
+                    "criterion_policy_hash": readiness.criterion_policy.get("policy_hash"),
+                },
+            )
+        if readiness.success_criteria_candidates:
+            self._event(
+                "investment_gate_preparation.success_criteria_candidates_frozen",
+                "InvestmentGatePreparation",
+                record.id,
+                {"candidate_count": len(readiness.success_criteria_candidates)},
+            )
         self.db.commit()
         return self._preparation_out(record, historical=True)
 
@@ -878,6 +934,7 @@ class InvestmentGatePreparationService:
         profile = self._configuration(record.investment_gate_profile_id)
         readiness = self._readiness(record, profile=profile, historical=True)
         contract = dict(record.source_snapshot_json.get("gate07i_contract", {}))
+        source_snapshot = dict(record.source_snapshot_json or {})
         summary = dict(record.evidence_summary_json or {})
         return HandoffOut(
             tenant_id=self.tenant_id,
@@ -912,6 +969,14 @@ class InvestmentGatePreparationService:
             execution_plan_summary=dict(summary.get("Execution Planning", {})),
             business_case_summary=self._evidence_source_summary(record, "BUSINESS_CASE_READINESS"),
             economic_financial_summary=self._evidence_source_summary(record, "ECONOMIC_FINANCIAL_READINESS"),
+            criterion_policy_snapshot=deepcopy(source_snapshot.get("decision_criterion_policy") or {}),
+            criterion_evaluations=deepcopy(source_snapshot.get("criterion_evaluations") or []),
+            portfolio_context_snapshot=deepcopy(source_snapshot.get("portfolio_context_snapshot") or {}),
+            success_criteria_candidates=deepcopy(source_snapshot.get("success_criteria_candidates") or []),
+            evidence_readiness_status=readiness.evidence_readiness_status,
+            business_evaluation_status=readiness.business_evaluation_status,
+            portfolio_context_status=readiness.portfolio_context_status,
+            decision_package_status=readiness.decision_package_status,
             open_conditions=[item for item in record.conditions_json or [] if item.get("preparation_status") == "OPEN"],
             warnings=list(record.warnings_json or []),
             blockers=[],
@@ -1071,12 +1136,61 @@ class InvestmentGatePreparationService:
             raise HTTPException(status_code=409, detail={"code": "INVALID_GATE07I_FID_SAFEGUARD"})
         return contract
 
+    @staticmethod
+    def _portfolio_context_snapshot(contract: dict) -> dict:
+        """Copy the governed Portfolio facts; never calculate a second rank."""
+
+        resource = deepcopy(contract.get("resource_feasibility_summary") or {})
+        budget = deepcopy(contract.get("budget_feasibility_summary") or {})
+        combined = " ".join(
+            str(value).upper()
+            for value in (
+                resource.get("status"),
+                resource.get("readiness_status"),
+                resource.get("feasibility_status"),
+            )
+            if value is not None
+        )
+        constrained = bool(
+            resource.get("resource_constrained")
+            or resource.get("capacity_constrained")
+            or resource.get("feasible") is False
+            or any(token in combined for token in ("CONSTRAINED", "INFEASIBLE", "BLOCKED"))
+        )
+        snapshot = {
+            "rank_authority": "PORTFOLIO",
+            "recommendation_id": contract.get("convergence_id"),
+            "recommendation_revision": contract.get("convergence_revision"),
+            "recommendation_hash": contract.get("recommendation_hash"),
+            "recommended_alternative_id": contract.get("recommended_alternative_id"),
+            "selected_project_ids": deepcopy(contract.get("selected_project_set_reference", [])),
+            "selected_project_set_hash": contract.get("selected_project_set_hash"),
+            "budget_scenario_ref": deepcopy(contract.get("budget_scenario_ref")),
+            "resource_scenario_ref": deepcopy(contract.get("resource_scenario_ref")),
+            "budget_planning_hash": contract.get("budget_planning_hash"),
+            "resource_planning_hash": contract.get("resource_planning_hash"),
+            "portfolio_analysis_hash": contract.get("analysis_hash"),
+            "budget_context": budget,
+            "resource_context": resource,
+            "strategic_context": deepcopy(contract.get("strategic_summary") or {}),
+            "risk_context": deepcopy(contract.get("risk_summary") or {}),
+            "portfolio_recommendation_ready": bool(contract.get("portfolio_recommendation_ready")),
+            "resource_constrained": constrained,
+            "warnings": deepcopy(contract.get("warnings") or []),
+            "blockers": deepcopy(contract.get("blockers") or []),
+            "captured_at": utc_now().isoformat(),
+        }
+        snapshot["hash"] = _hash(snapshot)
+        return snapshot
+
     def _source_snapshot(
         self,
         contract: dict,
         profile: AdminConfiguration,
         evidence_policy: dict | None = None,
     ) -> dict:
+        criterion_policy = deepcopy(dict(evidence_policy or {}).get("decision_criterion_policy") or {})
+        portfolio_context = self._portfolio_context_snapshot(contract)
         return {
             "gate07i_contract": deepcopy(contract),
             "selected_project_ids": list(contract.get("selected_project_set_reference", [])),
@@ -1087,6 +1201,11 @@ class InvestmentGatePreparationService:
                 "hash": profile.content_hash,
             },
             "evidence_policy": deepcopy(evidence_policy),
+            "decision_criterion_policy": criterion_policy,
+            "criterion_evaluations": [],
+            "portfolio_context_snapshot": portfolio_context,
+            "cross_source_consistency": [],
+            "success_criteria_candidates": [],
             "captured_at": utc_now().isoformat(),
             "boundaries": {
                 "investment_decision_created": False,
@@ -1157,6 +1276,12 @@ class InvestmentGatePreparationService:
                         if allow_manual
                         else "Class A governed evidence is unavailable; manual fallback is prohibited."
                     )
+
+        # SessionLocal deliberately disables autoflush.  The readiness and
+        # criteria evaluators query evidence rows immediately after this sync,
+        # so make newly created/updated governed evidence visible inside the
+        # same transaction before the frozen snapshot is calculated.
+        self.db.flush()
 
     def _policy_governed_payload(
         self, requirement: dict, contract: dict, scope_id: int | None
@@ -1269,6 +1394,151 @@ class InvestmentGatePreparationService:
             }
         return None
 
+    def _criterion_evidence_rows(
+        self, record: InvestmentGatePreparation, profile_content: dict
+    ) -> list[dict[str, Any]]:
+        """Normalize persisted evidence for deterministic criterion evaluation.
+
+        Provider payloads were already governed by their source modules.  This
+        adapter only exposes their frozen values; it does not recalculate them.
+        """
+
+        rows: list[dict[str, Any]] = []
+        for item in self._evidence_records(record.id):
+            try:
+                requirement = self._requirement(profile_content, item.requirement_key, item.scope_id)
+            except HTTPException:
+                requirement = {}
+            source = next(
+                (deepcopy(value) for value in item.evidence_refs_json or [] if isinstance(value, dict)),
+                {},
+            )
+            effective = self._effective_evidence_status(item, record)
+            source_current_value = source.get("source_current")
+            source_current = (
+                source_current_value
+                if isinstance(source_current_value, bool)
+                else effective not in {"STALE", "EXPIRED"}
+            )
+            readiness = (
+                source.get("readiness_status")
+                or source.get("overall_readiness")
+                or source.get("overall_benefits_readiness")
+                or source.get("overall_commercial_readiness")
+                or source.get("funding_readiness_status")
+                or effective
+            )
+            quality = (
+                source.get("evidence_quality")
+                or source.get("quality_status")
+                or source.get("validation_quality")
+                or "NOT_AVAILABLE"
+            )
+            confidence = source.get("confidence") or source.get("confidence_level")
+            rows.append(
+                {
+                    "evidence_item_id": item.id,
+                    "evidence_type": item.evidence_type,
+                    "classification": requirement.get("classification"),
+                    "blocking": bool(requirement.get("blocking")),
+                    "scope_type": item.scope_type,
+                    "scope_id": item.scope_id,
+                    "status": effective,
+                    "readiness_status": str(readiness),
+                    "source_current": bool(source_current),
+                    "source_module": item.source_module,
+                    "source_record_id": item.source_record_id,
+                    "source_hash": item.source_hash,
+                    "source_version": source.get("version")
+                    or source.get("revision_number")
+                    or source.get("model_version")
+                    or source.get("plan_version_number"),
+                    "as_of_date": source.get("as_of_date")
+                    or source.get("assessment_date")
+                    or (item.evidence_date.isoformat() if item.evidence_date else None),
+                    "evidence_quality": str(quality),
+                    "evidence_confidence": str(confidence) if confidence is not None else None,
+                    "quality_origin": ("GOVERNED_SOURCE" if quality != "NOT_AVAILABLE" else "NOT_DECLARED_BY_SOURCE"),
+                    "coverage": requirement.get("coverage_requirement"),
+                    "source_payload": source,
+                    "warnings": deepcopy(item.warnings_json or []),
+                    "blockers": deepcopy(item.blockers_json or []),
+                }
+            )
+        return rows
+
+    @staticmethod
+    def _cross_source_consistency(evidence: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Compare Business Case source hashes with the authoritative providers."""
+
+        source_map = {
+            "economic_financial_model": "ECONOMIC_FINANCIAL_READINESS",
+            "benefits": "BENEFITS_PLAN_READINESS",
+            "commercial_strategy": "CONTRACTING_STRATEGY_READINESS",
+            "fel": "PROJECT_DEFINITION_READINESS",
+            "funding": "FUNDING_READINESS",
+            "risk": "RISK_READINESS",
+            "permit": "PERMIT_READINESS",
+        }
+        results: list[dict[str, Any]] = []
+        for business_case in [item for item in evidence if item["evidence_type"] == "BUSINESS_CASE_READINESS"]:
+            expected_hashes = dict(business_case.get("source_payload", {}).get("source_hashes") or {})
+            for source_key, evidence_type in source_map.items():
+                expected = expected_hashes.get(source_key)
+                if not expected:
+                    continue
+                candidates = [
+                    item
+                    for item in evidence
+                    if item["evidence_type"] == evidence_type
+                    and (item.get("scope_id") == business_case.get("scope_id") or item.get("scope_id") is None)
+                ]
+                current = candidates[0] if candidates else None
+                actual = current.get("source_hash") if current else None
+                status = "CONSISTENT" if actual == expected else "MISMATCH" if actual else "SOURCE_MISSING"
+                results.append(
+                    {
+                        "business_case_scope_id": business_case.get("scope_id"),
+                        "source_key": source_key,
+                        "evidence_type": evidence_type,
+                        "expected_hash": expected,
+                        "actual_hash": actual,
+                        "status": status,
+                    }
+                )
+        return results
+
+    @staticmethod
+    def _business_evaluation_status(evaluations: list[dict[str, Any]]) -> str:
+        rows = [
+            item
+            for item in evaluations
+            if item.get("criterion_type") in {"MUST_MEET", "DECISION_HURDLE"} and item.get("required")
+        ]
+        if not rows:
+            return "NOT_APPLICABLE"
+        values = {str(item.get("result")) for item in rows}
+        if "STALE" in values:
+            return "STALE"
+        if values - {"SATISFIED", "NOT_APPLICABLE"}:
+            return "NOT_SATISFIED"
+        return "SATISFIED"
+
+    @staticmethod
+    def _cross_source_findings(profile_code: str, consistency: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+        """Apply strict FFA and proportional Select treatment to frozen comparisons."""
+
+        inconsistent = [item for item in consistency if item.get("status") != "CONSISTENT"]
+        if profile_code == "PYP-FFA":
+            return (
+                [f"CROSS_SOURCE_MISMATCH:{item.get('source_key')}" for item in inconsistent],
+                [],
+            )
+        return (
+            [],
+            [f"CROSS_SOURCE_REVIEW:{item.get('source_key')}" for item in inconsistent],
+        )
+
     def _recalculate(
         self,
         record: InvestmentGatePreparation,
@@ -1307,7 +1577,14 @@ class InvestmentGatePreparationService:
                 requirement = None
             if requirement and (not requirement.get("required") or requirement.get("classification") == "C"):
                 requirement = None
-            effective = self._effective_evidence_status(item, record)
+            # A frozen package is an as-of decision artifact. Expiration after
+            # freeze must not retroactively rewrite its historical evidence
+            # state; current-source validation belongs to a new preparation.
+            effective = (
+                item.status
+                if record.status == "FROZEN" or historical
+                else self._effective_evidence_status(item, record)
+            )
             category = self._category(item.evidence_type)
             bucket = categories.setdefault(category, {"required": 0, "valid": 0, "blocked": 0})
             if requirement:
@@ -1368,14 +1645,6 @@ class InvestmentGatePreparationService:
                 allowed.add("DEFERRED")
             if any(item.get("preparation_status") not in allowed for item in record.conditions_json or []):
                 blockers.append("OPEN_RECOMMENDATION_CONDITION")
-        if not source_current and record.status != "FROZEN":
-            blockers.append("STALE_PORTFOLIO_RECOMMENDATION")
-            readiness_status = "STALE"
-        else:
-            readiness_status = "BLOCKED" if blockers else "READY"
-        if record.status == "FROZEN":
-            readiness_status = "READY"
-            blockers = []
         category_summary = {
             key: {**value, "status": "VALID" if value["required"] == value["valid"] else "BLOCKED"}
             for key, value in categories.items()
@@ -1391,8 +1660,128 @@ class InvestmentGatePreparationService:
             }
             if coverage_percent < threshold:
                 blockers.append(f"EVIDENCE_COVERAGE_INCOMPLETE:{evidence_type}")
+
+        if not source_current and record.status != "FROZEN":
+            blockers.append("STALE_PORTFOLIO_RECOMMENDATION")
+        evidence_only_blockers = sorted(set(blockers))
+        evidence_readiness_status = (
+            "STALE"
+            if not source_current and record.status != "FROZEN"
+            else "BLOCKED"
+            if evidence_only_blockers
+            else "READY"
+        )
+
+        snapshot = deepcopy(record.source_snapshot_json or {})
+        criterion_policy = deepcopy(snapshot.get("decision_criterion_policy") or {})
+        portfolio_context = deepcopy(snapshot.get("portfolio_context_snapshot") or {})
+        criterion_evaluations = deepcopy(snapshot.get("criterion_evaluations") or [])
+        cross_source = deepcopy(snapshot.get("cross_source_consistency") or [])
+        success_candidates = deepcopy(snapshot.get("success_criteria_candidates") or [])
+        if criterion_policy and not (record.status == "FROZEN" or historical):
+            normalized_evidence = self._criterion_evidence_rows(record, profile_content)
+            project_contexts = deepcopy(dict(snapshot.get("evidence_policy") or {}).get("project_contexts") or [])
+            # If workspace metadata did not carry FEL stage, reuse the governed
+            # FEL source solely as context for applicability.
+            for context in project_contexts:
+                if str(context.get("fel_stage") or "UNSPECIFIED") != "UNSPECIFIED":
+                    continue
+                fel = next(
+                    (
+                        row
+                        for row in normalized_evidence
+                        if row.get("scope_id") == context.get("project_workspace_id")
+                        and row.get("evidence_type") == "PROJECT_DEFINITION_READINESS"
+                    ),
+                    None,
+                )
+                if fel:
+                    context["fel_stage"] = (
+                        fel.get("source_payload", {}).get("FEL_stage_code")
+                        or fel.get("source_payload", {}).get("fel_stage_code")
+                        or "UNSPECIFIED"
+                    )
+            criterion_evaluations = evaluate_criteria(
+                deepcopy(criterion_policy.get("criteria") or []),
+                normalized_evidence,
+                portfolio_context,
+                project_contexts,
+                policy_revision=criterion_policy.get("policy_revision"),
+                policy_hash=str(criterion_policy.get("policy_hash") or ""),
+                evaluated_at=utc_now().isoformat(),
+            )
+            cross_source = self._cross_source_consistency(normalized_evidence)
+            success_candidates = success_criteria_candidates(
+                deepcopy(criterion_policy.get("criteria") or []),
+                normalized_evidence,
+                criterion_evaluations,
+            )
+            snapshot.update(
+                criterion_evaluations=deepcopy(criterion_evaluations),
+                cross_source_consistency=deepcopy(cross_source),
+                success_criteria_candidates=deepcopy(success_candidates),
+            )
+            record.source_snapshot_json = snapshot
+
+        unresolved_mandatory = sorted(
+            {
+                str(item.get("criterion_code"))
+                for item in criterion_evaluations
+                if item.get("criterion_type") in MANDATORY_CRITERION_TYPES
+                and item.get("required")
+                and item.get("blocking")
+                and item.get("result") not in {"SATISFIED", "NOT_APPLICABLE"}
+            }
+        )
+        blockers.extend(f"MANDATORY_CRITERION_NOT_SATISFIED:{code}" for code in unresolved_mandatory)
+        warnings.extend(
+            f"SUCCESS_CRITERION_CANDIDATE_UNAVAILABLE:{item.get('criterion_code')}"
+            for item in criterion_evaluations
+            if item.get("criterion_type") == "SUCCESS_CRITERION"
+            and item.get("required")
+            and item.get("result") not in {"SATISFIED", "NOT_APPLICABLE"}
+        )
+        consistency_blockers, consistency_warnings = self._cross_source_findings(record.profile_code, cross_source)
+        blockers.extend(consistency_blockers)
+        warnings.extend(consistency_warnings)
+
+        business_evaluation_status = self._business_evaluation_status(criterion_evaluations)
+        if portfolio_context.get("blockers"):
+            portfolio_context_status = "BLOCKED"
+        elif portfolio_context.get("resource_constrained"):
+            portfolio_context_status = "CONSTRAINED"
+            warnings.append("PORTFOLIO_RESOURCE_CONTEXT_CONSTRAINED")
+        elif portfolio_context:
+            portfolio_context_status = "AVAILABLE"
+        else:
+            portfolio_context_status = "NOT_AVAILABLE"
+
+        if record.status == "FROZEN":
+            readiness_status = "READY"
+            blockers = []
+        elif not source_current:
+            readiness_status = "STALE"
+        else:
+            readiness_status = "BLOCKED" if blockers else "READY"
+
+        decision_package_status = (
+            "READY_FOR_INVESTMENT_DECISION"
+            if readiness_status == "READY" and record.status == "FROZEN"
+            else "READY_TO_FREEZE"
+            if readiness_status == "READY"
+            else "NOT_READY_FOR_INVESTMENT_DECISION"
+        )
         final_warnings = sorted(set(warnings))
         final_blockers = sorted(set(blockers))
+        category_summary["_gate_decision"] = {
+            "evidence_readiness_status": evidence_readiness_status,
+            "business_evaluation_status": business_evaluation_status,
+            "portfolio_context_status": portfolio_context_status,
+            "decision_package_status": decision_package_status,
+            "criterion_count": len(criterion_evaluations),
+            "unresolved_mandatory_count": len(unresolved_mandatory),
+            "success_criteria_candidate_count": len(success_candidates),
+        }
         if not historical and record.status != "FROZEN":
             record.readiness_status = readiness_status
             record.warnings_json = final_warnings
@@ -1412,6 +1801,15 @@ class InvestmentGatePreparationService:
             coverage_percent=project.coverage_percent,
             category_summary=category_summary,
             evidence_coverage=evidence_coverage,
+            evidence_readiness_status=evidence_readiness_status,
+            business_evaluation_status=business_evaluation_status,
+            portfolio_context_status=portfolio_context_status,
+            decision_package_status=decision_package_status,
+            criterion_evaluations=criterion_evaluations,
+            unresolved_mandatory_criteria=unresolved_mandatory,
+            cross_source_consistency=cross_source,
+            success_criteria_candidates=success_candidates,
+            criterion_policy=criterion_policy,
             warnings=final_warnings,
             blockers=final_blockers,
             investment_gate_preparation_ready=frozen_ready,
@@ -1447,7 +1845,12 @@ class InvestmentGatePreparationService:
                 for item in evidence
                 if item.scope_id == project_id and item.requirement_key in project_requirements
             ]
-            valid = [item for item in rows if self._effective_evidence_status(item, record) == "VALID"]
+            valid = [
+                item
+                for item in rows
+                if (item.status if record.status == "FROZEN" else self._effective_evidence_status(item, record))
+                == "VALID"
+            ]
             missing = sorted(set(project_requirements) - {item.requirement_key for item in valid})
             projects.append(
                 {
@@ -1524,6 +1927,7 @@ class InvestmentGatePreparationService:
     ) -> InvestmentGatePreparationOut:
         profile = self._configuration(record.investment_gate_profile_id)
         readiness = self._readiness(record, profile=profile, historical=historical or record.status == "FROZEN")
+        source_snapshot = deepcopy(record.source_snapshot_json or {})
         return InvestmentGatePreparationOut(
             id=record.id,
             tenant_id=record.tenant_id,
@@ -1544,8 +1948,12 @@ class InvestmentGatePreparationService:
             recommended_project_set_hash=record.recommended_project_set_hash,
             status=record.status,
             readiness_status=readiness.readiness_status,
-            source_snapshot=deepcopy(record.source_snapshot_json or {}),
+            source_snapshot=source_snapshot,
             evidence_summary=deepcopy(record.evidence_summary_json or {}),
+            criterion_policy_snapshot=deepcopy(source_snapshot.get("decision_criterion_policy") or {}),
+            criterion_evaluations=deepcopy(source_snapshot.get("criterion_evaluations") or []),
+            portfolio_context_snapshot=deepcopy(source_snapshot.get("portfolio_context_snapshot") or {}),
+            success_criteria_candidates=deepcopy(source_snapshot.get("success_criteria_candidates") or []),
             conditions=deepcopy(record.conditions_json or []),
             warnings=readiness.warnings,
             blockers=readiness.blockers,
@@ -1579,8 +1987,28 @@ class InvestmentGatePreparationService:
             requirement = {}
         source = next((value for value in item.evidence_refs_json or [] if isinstance(value, dict)), {})
         source_current = source.get("source_current")
-        source_readiness = source.get("readiness_status") or source.get("overall_readiness")
-        effective_status = self._effective_evidence_status(item, record)
+        source_readiness = (
+            source.get("readiness_status")
+            or source.get("overall_readiness")
+            or source.get("overall_benefits_readiness")
+            or source.get("overall_commercial_readiness")
+            or source.get("funding_readiness_status")
+        )
+        evidence_quality = (
+            source.get("evidence_quality")
+            or source.get("quality_status")
+            or source.get("validation_quality")
+            or "NOT_AVAILABLE"
+        )
+        evidence_confidence = source.get("confidence") or source.get("confidence_level")
+        source_version = (
+            source.get("version")
+            or source.get("revision_number")
+            or source.get("model_version")
+            or source.get("plan_version_number")
+        )
+        as_of = source.get("as_of_date") or source.get("assessment_date")
+        effective_status = item.status if record.status == "FROZEN" else self._effective_evidence_status(item, record)
         resolution_status = effective_status
         if effective_status == "STALE" or source_current is False:
             resolution_status = "STALE"
@@ -1621,6 +2049,11 @@ class InvestmentGatePreparationService:
             blockers=list(item.blockers_json or []),
             source_current=source_current if isinstance(source_current, bool) else None,
             source_readiness_status=str(source_readiness) if source_readiness is not None else None,
+            evidence_quality=str(evidence_quality),
+            evidence_confidence=(str(evidence_confidence) if evidence_confidence is not None else None),
+            quality_origin=("GOVERNED_SOURCE" if evidence_quality != "NOT_AVAILABLE" else "NOT_DECLARED_BY_SOURCE"),
+            source_version=source_version,
+            as_of=str(as_of) if as_of is not None else None,
             resolution_status=resolution_status,
             revision_version=item.revision_version,
         )
@@ -1942,6 +2375,7 @@ class InvestmentGatePreparationService:
             effective["evidence_policy_id"] = evidence_policy.get("policy_id")
             effective["evidence_policy_revision"] = evidence_policy.get("policy_revision")
             effective["evidence_policy_hash"] = evidence_policy.get("policy_hash")
+            effective["decision_criterion_policy"] = deepcopy(evidence_policy.get("decision_criterion_policy") or {})
         return effective
 
     def _profile_content(self, record: InvestmentGatePreparation, profile: AdminConfiguration) -> dict:
@@ -2093,6 +2527,7 @@ class InvestmentGatePreparationService:
             "PDRI_OR_DEFINITION_ASSESSMENT": "Definition Maturity",
             "BUSINESS_CASE_READINESS": "Business Case",
             "ECONOMIC_FINANCIAL_READINESS": "Economic / Financial",
+            "BENEFITS_PLAN_READINESS": "Strategic Benefits",
             "RISK_READINESS": "Risk",
             "FUNDING_READINESS": "Funding",
             "PERMIT_READINESS": "Permits",
@@ -2164,7 +2599,11 @@ class InvestmentGatePreparationService:
         }
 
     def _package_payload(self, record: InvestmentGatePreparation, readiness: PreparationReadinessOut) -> dict:
+        source_snapshot = deepcopy(record.source_snapshot_json or {})
+        readiness_snapshot = readiness.model_dump(mode="json")
+        readiness_snapshot["decision_package_status"] = "READY_FOR_INVESTMENT_DECISION"
         return {
+            "schema": "PPMIS.GATE07J.DECISION_PREPARATION.v2",
             "preparation": {
                 "id": record.id,
                 "number": record.preparation_number,
@@ -2179,7 +2618,14 @@ class InvestmentGatePreparationService:
                 for item in self._evidence_records(record.id)
             ],
             "conditions": record.conditions_json,
-            "readiness": readiness.model_dump(mode="json"),
+            "policy": deepcopy(source_snapshot.get("evidence_policy") or {}),
+            "criterion_policy": deepcopy(source_snapshot.get("decision_criterion_policy") or {}),
+            "criterion_evaluations": deepcopy(source_snapshot.get("criterion_evaluations") or []),
+            "portfolio_context_snapshot": deepcopy(source_snapshot.get("portfolio_context_snapshot") or {}),
+            "cross_source_consistency": deepcopy(source_snapshot.get("cross_source_consistency") or []),
+            "success_criteria_candidates": deepcopy(source_snapshot.get("success_criteria_candidates") or []),
+            "readiness": readiness_snapshot,
+            "formal_decision_authority": "GATE07K",
             "can_enter_fid": False,
         }
 

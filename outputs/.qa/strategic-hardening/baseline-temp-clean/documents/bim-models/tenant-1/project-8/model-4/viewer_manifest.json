@@ -1,0 +1,47 @@
+{
+  "building_name": "",
+  "cache_status": "metadata_manifest_ready",
+  "class_summary": [
+    {
+      "count": 1,
+      "ifc_class": "IfcBuildingElementProxy"
+    },
+    {
+      "count": 1,
+      "ifc_class": "IfcBuildingelementproxytype"
+    },
+    {
+      "count": 1,
+      "ifc_class": "IfcElementQuantity"
+    }
+  ],
+  "engine": "web-ifc/three",
+  "geometry_cache": {},
+  "geometry_strategy": "direct_browser",
+  "georeferencing": {},
+  "limits": {
+    "backend_cache_required_bytes": 104857600,
+    "direct_browser_bytes": 26214400
+  },
+  "model_id": 4,
+  "product_count": 3,
+  "project_id": 8,
+  "project_name": "Wellness Center",
+  "property_index": {
+    "indexed_products": 3,
+    "property_sets": 1,
+    "quantity_sets": 1,
+    "scan_limit_bytes": 26214400,
+    "scan_status": "complete",
+    "type_relations": 1
+  },
+  "revision_id": "IFC-M4-7ed471229a31",
+  "schema": "IFC4",
+  "site_name": "",
+  "source_file_name": "properties.ifc",
+  "source_sha256": "7ed471229a3141ab6b98d2093259b14784f98cd0d38914ebe71d91f85b3eefd5",
+  "source_size_bytes": 1011,
+  "storey_count": 0,
+  "units": "",
+  "warnings": []
+}

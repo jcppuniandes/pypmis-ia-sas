@@ -15,7 +15,7 @@ const initialFilters: MyWorkspaceFilters = {
   business_number: "",
 };
 
-export default function MyWorkspacesPanel({ onBack, token }: { onBack: () => void; token: string }) {
+export default function MyWorkspacesPanel({ onBack, token }: { onBack?: () => void; token: string }) {
   const navigate = useNavigate();
   const [filters, setFilters] = useState(initialFilters);
   const [workspaces, setWorkspaces] = useState<MyWorkspace[]>([]);
@@ -60,9 +60,11 @@ export default function MyWorkspacesPanel({ onBack, token }: { onBack: () => voi
 
   return (
     <section className="enterpriseWorkspace myWorkspacesPage">
-      <button className="workspaceDirectoryBack" onClick={onBack} type="button">
-        <ArrowLeft size={16} /> Enterprise Explorer
-      </button>
+      {onBack ? (
+        <button className="workspaceDirectoryBack" onClick={onBack} type="button">
+          <ArrowLeft size={16} /> Enterprise Explorer
+        </button>
+      ) : null}
       <CompactModuleHeader
         description="Vista transversal autorizada de Workspaces operativos y en ciclo de preparación."
         eyebrow="USER MODE · ENTERPRISE EXPLORER"

@@ -1,0 +1,431 @@
+.strategicAllocation {
+  color: #102331;
+  display: grid;
+  gap: 12px;
+}
+.allocationBoundary,
+.allocationMessage {
+  align-items: flex-start;
+  border-radius: 8px;
+  display: flex;
+  gap: 9px;
+  padding: 10px 12px;
+}
+.allocationBoundary {
+  background: #eef8f7;
+  border: 1px solid #afd9d5;
+  color: #155d5b;
+}
+.allocationMessage {
+  background: #fff6e8;
+  border: 1px solid #e5c38e;
+  color: #84520c;
+}
+.allocationSelector {
+  align-items: end;
+  background: #f7fafb;
+  border: 1px solid #cedae2;
+  border-radius: 9px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(135px, 0.55fr) minmax(260px, 1.5fr) auto auto;
+  padding: 10px;
+}
+.allocationSelector label,
+.allocationFormGrid label {
+  color: #536b77;
+  display: grid;
+  font-size: 10px;
+  font-weight: 850;
+  gap: 4px;
+  text-transform: uppercase;
+}
+.allocationSelector select,
+.allocationFormGrid input,
+.allocationFormGrid select,
+.allocationFormGrid textarea,
+.allocationTableScroll input,
+.allocationTableScroll select {
+  background: #fff;
+  border: 1px solid #b9c9d1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #183646;
+  font: inherit;
+  font-size: 12px;
+  min-width: 0;
+  padding: 7px;
+  width: 100%;
+}
+.allocationPrimary,
+.allocationSecondary,
+.allocationActions button,
+.allocationDrawer button {
+  align-items: center;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  gap: 6px;
+  justify-content: center;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+.allocationPrimary {
+  background: #087b77;
+  border: 1px solid #087b77;
+  color: #fff;
+}
+.allocationSecondary,
+.allocationActions button,
+.allocationDrawer button {
+  background: #fff;
+  border: 1px solid #aebfc8;
+  color: #173646;
+}
+.allocationPrimary:disabled,
+.allocationSecondary:disabled,
+.allocationActions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+.allocationTabs {
+  background: #f6f9fa;
+  border: 1px solid #cbd8df;
+  border-radius: 9px;
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 4px;
+}
+.allocationTabs button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #536975;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+.allocationTabs button.active {
+  background: #123547;
+  color: #fff;
+}
+.allocationEmpty {
+  color: #657985;
+  padding: 24px;
+  text-align: center;
+}
+.allocationEmpty h3 {
+  color: #173646;
+  margin: 8px 0 4px;
+}
+.allocationPlanHeader,
+.allocationSurface {
+  background: #fff;
+  border: 1px solid #cddae1;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.allocationPlanHeader {
+  align-items: start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 14px;
+}
+.allocationPlanHeader > div > span,
+.allocationSurface > header span {
+  color: #627985;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.allocationPlanHeader h3,
+.allocationSurface h3 {
+  margin: 4px 0;
+}
+.allocationPlanHeader p,
+.allocationSurface header p {
+  color: #607681;
+  font-size: 11px;
+  margin: 4px 0 0;
+}
+.allocationPlanHeader dl {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  margin: 0;
+  min-width: 410px;
+}
+.allocationPlanHeader dl div {
+  background: #f5f8fa;
+  border-radius: 6px;
+  display: grid;
+  padding: 7px;
+}
+.allocationPlanHeader dt {
+  color: #69808b;
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.allocationPlanHeader dd {
+  font-size: 11px;
+  font-weight: 800;
+  margin: 2px 0 0;
+}
+.allocationStatus {
+  background: #e9eef1;
+  border-radius: 999px;
+  color: #536975;
+  display: inline-flex;
+  font-size: 9px;
+  padding: 3px 7px;
+  width: fit-content;
+}
+.allocationStatus.status-endorsed,
+.allocationStatus.status-within-range {
+  background: #ddf2e6;
+  color: #087044;
+}
+.allocationStatus.status-draft,
+.allocationStatus.status-in-review,
+.allocationStatus.status-returned,
+.allocationStatus.status-under-target {
+  background: #fff0d8;
+  color: #875500;
+}
+.allocationStatus.status-over-target,
+.allocationStatus.status-unclassified-exposure {
+  background: #fbe3e3;
+  color: #982626;
+}
+.allocationActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.allocationActions button.endorse {
+  background: #087b77;
+  border-color: #087b77;
+  color: #fff;
+}
+.allocationSurface > header {
+  align-items: flex-start;
+  border-bottom: 1px solid #dfe7eb;
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 15px;
+}
+.allocationMetrics,
+.allocationDefinitions,
+.allocationReadiness {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 13px;
+}
+.allocationMetrics article,
+.allocationDefinitions article,
+.allocationReadiness article {
+  background: #f6f9fa;
+  border: 1px solid #dbe4e8;
+  border-radius: 7px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+.allocationMetrics span,
+.allocationDefinitions span,
+.allocationReadiness span {
+  color: #617783;
+  font-size: 10px;
+}
+.allocationMetrics strong {
+  font-size: 18px;
+}
+.allocationMetrics small {
+  color: #6c808a;
+  font-size: 10px;
+}
+.allocationDefinitions {
+  border-top: 1px solid #e1e8ec;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.allocationWarnings {
+  color: #85520a;
+  font-size: 11px;
+  margin: 0;
+  padding: 0 30px 14px;
+}
+.allocationTableScroll {
+  max-height: 520px;
+  overflow: auto;
+}
+.allocationTableScroll table {
+  border-collapse: collapse;
+  min-width: 1080px;
+  width: 100%;
+}
+.allocationTableScroll th,
+.allocationTableScroll td {
+  border-bottom: 1px solid #e1e8ec;
+  font-size: 10px;
+  padding: 8px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+.allocationTableScroll th {
+  background: #f2f6f8;
+  color: #536a76;
+  font-weight: 850;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.allocationTableScroll td:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 150px;
+}
+.allocationTableScroll td span {
+  color: #657985;
+}
+.allocationTableScroll tr.unclassified td {
+  background: #fff5e8;
+}
+.allocationSurface > footer {
+  align-items: center;
+  background: #f8fafb;
+  border-top: 1px solid #dfe7eb;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 13px;
+}
+.validTotal {
+  color: #087044;
+}
+.warningTotal {
+  color: #9b5d00;
+}
+.allocationReadiness {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+.allocationSurface > section:not(.allocationReadiness) {
+  padding: 0 14px;
+}
+.allocationHistory {
+  display: grid;
+  gap: 0;
+  padding: 0 14px 14px;
+}
+.allocationHistory article {
+  border-bottom: 1px solid #e1e8ec;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: 180px 1fr 1fr;
+  padding: 10px 0;
+}
+.allocationHistory span,
+.allocationHistory small {
+  color: #667c87;
+  font-size: 10px;
+}
+.allocationDrawerBackdrop {
+  align-items: stretch;
+  background: rgb(10 25 35 / 42%);
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 70;
+}
+.allocationDrawer {
+  background: #fff;
+  box-shadow: -10px 0 30px rgb(0 0 0 / 18%);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: min(620px, 96vw);
+}
+.allocationDrawer > header {
+  align-items: flex-start;
+  border-bottom: 1px solid #dce5e9;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+}
+.allocationDrawer > header span {
+  color: #687e89;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.allocationDrawer h3 {
+  margin: 4px 0 0;
+}
+.allocationFormGrid {
+  display: grid;
+  gap: 11px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 18px;
+}
+.allocationFormGrid label.wide {
+  grid-column: 1 / -1;
+}
+.allocationFormGrid textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+.allocationDrawer aside {
+  background: #fff6e8;
+  border: 1px solid #e5c38e;
+  border-radius: 7px;
+  color: #81500c;
+  font-size: 11px;
+  margin: 0 18px;
+  padding: 10px;
+}
+.allocationDrawer > footer {
+  border-top: 1px solid #dce5e9;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding: 14px 18px;
+}
+@media (max-width: 980px) {
+  .allocationSelector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .allocationPlanHeader {
+    display: grid;
+  }
+  .allocationPlanHeader dl {
+    min-width: 0;
+    width: 100%;
+  }
+  .allocationMetrics,
+  .allocationDefinitions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .allocationSelector,
+  .allocationFormGrid,
+  .allocationPlanHeader dl,
+  .allocationMetrics,
+  .allocationDefinitions {
+    grid-template-columns: 1fr;
+  }
+  .allocationHistory article {
+    grid-template-columns: 1fr;
+  }
+}

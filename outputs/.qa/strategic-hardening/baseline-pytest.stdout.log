@@ -1,0 +1,141 @@
+ssssssFssssssssssF...................................................... [ 11%]
+.......................................................F................ [ 23%]
+..................................................................FFFFFF [ 35%]
+F....................................................................... [ 47%]
+...............s...............................s........................ [ 59%]
+......s..........................ssss................................... [ 71%]
+......................s................................................. [ 82%]
+.........................................s..........s................... [ 94%]
+................................                                         [100%]
+================================== FAILURES ===================================
+_________ test_permit_readiness_partial_unique_index_and_checks_exist _________
+tests\postgres\test_permit_readiness_postgres.py:9: in test_permit_readiness_partial_unique_index_and_checks_exist
+    assert engine.dialect.name == "postgresql"
+E   AssertionError: assert 'sqlite' == 'postgresql'
+E     
+E     - postgresql
+E     + sqlite
+__________ test_risk_readiness_partial_unique_index_and_checks_exist __________
+tests\postgres\test_risk_readiness_postgres.py:9: in test_risk_readiness_partial_unique_index_and_checks_exist
+    assert engine.dialect.name == "postgresql"
+E   AssertionError: assert 'sqlite' == 'postgresql'
+E     
+E     - postgresql
+E     + sqlite
+_______ test_configuration_drafts_validate_publish_and_remain_immutable _______
+tests\test_enterprise_structure.py:265: in test_configuration_drafts_validate_publish_and_remain_immutable
+    assert validation.json()["valid"] is True
+E   assert False is True
+---------------------------- Captured stderr call -----------------------------
+{"timestamp":"2026-09-11T13:24:50-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"16081388-8be8-45e4-9661-3d09c1fbea17","method":"POST","path":"/api/v1/auth/login","status_code":200,"duration_ms":441.02,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:50-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/auth/login \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-09-11T13:24:51-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"df034961-058d-43b7-8633-caacd8d685e5","method":"POST","path":"/api/v1/admin-configuration/enterprise-structure/types/portfolio/clone","status_code":201,"duration_ms":336.42,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:51-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/types/portfolio/clone \"HTTP/1.1 201 Created\""}
+{"timestamp":"2026-09-11T13:24:51-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"72099492-b258-4f26-9747-594541b721af","method":"PUT","path":"/api/v1/admin-configuration/enterprise-structure/composition-rules/portfolio","status_code":200,"duration_ms":492.37,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:51-0500","level":"INFO","logger":"httpx","message":"HTTP Request: PUT http://testserver/api/v1/admin-configuration/enterprise-structure/composition-rules/portfolio \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-09-11T13:24:52-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"75dc1699-5233-415e-a0f3-ad05a7823fec","method":"POST","path":"/api/v1/admin-configuration/enterprise-structure/validate","status_code":200,"duration_ms":627.88,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:52-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/validate \"HTTP/1.1 200 OK\""}
+{"timestamp":"2026-09-11T13:24:52-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"988d4aab-25f2-402c-9573-6f99afba061e","method":"POST","path":"/api/v1/admin-configuration/enterprise-structure/publish","status_code":409,"duration_ms":707.13,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:52-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/publish \"HTTP/1.1 409 Conflict\""}
+{"timestamp":"2026-09-11T13:24:53-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"d94901fd-199e-4a55-9310-a5e5d329e28a","method":"POST","path":"/api/v1/admin-configuration/enterprise-structure/publish","status_code":409,"duration_ms":678.27,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:53-0500","level":"INFO","logger":"httpx","message":"HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/publish \"HTTP/1.1 409 Conflict\""}
+{"timestamp":"2026-09-11T13:24:53-0500","level":"INFO","logger":"pypmis.request","message":"request_completed","request_id":"2c43c508-2de7-4e9d-89cb-a57bc94601e6","method":"PATCH","path":"/api/v1/admin-configuration/configurations/42","status_code":200,"duration_ms":56.38,"client_host":"testclient"}
+{"timestamp":"2026-09-11T13:24:53-0500","level":"INFO","logger":"httpx","message":"HTTP Request: PATCH http://testserver/api/v1/admin-configuration/configurations/42 \"HTTP/1.1 200 OK\""}
+------------------------------ Captured log call ------------------------------
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/types/portfolio/clone "HTTP/1.1 201 Created"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/admin-configuration/enterprise-structure/composition-rules/portfolio "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/validate "HTTP/1.1 200 OK"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/publish "HTTP/1.1 409 Conflict"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/admin-configuration/enterprise-structure/publish "HTTP/1.1 409 Conflict"
+INFO     pypmis.request:observability.py:190 request_completed
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/v1/admin-configuration/configurations/42 "HTTP/1.1 200 OK"
+____ test_investment_selection_go_is_not_fid_and_has_no_project_activation ____
+tests\test_investment_decision_gate07k.py:156: in test_investment_selection_go_is_not_fid_and_has_no_project_activation
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+______ test_pyp_ffa_go_is_single_fid_and_duplicate_decide_is_idempotent _______
+tests\test_investment_decision_gate07k.py:189: in test_pyp_ffa_go_is_single_fid_and_duplicate_decide_is_idempotent
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation(funding=True)
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+_ test_alternate_outcomes_are_closed_without_fid[HOLD-extra0-INVESTMENT_SELECTION_HELD] _
+tests\test_investment_decision_gate07k.py:282: in test_alternate_outcomes_are_closed_without_fid
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+_ test_alternate_outcomes_are_closed_without_fid[RECYCLE-extra1-INVESTMENT_SELECTION_RECYCLE_REQUIRED] _
+tests\test_investment_decision_gate07k.py:282: in test_alternate_outcomes_are_closed_without_fid
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+_ test_alternate_outcomes_are_closed_without_fid[KILL-extra2-INVESTMENT_SELECTION_KILLED] _
+tests\test_investment_decision_gate07k.py:282: in test_alternate_outcomes_are_closed_without_fid
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+_______ test_ffa_segregation_of_duties_and_stale_policy_block_decision ________
+tests\test_investment_decision_gate07k.py:304: in test_ffa_segregation_of_duties_and_stale_policy_block_decision
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation(funding=True)
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+____________ test_committee_quorum_and_voting_rule_govern_decision ____________
+tests\test_investment_decision_gate07k.py:369: in test_committee_quorum_and_voting_rule_govern_decision
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+tests\test_investment_decision_gate07k.py:55: in _freeze_preparation
+    preparation = _add_fel(
+tests\test_investment_gate_preparation_gate07j.py:108: in _add_fel
+    return service.add_evidence(
+app\modules\investment_gate_preparation\service.py:427: in add_evidence
+    raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
+E   fastapi.exceptions.HTTPException: 409: {'code': 'MANUAL_REFERENCE_NOT_ALLOWED'}
+- generated xml file: C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\outputs\.qa\strategic-hardening\baseline-pytest.xml -
+=========================== short test summary info ===========================
+FAILED tests/postgres/test_permit_readiness_postgres.py::test_permit_readiness_partial_unique_index_and_checks_exist
+FAILED tests/postgres/test_risk_readiness_postgres.py::test_risk_readiness_partial_unique_index_and_checks_exist
+FAILED tests/test_enterprise_structure.py::test_configuration_drafts_validate_publish_and_remain_immutable
+FAILED tests/test_investment_decision_gate07k.py::test_investment_selection_go_is_not_fid_and_has_no_project_activation
+FAILED tests/test_investment_decision_gate07k.py::test_pyp_ffa_go_is_single_fid_and_duplicate_decide_is_idempotent
+FAILED tests/test_investment_decision_gate07k.py::test_alternate_outcomes_are_closed_without_fid[HOLD-extra0-INVESTMENT_SELECTION_HELD]
+FAILED tests/test_investment_decision_gate07k.py::test_alternate_outcomes_are_closed_without_fid[RECYCLE-extra1-INVESTMENT_SELECTION_RECYCLE_REQUIRED]
+FAILED tests/test_investment_decision_gate07k.py::test_alternate_outcomes_are_closed_without_fid[KILL-extra2-INVESTMENT_SELECTION_KILLED]
+FAILED tests/test_investment_decision_gate07k.py::test_ffa_segregation_of_duties_and_stale_policy_block_decision
+FAILED tests/test_investment_decision_gate07k.py::test_committee_quorum_and_voting_rule_govern_decision
+10 failed, 572 passed, 27 skipped in 2517.78s (0:41:57)

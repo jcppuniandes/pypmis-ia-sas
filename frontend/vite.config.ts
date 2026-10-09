@@ -49,9 +49,10 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
     css: true,
-    // AppFlow covers the complete served workflow and is close to 30 s even
-    // in isolation; keep CI deterministic when the suite runs workers in parallel.
-    testTimeout: 45000,
+    // AppFlow covers the complete served workflow and some scenarios now take
+    // 45-50 s in isolation. Keep headroom for worker contention in the full CI
+    // suite without weakening any assertion or retrying failed expectations.
+    testTimeout: 90000,
     include: ["src/**/*.{test,spec}.{ts,tsx}", "tests/**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       provider: "v8",

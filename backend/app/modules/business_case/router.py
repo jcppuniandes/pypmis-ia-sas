@@ -156,8 +156,7 @@ def get_revision(
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
 ):
-    record = _authorized(db, tenant_id, user_id, "business_case.read", VIEW_ROLES)._revision(revision_id)
-    result = BusinessCaseRevisionOut.model_validate(record)
+    result = _authorized(db, tenant_id, user_id, "business_case.read", VIEW_ROLES).revision_out(revision_id)
     _etag(response, result.revision_version)
     return result
 

@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-08-12",
+  "status": "PASS",
+  "before": {
+    "tenant": "P&P Ingeniería y Proyectos",
+    "tenant_id": 1,
+    "release": "ES-PYP-CORE-RECONCILED-20260809",
+    "release_id": 1,
+    "state": "published",
+    "release_count": 1,
+    "draft_count": 0,
+    "workspaces": 14,
+    "strategic_objectives": 7,
+    "classifications": 26,
+    "links": 0
+  },
+  "after": {
+    "tenant": "P&P Ingeniería y Proyectos",
+    "tenant_id": 1,
+    "release": "ES-PYP-CORE-RECONCILED-20260809",
+    "release_id": 1,
+    "state": "published",
+    "release_count": 1,
+    "draft_count": 0,
+    "workspaces": 14,
+    "strategic_objectives": 7,
+    "classifications": 26,
+    "links": 0,
+    "revision_version": 1,
+    "alembic_head": "20260810_0033"
+  },
+  "business_payload_mutations": 0,
+  "fixtures_left_behind": 0,
+  "ephemeral_projects_removed": ["pypmis-gate04h", "pypmis-gate04h-browser"]
+}

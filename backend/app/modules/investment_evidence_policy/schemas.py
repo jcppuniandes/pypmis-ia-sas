@@ -80,6 +80,12 @@ class PolicyPreviewOut(BaseModel):
     source_availability: dict[str, str] = Field(default_factory=dict)
     source_readiness: dict[str, list[str]] = Field(default_factory=dict)
     source_current: dict[str, list[bool]] = Field(default_factory=dict)
+    decision_criterion_policy: dict = Field(default_factory=dict)
+    decision_criteria: list[dict] = Field(default_factory=list)
+    criterion_validation_issues: list[str] = Field(default_factory=list)
+    decision_criterion_taxonomy: list[str] = Field(default_factory=list)
+    controlled_operators: list[str] = Field(default_factory=list)
+    evidence_quality_states: list[str] = Field(default_factory=list)
     would_gate07j_be_ready: bool
     would_be_ready_for_investment_gate: bool = False
     recommended_next_development: dict

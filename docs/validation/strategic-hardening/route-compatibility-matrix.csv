@@ -1,0 +1,29 @@
+Route family,Mode,Canonical resolver,Expected access,Compatibility decision,Disposition,Status,Evidence
+/app,user,App shell fallback,authenticated,Preserve dashboard and legacy in-app state navigation,KEEP,PRESERVED,App.tsx routeControlView returns null then existing state path applies
+/app/schedule-control,user,Explicit legacy pathname mapping,authenticated,Preserve dedicated schedule deep link outside strategic scope,KEEP,PRESERVED,App.tsx routeControlView
+/app/strategy/{view},user,strategicRouteRegistry,authenticated,Canonical USER strategic deep link; trailing slash normalized,KEEP,IMPLEMENTED,strategicNavigationBlueprint.ts routeFor and strategicRouteMatch
+/app/admin/strategy/{view},admin,strategicRouteRegistry,can_configure for ADMIN_CONFIGURATION,Canonical ADMIN strategic deep link; deny unauthorized direct access,KEEP,IMPLEMENTED,canAccessStrategicNode and StrategicViewOutlet
+/app/admin/strategy/enterprise-strategy-overview,admin,strategicRouteRegistry,authenticated,Allow shared read-only Foundation preview without mutation,KEEP,IMPLEMENTED,Node classification READ_ONLY_SHARED
+/app/strategy/enterprise-strategy-overview,user,strategicRouteRegistry,authenticated,Foundation entry and read-only status route,KEEP,IMPLEMENTED,strategicNavigationBlueprint test
+/app/strategy/enterprise-explorer,user,strategicRouteRegistry,authenticated,Preserve published enterprise explorer deep link,KEEP,IMPLEMENTED,StrategicViewOutlet
+/app/strategy/workspace-context,user,strategicRouteRegistry,authenticated,Preserve authorized Workspace selector deep link,KEEP,IMPLEMENTED,StrategicViewOutlet
+/app/strategy/idea-lifecycle,user,strategicRouteRegistry,authenticated,Canonical Idea lifecycle route,KEEP,IMPLEMENTED,strategicNavigationBlueprint phase 1
+/app/strategy/business-analysis-options,user,strategicRouteRegistry,authenticated,Canonical governed Business Analysis transaction route,KEEP,IMPLEMENTED,StrategicViewOutlet
+/app/admin/strategy/business-analysis-configuration,admin,strategicRouteRegistry,can_configure,Canonical Business Analysis configuration route; no USER fallback,KEEP,IMPLEMENTED,Blueprint direct-route unit assertion
+/app/strategy/project-proposal,user,strategicRouteRegistry,authenticated,Canonical proposal lifecycle route,KEEP,IMPLEMENTED,StrategicViewOutlet
+/app/strategy/strategic-gate-decision,user,strategicRouteRegistry,authenticated,Canonical strategic gate route,KEEP,IMPLEMENTED,StrategicViewOutlet
+/app/strategy/portfolio-*,user,strategicRouteRegistry,authenticated,Canonical Portfolio planning analysis budget resource and convergence routes,KEEP,IMPLEMENTED,Blueprint phases 4-5
+/app/admin/strategy/portfolio-*-configuration,admin,strategicRouteRegistry,can_configure,Canonical Portfolio configuration routes,KEEP,IMPLEMENTED,Blueprint admin phases 4-5
+/app/strategy/project-definition-fel,user,strategicRouteRegistry,authenticated,Canonical FEL transaction route for Capital Owner project context,KEEP,IMPLEMENTED,Blueprint phase 6 applicability
+/app/strategy/business-case-*,user,strategicRouteRegistry,authenticated,Canonical Business Case detail routes; preserve revisions snapshots and history,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/financial-model-*,user,strategicRouteRegistry,authenticated,Canonical financial model detail routes; preserve versions lineage and history,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/funds-*,user,strategicRouteRegistry,authenticated,Canonical funding lifecycle routes,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/risk-readiness-*,user,strategicRouteRegistry,authenticated,Canonical risk readiness routes,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/permit-readiness-*,user,strategicRouteRegistry,authenticated,Canonical permit readiness routes,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/investment-gate-preparation,user,strategicRouteRegistry,authenticated,Canonical gate package route without FID side effect,KEEP,IMPLEMENTED,Blueprint phase 7
+/app/strategy/investment-decision-*,user,strategicRouteRegistry,authenticated,Canonical FID queue package decision history and output routes,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+/app/strategy/post-fid-*,user,strategicRouteRegistry,authenticated,Canonical post-FID governance routes without project activation,KEEP,IMPLEMENTED,StrategicViewOutlet view family
+Unknown /app/strategy/{view},n/a,No registry match,no access,Do not guess or coerce to another strategic transaction; retain safe shell fallback,KEEP,IMPLEMENTED,strategicRouteMatch returns null
+Alternate governance model direct link,user,strategicRouteRegistry plus strategicNodeApplies,authenticated and context-authorized,Preserve Foundation and early flow while excluding Capital Owner-only phases when inapplicable,KEEP,IMPLEMENTED,Governance applicability unit test
+Legacy in-memory strategic selection,user or admin,handleControlFlowNavigate,mode-dependent,Translate known strategic view to canonical URL; preserve non-strategic /app behavior,KEEP,IMPLEMENTED,App.tsx strategicRouteForView
+

@@ -1,0 +1,21 @@
+{
+  "release": "Gate07M-COMM",
+  "generated_at": "2026-09-16T10:01:41.0797488-05:00",
+  "algorithm": "SHA-256",
+  "files": [
+    {"path": "backend/alembic/versions/20260915_0060_gate07m_comm_commercial_strategy.py", "bytes": 10529, "sha256": "a5e6414d57727ee0536232ca707b630486af0c1dbaa97fe053edbc1078f09982"},
+    {"path": "backend/app/modules/commercial_strategy/models.py", "bytes": 9320, "sha256": "7d5418ed3ad2e71907c4a5df8f9af399fec4f724915fc00d388972af4a3ada1c"},
+    {"path": "backend/app/modules/commercial_strategy/schemas.py", "bytes": 6007, "sha256": "0f7d40113caa4d4f2c3964be04594bde457944abe525dfb1f171161ab0013648"},
+    {"path": "backend/app/modules/commercial_strategy/service.py", "bytes": 100537, "sha256": "abf751d63c3a79870ff19639097a8443eff49f0a7c7245c5965a9df1e04f1c1e"},
+    {"path": "backend/app/modules/commercial_strategy/router.py", "bytes": 16370, "sha256": "cc3c544585af29be6e3eb3693b6709a5b41baca39504b3360e41faffbc63ba3b"},
+    {"path": "backend/tests/test_commercial_strategy_gate07m_comm.py", "bytes": 31820, "sha256": "bd6abce565de7e342dfc741ded1832c68d22d33be5e6c638599d412fc160c9d4"},
+    {"path": "backend/tests/test_commercial_strategy_gate07m_comm_migration.py", "bytes": 5935, "sha256": "851e489d2056e386019431a17479e4bcc58843a7bbf0be51d4eb8cca82cdfef9"},
+    {"path": "backend/tests/postgres/test_commercial_strategy_gate07m_comm_migration_postgres.py", "bytes": 4529, "sha256": "3b096a16d92b3e4139bccfa292a97614a09d3085f364227c63e816ec53b93280"},
+    {"path": "frontend/src/features/commercial-strategy/CommercialStrategyWorkspace.tsx", "bytes": 53176, "sha256": "881e02275cf709ea119bf04a98dc3675b1e975e73ce494143195dca5c3249e86"},
+    {"path": "frontend/src/features/commercial-strategy/CommercialStrategyAdminView.tsx", "bytes": 23719, "sha256": "0c9d9dc726d2b4e81f455a25f0873a5d88fcc58aa0df920a9221e819b0c9eab5"},
+    {"path": "frontend/src/features/commercial-strategy/types.ts", "bytes": 6749, "sha256": "245fdb1ad20464f2dc4aaf33fab8d91d5270dd537004c57ad45b9bf566e99187"},
+    {"path": "frontend/e2e/commercial-strategy-governance.spec.ts", "bytes": 3863, "sha256": "3cfc4bf7b141f7b2a302e93a894169044f1f6c75fca33bd6ed5a8ee9c2aa302f"},
+    {"path": "docs/65-adr-gate07m-comm-commercial-strategy-readiness.md", "bytes": 6654, "sha256": "215cb5b3b356d302addedba6ec41ef6e07b0864345ca08d29eb71859cbc8cc56"},
+    {"path": "docs/validation/gate07m-comm/release-validation.md", "bytes": 4674, "sha256": "72018a53583e67c2a4b416a5afb540a3e783450b2b6615b75d53649911c92104"}
+  ]
+}

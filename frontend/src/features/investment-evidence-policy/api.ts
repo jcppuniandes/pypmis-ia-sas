@@ -36,6 +36,11 @@ export const investmentEvidencePolicyApi = {
       `/api/v1/investment-evidence-policy/configurations/${configuration.id}/clone`,
       { method: "POST", token, headers: { "If-Match": `"${configuration.version}"` } }
     ),
+  cloneGate07jEvid2: (token: string, configuration: EvidencePolicyConfiguration) =>
+    apiFetch<EvidencePolicyConfiguration>(
+      `/api/v1/investment-evidence-policy/configurations/${configuration.id}/clone-gate07j-evid2`,
+      { method: "POST", token, headers: { "If-Match": `"${configuration.version}"` } }
+    ),
   save: (token: string, configuration: EvidencePolicyConfiguration, content: EvidencePolicyContent) =>
     apiFetch<EvidencePolicyConfiguration>(`/api/v1/investment-evidence-policy/configurations/${configuration.id}`, {
       method: "PUT",

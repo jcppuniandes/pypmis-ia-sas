@@ -1,0 +1,169 @@
+name: pypmis-wave1
+
+services:
+  wave1-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave1
+      POSTGRES_USER: wave1
+      POSTGRES_PASSWORD: wave1
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave1 -d wave1"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave1-migration-db:
+    profiles: ["validation"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave1_migration
+      POSTGRES_USER: wave1
+      POSTGRES_PASSWORD: wave1
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave1 -d wave1_migration"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave1-validation:
+    profiles: ["validation"]
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave1:wave1@wave1-db:5432/wave1
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://wave1:wave1@wave1-db:5432/wave1
+      PYPMIS_WAVE1_MIGRATION_DATABASE_URL: postgresql+psycopg://wave1:wave1@wave1-migration-db:5432/wave1_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave1-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.domain.models; import app.modules.capital_planning.models; import app.modules.enterprise_structure.models; import app.modules.idea_demand.models; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest --no-cov -q -rA tests/postgres/test_wave1_capital_planning_migration_postgres.py
+        pytest --no-cov -q -rA tests/postgres/test_wave1_capital_planning_release_postgres.py
+    depends_on:
+      wave1-db:
+        condition: service_healthy
+      wave1-migration-db:
+        condition: service_healthy
+
+  wave1-browser-migrate:
+    profiles: ["browser"]
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave1:wave1@wave1-db:5432/wave1
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave1-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.domain.models; import app.modules.capital_planning.models; import app.modules.enterprise_structure.models; import app.modules.idea_demand.models; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        python tests/postgres/wave1_browser_fixture.py
+    depends_on:
+      wave1-db:
+        condition: service_healthy
+
+  wave1-redis:
+    profiles: ["browser"]
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave1-api:
+    profiles: ["browser"]
+    build:
+      context: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave1:wave1@wave1-db:5432/wave1
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave1-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      REDIS_URL: redis://wave1-redis:6379/0
+      CORS_ORIGINS: http://localhost:25173,http://127.0.0.1:25173,http://wave1-frontend:5173
+      ALLOWED_HOSTS: localhost,127.0.0.1,wave1-api,wave1-frontend
+    ports:
+      - "28000:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2).read()",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      wave1-browser-migrate:
+        condition: service_completed_successfully
+      wave1-redis:
+        condition: service_healthy
+
+  wave1-frontend:
+    profiles: ["browser"]
+    build:
+      context: ./frontend
+    environment:
+      VITE_DEV_PROXY_TARGET: http://wave1-api:8000
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    ports:
+      - "25173:5173"
+    networks:
+      default:
+        aliases:
+          - frontend
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:5173/app').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      wave1-api:
+        condition: service_healthy
+
+  wave1-browser-e2e:
+    profiles: ["browser"]
+    build:
+      context: ./frontend
+    environment:
+      E2E_BASE_URL: http://frontend:5173
+      E2E_API_URL: http://wave1-api:8000
+    command:
+      - /bin/sh
+      - -ec
+      - npx playwright test e2e/capital-planning.spec.ts --project=chromium --reporter=line
+    depends_on:
+      wave1-frontend:
+        condition: service_healthy

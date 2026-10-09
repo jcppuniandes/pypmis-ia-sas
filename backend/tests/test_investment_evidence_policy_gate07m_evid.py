@@ -122,6 +122,12 @@ def test_business_case_provider_detects_stale_fin_reference(monkeypatch: pytest.
         recommendation_json={"selected_alternative": "ALT-1"},
         source_snapshot_hash="a" * 64,
         content_hash="b" * 64,
+        business_case_hash="e" * 64,
+        source_bundle_hash="f" * 64,
+        five_case_hash="1" * 64,
+        five_case_readiness_json={"overall_business_case_readiness": "READY"},
+        source_references_json={"proposal": {"id": 11}},
+        source_current=True,
         economic_financial_model_hash="c" * 64,
         material_change_status="CURRENT",
     )
@@ -158,7 +164,12 @@ def test_business_case_provider_detects_stale_fin_reference(monkeypatch: pytest.
     assert payload["readiness_status"] == "STALE"
     assert payload["source_current"] is False
     assert "BUSINESS_CASE_FIN_REFERENCE_STALE" in payload["blockers"]
-    assert payload["evidence_refs"][0]["business_case_hash"] == "b" * 64
+    assert payload["evidence_hash"] == "e" * 64
+    assert payload["evidence_refs"][0]["business_case_hash"] == "e" * 64
+    assert payload["evidence_refs"][0]["five_case_hash"] == "1" * 64
+    assert payload["evidence_refs"][0]["source_bundle_hash"] == "f" * 64
+    assert payload["evidence_refs"][0]["five_case_readiness"] == {"overall_business_case_readiness": "READY"}
+    assert payload["evidence_refs"][0]["provider_key"] == "BUSINESS_CASE_READINESS_PROVIDER"
 
 
 def test_effective_matrix_scales_to_one_thousand_projects() -> None:

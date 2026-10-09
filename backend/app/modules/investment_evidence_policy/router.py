@@ -91,6 +91,27 @@ def clone_configuration(
     return PolicyConfigurationOut.model_validate(result)
 
 
+@router.post(
+    "/configurations/{configuration_id}/clone-gate07j-evid2",
+    response_model=PolicyConfigurationOut,
+)
+def clone_gate07j_evid2_configuration(
+    configuration_id: int,
+    response: Response,
+    expected_version: int = Depends(_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> PolicyConfigurationOut:
+    """Create/reuse the additive Gate07J-EVID-2 draft from a governed revision."""
+
+    result = _authorized(
+        db, tenant_id, user_id, "investment_evidence_policy.configure", CONFIGURATION_ROLES
+    ).clone_gate07j_evid2_configuration(configuration_id, expected_version)
+    _etag(response, result.version)
+    return PolicyConfigurationOut.model_validate(result)
+
+
 @router.put("/configurations/{configuration_id}", response_model=PolicyConfigurationOut)
 def update_configuration(
     configuration_id: int,

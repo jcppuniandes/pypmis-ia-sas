@@ -102,6 +102,11 @@ class EvidenceItemOut(BaseModel):
     blockers: list[str]
     source_current: bool | None = None
     source_readiness_status: str | None = None
+    evidence_quality: str | None = None
+    evidence_confidence: str | None = None
+    quality_origin: str | None = None
+    source_version: str | int | None = None
+    as_of: str | None = None
     resolution_status: str
     revision_version: int
 
@@ -119,6 +124,15 @@ class PreparationReadinessOut(BaseModel):
     coverage_percent: float
     category_summary: dict
     evidence_coverage: dict = Field(default_factory=dict)
+    evidence_readiness_status: str = "NOT_EVALUATED"
+    business_evaluation_status: str = "NOT_APPLICABLE"
+    portfolio_context_status: str = "NOT_EVALUATED"
+    decision_package_status: str = "NOT_READY_FOR_INVESTMENT_DECISION"
+    criterion_evaluations: list[dict] = Field(default_factory=list)
+    unresolved_mandatory_criteria: list[str] = Field(default_factory=list)
+    cross_source_consistency: list[dict] = Field(default_factory=list)
+    success_criteria_candidates: list[dict] = Field(default_factory=list)
+    criterion_policy: dict = Field(default_factory=dict)
     warnings: list[str]
     blockers: list[str]
     investment_gate_preparation_ready: bool
@@ -149,6 +163,10 @@ class InvestmentGatePreparationOut(BaseModel):
     readiness_status: str
     source_snapshot: dict
     evidence_summary: dict
+    criterion_policy_snapshot: dict = Field(default_factory=dict)
+    criterion_evaluations: list[dict] = Field(default_factory=list)
+    portfolio_context_snapshot: dict = Field(default_factory=dict)
+    success_criteria_candidates: list[dict] = Field(default_factory=list)
     conditions: list[dict]
     warnings: list[str]
     blockers: list[str]
@@ -230,6 +248,14 @@ class HandoffOut(BaseModel):
     execution_plan_summary: dict
     business_case_summary: dict
     economic_financial_summary: dict
+    criterion_policy_snapshot: dict = Field(default_factory=dict)
+    criterion_evaluations: list[dict] = Field(default_factory=list)
+    portfolio_context_snapshot: dict = Field(default_factory=dict)
+    success_criteria_candidates: list[dict] = Field(default_factory=list)
+    evidence_readiness_status: str = "READY"
+    business_evaluation_status: str = "NOT_APPLICABLE"
+    portfolio_context_status: str = "AVAILABLE"
+    decision_package_status: str = "READY_FOR_INVESTMENT_DECISION"
     open_conditions: list[dict]
     warnings: list[str]
     blockers: list[str]

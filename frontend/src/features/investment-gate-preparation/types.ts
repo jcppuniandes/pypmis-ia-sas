@@ -24,8 +24,34 @@ export type InvestmentGateEvidence = {
   blockers: string[];
   source_current: boolean | null;
   source_readiness_status: string | null;
+  evidence_quality?: string | null;
+  evidence_confidence?: string | number | null;
+  quality_origin?: string | null;
+  source_version?: string | number | null;
+  source_hash?: string | null;
+  as_of?: string | null;
   resolution_status: string;
   revision_version: number;
+};
+
+export type CriterionEvaluationResult = {
+  criterion_id?: string | number;
+  criterion_code: string;
+  criterion_name?: string;
+  criterion_type: "READINESS_CHECK" | "MUST_MEET" | "DECISION_HURDLE" | "PRIORITIZATION" | "SUCCESS_CRITERION";
+  source_reference?: Record<string, unknown> | string | null;
+  source_value?: unknown;
+  operator?: string;
+  threshold_or_expected_value?: unknown;
+  threshold?: unknown;
+  expected_value?: unknown;
+  result: "SATISFIED" | "NOT_SATISFIED" | "NOT_APPLICABLE" | "NOT_EVALUABLE" | "STALE" | string;
+  blocking?: boolean;
+  required?: boolean;
+  evaluated_at?: string | null;
+  policy_revision?: number | string | null;
+  policy_hash?: string | null;
+  [key: string]: unknown;
 };
 
 export type InvestmentGateReadiness = {
@@ -41,6 +67,15 @@ export type InvestmentGateReadiness = {
   coverage_percent: number;
   category_summary: Record<string, Record<string, unknown>>;
   evidence_coverage: Record<string, Record<string, unknown>>;
+  evidence_readiness_status?: string;
+  business_evaluation_status?: string;
+  portfolio_context_status?: string;
+  decision_package_status?: string;
+  criterion_evaluations?: CriterionEvaluationResult[];
+  unresolved_mandatory_criteria?: string[];
+  cross_source_consistency?: Array<Record<string, unknown>>;
+  success_criteria_candidates?: Array<Record<string, unknown>>;
+  criterion_policy?: Record<string, unknown>;
   warnings: string[];
   blockers: string[];
   investment_gate_preparation_ready: boolean;
@@ -64,6 +99,10 @@ export type InvestmentGatePreparation = {
   readiness_status: "READY" | "BLOCKED" | "STALE";
   source_snapshot: Record<string, unknown>;
   evidence_summary: Record<string, Record<string, unknown>>;
+  criterion_policy_snapshot?: Record<string, unknown>;
+  criterion_evaluations?: CriterionEvaluationResult[];
+  portfolio_context_snapshot?: Record<string, unknown>;
+  success_criteria_candidates?: Array<Record<string, unknown>>;
   conditions: Array<Record<string, unknown>>;
   warnings: string[];
   blockers: string[];

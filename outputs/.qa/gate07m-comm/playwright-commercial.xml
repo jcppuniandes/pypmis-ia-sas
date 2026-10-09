@@ -1,0 +1,8 @@
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="73.943814">
+<testsuite name="commercial-strategy-governance.spec.ts" timestamp="2026-09-16T14:39:37.254Z" hostname="chromium" tests="2" failures="0" skipped="0" time="65.411" errors="0">
+<testcase name="07M-COMM keeps USER transactions and ADMIN policy configuration separated" classname="commercial-strategy-governance.spec.ts" time="38.919">
+</testcase>
+<testcase name="07M-COMM canonical deep routes preserve mode guards" classname="commercial-strategy-governance.spec.ts" time="26.492">
+</testcase>
+</testsuite>
+</testsuites>

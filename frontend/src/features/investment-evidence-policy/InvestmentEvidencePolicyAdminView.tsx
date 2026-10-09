@@ -10,21 +10,34 @@ import type {
   EvidencePolicyOverview,
   EvidencePolicyPreview,
   EvidenceRequirement,
+  GateDecisionCriterion,
 } from "./types";
 import "./investmentEvidencePolicy.css";
 
 const sections = [
   "Overview",
-  "Investment Gate Profiles",
-  "Evidence Matrix",
-  "Project Type Overrides",
+  "Evidence Policy",
+  "Evidence Classes",
   "Provider Registry",
+  "Gate Profiles",
+  "Decision Criteria",
+  "Criterion Types",
+  "Criterion Applicability",
+  "Thresholds / Expected States",
   "Readiness Rules",
-  "Validity",
-  "Coverage",
-  "Blocking Policy",
-  "Missing Providers",
+  "Evidence Quality Rules",
+  "Coverage Rules",
+  "Freshness Rules",
+  "Portfolio Context Rules",
+  "Success Criteria Rules",
+  "Project Type Overrides",
+  "Governance Model Overrides",
+  "FEL Stage Overrides",
+  "Uncertainty / Complexity Tailoring",
+  "Inheritance",
+  "SoD",
   "Preview",
+  "Publish",
   "History",
 ] as const;
 
@@ -42,6 +55,56 @@ function classLabel(value: string) {
   if (value === "A") return "A · Governed source required";
   if (value === "B") return "B · Governed evidence sufficient";
   return "C · Not required";
+}
+
+const criterionTypeDescriptions: Record<string, string> = {
+  READINESS_CHECK: "Confirms whether the frozen package can enter business evaluation.",
+  MUST_MEET: "Mandatory or knockout condition; it is not an evidence class.",
+  DECISION_HURDLE: "Controlled qualitative or quantitative minimum threshold.",
+  PRIORITIZATION: "Consumes existing Portfolio authority without recalculating rank.",
+  SUCCESS_CRITERION: "Candidate commitment for a future immutable FID snapshot.",
+};
+
+const defaultOperators = [
+  "EQUALS",
+  "NOT_EQUALS",
+  "GREATER_THAN",
+  "GREATER_THAN_OR_EQUAL",
+  "LESS_THAN",
+  "LESS_THAN_OR_EQUAL",
+  "IN",
+  "NOT_IN",
+  "IS_TRUE",
+  "IS_FALSE",
+  "IS_READY",
+  "IS_CURRENT",
+  "COVERAGE_AT_LEAST",
+];
+
+function records(value: unknown): Array<Record<string, unknown>> {
+  return Array.isArray(value)
+    ? value.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
+    : [];
+}
+
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function display(value: unknown): string {
+  if (value == null || value === "") return "—";
+  if (Array.isArray(value)) return value.map(display).join(", ") || "—";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function configuredCriteria(content: EvidencePolicyContent | null): GateDecisionCriterion[] {
+  if (!content) return [];
+  const direct = content.decision_criteria;
+  if (Array.isArray(direct)) return direct;
+  const policy = record(content.decision_criterion_policy);
+  const byProfile = record(policy.criteria_by_profile);
+  return Object.values(byProfile).flatMap((items) => records(items)) as GateDecisionCriterion[];
 }
 
 export default function InvestmentEvidencePolicyAdminView({ token }: { token: string }) {
@@ -64,6 +127,15 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
       (value.requirements || []).map((item) => ({ profile, ...item }))
     );
   }, [parsed]);
+  const criteria = useMemo(() => configuredCriteria(parsed), [parsed]);
+  const controlledOperators = useMemo(() => {
+    if (preview?.controlled_operators?.length) return preview.controlled_operators;
+    if (parsed?.controlled_operators?.length) return parsed.controlled_operators;
+    if (parsed?.decision_criterion_policy?.controlled_operators?.length) {
+      return parsed.decision_criterion_policy.controlled_operators;
+    }
+    return defaultOperators;
+  }, [parsed, preview]);
 
   async function load(preferredId?: number) {
     const [nextOverview, portfolioOptions] = await Promise.all([
@@ -88,11 +160,12 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
     );
   }, [token]);
 
-  async function execute(action: "clone" | "save" | "publish") {
+  async function execute(action: "clone" | "clone-evid2" | "save" | "publish") {
     if (!selected) return;
     try {
       let result = selected;
       if (action === "clone") result = await investmentEvidencePolicyApi.clone(token, selected);
+      if (action === "clone-evid2") result = await investmentEvidencePolicyApi.cloneGate07jEvid2(token, selected);
       if (action === "save") {
         if (!parsed) throw new Error("Policy JSON is invalid.");
         result = await investmentEvidencePolicyApi.save(token, selected, parsed);
@@ -170,10 +243,120 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
     );
   }
 
+  function renderCriteria(
+    rows: GateDecisionCriterion[],
+    mode: "definition" | "applicability" | "threshold" = "definition"
+  ) {
+    return (
+      <div className="evidencePolicyTableWrap">
+        <table aria-label={`Decision criteria ${mode}`} className="evidencePolicyTable decisionCriteriaTable">
+          <thead>
+            <tr>
+              <th>Criterion</th>
+              <th>Type</th>
+              {mode === "applicability" ? (
+                <>
+                  <th>Gate / FEL</th>
+                  <th>Project Type</th>
+                  <th>Governance Model</th>
+                </>
+              ) : null}
+              {mode !== "applicability" ? <th>Governed source</th> : null}
+              {mode !== "applicability" ? <th>Field</th> : null}
+              {mode !== "applicability" ? <th>Operator</th> : null}
+              {mode !== "applicability" ? <th>Threshold / expected state</th> : null}
+              <th>Required / Blocking</th>
+              {mode === "definition" ? <th>Weight</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length ? (
+              rows.map((item, index) => (
+                <tr key={`${item.criterion_code}-${index}`}>
+                  <td>
+                    <strong>{item.criterion_name || item.criterion_code}</strong>
+                    <small>{item.criterion_code}</small>
+                  </td>
+                  <td>
+                    <span className={`criterionType criterionType${item.criterion_type}`}>{item.criterion_type}</span>
+                  </td>
+                  {mode === "applicability" ? (
+                    <>
+                      <td>
+                        {display(item.gate_profiles || item.gate_profile_code)} ·{" "}
+                        {display(item.fel_stage_applicability)}
+                      </td>
+                      <td>{display(item.project_type_applicability || item.project_type_filter)}</td>
+                      <td>{display(item.governance_model_applicability || item.governance_model_filter)}</td>
+                    </>
+                  ) : null}
+                  {mode !== "applicability" ? <td>{display(item.source_evidence_type)}</td> : null}
+                  {mode !== "applicability" ? <td>{display(item.source_field)}</td> : null}
+                  {mode !== "applicability" ? <td>{display(item.operator)}</td> : null}
+                  {mode !== "applicability" ? (
+                    <td>{display(item.threshold ?? item.expected_state ?? item.expected_value)}</td>
+                  ) : null}
+                  <td>{item.required ? (item.blocking ? "Required · Blocking" : "Required") : "Optional"}</td>
+                  {mode === "definition" ? <td>{item.weight == null ? "N/A" : item.weight}</td> : null}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={mode === "applicability" ? 7 : mode === "definition" ? 8 : 7}>
+                  No decision criteria are configured in this revision.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  function renderPolicyValue(title: string, value: unknown, note: string) {
+    return (
+      <>
+        <div className="evidencePolicyCallout">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>{title}</strong>
+            <span>{note}</span>
+          </div>
+        </div>
+        <details open className="evidencePolicyJson">
+          <summary>Governed configuration</summary>
+          <pre>{JSON.stringify(value ?? {}, null, 2)}</pre>
+        </details>
+      </>
+    );
+  }
+
   function sectionContent() {
     if (!overview || !parsed) return <p>Loading controlled evidence policy…</p>;
-    if (section === "Evidence Matrix") return renderMatrix(matrixRows);
-    if (section === "Investment Gate Profiles") {
+    if (section === "Evidence Policy") return renderMatrix(matrixRows);
+    if (section === "Evidence Classes") {
+      return (
+        <div className="evidencePolicyCards evidenceClassCards">
+          {[
+            ["A", "GOVERNED_SOURCE_REQUIRED", "A governed source is mandatory and its failure may block readiness."],
+            ["B", "GOVERNED_EVIDENCE_SUFFICIENT", "Governed evidence is consumed according to the configured policy."],
+            ["C", "NOT_REQUIRED", "The evidence does not block this applicable Gate context."],
+          ].map(([code, name, description]) => (
+            <article key={code}>
+              <span>Evidence Class {code}</span>
+              <h3>{name}</h3>
+              <p>{description}</p>
+            </article>
+          ))}
+          <article className="taxonomyBoundary">
+            <span>Mandatory boundary</span>
+            <h3>Evidence ≠ Criterion</h3>
+            <p>A/B/C never becomes a decision criterion type or a formal GO/HOLD/RECYCLE/KILL outcome.</p>
+          </article>
+        </div>
+      );
+    }
+    if (section === "Gate Profiles") {
       return (
         <div className="evidencePolicyCards">
           {Object.entries(parsed.gate_profiles).map(([code, profile]) => (
@@ -185,6 +368,36 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
             </article>
           ))}
         </div>
+      );
+    }
+    if (section === "Decision Criteria") return renderCriteria(criteria);
+    if (section === "Criterion Applicability") return renderCriteria(criteria, "applicability");
+    if (section === "Thresholds / Expected States") return renderCriteria(criteria, "threshold");
+    if (section === "Criterion Types") {
+      const taxonomy = preview?.decision_criterion_taxonomy?.length
+        ? preview.decision_criterion_taxonomy
+        : Object.keys(criterionTypeDescriptions);
+      return (
+        <>
+          <div className="evidencePolicyCards criterionTypeCards">
+            {taxonomy.map((item) => (
+              <article key={item}>
+                <span>Decision Criterion Type</span>
+                <h3>{item}</h3>
+                <p>{criterionTypeDescriptions[item] || "Governed criterion type returned by the policy."}</p>
+              </article>
+            ))}
+          </div>
+          <div className="controlledOperators" aria-label="Controlled decision criterion operators">
+            <strong>Controlled operators</strong>
+            <div>
+              {controlledOperators.map((item) => (
+                <code key={item}>{item}</code>
+              ))}
+            </div>
+            <p>Free-form executable formulas are not supported.</p>
+          </div>
+        </>
       );
     }
     if (section === "Project Type Overrides") {
@@ -278,35 +491,91 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         </div>
       );
     }
-    if (section === "Missing Providers") {
-      const rows = preview?.missing_providers || overview.missing_providers;
+    if (section === "Readiness Rules") {
+      return renderPolicyValue(
+        "Gate readiness rules",
+        parsed.readiness_rules || parsed.blocking_policy,
+        "Readiness confirms that the package can be evaluated. It never produces GO, HOLD, RECYCLE or KILL."
+      );
+    }
+    if (section === "Evidence Quality Rules") {
+      return renderPolicyValue(
+        "Evidence quality is separate from readiness",
+        parsed.evidence_quality_rules || parsed.decision_criterion_policy?.evidence_quality_states,
+        "Quality and confidence remain governed metadata; the browser does not infer them."
+      );
+    }
+    if (section === "Coverage Rules") {
+      return renderPolicyValue(
+        "Exact Project Set coverage",
+        parsed.coverage_policy,
+        "The required denominator is preserved; missing Projects are never hidden by averaging."
+      );
+    }
+    if (section === "Freshness Rules") {
+      return renderPolicyValue(
+        "Source-current and freshness controls",
+        parsed.freshness_rules || parsed.validity_policy,
+        "Current provider hashes, effective policy and as-of dates are evaluated by the backend."
+      );
+    }
+    if (section === "Portfolio Context Rules") {
+      return renderPolicyValue(
+        "Portfolio authority is consumed, not recreated",
+        parsed.portfolio_context_rules || {
+          portfolio_rank_authority: parsed.decision_criterion_policy?.portfolio_rank_authority || "PORTFOLIO",
+        },
+        "Rank, scenarios, budget and resources remain Portfolio-owned context for a governed human decision."
+      );
+    }
+    if (section === "Success Criteria Rules") {
       return (
-        <div className="evidencePolicyTableWrap">
-          <table className="evidencePolicyTable">
-            <thead>
-              <tr>
-                <th>Evidence</th>
-                <th>Gate Profile</th>
-                <th>Project Type</th>
-                <th>Provider</th>
-                <th>Gap</th>
-                <th>Recommended Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((item, index) => (
-                <tr key={`${item.gate_profile}-${item.evidence_type}-${index}`}>
-                  <td>{item.evidence_type}</td>
-                  <td>{item.gate_profile}</td>
-                  <td>{item.project_type || "Base"}</td>
-                  <td>{item.provider || "MISSING"}</td>
-                  <td>{item.gap_status}</td>
-                  <td>{item.recommended_action}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {renderCriteria(
+            criteria.filter((item) => item.criterion_type === "SUCCESS_CRITERION"),
+            "threshold"
+          )}
+          {renderPolicyValue(
+            "Immutable FID candidate snapshot",
+            parsed.success_criteria_rules || {},
+            "Gate 07J prepares candidates; Gate 07K freezes selected source references and values on formal decision."
+          )}
+        </>
+      );
+    }
+    if (section === "Governance Model Overrides") {
+      return renderPolicyValue(
+        "Governance model applicability",
+        parsed.governance_model_overrides || parsed.applicable_governance_models,
+        "CAPITAL_OWNER requirements do not silently apply to CONTRACTOR_DELIVERY or DIRECT_INTERNAL."
+      );
+    }
+    if (section === "FEL Stage Overrides") {
+      return renderPolicyValue(
+        "Progressive FEL maturity",
+        parsed.fel_stage_overrides || parsed.decision_criterion_policy?.tailoring_dimensions || {},
+        "Select remains stage-appropriate; FFA may apply the stricter published maturity policy."
+      );
+    }
+    if (section === "Uncertainty / Complexity Tailoring") {
+      return renderPolicyValue(
+        "Tailoring dimensions",
+        parsed.uncertainty_complexity_tailoring || parsed.decision_criterion_policy?.tailoring_dimensions || {},
+        "Project type, risk, complexity and uncertainty applicability is configuration-driven."
+      );
+    }
+    if (section === "Inheritance") {
+      return renderPolicyValue(
+        "Effective-dated inheritance",
+        parsed.inheritance || parsed.decision_criterion_policy?.new_round_policy || {},
+        "Historical rounds retain their frozen policy; a new round resolves policy under the configured rule."
+      );
+    }
+    if (section === "SoD") {
+      return renderPolicyValue(
+        "Segregation of duties",
+        parsed.segregation_of_duties || {},
+        "Policy publishers cannot bypass Gate preparation or formal Gate 07K decision authority."
       );
     }
     if (section === "Preview") {
@@ -327,8 +596,32 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
               <h3>{preview.missing_required_provider_count}</h3>
             </article>
             <article>
-              <span>Investment Gate readiness</span>
+              <span>Decision Package eligibility</span>
               <h3>{preview.would_be_ready_for_investment_gate ? "READY" : "BLOCKED"}</h3>
+            </article>
+          </div>
+          <div className="evidencePolicyCards gateStageCards">
+            <article>
+              <span>A · Gate Readiness</span>
+              <h3>{preview.evidence_readiness_status || (preview.would_gate07j_be_ready ? "READY" : "BLOCKED")}</h3>
+              <p>Evidence sufficiency, freshness, quality and exact coverage.</p>
+            </article>
+            <article>
+              <span>B · Business Evaluation</span>
+              <h3>{preview.business_evaluation_status || "PREVIEW"}</h3>
+              <p>Must-meet criteria and decision hurdles over governed source values.</p>
+            </article>
+            <article>
+              <span>C · Portfolio / Resource Context</span>
+              <h3>{preview.portfolio_context_status || "CONTEXT"}</h3>
+              <p>Consumes Portfolio rank and feasibility; it never computes a second rank.</p>
+            </article>
+            <article>
+              <span>Gate 07K eligibility</span>
+              <h3>
+                {preview.decision_package_status || (preview.would_be_ready_for_investment_gate ? "READY" : "BLOCKED")}
+              </h3>
+              <p>READY means eligible for governed decision; it does not mean automatic GO.</p>
             </article>
           </div>
           <div className="evidencePolicyCards">
@@ -354,10 +647,62 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
             <span>{preview.blockers.join(" · ") || "No blocking provider gaps for this context."}</span>
           </div>
           {renderMatrix(preview.effective_matrix)}
+          <h3 className="evidencePolicySubheading">Effective decision criteria</h3>
+          {renderCriteria(preview.decision_criteria || criteria)}
+          {(preview.criterion_validation_issues || []).length ? (
+            <div className="evidencePolicyCallout danger">
+              <strong>Criterion validation issues</strong>
+              <span>{preview.criterion_validation_issues?.join(" · ")}</span>
+            </div>
+          ) : null}
+          {(preview.missing_providers || []).length ? (
+            <details className="evidencePolicyJson">
+              <summary>Missing provider diagnostics</summary>
+              <pre>{JSON.stringify(preview.missing_providers, null, 2)}</pre>
+            </details>
+          ) : null}
           <details open className="evidencePolicyJson">
             <summary>Deterministic next-development decision</summary>
             <pre>{JSON.stringify(preview.recommended_next_development, null, 2)}</pre>
           </details>
+        </>
+      );
+    }
+    if (section === "Publish") {
+      return (
+        <>
+          <div className="evidencePolicyCallout">
+            <Send size={20} />
+            <div>
+              <strong>DRAFT → PUBLISHED → ARCHIVED</strong>
+              <span>
+                Publication is effective-dated and immutable. It affects only newly applicable preparations; frozen
+                historical packages retain their captured revision and hash.
+              </span>
+            </div>
+          </div>
+          <div className="evidencePolicyCards">
+            <article>
+              <span>Selected revision</span>
+              <h3>{selected?.revision || "—"}</h3>
+              <p>{selected?.status || "No policy selected"}</p>
+            </article>
+            <article>
+              <span>Effective from</span>
+              <h3>{display(parsed.effective_from || parsed.decision_criterion_policy?.effective_from)}</h3>
+            </article>
+            <article>
+              <span>Formal decision authority</span>
+              <h3>{parsed.decision_criterion_policy?.formal_decision_authority || "GATE07K"}</h3>
+              <p>No automated GO/HOLD/RECYCLE/KILL.</p>
+            </article>
+            <article>
+              <span>Unsafe expressions</span>
+              <h3>
+                {parsed.decision_criterion_policy?.unsafe_expression_execution === false ? "DISABLED" : "NOT ALLOWED"}
+              </h3>
+            </article>
+          </div>
         </>
       );
     }
@@ -374,57 +719,44 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         </div>
       );
     }
-    const policyValue =
-      section === "Validity"
-        ? parsed.validity_policy
-        : section === "Coverage"
-          ? parsed.coverage_policy
-          : section === "Blocking Policy"
-            ? parsed.blocking_policy
-            : parsed;
     return (
       <>
-        {section === "Overview" ? (
-          <div className="evidencePolicyCallout">
-            <ShieldCheck size={20} />
-            <div>
-              <strong>A/B/C policy boundary</strong>
-              <span>
-                Class A requires an available governed provider. Class B requires controlled validated evidence. Class C
-                never blocks.
-              </span>
-            </div>
+        <div className="evidencePolicyCallout">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>Evidence classification and decision criteria stay separate</strong>
+            <span>
+              A/B/C governs source sufficiency. READINESS_CHECK, MUST_MEET, DECISION_HURDLE, PRIORITIZATION and
+              SUCCESS_CRITERION govern evaluation. Gate 07K alone owns the formal decision.
+            </span>
           </div>
-        ) : null}
+        </div>
         <details open className="evidencePolicyJson">
-          <summary>{section === "Overview" ? "Controlled policy JSON" : `${section} policy`}</summary>
-          {section === "Overview" ? (
-            <textarea
-              aria-label="Investment Decision Evidence Policy JSON"
-              disabled={selected?.status !== "draft"}
-              onChange={(event) => setContent(event.target.value)}
-              rows={30}
-              value={content}
-            />
-          ) : (
-            <pre>{JSON.stringify(policyValue, null, 2)}</pre>
-          )}
+          <summary>Controlled Evidence &amp; Decision Policy JSON</summary>
+          <textarea
+            aria-label="Evidence and Decision Policy JSON"
+            disabled={selected?.status !== "draft"}
+            onChange={(event) => setContent(event.target.value)}
+            rows={30}
+            value={content}
+          />
         </details>
       </>
     );
   }
 
   return (
-    <section aria-label="Investment Decision Evidence Policy" className="investmentEvidencePolicy">
+    <section aria-label="Evidence & Decision Policy" className="investmentEvidencePolicy">
       <CompactModuleHeader
-        description="Defines the contextual A/B/C evidence matrix required before a future Investment Decision. Gate 07J remains the owner of Preparation readiness; this policy never creates FID."
-        eyebrow="ADMIN MODE · ENTERPRISE STRATEGY MANAGER · INVESTMENT GOVERNANCE · GATE 07J-EVID"
+        description="Governs the separate evidence A/B/C taxonomy, controlled decision criteria, progressive maturity, Portfolio context and success-criteria candidates consumed by Gate 07J."
+        eyebrow="ADMIN MODE · ENTERPRISE STRATEGY MANAGER · INVESTMENT GOVERNANCE · GATE 07J-EVID-2"
         metrics={[
           { label: "Policy revisions", value: overview?.configurations.length || 0 },
           { label: "Providers", value: overview?.providers.length || 0 },
+          { label: "Decision criteria", value: preview?.decision_criteria?.length ?? criteria.length },
           { label: "Blocking gaps", value: preview?.missing_required_provider_count ?? "Preview" },
         ]}
-        title="Investment Decision Evidence Policy"
+        title="Evidence & Decision Policy"
         tone="admin"
       />
       {message ? (
@@ -517,6 +849,14 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         <div aria-label="Evidence policy actions" className="evidencePolicyActions" role="group">
           <button
             disabled={!selected || selected.status !== "published"}
+            onClick={() => void execute("clone-evid2")}
+            title="Create the governed EVID-2 draft from a published policy"
+            type="button"
+          >
+            <Copy size={15} /> Clone Gate07J-EVID-2 DRAFT
+          </button>
+          <button
+            disabled={!selected || selected.status !== "published"}
             onClick={() => void execute("clone")}
             type="button"
           >
@@ -564,8 +904,8 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
         {sectionContent()}
       </div>
       <p className="evidencePolicyGuardrail">
-        STOP boundary: no Business Case or FIN recalculation, no Investment Decision/FID redesign, no
-        GO/HOLD/RECYCLE/KILL, Project activation or execution.
+        ADMIN configuration only: no Gate preparation transaction, no source-domain recalculation, no Portfolio
+        reranking, no automated GO/HOLD/RECYCLE/KILL, no FID, Project activation or execution.
       </p>
     </section>
   );

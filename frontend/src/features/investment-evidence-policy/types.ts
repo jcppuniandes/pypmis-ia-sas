@@ -12,6 +12,59 @@ export type EvidencePolicyConfiguration = {
   content_hash: string;
 };
 
+export type GateCriterionType =
+  | "READINESS_CHECK"
+  | "MUST_MEET"
+  | "DECISION_HURDLE"
+  | "PRIORITIZATION"
+  | "SUCCESS_CRITERION";
+
+export type GateCriterionOperator =
+  | "EQUALS"
+  | "NOT_EQUALS"
+  | "GREATER_THAN"
+  | "GREATER_THAN_OR_EQUAL"
+  | "LESS_THAN"
+  | "LESS_THAN_OR_EQUAL"
+  | "IN"
+  | "NOT_IN"
+  | "IS_TRUE"
+  | "IS_FALSE"
+  | "IS_READY"
+  | "IS_CURRENT"
+  | "COVERAGE_AT_LEAST";
+
+export type GateDecisionCriterion = {
+  criterion_id?: string | number;
+  criterion_code: string;
+  criterion_name?: string;
+  criterion_type: GateCriterionType;
+  gate_profile_code?: string;
+  gate_profiles?: string[];
+  fel_stage_applicability?: string[];
+  project_type_applicability?: string[];
+  governance_model_applicability?: string[];
+  project_type_filter?: string[];
+  governance_model_filter?: string[];
+  uncertainty_level_filter?: string[];
+  source_evidence_type: string;
+  source_field?: string;
+  operator: GateCriterionOperator | string;
+  threshold?: unknown;
+  expected_state?: unknown;
+  expected_value?: unknown;
+  scope?: string;
+  success_snapshot_fields?: string[];
+  blocking: boolean;
+  required: boolean;
+  weight?: number | null;
+  effective_from?: string | null;
+  version?: number;
+  status?: string;
+  rationale?: string;
+  [key: string]: unknown;
+};
+
 export type EvidenceRequirement = {
   requirement_key: string;
   evidence_type: string;
@@ -39,6 +92,33 @@ export type EvidencePolicyContent = {
   blocking_policy: Record<string, unknown>;
   validity_policy: Record<string, unknown>;
   coverage_policy: Record<string, unknown>;
+  decision_criteria?: GateDecisionCriterion[];
+  decision_criterion_policy?: {
+    policy_code?: string;
+    effective_from?: string | null;
+    criterion_types?: string[];
+    controlled_operators?: string[];
+    evidence_quality_states?: string[];
+    unsafe_expression_execution?: boolean;
+    formal_decision_authority?: string;
+    portfolio_rank_authority?: string;
+    criteria_by_profile?: Record<string, GateDecisionCriterion[]>;
+    tailoring_dimensions?: string[] | Record<string, unknown>;
+    new_round_policy?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+  criterion_types?: string[] | Record<string, unknown>;
+  controlled_operators?: string[];
+  criterion_applicability?: Record<string, unknown>;
+  evidence_quality_rules?: Record<string, unknown>;
+  freshness_rules?: Record<string, unknown>;
+  portfolio_context_rules?: Record<string, unknown>;
+  success_criteria_rules?: Record<string, unknown>;
+  governance_model_overrides?: Array<Record<string, unknown>>;
+  fel_stage_overrides?: Array<Record<string, unknown>>;
+  uncertainty_complexity_tailoring?: Record<string, unknown> | Array<Record<string, unknown>>;
+  inheritance?: Record<string, unknown>;
+  segregation_of_duties?: Record<string, unknown>;
   [key: string]: unknown;
 };
 
@@ -107,6 +187,18 @@ export type EvidencePolicyPreview = {
   source_availability: Record<string, string>;
   source_readiness: Record<string, string[]>;
   source_current: Record<string, boolean[]>;
+  decision_criterion_policy?: Record<string, unknown>;
+  decision_criteria?: GateDecisionCriterion[];
+  criterion_validation_issues?: string[];
+  decision_criterion_taxonomy?: string[];
+  controlled_operators?: string[];
+  evidence_quality_states?: string[];
+  evidence_readiness_status?: string;
+  business_evaluation_status?: string;
+  portfolio_context_status?: string;
+  decision_package_status?: string;
+  portfolio_context_snapshot?: Record<string, unknown>;
+  success_criteria_candidates?: Array<Record<string, unknown>>;
   would_gate07j_be_ready: boolean;
   would_be_ready_for_investment_gate: boolean;
   recommended_next_development: Record<string, unknown>;

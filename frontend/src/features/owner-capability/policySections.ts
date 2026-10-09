@@ -1,0 +1,28 @@
+import type { PolicySection } from "../risk-governance/GovernedPolicyEditor";
+
+export const OWNER_CAPABILITY_POLICY_SECTIONS: readonly PolicySection[] = [
+  ["General", "scope"],
+  ["Capability Framework", "framework"],
+  ["Dimensions", "dimensions"],
+  ["Requirements", "requirements"],
+  ["Maturity Scale", "maturity_scale"],
+  ["Evidence Quality", "evidence_quality_scale"],
+  ["Applicability", "applicability"],
+  ["FEL Stage Rules", "requirements"],
+  ["Gate Profile Rules", "requirements"],
+  ["Project Type Rules", "applicability.project_types"],
+  ["Governance Model Rules", "applicability.governance_models"],
+  ["Complexity Rules", "requirements"],
+  ["Risk Rules", "requirements"],
+  ["Uncertainty Rules", "requirements"],
+  ["Commercial Strategy Rules", "requirements"],
+  ["Blocking Rules", "requirements"],
+  ["Coverage Rules", "coverage_rules"],
+  ["Mitigation Acceptance Rules", "mitigation_acceptance_rules"],
+  ["Freshness", "freshness"],
+  ["Numbering", "numbering"],
+  ["Inheritance", "inherit_to_descendants"],
+  ["Review / SoD", "separation_of_duties"],
+  ["Preview", null],
+  ["History", null],
+];

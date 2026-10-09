@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="28" failures="0" errors="0" time="257.723">
+    <testsuite name="tests/AppFlow.test.tsx" timestamp="2026-09-18T11:54:59.511Z" hostname="LAPTOP-4TR3E31D" tests="28" failures="0" errors="0" skipped="27" time="236.8367247">
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; clears expired sessions instead of rendering the workspace as unavailable" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; opens the selected project dashboard before optional project creation" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; uses a simplified project information flow instead of scattered navigation" time="236.8320608">
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; opens the blocking cost and currency gate from the next controlled action" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; expands project creation only when requested" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; creates a project with authorization and control configuration fields" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; lets users create the first project when the workspace is empty" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; deletes the selected project after confirmation and selects the next project" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; uploads the selected XML/XER file to the active project" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; renders DCMA schedule quality metrics in baseline control" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; navigates between control flow views from the side rail" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; registers the schedule control handbook module in navigation and route" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; renders the BPM process flow board by role lane" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; renders production hardening controls for BP policies, line versions, exports and recost history" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; shows the WBS Sheet roll-up from the latest Activity Sheet" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; keeps BIM and Excel quantity takeoff in BIM Manager instead of Project Setup" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; opens BIM Manager with AWP validation and 3D viewer" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; keeps heavy IFC models visible when quantity extraction times out" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; loads IFC models larger than the old 8 MB guard instead of doing nothing" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; clears expired sessions when BIM model upload receives a 401" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; auto-saves ready setup before loading the first Activity Sheet" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; creates a WBS node from Project Setup" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; shows WBS as a hierarchy and as a table in Project Setup" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; anchors WBS CBS FBS mapping on the WBS hierarchy and active traceability" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; shows package POC and lets users add manual constraints" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; creates a user with password and assigns a project role from the dashboard" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/AppFlow.test.tsx" name="served project control flow &gt; manages existing tenant users and project access from the dashboard" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+</testsuites>

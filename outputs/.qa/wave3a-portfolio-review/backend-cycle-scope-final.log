@@ -1,0 +1,141 @@
+..F                                                                      [100%]
+================================== FAILURES ===================================
+_ test_wave3a_automatic_allocation_selection_never_uses_another_portfolios_enterprise_plan _
+
+    def test_wave3a_automatic_allocation_selection_never_uses_another_portfolios_enterprise_plan():
+        with TestClient(app):
+            with SessionLocal() as db:
+                fixture = _fixture(db)
+                service = fixture["preparer"]
+                own_plan = db.get(StrategicCapitalAllocationPlan, fixture["plan"].id)
+                other_portfolio = _portfolio(db, fixture["author"], fixture["enterprise"], label="other plan scope")
+                plan_values = {
+                    column.name: deepcopy(getattr(own_plan, column.name))
+                    for column in StrategicCapitalAllocationPlan.__table__.columns
+                    if column.name != "id"
+                }
+                token = uuid4().hex[:10]
+                plan_values.update(
+                    allocation_plan_number=f"W3A-OTHER-{token}",
+                    logical_code=f"W3A-OTHER-{token}",
+                    portfolio_workspace_id=other_portfolio.id,
+                    create_idempotency_key=_key("other-plan"),
+                    submit_idempotency_key=None,
+                    review_idempotency_key=None,
+                    endorse_idempotency_key=None,
+                    endorsed_at=own_plan.endorsed_at + timedelta(days=1),
+                )
+                other_plan = StrategicCapitalAllocationPlan(**plan_values)
+                db.add(other_plan)
+                db.commit()
+                before = _authorities(db)
+                review = service.create_session(
+                    _payload(fixture).model_copy(update={"allocation_plan_id": None}), _key("automatic-plan")
+                )
+                review = service.prepare_session(review.id, review.revision_version)
+                candidate = service.snapshot_preview(review.id)
+                assert candidate.snapshot["allocation_plan"]["id"] == own_plan.id
+                frozen = service.freeze_snapshot(
+                    review.id, SnapshotCommandIn(), review.revision_version, _key("freeze-automatic-plan")
+                )
+                assert service.get_session(review.id).allocation_plan_id == own_plan.id
+                assert frozen.snapshot_json["allocation_plan"]["id"] != other_plan.id
+                assert _authorities(db) == before
+    
+                # A portfolio-less plan still belongs to its own workspace authority.
+                generic_plan = StrategicCapitalAllocationPlan(
+                    **{
+                        **plan_values,
+                        "allocation_plan_number": f"W3A-GENERIC-{token}",
+                        "logical_code": f"W3A-GENERIC-{token}",
+                        "portfolio_workspace_id": None,
+                        "scope_workspace_id": other_portfolio.id,
+                        "create_idempotency_key": _key("generic-plan"),
+                    }
+                )
+                db.add(generic_plan)
+                db.commit()
+                scoped = PortfolioReviewService(
+                    db,
+                    fixture["author"].tenant_id,
+                    fixture["author"].id,
+                    replace(
+                        _context(fixture["author"], "portfolio_review_preparer"),
+                        organization_wide=False,
+                        workspace_ids=frozenset({fixture["portfolio"].id}),
+                    ),
+                )
+                with pytest.raises(HTTPException) as outside_scope:
+                    scoped.create_session(
+                        _payload(fixture).model_copy(update={"allocation_plan_id": generic_plan.id}),
+                        _key("foreign-generic-plan"),
+                    )
+                assert outside_scope.value.status_code == 403
+                with pytest.raises(HTTPException) as incompatible_scope:
+                    service.create_session(
+                        _payload(fixture).model_copy(update={"allocation_plan_id": generic_plan.id}),
+                        _key("incompatible-generic-plan"),
+                    )
+                assert incompatible_scope.value.detail["code"] == "PORTFOLIO_REVIEW_SCOPE_INCOMPATIBLE"
+    
+                # Cycle lineage must be compatible without demanding an ancestor grant.
+                cycle_values = {
+>                   column.name: deepcopy(getattr(fixture["cycle"], column.name))
+                    for column in CapitalPlanningCycle.__table__.columns
+                    if column.name != "id"
+                }
+
+tests\test_portfolio_review_wave3a.py:1202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = CycleOut(id=3, cycle_number='CPC-0003', name='Wave 2A strategic capital cycle', planning_horizon_start=datetime.date(2...pened_at=datetime.datetime(2026, 10, 7, 18, 17, 0, 280340), review_started_at=None, closed_at=None, revision_version=2)
+item = 'tenant_id'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'CycleOut' object has no attribute 'tenant_id'
+
+.venv\Lib\site-packages\pydantic\main.py:1042: AttributeError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\_pytest\cacheprovider.py:475
+  C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.venv\Lib\site-packages\_pytest\cacheprovider.py:475: PytestCacheWarning: cache could not write path C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.pytest_cache\v\cache\nodeids: [Errno 13] Permission denied: 'C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\backend\\.pytest_cache\\v\\cache\\nodeids'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+.venv\Lib\site-packages\_pytest\cacheprovider.py:429
+  C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.venv\Lib\site-packages\_pytest\cacheprovider.py:429: PytestCacheWarning: could not create cache path C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.pytest_cache\v\cache\lastfailed: [WinError 5] Acceso denegado: 'C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\backend\\.pytest_cache\\v\\cache'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+.venv\Lib\site-packages\_pytest\stepwise.py:51
+  C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.venv\Lib\site-packages\_pytest\stepwise.py:51: PytestCacheWarning: could not create cache path C:\Users\Ricardo\Documents\GitHub\pypmis-ia-sas\backend\.pytest_cache\v\cache\stepwise: [WinError 5] Acceso denegado: 'C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\backend\\.pytest_cache\\v\\cache'
+    session.config.cache.set(STEPWISE_CACHE_DIR, [])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_portfolio_review_wave3a.py::test_wave3a_automatic_allocation_selection_never_uses_another_portfolios_enterprise_plan
+1 failed, 2 passed, 30 deselected, 3 warnings in 123.35s (0:02:03)

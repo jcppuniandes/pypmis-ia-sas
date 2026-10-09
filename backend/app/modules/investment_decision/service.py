@@ -300,6 +300,31 @@ class InvestmentDecisionService:
         )
         if active is not None:
             return self._out(active)
+        previous = self.db.scalar(
+            select(InvestmentDecision)
+            .where(
+                InvestmentDecision.tenant_id == self.tenant_id,
+                InvestmentDecision.investment_gate_preparation_id == preparation.id,
+                InvestmentDecision.profile_code == preparation.profile_code,
+                InvestmentDecision.status == "DECIDED",
+            )
+            .order_by(InvestmentDecision.decision_round.desc())
+        )
+        if previous is not None:
+            code = (
+                "NEW_GATE07J_PREPARATION_REQUIRED"
+                if previous.outcome in {"HOLD", "RECYCLE"}
+                else "PREPARATION_ALREADY_DECIDED"
+            )
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": code,
+                    "previous_decision_id": previous.id,
+                    "previous_outcome": previous.outcome,
+                    "policy_resolution": "CURRENT_EFFECTIVE_POLICY_REQUIRES_NEW_GATE07J_PREPARATION",
+                },
+            )
         config = (
             self._configuration(payload.configuration_id)
             if payload.configuration_id
@@ -564,6 +589,13 @@ class InvestmentDecisionService:
             raise HTTPException(status_code=409, detail={"code": "READY_FOR_DECISION_REQUIRED"})
         self._assert_current(record)
         self._assert_authority(record, payload.outcome)
+        if payload.outcome == "GO":
+            criterion_blockers = self._criterion_guardrail_blockers(record.decision_package_snapshot_json or {})
+            if criterion_blockers:
+                raise HTTPException(
+                    status_code=409,
+                    detail={"code": "GATE_DECISION_CRITERIA_NOT_SATISFIED", "blockers": criterion_blockers},
+                )
         if payload.outcome == "RECYCLE" and payload.recycle_target not in list(
             record.configuration_snapshot_json.get("recycle_targets", RECYCLE_TARGETS)
         ):
@@ -593,6 +625,23 @@ class InvestmentDecisionService:
         record.investment_authorized = fid
         record.decide_idempotency_key = payload.idempotency_key
         record.decide_payload_hash = payload_hash
+        if payload.outcome == "GO":
+            package = deepcopy(record.decision_package_snapshot_json or {})
+            candidates = deepcopy(package.get("success_criteria_candidates") or [])
+            frozen_success = [
+                {
+                    **item,
+                    "decision_id": record.id,
+                    "decision_number": record.decision_number,
+                    "decision_round": record.decision_round,
+                    "frozen_at": now.isoformat(),
+                }
+                for item in candidates
+            ]
+            package["fid_success_criteria_snapshot"] = frozen_success
+            package["success_criteria_snapshot_hash"] = _hash(frozen_success)
+            record.decision_package_snapshot_json = package
+            record.source_package_hash = _hash(package)
         record.decision_hash = self._decision_hash(record, now)
         self._touch(record, now=now)
         output = self._authorization_output(record)
@@ -613,6 +662,32 @@ class InvestmentDecisionService:
                 "InvestmentDecision",
                 record.id,
                 {"full_funds_authorized": True, "can_activate_project": False},
+            )
+        if payload.outcome == "GO":
+            self._event(
+                "investment_decision.success_criteria_snapshot_frozen",
+                "InvestmentDecision",
+                record.id,
+                {
+                    "snapshot_hash": dict(record.decision_package_snapshot_json or {}).get(
+                        "success_criteria_snapshot_hash"
+                    ),
+                    "success_criteria_count": len(
+                        dict(record.decision_package_snapshot_json or {}).get("fid_success_criteria_snapshot", [])
+                    ),
+                },
+            )
+            self._event(
+                "success_criteria.snapshot_created",
+                "InvestmentDecision",
+                record.id,
+                {
+                    "snapshot_hash": dict(record.decision_package_snapshot_json or {}).get(
+                        "success_criteria_snapshot_hash"
+                    ),
+                    "source": "FROZEN_GATE07J_CANDIDATES",
+                    "immutable_with_decision": True,
+                },
             )
         self.db.commit()
         self.db.refresh(record)
@@ -730,6 +805,27 @@ class InvestmentDecisionService:
         if current_config.content_hash != record.configuration_hash:
             raise HTTPException(status_code=409, detail={"code": "POLICY_MISMATCH"})
 
+    @staticmethod
+    def _criterion_guardrail_blockers(package: dict) -> list[str]:
+        evaluations = list(package.get("criterion_evaluations") or [])
+        blockers = {
+            f"{item.get('criterion_type')}:{item.get('criterion_code')}:{item.get('result')}"
+            for item in evaluations
+            if item.get("criterion_type") in {"MUST_MEET", "DECISION_HURDLE"}
+            and item.get("required")
+            and item.get("blocking")
+            and item.get("result") not in {"SATISFIED", "NOT_APPLICABLE"}
+        }
+        preparation = dict(package.get("preparation") or {})
+        if preparation.get("evidence_readiness_status") not in {None, "READY"}:
+            blockers.add(f"EVIDENCE_READINESS:{preparation.get('evidence_readiness_status')}")
+        if preparation.get("decision_package_status") not in {
+            None,
+            "READY_FOR_INVESTMENT_DECISION",
+        }:
+            blockers.add(f"DECISION_PACKAGE:{preparation.get('decision_package_status')}")
+        return sorted(blockers)
+
     def _readiness(self, record: InvestmentDecision) -> DecisionReadinessOut:
         blockers: list[str] = []
         warnings: list[str] = []
@@ -753,6 +849,11 @@ class InvestmentDecisionService:
         if record.authority_model == "COMMITTEE" and not quorum_met:
             blockers.append("QUORUM_NOT_MET")
         voting_rule_met = True
+        criterion_blockers = self._criterion_guardrail_blockers(record.decision_package_snapshot_json or {})
+        mandatory_criteria_satisfied = not any(item.startswith("MUST_MEET:") for item in criterion_blockers)
+        decision_hurdles_satisfied = not any(item.startswith("DECISION_HURDLE:") for item in criterion_blockers)
+        if criterion_blockers:
+            blockers.extend(f"GATE_CRITERION:{item}" for item in criterion_blockers)
         sod_valid = self._sod_valid(record)
         if not sod_valid:
             blockers.append("SEGREGATION_OF_DUTIES_VIOLATION")
@@ -770,6 +871,9 @@ class InvestmentDecisionService:
             quorum_met=quorum_met,
             voting_rule_met=voting_rule_met,
             segregation_of_duties_valid=sod_valid,
+            mandatory_criteria_satisfied=mandatory_criteria_satisfied,
+            decision_hurdles_satisfied=decision_hurdles_satisfied,
+            criterion_blockers=criterion_blockers,
             blockers=sorted(set(blockers)),
             warnings=sorted(set(warnings)),
             final_output=READY_OUTPUT if status == "READY" else REWORK_OUTPUT,
@@ -881,7 +985,7 @@ class InvestmentDecisionService:
 
     def _decision_package(self, preparation, handoff, configuration: dict) -> dict:
         return {
-            "schema": "PPMIS.GATE07K.DECISION_PACKAGE.v1",
+            "schema": "PPMIS.GATE07K.DECISION_PACKAGE.v2",
             "frozen_at": utc_now().isoformat(),
             "preparation": handoff.model_dump(mode="json"),
             "source_snapshot": deepcopy(preparation.source_snapshot_json or {}),
@@ -896,6 +1000,16 @@ class InvestmentDecisionService:
             "quorum": deepcopy(configuration.get("quorum", {})),
             "voting_rule": deepcopy(configuration.get("voting_rule", {})),
             "checklist": deepcopy(configuration.get("decision_checklist", [])),
+            "criterion_policy_snapshot": deepcopy(handoff.criterion_policy_snapshot),
+            "criterion_evaluations": deepcopy(handoff.criterion_evaluations),
+            "portfolio_context_snapshot": deepcopy(handoff.portfolio_context_snapshot),
+            "success_criteria_candidates": deepcopy(handoff.success_criteria_candidates),
+            "evidence_readiness_status": handoff.evidence_readiness_status,
+            "business_evaluation_status": handoff.business_evaluation_status,
+            "portfolio_context_status": handoff.portfolio_context_status,
+            "decision_package_status": handoff.decision_package_status,
+            "formal_decision_authority": "GATE07K",
+            "automatic_decision": False,
         }
 
     def _decision_hash(self, record: InvestmentDecision, timestamp) -> str:
@@ -925,6 +1039,9 @@ class InvestmentDecisionService:
                     else None
                 ),
                 "authorized_currency": record.authorized_currency,
+                "success_criteria_snapshot": deepcopy(
+                    dict(record.decision_package_snapshot_json or {}).get("fid_success_criteria_snapshot", [])
+                ),
                 "decided_at": timestamp,
             }
         )
@@ -972,6 +1089,8 @@ class InvestmentDecisionService:
             "project_definition_readiness": deepcopy(
                 package.get("preparation", {}).get("definition_maturity_summary", {})
             ),
+            "success_criteria_snapshot": deepcopy(package.get("fid_success_criteria_snapshot", [])),
+            "success_criteria_snapshot_hash": package.get("success_criteria_snapshot_hash"),
         }
         if record.status != "DECIDED":
             return {**base, "final_output": "INVESTMENT_DECISION_PENDING"}
@@ -1050,6 +1169,9 @@ class InvestmentDecisionService:
             source_profile_hash=record.source_profile_hash,
             source_policy_hash=record.source_policy_hash,
             decision_package_snapshot=deepcopy(record.decision_package_snapshot_json or {}),
+            success_criteria_snapshot=deepcopy(
+                dict(record.decision_package_snapshot_json or {}).get("fid_success_criteria_snapshot", [])
+            ),
             configuration_id=record.configuration_id,
             configuration_revision=record.configuration_revision,
             configuration_hash=record.configuration_hash,

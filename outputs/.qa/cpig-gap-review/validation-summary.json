@@ -1,0 +1,30 @@
+{
+  "as_of": "2026-09-21",
+  "result": "PASS",
+  "scope": "architecture-gap-review-only",
+  "branch": "main",
+  "commit": "9cb0969",
+  "alembic_code_head": "20260916_0061",
+  "initial_inspection_hash_algorithm_unspecified": "97f4b313bee98d2bdc8f952d160eabff55c90396cba5977c8c9e99ad359b2170",
+  "reproducible_production_tree_anchor_sha256": "218e73926488aa0abcffdbe5009b26f30aaac8014e813c865c516c7a21483fc2",
+  "reproducible_production_tree_sha256_final": "218e73926488aa0abcffdbe5009b26f30aaac8014e813c865c516c7a21483fc2",
+  "reproducible_production_file_count": 874,
+  "word_native_pages": 29,
+  "docx_a11y_findings": 0,
+  "word_native_visual_qa": "PASS",
+  "gaps_reviewed": 6,
+  "diagrams_required": 7,
+  "providers_to_reuse": [
+    "GATE07J_FEL_PROJECT_DEFINITION"
+  ],
+  "future_providers": [
+    "BASIC_DATA_READINESS_PROVIDER",
+    "QRA_CONFIDENCE_PROVIDER",
+    "OWNER_CAPABILITY_READINESS_PROVIDER"
+  ],
+  "completion_signals": [
+    "STRATEGIC_MACROPROCESS_CPIG_GAP_REVIEW_VALIDATED",
+    "TARGET_STRATEGIC_ARCHITECTURE_DEFINED"
+  ],
+  "production_changes": false
+}

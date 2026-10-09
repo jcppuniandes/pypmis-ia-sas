@@ -1,0 +1,353 @@
+.investmentGatePreparation {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.gatePreparationToolbar,
+.gateCreate,
+.gateActions {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.gatePreparationToolbar nav {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.gatePreparationToolbar label,
+.gateCreate label,
+.gatePreviewPortfolio {
+  color: #586d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+}
+.gatePreparationToolbar button,
+.gateCreate button,
+.gateActions button,
+.evidenceActions button,
+.conditionList button,
+.gateHistory button,
+.gateConfigTabs button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #c7d4dd;
+  border-radius: 7px;
+  color: #102536;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 750;
+  gap: 5px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.gatePreparationToolbar button.active,
+.gateHistory button.active,
+.gateConfigTabs button.active {
+  background: #102536;
+  color: #fff;
+}
+.gatePreparationToolbar select,
+.gateCreate select,
+.gateCreate input,
+.evidenceActions select,
+.gatePreviewPortfolio select {
+  background: #fff;
+  border: 1px solid #c7d4dd;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.gateReadiness,
+.gateSurface {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+.gateReadiness {
+  align-items: center;
+  border-left: 5px solid #c2413b;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.gateReadiness.ready {
+  border-left-color: #148158;
+}
+.gateReadiness.stale {
+  border-left-color: #d17a00;
+}
+.gateReadiness span,
+.gateSurface header span,
+.gateFacts span,
+.gatePolicySummary span {
+  color: #667887;
+  font-size: 0.69rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.gateReadiness h3,
+.gateSurface header h3 {
+  margin: 3px 0 8px;
+}
+.gateReadinessFlags,
+.gateBoundaries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.gateReadinessFlags b,
+.gateBoundaries span {
+  background: #edf3f7;
+  border-radius: 999px;
+  color: #345162;
+  font-size: 0.72rem;
+  padding: 6px 9px;
+}
+.gateReadinessFlags .prohibited {
+  background: #fff0e8;
+  color: #9a3d16;
+}
+.gateSurface header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.gateFacts,
+.evidenceGrid,
+.projectReadinessGrid,
+.gatePolicySummary {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+.gateFacts article,
+.evidenceGrid article,
+.projectReadinessGrid article,
+.gatePolicySummary article {
+  background: #f7f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+}
+.gateFacts small,
+.evidenceGrid small,
+.projectReadinessGrid small {
+  color: #657887;
+}
+.gateActions {
+  border: 0;
+  margin-top: 10px;
+  padding: 8px 0 0;
+}
+.gateActions button:disabled,
+.evidenceActions button:disabled,
+.conditionList button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+.gateBoundaries {
+  margin-top: 12px;
+}
+.gateHandoff,
+.gateSurface pre {
+  background: #f5f8fa;
+  border-radius: 7px;
+  font-size: 0.71rem;
+  max-height: 420px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+.evidenceGrid article.valid {
+  border-left: 5px solid #148158;
+}
+.evidenceGrid article.submitted {
+  border-left: 5px solid #2f71a0;
+}
+.evidenceGrid article.missing,
+.evidenceGrid article.invalid,
+.evidenceGrid article.expired,
+.evidenceGrid article.stale,
+.evidenceGrid article.not_available {
+  border-left: 5px solid #c2413b;
+}
+.evidenceGrid article.not_required {
+  border-left: 5px solid #8797a3;
+}
+.evidenceGrid article > div:first-child {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.evidenceGrid article > span {
+  color: #526979;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.evidenceGrid article em {
+  background: #fff0ee;
+  color: #8d2c27;
+  font-size: 0.68rem;
+  padding: 4px;
+}
+.evidenceGrid article em.warning {
+  background: #fff8dd;
+  color: #7a5b00;
+}
+.evidenceGrid article.gate07mEvidence {
+  border-top: 4px solid #1b7f79;
+  grid-column: span 2;
+}
+.gateEvidenceSource {
+  background: #f7fafb;
+  border: 1px solid #d7e0e7;
+  border-radius: 7px;
+  margin-top: 7px;
+  padding: 7px 9px;
+}
+.gateEvidenceSource summary {
+  color: #075e5a;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+.gateEvidenceSource dl {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+}
+.gateEvidenceSource dt {
+  color: #657887;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.gateEvidenceSource dd {
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin: 2px 0 0;
+}
+.gateEvidenceSource pre {
+  max-height: 280px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+.evidenceActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+.projectReadinessGrid article b {
+  color: #176b49;
+}
+.conditionList,
+.gateHistory {
+  display: grid;
+  gap: 7px;
+}
+.conditionList article {
+  align-items: center;
+  background: #f7f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: minmax(200px, 1fr) auto auto;
+  padding: 9px;
+}
+.conditionList article span {
+  color: #526979;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.gateHistory button {
+  align-items: start;
+  display: grid;
+  text-align: left;
+}
+.gateHistory span,
+.gateHistory small {
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+.gateConfigTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.gateAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.gateAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.gateAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  text-align: left;
+}
+.gateAdminGrid aside button.active {
+  border-left: 5px solid #276da0;
+}
+.gateAdminGrid aside span {
+  color: #657887;
+  font-size: 0.72rem;
+}
+.gatePolicySummary {
+  margin: 12px 0;
+}
+.gatePreviewPortfolio {
+  margin: 10px 0;
+  max-width: 420px;
+}
+.gateConfigJson textarea {
+  border: 1px solid #c7d4dd;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin-top: 8px;
+  padding: 9px;
+  resize: vertical;
+  width: 100%;
+}
+.gateGuardrail {
+  background: #fff0e8;
+  border-left: 4px solid #d17a00;
+  color: #7d4d00;
+  margin: 0;
+  padding: 9px 11px;
+}
+@media (max-width: 850px) {
+  .gateAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .conditionList article {
+    grid-template-columns: 1fr;
+  }
+  .evidenceGrid article.gate07mEvidence {
+    grid-column: span 1;
+  }
+}

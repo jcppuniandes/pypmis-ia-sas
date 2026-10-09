@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="9" failures="0" errors="0" time="13.133">
+    <testsuite name="src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx" timestamp="2026-09-21T00:04:11.057Z" hostname="LAPTOP-4TR3E31D" tests="4" failures="0" errors="0" skipped="0" time="3.0487473">
+        <testcase classname="src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx" name="Gate 07K Investment Decision / FID &gt; shows all nine USER views and preserves the no-FID/no-activation boundary" time="0.9971801">
+        </testcase>
+        <testcase classname="src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx" name="Gate 07K Investment Decision / FID &gt; renders the immutable authorization output separately" time="0.2517589">
+        </testcase>
+        <testcase classname="src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx" name="Gate 07K Investment Decision / FID &gt; shows the frozen Gate07J criteria, Portfolio context and FID success criteria" time="0.1891603">
+        </testcase>
+        <testcase classname="src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx" name="Gate 07K Investment Decision / FID &gt; exposes all 20 ADMIN sections and non-persistent dry-run" time="1.6053439">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.test.tsx" timestamp="2026-09-21T00:04:11.077Z" hostname="LAPTOP-4TR3E31D" tests="3" failures="0" errors="0" skipped="0" time="2.8078408">
+        <testcase classname="src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.test.tsx" name="Gate 07J-EVID Investment Decision Evidence Policy &gt; shows the contextual matrix and controlled provider registry" time="2.0587365">
+        </testcase>
+        <testcase classname="src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.test.tsx" name="Gate 07J-EVID Investment Decision Evidence Policy &gt; runs a non-persistent preview and exposes the deterministic next provider" time="0.4565694">
+        </testcase>
+        <testcase classname="src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.test.tsx" name="Gate 07J-EVID Investment Decision Evidence Policy &gt; uses the dedicated idempotent Gate07J-EVID-2 clone operation" time="0.2865469">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/investment-gate-preparation/InvestmentGatePreparationWorkspace.test.tsx" timestamp="2026-09-21T00:04:11.081Z" hostname="LAPTOP-4TR3E31D" tests="2" failures="0" errors="0" skipped="0" time="1.6908339">
+        <testcase classname="src/features/investment-gate-preparation/InvestmentGatePreparationWorkspace.test.tsx" name="InvestmentGatePreparationWorkspace &gt; shows governed readiness, evidence navigation and the explicit FID safeguard" time="0.9612965">
+        </testcase>
+        <testcase classname="src/features/investment-gate-preparation/InvestmentGatePreparationWorkspace.test.tsx" name="InvestmentGatePreparationWorkspace &gt; shows the compact evidence/criteria matrix with quality separate from readiness" time="0.7236146">
+        </testcase>
+    </testsuite>
+</testsuites>

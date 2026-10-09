@@ -1,0 +1,14 @@
+
+Running 2 tests using 1 worker
+
+
+
+[1A[2K(node:21588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K(node:21588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1A[2K[1/2] [chromium] › e2e\portfolio-review.spec.ts:52:3 › Wave 3A real Chromium and PostgreSQL release › two actors conduct real Reviews and ADMIN publishes scoped policy
+[1A[2K[2/2] [chromium] › e2e\portfolio-review.spec.ts:363:3 › Wave 3A real Chromium and PostgreSQL release › direct ADMIN route denies a USER without configuration permission
+[1A[2K  2 passed (5.1m)

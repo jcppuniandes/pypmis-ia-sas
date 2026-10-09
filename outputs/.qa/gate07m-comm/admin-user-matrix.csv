@@ -1,0 +1,34 @@
+area_or_action,mode,classification,required_authority,allowed,forbidden_contamination,baseline_pattern,status_before_implementation
+Create live Commercial Strategy,USER,USER_TRANSACTION,commercial_strategy.create,YES,ADMIN config role alone cannot create,business_case/router.py:80-96; BA config-admin contamination test:810-869,GAP
+View authorized live records,USER,USER_TRANSACTION,commercial_strategy.read,YES,No tenant-wide leakage,EnterprisePermissionContext scopes:1298-1385,GAP
+Edit DRAFT,USER,USER_TRANSACTION,commercial_strategy.edit plus If-Match,YES,Published/completed mutation,business_case/router.py:165-179,GAP
+Submit strategy,USER,USER_TRANSACTION,commercial_strategy.submit plus idempotency,YES,ADMIN policy mutation,business_case/router.py:182-196,GAP
+Start review,USER,USER_TRANSACTION,commercial_strategy.review,YES,Same actor final completion when SoD required,ProjectDefinition SoD:657-659,GAP
+Return from review,USER,USER_TRANSACTION,commercial_strategy.review,YES,ADMIN catalog change,BA lifecycle pattern,GAP
+Complete version,USER,USER_TRANSACTION,commercial_strategy.complete plus independent reviewer,YES,Completing BLOCKED/STALE or same actor,business_case/models.py:193-206; FIN service.py:899-923,GAP
+Void active version,USER,USER_TRANSACTION,commercial_strategy.complete or dedicated void,YES,Physical deletion,BA lifecycle includes VOIDED,GAP
+Create governed revision,USER,USER_TRANSACTION,commercial_strategy.create_revision,YES,Mutating historical COMPLETED,business_case/router.py:135-148,GAP
+Refresh preview,USER,USER_TRANSACTION,commercial_strategy.edit,YES,Persistence or historical mutation,risk router.py:262-269 and permit router.py refresh pattern,GAP
+Refresh apply,USER,USER_TRANSACTION,commercial_strategy.edit plus idempotency,YES,Update in place of completed version,risk router.py:272-286,GAP
+View readiness and blockers,USER,USER_TRANSACTION,commercial_strategy.read,YES,Frontend recalculation,business_case/router.py:216-223,GAP
+View history,USER,USER_TRANSACTION,commercial_strategy.read,YES,History rewrite,SecurityEvent history pattern in BA service.py:651-657,GAP
+Operate queues,USER,USER_TRANSACTION,commercial_strategy.read,YES,Unbounded lists,BA cursor router.py:107-123,GAP
+Configure policy,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Live Project record operation,FIN router.py:464-482,GAP
+Configure procurement approaches,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Issue RFQ/RFP,AdminConfiguration pattern,GAP
+Configure contracting models,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Create operational Contract,AdminConfiguration pattern,GAP
+Configure package types,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Create RFQPackage,AdminConfiguration pattern,GAP
+Configure readiness and applicability,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Manually override live readiness,Permit default config service.py:63-110,GAP
+Configure FEL/Gate requirements,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Hardcode global stage rules,ProjectDefinition configuration pattern,GAP
+Configure inheritance,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Write live Project content,FIN service.py:1903-1940,GAP
+Configure numbering,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Issue live strategy outside transaction flow,AdminNumberSequence domain/models.py:527-538,GAP
+Configure review/SoD,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Act as reviewer through config role,BC role split permissions.py:1177-1213,GAP
+Clone configuration,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure plus If-Match,YES,Clone live strategy,Risk service.py:192-233,GAP
+Preview configuration,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.configure,YES,Persistence,BC router.py:327-336,GAP
+Publish configuration,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.publish plus If-Match,YES,Modify published revision,Risk service.py:270-293,GAP
+Archive configuration,ADMIN,ADMIN_CONFIGURATION,commercial_strategy.admin.publish plus If-Match,YES,Delete published history,BA router.py:196-205,GAP
+Direct USER route while in ADMIN mode,ADMIN,ADMIN_CONFIGURATION,route classification guard,NO,Render live transaction controls,StrategicViewOutlet.tsx:262-290,GAP
+Direct ADMIN route without can_configure,USER,ADMIN_CONFIGURATION,can_configure,NO,Render admin controls,strategic-workflow-navigation.spec.ts:147-155; StrategicViewOutlet guard:268-278,PARTIAL_GENERIC
+USER sees config buttons,USER,USER_TRANSACTION,None,NO,Clone/edit/publish policy,strategic-workflow-navigation.spec.ts:132-140,PARTIAL_GENERIC
+ADMIN sees live action buttons,ADMIN,ADMIN_CONFIGURATION,None,NO,Create/edit/submit/complete strategy,BA E2E spec.ts:154-158,PARTIAL_GENERIC
+Provider read,USER,USER_TRANSACTION,commercial_strategy.read,YES,Gate policy mutation,evidence provider patterns in FIN service.py:964-1013,GAP
+Application shell routing,BOTH,READ_ONLY_SHARED,authenticated,YES,Module-specific logic in App.tsx,StrategicViewOutlet canonical resolver:260-291,AVAILABLE

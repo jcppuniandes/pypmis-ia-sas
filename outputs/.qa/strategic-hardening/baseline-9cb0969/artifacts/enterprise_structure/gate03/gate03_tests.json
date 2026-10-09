@@ -1,0 +1,42 @@
+{
+  "alembic": {
+    "clean_postgresql_upgrade_0030_to_0031": "PASS",
+    "current": "20260810_0031 (head)",
+    "temporary_database_removed": true
+  },
+  "backend": {
+    "enterprise_structure_apply_publish": {"passed": 24, "result": "PASS"},
+    "enterprise_structure_and_importer": {"passed": 20, "result": "PASS"},
+    "ruff": "PASS"
+  },
+  "frontend": {
+    "eslint": {"errors": 0, "pre_existing_warnings": 8, "result": "PASS"},
+    "prettier": "PASS",
+    "typescript_vite_build": "PASS",
+    "vitest": {"files": 23, "passed": 140, "result": "PASS"}
+  },
+  "mandatory_publish_cases": {
+    "actor_inactive": "PASS",
+    "actor_missing": "PASS",
+    "actor_without_publish_permission": "PASS",
+    "canonical_hash_mismatch": "PASS",
+    "classification_count_mismatch": "PASS",
+    "cross_tenant_blocked": "PASS",
+    "cycle_rejected": "PASS",
+    "duplicate_external_key_constraint": "PASS",
+    "duplicate_record_code_constraint": "PASS",
+    "failure_rolls_back_transaction": "PASS",
+    "fingerprint_changed": "PASS",
+    "immutable_release": "PASS",
+    "link_count_mismatch": "PASS",
+    "logical_rollback_preserves_workspaces": "PASS",
+    "objective_count_mismatch": "PASS",
+    "publish_correct_hash": "PASS",
+    "raw_hash_mismatch": "PASS",
+    "second_publish_zero_mutations": "PASS",
+    "security_event": "PASS",
+    "workspace_count_mismatch": "PASS"
+  },
+  "result": "PASS",
+  "total_automated_tests_reported": 184
+}

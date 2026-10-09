@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="24.021" timestamp="2026-09-16T20:51:43.614915-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_strategic_benefits_gate07m_ben_migration" name="test_gate07m_ben_sqlite_upgrade_downgrade_upgrade" time="22.806" /></testsuite></testsuites>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="25" failures="0" errors="0" time="72.839">
+    <testsuite name="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" timestamp="2026-09-17T11:51:38.221Z" hostname="LAPTOP-4TR3E31D" tests="6" failures="0" errors="0" skipped="0" time="1.1089828">
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks a direct ADMIN configuration view without can_configure" time="0.9098418">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; renders the ADMIN configuration view with can_configure" time="0.0169767">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; resolves Commercial Strategy USER and ADMIN views through the canonical outlet" time="0.028193">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks the direct Commercial Strategy ADMIN route without can_configure" time="0.0503452">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; resolves Strategic Benefits USER and ADMIN views through the canonical outlet" time="0.0166076">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/StrategicViewOutlet.test.tsx" name="StrategicViewOutlet &gt; blocks the direct Benefits ADMIN route without can_configure" time="0.081801">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/strategic-benefits/api.test.ts" timestamp="2026-09-17T11:51:38.234Z" hostname="LAPTOP-4TR3E31D" tests="4" failures="0" errors="0" skipped="0" time="0.0372332">
+        <testcase classname="src/features/strategic-benefits/api.test.ts" name="Strategic Benefits API client &gt; reads cursor-paginated queues from response headers" time="0.0212855">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/api.test.ts" name="Strategic Benefits API client &gt; uses the PlanVersion ETag and an idempotency key for governed Benefit mutations" time="0.0045484">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/api.test.ts" name="Strategic Benefits API client &gt; loads traceability through one optimized paginated endpoint" time="0.0044149">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/api.test.ts" name="Strategic Benefits API client &gt; keeps effective ADMIN preview non-transactional" time="0.0033357">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" timestamp="2026-09-17T11:51:38.238Z" hostname="LAPTOP-4TR3E31D" tests="5" failures="0" errors="0" skipped="0" time="3.1015243">
+        <testcase classname="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" name="Gate 07M-BEN frontend &gt; renders 8 USER queues and 16 governed views without ADMIN controls" time="0.9934264">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" name="Gate 07M-BEN frontend &gt; preserves UNKNOWN baseline as null and never silently converts it to zero" time="0.6511722">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" name="Gate 07M-BEN frontend &gt; loads the derived traceability matrix with one paginated API request" time="0.3372958">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" name="Gate 07M-BEN frontend &gt; exposes 23 ADMIN policy sections and no live Plan actions" time="0.4998238">
+        </testcase>
+        <testcase classname="src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx" name="Gate 07M-BEN frontend &gt; blocks ADMIN save and publish when governed JSON is invalid" time="0.6153058">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" timestamp="2026-09-17T11:51:38.244Z" hostname="LAPTOP-4TR3E31D" tests="10" failures="0" errors="0" skipped="0" time="0.2119567">
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; orders USER and ADMIN navigation by business phase with Foundation first" time="0.0088034">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; models Budget and Resources as parallel predecessors of Scenario Convergence" time="0.0036383">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; models all eight evidence contributors converging into Investment Gate Preparation" time="0.0023043">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; keeps route and breadcrumb metadata deterministic for deep links" time="0.0577504">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; classifies every strategic control and keeps USER and ADMIN responsibilities separated" time="0.0086499">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; enforces the existing can_configure permission on direct ADMIN routes" time="0.1167622">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; places Strategic Benefits between Business Case and Commercial Strategy with canonical deep links" time="0.0034235">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; keeps Commercial Strategy in Phase 6 with canonical USER deep links and ADMIN separation" time="0.0029401">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; preserves CAPITAL_OWNER applicability without forcing owner-only phases on alternate governance models" time="0.0011784">
+        </testcase>
+        <testcase classname="src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts" name="strategic navigation blueprint &gt; orders Workspace Navigator entries without changing backend state or permissions" time="0.0019098">
+        </testcase>
+    </testsuite>
+</testsuites>

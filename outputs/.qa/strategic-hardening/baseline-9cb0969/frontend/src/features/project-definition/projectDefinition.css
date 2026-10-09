@@ -1,0 +1,246 @@
+.projectDefinition {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.definitionMessage {
+  background: #eef7f7;
+  border: 1px solid #a8d5d2;
+  border-radius: 8px;
+  color: #164f4b;
+  padding: 9px 12px;
+}
+.definitionToolbar,
+.definitionSurface,
+.definitionReadiness {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  padding: 12px;
+}
+.definitionToolbar {
+  align-items: end;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.definitionToolbar label {
+  color: #586d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 4px;
+  min-width: 250px;
+}
+.definitionToolbar select,
+.assessmentMatrix input {
+  border: 1px solid #c7d4dd;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.definitionToolbar nav,
+.definitionConfigTabs,
+.definitionActions,
+.definitionChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.definitionToolbar nav {
+  flex: 1;
+}
+.definitionToolbar button,
+.definitionConfigTabs button,
+.definitionActions button,
+.definitionSurface button,
+.definitionAdminGrid aside button {
+  background: #fff;
+  border: 1px solid #c7d4dd;
+  border-radius: 7px;
+  color: #102536;
+  font: inherit;
+  font-size: 0.77rem;
+  font-weight: 750;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+.definitionToolbar button.active,
+.definitionConfigTabs button.active,
+.definitionAdminGrid aside button.active {
+  background: #102536;
+  color: #fff;
+}
+.definitionReadiness {
+  align-items: center;
+  border-left: 5px solid #c2413b;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.definitionReadiness.ready {
+  border-left-color: #148158;
+}
+.definitionReadiness.stale {
+  border-left-color: #d17a00;
+}
+.definitionReadiness span,
+.definitionSurface header span,
+.definitionFacts span {
+  color: #667887;
+  font-size: 0.69rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.definitionReadiness h3,
+.definitionSurface h3 {
+  margin: 3px 0;
+}
+.definitionChips b {
+  background: #edf3f7;
+  border-radius: 999px;
+  color: #345162;
+  font-size: 0.72rem;
+  padding: 6px 9px;
+}
+.definitionChips .boundary {
+  background: #fff0e8;
+  color: #9a3d16;
+}
+.definitionSurface header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.definitionFacts {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.definitionFacts article,
+.trendList article {
+  background: #f7f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+.definitionFacts small,
+.trendList small {
+  color: #657887;
+  overflow-wrap: anywhere;
+}
+.definitionActions {
+  margin-top: 10px;
+}
+.definitionActions button:disabled {
+  opacity: 0.45;
+}
+.definitionSurface pre {
+  background: #f5f8fa;
+  border-radius: 7px;
+  font-size: 0.7rem;
+  max-height: 420px;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+.assessmentMatrix {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  overflow: auto;
+}
+.matrixHead,
+.matrixRow {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 130px minmax(180px, 1fr) 120px 90px 70px minmax(180px, 1fr);
+  min-width: 900px;
+  padding: 8px;
+}
+.matrixHead {
+  background: #102536;
+  color: #fff;
+  font-size: 0.72rem;
+}
+.matrixRow {
+  border-top: 1px solid #e4eaee;
+  font-size: 0.76rem;
+}
+.trendList,
+.actionList {
+  display: grid;
+  gap: 7px;
+}
+.trendList article {
+  grid-template-columns: 120px 1fr 150px;
+}
+.trendList small {
+  grid-column: 1/-1;
+}
+.actionList article {
+  align-items: center;
+  background: #f7f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto auto;
+  padding: 9px;
+}
+.actionList article div {
+  display: grid;
+  gap: 3px;
+}
+.definitionGuardrail {
+  background: #fff7ed;
+  border-left: 4px solid #d17a00;
+  color: #7a4310;
+  margin: 0;
+  padding: 10px 12px;
+}
+.definitionConfigTabs {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  padding: 8px;
+}
+.definitionAdminGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.definitionAdminGrid aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+.definitionAdminGrid aside button {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+}
+.definitionAdminGrid textarea {
+  border: 1px solid #c7d4dd;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font:
+    12px/1.45 Consolas,
+    monospace;
+  margin-top: 8px;
+  padding: 10px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .definitionAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .definitionReadiness {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

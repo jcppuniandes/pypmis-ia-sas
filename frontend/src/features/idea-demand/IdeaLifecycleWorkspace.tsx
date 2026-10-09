@@ -327,18 +327,29 @@ export default function IdeaLifecycleWorkspace({ token, workspaceId }: { token: 
                 <section className="ideaProposalLink">
                   <header>
                     <div>
-                      <strong>Project Proposals</strong>
-                      <span>{relatedProposals.length} related strategic record(s)</span>
+                      <strong>Strategic continuation</strong>
+                      <span>
+                        {selected.allowed_actions.includes("start_business_analysis")
+                          ? "Business Analysis is required before Project Proposal"
+                          : `${relatedProposals.length} related Project Proposal record(s)`}
+                      </span>
                     </div>
-                    <button
-                      disabled={
-                        busy || relatedProposals.some((item) => !["CANCELLED", "ARCHIVED"].includes(item.status))
-                      }
-                      onClick={() => void previewProjectProposal()}
-                      type="button"
-                    >
-                      <Plus size={14} /> Create Project Proposal
-                    </button>
+                    {selected.allowed_actions.includes("start_business_analysis") ? (
+                      <a href="/app/strategy/business-analysis-options">
+                        <Plus size={14} /> Start Business Analysis
+                      </a>
+                    ) : null}
+                    {selected.allowed_actions.includes("create_project_proposal") ? (
+                      <button
+                        disabled={
+                          busy || relatedProposals.some((item) => !["CANCELLED", "ARCHIVED"].includes(item.status))
+                        }
+                        onClick={() => void previewProjectProposal()}
+                        type="button"
+                      >
+                        <Plus size={14} /> Create Project Proposal
+                      </button>
+                    ) : null}
                   </header>
                   {relatedProposals.map((proposal) => (
                     <article key={proposal.id}>

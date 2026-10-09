@@ -1,0 +1,53 @@
+{
+  "building_name": "",
+  "cache_status": "metadata_manifest_ready",
+  "class_summary": [
+    {
+      "count": 1,
+      "ifc_class": "IfcSite"
+    }
+  ],
+  "engine": "web-ifc/three",
+  "geometry_cache": {},
+  "geometry_strategy": "direct_browser",
+  "georeferencing": {
+    "elevation": 2600.5,
+    "latitude_decimal": 4.64,
+    "longitude_decimal": -74.08666666666666,
+    "map_conversion": {
+      "eastings": 1000.25,
+      "northings": 2000.5,
+      "orthogonal_height": 15.0,
+      "scale": 1.0,
+      "x_axis_abscissa": 1.0,
+      "x_axis_ordinate": 0.0
+    },
+    "projected_crs": "EPSG:3116",
+    "source": "IFCSITE"
+  },
+  "limits": {
+    "backend_cache_required_bytes": 104857600,
+    "direct_browser_bytes": 26214400
+  },
+  "model_id": 9,
+  "product_count": 1,
+  "project_id": 13,
+  "project_name": "Geo Project",
+  "property_index": {
+    "indexed_products": 1,
+    "property_sets": 0,
+    "quantity_sets": 0,
+    "scan_limit_bytes": 26214400,
+    "scan_status": "complete",
+    "type_relations": 0
+  },
+  "revision_id": "IFC-M9-6f6686619a82",
+  "schema": "IFC4",
+  "site_name": "Main Site",
+  "source_file_name": "geo.ifc",
+  "source_sha256": "6f6686619a82e462abbb47fbdc0f433eb317a5c81c08a81a0438d42bf684a927",
+  "source_size_bytes": 445,
+  "storey_count": 0,
+  "units": "",
+  "warnings": []
+}

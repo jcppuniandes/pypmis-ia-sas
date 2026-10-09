@@ -1,0 +1,124 @@
+export type FundingSource = {
+  id: number;
+  source_code: string;
+  source_name: string;
+  source_type: string;
+  legal_entity_provider_reference: string | null;
+  currency: string;
+  status: string;
+  effective_from: string | null;
+  effective_to: string | null;
+  restrictions: Record<string, unknown>;
+  evidence_refs: Array<Record<string, unknown>>;
+  source_hash: string;
+  revision_version: number;
+  allowed_actions: string[];
+};
+
+export type Fund = {
+  id: number;
+  fund_code: string;
+  fund_name: string;
+  funding_source_id: number | null;
+  funding_source_name: string | null;
+  currency: string;
+  authorized_amount: number;
+  assigned_amount: number;
+  confirmed_assigned_amount: number;
+  reserved_assigned_amount: number;
+  available_amount: number;
+  available_from: string | null;
+  available_to: string | null;
+  status: string;
+  restrictions: Record<string, unknown>;
+  evidence_refs: Array<Record<string, unknown>>;
+  fund_hash: string;
+  revision_version: number;
+  allowed_actions: string[];
+};
+
+export type FundingAssignment = {
+  id: number;
+  fund_id: number;
+  fund_code: string;
+  parent_assignment_id: number | null;
+  assignment_number: string;
+  scope_type: "PORTFOLIO" | "PROJECT" | "RECOMMENDED_PROJECT_SET";
+  portfolio_workspace_id: number | null;
+  project_workspace_id: number | null;
+  recommended_project_set_hash: string | null;
+  source_convergence_id: number | null;
+  source_recommendation_hash: string | null;
+  amount: number;
+  currency: string;
+  period_start: string | null;
+  period_end: string | null;
+  period_profile: Array<Record<string, unknown>>;
+  status: string;
+  assignment_purpose: string;
+  eligibility_status: string;
+  conditions: Array<Record<string, unknown>>;
+  coverage_contribution: number;
+  warnings: string[];
+  revision_version: number;
+  allowed_actions: string[];
+};
+
+export type FundingReadiness = {
+  snapshot_id: number | null;
+  portfolio_workspace_id: number | null;
+  source_convergence_id: number | null;
+  source_recommendation_hash: string | null;
+  recommended_project_set_hash: string | null;
+  funding_requirement_source: Record<string, unknown>;
+  funding_requirement_hash: string;
+  required_amount: number;
+  required_currency: string;
+  confirmed_funding_amount: number;
+  reserved_funding_amount: number;
+  funding_gap: number;
+  confirmed_coverage_percent: number;
+  potential_coverage_percent: number;
+  project_coverage_summary: Array<Record<string, unknown>>;
+  period_coverage_summary: Array<Record<string, unknown>>;
+  restriction_summary: Record<string, unknown>;
+  conditions_summary: Record<string, unknown>;
+  warnings: string[];
+  blockers: string[];
+  funding_readiness_status: string;
+  funding_readiness_hash: string;
+  source_hash: string;
+  source_current: boolean;
+  can_supply_investment_gate_evidence: boolean;
+  final_output: string;
+};
+
+export type FundsOverview = {
+  portfolio_workspace_id: number | null;
+  governance_model_applicable: boolean;
+  active_funds: number;
+  comparable_currency: string | null;
+  authorized_funding: number | null;
+  confirmed_assigned: number | null;
+  reserved_assigned: number | null;
+  available_funding: number | null;
+  funding_gap: number | null;
+  coverage_percent: number | null;
+  funding_readiness: string;
+  funding_sources: FundingSource[];
+  funds: Fund[];
+  assignments: FundingAssignment[];
+  readiness: FundingReadiness | null;
+  boundaries: string[];
+};
+
+export type FundsConfiguration = {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  revision: number;
+  version: number;
+  content_json: Record<string, unknown>;
+  content_hash: string;
+};

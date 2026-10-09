@@ -1,0 +1,45 @@
+{
+  "release_validated": true,
+  "validated_at": "2026-09-20T19:57:16-05:00",
+  "branch": "main",
+  "baseline_commit": "9cb0969",
+  "localhost": "http://127.0.0.1:5173/app",
+  "checks": {
+    "ruff": {
+      "status": "PASS",
+      "detail": "Ruff completo sobre backend/app y backend/tests: All checks passed."
+    },
+    "typecheck": {
+      "status": "PASS",
+      "detail": "TypeScript tsc finalizó con exit 0."
+    },
+    "build": {
+      "status": "PASS",
+      "detail": "Vite 8.0.12 produjo el build de producción; 2453 módulos transformados."
+    },
+    "eslint": {
+      "status": "PASS",
+      "detail": "ESLint: 0 errores y 9 warnings heredados del visor BIM, dentro del umbral CI de 10."
+    },
+    "prettier": {
+      "status": "PASS",
+      "detail": "Prettier aprobó src y los tres recorridos E2E Gate07J/EVID-2/Gate07K."
+    },
+    "alembic": {
+      "status": "PASS",
+      "detail": "alembic current y heads coinciden en la única head 20260916_0061; EVID-2 no requiere migración."
+    },
+    "docker_health": {
+      "status": "PASS",
+      "detail": "API healthy/ready, PostgreSQL ok, Redis ok, frontend HTTP 200; api, frontend, db, redis, worker y beat activos."
+    },
+    "openapi": {
+      "status": "PASS",
+      "detail": "OpenAPI desplegado expone clone-gate07j-evid2, success_criteria_snapshot y guardas mandatory/hurdle de Gate07K."
+    },
+    "performance": {
+      "status": "DOCUMENTADO",
+      "detail": "Evaluador determinista opera sobre evidencia ya resuelta y una respuesta combinada; no se ejecutó una prueba de carga dedicada."
+    }
+  }
+}

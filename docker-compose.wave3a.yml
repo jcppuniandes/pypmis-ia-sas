@@ -1,0 +1,120 @@
+name: pypmis-wave3a
+
+services:
+  wave3a-browser-db:
+    image: postgres:16-alpine
+    profiles: [browser]
+    environment:
+      POSTGRES_DB: wave3a_browser
+      POSTGRES_USER: wave3a
+      POSTGRES_PASSWORD: wave3a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave3a -d wave3a_browser"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3a-browser-api:
+    build:
+      context: ./backend
+    profiles: [browser]
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave3a:wave3a@wave3a-browser-db:5432/wave3a_browser
+      PYPMIS_WAVE3A_BROWSER_FIXTURE: disposable-only
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: wave3a-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5516,http://localhost:5516
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    ports:
+      - "127.0.0.1:8813:8000"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -m tests.provision_wave3a_browser
+        alembic stamp head
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      wave3a-browser-db:
+        condition: service_healthy
+
+  wave3a-browser-frontend:
+    build:
+      context: ./frontend
+    profiles: [browser]
+    environment:
+      VITE_API_URL: http://127.0.0.1:8813
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        npm run build -- --outDir /tmp/wave3a-browser-dist
+        npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/wave3a-browser-dist
+    ports:
+      - "127.0.0.1:5516:5173"
+    volumes:
+      - ./frontend:/app:ro
+      - /app/node_modules
+    depends_on:
+      - wave3a-browser-api
+
+  wave3a-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave3a
+      POSTGRES_USER: wave3a
+      POSTGRES_PASSWORD: wave3a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave3a -d wave3a"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3a-migration-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave3a_migration
+      POSTGRES_USER: wave3a
+      POSTGRES_PASSWORD: wave3a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave3a -d wave3a_migration"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave3a-validation:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave3a:wave3a@wave3a-db:5432/wave3a
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://wave3a:wave3a@wave3a-db:5432/wave3a
+      PYPMIS_WAVE3A_MIGRATION_DATABASE_URL: postgresql+psycopg://wave3a:wave3a@wave3a-migration-db:5432/wave3a_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave3a-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.main; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest -o addopts= --no-cov -q -rA tests/postgres/test_wave3a_periodic_portfolio_review_migration_postgres.py
+        pytest -o addopts= --no-cov -q -rA tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py
+    depends_on:
+      wave3a-db:
+        condition: service_healthy
+      wave3a-migration-db:
+        condition: service_healthy

@@ -1,0 +1,43 @@
+{
+  "engine": "fake-ifc-converter",
+  "generated_at": "2026-08-13T05:24:17.913241",
+  "model_id": 6,
+  "products": [
+    {
+      "express_id": 20,
+      "global_id": "0ZRuQHuvw8SOaxTest001",
+      "ifc_class": "IfcBuildingElementProxy",
+      "mesh": {
+        "indices": [
+          0,
+          1,
+          2
+        ],
+        "vertices": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      "name": "Concrete Column"
+    }
+  ],
+  "project_id": 10,
+  "revision_id": "IFC-M6-7ed471229a31-GEOM",
+  "schema": "IFC4",
+  "source_file_name": "geometry.ifc",
+  "source_sha256": "7ed471229a3141ab6b98d2093259b14784f98cd0d38914ebe71d91f85b3eefd5",
+  "stats": {
+    "mesh_count": 1,
+    "product_count": 1,
+    "triangle_count": 1
+  },
+  "units": "",
+  "version": 1
+}

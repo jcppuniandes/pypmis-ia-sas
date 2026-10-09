@@ -1,0 +1,3527 @@
+{
+  "numTotalTestSuites": 117.0,
+  "numPassedTestSuites": 117.0,
+  "numFailedTestSuites": 0.0,
+  "numPendingTestSuites": 0.0,
+  "numTotalTests": 272.0,
+  "numPassedTests": 272.0,
+  "numFailedTests": 0.0,
+  "numPendingTests": 0.0,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend renders all USER queues and governed tabs without ADMIN configuration controls",
+          "status": "passed",
+          "title": "renders all USER queues and governed tabs without ADMIN configuration controls",
+          "duration": 1453.0443999999989,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend normalizes historical object-shaped commercial context for the text editor",
+          "status": "passed",
+          "title": "normalizes historical object-shaped commercial context for the text editor",
+          "duration": 355.94550000000163,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend loads a bounded cursor page and preserves existing rows",
+          "status": "passed",
+          "title": "loads a bounded cursor page and preserves existing rows",
+          "duration": 892.3392999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend shows non-persistent source, policy and readiness deltas",
+          "status": "passed",
+          "title": "shows non-persistent source, policy and readiness deltas",
+          "duration": 666.9542000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend edits every backend-required readiness field with the canonical content contract",
+          "status": "passed",
+          "title": "edits every backend-required readiness field with the canonical content contract",
+          "duration": 3474.3813999999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend renders ADMIN catalogs and policy controls without live Project transactions",
+          "status": "passed",
+          "title": "renders ADMIN catalogs and policy controls without live Project transactions",
+          "duration": 666.2596000000049,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend validates governed tailoring JSON before ADMIN save or publish",
+          "status": "passed",
+          "title": "validates governed tailoring JSON before ADMIN save or publish",
+          "duration": 1127.6731999999975,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-COMM frontend"
+          ],
+          "fullName": "Gate 07M-COMM frontend resolves ADMIN inheritance preview without persisting a live record",
+          "status": "passed",
+          "title": "resolves ADMIN inheritance preview without persisting a live record",
+          "duration": 411.63320000000385,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648042557,
+      "endTime": 1789648051606.6333,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/commercial-strategy/CommercialStrategyWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "IdeaLifecycleWorkspace"
+          ],
+          "fullName": "IdeaLifecycleWorkspace renders the unified lifecycle queues and idea detail",
+          "status": "passed",
+          "title": "renders the unified lifecycle queues and idea detail",
+          "duration": 832.2127000000037,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "IdeaLifecycleWorkspace"
+          ],
+          "fullName": "IdeaLifecycleWorkspace opens the controlled new Idea drawer",
+          "status": "passed",
+          "title": "opens the controlled new Idea drawer",
+          "duration": 415.4542999999976,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648118381,
+      "endTime": 1789648119629.4543,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/idea-demand/IdeaLifecycleWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07K Investment Decision / FID"
+          ],
+          "fullName": "Gate 07K Investment Decision / FID shows all nine USER views and preserves the no-FID/no-activation boundary",
+          "status": "passed",
+          "title": "shows all nine USER views and preserves the no-FID/no-activation boundary",
+          "duration": 939.2467999999935,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07K Investment Decision / FID"
+          ],
+          "fullName": "Gate 07K Investment Decision / FID renders the immutable authorization output separately",
+          "status": "passed",
+          "title": "renders the immutable authorization output separately",
+          "duration": 184.41429999998945,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07K Investment Decision / FID"
+          ],
+          "fullName": "Gate 07K Investment Decision / FID exposes all 20 ADMIN sections and non-persistent dry-run",
+          "status": "passed",
+          "title": "exposes all 20 ADMIN sections and non-persistent dry-run",
+          "duration": 1670.1917000000103,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648098023,
+      "endTime": 1789648100818.1917,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/investment-decision/InvestmentDecisionWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07J-EVID Investment Decision Evidence Policy"
+          ],
+          "fullName": "Gate 07J-EVID Investment Decision Evidence Policy shows the contextual matrix and controlled provider registry",
+          "status": "passed",
+          "title": "shows the contextual matrix and controlled provider registry",
+          "duration": 1488.755600000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07J-EVID Investment Decision Evidence Policy"
+          ],
+          "fullName": "Gate 07J-EVID Investment Decision Evidence Policy runs a non-persistent preview and exposes the deterministic next provider",
+          "status": "passed",
+          "title": "runs a non-persistent preview and exposes the deterministic next provider",
+          "duration": 367.03889999999956,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648072093,
+      "endTime": 1789648073949.0388,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Portfolio Analysis Gate 07F"
+          ],
+          "fullName": "Portfolio Analysis Gate 07F provides Overview, accessible Investor Map, Scorecard and read-only Project drilldown",
+          "status": "passed",
+          "title": "provides Overview, accessible Investor Map, Scorecard and read-only Project drilldown",
+          "duration": 3060.636000000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Portfolio Analysis Gate 07F"
+          ],
+          "fullName": "Portfolio Analysis Gate 07F exposes governed ADMIN selectors and a non-persistent Preview action",
+          "status": "passed",
+          "title": "exposes governed ADMIN selectors and a non-persistent Preview action",
+          "duration": 405.0460999999923,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648067249,
+      "endTime": 1789648070715.0461,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-analysis/PortfolioAnalysisWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Portfolio Budget Planning Gate 07G"
+          ],
+          "fullName": "Portfolio Budget Planning Gate 07G shows readiness, governed alternatives and a two-scenario comparison without downstream decisions",
+          "status": "passed",
+          "title": "shows readiness, governed alternatives and a two-scenario comparison without downstream decisions",
+          "duration": 2528.555800000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Portfolio Budget Planning Gate 07G"
+          ],
+          "fullName": "Portfolio Budget Planning Gate 07G provides structured ADMIN policy fields and a non-persistent Preview",
+          "status": "passed",
+          "title": "provides structured ADMIN policy fields and a non-persistent Preview",
+          "duration": 409.40110000000277,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648060865,
+      "endTime": 1789648063803.4011,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-budget/PortfolioBudgetWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Portfolio Scenario Convergence Gate 07I"
+          ],
+          "fullName": "Portfolio Scenario Convergence Gate 07I shows independent sources, formal readiness and never exposes an FID control",
+          "status": "passed",
+          "title": "shows independent sources, formal readiness and never exposes an FID control",
+          "duration": 1580.0469000000012,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Portfolio Scenario Convergence Gate 07I"
+          ],
+          "fullName": "Portfolio Scenario Convergence Gate 07I previews ADMIN policy without persisting operational records",
+          "status": "passed",
+          "title": "previews ADMIN policy without persisting operational records",
+          "duration": 636.0774999999994,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648089161,
+      "endTime": 1789648091378.0774,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-convergence/PortfolioConvergenceWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07J-RISK Risk Readiness"
+          ],
+          "fullName": "Gate 07J-RISK Risk Readiness shows the governed Project Risk Register columns and no FID action",
+          "status": "passed",
+          "title": "shows the governed Project Risk Register columns and no FID action",
+          "duration": 1929.7131999999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07J-RISK Risk Readiness"
+          ],
+          "fullName": "Gate 07J-RISK Risk Readiness exposes all 16 ADMIN sections and a non-persistent preview",
+          "status": "passed",
+          "title": "exposes all 16 ADMIN sections and a non-persistent preview",
+          "duration": 943.421399999992,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648085190,
+      "endTime": 1789648088064.4214,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/risk-readiness/RiskReadinessWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows workspace and initialization states independently",
+          "status": "passed",
+          "title": "shows workspace and initialization states independently",
+          "duration": 699.5850999999966,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows template revision and progress",
+          "status": "passed",
+          "title": "shows template revision and progress",
+          "duration": 177.61539999999513,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle renders the backend checklist",
+          "status": "passed",
+          "title": "renders the backend checklist",
+          "duration": 180.20219999999972,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle marks blocking checks",
+          "status": "passed",
+          "title": "marks blocking checks",
+          "duration": 89.98110000000452,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows the minimal module container",
+          "status": "passed",
+          "title": "shows the minimal module container",
+          "duration": 75.34100000000035,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle requests a nonpersistent preview",
+          "status": "passed",
+          "title": "requests a nonpersistent preview",
+          "duration": 575.8971999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle starts initialization with If-Match version",
+          "status": "passed",
+          "title": "starts initialization with If-Match version",
+          "duration": 203.18699999999808,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle hides activation until backend capability and ready state",
+          "status": "passed",
+          "title": "hides activation until backend capability and ready state",
+          "duration": 213.03540000000066,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows activation for an authorized ready workspace",
+          "status": "passed",
+          "title": "shows activation for an authorized ready workspace",
+          "duration": 97.04690000000119,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle activates with the current revision",
+          "status": "passed",
+          "title": "activates with the current revision",
+          "duration": 157.52880000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle renders My Project Workspaces inventory",
+          "status": "passed",
+          "title": "renders My Project Workspaces inventory",
+          "duration": 90.3176999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle filters the inventory by pending status",
+          "status": "passed",
+          "title": "filters the inventory by pending status",
+          "duration": 67.37950000000274,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle opens a workspace from inventory",
+          "status": "passed",
+          "title": "opens a workspace from inventory",
+          "duration": 186.34649999999965,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows a friendly stale-version conflict",
+          "status": "passed",
+          "title": "shows a friendly stale-version conflict",
+          "duration": 269.9114999999947,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectWorkspaceLifecycle"
+          ],
+          "fullName": "ProjectWorkspaceLifecycle shows activated state without mutation actions",
+          "status": "passed",
+          "title": "shows activated state without mutation actions",
+          "duration": 101.14970000000176,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648048624,
+      "endTime": 1789648051810.1497,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-structure/components/ProjectWorkspaceLifecycle.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "bim model registry api"
+          ],
+          "fullName": "bim model registry api lists and uploads IFC coordination models under the selected project",
+          "status": "passed",
+          "title": "lists and uploads IFC coordination models under the selected project",
+          "duration": 83.22430000000168,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim model registry api"
+          ],
+          "fullName": "bim model registry api fetches viewer manifest and element properties for the stored IFC model",
+          "status": "passed",
+          "title": "fetches viewer manifest and element properties for the stored IFC model",
+          "duration": 7.266699999992852,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim model registry api"
+          ],
+          "fullName": "bim model registry api requests backend geometry cache preparation for the stored IFC model",
+          "status": "passed",
+          "title": "requests backend geometry cache preparation for the stored IFC model",
+          "duration": 4.712400000003981,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim model registry api"
+          ],
+          "fullName": "bim model registry api fetches the prepared backend geometry cache artifact",
+          "status": "passed",
+          "title": "fetches the prepared backend geometry cache artifact",
+          "duration": 12.388099999996484,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648079105,
+      "endTime": 1789648079219.3882,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/bim-model-registry.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BimBudgetPanel"
+          ],
+          "fullName": "BimBudgetPanel describes missing APU assignments as a pending budget",
+          "status": "passed",
+          "title": "describes missing APU assignments as a pending budget",
+          "duration": 492.5948000000062,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimBudgetPanel"
+          ],
+          "fullName": "BimBudgetPanel shows the consolidated BIM budget and returns to source quantities",
+          "status": "passed",
+          "title": "shows the consolidated BIM budget and returns to source quantities",
+          "duration": 336.7954000000027,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimBudgetPanel"
+          ],
+          "fullName": "BimBudgetPanel edits the APU structure and persists the recalculated unit rate",
+          "status": "passed",
+          "title": "edits the APU structure and persists the recalculated unit rate",
+          "duration": 887.1220999999932,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648110544,
+      "endTime": 1789648112261.122,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/BimBudgetPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BimGeometryBatchPanel"
+          ],
+          "fullName": "BimGeometryBatchPanel previews and approves only ready geometry measurements",
+          "status": "passed",
+          "title": "previews and approves only ready geometry measurements",
+          "duration": 1134.0118999999977,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimGeometryBatchPanel"
+          ],
+          "fullName": "BimGeometryBatchPanel blocks cross-model calculations with a clear source message",
+          "status": "passed",
+          "title": "blocks cross-model calculations with a clear source message",
+          "duration": 143.9994000000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimGeometryBatchPanel"
+          ],
+          "fullName": "BimGeometryBatchPanel links a takeoff run to the selected IFC revision",
+          "status": "passed",
+          "title": "links a takeoff run to the selected IFC revision",
+          "duration": 334.46740000000864,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648102851,
+      "endTime": 1789648104463.4673,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/BimGeometryBatchPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer detects metric length units from IFC source text",
+          "status": "passed",
+          "title": "detects metric length units from IFC source text",
+          "duration": 20.033400000000256,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer rejects invalid web-ifc express ids before geometry calls",
+          "status": "passed",
+          "title": "rejects invalid web-ifc express ids before geometry calls",
+          "duration": 1.4475000000002183,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer rejects invalid web-ifc memory references before array calls",
+          "status": "passed",
+          "title": "rejects invalid web-ifc memory references before array calls",
+          "duration": 7.716300000000047,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer measures two IFC points in meters using the declared model units",
+          "status": "passed",
+          "title": "measures two IFC points in meters using the declared model units",
+          "duration": 9.951399999999921,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer switches existing IFC materials between solid, xray and wireframe styles",
+          "status": "passed",
+          "title": "switches existing IFC materials between solid, xray and wireframe styles",
+          "duration": 14.052400000000489,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer screens clashes between different visible IFC products and keeps their references",
+          "status": "passed",
+          "title": "screens clashes between different visible IFC products and keeps their references",
+          "duration": 61.31750000000102,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer builds the Object Explorer hierarchy from model to individual IFC object",
+          "status": "passed",
+          "title": "builds the Object Explorer hierarchy from model to individual IFC object",
+          "duration": 18.736300000000483,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer builds selectable Three meshes from the backend geometry cache artifact",
+          "status": "passed",
+          "title": "builds selectable Three meshes from the backend geometry cache artifact",
+          "duration": 6.89049999999952,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer translates web-ifc invalid geometry references into an operational status",
+          "status": "passed",
+          "title": "translates web-ifc invalid geometry references into an operational status",
+          "duration": 2.8717999999989843,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer translates browser memory failures into a safe IFC viewer status",
+          "status": "passed",
+          "title": "translates browser memory failures into a safe IFC viewer status",
+          "duration": 1.6133000000008906,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer shows a clear empty geometry overlay for registered georeferenced IFC files without renderable meshes",
+          "status": "passed",
+          "title": "shows a clear empty geometry overlay for registered georeferenced IFC files without renderable meshes",
+          "duration": 1272.232399999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer presents the stored IFC as real model geometry, separate from inventory preview",
+          "status": "passed",
+          "title": "presents the stored IFC as real model geometry, separate from inventory preview",
+          "duration": 951.1856000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer keeps an oversized IFC out of direct browser rendering until its backend cache is prepared",
+          "status": "passed",
+          "title": "keeps an oversized IFC out of direct browser rendering until its backend cache is prepared",
+          "duration": 700.7838000000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer lets the user prepare a backend geometry cache from the IFC viewer health panel",
+          "status": "passed",
+          "title": "lets the user prepare a backend geometry cache from the IFC viewer health panel",
+          "duration": 1325.6395000000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer offers orbit and walk navigation modes without leaving the IFC viewer",
+          "status": "passed",
+          "title": "offers orbit and walk navigation modes without leaving the IFC viewer",
+          "duration": 1958.0881000000008,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer exposes controlled section axes for professional model inspection",
+          "status": "passed",
+          "title": "exposes controlled section axes for professional model inspection",
+          "duration": 1113.2838999999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer offers open review tools while preserving quantity and APU traceability",
+          "status": "passed",
+          "title": "offers open review tools while preserving quantity and APU traceability",
+          "duration": 4303.5026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer docks Object Explorer and Properties beside the canvas and toggles each panel independently",
+          "status": "passed",
+          "title": "docks Object Explorer and Properties beside the canvas and toggles each panel independently",
+          "duration": 1293.6854999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer moves the camera forward in walk navigation mode",
+          "status": "passed",
+          "title": "moves the camera forward in walk navigation mode",
+          "duration": 11.046699999998964,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer shows a model tree and selected element properties linked to controlled quantities",
+          "status": "passed",
+          "title": "shows a model tree and selected element properties linked to controlled quantities",
+          "duration": 1296.2777999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer shows IFC published properties from the backend manifest for the selected element",
+          "status": "passed",
+          "title": "shows IFC published properties from the backend manifest for the selected element",
+          "duration": 1595.6794999999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer marks a selected IFC mesh with a distinct material and visible outline",
+          "status": "passed",
+          "title": "marks a selected IFC mesh with a distinct material and visible outline",
+          "duration": 11.286299999999756,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer creates a high contrast selection box around the selected IFC product",
+          "status": "passed",
+          "title": "creates a high contrast selection box around the selected IFC product",
+          "duration": 6.188500000000204,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer calculates real mesh area, volume and length from selected IFC geometry",
+          "status": "passed",
+          "title": "calculates real mesh area, volume and length from selected IFC geometry",
+          "duration": 5.09230000000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer converts IFC millimeter geometry to metric quantities",
+          "status": "passed",
+          "title": "converts IFC millimeter geometry to metric quantities",
+          "duration": 2.658100000000559,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer keeps already-normalized web-ifc geometry in meters when the IFC declares millimeters",
+          "status": "passed",
+          "title": "keeps already-normalized web-ifc geometry in meters when the IFC declares millimeters",
+          "duration": 4.556599999999889,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer formats real geometry dimensions in meters when web-ifc normalizes millimeter models",
+          "status": "passed",
+          "title": "formats real geometry dimensions in meters when web-ifc normalizes millimeter models",
+          "duration": 2.806400000001304,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer uses real mesh area as the primary geometry quantity for walls",
+          "status": "passed",
+          "title": "uses real mesh area as the primary geometry quantity for walls",
+          "duration": 2.378100000001723,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimIfcModelViewer"
+          ],
+          "fullName": "BimIfcModelViewer builds a controlled measurement payload from the selected real geometry",
+          "status": "passed",
+          "title": "builds a controlled measurement payload from the selected real geometry",
+          "duration": 3.3048999999991793,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648020684,
+      "endTime": 1789648036699.305,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/BimIfcModelViewer.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure reuses compact metric chips and actions through CompactModuleHeader",
+          "status": "passed",
+          "title": "reuses compact metric chips and actions through CompactModuleHeader",
+          "duration": 1081.2464,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure shows record codes and derives tree indentation from depth",
+          "status": "passed",
+          "title": "shows record codes and derives tree indentation from depth",
+          "duration": 124.92220000000088,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure orders the table by numeric record code and hides USER actions",
+          "status": "passed",
+          "title": "orders the table by numeric record code and hides USER actions",
+          "duration": 233.95530000000144,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure exposes node actions only when the table is in ADMIN context",
+          "status": "passed",
+          "title": "exposes node actions only when the table is in ADMIN context",
+          "duration": 142.98140000000058,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure places configuration in ADMIN MODE and Explorer in USER MODE",
+          "status": "passed",
+          "title": "places configuration in ADMIN MODE and Explorer in USER MODE",
+          "duration": 6.217099999998027,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure adds only the Facility Manager and Property Manager macroprocesses from the workbook",
+          "status": "passed",
+          "title": "adds only the Facility Manager and Property Manager macroprocesses from the workbook",
+          "duration": 6.033999999999651,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure renders the governed ADMIN configuration with all functional tabs",
+          "status": "passed",
+          "title": "renders the governed ADMIN configuration with all functional tabs",
+          "duration": 3023.7508000000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure configures PROJECT, templates, allowed parents, attributes and readonly preview outputs",
+          "status": "passed",
+          "title": "configures PROJECT, templates, allowed parents, attributes and readonly preview outputs",
+          "duration": 2212.3616,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure exposes Numbering Rules and Creation Policies without a materialize action",
+          "status": "passed",
+          "title": "exposes Numbering Rules and Creation Policies without a materialize action",
+          "duration": 1185.5836000000018,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Nivel 2A Enterprise Structure"
+          ],
+          "fullName": "Nivel 2A Enterprise Structure renders USER Explorer filters, tree/table views and persisted node detail",
+          "status": "passed",
+          "title": "renders USER Explorer filters, tree/table views and persisted node detail",
+          "duration": 1582.7013000000006,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648023325,
+      "endTime": 1789648032925.7014,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/enterprise-structure.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "LoginView"
+          ],
+          "fullName": "LoginView renders demo username and password fields",
+          "status": "passed",
+          "title": "renders demo username and password fields",
+          "duration": 556.2728000000061,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "LoginView"
+          ],
+          "fullName": "LoginView shows error message on failed login",
+          "status": "passed",
+          "title": "shows error message on failed login",
+          "duration": 179.34389999999257,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "LoginView"
+          ],
+          "fullName": "LoginView navigates to /app on successful login",
+          "status": "passed",
+          "title": "navigates to /app on successful login",
+          "duration": 98.48179999999411,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648111502,
+      "endTime": 1789648112336.4817,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/views/LoginView.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "application navigation composition"
+          ],
+          "fullName": "application navigation composition uses one strategic source and preserves the alternate project/commercial modules",
+          "status": "passed",
+          "title": "uses one strategic source and preserves the alternate project/commercial modules",
+          "duration": 12.511499999993248,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "application navigation composition"
+          ],
+          "fullName": "application navigation composition does not duplicate strategic configuration under platform administration",
+          "status": "passed",
+          "title": "does not duplicate strategic configuration under platform administration",
+          "duration": 4.241500000003725,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648100911,
+      "endTime": 1789648100929.2415,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/navigation/applicationNavigation.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07M-BC Business Case Manager"
+          ],
+          "fullName": "Gate 07M-BC Business Case Manager renders governed lineage and the expected next boundary",
+          "status": "passed",
+          "title": "renders governed lineage and the expected next boundary",
+          "duration": 741.9896000000008,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BC Business Case Manager"
+          ],
+          "fullName": "Gate 07M-BC Business Case Manager shows refresh preview as non-persistent",
+          "status": "passed",
+          "title": "shows refresh preview as non-persistent",
+          "duration": 669.0537999999942,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BC Business Case Manager"
+          ],
+          "fullName": "Gate 07M-BC Business Case Manager renders all 26 ADMIN sections and executes a dry-run",
+          "status": "passed",
+          "title": "renders all 26 ADMIN sections and executes a dry-run",
+          "duration": 719.1794000000009,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648067823,
+      "endTime": 1789648069954.1794,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/business-case/BusinessCaseWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Enterprise Strategy landing"
+          ],
+          "fullName": "Enterprise Strategy landing separates Enterprise Foundation from the transactional flow and only exposes Create Idea when ready",
+          "status": "passed",
+          "title": "separates Enterprise Foundation from the transactional flow and only exposes Create Idea when ready",
+          "duration": 2205.940599999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Enterprise Strategy landing"
+          ],
+          "fullName": "Enterprise Strategy landing renders the ADMIN lifecycle with the same phase order",
+          "status": "passed",
+          "title": "renders the ADMIN lifecycle with the same phase order",
+          "duration": 543.9522999999899,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Enterprise Strategy landing"
+          ],
+          "fullName": "Enterprise Strategy landing renders the full deep-link breadcrumb",
+          "status": "passed",
+          "title": "renders the full deep-link breadcrumb",
+          "duration": 59.314299999998184,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648089120,
+      "endTime": 1789648091929.3142,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-strategy/EnterpriseStrategyLanding.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "InvestmentGatePreparationWorkspace"
+          ],
+          "fullName": "InvestmentGatePreparationWorkspace shows governed readiness, evidence navigation and the explicit FID safeguard",
+          "status": "passed",
+          "title": "shows governed readiness, evidence navigation and the explicit FID safeguard",
+          "duration": 1110.441700000003,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648079977,
+      "endTime": 1789648081087.4417,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/investment-gate-preparation/InvestmentGatePreparationWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ProjectProposalWorkspace"
+          ],
+          "fullName": "ProjectProposalWorkspace renders queues, readonly source, review, evaluation and Gate readiness",
+          "status": "passed",
+          "title": "renders queues, readonly source, review, evaluation and Gate readiness",
+          "duration": 1108.4881000000023,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectProposalWorkspace"
+          ],
+          "fullName": "ProjectProposalWorkspace previews an accepted Idea without reserving its Proposal number",
+          "status": "passed",
+          "title": "previews an accepted Idea without reserving its Proposal number",
+          "duration": 1059.5901999999987,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648066619,
+      "endTime": 1789648068787.59,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/project-proposal/ProjectProposalWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint orders USER and ADMIN navigation by business phase with Foundation first",
+          "status": "passed",
+          "title": "orders USER and ADMIN navigation by business phase with Foundation first",
+          "duration": 16.186299999997573,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint models Budget and Resources as parallel predecessors of Scenario Convergence",
+          "status": "passed",
+          "title": "models Budget and Resources as parallel predecessors of Scenario Convergence",
+          "duration": 7.818799999997282,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint models all eight evidence contributors converging into Investment Gate Preparation",
+          "status": "passed",
+          "title": "models all eight evidence contributors converging into Investment Gate Preparation",
+          "duration": 3.3614999999990687,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint keeps route and breadcrumb metadata deterministic for deep links",
+          "status": "passed",
+          "title": "keeps route and breadcrumb metadata deterministic for deep links",
+          "duration": 61.87299999999959,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint classifies every strategic control and keeps USER and ADMIN responsibilities separated",
+          "status": "passed",
+          "title": "classifies every strategic control and keeps USER and ADMIN responsibilities separated",
+          "duration": 3.9406999999991967,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint enforces the existing can_configure permission on direct ADMIN routes",
+          "status": "passed",
+          "title": "enforces the existing can_configure permission on direct ADMIN routes",
+          "duration": 131.26929999999993,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint places Strategic Benefits between Business Case and Commercial Strategy with canonical deep links",
+          "status": "passed",
+          "title": "places Strategic Benefits between Business Case and Commercial Strategy with canonical deep links",
+          "duration": 5.271300000000338,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint keeps Commercial Strategy in Phase 6 with canonical USER deep links and ADMIN separation",
+          "status": "passed",
+          "title": "keeps Commercial Strategy in Phase 6 with canonical USER deep links and ADMIN separation",
+          "duration": 4.04399999999805,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint preserves CAPITAL_OWNER applicability without forcing owner-only phases on alternate governance models",
+          "status": "passed",
+          "title": "preserves CAPITAL_OWNER applicability without forcing owner-only phases on alternate governance models",
+          "duration": 1.3436999999976251,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "strategic navigation blueprint"
+          ],
+          "fullName": "strategic navigation blueprint orders Workspace Navigator entries without changing backend state or permissions",
+          "status": "passed",
+          "title": "orders Workspace Navigator entries without changing backend state or permissions",
+          "duration": 3.716199999998935,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648043999,
+      "endTime": 1789648044239.7163,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "WorkspaceContextProvider"
+          ],
+          "fullName": "WorkspaceContextProvider invalidates the previous Workspace before resolving a switch",
+          "status": "passed",
+          "title": "invalidates the previous Workspace before resolving a switch",
+          "duration": 480.5008999999991,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648079420,
+      "endTime": 1789648079900.501,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/workspace-context/WorkspaceContextProvider.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel shows six active physical types, reserved LINEAR_ASSET and ASSET exclusion",
+          "status": "passed",
+          "title": "shows six active physical types, reserved LINEAR_ASSET and ASSET exclusion",
+          "duration": 762.329700000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel presents PROPERTY as Real Estate and parametrized attributes",
+          "status": "passed",
+          "title": "presents PROPERTY as Real Estate and parametrized attributes",
+          "duration": 1010.3177999999971,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel renders configurable composition matrix",
+          "status": "passed",
+          "title": "renders configurable composition matrix",
+          "duration": 738.7822999999989,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel persists numbering through the governed API",
+          "status": "passed",
+          "title": "persists numbering through the governed API",
+          "duration": 663.8373000000065,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel executes a non-persistent preview",
+          "status": "passed",
+          "title": "executes a non-persistent preview",
+          "duration": 737.7744999999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceConfigurationPanel"
+          ],
+          "fullName": "PhysicalWorkspaceConfigurationPanel disables preview for reserved LINEAR_ASSET",
+          "status": "passed",
+          "title": "disables preview for reserved LINEAR_ASSET",
+          "duration": 748.8303000000014,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648053856,
+      "endTime": 1789648058521.8303,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-structure/components/PhysicalWorkspaceConfigurationPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace shows only PROPERTY, FACILITY and WAREHOUSE in the type picker",
+          "status": "passed",
+          "title": "shows only PROPERTY, FACILITY and WAREHOUSE in the type picker",
+          "duration": 892.1389999999992,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace renders the backend-provided location picker and dynamic attributes",
+          "status": "passed",
+          "title": "renders the backend-provided location picker and dynamic attributes",
+          "duration": 200.67269999999917,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace blocks the intake when templates remain DRAFT",
+          "status": "passed",
+          "title": "blocks the intake when templates remain DRAFT",
+          "duration": 75.48099999999977,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace creates one parametrized draft and renders non-persistent preview",
+          "status": "passed",
+          "title": "creates one parametrized draft and renders non-persistent preview",
+          "duration": 407.2409000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace lists My Physical Workspace Requests",
+          "status": "passed",
+          "title": "lists My Physical Workspace Requests",
+          "duration": 169.04490000000078,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace starts review from Physical Workspace Review Queue",
+          "status": "passed",
+          "title": "starts review from Physical Workspace Review Queue",
+          "duration": 226.83729999999923,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace surfaces a stale If-Match conflict",
+          "status": "passed",
+          "title": "surfaces a stale If-Match conflict",
+          "duration": 258.1251000000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceCreationWorkspace"
+          ],
+          "fullName": "PhysicalWorkspaceCreationWorkspace renders a generic Physical Workspace Overview",
+          "status": "passed",
+          "title": "renders a generic Physical Workspace Overview",
+          "duration": 85.41489999999976,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648035617,
+      "endTime": 1789648037933.4148,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-structure/components/PhysicalWorkspaceCreationWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace shows a controlled blocked state when no template is published",
+          "status": "passed",
+          "title": "shows a controlled blocked state when no template is published",
+          "duration": 1195.464100000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace renders eligible locations as a selectable enterprise tree",
+          "status": "passed",
+          "title": "renders eligible locations as a selectable enterprise tree",
+          "duration": 503.29219999999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace uses governance independently from project type and requires the direct source",
+          "status": "passed",
+          "title": "uses governance independently from project type and requires the direct source",
+          "duration": 631.5959000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace creates a draft and displays a non-persistent preview",
+          "status": "passed",
+          "title": "creates a draft and displays a non-persistent preview",
+          "duration": 691.792300000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace lists My Project Requests with lifecycle state",
+          "status": "passed",
+          "title": "lists My Project Requests with lifecycle state",
+          "duration": 200.04979999999705,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace starts review from the dedicated Review Queue",
+          "status": "passed",
+          "title": "starts review from the dedicated Review Queue",
+          "duration": 302.7505999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace shows a clear stale-version conflict",
+          "status": "passed",
+          "title": "shows a clear stale-version conflict",
+          "duration": 384.58339999999953,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectCreationWorkspace"
+          ],
+          "fullName": "ProjectCreationWorkspace renders Project Overview from the canonical workspace",
+          "status": "passed",
+          "title": "renders Project Overview from the canonical workspace",
+          "duration": 217.39180000000124,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648039152,
+      "endTime": 1789648043279.3918,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BimApuReviewPanel"
+          ],
+          "fullName": "BimApuReviewPanel approves ready groups in one controlled action",
+          "status": "passed",
+          "title": "approves ready groups in one controlled action",
+          "duration": 1419.3940000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimApuReviewPanel"
+          ],
+          "fullName": "BimApuReviewPanel requests suggestions for pending groups",
+          "status": "passed",
+          "title": "requests suggestions for pending groups",
+          "duration": 154.98029999999562,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648091139,
+      "endTime": 1789648092715.9802,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/BimApuReviewPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ProjectControlsHandbook"
+          ],
+          "fullName": "ProjectControlsHandbook uses imported schedule data instead of handbook example data",
+          "status": "passed",
+          "title": "uses imported schedule data instead of handbook example data",
+          "duration": 764.5198999999993,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectControlsHandbook"
+          ],
+          "fullName": "ProjectControlsHandbook calculates a basic CPM critical path, delayed activities and module dashboard",
+          "status": "passed",
+          "title": "calculates a basic CPM critical path, delayed activities and module dashboard",
+          "duration": 17.470500000003085,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "ProjectControlsHandbook"
+          ],
+          "fullName": "ProjectControlsHandbook renders every handbook section and stores local project data",
+          "status": "passed",
+          "title": "renders every handbook section and stores local project data",
+          "duration": 3025.4841000000015,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648056026,
+      "endTime": 1789648059834.4841,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/ProjectControlsHandbook.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "useAuthStore"
+          ],
+          "fullName": "useAuthStore starts with empty token and no user",
+          "status": "passed",
+          "title": "starts with empty token and no user",
+          "duration": 6.228999999992084,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "useAuthStore"
+          ],
+          "fullName": "useAuthStore login sets token and user",
+          "status": "passed",
+          "title": "login sets token and user",
+          "duration": 2.135900000008405,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "useAuthStore"
+          ],
+          "fullName": "useAuthStore logout clears token and user",
+          "status": "passed",
+          "title": "logout clears token and user",
+          "duration": 1.7534000000014203,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648107029,
+      "endTime": 1789648107039.7534,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/store-auth.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "useProjectStore"
+          ],
+          "fullName": "useProjectStore starts with no selected project",
+          "status": "passed",
+          "title": "starts with no selected project",
+          "duration": 6.441800000000512,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "useProjectStore"
+          ],
+          "fullName": "useProjectStore setSelectedProject updates id and clears dashboard",
+          "status": "passed",
+          "title": "setSelectedProject updates id and clears dashboard",
+          "duration": 1.5641999999934342,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "useProjectStore"
+          ],
+          "fullName": "useProjectStore setDashboard stores dashboard data",
+          "status": "passed",
+          "title": "setDashboard stores dashboard data",
+          "duration": 1.2691999999951804,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648101440,
+      "endTime": 1789648101455.2693,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/store-project.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ui text utilities"
+          ],
+          "fullName": "ui text utilities does not expose legacy project shell wording",
+          "status": "passed",
+          "title": "does not expose legacy project shell wording",
+          "duration": 8.204400000002352,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648107631,
+      "endTime": 1789648107639.2043,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/utils.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Commercial Strategy API client"
+          ],
+          "fullName": "Commercial Strategy API client resolves effective USER catalogs for the selected Project Workspace",
+          "status": "passed",
+          "title": "resolves effective USER catalogs for the selected Project Workspace",
+          "duration": 26.08969999999681,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Commercial Strategy API client"
+          ],
+          "fullName": "Commercial Strategy API client reads a bounded cursor page from response headers",
+          "status": "passed",
+          "title": "reads a bounded cursor page from response headers",
+          "duration": 13.392999999996391,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Commercial Strategy API client"
+          ],
+          "fullName": "Commercial Strategy API client sends ETag and idempotency controls on governed lifecycle actions",
+          "status": "passed",
+          "title": "sends ETag and idempotency controls on governed lifecycle actions",
+          "duration": 3.338499999998021,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Commercial Strategy API client"
+          ],
+          "fullName": "Commercial Strategy API client uses the strategy ETag when applying a refresh as a new revision",
+          "status": "passed",
+          "title": "uses the strategy ETag when applying a refresh as a new revision",
+          "duration": 3.81420000000071,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Commercial Strategy API client"
+          ],
+          "fullName": "Commercial Strategy API client keeps ADMIN effective preview non-transactional",
+          "status": "passed",
+          "title": "keeps ADMIN effective preview non-transactional",
+          "duration": 4.155899999997928,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648066795,
+      "endTime": 1789648066851.156,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/commercial-strategy/api.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet blocks a direct ADMIN configuration view without can_configure",
+          "status": "passed",
+          "title": "blocks a direct ADMIN configuration view without can_configure",
+          "duration": 2281.428800000009,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet renders the ADMIN configuration view with can_configure",
+          "status": "passed",
+          "title": "renders the ADMIN configuration view with can_configure",
+          "duration": 45.353900000001886,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet resolves Commercial Strategy USER and ADMIN views through the canonical outlet",
+          "status": "passed",
+          "title": "resolves Commercial Strategy USER and ADMIN views through the canonical outlet",
+          "duration": 75.36570000000938,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet blocks the direct Commercial Strategy ADMIN route without can_configure",
+          "status": "passed",
+          "title": "blocks the direct Commercial Strategy ADMIN route without can_configure",
+          "duration": 137.86969999999565,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet resolves Strategic Benefits USER and ADMIN views through the canonical outlet",
+          "status": "passed",
+          "title": "resolves Strategic Benefits USER and ADMIN views through the canonical outlet",
+          "duration": 73.00909999999567,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicViewOutlet"
+          ],
+          "fullName": "StrategicViewOutlet blocks the direct Benefits ADMIN route without can_configure",
+          "status": "passed",
+          "title": "blocks the direct Benefits ADMIN route without can_configure",
+          "duration": 166.1316999999981,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648089269,
+      "endTime": 1789648092051.1316,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-strategy/StrategicViewOutlet.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07J-FUND Funds Manager"
+          ],
+          "fullName": "Gate 07J-FUND Funds Manager shows governed readiness without Investment, Treasury or payment controls",
+          "status": "passed",
+          "title": "shows governed readiness without Investment, Treasury or payment controls",
+          "duration": 1672.3951000000015,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07J-FUND Funds Manager"
+          ],
+          "fullName": "Gate 07J-FUND Funds Manager previews ADMIN policy without persisting Funds, Assignments or readiness",
+          "status": "passed",
+          "title": "previews ADMIN policy without persisting Funds, Assignments or readiness",
+          "duration": 572.9542000000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648049536,
+      "endTime": 1789648051782.954,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/funds-manager/FundsManagerWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "PortfolioEvaluationWorkspace"
+          ],
+          "fullName": "PortfolioEvaluationWorkspace renders backend-derived evaluation queues without a candidate entity",
+          "status": "passed",
+          "title": "renders backend-derived evaluation queues without a candidate entity",
+          "duration": 875.0746999999974,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PortfolioEvaluationWorkspace"
+          ],
+          "fullName": "PortfolioEvaluationWorkspace renders contextual ranking and Gate 07F handoff readiness only",
+          "status": "passed",
+          "title": "renders contextual ranking and Gate 07F handoff readiness only",
+          "duration": 224.37179999999353,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PortfolioEvaluationAdminView"
+          ],
+          "fullName": "PortfolioEvaluationAdminView keeps the starter matrix in draft until explicit publication",
+          "status": "passed",
+          "title": "keeps the starter matrix in draft until explicit publication",
+          "duration": 248.768799999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648057025,
+      "endTime": 1789648058375.7688,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-evaluation/PortfolioEvaluationWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "StrategicPlanningEntryWorkspace"
+          ],
+          "fullName": "StrategicPlanningEntryWorkspace shows Gate 07C lineage and governed Gate 05B prefill without execution controls",
+          "status": "passed",
+          "title": "shows Gate 07C lineage and governed Gate 05B prefill without execution controls",
+          "duration": 644.8800999999949,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648090225,
+      "endTime": 1789648090869.8801,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-planning/StrategicPlanningEntryWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ProjectDefinitionWorkspace"
+          ],
+          "fullName": "ProjectDefinitionWorkspace keeps FEL stage, maturity and Investment Gate evidence separate from FID",
+          "status": "passed",
+          "title": "keeps FEL stage, maturity and Investment Gate evidence separate from FID",
+          "duration": 825.710500000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648099841,
+      "endTime": 1789648100666.7104,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/project-definition/ProjectDefinitionWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07L Post-FID Project Governance"
+          ],
+          "fullName": "Gate 07L Post-FID Project Governance renders the per-Project matrix and protects the active Project from reactivation",
+          "status": "passed",
+          "title": "renders the per-Project matrix and protects the active Project from reactivation",
+          "duration": 889.8821000000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07L Post-FID Project Governance"
+          ],
+          "fullName": "Gate 07L Post-FID Project Governance shows refresh Preview as persisted=false",
+          "status": "passed",
+          "title": "shows refresh Preview as persisted=false",
+          "duration": 268.90969999998924,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07L Post-FID Project Governance"
+          ],
+          "fullName": "Gate 07L Post-FID Project Governance renders all ADMIN sections and a non-persistent dry-run",
+          "status": "passed",
+          "title": "renders all ADMIN sections and a non-persistent dry-run",
+          "duration": 451.67480000000796,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648078721,
+      "endTime": 1789648080331.6748,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/post-fid-governance/PostFIDGovernanceWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07M-BEN frontend"
+          ],
+          "fullName": "Gate 07M-BEN frontend renders 8 USER queues and 16 governed views without ADMIN controls",
+          "status": "passed",
+          "title": "renders 8 USER queues and 16 governed views without ADMIN controls",
+          "duration": 3928.466800000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BEN frontend"
+          ],
+          "fullName": "Gate 07M-BEN frontend preserves UNKNOWN baseline as null and never silently converts it to zero",
+          "status": "passed",
+          "title": "preserves UNKNOWN baseline as null and never silently converts it to zero",
+          "duration": 1837.9278000000013,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BEN frontend"
+          ],
+          "fullName": "Gate 07M-BEN frontend loads the derived traceability matrix with one paginated API request",
+          "status": "passed",
+          "title": "loads the derived traceability matrix with one paginated API request",
+          "duration": 740.7060999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BEN frontend"
+          ],
+          "fullName": "Gate 07M-BEN frontend exposes 23 ADMIN policy sections and no live Plan actions",
+          "status": "passed",
+          "title": "exposes 23 ADMIN policy sections and no live Plan actions",
+          "duration": 896.5737999999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07M-BEN frontend"
+          ],
+          "fullName": "Gate 07M-BEN frontend blocks ADMIN save and publish when governed JSON is invalid",
+          "status": "passed",
+          "title": "blocks ADMIN save and publish when governed JSON is invalid",
+          "duration": 1337.048899999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648027393,
+      "endTime": 1789648036135.0488,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/strategic-benefits/StrategicBenefitsWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "StrategicGateWorkspace"
+          ],
+          "fullName": "StrategicGateWorkspace renders queues, snapshots, checklist, authority, outcomes and Portfolio readiness",
+          "status": "passed",
+          "title": "renders queues, snapshots, checklist, authority, outcomes and Portfolio readiness",
+          "duration": 2083.417699999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "StrategicGateWorkspace"
+          ],
+          "fullName": "StrategicGateWorkspace previews a gate-ready Proposal without reserving an SGD number",
+          "status": "passed",
+          "title": "previews a gate-ready Proposal without reserving an SGD number",
+          "duration": 1687.0837000000029,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648045087,
+      "endTime": 1789648048858.0837,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/strategic-gate/StrategicGateWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BIM budget consolidation"
+          ],
+          "fullName": "BIM budget consolidation consolidates assigned BIM quantities by item and control codes",
+          "status": "passed",
+          "title": "consolidates assigned BIM quantities by item and control codes",
+          "duration": 20.947500000002037,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM budget consolidation"
+          ],
+          "fullName": "BIM budget consolidation excludes exact repeated element measurements and flags incompatible units",
+          "status": "passed",
+          "title": "excludes exact repeated element measurements and flags incompatible units",
+          "duration": 33.11779999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM budget consolidation"
+          ],
+          "fullName": "BIM budget consolidation marks an unpriced takeoff as pending instead of blocked",
+          "status": "passed",
+          "title": "marks an unpriced takeoff as pending instead of blocked",
+          "duration": 1.5776000000041677,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM budget consolidation"
+          ],
+          "fullName": "BIM budget consolidation generates an Excel-compatible workbook with traceability and APU structure",
+          "status": "passed",
+          "title": "generates an Excel-compatible workbook with traceability and APU structure",
+          "duration": 4.745900000001711,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648057719,
+      "endTime": 1789648057779.7458,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/bim-budget.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers derives project PV, EV, AC and ratios from control cost lines when stored project KPI is incomplete",
+          "status": "passed",
+          "title": "derives project PV, EV, AC and ratios from control cost lines when stored project KPI is incomplete",
+          "duration": 30.809800000000905,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers does not present missing EVM denominators as zero performance",
+          "status": "passed",
+          "title": "does not present missing EVM denominators as zero performance",
+          "duration": 1.4843999999993684,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers derives current PV from activity dates and planned cost when cost sheet planned value is missing",
+          "status": "passed",
+          "title": "derives current PV from activity dates and planned cost when cost sheet planned value is missing",
+          "duration": 6.499200000000201,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers keeps PV, EV and AC at zero when the project only has a baseline and no control cut",
+          "status": "passed",
+          "title": "keeps PV, EV and AC at zero when the project only has a baseline and no control cut",
+          "duration": 7.3576000000011845,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers uses activity BAC instead of duplicated control-account BAC when both are available",
+          "status": "passed",
+          "title": "uses activity BAC instead of duplicated control-account BAC when both are available",
+          "duration": 1.3104000000002998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers orders the cumulative S curve by data date and appends the current project cut",
+          "status": "passed",
+          "title": "orders the cumulative S curve by data date and appends the current project cut",
+          "duration": 11.209499999999025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers builds a planned cumulative S curve from activity costs when snapshot PV is unavailable",
+          "status": "passed",
+          "title": "builds a planned cumulative S curve from activity costs when snapshot PV is unavailable",
+          "duration": 3.9812000000001717,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "dashboard EVM helpers"
+          ],
+          "fullName": "dashboard EVM helpers shows only the baseline S curve when no control cut has been captured",
+          "status": "passed",
+          "title": "shows only the baseline S curve when no control cut has been captured",
+          "duration": 2.231499999999869,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648019463,
+      "endTime": 1789648019531.2314,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/evm-dashboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "guided flow components"
+          ],
+          "fullName": "guided flow components renders tenant context and project switcher",
+          "status": "passed",
+          "title": "renders tenant context and project switcher",
+          "duration": 868.4589999999953,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "guided flow components"
+          ],
+          "fullName": "guided flow components renders guided rail step state and next action",
+          "status": "passed",
+          "title": "renders guided rail step state and next action",
+          "duration": 169.66719999999623,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "guided flow components"
+          ],
+          "fullName": "guided flow components confirms detected currency from the gate",
+          "status": "passed",
+          "title": "confirms detected currency from the gate",
+          "duration": 141.23169999999664,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "guided flow components"
+          ],
+          "fullName": "guided flow components navigates from the next action panel",
+          "status": "passed",
+          "title": "navigates from the next action panel",
+          "duration": 78.10749999999825,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648069652,
+      "endTime": 1789648070910.1074,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/guided-flow-components.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "control diagnostic analysis"
+          ],
+          "fullName": "control diagnostic analysis prioritizes the P6 CPM and cost-loaded spine before downstream controls",
+          "status": "passed",
+          "title": "prioritizes the P6 CPM and cost-loaded spine before downstream controls",
+          "duration": 10.997199999997974,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "control diagnostic analysis"
+          ],
+          "fullName": "control diagnostic analysis recognizes a connected BIM to APU to EVM control spine when the project data is present",
+          "status": "passed",
+          "title": "recognizes a connected BIM to APU to EVM control spine when the project data is present",
+          "duration": 1.7707999999984168,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "control diagnostic analysis"
+          ],
+          "fullName": "control diagnostic analysis keeps the BIM budget bridge partial when quantities exist but IFC geometry is not renderable",
+          "status": "passed",
+          "title": "keeps the BIM budget bridge partial when quantities exist but IFC geometry is not renderable",
+          "duration": 1.4937000000063563,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "control diagnostic analysis"
+          ],
+          "fullName": "control diagnostic analysis keeps generated user-facing references free of external product comparison names",
+          "status": "passed",
+          "title": "keeps generated user-facing references free of external product comparison names",
+          "duration": 2.742899999997462,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648099679,
+      "endTime": 1789648099696.743,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/opc-gap.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "web-ifc bundle guard"
+          ],
+          "fullName": "web-ifc bundle guard loads the geometric IFC viewer lazily from the BIM module",
+          "status": "passed",
+          "title": "loads the geometric IFC viewer lazily from the BIM module",
+          "duration": 14.850399999995716,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648106869,
+      "endTime": 1789648106883.8503,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/web-ifc-lazy-load.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Workspace Structure Revision Manager"
+          ],
+          "fullName": "Workspace Structure Revision Manager shows the published base, DRAFT gate actions, accessible change states and hierarchical tree",
+          "status": "passed",
+          "title": "shows the published base, DRAFT gate actions, accessible change states and hierarchical tree",
+          "duration": 989.4506000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Workspace Structure Revision Manager"
+          ],
+          "fullName": "Workspace Structure Revision Manager offers Create New Revision when no DRAFT exists",
+          "status": "passed",
+          "title": "offers Create New Revision when no DRAFT exists",
+          "duration": 59.95079999999871,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Workspace Structure Revision Manager"
+          ],
+          "fullName": "Workspace Structure Revision Manager sends If-Match and explains an optimistic concurrency conflict",
+          "status": "passed",
+          "title": "sends If-Match and explains an optimistic concurrency conflict",
+          "duration": 639.9436999999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648030618,
+      "endTime": 1789648032307.9436,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/workspace-revision-manager.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Business Analysis mode boundaries"
+          ],
+          "fullName": "Business Analysis mode boundaries renders the USER workspace, governed sections and Proposal readiness link",
+          "status": "passed",
+          "title": "renders the USER workspace, governed sections and Proposal readiness link",
+          "duration": 1145.989999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Business Analysis mode boundaries"
+          ],
+          "fullName": "Business Analysis mode boundaries loads the next bounded cursor page without duplicating the register",
+          "status": "passed",
+          "title": "loads the next bounded cursor page without duplicating the register",
+          "duration": 839.9913000000015,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Business Analysis mode boundaries"
+          ],
+          "fullName": "Business Analysis mode boundaries renders ADMIN configuration without live Business Analysis controls",
+          "status": "passed",
+          "title": "renders ADMIN configuration without live Business Analysis controls",
+          "duration": 143.08650000000125,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Business Analysis mode boundaries"
+          ],
+          "fullName": "Business Analysis mode boundaries edits governed BA policy with structured controls and keeps raw JSON read only",
+          "status": "passed",
+          "title": "edits governed BA policy with structured controls and keeps raw JSON read only",
+          "duration": 1015.8185000000012,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648504828,
+      "endTime": 1789648507973.8186,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/business-analysis/BusinessAnalysisWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Gate 07J-PERMIT Permit Readiness"
+          ],
+          "fullName": "Gate 07J-PERMIT Permit Readiness shows the governed permit register columns and no regulatory or FID action",
+          "status": "passed",
+          "title": "shows the governed permit register columns and no regulatory or FID action",
+          "duration": 1299.0056000000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07J-PERMIT Permit Readiness"
+          ],
+          "fullName": "Gate 07J-PERMIT Permit Readiness shows normalized conditions with blocking and evidence columns",
+          "status": "passed",
+          "title": "shows normalized conditions with blocking and evidence columns",
+          "duration": 348.97130000000107,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Gate 07J-PERMIT Permit Readiness"
+          ],
+          "fullName": "Gate 07J-PERMIT Permit Readiness exposes all 17 ADMIN sections and a non-persistent preview",
+          "status": "passed",
+          "title": "exposes all 17 ADMIN sections and a non-persistent preview",
+          "duration": 611.3366999999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648511663,
+      "endTime": 1789648513922.3367,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/permit-readiness/PermitReadinessWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Portfolio Resource Planning Gate 07H"
+          ],
+          "fullName": "Portfolio Resource Planning Gate 07H shows readiness, strategic overload analytics and comparison without operational allocation",
+          "status": "passed",
+          "title": "shows readiness, strategic overload analytics and comparison without operational allocation",
+          "duration": 1871.2222000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Portfolio Resource Planning Gate 07H"
+          ],
+          "fullName": "Portfolio Resource Planning Gate 07H provides structured ADMIN policy fields and a non-persistent preview",
+          "status": "passed",
+          "title": "provides structured ADMIN policy fields and a non-persistent preview",
+          "duration": 332.0545000000002,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648494835,
+      "endTime": 1789648497039.0544,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/portfolio-resource/PortfolioResourceWorkspace.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Strategic Benefits API client"
+          ],
+          "fullName": "Strategic Benefits API client reads cursor-paginated queues from response headers",
+          "status": "passed",
+          "title": "reads cursor-paginated queues from response headers",
+          "duration": 28.151399999995192,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Strategic Benefits API client"
+          ],
+          "fullName": "Strategic Benefits API client uses the PlanVersion ETag and an idempotency key for governed Benefit mutations",
+          "status": "passed",
+          "title": "uses the PlanVersion ETag and an idempotency key for governed Benefit mutations",
+          "duration": 5.302499999997963,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Strategic Benefits API client"
+          ],
+          "fullName": "Strategic Benefits API client loads traceability through one optimized paginated endpoint",
+          "status": "passed",
+          "title": "loads traceability through one optimized paginated endpoint",
+          "duration": 4.353100000000268,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Strategic Benefits API client"
+          ],
+          "fullName": "Strategic Benefits API client keeps effective ADMIN preview non-transactional",
+          "status": "passed",
+          "title": "keeps effective ADMIN preview non-transactional",
+          "duration": 2.9437999999936437,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648518381,
+      "endTime": 1789648518422.9438,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/strategic-benefits/api.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "WorkspaceOperationalPage"
+          ],
+          "fullName": "WorkspaceOperationalPage renders the backend-derived Header, Breadcrumb, Navigator and planned state",
+          "status": "passed",
+          "title": "renders the backend-derived Header, Breadcrumb, Navigator and planned state",
+          "duration": 1409.9671999999991,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648528410,
+      "endTime": 1789648529819.9673,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/workspace-context/WorkspaceOperationalPage.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceLifecycle"
+          ],
+          "fullName": "PhysicalWorkspaceLifecycle renders common/type checklists and READY/PLANNED modules",
+          "status": "passed",
+          "title": "renders common/type checklists and READY/PLANNED modules",
+          "duration": 338.33759999999893,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceLifecycle"
+          ],
+          "fullName": "PhysicalWorkspaceLifecycle offers activation only when the backend capability permits it",
+          "status": "passed",
+          "title": "offers activation only when the backend capability permits it",
+          "duration": 425.4579999999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PhysicalWorkspaceLifecycle"
+          ],
+          "fullName": "PhysicalWorkspaceLifecycle lists and filters My Physical Workspaces",
+          "status": "passed",
+          "title": "lists and filters My Physical Workspaces",
+          "duration": 163.19549999999435,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648519436,
+      "endTime": 1789648520364.1956,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/src/features/enterprise-structure/components/PhysicalWorkspaceLifecycle.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "apiFetch"
+          ],
+          "fullName": "apiFetch throws ApiError on 401",
+          "status": "passed",
+          "title": "throws ApiError on 401",
+          "duration": 10.378799999998591,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "apiFetch"
+          ],
+          "fullName": "apiFetch returns parsed JSON on success",
+          "status": "passed",
+          "title": "returns parsed JSON on success",
+          "duration": 2.004000000000815,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "apiFetch"
+          ],
+          "fullName": "apiFetch returns undefined on 204",
+          "status": "passed",
+          "title": "returns undefined on 204",
+          "duration": 1.158000000003085,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648546339,
+      "endTime": 1789648546354.158,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/api-client.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "App routing"
+          ],
+          "fullName": "App routing redirects unauthenticated user from /app to /login",
+          "status": "passed",
+          "title": "redirects unauthenticated user from /app to /login",
+          "duration": 135.29469999999856,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "App routing"
+          ],
+          "fullName": "App routing renders app shell for authenticated user at /app",
+          "status": "passed",
+          "title": "renders app shell for authenticated user at /app",
+          "duration": 288.5214999999953,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "App routing"
+          ],
+          "fullName": "App routing redirects / to /app",
+          "status": "passed",
+          "title": "redirects / to /app",
+          "duration": 143.95820000000094,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648541157,
+      "endTime": 1789648541724.9583,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/App.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BIM APU group review"
+          ],
+          "fullName": "BIM APU group review groups compatible lines and exposes confidence, source and IFC-budget variance",
+          "status": "passed",
+          "title": "groups compatible lines and exposes confidence, source and IFC-budget variance",
+          "duration": 26.62840000000142,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM APU group review"
+          ],
+          "fullName": "BIM APU group review accepts unit aliases and blocks incompatible budget units",
+          "status": "passed",
+          "title": "accepts unit aliases and blocks incompatible budget units",
+          "duration": 4.458299999998417,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM APU group review"
+          ],
+          "fullName": "BIM APU group review does not send dimensional ElementCount fallbacks to APU suggestion or approval",
+          "status": "passed",
+          "title": "does not send dimensional ElementCount fallbacks to APU suggestion or approval",
+          "duration": 4.824300000000221,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BIM APU group review"
+          ],
+          "fullName": "BIM APU group review requires review when a group receives different APU items or low confidence",
+          "status": "passed",
+          "title": "requires review when a group receives different APU items or low confidence",
+          "duration": 3.5469999999986612,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648523810,
+      "endTime": 1789648523850.547,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/bim-apu-review.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules estimates wall area from metric geometry dimensions",
+          "status": "passed",
+          "title": "estimates wall area from metric geometry dimensions",
+          "duration": 6.651299999997718,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules converts millimeter model dimensions before estimating area",
+          "status": "passed",
+          "title": "converts millimeter model dimensions before estimating area",
+          "duration": 1.315599999998085,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules does not estimate geometry quantities when the model unit is unknown",
+          "status": "passed",
+          "title": "does not estimate geometry quantities when the model unit is unknown",
+          "duration": 0.8860999999997148,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules marks published IFC wall area quantities as reliable",
+          "status": "passed",
+          "title": "marks published IFC wall area quantities as reliable",
+          "duration": 9.91280000000188,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules accepts wall length when the budget measurement is linear",
+          "status": "passed",
+          "title": "accepts wall length when the budget measurement is linear",
+          "duration": 5.333099999999831,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules accepts inventory count for naturally countable IFC classes",
+          "status": "passed",
+          "title": "accepts inventory count for naturally countable IFC classes",
+          "duration": 1.4347000000016124,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules blocks dimensional IFC classes when only ElementCount is available",
+          "status": "passed",
+          "title": "blocks dimensional IFC classes when only ElementCount is available",
+          "duration": 1.6381000000001222,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules accepts approved real geometry for columns and rejects count units",
+          "status": "passed",
+          "title": "accepts approved real geometry for columns and rejects count units",
+          "duration": 1.5095000000001164,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules detects unit mismatches against the expected IFC class rule",
+          "status": "passed",
+          "title": "detects unit mismatches against the expected IFC class rule",
+          "duration": 2.083999999998923,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules uses the backend audited quantity rule when the API provides it",
+          "status": "passed",
+          "title": "uses the backend audited quantity rule when the API provides it",
+          "duration": 1.7361999999993714,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "bim quantity rules"
+          ],
+          "fullName": "bim quantity rules summarizes valid, review and blocked quantity lines",
+          "status": "passed",
+          "title": "summarizes valid, review and blocked quantity lines",
+          "duration": 1.8361999999979162,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648513579,
+      "endTime": 1789648513614.8362,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/bim-quantity-rules.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel shows the single controlled quantity table with constructive element before the technical IFC class",
+          "status": "passed",
+          "title": "shows the single controlled quantity table with constructive element before the technical IFC class",
+          "duration": 895.3462999999992,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel shows an editable project catalog for BIM quantity rules",
+          "status": "passed",
+          "title": "shows an editable project catalog for BIM quantity rules",
+          "duration": 1822.451500000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel lets the user recalculate stored quantity lines with the current BIM rules",
+          "status": "passed",
+          "title": "lets the user recalculate stored quantity lines with the current BIM rules",
+          "duration": 255.97819999999956,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel lets the user approve the current controlled measurement group",
+          "status": "passed",
+          "title": "lets the user approve the current controlled measurement group",
+          "duration": 688.4950000000008,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel lets the user assign WBS, CBS, FBS and package codes from the controlled quantity table",
+          "status": "passed",
+          "title": "lets the user assign WBS, CBS, FBS and package codes from the controlled quantity table",
+          "duration": 4804.736799999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel summarizes BIM budget items already assigned to takeoff lines",
+          "status": "passed",
+          "title": "summarizes BIM budget items already assigned to takeoff lines",
+          "duration": 135.24339999999938,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "BimScopeValidationPanel"
+          ],
+          "fullName": "BimScopeValidationPanel shows Colombia APU catalog actions and suggested budget items in COP",
+          "status": "passed",
+          "title": "shows Colombia APU catalog actions and suggested budget items in COP",
+          "duration": 412.85489999999845,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648495162,
+      "endTime": 1789648504177.855,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/BimScopeValidationPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "OpcGapReadinessPanel"
+          ],
+          "fullName": "OpcGapReadinessPanel shows the control diagnostic score, data spine and prioritized actions without naming external products",
+          "status": "passed",
+          "title": "shows the control diagnostic score, data spine and prioritized actions without naming external products",
+          "duration": 545.5979999999981,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648536139,
+      "endTime": 1789648536684.598,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/OpcGapReadinessPanel.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow clears expired sessions instead of rendering the workspace as unavailable",
+          "status": "passed",
+          "title": "clears expired sessions instead of rendering the workspace as unavailable",
+          "duration": 397.6840999999986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow opens the selected project dashboard before optional project creation",
+          "status": "passed",
+          "title": "opens the selected project dashboard before optional project creation",
+          "duration": 19265.594500000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow uses a simplified project information flow instead of scattered navigation",
+          "status": "passed",
+          "title": "uses a simplified project information flow instead of scattered navigation",
+          "duration": 288041.5453,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow opens the blocking cost and currency gate from the next controlled action",
+          "status": "passed",
+          "title": "opens the blocking cost and currency gate from the next controlled action",
+          "duration": 2829.1516999999876,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow expands project creation only when requested",
+          "status": "passed",
+          "title": "expands project creation only when requested",
+          "duration": 23203.329399999988,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow creates a project with authorization and control configuration fields",
+          "status": "passed",
+          "title": "creates a project with authorization and control configuration fields",
+          "duration": 25983.325899999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow lets users create the first project when the workspace is empty",
+          "status": "passed",
+          "title": "lets users create the first project when the workspace is empty",
+          "duration": 2183.8941999999806,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow deletes the selected project after confirmation and selects the next project",
+          "status": "passed",
+          "title": "deletes the selected project after confirmation and selects the next project",
+          "duration": 34973.253000000026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow uploads the selected XML/XER file to the active project",
+          "status": "passed",
+          "title": "uploads the selected XML/XER file to the active project",
+          "duration": 14749.983699999982,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow renders DCMA schedule quality metrics in baseline control",
+          "status": "passed",
+          "title": "renders DCMA schedule quality metrics in baseline control",
+          "duration": 3080.4333000000333,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow navigates between control flow views from the side rail",
+          "status": "passed",
+          "title": "navigates between control flow views from the side rail",
+          "duration": 66474.3359,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability",
+          "status": "passed",
+          "title": "keeps CBS and FBS details out of the EVM dashboard and shows them as cost traceability",
+          "duration": 25306.22019999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow registers the schedule control handbook module in navigation and route",
+          "status": "passed",
+          "title": "registers the schedule control handbook module in navigation and route",
+          "duration": 2282.5296999999555,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow renders the BPM process flow board by role lane",
+          "status": "passed",
+          "title": "renders the BPM process flow board by role lane",
+          "duration": 24988.78960000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow renders production hardening controls for BP policies, line versions, exports and recost history",
+          "status": "passed",
+          "title": "renders production hardening controls for BP policies, line versions, exports and recost history",
+          "duration": 41427.30900000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow shows the WBS Sheet roll-up from the latest Activity Sheet",
+          "status": "passed",
+          "title": "shows the WBS Sheet roll-up from the latest Activity Sheet",
+          "duration": 12966.510800000047,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow keeps BIM and Excel quantity takeoff in BIM Manager instead of Project Setup",
+          "status": "passed",
+          "title": "keeps BIM and Excel quantity takeoff in BIM Manager instead of Project Setup",
+          "duration": 38543.41610000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow opens BIM Manager with AWP validation and 3D viewer",
+          "status": "passed",
+          "title": "opens BIM Manager with AWP validation and 3D viewer",
+          "duration": 37865.87419999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow keeps heavy IFC models visible when quantity extraction times out",
+          "status": "passed",
+          "title": "keeps heavy IFC models visible when quantity extraction times out",
+          "duration": 26072.822600000072,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow loads IFC models larger than the old 8 MB guard instead of doing nothing",
+          "status": "passed",
+          "title": "loads IFC models larger than the old 8 MB guard instead of doing nothing",
+          "duration": 30076.21609999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow clears expired sessions when BIM model upload receives a 401",
+          "status": "passed",
+          "title": "clears expired sessions when BIM model upload receives a 401",
+          "duration": 26046.25840000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow auto-saves ready setup before loading the first Activity Sheet",
+          "status": "passed",
+          "title": "auto-saves ready setup before loading the first Activity Sheet",
+          "duration": 15280.461800000048,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow creates a WBS node from Project Setup",
+          "status": "passed",
+          "title": "creates a WBS node from Project Setup",
+          "duration": 16259.91359999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow shows WBS as a hierarchy and as a table in Project Setup",
+          "status": "passed",
+          "title": "shows WBS as a hierarchy and as a table in Project Setup",
+          "duration": 14289.272099999944,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow anchors WBS CBS FBS mapping on the WBS hierarchy and active traceability",
+          "status": "passed",
+          "title": "anchors WBS CBS FBS mapping on the WBS hierarchy and active traceability",
+          "duration": 13498.906199999969,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow shows package POC and lets users add manual constraints",
+          "status": "passed",
+          "title": "shows package POC and lets users add manual constraints",
+          "duration": 29794.3848,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow creates a user with password and assigns a project role from the dashboard",
+          "status": "passed",
+          "title": "creates a user with password and assigns a project role from the dashboard",
+          "duration": 28109.842500000028,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "served project control flow"
+          ],
+          "fullName": "served project control flow manages existing tenant users and project access from the dashboard",
+          "status": "passed",
+          "title": "manages existing tenant users and project access from the dashboard",
+          "duration": 41359.90049999999,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1789648508108,
+      "endTime": 1789649413528.9004,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend/tests/AppFlow.test.tsx"
+    }
+  ]
+}

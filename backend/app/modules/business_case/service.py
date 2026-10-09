@@ -34,7 +34,30 @@ from app.modules.risk_readiness.models import RiskReadinessAssessment
 
 CONFIGURATION_KIND = "business_case_governance_configuration"
 READY_OUTPUT = "READY_FOR_GOVERNED_BUSINESS_CASE_EVIDENCE"
+FIVE_CASE_READY_OUTPUT = "READY_FOR_GOVERNED_FIVE_CASE_BUSINESS_CASE_EVIDENCE"
 NEXT_PROCESS = "BUILD_GATE07M_FIN"
+FIVE_CASE_SCHEMA_VERSION = "1.0"
+FIVE_CASE_KEYS = (
+    "strategic_case",
+    "economic_case",
+    "commercial_case",
+    "financial_case",
+    "management_case",
+)
+CASE_SOURCE_MAP: dict[str, tuple[str, ...]] = {
+    "strategic_case": ("idea", "business_analysis", "proposal", "benefits"),
+    "economic_case": ("business_analysis", "proposal", "benefits", "economic_financial_model", "risk"),
+    "commercial_case": ("commercial_strategy",),
+    "financial_case": ("budget", "funding", "economic_financial_model", "benefits"),
+    "management_case": ("fel", "resource", "risk", "permit", "benefits", "commercial_strategy"),
+}
+CASE_QUESTIONS = {
+    "strategic_case": "Why should the organization intervene and how does the investment align with strategy?",
+    "economic_case": "Which option provides the best overall value?",
+    "commercial_case": "Can the preferred option be procured and commercially structured?",
+    "financial_case": "Can the organization afford and finance the investment?",
+    "management_case": "Can the organization deliver and govern the investment successfully?",
+}
 REVISION_PURPOSES = {
     "INITIAL_PROPOSAL",
     "FEL_1_UPDATE",
@@ -82,8 +105,72 @@ DEFAULT_CONFIGURATION: dict[str, Any] = {
     "separation_of_duties": {"reviewer_must_differ_from_preparer": True, "pyp_ffa_strict": True},
     "freshness": {"require_current_sources": True},
     "material_change": {
-        "tracked_sources": ["proposal", "fel", "budget", "resource", "funding", "risk", "permit"],
+        "tracked_sources": [
+            "idea",
+            "business_analysis",
+            "proposal",
+            "benefits",
+            "commercial_strategy",
+            "fel",
+            "budget",
+            "resource",
+            "funding",
+            "economic_financial_model",
+            "risk",
+            "permit",
+        ],
         "recommendation_only_after_selection_or_fid": True,
+    },
+    "five_case": {
+        "schema_version": FIVE_CASE_SCHEMA_VERSION,
+        "enabled_governance_models": ["CAPITAL_OWNER"],
+        "enforce_readiness": True,
+        "required_cases_by_stage": {
+            "FEL-1": ["strategic_case"],
+            "FEL-2": ["strategic_case", "economic_case", "commercial_case", "management_case"],
+            "INVESTMENT_SELECTION": [
+                "strategic_case",
+                "economic_case",
+                "commercial_case",
+                "management_case",
+            ],
+            "FEL-3": list(FIVE_CASE_KEYS),
+            "FFA": list(FIVE_CASE_KEYS),
+        },
+        "source_requirements_by_stage": {
+            "FEL-1": {"strategic_case": ["proposal"]},
+            "FEL-2": {
+                "strategic_case": ["proposal", "business_analysis", "benefits"],
+                "economic_case": ["business_analysis"],
+                "commercial_case": ["commercial_strategy"],
+                "management_case": ["fel"],
+            },
+            "INVESTMENT_SELECTION": {
+                "strategic_case": ["proposal", "business_analysis", "benefits"],
+                "economic_case": ["business_analysis", "economic_financial_model", "risk"],
+                "commercial_case": ["commercial_strategy"],
+                "management_case": ["fel", "benefits", "commercial_strategy"],
+            },
+            "FEL-3": {
+                "strategic_case": ["proposal", "business_analysis", "benefits"],
+                "economic_case": ["business_analysis", "economic_financial_model", "risk"],
+                "commercial_case": ["commercial_strategy"],
+                "financial_case": ["budget", "economic_financial_model"],
+                "management_case": ["fel", "resource", "risk", "permit", "benefits", "commercial_strategy"],
+            },
+            "FFA": {
+                "strategic_case": ["proposal", "business_analysis", "benefits"],
+                "economic_case": ["business_analysis", "economic_financial_model", "risk"],
+                "commercial_case": ["commercial_strategy"],
+                "financial_case": ["budget", "funding", "economic_financial_model"],
+                "management_case": ["fel", "resource", "risk", "permit", "benefits", "commercial_strategy"],
+            },
+        },
+        "future_sources": {
+            "qra_confidence": "NOT_AVAILABLE",
+            "basic_data_readiness": "NOT_AVAILABLE",
+            "owner_capability_readiness": "NOT_AVAILABLE",
+        },
     },
     "scope": {"workspace_id": None, "inherit_to_descendants": True},
 }
@@ -335,7 +422,7 @@ class BusinessCaseService:
     def revisions(self, business_case_id: int) -> list[BusinessCaseRevisionOut]:
         self._case(business_case_id)
         return [
-            BusinessCaseRevisionOut.model_validate(item)
+            self._revision_out(item)
             for item in self.db.scalars(
                 select(BusinessCaseRevision)
                 .where(
@@ -356,7 +443,7 @@ class BusinessCaseService:
             )
         )
         if duplicate:
-            return BusinessCaseRevisionOut.model_validate(duplicate)
+            return self._revision_out(duplicate)
         case = self._case(business_case_id, lock=True)
         current = self._current_revision(case)
         if current.status not in {"COMPLETED", "VOIDED"}:
@@ -370,7 +457,7 @@ class BusinessCaseService:
         self._event("business_case.revision_created", "BusinessCaseRevision", revision.id, {"purpose": purpose})
         self.db.commit()
         self.db.refresh(revision)
-        return BusinessCaseRevisionOut.model_validate(revision)
+        return self._revision_out(revision)
 
     def update_revision(
         self, revision_id: int, expected_version: int, values: dict[str, Any]
@@ -401,13 +488,13 @@ class BusinessCaseService:
         self._event("business_case.revision_updated", "BusinessCaseRevision", revision.id, {})
         self.db.commit()
         self.db.refresh(revision)
-        return BusinessCaseRevisionOut.model_validate(revision)
+        return self._revision_out(revision)
 
     def submit_review(self, revision_id: int, expected_version: int, idempotency_key: str) -> BusinessCaseRevisionOut:
         revision = self._revision(revision_id, lock=True)
         self._check_version(revision.revision_version, expected_version)
         if revision.status == "IN_REVIEW" and revision.create_idempotency_key == idempotency_key:
-            return BusinessCaseRevisionOut.model_validate(revision)
+            return self._revision_out(revision)
         if revision.status != "DRAFT":
             raise HTTPException(status_code=409, detail={"code": "BUSINESS_CASE_REVISION_NOT_DRAFT"})
         revision.status = "IN_REVIEW"
@@ -418,7 +505,7 @@ class BusinessCaseService:
         self._event("business_case.review_submitted", "BusinessCaseRevision", revision.id, {})
         self.db.commit()
         self.db.refresh(revision)
-        return BusinessCaseRevisionOut.model_validate(revision)
+        return self._revision_out(revision)
 
     def complete_revision(
         self, revision_id: int, expected_version: int, idempotency_key: str, reviewer_user_id: int | None
@@ -430,7 +517,7 @@ class BusinessCaseService:
             )
         )
         if duplicate:
-            return BusinessCaseRevisionOut.model_validate(duplicate)
+            return self._revision_out(duplicate)
         revision = self._revision(revision_id, lock=True)
         self._check_version(revision.revision_version, expected_version)
         if revision.status != "IN_REVIEW":
@@ -467,7 +554,7 @@ class BusinessCaseService:
         self._event("business_case.revision_completed", "BusinessCaseRevision", revision.id, {})
         self.db.commit()
         self.db.refresh(revision)
-        return BusinessCaseRevisionOut.model_validate(revision)
+        return self._revision_out(revision)
 
     def readiness(self, business_case_id: int) -> ReadinessOut:
         case = self._case(business_case_id)
@@ -478,19 +565,81 @@ class BusinessCaseService:
         case = self._case(business_case_id)
         current = self._current_revision(case)
         refs, hashes = self._source_bundle(case.project_workspace_id, case.source_project_proposal_id)
-        changes = [
-            {"source": key, "from": current.source_hashes_json.get(key), "to": value}
-            for key, value in hashes.items()
-            if current.source_hashes_json.get(key) != value
-        ]
+        previous_hashes = dict(current.source_hashes_json or {})
+        changes = []
+        for key in sorted(set(previous_hashes) | set(hashes)):
+            before = previous_hashes.get(key)
+            after = hashes.get(key)
+            if before == after:
+                continue
+            change_type = "ADDED" if before is None else "REMOVED" if after is None else "CHANGED"
+            changes.append({"source": key, "from": before, "to": after, "change_type": change_type})
         material = "MATERIAL_CHANGE_REVIEW_REQUIRED" if changes and self._snapshots(case.id) else "NO_MATERIAL_CHANGE"
+        recommended_purpose = "MATERIAL_CHANGE_UPDATE" if material != "NO_MATERIAL_CHANGE" else "REVALIDATION"
+
+        previous_contract = self._five_case_contract(case, current)
+        preview_refs = deepcopy(refs)
+        previous_marker = dict((current.source_references_json or {}).get("_five_case") or {})
+        if previous_marker:
+            preview_marker = deepcopy(previous_marker)
+            preview_context = dict(preview_marker.get("gate_context") or {})
+            preview_context["fel_stage"] = (preview_refs.get("fel") or {}).get("stage") or preview_context.get(
+                "fel_stage", current.fel_stage_code or "FEL-1"
+            )
+            preview_context["policy_stage"] = self._five_case_stage(
+                recommended_purpose, str(preview_context["fel_stage"])
+            )
+            preview_context["decision_gate"] = (
+                "INVESTMENT_SELECTION" if preview_context["policy_stage"] == "INVESTMENT_SELECTION" else None
+            )
+            preview_marker["gate_context"] = preview_context
+            preview_refs["_five_case"] = preview_marker
+        else:
+            preview_refs["_five_case"] = self._five_case_marker(
+                case,
+                purpose=recommended_purpose,
+                as_of_date=current.as_of_date,
+                references=preview_refs,
+            )
+        prospective_contract = self._five_case_contract(
+            case,
+            current,
+            references=preview_refs,
+            hashes=hashes,
+            force_five_case=True,
+        )
+        changes_by_case = {
+            case_key: [deepcopy(item) for item in changes if item["source"] in CASE_SOURCE_MAP[case_key]]
+            for case_key in FIVE_CASE_KEYS
+        }
+        readiness_keys = (*FIVE_CASE_KEYS, "overall_business_case_readiness")
+        readiness_delta = {
+            key: {
+                "from": previous_contract["five_case_readiness_json"].get(key, "LEGACY"),
+                "to": prospective_contract["five_case_readiness_json"].get(key, "LEGACY"),
+            }
+            for key in readiness_keys
+        }
+        previous_warnings = set(previous_contract["warnings"])
+        previous_blockers = set(previous_contract["blockers"])
         result = RefreshPreviewOut(
             business_case_id=case.id,
             current_revision_id=current.id,
             source_changes=changes,
             material_change_status=material,
-            recommended_purpose="MATERIAL_CHANGE_UPDATE" if material != "NO_MATERIAL_CHANGE" else "REVALIDATION",
+            recommended_purpose=recommended_purpose,
             persisted=False,
+            source_changes_by_case=changes_by_case,
+            case_readiness_delta=readiness_delta,
+            five_case_delta={
+                "changed": previous_contract["five_case_hash"] != prospective_contract["five_case_hash"],
+                "from_five_case_hash": previous_contract["five_case_hash"],
+                "to_five_case_hash": prospective_contract["five_case_hash"],
+                "from_source_bundle_hash": previous_contract["source_bundle_hash"],
+                "to_source_bundle_hash": prospective_contract["source_bundle_hash"],
+            },
+            new_warnings=sorted(set(prospective_contract["warnings"]) - previous_warnings),
+            new_blockers=sorted(set(prospective_contract["blockers"]) - previous_blockers),
         )
         if audit:
             self._event(
@@ -524,7 +673,7 @@ class BusinessCaseService:
             )
         )
         if duplicate:
-            return BusinessCaseRevisionOut.model_validate(duplicate)
+            return self._revision_out(duplicate)
         case = self._case(business_case_id, lock=True)
         self._check_version(case.revision_version, expected_version)
         current = self._current_revision(case)
@@ -546,7 +695,7 @@ class BusinessCaseService:
         )
         self.db.commit()
         self.db.refresh(revision)
-        return BusinessCaseRevisionOut.model_validate(revision)
+        return self._revision_out(revision)
 
     def snapshots(self, business_case_id: int) -> list[BusinessCaseDecisionSnapshot]:
         self._case(business_case_id)
@@ -576,6 +725,7 @@ class BusinessCaseService:
         revision = self._revision(revision_id)
         if revision.business_case_id != case.id or revision.status != "COMPLETED":
             raise HTTPException(status_code=409, detail={"code": "COMPLETED_BUSINESS_CASE_REVISION_REQUIRED"})
+        five_case_contract = self._five_case_contract(case, revision)
         payload = {
             "business_case_number": case.business_case_number,
             "business_case_id": case.id,
@@ -601,6 +751,15 @@ class BusinessCaseService:
             "unresolved_concerns": revision.unresolved_concerns_json,
             "source_references": revision.source_references_json,
             "source_hashes": revision.source_hashes_json,
+            "source_evidence_matrix": five_case_contract["source_evidence_matrix_json"],
+            "gate_context": five_case_contract["gate_context_json"],
+            "five_case": five_case_contract["five_case_json"],
+            "five_case_readiness": five_case_contract["five_case_readiness_json"],
+            "five_case_hash": five_case_contract["five_case_hash"],
+            "source_bundle_hash": five_case_contract["source_bundle_hash"],
+            "business_case_hash": five_case_contract["business_case_hash"],
+            "source_current": five_case_contract["source_current"],
+            "legacy_layout": five_case_contract["legacy_layout"],
             "readiness_hash": revision.readiness_hash,
             "recommendation": revision.recommendation_json,
             "economic_financial_model_reference": {
@@ -689,6 +848,16 @@ class BusinessCaseService:
         )
         proposal = proposal or self._proposal(case.source_project_proposal_id)
         refs, hashes = self._source_bundle(case.project_workspace_id, proposal.id)
+        as_of_date = utc_now()
+        # An explicit marker lets old rows remain genuinely legacy-readable.
+        # It is metadata, not an external evidence source, and therefore is not
+        # included in ``source_hashes_json`` or current/stale comparisons.
+        refs["_five_case"] = self._five_case_marker(
+            case,
+            purpose=purpose,
+            as_of_date=as_of_date,
+            references=refs,
+        )
         financial_ref = refs.get("economic_financial_model") or {}
         financial_as_of_date = financial_ref.get("as_of_date")
         if isinstance(financial_as_of_date, str):
@@ -737,7 +906,7 @@ class BusinessCaseService:
             revision_label=f"R{number}",
             purpose=purpose,
             status="DRAFT",
-            as_of_date=utc_now(),
+            as_of_date=as_of_date,
             fel_stage_code=(refs.get("fel") or {}).get("stage"),
             source_references_json=refs,
             source_hashes_json=hashes,
@@ -778,7 +947,14 @@ class BusinessCaseService:
         refs: dict[str, Any] = {}
         hashes: dict[str, str] = {}
         proposal = self._proposal(proposal_id)
-        refs["proposal"] = {"id": proposal.id, "number": proposal.proposal_number, "status": proposal.status}
+        refs["proposal"] = {
+            "id": proposal.id,
+            "number": proposal.proposal_number,
+            "status": proposal.status,
+            "readiness": proposal.status,
+            "source_current": True,
+            "as_of_date": proposal.updated_at.isoformat(),
+        }
         hashes["proposal"] = _hash(
             {
                 "id": proposal.id,
@@ -787,6 +963,170 @@ class BusinessCaseService:
                 "updated_at": proposal.updated_at,
             }
         )
+        # Five Case consumes, but never owns, these governed sources.  Imports
+        # remain local because Benefits and Commercial also reference the
+        # Business Case aggregate and must not form an import cycle.
+        from app.modules.business_analysis.models import BusinessAnalysis
+        from app.modules.commercial_strategy.models import (
+            CommercialContractingStrategy,
+            CommercialStrategyVersion,
+        )
+        from app.modules.idea_demand.models import Idea
+        from app.modules.strategic_benefits.models import (
+            StrategicBenefitsPlan,
+            StrategicBenefitsPlanVersion,
+        )
+
+        idea = self.db.scalar(
+            select(Idea).where(
+                Idea.tenant_id == self.tenant_id,
+                Idea.id == proposal.source_idea_id,
+            )
+        )
+        if idea:
+            refs["idea"] = {
+                "id": idea.id,
+                "number": idea.idea_number,
+                "status": idea.state,
+                "title": idea.title,
+                "as_of_date": idea.updated_at.isoformat(),
+                "source_current": True,
+            }
+            hashes["idea"] = _hash(
+                {
+                    "id": idea.id,
+                    "version": idea.revision_version,
+                    "state": idea.state,
+                    "updated_at": idea.updated_at,
+                }
+            )
+
+        # The Proposal carries the governed BA lineage.  Never choose a
+        # different Analysis merely because it shares the same Idea.
+        analysis = (
+            self.db.scalar(
+                select(BusinessAnalysis).where(
+                    BusinessAnalysis.tenant_id == self.tenant_id,
+                    BusinessAnalysis.id == proposal.source_business_analysis_id,
+                    BusinessAnalysis.source_idea_id == proposal.source_idea_id,
+                )
+            )
+            if proposal.source_business_analysis_id is not None
+            else None
+        )
+        if analysis:
+            hash_matches_proposal = bool(
+                proposal.source_business_analysis_hash
+                and proposal.source_business_analysis_hash == analysis.completion_hash
+            )
+            analysis_content = dict(analysis.content_json or {})
+            content_recommended_option_id = analysis_content.get("recommended_option_id")
+            proposal_recommended_option_id = dict(proposal.source_values_snapshot_json or {}).get(
+                "recommended_option_id"
+            )
+            option_ids = {
+                str(item.get("id"))
+                for item in list(analysis_content.get("options") or [])
+                if item.get("id") is not None
+            }
+            recommended_option_current = bool(
+                analysis.recommended_option_id
+                and str(analysis.recommended_option_id) == str(content_recommended_option_id)
+                and str(analysis.recommended_option_id) == str(proposal_recommended_option_id)
+                and str(analysis.recommended_option_id) in option_ids
+            )
+            refs["business_analysis"] = {
+                "id": analysis.id,
+                "number": analysis.analysis_number,
+                "status": analysis.status,
+                "readiness": (analysis.readiness_json or {}).get("status", "READY"),
+                "recommended_option_id": analysis.recommended_option_id,
+                "content_recommended_option_id": content_recommended_option_id,
+                "proposal_recommended_option_id": proposal_recommended_option_id,
+                "recommended_option_current": recommended_option_current,
+                "as_of_date": (analysis.completed_at or analysis.updated_at).isoformat(),
+                "source_current": (
+                    analysis.status == "COMPLETED" and hash_matches_proposal and recommended_option_current
+                ),
+                "proposal_source_hash": proposal.source_business_analysis_hash,
+                "lineage_hash_match": hash_matches_proposal,
+            }
+            hashes["business_analysis"] = analysis.completion_hash or _hash(
+                {
+                    "id": analysis.id,
+                    "version": analysis.revision_version,
+                    "content": analysis.content_json,
+                    "recommended_option_id": analysis.recommended_option_id,
+                }
+            )
+
+        benefits_plan = self.db.scalar(
+            select(StrategicBenefitsPlan).where(
+                StrategicBenefitsPlan.tenant_id == self.tenant_id,
+                StrategicBenefitsPlan.project_workspace_id == project_id,
+            )
+        )
+        benefits_version = (
+            self.db.scalar(
+                select(StrategicBenefitsPlanVersion).where(
+                    StrategicBenefitsPlanVersion.tenant_id == self.tenant_id,
+                    StrategicBenefitsPlanVersion.id == benefits_plan.current_version_id,
+                    StrategicBenefitsPlanVersion.benefits_plan_id == benefits_plan.id,
+                )
+            )
+            if benefits_plan and benefits_plan.current_version_id
+            else None
+        )
+        if benefits_plan and benefits_version:
+            readiness = benefits_version.readiness_status
+            refs["benefits"] = {
+                "id": benefits_plan.id,
+                "number": benefits_plan.plan_number,
+                "version_id": benefits_version.id,
+                "version": benefits_version.version_number,
+                "status": benefits_version.status,
+                "readiness": readiness,
+                "source_current": bool(benefits_version.source_current),
+                "as_of_date": (benefits_version.completed_at or benefits_version.updated_at).isoformat(),
+                "warnings": list(benefits_version.readiness_warnings_json or []),
+                "blockers": list(benefits_version.readiness_blockers_json or []),
+            }
+            hashes["benefits"] = benefits_version.benefits_plan_hash
+
+        commercial_strategy = self.db.scalar(
+            select(CommercialContractingStrategy).where(
+                CommercialContractingStrategy.tenant_id == self.tenant_id,
+                CommercialContractingStrategy.project_workspace_id == project_id,
+            )
+        )
+        commercial_version = (
+            self.db.scalar(
+                select(CommercialStrategyVersion).where(
+                    CommercialStrategyVersion.tenant_id == self.tenant_id,
+                    CommercialStrategyVersion.id == commercial_strategy.current_version_id,
+                    CommercialStrategyVersion.commercial_strategy_id == commercial_strategy.id,
+                )
+            )
+            if commercial_strategy and commercial_strategy.current_version_id
+            else None
+        )
+        if commercial_strategy and commercial_version:
+            commercial_content = dict(commercial_version.content_json or {})
+            refs["commercial_strategy"] = {
+                "id": commercial_strategy.id,
+                "number": commercial_strategy.strategy_number,
+                "version_id": commercial_version.id,
+                "version": commercial_version.version_number,
+                "status": commercial_version.status,
+                "readiness": commercial_version.readiness_status,
+                "source_current": bool(commercial_version.source_current),
+                "as_of_date": (commercial_version.completed_at or commercial_version.updated_at).isoformat(),
+                "procurement_approach": commercial_content.get("procurement_approach"),
+                "contracting_model": commercial_content.get("contracting_model"),
+                "warnings": list(commercial_version.readiness_warnings_json or []),
+                "blockers": list(commercial_version.readiness_blockers_json or []),
+            }
+            hashes["commercial_strategy"] = commercial_version.commercial_strategy_hash
         fel = self.db.scalar(
             select(ProjectFELStatus).where(
                 ProjectFELStatus.tenant_id == self.tenant_id,
@@ -794,7 +1134,14 @@ class BusinessCaseService:
             )
         )
         if fel:
-            refs["fel"] = {"id": fel.id, "stage": fel.current_stage_code, "readiness": fel.readiness_status}
+            refs["fel"] = {
+                "id": fel.id,
+                "stage": fel.current_stage_code,
+                "status": fel.status,
+                "readiness": fel.readiness_status,
+                "source_current": fel.readiness_status != "STALE",
+                "as_of_date": fel.updated_at.isoformat(),
+            }
             hashes["fel"] = fel.definition_source_hash
         budget_row = self.db.scalar(
             select(PortfolioBudgetScenarioProject)
@@ -813,6 +1160,9 @@ class BusinessCaseService:
                 "selection_state": budget_row.selection_state,
                 "capex": str(budget_row.capex_amount) if budget_row.capex_amount is not None else None,
                 "currency": budget_row.currency,
+                "status": "FROZEN",
+                "readiness": "READY",
+                "source_current": True,
             }
             hashes["budget"] = budget_row.row_hash
         resource_row = self.db.scalar(
@@ -832,6 +1182,9 @@ class BusinessCaseService:
                 "id": resource_row.id,
                 "scenario_id": resource_row.scenario_id,
                 "selection_state": resource_row.selection_state,
+                "status": "FROZEN",
+                "readiness": "READY",
+                "source_current": True,
             }
             hashes["resource"] = resource_row.row_hash
         funding = self.db.scalar(
@@ -843,7 +1196,13 @@ class BusinessCaseService:
             .order_by(FundingReadinessSnapshot.generated_at.desc())
         )
         if funding:
-            refs["funding"] = {"id": funding.id, "status": funding.status, "source_current": funding.source_current}
+            refs["funding"] = {
+                "id": funding.id,
+                "status": funding.status,
+                "readiness": funding.status,
+                "source_current": funding.source_current,
+                "as_of_date": funding.generated_at.isoformat(),
+            }
             hashes["funding"] = funding.funding_readiness_hash
         # Gate 07M-FIN is an optional governed successor source. Historical
         # completed Business Case revisions stay immutable; only a new DRAFT
@@ -877,8 +1236,32 @@ class BusinessCaseService:
                     "version_id": financial_version.id,
                     "version": financial_version.version_number,
                     "readiness": financial_version.overall_readiness,
+                    "status": financial_version.status,
                     "financial_model_status": "AVAILABLE",
                     "as_of_date": financial_version.as_of_date.isoformat(),
+                    "source_current": bool(financial_version.source_current),
+                    "model_type": financial_version.model_type,
+                    "base_currency": financial_version.base_currency,
+                    "project_financial_npv": (
+                        str(financial_version.project_financial_npv)
+                        if financial_version.project_financial_npv is not None
+                        else None
+                    ),
+                    "project_irr": (
+                        str(financial_version.project_irr) if financial_version.project_irr is not None else None
+                    ),
+                    "economic_npv": (
+                        str(financial_version.economic_npv) if financial_version.economic_npv is not None else None
+                    ),
+                    "economic_irr": (
+                        str(financial_version.economic_irr) if financial_version.economic_irr is not None else None
+                    ),
+                    "benefit_cost_ratio": (
+                        str(financial_version.benefit_cost_ratio)
+                        if financial_version.benefit_cost_ratio is not None
+                        else None
+                    ),
+                    "funding_reconciliation_status": financial_version.funding_reconciliation_status,
                 }
                 hashes["economic_financial_model"] = financial_version.model_hash
         risk = self.db.scalar(
@@ -894,7 +1277,11 @@ class BusinessCaseService:
             refs["risk"] = {
                 "id": risk.id,
                 "status": risk.readiness_status,
+                "readiness": risk.readiness_status,
                 "valid_until": risk.valid_until.isoformat() if risk.valid_until else None,
+                "source_current": risk.readiness_status not in {"STALE", "EXPIRED"},
+                "as_of_date": risk.completed_at.isoformat() if risk.completed_at else None,
+                "blockers": list(risk.blockers_json or []),
             }
             hashes["risk"] = risk.risk_readiness_hash or risk.risk_register_hash
         permit = self.db.scalar(
@@ -910,10 +1297,407 @@ class BusinessCaseService:
             refs["permit"] = {
                 "id": permit.id,
                 "status": permit.readiness_status,
+                "readiness": permit.readiness_status,
                 "valid_until": permit.valid_until.isoformat() if permit.valid_until else None,
+                "source_current": permit.readiness_status not in {"STALE", "EXPIRED"},
+                "as_of_date": permit.completed_at.isoformat() if permit.completed_at else None,
+                "blockers": list(permit.blockers_json or []),
             }
             hashes["permit"] = permit.permit_readiness_hash or permit.permit_source_hash
         return refs, hashes
+
+    def _five_case_marker(
+        self,
+        case: BusinessCase,
+        *,
+        purpose: str,
+        as_of_date: datetime,
+        references: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Freeze the additive policy/context in an existing JSON column."""
+
+        project = self._project(case.project_workspace_id)
+        metadata = dict((project.defaults_json or {}).get("_project", {}))
+        config = self._configuration(case.configuration_id)
+        fel_stage = (references.get("fel") or {}).get("stage") or metadata.get("fel_stage") or "FEL-1"
+        policy_stage = self._five_case_stage(purpose, str(fel_stage))
+        return {
+            "schema_version": FIVE_CASE_SCHEMA_VERSION,
+            "integration_layer": True,
+            "source_authority_preserved": True,
+            "configuration_id": case.configuration_id,
+            "configuration_hash": case.configuration_hash,
+            "policy": self._five_case_policy(config.content_json),
+            "gate_context": {
+                "project_workspace_id": project.id,
+                "project_type": metadata.get("project_type"),
+                "governance_model": metadata.get("governance_model"),
+                "gate_profile": metadata.get("gate_profile"),
+                "fel_stage": fel_stage,
+                "policy_stage": policy_stage,
+                "decision_gate": "INVESTMENT_SELECTION" if policy_stage == "INVESTMENT_SELECTION" else None,
+                "revision_purpose": purpose,
+                "as_of_date": as_of_date.isoformat(),
+            },
+        }
+
+    def _five_case_contract(
+        self,
+        case: BusinessCase,
+        revision: BusinessCaseRevision,
+        *,
+        references: dict[str, Any] | None = None,
+        hashes: dict[str, str] | None = None,
+        compare_current: bool = False,
+        force_five_case: bool = False,
+    ) -> dict[str, Any]:
+        """Build the additive Five Case synthesis without owning source data.
+
+        The marker is persisted inside the pre-existing structured reference
+        payload.  This lets historical revisions remain honest: an old row is
+        readable as legacy rather than receiving a fabricated Five Case view.
+        """
+
+        # ``compare_current`` is retained as a call-compatible argument only.
+        # A read contract is exclusively a projection of the frozen revision;
+        # live-source comparison belongs to readiness/refresh operations.
+        _ = compare_current
+        custom_bundle = references is not None or hashes is not None
+        stored_refs = deepcopy(references if references is not None else (revision.source_references_json or {}))
+        stored_hashes = deepcopy(hashes if hashes is not None else (revision.source_hashes_json or {}))
+        marker = dict(stored_refs.get("_five_case") or {})
+        enhanced = force_five_case or marker.get("schema_version") == FIVE_CASE_SCHEMA_VERSION
+        calculated_source_bundle_hash = _hash({"references": stored_refs, "hashes": stored_hashes})
+        source_bundle_hash = (
+            calculated_source_bundle_hash
+            if custom_bundle
+            else (revision.source_snapshot_hash or calculated_source_bundle_hash)
+        )
+        if not enhanced:
+            return {
+                "five_case_json": {},
+                "five_case_readiness_json": {},
+                "source_evidence_matrix_json": [],
+                "gate_context_json": self._gate_context(case, revision, stored_refs),
+                "source_current": True,
+                "five_case_hash": None,
+                "source_bundle_hash": source_bundle_hash,
+                "business_case_hash": revision.content_hash,
+                "legacy_layout": True,
+                "warnings": [],
+                "blockers": [],
+            }
+
+        gate_context = self._gate_context(case, revision, stored_refs)
+        frozen_policy = marker.get("policy")
+        policy = (
+            deepcopy(frozen_policy) if isinstance(frozen_policy, dict) else deepcopy(DEFAULT_CONFIGURATION["five_case"])
+        )
+        governance_model = str(gate_context.get("governance_model") or "")
+        enabled_models = {str(value).upper() for value in policy.get("enabled_governance_models", ["CAPITAL_OWNER"])}
+        enabled = "*" in enabled_models or governance_model.upper() in enabled_models
+        stage = str(gate_context.get("policy_stage") or gate_context.get("fel_stage") or "FEL-1").upper()
+        required_cases_by_stage = dict(policy.get("required_cases_by_stage") or {})
+        required_cases = set(
+            required_cases_by_stage.get(stage) or required_cases_by_stage.get("FEL-1") or ["strategic_case"]
+        )
+        source_rules_by_stage = dict(policy.get("source_requirements_by_stage") or {})
+        source_rules = dict(
+            source_rules_by_stage.get(stage) or source_rules_by_stage.get("FEL-1") or {"strategic_case": ["proposal"]}
+        )
+        matrix: list[dict[str, Any]] = []
+        five_case: dict[str, Any] = {}
+        readiness_map: dict[str, str] = {}
+        aggregate_warnings: list[str] = []
+        aggregate_blockers: list[str] = []
+
+        for case_key in FIVE_CASE_KEYS:
+            required_sources = set(source_rules.get(case_key, [])) if enabled and case_key in required_cases else set()
+            rows: list[dict[str, Any]] = []
+            blockers: list[str] = []
+            warnings: list[str] = []
+            stale = False
+            relevant_sources = CASE_SOURCE_MAP[case_key]
+            for source_key in relevant_sources:
+                ref = deepcopy(stored_refs.get(source_key) or {})
+                stored_hash = stored_hashes.get(source_key)
+                required = source_key in required_sources
+                source_current = bool(stored_hash and ref and ref.get("source_current", True) is not False)
+                readiness = str(ref.get("readiness") or ref.get("status") or "NOT_AVAILABLE").upper()
+                row = {
+                    "case": case_key,
+                    "source_key": source_key,
+                    "source_module": self._source_module(source_key),
+                    "source_id": ref.get("id"),
+                    "version": ref.get("version") or ref.get("version_id"),
+                    "hash": stored_hash,
+                    "readiness": readiness,
+                    "source_current": source_current,
+                    "as_of_date": ref.get("as_of_date"),
+                    "blocking": required,
+                    "available": bool(ref and stored_hash),
+                    "view_source": {
+                        "module": self._source_module(source_key),
+                        "source_id": ref.get("id"),
+                    },
+                }
+                rows.append(row)
+                matrix.append(deepcopy(row))
+                if not required:
+                    continue
+                if not ref or not stored_hash:
+                    blockers.append(f"{case_key.upper()}:REQUIRED_SOURCE_MISSING:{source_key}")
+                    continue
+                if not source_current:
+                    stale = True
+                    blockers.append(f"{case_key.upper()}:SOURCE_STALE:{source_key}")
+                if readiness in {"BLOCKED", "STALE", "EXPIRED", "NOT_STARTED", "IN_PROGRESS", "DRAFT", "VOIDED"}:
+                    blockers.append(f"{case_key.upper()}:SOURCE_NOT_READY:{source_key}:{readiness}")
+                warnings.extend(str(value) for value in list(ref.get("warnings") or []))
+                blockers.extend(str(value) for value in list(ref.get("blockers") or []))
+
+            if enabled and case_key in required_cases and case_key == "economic_case":
+                warnings.append("QRA_CONFIDENCE_NOT_AVAILABLE")
+            if enabled and case_key in required_cases and case_key == "management_case":
+                warnings.extend(["OWNER_CAPABILITY_READINESS_NOT_AVAILABLE", "BASIC_DATA_READINESS_NOT_AVAILABLE"])
+            if not enabled:
+                status = "NOT_APPLICABLE"
+            elif case_key not in required_cases:
+                status = "IN_PROGRESS" if any(row["available"] for row in rows) else "NOT_STARTED"
+            elif stale:
+                status = "STALE"
+            elif blockers:
+                status = "BLOCKED"
+            else:
+                status = "READY"
+            readiness_map[case_key] = status
+            conclusion = {
+                "READY": "CASE_READY_FOR_GOVERNED_DECISION_EVIDENCE",
+                "STALE": "CASE_REVALIDATION_REQUIRED",
+                "BLOCKED": "CASE_BLOCKED_BY_REQUIRED_EVIDENCE",
+                "IN_PROGRESS": "CASE_MATURITY_IN_PROGRESS",
+                "NOT_STARTED": "CASE_NOT_STARTED",
+                "NOT_APPLICABLE": "CASE_NOT_APPLICABLE_BY_POLICY",
+            }[status]
+            case_payload = {
+                "question": CASE_QUESTIONS[case_key],
+                "summary": self._case_summary(case_key, revision, stored_refs),
+                "source_references": {
+                    key: deepcopy(stored_refs[key]) for key in relevant_sources if key in stored_refs
+                },
+                "source_hashes": {key: stored_hashes[key] for key in relevant_sources if key in stored_hashes},
+                "source_readiness": {row["source_key"]: row["readiness"] for row in rows},
+                "findings": self._case_findings(case_key, revision, stored_refs),
+                "assumptions": deepcopy(revision.assumptions_json or []),
+                "warnings": sorted(set(warnings)),
+                "blockers": sorted(set(blockers)),
+                "conclusion": conclusion,
+                "readiness": status,
+                "required_by_policy": enabled and case_key in required_cases,
+            }
+            five_case[case_key] = case_payload
+            aggregate_warnings.extend(f"{case_key}:{value}" for value in case_payload["warnings"])
+            aggregate_blockers.extend(case_payload["blockers"])
+
+        required_statuses = [readiness_map[key] for key in required_cases if key in readiness_map]
+        if not enabled:
+            overall = "NOT_APPLICABLE"
+        elif any(value == "STALE" for value in required_statuses):
+            overall = "STALE"
+        elif any(value == "BLOCKED" for value in required_statuses):
+            overall = "BLOCKED"
+        elif required_statuses and all(value == "READY" for value in required_statuses):
+            overall = "READY"
+        elif any(value == "IN_PROGRESS" for value in required_statuses):
+            overall = "IN_PROGRESS"
+        else:
+            overall = "NOT_STARTED"
+        readiness_map["overall_business_case_readiness"] = overall
+        effective_required_cases = sorted(required_cases) if enabled else []
+        frozen_payload = {
+            "schema_version": FIVE_CASE_SCHEMA_VERSION,
+            "gate_context": gate_context,
+            "cases": five_case,
+            "required_cases": effective_required_cases,
+        }
+        five_case_hash = _hash(frozen_payload)
+        business_case_hash = _hash(
+            {
+                "content_hash": revision.content_hash,
+                "five_case_hash": five_case_hash,
+                "source_bundle_hash": source_bundle_hash,
+                "configuration_hash": case.configuration_hash,
+            }
+        )
+        return {
+            "five_case_json": {
+                "schema_version": FIVE_CASE_SCHEMA_VERSION,
+                "integration_layer": True,
+                "required_cases": effective_required_cases,
+                **five_case,
+            },
+            "five_case_readiness_json": readiness_map,
+            "source_evidence_matrix_json": matrix,
+            "gate_context_json": gate_context,
+            "source_current": all(
+                bool(stored_refs.get(key)) and dict(stored_refs.get(key) or {}).get("source_current", True) is not False
+                for key in stored_hashes
+            ),
+            "five_case_hash": five_case_hash,
+            "source_bundle_hash": source_bundle_hash,
+            "business_case_hash": business_case_hash,
+            "legacy_layout": False,
+            "warnings": sorted(set(aggregate_warnings)),
+            "blockers": sorted(set(aggregate_blockers)),
+        }
+
+    def _revision_out(self, revision: BusinessCaseRevision) -> BusinessCaseRevisionOut:
+        base = BusinessCaseRevisionOut.model_validate(revision)
+        case = self._case(revision.business_case_id)
+        contract = self._five_case_contract(case, revision)
+        return base.model_copy(
+            update={
+                key: contract[key]
+                for key in (
+                    "five_case_json",
+                    "five_case_readiness_json",
+                    "source_evidence_matrix_json",
+                    "gate_context_json",
+                    "source_current",
+                    "five_case_hash",
+                    "source_bundle_hash",
+                    "business_case_hash",
+                    "legacy_layout",
+                )
+            }
+        )
+
+    def revision_out(self, revision_id: int) -> BusinessCaseRevisionOut:
+        return self._revision_out(self._revision(revision_id))
+
+    def _gate_context(
+        self, case: BusinessCase, revision: BusinessCaseRevision, references: dict[str, Any]
+    ) -> dict[str, Any]:
+        marker = dict(references.get("_five_case") or {})
+        frozen = marker.get("gate_context")
+        if isinstance(frozen, dict) and frozen:
+            return deepcopy(frozen)
+        # Rows predating BC-5C intentionally remain legacy-compatible.  Do not
+        # reinterpret their historical context from mutable Project metadata.
+        return {
+            "project_workspace_id": case.project_workspace_id,
+            "project_type": None,
+            "governance_model": None,
+            "gate_profile": None,
+            "fel_stage": (references.get("fel") or {}).get("stage") or revision.fel_stage_code or "FEL-1",
+            "revision_purpose": revision.purpose,
+            "as_of_date": revision.as_of_date.isoformat(),
+        }
+
+    @staticmethod
+    def _five_case_policy(content: dict[str, Any]) -> dict[str, Any]:
+        policy = deepcopy(DEFAULT_CONFIGURATION["five_case"])
+        supplied = dict(content.get("five_case") or {})
+        for key, value in supplied.items():
+            if isinstance(value, dict) and isinstance(policy.get(key), dict):
+                policy[key].update(deepcopy(value))
+            else:
+                policy[key] = deepcopy(value)
+        return policy
+
+    @staticmethod
+    def _five_case_stage(purpose: str, fel_stage: str) -> str:
+        return {
+            "FEL_1_UPDATE": "FEL-1",
+            "FEL_2_UPDATE": "FEL-2",
+            "INVESTMENT_SELECTION_UPDATE": "INVESTMENT_SELECTION",
+            "FEL_3_UPDATE": "FEL-3",
+            "FFA_UPDATE": "FFA",
+        }.get(purpose, fel_stage.upper())
+
+    @staticmethod
+    def _source_module(source_key: str) -> str:
+        return {
+            "idea": "IDEA_DEMAND_MANAGER",
+            "business_analysis": "BUSINESS_ANALYSIS",
+            "proposal": "PROJECT_PROPOSAL",
+            "benefits": "STRATEGIC_BENEFITS_PLAN",
+            "commercial_strategy": "COMMERCIAL_CONTRACTING_STRATEGY",
+            "fel": "PROJECT_DEFINITION_FEL",
+            "budget": "PORTFOLIO_BUDGET_SCENARIO",
+            "resource": "PORTFOLIO_RESOURCE_SCENARIO",
+            "funding": "FUNDING_READINESS",
+            "economic_financial_model": "ECONOMIC_FINANCIAL_MODEL",
+            "risk": "RISK_READINESS",
+            "permit": "PERMIT_READINESS",
+        }.get(source_key, source_key.upper())
+
+    @staticmethod
+    def _case_summary(case_key: str, revision: BusinessCaseRevision, references: dict[str, Any]) -> str:
+        if case_key == "strategic_case":
+            return revision.executive_summary or revision.business_need
+        if case_key == "economic_case":
+            recommendation = dict(revision.recommendation_json or {})
+            selected = recommendation.get("selected_alternative") or (references.get("business_analysis") or {}).get(
+                "recommended_option_id"
+            )
+            return f"Preferred option: {selected}." if selected else "Preferred option remains to be governed."
+        if case_key == "commercial_case":
+            commercial = dict(references.get("commercial_strategy") or {})
+            return (
+                f"Procurement approach {commercial.get('procurement_approach') or 'not available'}; "
+                f"contracting model {commercial.get('contracting_model') or 'not available'}."
+            )
+        if case_key == "financial_case":
+            financial = dict(references.get("economic_financial_model") or {})
+            return (
+                f"Governed financial model {financial.get('model_type') or 'not available'}; "
+                f"funding reconciliation {financial.get('funding_reconciliation_status') or 'not available'}."
+            )
+        fel = dict(references.get("fel") or {})
+        return f"Delivery context at {fel.get('stage') or revision.fel_stage_code or 'FEL-1'}."
+
+    @staticmethod
+    def _case_findings(
+        case_key: str, revision: BusinessCaseRevision, references: dict[str, Any]
+    ) -> list[dict[str, Any]]:
+        if case_key == "strategic_case":
+            return [
+                {"finding": "strategic_alignment_items", "value": len(revision.strategic_alignment_json or [])},
+                {"finding": "objectives", "value": len(revision.objectives_json or [])},
+                {"finding": "benefit_items", "value": len(revision.benefits_json or [])},
+            ]
+        if case_key == "economic_case":
+            financial = dict(references.get("economic_financial_model") or {})
+            return [
+                {"finding": "alternatives_considered", "value": len(revision.alternatives_json or [])},
+                {"finding": "preferred_option", "value": dict(revision.recommendation_json or {})},
+                {
+                    "finding": "governed_financial_metrics",
+                    "value": {
+                        key: financial.get(key) for key in ("economic_npv", "economic_irr", "benefit_cost_ratio")
+                    },
+                },
+            ]
+        if case_key == "commercial_case":
+            commercial = dict(references.get("commercial_strategy") or {})
+            return [{"finding": "commercial_source_summary", "value": commercial}]
+        if case_key == "financial_case":
+            return [
+                {"finding": "budget", "value": deepcopy(references.get("budget") or {})},
+                {"finding": "funding", "value": deepcopy(references.get("funding") or {})},
+                {
+                    "finding": "financial_metrics",
+                    "value": deepcopy(references.get("economic_financial_model") or {}),
+                },
+            ]
+        return [
+            {"finding": "delivery", "value": deepcopy(revision.delivery_json or {})},
+            {"finding": "fel", "value": deepcopy(references.get("fel") or {})},
+            {"finding": "resource", "value": deepcopy(references.get("resource") or {})},
+            {"finding": "risk", "value": deepcopy(references.get("risk") or {})},
+            {"finding": "permit", "value": deepcopy(references.get("permit") or {})},
+        ]
 
     def _evaluate_readiness(
         self, case: BusinessCase, revision: BusinessCaseRevision, config: AdminConfiguration
@@ -949,14 +1733,43 @@ class BusinessCaseService:
             if ref.get("valid_until") and str(ref["valid_until"]) < now_iso:
                 expired_sources.append(key)
                 blockers.append(f"SOURCE_EXPIRED:{key}")
+
+        five_case = self._five_case_contract(case, revision)
+        five_case_status = five_case["five_case_readiness_json"].get("overall_business_case_readiness")
+        marker = dict((revision.source_references_json or {}).get("_five_case") or {})
+        frozen_policy = marker.get("policy")
+        policy = frozen_policy if isinstance(frozen_policy, dict) else DEFAULT_CONFIGURATION["five_case"]
+        strict_five_case = bool(
+            not five_case["legacy_layout"]
+            and five_case_status != "NOT_APPLICABLE"
+            and policy.get("enforce_readiness", True)
+        )
+        if strict_five_case:
+            warnings.extend(five_case["warnings"])
+            blockers.extend(five_case["blockers"])
+            if five_case_status != "READY":
+                blockers.append(f"FIVE_CASE_NOT_READY:{five_case_status or 'NOT_STARTED'}")
+            if not five_case["source_current"]:
+                stale = True
+
         status = "EXPIRED" if expired_sources else ("STALE" if stale else ("BLOCKED" if blockers else "READY"))
-        readiness_hash = _hash({"revision": revision.content_hash, "sources": current_hashes, "blockers": blockers})
-        output = READY_OUTPUT if status == "READY" and revision.status in {"IN_REVIEW", "COMPLETED"} else status
+        readiness_hash = _hash(
+            {
+                "revision": revision.content_hash,
+                "sources": current_hashes,
+                "five_case_hash": five_case["five_case_hash"],
+                "blockers": sorted(set(blockers)),
+            }
+        )
+        if status == "READY" and revision.status in {"IN_REVIEW", "COMPLETED"}:
+            output = FIVE_CASE_READY_OUTPUT if strict_five_case else READY_OUTPUT
+        else:
+            output = status
         return ReadinessOut(
             business_case_id=case.id,
             revision_id=revision.id,
             status=status,
-            warnings=warnings,
+            warnings=sorted(set(warnings)),
             blockers=sorted(set(blockers)),
             source_current=not stale,
             readiness_hash=readiness_hash,
@@ -967,10 +1780,16 @@ class BusinessCaseService:
     def _case_out(self, record: BusinessCase) -> BusinessCaseOut:
         revision = self._current_revision(record, required=False)
         ready = bool(revision and revision.status == "COMPLETED" and revision.readiness_status == "READY")
+        revision_out = self._revision_out(revision) if revision else None
+        five_case_ready = bool(
+            revision_out and revision_out.five_case_readiness_json.get("overall_business_case_readiness") == "READY"
+        )
         return BusinessCaseOut(
             **{key: getattr(record, key) for key in BusinessCaseOut.model_fields if hasattr(record, key)},
-            current_revision=BusinessCaseRevisionOut.model_validate(revision) if revision else None,
-            final_output=READY_OUTPUT if ready else "BUSINESS_CASE_IN_PROGRESS",
+            current_revision=revision_out,
+            final_output=(FIVE_CASE_READY_OUTPUT if ready and five_case_ready else READY_OUTPUT)
+            if ready
+            else "BUSINESS_CASE_IN_PROGRESS",
             next_process=NEXT_PROCESS if ready else "COMPLETE_GOVERNED_BUSINESS_CASE",
         )
 

@@ -1,0 +1,16 @@
+.ownerCapability td small {
+  display: block;
+  margin-top: 5px;
+  max-width: 36rem;
+}
+.ownerCapabilityCheckbox {
+  display: flex !important;
+  gap: 8px;
+  align-items: center;
+}
+.ownerCapabilityCheckbox input {
+  width: auto;
+}
+.ownerCapability .wave2bTabs button {
+  font-size: 12px;
+}

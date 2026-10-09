@@ -1,0 +1,20 @@
+{
+  "roles": {
+    "structure_approver": [
+      "admin.enterprise_structure.revision.approve",
+      "admin.enterprise_structure.revision.compare"
+    ],
+    "structure_editor": [
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.revision.create",
+      "admin.enterprise_structure.revision.edit",
+      "admin.enterprise_structure.revision.validate"
+    ],
+    "structure_publisher": [
+      "admin.enterprise_structure.publish",
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.rollback"
+    ]
+  },
+  "status": "PASS"
+}

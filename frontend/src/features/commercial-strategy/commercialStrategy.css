@@ -1,0 +1,496 @@
+.commercialStrategy {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.commercialMessage {
+  background: #eaf5ff;
+  border-left: 4px solid #276da0;
+  color: #173e59;
+  padding: 9px 11px;
+}
+
+.commercialTabs,
+.commercialQueue > div,
+.commercialControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.commercialTabs button,
+.commercialQueue button,
+.commercialControls button,
+.commercialSurface button,
+.commercialLoadMore {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 7px;
+  color: #102536;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  gap: 5px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+.commercialTabs button.active,
+.commercialQueue button.active {
+  background: #102536;
+  border-color: #102536;
+  color: #fff;
+}
+
+.commercialQueue {
+  align-items: end;
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 9px;
+}
+
+.commercialQueue form,
+.commercialCreate > div {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.commercialQueue label,
+.commercialControls label,
+.commercialCreate label,
+.commercialReason,
+.commercialOverview label,
+.commercialField {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 4px;
+}
+
+.commercialQueue input,
+.commercialControls select,
+.commercialCreate input,
+.commercialReason input,
+.commercialOverview input,
+.commercialField input,
+.commercialField textarea,
+.commercialRepeater input,
+.commercialRepeater textarea {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #102536;
+  font: inherit;
+  min-height: 34px;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.commercialControls {
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 9px;
+  padding: 10px;
+}
+
+.commercialControls label {
+  min-width: min(360px, 100%);
+}
+
+.commercialControls button:disabled,
+.commercialSurface button:disabled,
+.commercialLoadMore:disabled {
+  cursor: not-allowed;
+  opacity: 0.44;
+}
+
+.commercialReason {
+  max-width: 620px;
+}
+
+.commercialSurface {
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 10px;
+  min-width: 0;
+  padding: 13px;
+}
+
+.commercialSurface > header,
+.commercialRepeater > header,
+.commercialReadiness > header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.commercialSurface > header span:not(.commercialStatus),
+.commercialFacts span {
+  color: #667887;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.commercialSurface h3,
+.commercialSurface h4,
+.commercialSurface p {
+  margin: 3px 0 7px;
+}
+
+.commercialStatus {
+  background: #e8eef2;
+  border-radius: 999px;
+  color: #425764;
+  font-size: 0.72rem;
+  font-weight: 850;
+  padding: 5px 9px;
+}
+
+.commercialStatus.ready {
+  background: #dff3e9;
+  color: #166742;
+}
+
+.commercialStatus.blocked,
+.commercialStatus.stale {
+  background: #fff0e8;
+  color: #8f3c13;
+}
+
+.commercialFacts,
+.commercialPreviewGrid,
+.commercialReadiness > div {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 10px 0;
+}
+
+.commercialFacts article,
+.commercialOverview article,
+.commercialPreviewGrid article,
+.commercialReadiness > div article {
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.commercialOverview,
+.commercialEditorGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.commercialOverview article {
+  align-items: start;
+  grid-template-columns: auto 1fr;
+}
+
+.commercialField textarea {
+  min-height: 126px;
+  resize: vertical;
+}
+
+.commercialField small {
+  color: #71818c;
+  font-weight: 500;
+}
+
+.commercialField .commercialFieldError {
+  color: #a02525;
+  font-weight: 700;
+}
+
+.commercialField textarea[aria-invalid="true"] {
+  border-color: #bf3c3c;
+  box-shadow: 0 0 0 2px rgb(191 60 60 / 12%);
+}
+
+.commercialRepeater {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-column: 1 / -1;
+  padding: 10px;
+}
+
+.commercialRepeater article {
+  background: #f6f9fa;
+  border-radius: 7px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 8px;
+}
+
+.commercialRepeater textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.commercialReadiness {
+  display: grid;
+  gap: 10px;
+}
+
+.commercialIssues {
+  display: grid;
+  gap: 5px;
+}
+
+.commercialIssues p {
+  align-items: center;
+  background: #edf8f2;
+  border-left: 3px solid #299462;
+  display: flex;
+  gap: 6px;
+  padding: 7px 9px;
+}
+
+.commercialIssues p.blocked {
+  background: #fff0e8;
+  border-left-color: #d16a27;
+}
+
+.commercialHistory {
+  display: grid;
+  gap: 7px;
+}
+
+.commercialHistory h4 {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.commercialHistory article {
+  align-items: center;
+  border-bottom: 1px solid #e2e8ec;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(200px, 1fr) minmax(130px, auto) minmax(90px, auto);
+  padding: 8px 4px;
+}
+
+.commercialPreview pre {
+  font-size: 0.7rem;
+  max-height: 250px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.commercialBoundary {
+  background: #fff0e8;
+  border-left: 4px solid #d17a00;
+  color: #7d4d00;
+  margin: 0;
+  padding: 9px 11px;
+}
+
+.commercialCreate h3,
+.commercialCreate p {
+  flex-basis: 100%;
+}
+
+.commercialCreate > summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.commercialCreate > div {
+  margin-top: 10px;
+}
+
+.commercialCriteria {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  padding: 10px;
+}
+
+.commercialCriteria legend {
+  font-weight: 800;
+}
+
+.commercialCriteria label,
+.commercialRepeater label {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 750;
+  gap: 4px;
+}
+
+.commercialRepeater select {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 5px 7px;
+}
+
+.commercialAdminLayout {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 270px minmax(0, 1fr);
+}
+
+.commercialAdminLayout > aside {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+}
+
+.commercialAdminLayout > aside button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  color: #102536;
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: auto 1fr;
+  padding: 9px;
+  text-align: left;
+}
+
+.commercialAdminLayout > aside button.active {
+  border-left: 5px solid #276da0;
+}
+
+.commercialAdminLayout > aside small {
+  color: #667887;
+  grid-column: 2;
+}
+
+.commercialAdminActions,
+.commercialConfigTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 9px 0;
+}
+
+.commercialConfigTabs {
+  border-bottom: 1px solid #d7e0e7;
+  max-height: 128px;
+  overflow: auto;
+  padding-bottom: 8px;
+}
+
+.commercialConfigTabs button {
+  background: #f6f9fa;
+  font-size: 0.72rem;
+  min-height: 30px;
+  padding: 4px 8px;
+}
+
+.commercialConfigTabs button.active {
+  background: #102536;
+  color: #fff;
+}
+
+.commercialConfigEditor {
+  min-height: 230px;
+  padding: 5px 0;
+}
+
+.commercialConfigEditor input,
+.commercialAdminPreview input {
+  background: #fff;
+  border: 1px solid #c8d5de;
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.commercialAdvanced {
+  border-top: 1px solid #d7e0e7;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.commercialAdvanced pre,
+.commercialConfigEditor pre {
+  background: #f6f9fa;
+  font-size: 0.7rem;
+  max-height: 300px;
+  overflow: auto;
+  padding: 8px;
+  white-space: pre-wrap;
+}
+
+.commercialChecks {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.commercialChecks label {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+}
+
+.commercialAdminPreview {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(280px, 1fr) minmax(210px, 300px) auto;
+}
+
+.commercialAdminPreview > div {
+  align-items: start;
+  display: flex;
+  gap: 8px;
+}
+
+.commercialAdminPreview label,
+.commercialAdminPreview output {
+  color: #566d7d;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 3px;
+}
+
+.commercialAdminPreview output span {
+  max-width: 280px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .commercialRepeater article,
+  .commercialHistory article,
+  .commercialAdminLayout,
+  .commercialAdminPreview {
+    grid-template-columns: 1fr;
+  }
+}

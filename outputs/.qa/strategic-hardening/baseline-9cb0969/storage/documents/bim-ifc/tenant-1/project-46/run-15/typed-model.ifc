@@ -1,0 +1,16 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');
+ENDSEC;
+DATA;
+#10=IFCPROJECT('PROJECTGUID',$,'Wellness Center',$,$,$,$,$,$);
+#40=IFCBUILDINGSTOREY('STOREYGUID',$,'Ground floor',$,$,$,$,$,$);
+#50=IFCMEMBER('MEMBERGUID',$,'Rectangular Mullion:50 x 150mm:123',$,'Rectangular Mullion:50 x 150mm',$,$,$,'123');
+#60=IFCMEMBERTYPE('TYPEGUID',$,'Rectangular Mullion:50 x 150mm',$,$,$,$,'8486',$,.MULLION.);
+#70=IFCRELDEFINESBYTYPE('RELT',$,$,$,(#50),#60);
+#80=IFCCOLUMN('COLUMNGUID',$,'UC-Universal Columns-Column:UC305x305x97:552739',$,'UC-Universal Columns-Column:UC305x305x97',$,$,$,'552739');
+#90=IFCCOLUMNTYPE('COLTYPEGUID',$,'UC-Universal Columns-Column:UC305x305x97',$,$,$,$,'12190',$,.COLUMN.);
+#100=IFCRELDEFINESBYTYPE('RELC',$,$,$,(#80),#90);
+#110=IFCRELCONTAINEDINSPATIALSTRUCTURE('RELSTOREY',$,$,$,(#50,#80),#40);
+ENDSEC;
+END-ISO-10303-21;

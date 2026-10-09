@@ -32,6 +32,15 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
         BUSINESS_CASE_READINESS: { required: 1, valid: 1, coverage_percent: 100, status: "VALID" },
         ECONOMIC_FINANCIAL_READINESS: { required: 1, valid: 1, coverage_percent: 100, status: "VALID" },
       },
+      evidence_readiness_status: "BLOCKED",
+      business_evaluation_status: "READY",
+      portfolio_context_status: "CONSTRAINED",
+      decision_package_status: "NOT_READY_FOR_INVESTMENT_DECISION",
+      criterion_evaluations: [],
+      unresolved_mandatory_criteria: [],
+      cross_source_consistency: [],
+      success_criteria_candidates: [],
+      criterion_policy: { policy_revision: 4 },
       warnings: [],
       blockers: ["MISSING_DEFINITION_READINESS"],
       investment_gate_preparation_ready: false,
@@ -59,8 +68,45 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
       recommended_project_set_hash: "c".repeat(64),
       status: "IN_PREPARATION",
       readiness_status: "BLOCKED",
-      source_snapshot: {},
+      source_snapshot: { selected_project_ids: [33], project_contexts: [{ fel_stage: "FEL-2" }] },
       evidence_summary: {},
+      criterion_policy_snapshot: { policy_revision: 4, policy_hash: "7".repeat(64) },
+      criterion_evaluations: [
+        {
+          criterion_code: "BC-MUST-01",
+          criterion_name: "Strategic case accepted",
+          criterion_type: "MUST_MEET",
+          source_reference: { evidence_type: "BUSINESS_CASE_READINESS" },
+          source_value: "READY",
+          operator: "IS_READY",
+          threshold_or_expected_value: "READY",
+          result: "SATISFIED",
+          blocking: true,
+          required: true,
+          policy_revision: 4,
+        },
+        {
+          criterion_code: "BEN-SUCCESS-01",
+          criterion_name: "Reliability uplift",
+          criterion_type: "SUCCESS_CRITERION",
+          source_reference: { evidence_type: "BENEFITS_READINESS" },
+          source_value: "12%",
+          operator: "GREATER_THAN_OR_EQUAL",
+          threshold_or_expected_value: "10%",
+          result: "SATISFIED",
+          blocking: false,
+          required: false,
+          policy_revision: 4,
+        },
+      ],
+      portfolio_context_snapshot: {
+        rank_authority: "PORTFOLIO",
+        governed_rank: 2,
+        resource_constrained: true,
+      },
+      success_criteria_candidates: [
+        { criterion_code: "BEN-SUCCESS-01", criterion_name: "Reliability uplift", result: "SATISFIED" },
+      ],
       conditions: [],
       warnings: [],
       blockers: ["MISSING_DEFINITION_READINESS"],
@@ -108,6 +154,11 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
           blockers: [],
           source_current: true,
           source_readiness_status: "READY",
+          evidence_quality: "HIGH",
+          evidence_confidence: "HIGH",
+          quality_origin: "PROVIDER",
+          source_version: 3,
+          as_of: "2026-09-03T00:00:00Z",
           resolution_status: "VALID",
           revision_version: 1,
         },
@@ -144,6 +195,11 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
           blockers: [],
           source_current: true,
           source_readiness_status: "READY",
+          evidence_quality: "ACCEPTABLE",
+          evidence_confidence: "MEDIUM",
+          quality_origin: "PROVIDER",
+          source_version: 2,
+          as_of: "2026-09-03T00:00:00Z",
           resolution_status: "VALID",
           revision_version: 1,
         },
@@ -252,11 +308,28 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
 
     await login(page);
     await expand(page, /^enterprise strategy manager$/i);
-    await expand(page, /^portfolio manager$/i);
-    await page.getByRole("button", { name: /^investment gate preparation$/i }).click();
+    await expand(page, /^investment governance$/i);
+    await page
+      .getByRole("group", { name: "Submódulos de Investment Governance" })
+      .getByRole("button", { name: /^investment gate preparation$/i })
+      .click();
     const workspace = page.getByRole("region", { name: "Investment Gate Preparation", exact: true });
     await expect(workspace.getByText("GATE07J_REWORK_REQUIRED")).toBeVisible();
     await expect(workspace.getByText("can_enter_fid = false")).toBeVisible();
+    await expect(workspace.getByRole("region", { name: "Gate evaluation stages" })).toContainText(
+      "Business EvaluationREADY"
+    );
+    await workspace.getByRole("button", { name: "Gate Matrix" }).click();
+    const matrix = workspace.getByRole("table", { name: "Gate evidence and decision criteria matrix" });
+    await expect(matrix).toContainText("Evidence Class A");
+    await expect(matrix).toContainText("MUST_MEET");
+    await expect(matrix).toContainText("HIGH");
+    await expect(matrix).toContainText("Confidence HIGH");
+    await expect(matrix).toContainText("10%");
+    await expect(workspace.getByRole("group", { name: "Decision criteria grouped by taxonomy" })).toContainText(
+      "Success criteria candidates"
+    );
+    await expect(workspace.getByRole("region", { name: "Frozen Portfolio context" })).toContainText("PORTFOLIO");
     await workspace.getByRole("button", { name: "Evidence Package" }).click();
     await expect(workspace.getByText("fel-stage-readiness")).toBeVisible();
     await expect(workspace.getByText("Business Case Readiness", { exact: true })).toBeVisible();
@@ -270,8 +343,13 @@ test.describe("Gate 07J Investment Gate Preparation browser", () => {
     await expect(workspace.getByRole("button", { name: /approve investment|enter fid|go|hold|kill/i })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Cambiar a ADMIN MODE" }).click();
+    await expect(page.getByRole("navigation", { name: "Admin mode navigation" })).toBeVisible();
     await expand(page, /^enterprise strategy manager$/i);
-    await page.getByRole("button", { name: /^investment gate preparation configuration$/i }).click();
+    await expand(page, /^investment governance$/i);
+    await page
+      .getByRole("group", { name: "Submódulos de Investment Governance" })
+      .getByRole("button", { name: /^investment gate preparation$/i })
+      .click();
     const admin = page.getByRole("region", { name: "Investment Gate Preparation Configuration" });
     await admin.getByRole("button", { name: "Preview" }).click();
     await expect(admin.getByText(/persisted=false; no preparation, decision or fid was created/i)).toBeVisible();

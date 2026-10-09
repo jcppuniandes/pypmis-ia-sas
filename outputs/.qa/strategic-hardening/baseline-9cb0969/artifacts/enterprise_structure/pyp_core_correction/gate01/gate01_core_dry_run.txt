@@ -1,0 +1,77 @@
+P&Pmis Enterprise Structure - Nivel 2B dry-run
+Tenant: DEMO-ENERGY
+Release: ES-PYP-CORE-SIMPLIFIED-20260806
+Input hash: 69e2c7c3e7f89dc4d5f23a3f5d0b546d4c5e935926817a814fe18a6c70e7d6a9
+Result: VALID
+
+Summary
+  nodes: 14
+  strategic_objectives: 7
+  classifications: 26
+  links: 0
+  errors: 0
+  warnings: 0
+  info: 0
+  create: 46
+  update: 1
+  unchanged: 0
+  conflict: 0
+  hierarchy_errors: 0
+  required_classification_missing: 0
+  category_not_applicable: 0
+  base_mutations: 0
+
+Findings
+  No findings.
+
+Diff
+  update    node                   ENT-PYP [01] - Controlled fields differ
+  create    node                   BU-PYP-CONS [01.01] - New external_key
+  create    node                   BU-PYP-PMO [01.02] - New external_key
+  create    node                   BU-PYP-TEC [01.03] - New external_key
+  create    node                   BU-PYP-CONST [01.04] - New external_key
+  create    node                   PF-PYP-CONS [01.01.01] - New external_key
+  create    node                   PF-PYP-ASSET [01.01.02] - New external_key
+  create    node                   PF-PYP-PMO [01.02.01] - New external_key
+  create    node                   PF-PYP-TEC [01.03.01] - New external_key
+  create    node                   PF-PYP-CONST [01.04.01] - New external_key
+  create    node                   PG-PYP-PMO-MIN [01.02.01.01] - New external_key
+  create    node                   PG-PYP-TEC-IMP [01.03.01.01] - New external_key
+  create    node                   PG-PYP-PPMIS [01.03.01.02] - New external_key
+  create    node                   PRJ-PYP-PPMIS [01.03.01.02.01] - New external_key
+  create    strategic_objective    OBJ-PYP-01 - New strategic objective
+  create    strategic_objective    OBJ-PYP-02 - New strategic objective
+  create    strategic_objective    OBJ-PYP-03 - New strategic objective
+  create    strategic_objective    OBJ-PYP-04 - New strategic objective
+  create    strategic_objective    OBJ-PYP-05 - New strategic objective
+  create    strategic_objective    OBJ-PYP-06 - New strategic objective
+  create    strategic_objective    OBJ-PYP-07 - New strategic objective
+  create    classification         BU-PYP-CONS:RESPONSIBLE_AREA:CONSULTING - New assignment
+  create    classification         BU-PYP-PMO:RESPONSIBLE_AREA:PMO-AAS - New assignment
+  create    classification         BU-PYP-TEC:RESPONSIBLE_AREA:TECHNOLOGY - New assignment
+  create    classification         BU-PYP-CONST:RESPONSIBLE_AREA:CONSTRUCTION - New assignment
+  create    classification         PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-CONS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-ASSET:STRATEGIC_OBJECTIVE:OBJ-PYP-06 - New assignment
+  create    classification         PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-PMO:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PF-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PF-PYP-TEC:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-01 - New assignment
+  create    classification         PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-02 - New assignment
+  create    classification         PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-05 - New assignment
+  create    classification         PF-PYP-CONST:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PG-PYP-PMO-MIN:STRATEGIC_OBJECTIVE:OBJ-PYP-07 - New assignment
+  create    classification         PG-PYP-TEC-IMP:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PG-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+  create    classification         PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-03 - New assignment
+  create    classification         PRJ-PYP-PPMIS:STRATEGIC_OBJECTIVE:OBJ-PYP-04 - New assignment
+
+Topological order
+  ENT-PYP -> BU-PYP-CONS -> BU-PYP-PMO -> BU-PYP-TEC -> BU-PYP-CONST -> PF-PYP-CONS -> PF-PYP-ASSET -> PF-PYP-PMO -> PF-PYP-TEC -> PF-PYP-CONST -> PG-PYP-PMO-MIN -> PG-PYP-TEC-IMP -> PG-PYP-PPMIS -> PRJ-PYP-PPMIS

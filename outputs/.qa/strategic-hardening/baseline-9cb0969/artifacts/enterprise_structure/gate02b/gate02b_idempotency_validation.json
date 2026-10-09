@@ -1,0 +1,34 @@
+{
+  "allowed_difference": {
+    "security_events": {
+      "after_first": 9,
+      "after_second": 10,
+      "event_id": 10,
+      "event_type": "enterprise_structure.core_applied",
+      "reason": "Technical audit event for the idempotent execution"
+    }
+  },
+  "functional_fingerprints_equal": {
+    "admin_configurations": true,
+    "enterprise_workspace_classifications": true,
+    "enterprise_workspace_links": true,
+    "enterprise_workspaces": true,
+    "tenants": true,
+    "user_accounts": true,
+    "workspace_module_settings": true
+  },
+  "second_apply": {
+    "classification_create": 0,
+    "conflict": 0,
+    "create": 0,
+    "effective_adopt_changes": 0,
+    "objective_create": 0,
+    "tenant_update": 0,
+    "unchanged": 47,
+    "update": 0,
+    "workspace_create": 0
+  },
+  "status": "PASS",
+  "strategic_objectives_after_first": 7,
+  "strategic_objectives_after_second": 7
+}

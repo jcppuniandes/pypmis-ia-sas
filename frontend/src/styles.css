@@ -2982,10 +2982,31 @@ td span {
 }
 
 .navigatorModuleCopy {
-  display: block;
+  display: grid;
+  gap: 2px;
   font-size: 13px;
   font-weight: 800;
   min-width: 0;
+}
+
+.navigatorModuleCopy small {
+  color: #0b6f71;
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.navigatorModuleCopy em {
+  color: #667481;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.navigatorModule.foundation .navigatorModuleButton {
+  background: #f0f7f8;
+  border-color: #b9d7d8;
 }
 
 .navigatorModuleButton svg {
@@ -3022,6 +3043,40 @@ td span {
 
 .navigatorSubmoduleList[hidden] {
   display: none;
+}
+
+.navigatorViewBranch {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.navigatorNestedList {
+  border-left: 1px solid #d7e4e6;
+  display: grid;
+  gap: 3px;
+  margin-left: 9px;
+  padding-left: 7px;
+}
+
+.navigatorNestedList[hidden] {
+  display: none;
+}
+
+.navigatorViewBranch[data-depth="1"] .navigatorSubmoduleItem span,
+.navigatorViewBranch[data-depth="2"] .navigatorSubmoduleItem span {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.navigatorSubmoduleItem svg {
+  color: #667481;
+  flex: 0 0 auto;
+  transition: transform 160ms ease;
+}
+
+.navigatorSubmoduleItem svg.expanded {
+  transform: rotate(180deg);
 }
 
 .navigatorSubmoduleItem {

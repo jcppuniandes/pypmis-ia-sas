@@ -1,0 +1,1 @@
+[{"id":1,"schedule_import_id":1,"predecessor_external_id":"P6-MECH-1000","successor_external_id":"P6-PIPE-2100","relationship_type":"FS","lag_days":0.0},{"id":2,"schedule_import_id":1,"predecessor_external_id":"P6-PIPE-2100","successor_external_id":"P6-ELEC-3100","relationship_type":"FS","lag_days":2.0}]

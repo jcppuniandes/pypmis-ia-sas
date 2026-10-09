@@ -21,6 +21,8 @@ from app.domain.models import (
     SecurityRolePermission,
     UserAccount,
 )
+from app.modules.business_analysis.models import BusinessAnalysis
+from app.modules.business_analysis.service import BusinessAnalysisService
 from app.modules.enterprise_structure.models import EnterpriseStrategicObjective
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext, ensure_enterprise_permissions
 from app.modules.idea_demand.models import Idea, IdeaEvaluation
@@ -81,6 +83,12 @@ DEFAULT_IDEA_CONFIGURATION = {
         "parent_workspace_id": "target_portfolio_workspace_id|owning_workspace_id",
         "strategic_objectives": "strategic_objective_codes",
     },
+    "business_analysis_required_by_governance_model": {
+        "CAPITAL_OWNER": True,
+        "CONTRACTOR_DELIVERY": False,
+        "DIRECT_INTERNAL": False,
+        "LEGACY_UNCLASSIFIED": False,
+    },
 }
 
 DEFAULT_MATRIX = {
@@ -114,9 +122,48 @@ class IdeaDemandService:
     def ensure_seed(self) -> None:
         """Install reusable defaults and numbering idempotently; never create an Idea."""
         ensure_enterprise_permissions(self.db, self.tenant_id, self.actor_id)
-        if self._latest_configuration("idea_demand_configuration", "default") is None:
+        idea_configuration = self._latest_configuration("idea_demand_configuration", "default")
+        if idea_configuration is None:
             self._seed_configuration(
                 "idea_demand_configuration", "default", "Default Idea Lifecycle", DEFAULT_IDEA_CONFIGURATION
+            )
+        elif "business_analysis_required_by_governance_model" not in idea_configuration.content_json:
+            revision = (
+                int(
+                    self.db.scalar(
+                        select(func.coalesce(func.max(AdminConfiguration.revision), 0)).where(
+                            AdminConfiguration.tenant_id == self.tenant_id,
+                            AdminConfiguration.kind == "idea_demand_configuration",
+                            AdminConfiguration.code == "default",
+                        )
+                    )
+                    or 0
+                )
+                + 1
+            )
+            content = {
+                **dict(idea_configuration.content_json),
+                "business_analysis_required_by_governance_model": DEFAULT_IDEA_CONFIGURATION[
+                    "business_analysis_required_by_governance_model"
+                ],
+            }
+            self.db.add(
+                AdminConfiguration(
+                    tenant_id=self.tenant_id,
+                    kind="idea_demand_configuration",
+                    code="default",
+                    name=idea_configuration.name,
+                    description="Gate 07A-BA policy-effective successor",
+                    status="published",
+                    revision=revision,
+                    version=1,
+                    content_json=content,
+                    content_hash=hashlib.sha256(
+                        json.dumps(content, ensure_ascii=False, sort_keys=True).encode()
+                    ).hexdigest(),
+                    published_at=utc_now(),
+                    created_by_user_id=self.actor_id,
+                )
             )
         if self._latest_configuration("idea_evaluation_matrix", "default") is None:
             self._seed_configuration(
@@ -191,23 +238,54 @@ class IdeaDemandService:
         )
 
     def create(self, payload: IdeaCreate) -> IdeaOut:
+        idea = self.create_from_capital_demand_record(payload)
+        self.db.commit()
+        self.db.refresh(idea)
+        return self._out(idea)
+
+    def create_from_capital_demand_record(
+        self,
+        payload: IdeaCreate,
+        *,
+        source_capital_demand_id: int | None = None,
+        source_snapshot_hash: str | None = None,
+    ) -> Idea:
+        """Build an Idea through the Idea authority without committing.
+
+        Capital Planning uses this transaction-friendly entry point so the Idea
+        and immutable origin relation are persisted atomically.  The public
+        standalone create path above remains unchanged semantically.
+        """
         workspace, config, sources = self._validate_payload(payload)
         idea = Idea(
             tenant_id=self.tenant_id,
             idea_number=self._reserve_number(),
             requestor_user_id=self.actor_id,
             state=IdeaState.DRAFT,
-            configuration_snapshot_json={"effective": config, "sources": sources},
+            configuration_snapshot_json={
+                "effective": {**config, "governance_model": self._governance_model(workspace)},
+                "sources": sources,
+            },
             revision_version=1,
             last_modified_by_user_id=self.actor_id,
+            source_capital_demand_id=source_capital_demand_id,
+            source_capital_demand_snapshot_hash=source_snapshot_hash,
             **self._payload_values(payload),
         )
         self.db.add(idea)
         self.db.flush()
-        self._event("idea.created", idea, None, "DRAFT", {"owning_workspace_id": workspace.id})
-        self.db.commit()
-        self.db.refresh(idea)
-        return self._out(idea)
+        self._event(
+            "idea.created",
+            idea,
+            None,
+            "DRAFT",
+            {
+                "owning_workspace_id": workspace.id,
+                "source_capital_demand_id": source_capital_demand_id,
+                "source_capital_demand_snapshot_hash": source_snapshot_hash,
+            },
+        )
+        return idea
 
     def list(
         self,
@@ -261,7 +339,10 @@ class IdeaDemandService:
         for key, value in self._payload_values(payload).items():
             setattr(idea, key, value)
         idea.state = "DRAFT"
-        idea.configuration_snapshot_json = {"effective": config, "sources": sources}
+        idea.configuration_snapshot_json = {
+            "effective": {**config, "governance_model": self._governance_model(_workspace)},
+            "sources": sources,
+        }
         self._touch(idea)
         self._event("idea.updated", idea, before, idea.state)
         return self._commit(idea)
@@ -458,14 +539,42 @@ class IdeaDemandService:
     def readiness(self, idea_id: int) -> ProposalReadinessOut:
         idea = self._idea(idea_id)
         readiness = self._readiness(idea)
+        base_ready = not readiness["blocking_issues"]
+        analysis_required = BusinessAnalysisService.requirement_for_idea(idea)
+        current_analysis = self._current_business_analysis(idea.id) if analysis_required and base_ready else None
+        if not base_ready:
+            status = "GATE07A_REWORK_REQUIRED"
+            can_create_proposal = False
+        elif not analysis_required:
+            status = "READY_FOR_PROJECT_PROPOSAL"
+            can_create_proposal = True
+        elif current_analysis is None:
+            status = "READY_FOR_BUSINESS_ANALYSIS"
+            can_create_proposal = False
+        else:
+            analysis_readiness = BusinessAnalysisService(
+                self.db,
+                self.tenant_id,
+                self.actor_id,
+                self.context,
+            ).readiness_for_record(current_analysis)
+            if analysis_readiness.ready:
+                status = "READY_FOR_PROJECT_PROPOSAL"
+                can_create_proposal = True
+            elif analysis_readiness.status == "STALE":
+                status = "BUSINESS_ANALYSIS_STALE"
+                can_create_proposal = False
+            else:
+                status = "BUSINESS_ANALYSIS_IN_PROGRESS"
+                can_create_proposal = False
         return ProposalReadinessOut(
             idea_id=idea.id,
             idea_number=idea.idea_number,
-            ready=not readiness["blocking_issues"],
-            status="READY_FOR_PROJECT_PROPOSAL" if not readiness["blocking_issues"] else "GATE07A_REWORK_REQUIRED",
+            ready=base_ready,
+            status=status,
             blocking_issues=readiness["blocking_issues"],
             mapping_preview=readiness["mapping_preview"],
-            can_create_project_proposal=not readiness["blocking_issues"],
+            can_create_project_proposal=can_create_proposal,
         )
 
     def history(self, idea_id: int) -> list[IdeaHistoryItemOut]:
@@ -595,14 +704,15 @@ class IdeaDemandService:
             portfolio = self._workspace(payload.target_portfolio_workspace_id)
             if portfolio.workspace_type_code != "portfolio":
                 raise HTTPException(status_code=422, detail="Target Workspace must be a Portfolio")
-        valid_objectives = set(
-            self.db.scalars(
+        valid_objectives = {
+            str(code).strip().lower()
+            for code in self.db.scalars(
                 select(EnterpriseStrategicObjective.code).where(
                     EnterpriseStrategicObjective.tenant_id == self.tenant_id,
                     EnterpriseStrategicObjective.active.is_(True),
                 )
             ).all()
-        )
+        }
         if set(payload.strategic_objective_codes) - valid_objectives:
             raise HTTPException(status_code=422, detail="One or more strategic objectives are inactive or unknown")
         if effective.get("objective_selection") == "one" and len(payload.strategic_objective_codes) > 1:
@@ -989,6 +1099,8 @@ class IdeaDemandService:
             owning_workspace_id=idea.owning_workspace_id,
             owning_workspace_name=workspace.name,
             target_portfolio_workspace_id=idea.target_portfolio_workspace_id,
+            source_capital_demand_id=idea.source_capital_demand_id,
+            source_capital_demand_snapshot_hash=idea.source_capital_demand_snapshot_hash,
             strategic_objective_codes=idea.strategic_objective_codes or [],
             requestor_user_id=idea.requestor_user_id,
             requestor_name=requestor.full_name if requestor else "Unknown",
@@ -1028,8 +1140,57 @@ class IdeaDemandService:
         if idea.state == "EVALUATED" and (admin or "idea_decision_maker" in roles):
             actions += ["accept", "reject", "return"]
         if idea.state == "ACCEPTED":
-            actions += ["proposal_readiness", "create_project_proposal"]
+            actions.append("proposal_readiness")
+            if BusinessAnalysisService.requirement_for_idea(idea):
+                current = self._current_business_analysis(idea.id)
+                if current is None:
+                    actions.append("start_business_analysis")
+                elif (
+                    BusinessAnalysisService(
+                        self.db,
+                        self.tenant_id,
+                        self.actor_id,
+                        self.context,
+                    )
+                    .readiness_for_record(current)
+                    .ready
+                ):
+                    actions.append("create_project_proposal")
+            else:
+                actions.append("create_project_proposal")
         return actions
+
+    def _current_business_analysis(self, idea_id: int) -> BusinessAnalysis | None:
+        return self.db.scalar(
+            select(BusinessAnalysis)
+            .where(
+                BusinessAnalysis.tenant_id == self.tenant_id,
+                BusinessAnalysis.source_idea_id == idea_id,
+                BusinessAnalysis.status != "VOIDED",
+            )
+            .order_by(BusinessAnalysis.id.desc())
+            .limit(1)
+        )
+
+    def _accepted_evaluation_for_readiness(self, idea: Idea) -> IdeaEvaluation | None:
+        return (
+            self.db.scalar(
+                select(IdeaEvaluation).where(
+                    IdeaEvaluation.id == idea.accepted_evaluation_id,
+                    IdeaEvaluation.tenant_id == self.tenant_id,
+                    IdeaEvaluation.idea_id == idea.id,
+                )
+            )
+            if idea.accepted_evaluation_id
+            else None
+        )
+
+    @staticmethod
+    def _governance_model(workspace: EnterpriseWorkspace) -> str:
+        value = str((workspace.defaults_json or {}).get("governance_model") or "CAPITAL_OWNER").upper()
+        if value in {"CAPITAL_OWNER", "CONTRACTOR_DELIVERY", "DIRECT_INTERNAL"}:
+            return value
+        return "LEGACY_UNCLASSIFIED"
 
     @staticmethod
     def _payload_values(payload: IdeaPayload) -> dict:

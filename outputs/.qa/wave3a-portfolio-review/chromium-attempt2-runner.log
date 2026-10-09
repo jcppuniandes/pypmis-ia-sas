@@ -1,0 +1,27 @@
+Cannot use({ trace }) in a describe group, because it forces a new worker.
+Make it top-level in the test file or put in the configuration file.
+
+   at portfolio-review.spec.ts:49
+
+  47 |   if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
+  48 | }
+> 49 | async function reviewNavigation(page: Page) {
+     |        ^
+  50 |   await expand(page, /^enterprise strategy manager$/i, "Control Flow");
+  51 |   await expand(page, /^portfolio planning & review$/i, "Control Flow");
+  52 |   await expand(page, /^periodic portfolio review$/i, "Control Flow");
+
+Cannot use({ trace }) in a describe group, because it forces a new worker.
+Make it top-level in the test file or put in the configuration file.
+
+   at portfolio-review.spec.ts:49
+
+  47 |   if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
+  48 | }
+> 49 | async function reviewNavigation(page: Page) {
+     |        ^
+  50 |   await expand(page, /^enterprise strategy manager$/i, "Control Flow");
+  51 |   await expand(page, /^portfolio planning & review$/i, "Control Flow");
+  52 |   await expand(page, /^periodic portfolio review$/i, "Control Flow");
+
+[1A[2K

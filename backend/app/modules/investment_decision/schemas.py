@@ -80,6 +80,9 @@ class DecisionReadinessOut(BaseModel):
     quorum_met: bool
     voting_rule_met: bool
     segregation_of_duties_valid: bool
+    mandatory_criteria_satisfied: bool = True
+    decision_hurdles_satisfied: bool = True
+    criterion_blockers: list[str] = Field(default_factory=list)
     blockers: list[str]
     warnings: list[str]
     final_output: str
@@ -109,6 +112,7 @@ class InvestmentDecisionOut(BaseModel):
     source_profile_hash: str
     source_policy_hash: str | None
     decision_package_snapshot: dict
+    success_criteria_snapshot: list[dict] = Field(default_factory=list)
     configuration_id: int
     configuration_revision: int
     configuration_hash: str

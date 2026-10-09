@@ -1,0 +1,8 @@
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="34.943528">
+<testsuite name="investment-decision.spec.ts" timestamp="2026-09-21T00:48:02.359Z" hostname="chromium" tests="2" failures="0" skipped="0" time="29.763" errors="0">
+<testcase name="Gate 07K USER and ADMIN browser flow preserves FID and downstream boundaries" classname="investment-decision.spec.ts" time="15.463">
+</testcase>
+<testcase name="Gate 07K browser renders FID, alternate outcomes, quorum and stale evidence safely" classname="investment-decision.spec.ts" time="14.3">
+</testcase>
+</testsuite>
+</testsuites>

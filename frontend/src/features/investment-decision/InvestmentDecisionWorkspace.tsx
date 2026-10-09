@@ -41,6 +41,139 @@ const labels: Record<DecisionView, string> = {
   output: "Authorization Output",
 };
 
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function records(value: unknown): Array<Record<string, unknown>> {
+  return Array.isArray(value)
+    ? value.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
+    : [];
+}
+
+function display(value: unknown): string {
+  if (value == null || value === "") return "—";
+  if (typeof value === "boolean") return value ? "YES" : "NO";
+  if (Array.isArray(value)) return value.map(display).join(", ") || "—";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function decisionTone(value: unknown): string {
+  return `decisionStatus decisionStatus-${String(value || "NOT_EVALUATED")
+    .toLowerCase()
+    .split("_")
+    .join("-")}`;
+}
+
+function FrozenDecisionSummary({ decision }: { decision: InvestmentDecision }) {
+  const snapshot = decision.decision_package_snapshot;
+  const preparation = record(snapshot.preparation);
+  const policy = record(snapshot.criterion_policy_snapshot || preparation.criterion_policy_snapshot);
+  const criteria = records(snapshot.criterion_evaluations || preparation.criterion_evaluations);
+  const mandatory = criteria.filter((item) => item.criterion_type === "MUST_MEET");
+  const hurdles = criteria.filter((item) => item.criterion_type === "DECISION_HURDLE");
+  const portfolioContext = record(snapshot.portfolio_context_snapshot || preparation.portfolio_context_snapshot);
+  const candidates = records(snapshot.success_criteria_candidates || preparation.success_criteria_candidates);
+  const frozenSuccess = decision.success_criteria_snapshot || records(snapshot.fid_success_criteria_snapshot);
+  const success = frozenSuccess.length ? frozenSuccess : candidates;
+  const stages: Array<[string, unknown]> = [
+    ["Evidence Readiness", snapshot.evidence_readiness_status || preparation.evidence_readiness_status],
+    ["Business Evaluation", snapshot.business_evaluation_status || preparation.business_evaluation_status],
+    ["Portfolio & Resource Context", snapshot.portfolio_context_status || preparation.portfolio_context_status],
+    ["Decision Package", snapshot.decision_package_status || preparation.decision_package_status],
+  ];
+  return (
+    <section aria-label="Frozen Gate 07J decision inputs" className="frozenDecisionSummary">
+      <div className="decisionStageGrid">
+        {stages.map(([label, value]) => (
+          <article key={label}>
+            <span>{label}</span>
+            <b className={decisionTone(value)}>{display(value)}</b>
+          </article>
+        ))}
+      </div>
+      <div className="decisionSnapshotFacts">
+        <article>
+          <span>Gate07J package ID</span>
+          <b>{display(preparation.preparation_number || decision.investment_gate_preparation_id)}</b>
+        </article>
+        <article>
+          <span>Policy revision</span>
+          <b>{display(policy.policy_revision || policy.revision)}</b>
+          <small>{display(policy.policy_hash || decision.source_policy_hash)}</small>
+        </article>
+        <article>
+          <span>Formal authority</span>
+          <b>{display(snapshot.formal_decision_authority || "GATE07K")}</b>
+          <small>Human-governed; no automatic decision</small>
+        </article>
+      </div>
+      <div className="decisionCriteriaColumns">
+        <DecisionCriterionGroup label="Mandatory criteria" rows={mandatory} />
+        <DecisionCriterionGroup label="Decision hurdles" rows={hurdles} />
+      </div>
+      <section className="decisionSnapshotPanel">
+        <h4>Portfolio & Resource Context</h4>
+        <dl>
+          {Object.entries(portfolioContext).map(([key, value]) => (
+            <div key={key}>
+              <dt>{key.split("_").join(" ")}</dt>
+              <dd>{display(value)}</dd>
+            </div>
+          ))}
+        </dl>
+        {!Object.keys(portfolioContext).length ? <p>No frozen Portfolio context is available.</p> : null}
+      </section>
+      <section className="decisionSnapshotPanel">
+        <h4>{frozenSuccess.length ? "Frozen FID success criteria" : "Frozen success criteria candidates"}</h4>
+        <div className="decisionCards">
+          {success.length ? (
+            success.map((item, index) => (
+              <article key={String(item.criterion_id || item.criterion_code || index)}>
+                <b>{display(item.criterion_name || item.criterion_code || `Criterion ${index + 1}`)}</b>
+                <span>{display(item.result || item.status)}</span>
+                <small>{display(item.source_reference || item.source_value)}</small>
+              </article>
+            ))
+          ) : (
+            <p>No success criteria were frozen for this package.</p>
+          )}
+        </div>
+      </section>
+      <CardList title="Frozen conditions" rows={records(snapshot.conditions || preparation.open_conditions)} />
+      <p className="decisionEligibilityNote">
+        READY means this frozen package is eligible for a governed decision; it never means automatic GO. Gate 07K
+        remains the sole authority for GO, HOLD, RECYCLE or KILL.
+      </p>
+    </section>
+  );
+}
+
+function DecisionCriterionGroup({ label, rows }: { label: string; rows: Array<Record<string, unknown>> }) {
+  return (
+    <section className="decisionSnapshotPanel">
+      <h4>{label}</h4>
+      {rows.length ? (
+        rows.map((item, index) => (
+          <article className="decisionCriterionRow" key={String(item.criterion_id || item.criterion_code || index)}>
+            <div>
+              <b>{display(item.criterion_name || item.criterion_code)}</b>
+              <small>{display(item.criterion_code)}</small>
+            </div>
+            <span className={decisionTone(item.result)}>{display(item.result)}</span>
+            <small>
+              {item.blocking ? "Blocking" : "Non-blocking"} · {item.required ? "Required" : "Advisory"}
+            </small>
+          </article>
+        ))
+      ) : (
+        <p>No applicable criteria.</p>
+      )}
+    </section>
+  );
+}
+
 export default function InvestmentDecisionWorkspace({ token, initialView }: { token: string; initialView?: string }) {
   const [view, setView] = useState<DecisionView>(VIEW_BY_ROUTE[initialView || ""] || "queue");
   const [decisions, setDecisions] = useState<InvestmentDecision[]>([]);
@@ -182,6 +315,12 @@ export default function InvestmentDecisionWorkspace({ token, initialView }: { to
               <b>{selected.profile_code}</b>
               <b>{selected.status}</b>
               <b>{selected.readiness.readiness_status}</b>
+              <b>
+                Mandatory criteria {selected.readiness.mandatory_criteria_satisfied === false ? "BLOCKED" : "SATISFIED"}
+              </b>
+              <b>
+                Decision hurdles {selected.readiness.decision_hurdles_satisfied === false ? "BLOCKED" : "SATISFIED"}
+              </b>
               <b className={selected.is_fid ? "fid" : "boundary"}>FID {selected.is_fid ? "YES" : "NO"}</b>
               <b className="boundary">Project activation NO</b>
             </div>
@@ -295,7 +434,10 @@ export default function InvestmentDecisionWorkspace({ token, initialView }: { to
           ) : null}
 
           {view === "package" ? (
-            <JsonSurface title="Frozen Decision Package Snapshot" value={selected.decision_package_snapshot} />
+            <>
+              <FrozenDecisionSummary decision={selected} />
+              <JsonSurface title="Frozen Decision Package Snapshot" value={selected.decision_package_snapshot} />
+            </>
           ) : null}
           {view === "evidence" ? (
             <JsonSurface

@@ -126,6 +126,39 @@ def _next_configuration_revision(db, tenant_id: int) -> int:
 def _decision_ready(db, tenant_id, actor_id, reviewer_id, preparation, maker_id):
     preparer = InvestmentDecisionService(db, tenant_id, actor_id)
     preparer.ensure_seed()
+    # The strategic regression shares the demo tenant between modules. A
+    # committee-governed test intentionally publishes a later configuration,
+    # so make this helper's single-authority contract explicit instead of
+    # depending on module execution order.
+    current = db.scalar(
+        select(AdminConfiguration)
+        .where(
+            AdminConfiguration.tenant_id == tenant_id,
+            AdminConfiguration.kind == CONFIGURATION_KIND,
+            AdminConfiguration.code == "default",
+            AdminConfiguration.status == "published",
+        )
+        .order_by(AdminConfiguration.revision.desc())
+    )
+    if current is None or current.content_json.get("authority", {}).get("model") != "SINGLE_DECISION_MAKER":
+        content = deepcopy(DEFAULT_CONFIGURATION)
+        db.add(
+            AdminConfiguration(
+                tenant_id=tenant_id,
+                kind=CONFIGURATION_KIND,
+                code="default",
+                name="Gate 07K single decision authority fixture",
+                description="Deterministic single-authority configuration for reusable decision-ready fixtures.",
+                status="published",
+                revision=_next_configuration_revision(db, tenant_id),
+                version=1,
+                content_json=content,
+                content_hash=_hash(content),
+                published_at=utc_now(),
+                created_by_user_id=actor_id,
+            )
+        )
+        db.commit()
     decision = preparer.create(
         DecisionCreateIn(
             investment_gate_preparation_id=preparation.id,
@@ -266,6 +299,91 @@ def test_pyp_ffa_go_is_single_fid_and_duplicate_decide_is_idempotent() -> None:
         db.close()
 
 
+def test_go_guard_and_success_criteria_snapshot_are_governed_and_immutable() -> None:
+    db, tenant_id, actor_id, reviewer_id, _portfolio, _projects, preparation = _freeze_preparation()
+    try:
+        maker = _maker(db, tenant_id, "Gate criteria decision authority")
+        decision = _decision_ready(db, tenant_id, actor_id, reviewer_id, preparation, maker.id)
+        stored = db.get(InvestmentDecision, decision.id)
+        package = deepcopy(stored.decision_package_snapshot_json or {})
+        package["criterion_evaluations"] = [
+            {
+                "criterion_code": "BC-FIVE-CASE-READINESS",
+                "criterion_type": "MUST_MEET",
+                "required": True,
+                "blocking": True,
+                "result": "NOT_SATISFIED",
+            }
+        ]
+        package["success_criteria_candidates"] = [
+            {
+                "criterion_code": "BENEFIT-TARGET-COMMITMENTS",
+                "stable_source_identity": "BEN-0001",
+                "source": "BENEFITS_PLAN_READINESS",
+                "source_id": 501,
+                "source_version": 3,
+                "source_hash": "c" * 64,
+                "metric_or_kpi": "BENEFIT-COVERAGE",
+                "baseline": {"amount": "0", "currency": "COP"},
+                "target": {"amount": "100", "unit": "%"},
+                "target_date": "2028-12-31",
+                "unit": "%",
+                "condition": None,
+                "as_of": "2026-09-18",
+            }
+        ]
+        stored.decision_package_snapshot_json = package
+        stored.source_package_hash = _hash(package)
+        db.commit()
+
+        maker_service = InvestmentDecisionService(db, tenant_id, maker.id)
+        with pytest.raises(HTTPException) as guard:
+            maker_service.decide(
+                decision.id,
+                decision.revision_version,
+                DecisionDecideIn(
+                    outcome="GO",
+                    rationale="This GO must remain blocked by the required criterion.",
+                    idempotency_key=f"gate07k-criterion-block-{uuid4()}",
+                ),
+            )
+        assert guard.value.detail["code"] == "GATE_DECISION_CRITERIA_NOT_SATISFIED"
+        assert guard.value.detail["blockers"] == ["MUST_MEET:BC-FIVE-CASE-READINESS:NOT_SATISFIED"]
+
+        stored = db.get(InvestmentDecision, decision.id)
+        package = deepcopy(stored.decision_package_snapshot_json or {})
+        package["criterion_evaluations"][0]["result"] = "SATISFIED"
+        stored.decision_package_snapshot_json = package
+        stored.source_package_hash = _hash(package)
+        db.commit()
+        decided = maker_service.decide(
+            decision.id,
+            decision.revision_version,
+            DecisionDecideIn(
+                outcome="GO",
+                rationale="Required criteria are satisfied and success targets are frozen.",
+                idempotency_key=f"gate07k-success-snapshot-{uuid4()}",
+            ),
+        )
+
+        assert len(decided.success_criteria_snapshot) == 1
+        frozen = decided.success_criteria_snapshot[0]
+        assert frozen["stable_source_identity"] == "BEN-0001"
+        assert frozen["decision_id"] == decision.id
+        assert decided.authorization_output["success_criteria_snapshot_hash"]
+        assert decided.source_package_hash == _hash(decided.decision_package_snapshot)
+
+        with pytest.raises(ValueError, match="immutable"):
+            stored = db.get(InvestmentDecision, decision.id)
+            changed = deepcopy(stored.decision_package_snapshot_json)
+            changed["fid_success_criteria_snapshot"][0]["target"] = {"amount": "999"}
+            stored.decision_package_snapshot_json = changed
+            db.commit()
+    finally:
+        db.rollback()
+        db.close()
+
+
 @pytest.mark.parametrize(
     ("outcome", "extra", "expected_output"),
     [
@@ -296,6 +414,20 @@ def test_alternate_outcomes_are_closed_without_fid(outcome, extra, expected_outp
         assert decided.is_fid is False
         assert decided.status == "DECIDED"
         assert decided.authorization_output["final_output"] == expected_output
+        if outcome in {"HOLD", "RECYCLE"}:
+            with pytest.raises(HTTPException) as new_round:
+                InvestmentDecisionService(db, tenant_id, actor_id).create(
+                    DecisionCreateIn(
+                        investment_gate_preparation_id=preparation.id,
+                        title="Attempt to reuse a closed preparation",
+                        idempotency_key=f"gate07k-reuse-{outcome.lower()}-{uuid4()}",
+                    )
+                )
+            assert new_round.value.detail["code"] == "NEW_GATE07J_PREPARATION_REQUIRED"
+            assert (
+                new_round.value.detail["policy_resolution"]
+                == "CURRENT_EFFECTIVE_POLICY_REQUIRES_NEW_GATE07J_PREPARATION"
+            )
     finally:
         db.close()
 

@@ -1,0 +1,27 @@
+{
+  "measured_at": "2026-09-14T22:09:15.003Z",
+  "base_url": "http://127.0.0.1:5173",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "measurements": [
+    {
+      "label": "strategic_navigation_render",
+      "duration_ms": 93.7
+    },
+    {
+      "label": "enterprise_strategy_landing_render",
+      "duration_ms": 751.3
+    },
+    {
+      "label": "business_analysis_first_page_render",
+      "duration_ms": 3688
+    },
+    {
+      "label": "gate07j_evidence_view_render",
+      "duration_ms": 3840.4
+    }
+  ],
+  "failures": []
+}

@@ -14,6 +14,15 @@
   flex-wrap: wrap;
   gap: 5px;
 }
+.businessCaseTabs.userTabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+}
+.businessCaseTabs.userTabs button {
+  flex: 0 0 auto;
+}
 .businessCaseTabs button,
 .businessCaseControls button,
 .createSurface button {
@@ -25,6 +34,13 @@
   font-weight: 750;
   min-height: 34px;
   padding: 6px 10px;
+}
+.businessCaseControls button,
+.businessCaseEvidenceTable button {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  justify-content: center;
 }
 .businessCaseTabs button.active {
   background: #102536;
@@ -139,9 +155,12 @@
   gap: 9px;
 }
 .businessCaseGuardrail {
+  align-items: center;
   background: #fff0e8;
   border-left: 4px solid #d17a00;
   color: #7d4d00;
+  display: flex;
+  gap: 7px;
   margin: 0;
   padding: 9px 11px;
 }
@@ -194,8 +213,184 @@
 .businessCaseProjectPicker {
   margin: 10px 0;
 }
+.businessCaseAdminGuidance {
+  background: #eef6fa;
+  border-left: 4px solid #28759e;
+  color: #284d63;
+  margin: 10px 0;
+  padding: 9px 11px;
+}
+.businessCaseQuestion {
+  background: linear-gradient(135deg, #edf7f8, #f7fbfb);
+  border-left: 4px solid #168b8f;
+  border-radius: 8px;
+  grid-column: 1 / -1;
+  padding: 13px;
+}
+.businessCaseQuestion span,
+.businessCaseConclusion span,
+.businessCaseReadinessBanner span,
+.businessCaseReadinessGrid span {
+  color: #5c7281;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.businessCaseQuestion h4 {
+  font-size: 1rem;
+  margin: 4px 0;
+}
+.businessCaseQuestion p,
+.businessCaseConclusion p,
+.businessCaseDetailCard p {
+  margin: 5px 0;
+}
+.businessCaseQuestion small {
+  color: #647987;
+  display: block;
+  margin-top: 8px;
+}
+.businessCaseCaseLayout {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+.businessCaseReadinessBanner,
+.businessCaseConclusion {
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+.businessCaseReadinessBanner {
+  grid-column: 1 / -1;
+}
+.businessCaseReadinessBanner[data-readiness="READY"] {
+  background: #edf9f2;
+  border-color: #8ec7a5;
+}
+.businessCaseReadinessBanner[data-readiness="BLOCKED"],
+.businessCaseReadinessBanner[data-readiness="STALE"] {
+  background: #fff3ee;
+  border-color: #e7a38d;
+}
+.businessCaseDetailCard {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  min-width: 0;
+  padding: 10px;
+}
+.businessCaseDetailCard h4,
+.businessCaseCaseEvidence h4 {
+  margin: 0 0 7px;
+}
+.businessCaseDetailCard ul {
+  margin: 5px 0;
+  padding-left: 19px;
+}
+.businessCaseDetailCard pre {
+  margin: 0;
+  max-height: 280px;
+}
+.businessCaseConclusion,
+.businessCaseCaseEvidence {
+  grid-column: 1 / -1;
+}
+.businessCaseTableWrap {
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.businessCaseEvidenceTable {
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  min-width: 930px;
+  width: 100%;
+}
+.businessCaseEvidenceTable th,
+.businessCaseEvidenceTable td {
+  border-bottom: 1px solid #e1e7eb;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+.businessCaseEvidenceTable th {
+  background: #f3f7f8;
+  color: #506775;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.businessCaseEvidenceTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+.businessCaseEvidenceTable button {
+  background: #fff;
+  border: 1px solid #b9cad4;
+  border-radius: 6px;
+  color: #12364b;
+  font: inherit;
+  font-weight: 750;
+  padding: 5px 7px;
+  white-space: nowrap;
+}
+.businessCaseEvidenceTable button:disabled {
+  opacity: 0.45;
+}
+.businessCaseReadOnlyNotice {
+  background: #eff7fb;
+  border-left: 4px solid #28759e;
+  margin: 12px 0;
+  padding: 9px;
+}
+.businessCaseReadinessGrid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin: 10px 0;
+}
+.businessCaseReadinessGrid article,
+.businessCaseSnapshotList article,
+.businessCaseHistoryList article {
+  background: #f6f9fa;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 10px;
+}
+.businessCaseReadinessView,
+.businessCaseSnapshotList,
+.businessCaseHistoryList {
+  display: grid;
+  gap: 9px;
+  margin-top: 10px;
+}
+.businessCaseSnapshotList code,
+.businessCaseHistoryList code {
+  color: #566e7c;
+  overflow-wrap: anywhere;
+}
+.businessCaseRevisionEditor {
+  border-top: 1px solid #d7e0e7;
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.businessCaseRevisionEditor summary {
+  cursor: pointer;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
 @media (max-width: 850px) {
   .businessCaseAdminGrid {
+    grid-template-columns: 1fr;
+  }
+  .businessCaseCaseLayout {
     grid-template-columns: 1fr;
   }
 }

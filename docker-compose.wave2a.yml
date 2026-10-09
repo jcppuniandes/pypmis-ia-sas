@@ -1,0 +1,57 @@
+name: pypmis-wave2a
+
+services:
+  wave2a-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave2a
+      POSTGRES_USER: wave2a
+      POSTGRES_PASSWORD: wave2a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave2a -d wave2a"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave2a-migration-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wave2a_migration
+      POSTGRES_USER: wave2a
+      POSTGRES_PASSWORD: wave2a
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wave2a -d wave2a_migration"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  wave2a-validation:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://wave2a:wave2a@wave2a-db:5432/wave2a
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://wave2a:wave2a@wave2a-db:5432/wave2a
+      PYPMIS_WAVE2A_MIGRATION_DATABASE_URL: postgresql+psycopg://wave2a:wave2a@wave2a-migration-db:5432/wave2a_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: wave2a-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.main; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest --no-cov -q -rA tests/postgres/test_wave2a_strategic_capital_allocation_migration_postgres.py
+        pytest --no-cov -q -rA tests/postgres/test_wave2a_strategic_capital_allocation_postgres.py
+    depends_on:
+      wave2a-db:
+        condition: service_healthy
+      wave2a-migration-db:
+        condition: service_healthy

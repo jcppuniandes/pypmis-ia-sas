@@ -7,9 +7,11 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
+from app.core.time import utc_now
 from app.database.session import SessionLocal
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace, UserAccount
 from app.main import app
+from app.modules.business_analysis.models import BusinessAnalysis
 from app.modules.business_case.models import BusinessCaseDecisionSnapshot
 from app.modules.business_case.service import NEXT_PROCESS, READY_OUTPUT, BusinessCaseService
 from app.modules.idea_demand.models import Idea, IdeaEvaluation
@@ -225,6 +227,59 @@ def test_etag_mismatch_uses_precondition_failed_semantics() -> None:
         db.close()
 
 
+def test_source_bundle_uses_proposal_business_analysis_lineage_and_current_recommended_option() -> None:
+    db, actor, project, proposal, service = _fixture()
+    try:
+        suffix = uuid4().hex[:10]
+        analysis = BusinessAnalysis(
+            tenant_id=actor.tenant_id,
+            analysis_number=f"BA-BC5C-{suffix}",
+            source_idea_id=proposal.source_idea_id,
+            source_idea_evaluation_id=proposal.accepted_idea_evaluation_id,
+            owning_workspace_id=proposal.owning_workspace_id,
+            status="COMPLETED",
+            title="Pinned source analysis",
+            content_json={
+                "options": [{"id": "ALT-1", "name": "Preferred option"}],
+                "recommended_option_id": "ALT-1",
+            },
+            recommended_option_id="ALT-1",
+            readiness_json={"status": "READY", "blockers": []},
+            source_idea_hash="1" * 64,
+            configuration_id=proposal.mapping_configuration_id,
+            configuration_revision=1,
+            configuration_hash="2" * 64,
+            review_json={},
+            completion_hash="3" * 64,
+            idempotency_key=f"ba-bc5c-{suffix}",
+            created_by_user_id=actor.id,
+            updated_by_user_id=actor.id,
+            reviewer_user_id=actor.id,
+            completed_at=utc_now(),
+        )
+        db.add(analysis)
+        db.flush()
+        proposal.source_business_analysis_id = analysis.id
+        proposal.source_business_analysis_hash = analysis.completion_hash
+        proposal.source_values_snapshot_json = {"recommended_option_id": "ALT-1"}
+        db.commit()
+
+        references, hashes = service._source_bundle(project.id, proposal.id)
+        assert references["business_analysis"]["id"] == analysis.id
+        assert references["business_analysis"]["recommended_option_current"] is True
+        assert references["business_analysis"]["source_current"] is True
+        assert hashes["business_analysis"] == analysis.completion_hash
+
+        proposal.source_values_snapshot_json = {"recommended_option_id": "ALT-2"}
+        db.commit()
+        stale_references, _ = service._source_bundle(project.id, proposal.id)
+        assert stale_references["business_analysis"]["recommended_option_current"] is False
+        assert stale_references["business_analysis"]["source_current"] is False
+    finally:
+        db.rollback()
+        db.close()
+
+
 def test_complete_snapshot_and_new_revision_preserve_longitudinal_history() -> None:
     db, _actor, project, proposal, service = _fixture()
     try:
@@ -275,6 +330,11 @@ def test_complete_snapshot_and_new_revision_preserve_longitudinal_history() -> N
         assert snapshot.snapshot_json["alternatives"] == []
         assert snapshot.snapshot_json["unresolved_concerns"] == [{"description": "Source evidence remains incomplete"}]
         assert snapshot.snapshot_json["economic_financial_model_reference"]["status"] == "NOT_AVAILABLE"
+        assert snapshot.snapshot_json["five_case_hash"]
+        assert snapshot.snapshot_json["source_bundle_hash"] == completed.source_bundle_hash
+        assert snapshot.snapshot_json["business_case_hash"] == completed.business_case_hash
+        assert snapshot.snapshot_json["five_case_readiness"] == completed.five_case_readiness_json
+        assert snapshot.snapshot_json["source_references"]["proposal"]["id"] == proposal.id
         next_revision = service.create_revision(created.id, "REVALIDATION", f"gate07m-revision-{uuid4()}")
         assert next_revision.revision_number == 2
         assert next_revision.status == "DRAFT"

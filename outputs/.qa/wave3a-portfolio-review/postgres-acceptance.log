@@ -1,0 +1,199 @@
+wave3a-validation-1  | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+wave3a-validation-1  | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+wave3a-validation-1  | INFO  [alembic.runtime.migration] Running stamp_revision  -> 20261005_0064
+wave3a-validation-1  | .                                                                        [100%]
+wave3a-validation-1  | ==================================== PASSES ====================================
+wave3a-validation-1  | =========================== short test summary info ============================
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_migration_postgres.py::test_wave3a_periodic_portfolio_review_postgres_upgrade_downgrade_upgrade
+wave3a-validation-1  | 1 passed in 51.30s
+wave3a-validation-1  | ...............................                                          [100%]
+wave3a-validation-1  | ==================================== PASSES ====================================
+wave3a-validation-1  | _ test_wave3a_admin_preview_is_nonpersisted_clone_keeps_scope_and_scoped_admin_cannot_escape _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:38:20,567 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:38:20,598 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-reviews/admin/preview "HTTP/1.1 200 OK"
+wave3a-validation-1  | 2026-10-07 00:38:21,494 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:38:21,496 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-reviews/admin/configurations/1/clone "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-reviews/admin/preview "HTTP/1.1 200 OK"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-reviews/admin/configurations/1/clone "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | ___ test_wave3a_http_etag_idempotency_and_admin_user_approval_dispatch_rbac ____
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:40:28,265 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:28,337 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | 2026-10-07 00:40:29,587 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:29,594 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 201 Created"
+wave3a-validation-1  | 2026-10-07 00:40:29,729 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:29,734 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | 2026-10-07 00:40:30,885 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:30,888 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 200 OK"
+wave3a-validation-1  | 2026-10-07 00:40:31,612 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:31,640 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 412 Precondition Failed"
+wave3a-validation-1  | 2026-10-07 00:40:32,799 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:32,822 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/admin/configurations "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:40:33,887 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:33,903 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/admin/configurations "HTTP/1.1 200 OK"
+wave3a-validation-1  | 2026-10-07 00:40:34,983 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:34,988 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:40:35,832 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:35,834 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-review-actions/14/approve "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:40:36,493 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:36,494 INFO [httpx] HTTP Request: POST http://testserver/api/v1/portfolio-review-actions/14/dispatch "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 201 Created"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 200 OK"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/19 "HTTP/1.1 412 Precondition Failed"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/admin/configurations "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/admin/configurations "HTTP/1.1 200 OK"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-reviews "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-review-actions/14/approve "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/v1/portfolio-review-actions/14/dispatch "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | _ test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[title] _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:40:46,287 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:46,288 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/20 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/20 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | _ test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[review_date] _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:40:55,509 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:40:55,511 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/21 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/21 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | _ test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[chair_user_id] _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:41:02,632 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:02,635 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/22 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/22 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | _ test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[agenda] _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:41:09,183 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:09,185 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/23 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-reviews/23 "HTTP/1.1 422 Unprocessable Entity"
+wave3a-validation-1  | _ test_wave3a_http_owner_organization_and_preparer_scoped_grants_do_not_cross_multiply _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:41:19,163 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:19,165 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/15 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:20,793 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:20,795 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/16 "HTTP/1.1 200 OK"
+wave3a-validation-1  | 2026-10-07 00:41:21,632 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:21,634 INFO [httpx] HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/17 "HTTP/1.1 200 OK"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/15 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/16 "HTTP/1.1 200 OK"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/v1/portfolio-review-actions/17 "HTTP/1.1 200 OK"
+wave3a-validation-1  | _ test_wave3a_http_tenant_and_workspace_scope_are_enforced_for_all_read_models _
+wave3a-validation-1  | ----------------------------- Captured stderr call -----------------------------
+wave3a-validation-1  | 2026-10-07 00:41:34,815 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:34,816 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:35,283 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:35,285 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26 "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:36,532 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:36,534 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/project-matrix "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:37,093 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:37,095 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/project-matrix "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:37,686 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:37,690 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/allocation "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:38,334 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:38,335 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/allocation "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:38,797 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:38,798 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/budget-resources "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:39,590 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:39,592 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/budget-resources "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:40,188 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:40,190 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/gate-status "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:40,840 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:40,842 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/gate-status "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:41,306 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:41,307 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/history "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | 2026-10-07 00:41:41,795 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:41,797 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/history "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | 2026-10-07 00:41:42,289 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:42,290 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews "HTTP/1.1 200 OK"
+wave3a-validation-1  | 2026-10-07 00:41:42,782 INFO [pypmis.request] request_completed
+wave3a-validation-1  | 2026-10-07 00:41:42,783 INFO [httpx] HTTP Request: GET http://testserver/api/v1/portfolio-reviews/trends?portfolio_workspace_id=106 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | ------------------------------ Captured log call -------------------------------
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26 "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/project-matrix "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/project-matrix "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/allocation "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/allocation "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/budget-resources "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/budget-resources "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/gate-status "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/gate-status "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/history "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/26/history "HTTP/1.1 404 Not Found"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews "HTTP/1.1 200 OK"
+wave3a-validation-1  | INFO     pypmis.request:observability.py:190 request_completed
+wave3a-validation-1  | INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/v1/portfolio-reviews/trends?portfolio_workspace_id=106 "HTTP/1.1 403 Forbidden"
+wave3a-validation-1  | =========================== short test summary info ============================
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_acceptance_cannot_bypass_approval_through_update
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_owner_with_other_nonprivileged_role_cannot_edit_someone_elses_action
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_semantics_are_request_only_without_source_mutations[HOLD_FOR_CAPACITY]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_semantics_are_request_only_without_source_mutations[REQUEST_REASSESSMENT]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_semantics_are_request_only_without_source_mutations[REBALANCE_CAPITAL]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_semantics_are_request_only_without_source_mutations[MOVE_BETWEEN_BUCKETS]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_action_semantics_are_request_only_without_source_mutations[REQUEST_GATE_REVALIDATION]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_admin_preview_is_nonpersisted_clone_keeps_scope_and_scoped_admin_cannot_escape
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_bucket_subject_and_source_authority_are_controlled_not_arbitrary
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_cancelled_and_superseded_reviews_do_not_allow_action_mutations[CANCELLED]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_cancelled_and_superseded_reviews_do_not_allow_action_mutations[SUPERSEDED]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_completed_history_trends_and_comparison_never_reinterpret_live_sources
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_controlled_return_cancel_supersede_transitions_are_idempotent_and_terminal
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_governance_model_is_opt_in_and_empty_portfolio_cannot_freeze
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_etag_idempotency_and_admin_user_approval_dispatch_rbac
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[title]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[review_date]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[chair_user_id]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_null_required_update_is_validation_error_and_does_not_mutate[agenda]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_owner_organization_and_preparer_scoped_grants_do_not_cross_multiply
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_http_tenant_and_workspace_scope_are_enforced_for_all_read_models
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[PORTFOLIO_RANK]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[STRATEGIC_ALLOCATION]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[BUDGET_SCENARIO]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[RESOURCE_SCENARIO]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[SCENARIO_RECOMMENDATION]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[GATE_CONTEXT]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_required_missing_sources_block_readiness_and_freeze[RISK_READINESS]
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_snapshot_staleness_refresh_and_source_history_remain_immutable
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_two_actor_lifecycle_snapshot_preview_freeze_idempotency_and_sod
+wave3a-validation-1  | PASSED tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py::test_wave3a_postgres_dialect_schema_indexes_and_constraints
+wave3a-validation-1  | 31 passed in 642.10s (0:10:42)

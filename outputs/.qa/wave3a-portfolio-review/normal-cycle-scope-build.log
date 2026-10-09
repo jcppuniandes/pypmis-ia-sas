@@ -1,0 +1,176 @@
+ Image pypmis-ia-sas-api Building 
+ Image pypmis-ia-sas-worker Building 
+ Image pypmis-ia-sas-beat Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.57kB 0.3s done
+#1 DONE 0.3s
+
+#2 [worker internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 609B 0.1s done
+#2 DONE 0.2s
+
+#3 [worker internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 1.4s
+
+#4 [beat internal] load .dockerignore
+#4 transferring context: 157B 0.1s done
+#4 transferring context: 157B 0.1s done
+#4 DONE 0.2s
+
+#5 [worker internal] load build context
+#5 DONE 0.0s
+
+#6 [api  1/12] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#6 ...
+
+#5 [beat internal] load build context
+#5 DONE 0.0s
+
+#6 [beat  1/12] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+#6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 1.4s done
+#6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 1.4s done
+#6 DONE 1.5s
+
+#5 [api internal] load build context
+#5 transferring context: 786.85kB 1.4s done
+#5 DONE 1.5s
+
+#7 [worker  6/12] COPY alembic.ini ./
+#7 CACHED
+
+#8 [worker  7/12] COPY gunicorn.conf.py ./
+#8 CACHED
+
+#9 [worker  2/12] WORKDIR /app
+#9 CACHED
+
+#10 [worker  3/12] COPY requirements.txt .
+#10 CACHED
+
+#11 [worker  4/12] RUN pip install --no-cache-dir -r requirements.txt
+#11 CACHED
+
+#12 [worker  5/12] COPY pyproject.toml ./
+#12 CACHED
+
+#13 [worker  8/12] COPY alembic ./alembic
+#13 CACHED
+
+#8 [api  7/12] COPY gunicorn.conf.py ./
+#8 CACHED
+
+#9 [api  2/12] WORKDIR /app
+#9 CACHED
+
+#11 [api  4/12] RUN pip install --no-cache-dir -r requirements.txt
+#11 CACHED
+
+#10 [api  3/12] COPY requirements.txt .
+#10 CACHED
+
+#12 [api  5/12] COPY pyproject.toml ./
+#12 CACHED
+
+#7 [api  6/12] COPY alembic.ini ./
+#7 CACHED
+
+#14 [worker  9/12] COPY app ./app
+#14 DONE 3.7s
+
+#15 [worker 10/12] COPY tests ./tests
+#15 DONE 2.4s
+
+#16 [api 11/12] COPY config ./config
+#16 DONE 0.4s
+
+#17 [api 12/12] RUN mkdir -p /app/storage/documents     && useradd --system --create-home --home-dir /app appuser     && chown -R appuser /app
+#17 10.90 useradd: warning: the home directory /app already exists.
+#17 10.90 useradd: Not copying any file from skel directory into it.
+#17 DONE 86.3s
+
+#18 [api] exporting to image
+#18 exporting layers
+#18 ...
+
+#19 [beat] exporting to image
+#19 ...
+
+#20 [worker] exporting to image
+#20 ...
+
+#19 [beat] exporting to image
+#19 exporting layers 22.7s done
+#19 exporting manifest sha256:4806ba763ec899b630033547ecede4499f3b0688ef87ea80bae9b280c7e1fc9a
+#19 exporting manifest sha256:4806ba763ec899b630033547ecede4499f3b0688ef87ea80bae9b280c7e1fc9a 1.8s done
+#19 exporting config sha256:65555b831aeacbd30ab18602a666affe7cfd5778cf473a1616a73f205265cd24
+#19 exporting config sha256:65555b831aeacbd30ab18602a666affe7cfd5778cf473a1616a73f205265cd24 2.0s done
+#19 exporting attestation manifest sha256:76042a69a24579b060f374bf17f8d9acf5cf598f6a22d9f3ee7b9afbd9008d1a
+#19 ...
+
+#20 [worker] exporting to image
+#20 exporting layers 22.7s done
+#20 exporting manifest sha256:0e7dced67406ad941f07baf1ac3f4cf659e00956c883f10b902d4c47a895a6de 1.6s done
+#20 exporting config sha256:29f4a735725eb794899d88ff4a31f2c735dddf6416d48dd95aaa57d1c5e76819 1.9s done
+#20 exporting attestation manifest sha256:6489bfdf2d73aed4c3c23398a7cdb52d1402d4def936b3ec70e80f47d945a7fc 2.0s done
+#20 exporting manifest list sha256:31a9f627d734b674e488488dc46923af48707849f9f4ff844a9c1c0fecc93271
+#20 ...
+
+#19 [beat] exporting to image
+#19 exporting attestation manifest sha256:76042a69a24579b060f374bf17f8d9acf5cf598f6a22d9f3ee7b9afbd9008d1a 2.1s done
+#19 exporting manifest list sha256:40e810e780c964a22f2f22877c05facf3598719dd8a3a12b69e47e3148119e92
+#19 exporting manifest list sha256:40e810e780c964a22f2f22877c05facf3598719dd8a3a12b69e47e3148119e92 1.7s done
+#19 naming to docker.io/library/pypmis-ia-sas-beat:latest
+#19 naming to docker.io/library/pypmis-ia-sas-beat:latest 0.2s done
+#19 unpacking to docker.io/library/pypmis-ia-sas-beat:latest
+#19 ...
+
+#18 [api] exporting to image
+#18 exporting layers 22.9s done
+#18 exporting manifest sha256:54f98afe6bf9a165120da24652a843c6c17f6a1f9580f4043ef1fb637a9c3580 2.1s done
+#18 exporting config sha256:884cba93855df519e70364460df3e14f2062ba1fc12fe59edbc9ad1b79c85013 2.1s done
+#18 exporting attestation manifest sha256:49c48c736db0c9de30bc449de206d589886ecb4ccb48908642eb0dfff7ecc36f 2.1s done
+#18 exporting manifest list sha256:863b92d69f78e5ecddd602799d72adfce7d2c961b1671868cd4fbe637124fb05 1.6s done
+#18 naming to docker.io/library/pypmis-ia-sas-api:latest 0.1s done
+#18 unpacking to docker.io/library/pypmis-ia-sas-api:latest
+#18 ...
+
+#20 [worker] exporting to image
+#20 exporting manifest list sha256:31a9f627d734b674e488488dc46923af48707849f9f4ff844a9c1c0fecc93271 1.7s done
+#20 naming to docker.io/library/pypmis-ia-sas-worker:latest 0.4s done
+#20 unpacking to docker.io/library/pypmis-ia-sas-worker:latest
+#20 unpacking to docker.io/library/pypmis-ia-sas-worker:latest 34.5s done
+#20 ...
+
+#18 [api] exporting to image
+#18 unpacking to docker.io/library/pypmis-ia-sas-api:latest 34.5s done
+#18 ...
+
+#20 [worker] exporting to image
+#20 DONE 67.7s
+
+#19 [beat] exporting to image
+#19 unpacking to docker.io/library/pypmis-ia-sas-beat:latest 34.8s done
+#19 ...
+
+#18 [api] exporting to image
+#18 DONE 68.0s
+
+#19 [beat] exporting to image
+#19 DONE 68.6s
+
+#21 [worker] resolving provenance for metadata file
+#21 ...
+
+#22 [api] resolving provenance for metadata file
+#22 DONE 1.0s
+
+#21 [worker] resolving provenance for metadata file
+#21 DONE 2.9s
+
+#23 [beat] resolving provenance for metadata file
+#23 DONE 2.5s
+ Image pypmis-ia-sas-api Built 
+ Image pypmis-ia-sas-worker Built 
+ Image pypmis-ia-sas-beat Built 

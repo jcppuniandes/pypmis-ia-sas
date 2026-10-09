@@ -1,0 +1,16 @@
+{
+  "file": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\technical_reports\\Informe_Tecnico_Gate_07M_EVID_Policy_Update_20260903.docx",
+  "checks": {
+    "final_output_present": true,
+    "exclusive_state_present": true,
+    "next_present": true,
+    "stop_present": true,
+    "both_providers_present": true,
+    "policy_identity_present": true,
+    "traceability_101_present": true,
+    "no_fake_bullets": true,
+    "no_placeholder_text": true
+  },
+  "result": "PASS",
+  "failed": []
+}

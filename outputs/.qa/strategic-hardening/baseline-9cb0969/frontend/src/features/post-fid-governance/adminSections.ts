@@ -1,0 +1,16 @@
+export const POST_FID_ADMIN_SECTIONS = [
+  "General",
+  "FID Eligibility Rules",
+  "Project State Mapping",
+  "Initialization Eligibility",
+  "Activation Eligibility",
+  "Condition Rules",
+  "Authorization Validity",
+  "Governance Model Applicability",
+  "Handoff Rules",
+  "Staleness",
+  "Inheritance",
+  "Permissions",
+  "Preview",
+  "History",
+] as const;

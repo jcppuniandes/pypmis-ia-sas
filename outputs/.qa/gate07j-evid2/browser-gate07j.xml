@@ -1,0 +1,6 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="21.627749000000005">
+<testsuite name="investment-gate-preparation.spec.ts" timestamp="2026-09-21T00:43:31.914Z" hostname="chromium" tests="1" failures="0" skipped="0" time="16.34" errors="0">
+<testcase name="Gate 07J Investment Gate Preparation browser › USER package and ADMIN dry-run preserve decision and FID boundaries" classname="investment-gate-preparation.spec.ts" time="16.34">
+</testcase>
+</testsuite>
+</testsuites>

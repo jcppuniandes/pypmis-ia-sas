@@ -1,0 +1,9 @@
+{
+  "approve_then_modify_then_publish": "APPROVAL_INVALIDATED",
+  "database": "ephemeral PostgreSQL",
+  "four_eyes": "PASS",
+  "stale_writer_reason": "REVISION_VERSION_CONFLICT",
+  "stale_writer_status": 409,
+  "status": "PASS",
+  "validate_then_modify_then_approve": "HASH_MISMATCH"
+}

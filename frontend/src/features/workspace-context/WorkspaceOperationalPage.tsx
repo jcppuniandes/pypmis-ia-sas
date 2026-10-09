@@ -1,13 +1,15 @@
 import { Archive, ArrowLeft, Building2, Clock3, FileText, Home, UserRound, Workflow } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
 import IdeaLifecycleWorkspace from "../idea-demand/IdeaLifecycleWorkspace";
+import BusinessAnalysisWorkspace from "../business-analysis/BusinessAnalysisWorkspace";
 import ProjectProposalWorkspace from "../project-proposal/ProjectProposalWorkspace";
 import StrategicGateWorkspace from "../strategic-gate/StrategicGateWorkspace";
 import PortfolioProjectsWorkspace from "../portfolio-planning/PortfolioProjectsWorkspace";
 import ProjectStrategicContext from "../portfolio-planning/ProjectStrategicContext";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
+import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
 import { WorkspaceContextProvider, useActiveWorkspaceContext } from "./WorkspaceContextProvider";
 import "./workspaceContext.css";
@@ -57,6 +59,10 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
   const navigate = useNavigate();
   const routeParts = location.pathname.replace(/\/+$/, "").split("/");
   const routeCode = routeParts[routeParts.length - 1] || "home";
+  const navigatorItems = useMemo(
+    () => orderStrategicWorkspaceNavigator(context?.navigator ?? [], context?.identity.workspace_type ?? ""),
+    [context?.identity.workspace_type, context?.navigator]
+  );
 
   if (loading) return <section className="workspaceContextLoading">Loading Workspace Context…</section>;
   if (error || !context || !home) {
@@ -69,10 +75,10 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
     );
   }
 
-  const selected = context.navigator.find((item) => item.code === routeCode);
+  const selected = navigatorItems.find((item) => item.code === routeCode);
   if (!selected && routeCode !== String(workspaceId))
     return <Navigate replace to={`/workspaces/${workspaceId}/home`} />;
-  const current = selected ?? context.navigator.find((item) => item.code === "home");
+  const current = selected ?? navigatorItems.find((item) => item.code === "home");
 
   async function selectRoute(route: string, state: string) {
     if (state !== "READY") return;
@@ -130,7 +136,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             <Workflow size={17} />
             <strong>Workspace Navigator</strong>
           </header>
-          {context.navigator.map((item) => (
+          {navigatorItems.map((item) => (
             <button
               aria-current={current?.code === item.code ? "page" : undefined}
               className={current?.code === item.code ? "active" : ""}
@@ -159,7 +165,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
               { label: "Status", value: context.identity.workspace_status },
               {
                 label: "Modules",
-                value: context.navigator.filter(
+                value: navigatorItems.filter(
                   (item) => item.state === "READY" && !["home", "overview"].includes(item.code)
                 ).length,
               },
@@ -170,6 +176,8 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
 
           {current?.code === "ideas" ? (
             <IdeaLifecycleWorkspace token={token} workspaceId={workspaceId} />
+          ) : current?.code === "business-analyses" ? (
+            <BusinessAnalysisWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "project-proposals" ? (
             <ProjectProposalWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "strategic-gate-decisions" ? (
@@ -223,7 +231,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
                   <h2>Enabled Modules</h2>
                 </header>
                 <div className="workspaceModuleChips">
-                  {context.navigator
+                  {navigatorItems
                     .filter((item) => item.state === "READY" && !["home", "overview"].includes(item.code))
                     .map((item) => (
                       <span key={item.code}>{item.label}</span>
@@ -239,7 +247,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
                   <h2>Planned Modules</h2>
                 </header>
                 <div className="workspaceModuleChips">
-                  {context.navigator
+                  {navigatorItems
                     .filter((item) => item.state === "PLANNED")
                     .map((item) => (
                       <span key={item.code}>{item.label} · PLANNED</span>

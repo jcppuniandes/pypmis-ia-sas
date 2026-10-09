@@ -83,12 +83,14 @@ function categoryContent(category: ConfigurationVersion) {
 export default function AdminEnterpriseStructurePage({
   token,
   canConfigure,
+  initialTab = "hierarchy",
 }: {
   token: string;
   canConfigure: boolean;
+  initialTab?: AdminTab;
 }) {
   const [data, setData] = useState<EnterpriseStructureConfiguration | null>(null);
-  const [tab, setTab] = useState<AdminTab>("hierarchy");
+  const [tab, setTab] = useState<AdminTab>(initialTab);
   const initialTabResolved = useRef(false);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [nodeMode, setNodeMode] = useState<"create" | "edit">("create");

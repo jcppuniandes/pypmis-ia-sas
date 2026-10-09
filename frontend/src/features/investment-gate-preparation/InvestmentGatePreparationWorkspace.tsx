@@ -6,6 +6,7 @@ import { portfolioPlanningApi } from "../portfolio-planning/api";
 import "../portfolio-planning/portfolioPlanning.css";
 import { investmentGatePreparationApi } from "./api";
 import type {
+  CriterionEvaluationResult,
   InvestmentGateEvidence,
   InvestmentGateOverview,
   InvestmentGatePreparation,
@@ -13,9 +14,10 @@ import type {
 } from "./types";
 import "./investmentGatePreparation.css";
 
-type View = "preparations" | "evidence" | "projects" | "conditions" | "history";
+type View = "preparations" | "matrix" | "evidence" | "projects" | "conditions" | "history";
 const views: Array<[View, string]> = [
   ["preparations", "Preparations"],
+  ["matrix", "Gate Matrix"],
   ["evidence", "Evidence Package"],
   ["projects", "Project Readiness"],
   ["conditions", "Conditions"],
@@ -23,6 +25,280 @@ const views: Array<[View, string]> = [
 ];
 
 const gate07mEvidence = new Set(["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"]);
+
+const criterionTypeLabels: Record<string, string> = {
+  READINESS_CHECK: "Readiness checks",
+  MUST_MEET: "Must-meet criteria",
+  DECISION_HURDLE: "Decision hurdles",
+  PRIORITIZATION: "Portfolio context",
+  SUCCESS_CRITERION: "Success criteria candidates",
+};
+
+function display(value: unknown): string {
+  if (value == null || value === "") return "—";
+  if (typeof value === "boolean") return value ? "YES" : "NO";
+  if (Array.isArray(value)) return value.map(display).join(", ") || "—";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function criterionStage(type: string): string {
+  if (type === "READINESS_CHECK") return "Gate Readiness";
+  if (type === "PRIORITIZATION") return "Portfolio / Resource Context";
+  return "Business Evaluation";
+}
+
+function evaluationTone(value: unknown): string {
+  const normalized = String(value || "NOT_EVALUATED")
+    .toLowerCase()
+    .split("_")
+    .join("-");
+  return `gateStatus gateStatus-${normalized}`;
+}
+
+function GateStageSummary({ preparation }: { preparation: InvestmentGatePreparation | null }) {
+  const readiness = preparation?.readiness;
+  const stages = [
+    ["Evidence Readiness", readiness?.evidence_readiness_status || "NOT_EVALUATED"],
+    ["Business Evaluation", readiness?.business_evaluation_status || "NOT_APPLICABLE"],
+    ["Portfolio & Resource Context", readiness?.portfolio_context_status || "NOT_EVALUATED"],
+    ["Decision Package", readiness?.decision_package_status || "NOT_READY_FOR_INVESTMENT_DECISION"],
+  ];
+  return (
+    <section aria-label="Gate evaluation stages" className="gateStageSummary">
+      {stages.map(([label, value]) => (
+        <article key={label}>
+          <span>{label}</span>
+          <strong className={evaluationTone(value)}>{value}</strong>
+        </article>
+      ))}
+      <p>READY means eligible for a governed Gate 07K decision; it never means automatic GO.</p>
+    </section>
+  );
+}
+
+function CriterionGroups({ criteria }: { criteria: CriterionEvaluationResult[] }) {
+  return (
+    <div aria-label="Decision criteria grouped by taxonomy" className="criterionGroups" role="group">
+      {Object.entries(criterionTypeLabels).map(([type, label]) => {
+        const rows = criteria.filter((item) => item.criterion_type === type);
+        return (
+          <section key={type}>
+            <header>
+              <h4>{label}</h4>
+              <span>{rows.length}</span>
+            </header>
+            {rows.length ? (
+              rows.map((item) => (
+                <article key={String(item.criterion_id || item.criterion_code)}>
+                  <div>
+                    <strong>{item.criterion_name || item.criterion_code}</strong>
+                    <small>{item.criterion_code}</small>
+                  </div>
+                  <b className={evaluationTone(item.result)}>{item.result}</b>
+                  <span>
+                    {item.required ? "Required" : "Advisory"} · {item.blocking ? "Blocking" : "Non-blocking"}
+                  </span>
+                </article>
+              ))
+            ) : (
+              <p>No applicable criteria.</p>
+            )}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function GateMatrix({ preparation }: { preparation: InvestmentGatePreparation }) {
+  const criteria = preparation.criterion_evaluations || preparation.readiness.criterion_evaluations || [];
+  return (
+    <>
+      <div className="gateMatrixWrap">
+        <table aria-label="Gate evidence and decision criteria matrix" className="gateMatrix">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Evidence / Criterion</th>
+              <th>Class / Type</th>
+              <th>Source</th>
+              <th>Version</th>
+              <th>Status</th>
+              <th>Readiness</th>
+              <th>Quality / Confidence</th>
+              <th>Current / Stale</th>
+              <th>Coverage</th>
+              <th>Threshold / Expected</th>
+              <th>Actual Result</th>
+              <th>Blocking</th>
+              <th>As-of</th>
+              <th>Source detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            {preparation.evidence.map((item) => (
+              <tr key={`evidence-${item.id}`}>
+                <td>Gate Readiness</td>
+                <td>
+                  <strong>{item.requirement_key}</strong>
+                  <small>{item.evidence_type}</small>
+                </td>
+                <td>Evidence Class {item.classification || "—"}</td>
+                <td>{item.provider_key || item.evidence_origin}</td>
+                <td>{display(item.source_version)}</td>
+                <td>
+                  <span className={evaluationTone(item.resolution_status || item.status)}>
+                    {item.resolution_status || item.status}
+                  </span>
+                </td>
+                <td>{item.source_readiness_status || item.resolution_status || item.status}</td>
+                <td>
+                  <span>{item.evidence_quality || "NOT AVAILABLE"}</span>
+                  <small>Confidence {display(item.evidence_confidence)}</small>
+                </td>
+                <td>{item.source_current == null ? "NOT EVALUATED" : item.source_current ? "CURRENT" : "STALE"}</td>
+                <td>{item.coverage_requirement == null ? "N/A" : `${item.coverage_requirement}%`}</td>
+                <td>N/A</td>
+                <td>{item.summary || item.resolution_status}</td>
+                <td>{item.blocking ? "YES" : "NO"}</td>
+                <td>{item.as_of || item.evidence_date || "—"}</td>
+                <td>
+                  <details>
+                    <summary>View source</summary>
+                    <pre>{JSON.stringify(item.evidence_refs, null, 2)}</pre>
+                  </details>
+                </td>
+              </tr>
+            ))}
+            {criteria.map((item) => (
+              <tr key={`criterion-${String(item.criterion_id || item.criterion_code)}`}>
+                <td>{criterionStage(item.criterion_type)}</td>
+                <td>
+                  <strong>{item.criterion_name || item.criterion_code}</strong>
+                  <small>{item.criterion_code}</small>
+                </td>
+                <td>{item.criterion_type}</td>
+                <td>{display(item.source_reference)}</td>
+                <td>Policy {display(item.policy_revision)}</td>
+                <td>
+                  <span className={evaluationTone(item.result)}>{item.result}</span>
+                </td>
+                <td>{item.result}</td>
+                <td>Governed source metadata</td>
+                <td>{item.result === "STALE" ? "STALE" : "CURRENT / SEE SOURCE"}</td>
+                <td>N/A</td>
+                <td>{display(item.threshold_or_expected_value ?? item.threshold ?? item.expected_value)}</td>
+                <td>{display(item.source_value)}</td>
+                <td>{item.blocking ? "YES" : "NO"}</td>
+                <td>{item.evaluated_at || "—"}</td>
+                <td>
+                  <small>Operator {item.operator || "—"}</small>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <CriterionGroups criteria={criteria} />
+    </>
+  );
+}
+
+function GovernedContext({ preparation }: { preparation: InvestmentGatePreparation }) {
+  const context = record(preparation.portfolio_context_snapshot);
+  const candidates = preparation.success_criteria_candidates || preparation.readiness.success_criteria_candidates || [];
+  const projectContexts = Array.isArray(preparation.source_snapshot.project_contexts)
+    ? preparation.source_snapshot.project_contexts
+    : Array.isArray(record(preparation.source_snapshot.evidence_policy).project_contexts)
+      ? (record(preparation.source_snapshot.evidence_policy).project_contexts as unknown[])
+      : [];
+  return (
+    <div className="gateContextLayout">
+      <section aria-label="Gate scope and maturity" className="gateContextPanel">
+        <header>
+          <h4>Gate scope and FEL maturity</h4>
+        </header>
+        <dl>
+          <div>
+            <dt>Gate Profile</dt>
+            <dd>{preparation.profile_code}</dd>
+          </div>
+          <div>
+            <dt>Project / Project Set</dt>
+            <dd>{display(preparation.source_snapshot.selected_project_ids)}</dd>
+          </div>
+          <div>
+            <dt>FEL Stage</dt>
+            <dd>{display(projectContexts.map((item) => record(item).fel_stage))}</dd>
+          </div>
+          <div>
+            <dt>Policy revision</dt>
+            <dd>{display(record(preparation.criterion_policy_snapshot).policy_revision)}</dd>
+          </div>
+        </dl>
+      </section>
+      <section aria-label="Frozen Portfolio context" className="gateContextPanel">
+        <header>
+          <h4>Portfolio & Resource Context</h4>
+        </header>
+        <dl>
+          {Object.entries(context).map(([key, value]) => (
+            <div key={key}>
+              <dt>{key.split("_").join(" ")}</dt>
+              <dd>{display(value)}</dd>
+            </div>
+          ))}
+        </dl>
+        {!Object.keys(context).length ? <p>No Portfolio context is available for this preparation.</p> : null}
+      </section>
+      <section aria-label="Success criteria candidates" className="gateContextPanel">
+        <header>
+          <h4>Success criteria candidates</h4>
+          <span>{candidates.length}</span>
+        </header>
+        {candidates.length ? (
+          candidates.map((item, index) => (
+            <article key={String(item.criterion_id || item.criterion_code || index)}>
+              <strong>{display(item.criterion_name || item.criterion_code || `Candidate ${index + 1}`)}</strong>
+              <span>{display(item.result || item.status)}</span>
+              <small>{display(item.source_reference || item.source_value)}</small>
+            </article>
+          ))
+        ) : (
+          <p>No success criteria candidates are applicable.</p>
+        )}
+      </section>
+      <section aria-label="Gate warnings and blockers" className="gateContextPanel">
+        <header>
+          <h4>Warnings, blockers and stale sources</h4>
+        </header>
+        <div className="gateIssueColumns">
+          <div>
+            <b>Blockers</b>
+            {preparation.readiness.blockers.length ? (
+              preparation.readiness.blockers.map((item) => <span key={item}>{item}</span>)
+            ) : (
+              <span>None</span>
+            )}
+          </div>
+          <div>
+            <b>Warnings</b>
+            {preparation.readiness.warnings.length ? (
+              preparation.readiness.warnings.map((item) => <span key={item}>{item}</span>)
+            ) : (
+              <span>None</span>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
 
 function EvidenceSourceDetails({ item }: { item: InvestmentGateEvidence }) {
   if (!gate07mEvidence.has(item.evidence_type)) return null;
@@ -215,6 +491,8 @@ export default function InvestmentGatePreparationWorkspace({
         </div>
       </section>
 
+      <GateStageSummary preparation={preparation} />
+
       {view === "preparations" ? (
         <section className="gateSurface">
           <header>
@@ -346,6 +624,21 @@ export default function InvestmentGatePreparationWorkspace({
                   Class {item.classification || "—"} · {item.blocking ? "Blocking" : "Non-blocking"} · {item.scope_type}
                   {item.scope_id ? ` #${item.scope_id}` : ""}
                 </span>
+                <div className="evidenceMetadata" aria-label={`Evidence quality ${item.requirement_key}`}>
+                  <span>
+                    Readiness <b>{item.source_readiness_status || item.resolution_status || item.status}</b>
+                  </span>
+                  <span>
+                    Quality <b>{item.evidence_quality || "NOT AVAILABLE"}</b>
+                  </span>
+                  <span>
+                    Confidence <b>{display(item.evidence_confidence)}</b>
+                  </span>
+                  <span>
+                    Currency{" "}
+                    <b>{item.source_current == null ? "NOT EVALUATED" : item.source_current ? "CURRENT" : "STALE"}</b>
+                  </span>
+                </div>
                 <small>{item.summary}</small>
                 <EvidenceSourceDetails item={item} />
                 {item.evidence_origin === "MANUAL_REFERENCE" && item.scope_id ? (
@@ -420,6 +713,24 @@ export default function InvestmentGatePreparationWorkspace({
               <pre>{JSON.stringify(readiness.evidence_coverage, null, 2)}</pre>
             </details>
           ) : null}
+        </section>
+      ) : null}
+
+      {view === "matrix" && preparation ? (
+        <section className="gateSurface">
+          <header>
+            <div>
+              <span>Evidence, criteria and governed context</span>
+              <h3>Gate evaluation matrix</h3>
+            </div>
+            <FileCheck2 size={23} />
+          </header>
+          <p className="gateMatrixNotice">
+            Evidence Class A/B/C and decision-criterion taxonomy are independent. Results support a human Gate 07K
+            decision and never calculate GO, HOLD, RECYCLE or KILL.
+          </p>
+          <GateMatrix preparation={preparation} />
+          <GovernedContext preparation={preparation} />
         </section>
       ) : null}
 

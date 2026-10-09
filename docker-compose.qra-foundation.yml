@@ -1,0 +1,119 @@
+name: pypmis-qra-foundation
+
+# Disposable acceptance infrastructure only. No production/runtime volumes are
+# shared, mounted, seeded or removed by this stack.
+services:
+  qra-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: qra_foundation
+      POSTGRES_USER: qra
+      POSTGRES_PASSWORD: qra
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_foundation]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  qra-migration-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: qra_foundation_migration
+      POSTGRES_USER: qra
+      POSTGRES_PASSWORD: qra
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_foundation_migration]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  qra-validation:
+    build: {context: ./backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@qra-db:5432/qra_foundation
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://qra:qra@qra-db:5432/qra_foundation
+      PYPMIS_QRA_MIGRATION_DATABASE_URL: postgresql+psycopg://qra:qra@qra-migration-db:5432/qra_foundation_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: qra-foundation-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -c 'from app.database.session import Base, engine; import app.main; Base.metadata.create_all(engine)'
+        alembic stamp head
+        python -c 'from app.database.seed import seed_demo; from app.database.session import SessionLocal; db=SessionLocal(); seed_demo(db); db.close()'
+        pytest -p no:cacheprovider -o addopts= --no-cov -q -rA tests/test_qra_foundation.py tests/test_qra_release_hardening.py tests/test_qra_governed_context_integration.py tests/test_qra_provider_integration.py tests/test_qra_legacy_configuration_guard.py tests/test_qra_bootstrap.py tests/test_qra_schedule_import_metadata.py tests/postgres/test_qra_migrations.py
+    depends_on:
+      qra-db: {condition: service_healthy}
+      qra-migration-db: {condition: service_healthy}
+
+  qra-browser-db:
+    image: postgres:16-alpine
+    profiles: [browser]
+    environment:
+      POSTGRES_DB: qra_foundation_browser
+      POSTGRES_USER: qra
+      POSTGRES_PASSWORD: qra
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_foundation_browser]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  qra-browser-api:
+    build: {context: ./backend}
+    profiles: [browser]
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@qra-browser-db:5432/qra_foundation_browser
+      REDIS_URL: redis://qra-browser-redis:6379/0
+      PYPMIS_QRA_BROWSER_FIXTURE: disposable-only
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: qra-foundation-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5519,http://localhost:5519
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    ports: ["127.0.0.1:8816:8000"]
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        python -m tests.provision_qra_foundation_browser
+        alembic stamp head
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      qra-browser-db: {condition: service_healthy}
+      qra-browser-redis: {condition: service_healthy}
+
+  qra-browser-redis:
+    image: redis:7-alpine
+    profiles: [browser]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  qra-browser-frontend:
+    build: {context: ./frontend}
+    profiles: [browser]
+    environment:
+      VITE_API_URL: http://127.0.0.1:8816
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        npm run build -- --outDir /tmp/qra-foundation-browser-dist
+        npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/qra-foundation-browser-dist
+    ports: ["127.0.0.1:5519:5173"]
+    volumes: ["./frontend:/app:ro", /app/node_modules]
+    depends_on: [qra-browser-api]

@@ -16,7 +16,11 @@ venv/
 env/
 
 .pytest_cache/
+.pytest_tmp/
+backend/.pytest_tmp/
 .pytest_tmp*/
+.tmp/pytest*/
+backend/.tmp/pytest*/
 .tmp/pytest_full_gate06a/
 .tmp/pytest_gate06a/
 .tmp/build_gate06a_report.py
@@ -54,3 +58,8 @@ Thumbs.db
 # Local render and accessibility artifacts used to inspect generated reports
 outputs/technical_reports/render_*/
 outputs/technical_reports/*_a11y*.json
+
+# Wave 2B local backups, browser traces and document-render QA are not source code.
+outputs/.qa/wave2b-risk-basic-data/
+outputs/.qa/wave3b-owner-capability/
+outputs/.qa/qra-foundation/

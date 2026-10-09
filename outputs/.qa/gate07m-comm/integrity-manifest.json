@@ -1,0 +1,46 @@
+{
+  "snapshot": "2026-09-15",
+  "scope": "Gate07M-COMM pre-implementation baseline QA artifacts",
+  "csv_validation": {
+    "parser": "Python csv.reader",
+    "result": "PASS",
+    "details": {
+      "acceptance-gaps.csv": { "data_rows": 45, "columns": 5, "observed_row_widths": [5] },
+      "admin-user-matrix.csv": { "data_rows": 33, "columns": 8, "observed_row_widths": [8] },
+      "domain-authority-matrix.csv": { "data_rows": 27, "columns": 6, "observed_row_widths": [6] },
+      "reuse-matrix.csv": { "data_rows": 27, "columns": 6, "observed_row_widths": [6] }
+    }
+  },
+  "files": [
+    {
+      "name": "acceptance-gaps.csv",
+      "bytes": 7037,
+      "lines": 46,
+      "sha256": "a563ff13c7c303ae9efbaccc2319f7d093b0f1ae46f2926e25fcaf7f4329285a"
+    },
+    {
+      "name": "admin-user-matrix.csv",
+      "bytes": 5174,
+      "lines": 34,
+      "sha256": "6469b9fc76bb7f2c18c521accbc6cccadf3c585ae69384ca601c8010dfba5290"
+    },
+    {
+      "name": "baseline-assessment.md",
+      "bytes": 15622,
+      "lines": 150,
+      "sha256": "f14cb897b0902657c1d554495a8fc860afeae6dc2f783490b7d10b708c45ed32"
+    },
+    {
+      "name": "domain-authority-matrix.csv",
+      "bytes": 4727,
+      "lines": 28,
+      "sha256": "3417f1f8273e2780c379cc41a8e20458cbd3f50549ac24b0d25dbd8cb3b21a03"
+    },
+    {
+      "name": "reuse-matrix.csv",
+      "bytes": 6505,
+      "lines": 28,
+      "sha256": "d62d9c4b4377b595dff9d7f0f7b2fc85755b08f8c0943d3749c001986f20b386"
+    }
+  ]
+}

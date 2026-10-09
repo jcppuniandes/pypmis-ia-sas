@@ -1,0 +1,189 @@
+{
+  "actions": [
+    "clone_published_revision",
+    "append_four_items"
+  ],
+  "actor": {
+    "email": "admin@demo.local",
+    "existing_user": true,
+    "rbac": "admin.enterprise_category.manage"
+  },
+  "core": {
+    "apply_executed": false,
+    "dry_run_executed": false,
+    "publish_executed": false
+  },
+  "database": {
+    "after": {
+      "admin_configurations": 22,
+      "enterprise_workspaces": 1,
+      "responsible_area_drafts": 1,
+      "responsible_area_published": 1,
+      "root_rows": [
+        {
+          "code": "enterprise",
+          "id": 1,
+          "name": "Enterprise Workspace",
+          "status": "active",
+          "version": 2,
+          "workspace_type_code": "enterprise"
+        }
+      ],
+      "roots": 1,
+      "security_events": 3,
+      "tenant_rows": [
+        {
+          "base_currency": "COP",
+          "id": 1,
+          "name": "Demo Energy Infrastructure",
+          "slug": "demo-energy"
+        }
+      ],
+      "tenants": 1
+    },
+    "before": {
+      "admin_configurations": 21,
+      "enterprise_workspaces": 1,
+      "responsible_area_drafts": 0,
+      "responsible_area_published": 1,
+      "root_rows": [
+        {
+          "code": "enterprise",
+          "id": 1,
+          "name": "Enterprise Workspace",
+          "status": "active",
+          "version": 2,
+          "workspace_type_code": "enterprise"
+        }
+      ],
+      "roots": 1,
+      "security_events": 1,
+      "tenant_rows": [
+        {
+          "base_currency": "COP",
+          "id": 1,
+          "name": "Demo Energy Infrastructure",
+          "slug": "demo-energy"
+        }
+      ],
+      "tenants": 1
+    }
+  },
+  "diff": {
+    "added": [
+      "consulting",
+      "pmo-aas",
+      "technology",
+      "construction"
+    ],
+    "applicability_changed": false,
+    "modified": [],
+    "preserved": [
+      "corporate",
+      "capital-projects",
+      "operations"
+    ],
+    "removed": []
+  },
+  "draft": {
+    "applicable_types": [
+      "business-unit",
+      "portfolio",
+      "program",
+      "project",
+      "property",
+      "facility"
+    ],
+    "candidate_hash": "ccfdccd6367a3d9de68e7e5d2b38c521e92ef90a1971236da5b4fe16f4d3ddb7",
+    "id": 22,
+    "items": [
+      {
+        "code": "corporate",
+        "label": "Corporate"
+      },
+      {
+        "code": "capital-projects",
+        "label": "Capital Projects"
+      },
+      {
+        "code": "operations",
+        "label": "Operations"
+      },
+      {
+        "code": "consulting",
+        "label": "Consultoría en Gestión de Proyectos y Activos"
+      },
+      {
+        "code": "pmo-aas",
+        "label": "PMO como Servicio (PMO aaS)"
+      },
+      {
+        "code": "technology",
+        "label": "Tecnología e Innovación"
+      },
+      {
+        "code": "construction",
+        "label": "Gerencia de Construcción"
+      }
+    ],
+    "revision": 2,
+    "status": "draft",
+    "version": 2
+  },
+  "gate": "G0",
+  "publication": {
+    "executed": false,
+    "published_revision_unchanged": true
+  },
+  "result": "READY_FOR_ADMIN_PUBLISH_APPROVAL",
+  "source": {
+    "applicable_types": [
+      "business-unit",
+      "portfolio",
+      "program",
+      "project",
+      "property",
+      "facility"
+    ],
+    "expected_hash": "8cfcc66700593a8f38b63a27e4ee9d2cebadd10198e8d528652d138a359c08be",
+    "id": 18,
+    "items": [
+      {
+        "code": "corporate",
+        "label": "Corporate"
+      },
+      {
+        "code": "capital-projects",
+        "label": "Capital Projects"
+      },
+      {
+        "code": "operations",
+        "label": "Operations"
+      }
+    ],
+    "observed_hash": "8cfcc66700593a8f38b63a27e4ee9d2cebadd10198e8d528652d138a359c08be",
+    "revision": 1,
+    "status": "published"
+  },
+  "tenant": {
+    "identity_confirmed": false,
+    "observed": [
+      {
+        "base_currency": "COP",
+        "id": 1,
+        "name": "Demo Energy Infrastructure",
+        "slug": "demo-energy"
+      }
+    ],
+    "slug": "demo-energy",
+    "tenant_mutated": false
+  },
+  "validation": {
+    "configuration_ids": [
+      22
+    ],
+    "issues": [],
+    "valid": true,
+    "warnings": []
+  }
+}

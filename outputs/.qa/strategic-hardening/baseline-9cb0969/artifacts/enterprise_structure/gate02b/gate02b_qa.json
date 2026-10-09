@@ -1,0 +1,38 @@
+{
+  "admin_mode": {
+    "actions_available": true,
+    "compact_module_header_preserved": true,
+    "correct_hierarchy_and_indentation": true,
+    "duplicate_nodes": 0,
+    "nodes": 14,
+    "record_codes_visible": true,
+    "root_external_key": "ENT-PYP",
+    "root_nodes": 1,
+    "route": "ADMIN MODE > Enterprise Structure > Enterprise Structure Configuration",
+    "status": "PASS"
+  },
+  "api": {
+    "admin_configuration_status": 200,
+    "authentication_without_legacy_tenant_slug": 200,
+    "enterprise_explorer_status": 200,
+    "health_ready": true
+  },
+  "browser": {
+    "console_errors": 0,
+    "title": "P&Pmis Construction AI",
+    "url": "http://127.0.0.1:5173/app"
+  },
+  "user_mode": {
+    "admin_actions_absent": true,
+    "compact_module_header_preserved": true,
+    "facilities": 0,
+    "filters_available": true,
+    "nodes": 14,
+    "projects": 1,
+    "record_codes_visible": true,
+    "route": "USER MODE > Enterprise Strategy Manager > Enterprise Structure & Workspace Manager > Enterprise Explorer",
+    "same_hierarchy": true,
+    "strategic_objectives": 7,
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,479 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic "Application brand" [ref=e4]:
+      - generic [ref=e5]:
+        - img "P&Pmis Construction AI logo" [ref=e6]
+        - strong [ref=e8]: P&Pmis Construction AI
+      - generic [ref=e9]:
+        - button "Cambiar a ADMIN MODE" [ref=e10] [cursor=pointer]:
+          - generic [ref=e11]: Modo actual
+          - strong [ref=e12]: USER MODE
+        - generic [ref=e13]: Project Controls Intelligence Platform
+    - generic "Tenant command bar" [ref=e14]:
+      - generic [ref=e15]:
+        - img [ref=e16]
+        - generic [ref=e20]:
+          - generic [ref=e21]: Acceso de proyecto
+          - strong [ref=e22]: Proyectos asignados
+          - generic [ref=e23]: Cada usuario ve solo sus proyectos
+      - generic [ref=e24]:
+        - generic [ref=e25]: Project
+        - combobox "Project" [ref=e26]:
+          - option "CTRL-DEMO-001" [selected]
+          - option "MIN-ABC"
+          - option "REF-TURN-002"
+          - option "VIA-001"
+      - generic [ref=e27]:
+        - heading "Proyecto Demo - Control Integrado TCM" [level=1] [ref=e28]
+        - generic [ref=e29]: CTRL-DEMO-001 / draft / USD
+      - generic [ref=e30]:
+        - strong [ref=e31]: Pypmis Admin
+        - generic [ref=e32]: Tenant Administrator / admin@demo.local
+      - button "Logout" [ref=e33] [cursor=pointer]:
+        - img [ref=e34]
+    - region "Project workspace and control flow" [ref=e37]:
+      - generic [ref=e38]:
+        - button "Ocultar barra de módulos" [expanded] [ref=e39] [cursor=pointer]:
+          - img [ref=e40]
+        - complementary [ref=e42]:
+          - navigation "Control Flow" [ref=e43]:
+            - generic [ref=e44]:
+              - strong [ref=e45]: USER MODE
+              - generic [ref=e46]: Macroprocesos + módulos + submódulos
+            - button "Dashboard 0.888 SPI" [ref=e47] [cursor=pointer]:
+              - generic [ref=e48]: Dashboard
+              - strong [ref=e49]: 0.888 SPI
+            - button "Diagnóstico de Control 50%" [ref=e50] [cursor=pointer]:
+              - generic [ref=e51]: Diagnóstico de Control
+              - strong [ref=e52]: 50%
+            - generic [ref=e53]: Macroprocesos
+            - generic [ref=e54]:
+              - button "Enterprise Strategy Manager" [expanded] [ref=e55] [cursor=pointer]:
+                - generic [ref=e56]: Enterprise Strategy Manager
+                - img [ref=e57]
+              - group "Módulos de Enterprise Strategy Manager" [ref=e59]:
+                - generic [ref=e60]:
+                  - button "Enterprise Foundation" [expanded] [ref=e61] [cursor=pointer]:
+                    - generic [ref=e62]:
+                      - generic [ref=e63]: Phase 0
+                      - text: Enterprise Foundation
+                      - emphasis [ref=e64]: Foundation / prerequisite
+                    - img [ref=e65]
+                  - group "Submódulos de Enterprise Foundation" [ref=e67]:
+                    - button "Foundation Status" [ref=e69] [cursor=pointer]:
+                      - generic [ref=e70]: Foundation Status
+                    - button "Enterprise Explorer" [ref=e72] [cursor=pointer]:
+                      - generic [ref=e73]: Enterprise Explorer
+                    - button "Workspace Context" [ref=e75] [cursor=pointer]:
+                      - generic [ref=e76]: Workspace Context
+                - button "Strategic Capital Planning & Demand" [ref=e78] [cursor=pointer]:
+                  - generic [ref=e79]:
+                    - generic [ref=e80]: Phase 1
+                    - text: Strategic Capital Planning & Demand
+                    - emphasis [ref=e81]: Start of capital planning
+                  - img [ref=e82]
+                - button "Investment Origination & Shaping" [ref=e85] [cursor=pointer]:
+                  - generic [ref=e86]:
+                    - generic [ref=e87]: Phase 2
+                    - text: Investment Origination & Shaping
+                    - emphasis [ref=e88]: Demand → Idea is explicit
+                  - img [ref=e89]
+                - button "Strategic Gate" [ref=e92] [cursor=pointer]:
+                  - generic [ref=e93]:
+                    - generic [ref=e94]: Phase 3
+                    - text: Strategic Gate
+                  - img [ref=e95]
+                - generic [ref=e97]:
+                  - button "Portfolio Planning & Review" [expanded] [ref=e98] [cursor=pointer]:
+                    - generic [ref=e99]:
+                      - generic [ref=e100]: Phase 4
+                      - text: Portfolio Planning & Review
+                    - img [ref=e101]
+                  - group "Submódulos de Portfolio Planning & Review" [ref=e103]:
+                    - button "Portfolio Intake & Planning" [ref=e105] [cursor=pointer]:
+                      - generic [ref=e106]: Portfolio Intake & Planning
+                      - img [ref=e107]
+                    - button "Evaluation & Prioritization" [ref=e110] [cursor=pointer]:
+                      - generic [ref=e111]: Evaluation & Prioritization
+                      - img [ref=e112]
+                    - button "Portfolio Analysis" [ref=e115] [cursor=pointer]:
+                      - generic [ref=e116]: Portfolio Analysis
+                      - img [ref=e117]
+                    - generic [ref=e119]:
+                      - button "Periodic Portfolio Review" [expanded] [ref=e120] [cursor=pointer]:
+                        - generic [ref=e121]: Periodic Portfolio Review
+                        - img [ref=e122]
+                      - group "Submódulos de Periodic Portfolio Review" [ref=e124]:
+                        - button "Review Calendar / Sessions" [ref=e126] [cursor=pointer]:
+                          - generic [ref=e127]: Review Calendar / Sessions
+                        - button "Overview" [ref=e129] [cursor=pointer]:
+                          - generic [ref=e130]: Overview
+                        - button "Portfolio Snapshot" [ref=e132] [cursor=pointer]:
+                          - generic [ref=e133]: Portfolio Snapshot
+                        - button "Strategic Allocation" [ref=e135] [cursor=pointer]:
+                          - generic [ref=e136]: Strategic Allocation
+                        - button "Project Matrix" [ref=e138] [cursor=pointer]:
+                          - generic [ref=e139]: Project Matrix
+                        - button "Budget & Resources" [ref=e141] [cursor=pointer]:
+                          - generic [ref=e142]: Budget & Resources
+                        - button "Gate / FID Status" [ref=e144] [cursor=pointer]:
+                          - generic [ref=e145]: Gate / FID Status
+                        - button "Exceptions" [ref=e147] [cursor=pointer]:
+                          - generic [ref=e148]: Exceptions
+                        - button "Conclusions" [ref=e150] [cursor=pointer]:
+                          - generic [ref=e151]: Conclusions
+                        - button "Actions" [ref=e153] [cursor=pointer]:
+                          - generic [ref=e154]: Actions
+                        - button "History" [ref=e156] [cursor=pointer]:
+                          - generic [ref=e157]: History
+                        - button "Trends" [ref=e159] [cursor=pointer]:
+                          - generic [ref=e160]: Trends
+                - button "Portfolio Scenario Planning" [ref=e162] [cursor=pointer]:
+                  - generic [ref=e163]:
+                    - generic [ref=e164]: Phase 5
+                    - text: Portfolio Scenario Planning
+                  - img [ref=e165]
+                - button "Project Definition & Investment Case" [ref=e168] [cursor=pointer]:
+                  - generic [ref=e169]:
+                    - generic [ref=e170]: Phase 6
+                    - text: Project Definition & Investment Case
+                  - img [ref=e171]
+                - button "Investment Governance" [ref=e174] [cursor=pointer]:
+                  - generic [ref=e175]:
+                    - generic [ref=e176]: Phase 7
+                    - text: Investment Governance
+                  - img [ref=e177]
+            - button "Project Workspace Governance" [ref=e180] [cursor=pointer]:
+              - generic [ref=e181]: Project Workspace Governance
+              - img [ref=e182]
+            - generic [ref=e184]:
+              - button "Project Control Manager" [expanded] [ref=e185] [cursor=pointer]:
+                - generic [ref=e186]: Project Control Manager
+                - img [ref=e187]
+              - group "Módulos de Project Control Manager" [ref=e189]:
+                - button "Project Manager" [ref=e191] [cursor=pointer]:
+                  - generic [ref=e192]: Project Manager
+                  - img [ref=e193]
+                - button "Scope Manager" [ref=e196] [cursor=pointer]:
+                  - generic [ref=e197]: Scope Manager
+                  - img [ref=e198]
+                - button "Schedule Manager" [ref=e201] [cursor=pointer]:
+                  - generic [ref=e202]: Schedule Manager
+                  - img [ref=e203]
+                - button "Cost Manager" [ref=e206] [cursor=pointer]:
+                  - generic [ref=e207]: Cost Manager
+                  - img [ref=e208]
+                - button "Risk Manager" [ref=e211] [cursor=pointer]:
+                  - generic [ref=e212]: Risk Manager
+                  - img [ref=e213]
+                - button "Procurement Manager" [ref=e216] [cursor=pointer]:
+                  - generic [ref=e217]: Procurement Manager
+                  - img [ref=e218]
+                - button "Progress&Performance Manager" [ref=e221] [cursor=pointer]:
+                  - generic [ref=e222]: Progress&Performance Manager
+                  - img [ref=e223]
+                - button "Resource Manager" [ref=e226] [cursor=pointer]:
+                  - generic [ref=e227]: Resource Manager
+                  - img [ref=e228]
+                - button "Claim Manager" [ref=e231] [cursor=pointer]:
+                  - generic [ref=e232]: Claim Manager
+                  - img [ref=e233]
+                - button "Document Manager" [ref=e236] [cursor=pointer]:
+                  - generic [ref=e237]: Document Manager
+                  - img [ref=e238]
+            - button "Facility Manager" [ref=e241] [cursor=pointer]:
+              - generic [ref=e242]: Facility Manager
+              - img [ref=e243]
+            - button "Property Manager" [ref=e246] [cursor=pointer]:
+              - generic [ref=e247]: Property Manager
+              - img [ref=e248]
+          - complementary "Project information flow" [ref=e250]:
+            - generic [ref=e251]:
+              - strong [ref=e252]: Project Information Flow
+              - generic [ref=e253]: Follow the project data
+            - button "Open Project and WBS" [ref=e254] [cursor=pointer]:
+              - img [ref=e255]
+              - generic [ref=e258]:
+                - strong [ref=e259]: Project and WBS
+                - generic [ref=e260]: Define project identity, roles and WBS controls.
+              - emphasis [ref=e261]: "0"
+            - button "Open Load schedule" [ref=e262] [cursor=pointer]:
+              - img [ref=e263]
+              - generic [ref=e266]:
+                - strong [ref=e267]: Load schedule
+                - generic [ref=e268]: Import P6 XML/XER and Activity Sheet data.
+              - emphasis [ref=e269]: "0"
+            - button "Open Baseline gate" [ref=e270] [cursor=pointer]:
+              - img [ref=e271]
+              - generic [ref=e273]:
+                - strong [ref=e274]: Baseline gate
+                - generic [ref=e275]: Confirm cost, currency and schedule quality before approval.
+              - emphasis [ref=e276]: "1"
+            - button "Open CBS/FBS and CostCodes" [ref=e277] [cursor=pointer]:
+              - img [ref=e278]
+              - generic [ref=e281]:
+                - strong [ref=e282]: CBS/FBS and CostCodes
+                - generic [ref=e283]: Reconcile WBS, CBS, FBS, CostCode and commitments.
+              - emphasis [ref=e284]: "0"
+            - button "Open Baseline approval" [ref=e285] [cursor=pointer]:
+              - img [ref=e286]
+              - generic [ref=e288]:
+                - strong [ref=e289]: Baseline approval
+                - generic [ref=e290]: Freeze the controlled schedule and cost baseline.
+              - emphasis [ref=e291]: "1"
+            - button "Open Progress and EVM" [ref=e292] [cursor=pointer]:
+              - img [ref=e293]
+              - generic [ref=e296]:
+                - strong [ref=e297]: Progress and EVM
+                - generic [ref=e298]: Capture progress and calculate earned value.
+              - emphasis [ref=e299]: "0"
+            - button "Open Business processes" [ref=e300] [cursor=pointer]:
+              - img [ref=e301]
+              - generic [ref=e304]:
+                - strong [ref=e305]: Business processes
+                - generic [ref=e306]: Control approvals, versions, exports and recost history.
+              - emphasis [ref=e307]: "0"
+            - button "Open AWP packages" [ref=e308] [cursor=pointer]:
+              - img [ref=e309]
+              - generic [ref=e312]:
+                - strong [ref=e313]: AWP packages
+                - generic [ref=e314]: Release packages through constraints and POC readiness.
+              - emphasis [ref=e315]: "2"
+            - button "Open Closeout evidence" [ref=e316] [cursor=pointer]:
+              - img [ref=e317]
+              - generic [ref=e320]:
+                - strong [ref=e321]: Closeout evidence
+                - generic [ref=e322]: Keep approvals, documents and audit evidence controlled.
+              - emphasis [ref=e323]: "0"
+          - group "Administrative actions" [ref=e324]:
+            - generic "Proyecto Crear o borrar proyectos" [ref=e325] [cursor=pointer]:
+              - generic [ref=e326]:
+                - img [ref=e327]
+                - text: Proyecto
+              - strong [ref=e331]: Crear o borrar proyectos
+      - region "Control dashboard" [ref=e332]:
+        - region "Next controlled action" [ref=e333]:
+          - generic [ref=e334]: Next controlled action / Project Controls
+          - strong [ref=e335]: Baseline gate
+          - paragraph [ref=e336]: Baseline is blocked until the schedule has cost-loaded activities.
+          - button "Open Baseline gate" [ref=e337] [cursor=pointer]:
+            - img [ref=e338]
+            - generic [ref=e340]: Open Baseline gate
+        - region "Current module guide" [ref=e341]:
+          - generic [ref=e342]:
+            - generic [ref=e343]: Current module
+            - strong [ref=e344]: Review Calendar / Sessions
+            - paragraph [ref=e345]: Open the governed Review Calendar / Sessions view without changing its existing business rules.
+          - generic [ref=e346]:
+            - article [ref=e347]:
+              - generic [ref=e348]: Status
+              - strong [ref=e349]: Phase 4
+            - article [ref=e350]:
+              - generic [ref=e351]: Next action
+              - strong [ref=e352]: Continue through actions and readiness conditions authorized by the existing backend.
+        - generic [ref=e354]:
+          - navigation "Strategic workflow breadcrumb" [ref=e355]:
+            - generic [ref=e356]: Enterprise Strategy Manager
+            - generic [ref=e357]:
+              - generic [ref=e358]: ›
+              - text: Portfolio Planning & Review
+            - generic [ref=e359]:
+              - generic [ref=e360]: ›
+              - text: Periodic Portfolio Review
+            - generic [ref=e361]:
+              - generic [ref=e362]: ›
+              - text: Review Calendar / Sessions
+          - region "Periodic Portfolio Review workspace" [ref=e363]:
+            - generic [ref=e364]:
+              - generic [ref=e365]:
+                - generic [ref=e366]: USER MODE / Enterprise Strategy Manager / Portfolio Planning & Review
+                - heading "Periodic Portfolio Review" [level=2] [ref=e367]
+                - paragraph [ref=e368]: Govern the Portfolio collectively through recurring, auditable Sessions. Frozen evidence is consumed read-only; Project rank, Budget, Resource scenarios, Gate decisions and FID remain with their source authorities.
+              - generic "Métricas de Periodic Portfolio Review" [ref=e370]:
+                - article [ref=e371]:
+                  - strong [ref=e372]: "3"
+                  - generic [ref=e373]: Review Sessions
+                - article [ref=e374]:
+                  - strong [ref=e375]: READY_FOR_REVIEW
+                  - generic [ref=e376]: Selected status
+                - article [ref=e377]:
+                  - strong [ref=e378]: "0"
+                  - generic [ref=e379]: Open actions
+                - article [ref=e380]:
+                  - strong [ref=e381]: "0"
+                  - generic [ref=e382]: Overdue
+            - note [ref=e383]:
+              - img [ref=e384]
+              - generic [ref=e387]: Portfolio Review ≠ Project Gate. Gate07K HOLD ≠ HOLD_FOR_CAPACITY. This review does not rank Projects or approve Budget; REQUEST_REASSESSMENT never recalculates rank.
+            - status [ref=e388]: Portfolio Review lifecycle action freeze completed.
+            - region "Portfolio Review Session selector" [ref=e389]:
+              - generic [ref=e390]:
+                - text: Portfolio ID
+                - spinbutton "Portfolio ID" [ref=e391]
+              - generic [ref=e392]:
+                - text: Status
+                - combobox "Status" [ref=e393]:
+                  - option "All statuses" [selected]
+                  - option "DRAFT"
+                  - option "PREPARING"
+                  - option "READY_FOR_REVIEW"
+                  - option "IN_REVIEW"
+                  - option "STALE"
+                  - option "COMPLETED"
+                  - option "RETURNED"
+                  - option "CANCELLED"
+                  - option "SUPERSEDED"
+              - generic [ref=e394]:
+                - text: Review Session
+                - combobox "Review Session" [ref=e395]:
+                  - option "PRV-000003 · QUARTERLY · READY_FOR_REVIEW" [selected]
+                  - option "PRV-000002 · QUARTERLY · IN_REVIEW"
+                  - option "PRV-000001 · QUARTERLY · COMPLETED"
+              - button "Refresh" [ref=e396] [cursor=pointer]:
+                - img [ref=e397]
+                - text: Refresh
+              - button "New Review Session" [ref=e402] [cursor=pointer]:
+                - img [ref=e403]
+                - text: New Review Session
+            - navigation "Periodic Portfolio Review views" [ref=e406]:
+              - button "Review Calendar / Sessions" [ref=e407] [cursor=pointer]
+              - button "Overview" [ref=e408] [cursor=pointer]
+              - button "Portfolio Snapshot" [ref=e409] [cursor=pointer]
+              - button "Strategic Allocation" [ref=e410] [cursor=pointer]
+              - button "Project Matrix" [ref=e411] [cursor=pointer]
+              - button "Budget & Resources" [ref=e412] [cursor=pointer]
+              - button "Gate / FID Status" [ref=e413] [cursor=pointer]
+              - button "Exceptions" [ref=e414] [cursor=pointer]
+              - button "Conclusions" [ref=e415] [cursor=pointer]
+              - button "Actions" [ref=e416] [cursor=pointer]
+              - button "History" [ref=e417] [cursor=pointer]
+              - button "Trends" [ref=e418] [cursor=pointer]
+            - region "Selected Portfolio Review Session" [ref=e419]:
+              - generic [ref=e420]:
+                - text: QUARTERLY
+                - heading "PRV-000003" [level=2] [ref=e421]
+                - paragraph [ref=e422]: Wave 3A governed portfolio · review 9/5/2026
+              - generic [ref=e423]:
+                - generic [ref=e424]: READY_FOR_REVIEW
+                - generic [ref=e425]: Revision 3
+                - generic [ref=e426]: Snapshot 7ebf8f2b95ef…
+                - generic [ref=e427]: SOURCE CURRENT
+            - region "Portfolio Review lifecycle actions" [ref=e428]:
+              - button "Refresh Snapshot Preview" [ref=e429] [cursor=pointer]:
+                - img [ref=e430]
+                - text: Refresh Snapshot Preview
+              - button "Freeze Snapshot" [ref=e435] [cursor=pointer]:
+                - img [ref=e436]
+                - text: Freeze Snapshot
+              - button "Start Review" [ref=e440] [cursor=pointer]:
+                - img [ref=e441]
+                - text: Start Review
+            - region "Controlled Review transitions" [ref=e444]:
+              - generic [ref=e445]:
+                - text: Lifecycle reason
+                - textbox "Lifecycle reason" [ref=e446]
+              - generic [ref=e447]:
+                - text: Replacement Review Session ID
+                - spinbutton "Replacement Review Session ID" [ref=e448]
+              - button "Return for preparation" [disabled] [ref=e449]
+              - button "Cancel Review" [disabled] [ref=e450]
+              - button "Supersede Review" [disabled] [ref=e451]
+            - region "Portfolio Review Snapshot" [ref=e452]:
+              - generic [ref=e453]:
+                - generic [ref=e454]:
+                  - text: Immutable evidence contract
+                  - heading "Portfolio Snapshot" [level=3] [ref=e455]
+                - img [ref=e456]
+              - generic [ref=e460]:
+                - article [ref=e461]:
+                  - generic [ref=e462]: Snapshot hash
+                  - strong [ref=e463]: 7ebf8f2b95ef…
+                - article [ref=e464]:
+                  - generic [ref=e465]: As of
+                  - strong [ref=e466]: 10/7/2026
+                - article [ref=e467]:
+                  - generic [ref=e468]: Source status
+                  - strong [ref=e469]: CURRENT
+                - article [ref=e470]:
+                  - generic [ref=e471]: Persistence
+                  - strong [ref=e472]: FROZEN
+              - table "Snapshot source lineage" [ref=e474]:
+                - rowgroup [ref=e475]:
+                  - row "Source authority Identity Version Hash As of Current" [ref=e476]:
+                    - columnheader "Source authority" [ref=e477]
+                    - columnheader "Identity" [ref=e478]
+                    - columnheader "Version" [ref=e479]
+                    - columnheader "Hash" [ref=e480]
+                    - columnheader "As of" [ref=e481]
+                    - columnheader "Current" [ref=e482]
+                - rowgroup [ref=e483]:
+                  - row "PORTFOLIO_MEMBERSHIP — — 20ca85876063… 10/7/2026 CURRENT" [ref=e484]:
+                    - cell "PORTFOLIO_MEMBERSHIP" [ref=e485]
+                    - cell "—" [ref=e486]
+                    - cell "—" [ref=e487]
+                    - cell "20ca85876063…" [ref=e488]
+                    - cell "10/7/2026" [ref=e489]
+                    - cell "CURRENT" [ref=e490]:
+                      - generic [ref=e491]: CURRENT
+                  - row "PORTFOLIO_RANK — — 2f8fbe224b60… 10/7/2026 CURRENT" [ref=e492]:
+                    - cell "PORTFOLIO_RANK" [ref=e493]
+                    - cell "—" [ref=e494]
+                    - cell "—" [ref=e495]
+                    - cell "2f8fbe224b60…" [ref=e496]
+                    - cell "10/7/2026" [ref=e497]
+                    - cell "CURRENT" [ref=e498]:
+                      - generic [ref=e499]: CURRENT
+                  - row "STRATEGIC_ALLOCATION 1 6 76f3f56dfd7f… 10/7/2026 CURRENT" [ref=e500]:
+                    - cell "STRATEGIC_ALLOCATION" [ref=e501]
+                    - cell "1" [ref=e502]
+                    - cell "6" [ref=e503]
+                    - cell "76f3f56dfd7f…" [ref=e504]
+                    - cell "10/7/2026" [ref=e505]
+                    - cell "CURRENT" [ref=e506]:
+                      - generic [ref=e507]: CURRENT
+                  - row "BUDGET_SCENARIO 1 1 bbbbbbbbbbbb… 10/7/2026 CURRENT" [ref=e508]:
+                    - cell "BUDGET_SCENARIO" [ref=e509]
+                    - cell "1" [ref=e510]
+                    - cell "1" [ref=e511]
+                    - cell "bbbbbbbbbbbb…" [ref=e512]
+                    - cell "10/7/2026" [ref=e513]
+                    - cell "CURRENT" [ref=e514]:
+                      - generic [ref=e515]: CURRENT
+                  - row "RESOURCE_SCENARIO 1 1 bbbbbbbbbbbb… 10/7/2026 CURRENT" [ref=e516]:
+                    - cell "RESOURCE_SCENARIO" [ref=e517]
+                    - cell "1" [ref=e518]
+                    - cell "1" [ref=e519]
+                    - cell "bbbbbbbbbbbb…" [ref=e520]
+                    - cell "10/7/2026" [ref=e521]
+                    - cell "CURRENT" [ref=e522]:
+                      - generic [ref=e523]: CURRENT
+                  - row "SCENARIO_RECOMMENDATION 1 1 777777777777… 10/7/2026 CURRENT" [ref=e524]:
+                    - cell "SCENARIO_RECOMMENDATION" [ref=e525]
+                    - cell "1" [ref=e526]
+                    - cell "1" [ref=e527]
+                    - cell "777777777777…" [ref=e528]
+                    - cell "10/7/2026" [ref=e529]
+                    - cell "CURRENT" [ref=e530]:
+                      - generic [ref=e531]: CURRENT
+                  - row "GATE_CONTEXT 1 — f27259f87caf… 10/7/2026 CURRENT" [ref=e532]:
+                    - cell "GATE_CONTEXT" [ref=e533]
+                    - cell "1" [ref=e534]
+                    - cell "—" [ref=e535]
+                    - cell "f27259f87caf…" [ref=e536]
+                    - cell "10/7/2026" [ref=e537]
+                    - cell "CURRENT" [ref=e538]:
+                      - generic [ref=e539]: CURRENT
+                  - row "RISK_READINESS — — affa85473173… 10/7/2026 CURRENT" [ref=e540]:
+                    - cell "RISK_READINESS" [ref=e541]
+                    - cell "—" [ref=e542]
+                    - cell "—" [ref=e543]
+                    - cell "affa85473173…" [ref=e544]
+                    - cell "10/7/2026" [ref=e545]
+                    - cell "CURRENT" [ref=e546]:
+                      - generic [ref=e547]: CURRENT
+              - paragraph [ref=e548]: Completed snapshots are displayed from their immutable historical payload; live sources are never used to reinterpret them.
+  - generic [ref=e549]: $0
+```

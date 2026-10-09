@@ -21,9 +21,17 @@ from app.core.time import utc_now
 from app.domain.models import AdminConfiguration, EnterpriseWorkspace, SecurityEvent
 from app.modules.business_case.models import BusinessCaseDecisionSnapshot
 from app.modules.business_case.service import BusinessCaseService
+from app.modules.commercial_strategy.service import CommercialStrategyService
 from app.modules.economic_financial_model.service import EconomicFinancialModelService
 from app.modules.enterprise_structure.permissions import EnterprisePermissionContext
 from app.modules.funds_manager.service import FundsManagerService
+from app.modules.investment_evidence_policy.decision_criteria import (
+    CONTROLLED_OPERATORS,
+    DECISION_CRITERION_TYPES,
+    EVIDENCE_QUALITY_STATES,
+    decision_criterion_policy,
+    validate_criterion_policy,
+)
 from app.modules.investment_evidence_policy.schemas import (
     PolicyConfigurationOut,
     PolicyOverviewOut,
@@ -34,11 +42,14 @@ from app.modules.permit_readiness.service import PermitReadinessService
 from app.modules.portfolio_convergence.service import PortfolioConvergenceService
 from app.modules.project_definition.service import ProjectDefinitionService
 from app.modules.risk_readiness.service import RiskReadinessService
+from app.modules.strategic_benefits.service import StrategicBenefitsService
 
 CONFIGURATION_KIND = "investment_evidence_policy"
 DEFAULT_CODE = "pyp-investment-decision-evidence-policy"
 READY_OUTPUT = "READY_FOR_BUSINESS_CASE_AND_ECONOMIC_FINANCIAL_GATE_EVIDENCE"
 VALIDATED_RELEASE = "GATE07M_EVID_POLICY_UPDATE_VALIDATED"
+EVID2_READY_OUTPUT = "READY_FOR_GOVERNED_GATE_DECISION_WITH_INTEGRATED_STRATEGIC_EVIDENCE"
+EVID2_VALIDATED_RELEASE = "GATE07J_EVID_2_DECISION_CRITERIA_POLICY_RELEASE_VALIDATED"
 
 CLASSIFICATIONS = {"A", "B", "C"}
 SCOPES = {"PORTFOLIO", "PROJECT_SET", "EACH_PROJECT", "SELECTED_PROJECTS_ONLY"}
@@ -52,9 +63,15 @@ EVIDENCE_TYPES = (
     "BUSINESS_CASE_READINESS",
     "FUNDING_READINESS",
     "RISK_READINESS",
+    "BASIC_DATA_READINESS",
+    "OWNER_CAPABILITY_READINESS",
+    "COST_SOURCE_READINESS",
+    "SCHEDULE_SOURCE_READINESS",
     "PERMIT_READINESS",
     "ECONOMIC_FINANCIAL_READINESS",
+    "BENEFITS_PLAN_READINESS",
     "CONTRACTING_STRATEGY_READINESS",
+    "COMMERCIAL_READINESS",
     "EXECUTION_PLAN_READINESS",
     "SCHEDULE_MATURITY",
     "COST_ESTIMATE_MATURITY",
@@ -157,6 +174,17 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
         {"PORTFOLIO", "PROJECT_SET", "EACH_PROJECT"},
         notes="Validated Gate 07J-RISK Project and Project Set Risk Readiness evidence.",
     ),
+    "BASIC_DATA_READINESS_PROVIDER": _provider(
+        "BASIC_DATA_READINESS_PROVIDER",
+        "BASIC_DATA_READINESS",
+        "BASIC_DATA_READINESS",
+        "BasicDataReadinessEvidence.v1",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes=(
+            "Wave 2B current COMPLETED READY non-stale Project evidence only. "
+            "Registry availability does not add requirements to published Gate policies."
+        ),
+    ),
     "PERMIT_READINESS_PROVIDER": _provider(
         "PERMIT_READINESS_PROVIDER",
         "PERMIT_READINESS",
@@ -164,6 +192,27 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
         "InvestmentGatePermitEvidenceOut",
         {"PROJECT_SET", "EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
         notes="Validated Gate 07J-PERMIT Project and Project Set Permit Readiness evidence.",
+    ),
+    "OWNER_CAPABILITY_READINESS_PROVIDER": _provider(
+        "OWNER_CAPABILITY_READINESS_PROVIDER",
+        "OWNER_CAPABILITY_READINESS",
+        "OWNER_CAPABILITY_READINESS",
+        "OwnerCapabilityReadinessEvidence.v1",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes=(
+            "Wave 3B current COMPLETED READY non-stale Project evidence only. "
+            "Availability does not alter existing Gate policies, packages or FID decisions."
+        ),
+    ),
+    "COST_SOURCE_READINESS_PROVIDER": _provider(
+        "COST_SOURCE_READINESS_PROVIDER", "COST_SOURCE_READINESS", "QRA_COST_SOURCE_READINESS",
+        "CostSourceReadinessEvidence.v1", {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes="Current COMPLETED READY cost-source evidence only; no QRA simulation or Gate policy mutation.",
+    ),
+    "SCHEDULE_SOURCE_READINESS_PROVIDER": _provider(
+        "SCHEDULE_SOURCE_READINESS_PROVIDER", "SCHEDULE_SOURCE_READINESS", "QRA_SCHEDULE_SOURCE_READINESS",
+        "ScheduleSourceReadinessEvidence.v1", {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes="Current COMPLETED READY imported schedule-source evidence; no CPM, sampling or result provider.",
     ),
     "BUSINESS_CASE_READINESS_PROVIDER": _provider(
         "BUSINESS_CASE_READINESS_PROVIDER",
@@ -181,7 +230,34 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
         {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
         notes="Validated Gate 07M-FIN Project economic-financial readiness evidence.",
     ),
+    "BENEFITS_READINESS_PROVIDER": _provider(
+        "BENEFITS_READINESS_PROVIDER",
+        "BENEFITS_PLAN_READINESS",
+        "STRATEGIC_BENEFITS_PLAN",
+        "BenefitsReadinessProviderOut",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes=(
+            "Gate 07M-BEN governed Project Strategic Benefits Plan readiness. "
+            "Registry-only integration; published Gate07J-EVID matrices remain unchanged."
+        ),
+    ),
+    "COMMERCIAL_READINESS_PROVIDER": _provider(
+        "COMMERCIAL_READINESS_PROVIDER",
+        "COMMERCIAL_READINESS",
+        "COMMERCIAL_CONTRACTING_STRATEGY",
+        "CommercialReadinessProviderOut",
+        {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes=(
+            "Gate 07M-COMM governed Project commercial-readiness evidence. "
+            "Compatible with the legacy CONTRACTING_STRATEGY_READINESS label; "
+            "published Gate07J-EVID matrices remain unchanged."
+        ),
+    ),
 }
+
+# Compatibility is registry metadata only.  It does not add or reclassify a
+# requirement in any published/default Gate07J-EVID policy.
+PROVIDER_REGISTRY["COMMERCIAL_READINESS_PROVIDER"]["compatible_evidence_types"] = ["CONTRACTING_STRATEGY_READINESS"]
 
 
 def _requirement(
@@ -599,6 +675,70 @@ def gate07m_evid_policy_update(source: dict[str, Any]) -> dict[str, Any]:
     return updated
 
 
+def gate07j_evid2_policy_update(source: dict[str, Any]) -> dict[str, Any]:
+    """Create the additive EVID-2 draft payload without mutating its source.
+
+    Existing published revisions remain byte-for-byte historical.  ADMIN may
+    clone a published revision, apply this deterministic transform to the DRAFT,
+    preview it, and publish it under the existing ETag lifecycle.
+    """
+
+    updated = gate07m_evid_policy_update(source)
+    updated["policy_update"] = "GATE07J_EVID_2"
+    updated["decision_criterion_policy"] = decision_criterion_policy(updated)
+    for profile_code in ("PYP-INV-SELECT", "PYP-FFA"):
+        ffa = profile_code == "PYP-FFA"
+        profile = updated.setdefault("gate_profiles", {}).setdefault(
+            profile_code,
+            {"allow_valid_with_conditions": profile_code == "PYP-INV-SELECT", "requirements": []},
+        )
+        current = {str(item.get("evidence_type")): deepcopy(item) for item in profile.get("requirements", [])}
+        desired_rows = [
+            deepcopy(item)
+            for item in DEFAULT_POLICY["gate_profiles"][profile_code]["requirements"]
+            if item.get("evidence_type") in {"BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"}
+        ]
+        desired_rows.extend(
+            [
+                _requirement(
+                    "CONTRACTING_STRATEGY_READINESS",
+                    "A" if ffa else "B",
+                    scope="EACH_PROJECT",
+                    blocking=ffa,
+                    provider_key="COMMERCIAL_READINESS_PROVIDER",
+                    validity=365,
+                    coverage=100 if ffa else 80,
+                    rationale=(
+                        "FFA consumes the governed Commercial & Contracting Strategy readiness provider."
+                        if ffa
+                        else "Selection accepts governed or controlled stage-appropriate commercial evidence."
+                    ),
+                    order=100,
+                ),
+                _requirement(
+                    "BENEFITS_PLAN_READINESS",
+                    "A" if ffa else "B",
+                    scope="EACH_PROJECT",
+                    blocking=ffa,
+                    provider_key="BENEFITS_READINESS_PROVIDER",
+                    validity=365,
+                    coverage=100 if ffa else 80,
+                    rationale=(
+                        "FFA consumes the governed Benefits Plan readiness and stable BEN-* references."
+                        if ffa
+                        else "Selection accepts stage-appropriate Benefits readiness without forcing FFA depth."
+                    ),
+                    order=105,
+                ),
+            ]
+        )
+        desired = {str(item.get("evidence_type")): deepcopy(item) for item in desired_rows}
+        current.update(desired)
+        profile["requirements"] = sorted(current.values(), key=lambda item: int(item.get("order", 0)))
+    updated["release_status"] = "DRAFT"
+    return updated
+
+
 class InvestmentEvidencePolicyService:
     def __init__(
         self,
@@ -727,6 +867,89 @@ class InvestmentEvidencePolicyService:
         self.db.commit()
         return clone
 
+    def clone_gate07j_evid2_configuration(self, configuration_id: int, expected_version: int) -> AdminConfiguration:
+        """Idempotently clone a source revision into an EVID-2 DRAFT."""
+
+        source = self._configuration(configuration_id, lock=True)
+        self._check_version(source.version, expected_version)
+        if source.status != "published":
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "PUBLISHED_POLICY_REQUIRED",
+                    "message": (
+                        "Gate 07J-EVID-2 revisions must be cloned from an immutable published evidence policy."
+                    ),
+                },
+            )
+        marker = {
+            "source_policy_id": source.id,
+            "source_policy_revision": source.revision,
+            "source_policy_hash": source.content_hash,
+        }
+        records = self.db.scalars(
+            select(AdminConfiguration).where(
+                AdminConfiguration.tenant_id == self.tenant_id,
+                AdminConfiguration.kind == CONFIGURATION_KIND,
+                AdminConfiguration.code == source.code,
+                AdminConfiguration.status == "draft",
+            )
+        ).all()
+        duplicate = next(
+            (item for item in records if dict(item.content_json.get("_gate07j_evid2") or {}) == marker),
+            None,
+        )
+        if duplicate is not None:
+            return duplicate
+        revision = (
+            int(
+                self.db.scalar(
+                    select(func.coalesce(func.max(AdminConfiguration.revision), 0)).where(
+                        AdminConfiguration.tenant_id == self.tenant_id,
+                        AdminConfiguration.kind == CONFIGURATION_KIND,
+                        AdminConfiguration.code == source.code,
+                    )
+                )
+                or 0
+            )
+            + 1
+        )
+        content = gate07j_evid2_policy_update(source.content_json)
+        content["_gate07j_evid2"] = marker
+        clone = AdminConfiguration(
+            tenant_id=self.tenant_id,
+            kind=CONFIGURATION_KIND,
+            code=source.code,
+            name=f"{source.name} · Gate 07J-EVID-2 revision {revision}",
+            description=(
+                "Governed Gate evidence policy with a separate decision-criteria layer; "
+                "DRAFT until explicitly previewed and published."
+            ),
+            status="draft",
+            revision=revision,
+            version=1,
+            content_json=content,
+            content_hash=_hash(content),
+            created_by_user_id=self.actor_id,
+        )
+        self.db.add(clone)
+        self.db.flush()
+        self._event("investment_evidence_policy.cloned", "AdminConfiguration", clone.id, marker)
+        self._event("gate_policy.cloned", "AdminConfiguration", clone.id, marker)
+        self._event(
+            "gate_criterion.created",
+            "AdminConfiguration",
+            clone.id,
+            {
+                "profile_codes": ["PYP-INV-SELECT", "PYP-FFA"],
+                "criterion_count": sum(
+                    len(items) for items in content["decision_criterion_policy"].get("criteria_by_profile", {}).values()
+                ),
+            },
+        )
+        self.db.commit()
+        return clone
+
     def update_configuration(
         self,
         configuration_id: int,
@@ -747,6 +970,13 @@ class InvestmentEvidencePolicyService:
         record.version += 1
         record.updated_at = utc_now()
         self._event("investment_evidence_policy.updated", "AdminConfiguration", record.id, {})
+        if content.get("decision_criterion_policy"):
+            self._event(
+                "gate_criterion.changed",
+                "AdminConfiguration",
+                record.id,
+                {"criterion_policy_hash": _hash(content["decision_criterion_policy"])},
+            )
         self.db.commit()
         return record
 
@@ -774,7 +1004,8 @@ class InvestmentEvidencePolicyService:
                 previous.status = "superseded"
                 previous.version += 1
                 self._event("investment_evidence_policy.superseded", "AdminConfiguration", previous.id, {})
-        content["release_status"] = VALIDATED_RELEASE
+        is_evid2 = content.get("policy_update") == "GATE07J_EVID_2"
+        content["release_status"] = EVID2_VALIDATED_RELEASE if is_evid2 else VALIDATED_RELEASE
         record.content_json = content
         record.content_hash = _hash(content)
         record.status = "published"
@@ -787,9 +1018,27 @@ class InvestmentEvidencePolicyService:
             {
                 "policy_hash": record.content_hash,
                 "effective_from": content["effective_from"],
-                "evidence_types": ["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"],
+                "evidence_types": sorted(
+                    {
+                        str(item.get("evidence_type"))
+                        for profile in content.get("gate_profiles", {}).values()
+                        for item in profile.get("requirements", [])
+                        if item.get("evidence_type")
+                    }
+                ),
             },
         )
+        if content.get("decision_criterion_policy"):
+            self._event(
+                "gate_policy.published",
+                "AdminConfiguration",
+                record.id,
+                {
+                    "policy_revision": record.revision,
+                    "policy_hash": record.content_hash,
+                    "criterion_policy_hash": _hash(content["decision_criterion_policy"]),
+                },
+            )
         self.db.commit()
         return record
 
@@ -885,6 +1134,9 @@ class InvestmentEvidencePolicyService:
         would_be_ready = not blockers and all(
             not item.get("blocking") or item.get("status") in {"VALID", "NOT_REQUIRED"} for item in evidence
         )
+        criterion_policy = decision_criterion_policy(content) if content.get("decision_criterion_policy") else {}
+        decision_criteria = deepcopy(criterion_policy.get("criteria_by_profile", {}).get(gate_profile_code, []))
+        criterion_issues = validate_criterion_policy(content, set(EVIDENCE_TYPES)) if criterion_policy else []
         return PolicyPreviewOut(
             policy={
                 "id": record.id if record else None,
@@ -916,13 +1168,23 @@ class InvestmentEvidencePolicyService:
             source_availability=source_availability,
             source_readiness=source_readiness,
             source_current=source_current,
+            decision_criterion_policy=criterion_policy,
+            decision_criteria=decision_criteria,
+            criterion_validation_issues=criterion_issues,
+            decision_criterion_taxonomy=list(DECISION_CRITERION_TYPES),
+            controlled_operators=list(CONTROLLED_OPERATORS),
+            evidence_quality_states=list(EVIDENCE_QUALITY_STATES),
             would_gate07j_be_ready=would_be_ready,
             would_be_ready_for_investment_gate=would_be_ready,
             recommended_next_development=next_step,
             can_design_investment_decision_gate=not blocking_missing,
             can_enter_fid=False,
             persisted=False,
-            final_output=READY_OUTPUT,
+            final_output=(
+                EVID2_READY_OUTPUT
+                if content.get("policy_update") == "GATE07J_EVID_2" and would_be_ready
+                else READY_OUTPUT
+            ),
         )
 
     def missing_providers(self, gate_profile_code: str | None = None, portfolio_id: int | None = None) -> list[dict]:
@@ -963,6 +1225,20 @@ class InvestmentEvidencePolicyService:
             }
             if resolutions:
                 requirement["resolved_projects"] = resolutions
+        raw_criterion_policy = record.content_json.get("decision_criterion_policy")
+        criterion_policy = decision_criterion_policy(record.content_json) if raw_criterion_policy else {}
+        criteria = deepcopy(criterion_policy.get("criteria_by_profile", {}).get(gate_profile_code, []))
+        criterion_policy_hash = (
+            _hash(
+                {
+                    "policy": criterion_policy,
+                    "gate_profile_code": gate_profile_code,
+                    "criteria": criteria,
+                }
+            )
+            if criterion_policy
+            else None
+        )
         return {
             "policy_id": record.id,
             "policy_revision": record.revision,
@@ -972,6 +1248,24 @@ class InvestmentEvidencePolicyService:
             "effective_matrix": matrix,
             "provider_registry_snapshot": [item.model_dump(mode="json") for item in self.providers()],
             "project_contexts": [self._project_context(item) for item in projects],
+            "decision_criterion_policy": (
+                {
+                    "policy_id": record.id,
+                    "policy_revision": record.revision,
+                    "policy_hash": criterion_policy_hash,
+                    "effective_from": criterion_policy.get("effective_from"),
+                    "criterion_types": deepcopy(criterion_policy.get("criterion_types", [])),
+                    "controlled_operators": deepcopy(criterion_policy.get("controlled_operators", [])),
+                    "evidence_quality_states": deepcopy(criterion_policy.get("evidence_quality_states", [])),
+                    "tailoring_dimensions": deepcopy(criterion_policy.get("tailoring_dimensions", [])),
+                    "formal_decision_authority": "GATE07K",
+                    "portfolio_rank_authority": "PORTFOLIO",
+                    "new_round_policy": criterion_policy.get("new_round_policy"),
+                    "criteria": criteria,
+                }
+                if criterion_policy
+                else {}
+            ),
             "captured_at": utc_now().isoformat(),
             "final_output": READY_OUTPUT,
             "can_enter_fid": False,
@@ -1277,9 +1571,17 @@ class InvestmentEvidencePolicyService:
             readiness = business_service.readiness(case.id)
             warnings = list(readiness.warnings)
             blockers = list(readiness.blockers)
-            source_current = bool(readiness.source_current)
+            source_current = bool(readiness.source_current and getattr(revision, "source_current", True))
+            five_case_readiness = deepcopy(getattr(revision, "five_case_readiness_json", {}) or {})
+            five_case_status = five_case_readiness.get("overall_business_case_readiness")
+            # Legacy and policy-not-applicable revisions retain the v1 provider
+            # behavior.  For an applicable BC-5C revision, Five Case overall
+            # readiness is authoritative.
+            overall_status = readiness.status if five_case_status in {None, "NOT_APPLICABLE"} else five_case_status
             if revision.status != "COMPLETED":
                 blockers.append("BUSINESS_CASE_REVISION_NOT_COMPLETED")
+            if overall_status != "READY":
+                blockers.append(f"BUSINESS_CASE_OVERALL_NOT_READY:{overall_status}")
             if revision.material_change_status == "MATERIAL_CHANGE_REVIEW_REQUIRED":
                 blockers.append("MATERIAL_CHANGE_REVIEW_REQUIRED")
             if any(
@@ -1310,8 +1612,23 @@ class InvestmentEvidencePolicyService:
                 "STALE"
                 if not source_current
                 else "READY"
-                if revision.status == "COMPLETED" and readiness.status == "READY" and not blockers
+                if (
+                    revision.status == "COMPLETED"
+                    and readiness.status == "READY"
+                    and overall_status == "READY"
+                    and not blockers
+                )
                 else "BLOCKED"
+            )
+            business_case_hash = str(getattr(revision, "business_case_hash", None) or revision.content_hash)
+            source_bundle_hash = str(getattr(revision, "source_bundle_hash", None) or revision.source_snapshot_hash)
+            five_case_hash = getattr(revision, "five_case_hash", None)
+            can_supply = bool(
+                revision.status == "COMPLETED"
+                and overall_status == "READY"
+                and status == "READY"
+                and source_current
+                and not blockers
             )
             contract_value = {
                 "provider_key": "BUSINESS_CASE_READINESS_PROVIDER",
@@ -1323,8 +1640,13 @@ class InvestmentEvidencePolicyService:
                 "business_case_revision_id": revision.id,
                 "revision_number": revision.revision_number,
                 "revision_purpose": revision.purpose,
-                "business_case_hash": revision.content_hash,
+                "business_case_hash": business_case_hash,
                 "business_case_source_hash": revision.source_snapshot_hash,
+                "source_bundle_hash": source_bundle_hash,
+                "five_case_hash": five_case_hash,
+                "five_case_readiness": five_case_readiness,
+                "source_references": deepcopy(getattr(revision, "source_references_json", {}) or {}),
+                "source_hashes": deepcopy(getattr(revision, "source_hashes_json", {}) or {}),
                 "as_of_date": revision.as_of_date.isoformat(),
                 "fel_stage_code": revision.fel_stage_code,
                 "selected_alternative": dict(revision.recommendation_json or {}).get("selected_alternative"),
@@ -1342,14 +1664,14 @@ class InvestmentEvidencePolicyService:
                 ),
                 "warnings": sorted(set(warnings)),
                 "blockers": sorted(set(blockers)),
-                "can_supply_investment_gate_evidence": bool(status == "READY" and source_current),
+                "can_supply_investment_gate_evidence": can_supply,
             }
             return self._normalized_provider_payload(
                 evidence_type="BUSINESS_CASE_READINESS",
                 scope=scope,
                 readiness_status=status,
                 source_current=source_current,
-                evidence_hash=str(revision.content_hash),
+                evidence_hash=business_case_hash,
                 as_of_date=revision.as_of_date.isoformat(),
                 warnings=contract_value["warnings"],
                 blockers=contract_value["blockers"],
@@ -1381,6 +1703,120 @@ class InvestmentEvidencePolicyService:
                     f"Governed {governed.model_type} economic-financial model; "
                     f"funding reconciliation {governed.funding_reconciliation_status}."
                 ),
+                evidence_refs=[value],
+            )
+        if provider_key == "BENEFITS_READINESS_PROVIDER" and scope_id is not None:
+            governed = StrategicBenefitsService(self.db, self.tenant_id, self.actor_id, self.context).provider_evidence(
+                scope_id
+            )
+            value = governed.model_dump(mode="json")
+            return self._normalized_provider_payload(
+                evidence_type="BENEFITS_PLAN_READINESS",
+                scope=scope,
+                readiness_status=str(governed.overall_benefits_readiness),
+                source_current=bool(governed.source_current),
+                evidence_hash=str(governed.benefits_plan_hash),
+                as_of_date=governed.as_of_date.isoformat(),
+                warnings=list(governed.warnings),
+                blockers=list(governed.blockers),
+                source_module="STRATEGIC_BENEFITS_PLAN",
+                source_record_id=str(governed.plan_version_id),
+                summary=(
+                    f"Governed Strategic Benefits Plan {governed.plan_number} "
+                    f"version {governed.plan_version_number}; readiness "
+                    f"{governed.overall_benefits_readiness}."
+                ),
+                evidence_refs=[value],
+            )
+        if provider_key == "COMMERCIAL_READINESS_PROVIDER" and scope_id is not None:
+            governed = CommercialStrategyService(
+                self.db, self.tenant_id, self.actor_id, self.context
+            ).provider_evidence(scope_id)
+            value = governed.model_dump(mode="json")
+            return self._normalized_provider_payload(
+                evidence_type="COMMERCIAL_READINESS",
+                scope=scope,
+                readiness_status=str(governed.overall_commercial_readiness),
+                source_current=bool(governed.source_current),
+                evidence_hash=str(governed.commercial_strategy_hash),
+                as_of_date=governed.as_of_date.isoformat(),
+                warnings=list(governed.warnings),
+                blockers=list(governed.blockers),
+                source_module="COMMERCIAL_CONTRACTING_STRATEGY",
+                source_record_id=str(governed.version_id),
+                summary=(
+                    f"Governed commercial strategy {governed.strategy_number} "
+                    f"version {governed.version_number}; readiness "
+                    f"{governed.overall_commercial_readiness}."
+                ),
+                evidence_refs=[value],
+            )
+        if provider_key == "BASIC_DATA_READINESS_PROVIDER" and scope_id is not None:
+            # Keep the dependency lazy: Basic Data consumes the existing FEL
+            # service and quality vocabulary, never this Gate's write workflow.
+            from app.modules.basic_data.service import BasicDataService
+
+            value = BasicDataService(self.db, self.tenant_id, self.actor_id, self.context).provider_evidence(scope_id)
+            if hasattr(value, "model_dump"):
+                value = value.model_dump(mode="json")
+            if not value or value.get("status") != "AVAILABLE" or not value.get("source_current"):
+                return None
+            return self._normalized_provider_payload(
+                evidence_type="BASIC_DATA_READINESS",
+                scope=scope,
+                readiness_status=str(value["readiness_status"]),
+                source_current=True,
+                evidence_hash=str(value["evidence_hash"]),
+                as_of_date=str(value["as_of_date"]),
+                warnings=list(value.get("warnings", [])),
+                blockers=list(value.get("blockers", [])),
+                source_module="BASIC_DATA_READINESS",
+                source_record_id=str(value["assessment_id"]),
+                summary=f"Governed Basic Data assessment {value['assessment_id']}; readiness READY.",
+                evidence_refs=[value],
+            )
+        if provider_key == "OWNER_CAPABILITY_READINESS_PROVIDER" and scope_id is not None:
+            from app.modules.owner_capability.service import OwnerCapabilityService
+
+            value = OwnerCapabilityService(self.db, self.tenant_id, self.actor_id, self.context).provider_evidence(
+                scope_id
+            )
+            if hasattr(value, "model_dump"):
+                value = value.model_dump(mode="json")
+            if not value or value.get("status") != "AVAILABLE" or not value.get("source_current"):
+                return None
+            return self._normalized_provider_payload(
+                evidence_type="OWNER_CAPABILITY_READINESS",
+                scope=scope,
+                readiness_status=str(value["readiness_status"]),
+                source_current=True,
+                evidence_hash=str(value["evidence_hash"]),
+                as_of_date=str(value["as_of_date"]),
+                warnings=list(value.get("warnings", [])),
+                blockers=list(value.get("blockers", [])),
+                source_module="OWNER_CAPABILITY_READINESS",
+                source_record_id=str(value["assessment_id"]),
+                summary=f"Governed Owner Capability assessment {value['assessment_id']}; readiness READY.",
+                evidence_refs=[value],
+            )
+        if provider_key in {"COST_SOURCE_READINESS_PROVIDER", "SCHEDULE_SOURCE_READINESS_PROVIDER"} and scope_id is not None:
+            from app.modules.qra_foundation.service import QraFoundationService
+
+            kind = "cost" if provider_key == "COST_SOURCE_READINESS_PROVIDER" else "schedule"
+            value = QraFoundationService(self.db, self.tenant_id, self.actor_id, self.context).provider_evidence(
+                scope_id, kind=kind
+            )
+            if hasattr(value, "model_dump"):
+                value = value.model_dump(mode="json")
+            if not value or value.get("status") != "AVAILABLE" or not value.get("source_current"):
+                return None
+            return self._normalized_provider_payload(
+                evidence_type=f"{kind.upper()}_SOURCE_READINESS", scope=scope,
+                readiness_status=str(value["readiness_status"]), source_current=True,
+                evidence_hash=str(value["evidence_hash"]), as_of_date=str(value["as_of_date"]),
+                warnings=list(value.get("warnings", [])), blockers=list(value.get("blockers", [])),
+                source_module=f"QRA_{kind.upper()}_SOURCE_READINESS", source_record_id=str(value["assessment_id"]),
+                summary=f"Governed {kind} source assessment {value['assessment_id']}; readiness READY, not simulation.",
                 evidence_refs=[value],
             )
         return None
@@ -1585,6 +2021,14 @@ class InvestmentEvidencePolicyService:
 
     def _release_contract(self, record: AdminConfiguration | None, content: dict) -> dict:
         missing = self._missing_provider_analysis(content)
+        is_evid2 = content.get("policy_update") == "GATE07J_EVID_2"
+        ready_output = EVID2_READY_OUTPUT if is_evid2 else READY_OUTPUT
+        validated_release = EVID2_VALIDATED_RELEASE if is_evid2 else VALIDATED_RELEASE
+        rework_output = (
+            "GATE07J_EVID_2_DECISION_CRITERIA_POLICY_REWORK_REQUIRED"
+            if is_evid2
+            else "GATE07M_EVID_POLICY_UPDATE_REWORK_REQUIRED"
+        )
 
         def profile_matrix(profile_code: str) -> list[dict]:
             return [
@@ -1615,6 +2059,11 @@ class InvestmentEvidencePolicyService:
             "business_case_provider_status": PROVIDER_REGISTRY["BUSINESS_CASE_READINESS_PROVIDER"]["status"],
             "economic_financial_provider_key": "ECONOMIC_FINANCIAL_READINESS_PROVIDER",
             "economic_financial_provider_status": PROVIDER_REGISTRY["ECONOMIC_FINANCIAL_READINESS_PROVIDER"]["status"],
+            "commercial_provider_key": "COMMERCIAL_READINESS_PROVIDER",
+            "commercial_provider_status": PROVIDER_REGISTRY["COMMERCIAL_READINESS_PROVIDER"]["status"],
+            "benefits_provider_key": "BENEFITS_READINESS_PROVIDER",
+            "benefits_provider_status": PROVIDER_REGISTRY["BENEFITS_READINESS_PROVIDER"]["status"],
+            "decision_criterion_policy": deepcopy(content.get("decision_criterion_policy", {})),
             "PYP_INV_SELECT_effective_policy": profile_matrix("PYP-INV-SELECT"),
             "PYP_FFA_effective_policy": profile_matrix("PYP-FFA"),
             "Project_Type_overrides": deepcopy(content.get("project_type_overrides", [])),
@@ -1626,8 +2075,8 @@ class InvestmentEvidencePolicyService:
             "Gate07K_package_integration_status": "AVAILABLE",
             "warnings": [],
             "blockers": blockers,
-            "final_output": READY_OUTPUT if not blockers else "GATE07M_EVID_POLICY_UPDATE_REWORK_REQUIRED",
-            "exclusive_status": VALIDATED_RELEASE if not blockers else "GATE07M_EVID_POLICY_UPDATE_REWORK_REQUIRED",
+            "final_output": ready_output if not blockers else rework_output,
+            "exclusive_status": validated_release if not blockers else rework_output,
         }
 
     @staticmethod
@@ -1747,6 +2196,8 @@ class InvestmentEvidencePolicyService:
                 issues.append("INVALID_PROJECT_TYPE_OVERRIDE")
             if not override.get("project_type_filter"):
                 issues.append("PROJECT_TYPE_FILTER_REQUIRED")
+        if content.get("decision_criterion_policy"):
+            issues.extend(validate_criterion_policy(content, set(EVIDENCE_TYPES)))
         if issues:
             raise HTTPException(
                 status_code=422, detail={"code": "INVALID_EVIDENCE_POLICY", "issues": sorted(set(issues))}
@@ -1851,12 +2302,20 @@ class InvestmentEvidencePolicyService:
         return value or "LEGACY"
 
     def _project_context(self, project: EnterpriseWorkspace) -> dict:
+        metadata = dict(dict(project.defaults_json or {}).get("_project", {}))
         return {
             "project_workspace_id": project.id,
             "project_code": project.code,
             "project_name": project.name,
             "project_type": self._project_type(project),
             "governance_model": self._governance_model(project),
+            "fel_stage": str(metadata.get("fel_stage") or metadata.get("fel_stage_code") or "UNSPECIFIED").upper(),
+            "project_size": str(metadata.get("project_size") or "UNSPECIFIED").upper(),
+            "project_risk": str(metadata.get("project_risk") or metadata.get("risk_level") or "UNSPECIFIED").upper(),
+            "project_complexity": str(
+                metadata.get("project_complexity") or metadata.get("complexity_level") or "UNSPECIFIED"
+            ).upper(),
+            "uncertainty_level": str(metadata.get("uncertainty_level") or "UNSPECIFIED").upper(),
         }
 
     @staticmethod

@@ -1,0 +1,34 @@
+
+ RUN  v2.1.9 C:/Users/Ricardo/Documents/GitHub/pypmis-ia-sas/frontend
+
+ ✓ src/features/capital-allocation/api.test.ts (5 tests) 28ms
+ ✓ src/features/portfolio-review/api.test.ts (11 tests) 55ms
+ ✓ src/features/capital-planning/api.test.ts (4 tests) 130ms
+ ✓ src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts (11 tests) 519ms
+ ✓ src/features/capital-planning/CapitalPlanningWorkspace.test.tsx (4 tests) 5896ms
+   ✓ CapitalPlanningWorkspace > uses server-side filtering, accurate summary metrics and page-level Idea labeling 2265ms
+   ✓ CapitalPlanningWorkspace > sends an idempotency key for every governed Demand transition 749ms
+   ✓ CapitalPlanningWorkspace > preserves assumptions, constraints and dependencies as governed arrays when editing 1646ms
+   ✓ CapitalPlanningWorkspace > refreshes originated Idea lineage after the selected Demand keeps the same id 1230ms
+ ✓ src/features/capital-allocation/StrategicCapitalAllocationWorkspace.test.tsx (5 tests) 8404ms
+   ✓ StrategicCapitalAllocationWorkspace > renders backend-derived positions, explicit unclassified exposure and the no-authority boundary 1854ms
+   ✓ StrategicCapitalAllocationWorkspace > edits and saves an exact 100 percent target without silently changing Bucket values 1364ms
+   ✓ StrategicCapitalAllocationWorkspace > persists one explicit primary Bucket classification and keeps lineage identifiers 2348ms
+   ✓ StrategicCapitalAllocationWorkspace > creates a governed plan only after an explicit scope Workspace is selected 2269ms
+   ✓ StrategicCapitalAllocationWorkspace > exposes only governed lifecycle actions returned by the backend 561ms
+ ✓ src/features/portfolio-review/PortfolioReviewWorkspace.test.tsx (10 tests) 17357ms
+   ✓ PortfolioReviewWorkspace > renders backend-owned Portfolio evidence and preserves the Project Gate authority boundary 2710ms
+   ✓ PortfolioReviewWorkspace > previews changes with persisted=false and freezes only through the governed lifecycle API 1287ms
+   ✓ PortfolioReviewWorkspace > records HOLD_FOR_CAPACITY as a request without exposing a source-domain mutation control 3303ms
+   ✓ PortfolioReviewWorkspace > records REQUEST_REASSESSMENT as a request without exposing a source-domain mutation control 2739ms
+   ✓ PortfolioReviewWorkspace > records REBALANCE_CAPITAL as a request without exposing a source-domain mutation control 2486ms
+   ✓ PortfolioReviewWorkspace > retains frozen actions at close while an authorized owner continues the live follow-up queue 733ms
+   ✓ PortfolioReviewWorkspace > uses the server matrix filters and stable pagination without querying individual Projects 1280ms
+   ✓ PortfolioReviewWorkspace > requires governed rationale for a controlled Review transition 1784ms
+   ✓ PortfolioReviewAdminView > stages SoD edits under the actual backend policy key without adding inert UI sections 797ms
+
+ Test Files  7 passed (7)
+      Tests  50 passed (50)
+   Start at  12:27:46
+   Duration  37.39s (transform 8.65s, setup 11.91s, collect 32.05s, tests 32.39s, environment 45.21s, prepare 7.11s)
+

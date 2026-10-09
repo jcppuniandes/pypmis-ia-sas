@@ -1,0 +1,340 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - main [ref=e3]:
+    - generic "Application brand" [ref=e4]:
+      - generic [ref=e5]:
+        - img "P&Pmis Construction AI logo" [ref=e6]
+        - strong [ref=e8]: P&Pmis Construction AI
+      - generic [ref=e9]:
+        - button "Cambiar a ADMIN MODE" [ref=e10] [cursor=pointer]:
+          - generic [ref=e11]: Modo actual
+          - strong [ref=e12]: USER MODE
+        - generic [ref=e13]: Project Controls Intelligence Platform
+    - generic "Tenant command bar" [ref=e14]:
+      - generic [ref=e15]:
+        - img [ref=e16]
+        - generic [ref=e20]:
+          - generic [ref=e21]: Acceso de proyecto
+          - strong [ref=e22]: Proyectos asignados
+          - generic [ref=e23]: Cada usuario ve solo sus proyectos
+      - generic [ref=e24]:
+        - generic [ref=e25]: Project
+        - combobox "Project" [ref=e26]:
+          - option "CTRL-DEMO-001" [selected]
+          - option "MIN-ABC"
+          - option "REF-TURN-002"
+          - option "VIA-001"
+      - generic [ref=e27]:
+        - heading "Proyecto Demo - Control Integrado TCM" [level=1] [ref=e28]
+        - generic [ref=e29]: CTRL-DEMO-001 / draft / USD
+      - generic [ref=e30]:
+        - strong [ref=e31]: Pypmis Admin
+        - generic [ref=e32]: Tenant Administrator / admin@demo.local
+      - button "Logout" [ref=e33] [cursor=pointer]:
+        - img [ref=e34]
+    - region "Project workspace and control flow" [ref=e37]:
+      - generic [ref=e38]:
+        - button "Ocultar barra de módulos" [expanded] [ref=e39] [cursor=pointer]:
+          - img [ref=e40]
+        - complementary [ref=e42]:
+          - navigation "Control Flow" [ref=e43]:
+            - generic [ref=e44]:
+              - strong [ref=e45]: USER MODE
+              - generic [ref=e46]: Macroprocesos + módulos + submódulos
+            - button "Dashboard 0.888 SPI" [ref=e47] [cursor=pointer]:
+              - generic [ref=e48]: Dashboard
+              - strong [ref=e49]: 0.888 SPI
+            - button "Diagnóstico de Control 50%" [ref=e50] [cursor=pointer]:
+              - generic [ref=e51]: Diagnóstico de Control
+              - strong [ref=e52]: 50%
+            - generic [ref=e53]: Macroprocesos
+            - generic [ref=e54]:
+              - button "Enterprise Strategy Manager" [expanded] [ref=e55] [cursor=pointer]:
+                - generic [ref=e56]: Enterprise Strategy Manager
+                - img [ref=e57]
+              - group "Módulos de Enterprise Strategy Manager" [ref=e59]:
+                - generic [ref=e60]:
+                  - button "Enterprise Foundation" [expanded] [ref=e61] [cursor=pointer]:
+                    - generic [ref=e62]:
+                      - generic [ref=e63]: Phase 0
+                      - text: Enterprise Foundation
+                      - emphasis [ref=e64]: Foundation / prerequisite
+                    - img [ref=e65]
+                  - group "Submódulos de Enterprise Foundation" [ref=e67]:
+                    - button "Foundation Status" [ref=e69] [cursor=pointer]:
+                      - generic [ref=e70]: Foundation Status
+                    - button "Enterprise Explorer" [ref=e72] [cursor=pointer]:
+                      - generic [ref=e73]: Enterprise Explorer
+                    - button "Workspace Context" [ref=e75] [cursor=pointer]:
+                      - generic [ref=e76]: Workspace Context
+                - generic [ref=e77]:
+                  - button "Strategic Capital Planning & Demand" [expanded] [ref=e78] [cursor=pointer]:
+                    - generic [ref=e79]:
+                      - generic [ref=e80]: Phase 1
+                      - text: Strategic Capital Planning & Demand
+                      - emphasis [ref=e81]: Start of capital planning
+                    - img [ref=e82]
+                  - group "Submódulos de Strategic Capital Planning & Demand" [ref=e84]:
+                    - button "Planning Cycles" [ref=e86] [cursor=pointer]:
+                      - generic [ref=e87]: Planning Cycles
+                    - button "Capital Demand Pipeline" [ref=e89] [cursor=pointer]:
+                      - generic [ref=e90]: Capital Demand Pipeline
+                    - button "My Demands" [ref=e92] [cursor=pointer]:
+                      - generic [ref=e93]: My Demands
+                    - button "Demands in Review" [ref=e95] [cursor=pointer]:
+                      - generic [ref=e96]: Demands in Review
+                    - button "Endorsed Demands" [ref=e98] [cursor=pointer]:
+                      - generic [ref=e99]: Endorsed Demands
+                    - button "Demand History" [ref=e101] [cursor=pointer]:
+                      - generic [ref=e102]: Demand History
+                - button "Investment Origination & Shaping" [ref=e104] [cursor=pointer]:
+                  - generic [ref=e105]:
+                    - generic [ref=e106]: Phase 2
+                    - text: Investment Origination & Shaping
+                    - emphasis [ref=e107]: Demand → Idea is explicit
+                  - img [ref=e108]
+                - button "Strategic Gate" [ref=e111] [cursor=pointer]:
+                  - generic [ref=e112]:
+                    - generic [ref=e113]: Phase 3
+                    - text: Strategic Gate
+                  - img [ref=e114]
+                - button "Portfolio Planning" [ref=e117] [cursor=pointer]:
+                  - generic [ref=e118]:
+                    - generic [ref=e119]: Phase 4
+                    - text: Portfolio Planning
+                  - img [ref=e120]
+                - button "Portfolio Scenario Planning" [ref=e123] [cursor=pointer]:
+                  - generic [ref=e124]:
+                    - generic [ref=e125]: Phase 5
+                    - text: Portfolio Scenario Planning
+                  - img [ref=e126]
+                - button "Project Definition & Investment Case" [ref=e129] [cursor=pointer]:
+                  - generic [ref=e130]:
+                    - generic [ref=e131]: Phase 6
+                    - text: Project Definition & Investment Case
+                  - img [ref=e132]
+                - button "Investment Governance" [ref=e135] [cursor=pointer]:
+                  - generic [ref=e136]:
+                    - generic [ref=e137]: Phase 7
+                    - text: Investment Governance
+                  - img [ref=e138]
+            - button "Project Workspace Governance" [ref=e141] [cursor=pointer]:
+              - generic [ref=e142]: Project Workspace Governance
+              - img [ref=e143]
+            - generic [ref=e145]:
+              - button "Project Control Manager" [expanded] [ref=e146] [cursor=pointer]:
+                - generic [ref=e147]: Project Control Manager
+                - img [ref=e148]
+              - group "Módulos de Project Control Manager" [ref=e150]:
+                - button "Project Manager" [ref=e152] [cursor=pointer]:
+                  - generic [ref=e153]: Project Manager
+                  - img [ref=e154]
+                - button "Scope Manager" [ref=e157] [cursor=pointer]:
+                  - generic [ref=e158]: Scope Manager
+                  - img [ref=e159]
+                - button "Schedule Manager" [ref=e162] [cursor=pointer]:
+                  - generic [ref=e163]: Schedule Manager
+                  - img [ref=e164]
+                - button "Cost Manager" [ref=e167] [cursor=pointer]:
+                  - generic [ref=e168]: Cost Manager
+                  - img [ref=e169]
+                - button "Risk Manager" [ref=e172] [cursor=pointer]:
+                  - generic [ref=e173]: Risk Manager
+                  - img [ref=e174]
+                - button "Procurement Manager" [ref=e177] [cursor=pointer]:
+                  - generic [ref=e178]: Procurement Manager
+                  - img [ref=e179]
+                - button "Progress&Performance Manager" [ref=e182] [cursor=pointer]:
+                  - generic [ref=e183]: Progress&Performance Manager
+                  - img [ref=e184]
+                - button "Resource Manager" [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]: Resource Manager
+                  - img [ref=e189]
+                - button "Claim Manager" [ref=e192] [cursor=pointer]:
+                  - generic [ref=e193]: Claim Manager
+                  - img [ref=e194]
+                - button "Document Manager" [ref=e197] [cursor=pointer]:
+                  - generic [ref=e198]: Document Manager
+                  - img [ref=e199]
+            - button "Facility Manager" [ref=e202] [cursor=pointer]:
+              - generic [ref=e203]: Facility Manager
+              - img [ref=e204]
+            - button "Property Manager" [ref=e207] [cursor=pointer]:
+              - generic [ref=e208]: Property Manager
+              - img [ref=e209]
+          - complementary "Project information flow" [ref=e211]:
+            - generic [ref=e212]:
+              - strong [ref=e213]: Project Information Flow
+              - generic [ref=e214]: Follow the project data
+            - button "Open Project and WBS" [ref=e215] [cursor=pointer]:
+              - img [ref=e216]
+              - generic [ref=e219]:
+                - strong [ref=e220]: Project and WBS
+                - generic [ref=e221]: Define project identity, roles and WBS controls.
+              - emphasis [ref=e222]: "0"
+            - button "Open Load schedule" [ref=e223] [cursor=pointer]:
+              - img [ref=e224]
+              - generic [ref=e227]:
+                - strong [ref=e228]: Load schedule
+                - generic [ref=e229]: Import P6 XML/XER and Activity Sheet data.
+              - emphasis [ref=e230]: "0"
+            - button "Open Baseline gate" [ref=e231] [cursor=pointer]:
+              - img [ref=e232]
+              - generic [ref=e234]:
+                - strong [ref=e235]: Baseline gate
+                - generic [ref=e236]: Confirm cost, currency and schedule quality before approval.
+              - emphasis [ref=e237]: "1"
+            - button "Open CBS/FBS and CostCodes" [ref=e238] [cursor=pointer]:
+              - img [ref=e239]
+              - generic [ref=e242]:
+                - strong [ref=e243]: CBS/FBS and CostCodes
+                - generic [ref=e244]: Reconcile WBS, CBS, FBS, CostCode and commitments.
+              - emphasis [ref=e245]: "0"
+            - button "Open Baseline approval" [ref=e246] [cursor=pointer]:
+              - img [ref=e247]
+              - generic [ref=e249]:
+                - strong [ref=e250]: Baseline approval
+                - generic [ref=e251]: Freeze the controlled schedule and cost baseline.
+              - emphasis [ref=e252]: "1"
+            - button "Open Progress and EVM" [ref=e253] [cursor=pointer]:
+              - img [ref=e254]
+              - generic [ref=e257]:
+                - strong [ref=e258]: Progress and EVM
+                - generic [ref=e259]: Capture progress and calculate earned value.
+              - emphasis [ref=e260]: "0"
+            - button "Open Business processes" [ref=e261] [cursor=pointer]:
+              - img [ref=e262]
+              - generic [ref=e265]:
+                - strong [ref=e266]: Business processes
+                - generic [ref=e267]: Control approvals, versions, exports and recost history.
+              - emphasis [ref=e268]: "0"
+            - button "Open AWP packages" [ref=e269] [cursor=pointer]:
+              - img [ref=e270]
+              - generic [ref=e273]:
+                - strong [ref=e274]: AWP packages
+                - generic [ref=e275]: Release packages through constraints and POC readiness.
+              - emphasis [ref=e276]: "2"
+            - button "Open Closeout evidence" [ref=e277] [cursor=pointer]:
+              - img [ref=e278]
+              - generic [ref=e281]:
+                - strong [ref=e282]: Closeout evidence
+                - generic [ref=e283]: Keep approvals, documents and audit evidence controlled.
+              - emphasis [ref=e284]: "0"
+          - group "Administrative actions" [ref=e285]:
+            - generic "Proyecto Crear o borrar proyectos" [ref=e286] [cursor=pointer]:
+              - generic [ref=e287]:
+                - img [ref=e288]
+                - text: Proyecto
+              - strong [ref=e292]: Crear o borrar proyectos
+      - region "Control dashboard" [ref=e293]:
+        - region "Next controlled action" [ref=e294]:
+          - generic [ref=e295]: Next controlled action / Project Controls
+          - strong [ref=e296]: Baseline gate
+          - paragraph [ref=e297]: Baseline is blocked until the schedule has cost-loaded activities.
+          - button "Open Baseline gate" [ref=e298] [cursor=pointer]:
+            - img [ref=e299]
+            - generic [ref=e301]: Open Baseline gate
+        - region "Current module guide" [ref=e302]:
+          - generic [ref=e303]:
+            - generic [ref=e304]: Current module
+            - strong [ref=e305]: Planning Cycles
+            - paragraph [ref=e306]: Open and close governed periods for capital need capture, review and endorsement.
+          - generic [ref=e307]:
+            - article [ref=e308]:
+              - generic [ref=e309]: Status
+              - strong [ref=e310]: Phase 1
+            - article [ref=e311]:
+              - generic [ref=e312]: Next action
+              - strong [ref=e313]: Continue through actions and readiness conditions authorized by the existing backend.
+        - generic [ref=e315]:
+          - navigation "Strategic workflow breadcrumb" [ref=e316]:
+            - generic [ref=e317]: Enterprise Strategy Manager
+            - generic [ref=e318]:
+              - generic [ref=e319]: ›
+              - text: Strategic Capital Planning & Demand
+            - generic [ref=e320]:
+              - generic [ref=e321]: ›
+              - text: Planning Cycles
+          - region "Strategic Capital Planning and Demand" [ref=e322]:
+            - generic [ref=e323]:
+              - generic [ref=e324]:
+                - generic [ref=e325]: USER MODE / Enterprise Strategy Manager
+                - heading "Strategic Capital Planning & Demand" [level=2] [ref=e326]
+                - paragraph [ref=e327]: Govern capital needs before solution selection. A Capital Demand is not an Idea, Project, Budget, Funding assignment or FIN model.
+              - generic "Métricas de Strategic Capital Planning & Demand" [ref=e329]:
+                - article [ref=e330]:
+                  - strong [ref=e331]: "0"
+                  - generic [ref=e332]: Planning Cycles
+                - article [ref=e333]:
+                  - strong [ref=e334]: "0"
+                  - generic [ref=e335]: Capital Demands
+                - article [ref=e336]:
+                  - strong [ref=e337]: "0"
+                  - generic [ref=e338]: Endorsed Needs
+                - article [ref=e339]:
+                  - strong [ref=e340]: "0"
+                  - generic [ref=e341]: Ideas on this page
+            - note [ref=e342]:
+              - img [ref=e343]
+              - generic [ref=e346]: Endorsement recognizes a sufficiently defined capital need. It does not approve a solution, Project, Portfolio entry, capital, Budget, Funding or FID.
+            - navigation "Capital Planning workspace views" [ref=e347]:
+              - button "Planning Cycles" [ref=e348] [cursor=pointer]
+              - button "Capital Demand Pipeline" [ref=e349] [cursor=pointer]
+              - button "My Demands" [ref=e350] [cursor=pointer]
+              - button "Demands in Review" [ref=e351] [cursor=pointer]
+              - button "Endorsed Demands" [ref=e352] [cursor=pointer]
+              - button "Demand History" [ref=e353] [cursor=pointer]
+            - region "Capital Planning Cycles" [ref=e354]:
+              - generic [ref=e355]:
+                - generic [ref=e356]:
+                  - text: Governed planning horizon
+                  - heading "Capital Planning Cycles" [level=3] [ref=e357]
+                - button "New Planning Cycle" [ref=e358] [cursor=pointer]:
+                  - img [ref=e359]
+                  - text: New Planning Cycle
+            - form "New Planning Cycle form" [ref=e361]:
+              - generic [ref=e362]:
+                - generic [ref=e363]:
+                  - text: Governed planning period
+                  - heading "New Planning Cycle" [level=3] [ref=e364]
+                - button "Close" [ref=e365] [cursor=pointer]
+              - generic [ref=e366]:
+                - text: Name
+                - textbox "Name" [ref=e367]: Wave 1 Cycle 98150467
+              - generic [ref=e368]:
+                - generic [ref=e369]:
+                  - text: Horizon start
+                  - textbox "Horizon start" [ref=e370]: 2027-01-01
+                - generic [ref=e371]:
+                  - text: Horizon end
+                  - textbox "Horizon end" [ref=e372]: 2027-12-31
+                - generic [ref=e373]:
+                  - text: Scope Workspace
+                  - combobox "Scope Workspace" [ref=e374]:
+                    - option "Tenant / enterprise default"
+                    - option "Wave 1 Browser Capital Owner Enterprise" [selected]
+                - generic [ref=e375]:
+                  - text: Responsible organization
+                  - combobox "Responsible organization" [ref=e376]:
+                    - option "Not specified"
+                    - option "Wave 1 Browser Capital Owner Enterprise" [selected]
+                - generic [ref=e377]:
+                  - text: Capital basis currency (optional)
+                  - textbox "Capital basis currency (optional)" [ref=e378]: COP
+              - group "Applicable Strategic Investment Themes" [ref=e379]:
+                - generic [ref=e380]: Applicable Strategic Investment Themes
+                - generic [ref=e381]:
+                  - checkbox "Wave 1 98150467" [checked] [ref=e382]
+                  - text: Wave 1 98150467
+              - generic [ref=e383]:
+                - text: Description
+                - textbox "Description" [ref=e384]
+              - generic [ref=e385]:
+                - button "Cancel" [ref=e386] [cursor=pointer]
+                - button "Create cycle" [active] [ref=e387] [cursor=pointer]:
+                  - img [ref=e388]
+                  - text: Create cycle
+  - generic [ref=e390]: $0
+```

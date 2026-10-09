@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
-import { Copy, Eye, Save, Send } from "lucide-react";
+import { AlertTriangle, Copy, Eye, Save, Send } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
 import { BUSINESS_CASE_ADMIN_SECTIONS } from "./adminSections";
@@ -14,6 +14,34 @@ function parse(value: string) {
     return null;
   }
 }
+
+const SECTION_GUIDANCE: Partial<Record<(typeof BUSINESS_CASE_ADMIN_SECTIONS)[number], string>> = {
+  "Case Applicability":
+    "Enable policy-driven Five Case depth by Governance Model, Project Type, FEL Stage and Gate Profile.",
+  "Strategic Case Requirements":
+    "Configure required strategic sources, minimum readiness, freshness, coverage and blocking behavior.",
+  "Economic Case Requirements":
+    "Configure option, value-for-money, Benefits, FIN and Risk evidence without creating an options engine.",
+  "Commercial Case Requirements":
+    "Configure Commercial Strategy evidence requirements without executing procurement or contracting.",
+  "Financial Case Requirements": "Configure Budget, Funding and FIN references; financial metrics remain owned by FIN.",
+  "Management Case Requirements":
+    "Configure FEL, Resources, Risk, Permit, Benefits and Commercial evidence for deliverability.",
+  "Source Requirements": "Set required yes/no, applicability and blocking/warning behavior per Case and source.",
+  "Source Readiness Requirements": "Set minimum source status/readiness, current flag, freshness and validity rules.",
+  "Required Evidence": "Declare evidence contracts by Case; this screen never edits live source records.",
+  "Case Readiness Rules": "Define backend-owned readiness rules for each of the five Cases.",
+  "Overall Readiness Rules": "Compose policy-driven overall readiness; all Cases READY is not hardcoded universally.",
+  "FEL / Gate Requirements": "Apply progressive maturity and gate-level revalidation rules.",
+  "Project Type Overrides": "Tailor depth for Project type without changing the source authorities.",
+  "Governance Model Overrides":
+    "CAPITAL_OWNER is policy-driven; CONTRACTOR_DELIVERY and DIRECT_INTERNAL remain unaffected by default.",
+  Tailoring: "Tailor by size, risk, complexity, Project Type, Governance Model, FEL Stage and Gate Profile.",
+  Inheritance: "Resolve the nearest published policy through Tenant, Enterprise, Business Unit and Portfolio scopes.",
+  "Review / SoD": "Configure preparer/reviewer separation and controlled publication rules.",
+  Preview: "Dry-run the effective policy and resolution chain with persisted=false.",
+  History: "Review configuration lineage; published revisions remain controlled records.",
+};
 
 export default function BusinessCaseAdminView({ token }: { token: string }) {
   const [records, setRecords] = useState<BusinessCaseConfiguration[]>([]);
@@ -63,8 +91,8 @@ export default function BusinessCaseAdminView({ token }: { token: string }) {
   return (
     <section aria-label="Business Case Manager Configuration" className="businessCase businessCaseAdmin">
       <CompactModuleHeader
-        description="Configures Project Proposal mapping, stage-specific evidence, source freshness, review separation, material-change rules and nearest-published inheritance."
-        eyebrow="ADMIN MODE · ENTERPRISE STRATEGY MANAGER · GATE 07M-BC"
+        description="Configures Five Case applicability, source/evidence requirements, readiness, progressive FEL/Gate maturity, tailoring, inheritance and review separation."
+        eyebrow="ADMIN MODE · ENTERPRISE STRATEGY MANAGER · GATE 07M-BC-5C"
         metrics={[
           { label: "Configurations", value: records.length },
           { label: "Sections", value: BUSINESS_CASE_ADMIN_SECTIONS.length },
@@ -124,7 +152,7 @@ export default function BusinessCaseAdminView({ token }: { token: string }) {
               <b>Tenant → Enterprise → BU → Portfolio</b>
             </article>
             <article>
-              <span>Context</span>
+              <span>Applicability</span>
               <b>Type · Governance · Gate · FEL</b>
             </article>
             <article>
@@ -132,10 +160,14 @@ export default function BusinessCaseAdminView({ token }: { token: string }) {
               <b>Stage-specific</b>
             </article>
             <article>
-              <span>Financial engine</span>
-              <b>NOT_AVAILABLE</b>
+              <span>Live source mutation</span>
+              <b>DISABLED</b>
             </article>
           </div>
+          <p className="businessCaseAdminGuidance">
+            {SECTION_GUIDANCE[section] ||
+              "Legacy Business Case policy remains available for compatibility while Five Case rules are layered additively."}
+          </p>
           <label className="businessCaseProjectPicker">
             Preview Project Workspace ID
             <input inputMode="numeric" value={projectId} onChange={(event) => setProjectId(event.target.value)} />
@@ -179,6 +211,10 @@ export default function BusinessCaseAdminView({ token }: { token: string }) {
           {preview ? <pre>{JSON.stringify(preview, null, 2)}</pre> : null}
         </article>
       </div>
+      <p className="businessCaseGuardrail">
+        <AlertTriangle size={15} /> ADMIN configures policy only. It cannot edit live Business Cases, source records,
+        investment decisions or Project lifecycle transactions.
+      </p>
     </section>
   );
 }
