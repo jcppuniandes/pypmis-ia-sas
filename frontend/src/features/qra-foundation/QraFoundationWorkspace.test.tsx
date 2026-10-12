@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import QraFoundationWorkspace from "./QraFoundationWorkspace";
 const mocks = vi.hoisted(() => ({
@@ -13,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   readiness: vi.fn(),
   create: vi.fn(),
   update: vi.fn(),
+  updateModelMetadata: vi.fn(),
+  updateModelInputs: vi.fn(),
   action: vi.fn(),
   refreshPreview: vi.fn(),
 }));
@@ -89,10 +92,21 @@ beforeEach(() => {
   });
   mocks.create.mockResolvedValue(draft);
   mocks.update.mockResolvedValue(draft);
+  mocks.updateModelMetadata.mockResolvedValue(draft);
+  mocks.updateModelInputs.mockResolvedValue(draft);
   mocks.action.mockResolvedValue({ persisted: false, readiness_status: "READY_FOR_QRA_ANALYSIS" });
   mocks.refreshPreview.mockResolvedValue({ persisted: false, changes: ["SOURCE_CHANGED"] });
 });
 describe("QRA Foundation USER workspace", () => {
+  it("loads the initial context under React StrictMode without abandoning the active request", async () => {
+    render(
+      <StrictMode>
+        <QraFoundationWorkspace token="user" />
+      </StrictMode>
+    );
+    await screen.findByText("Cost source readiness · BLOCKED");
+    expect(screen.getByRole("button", { name: "Edit cost source assessment" })).toBeEnabled();
+  });
   it("loads summary metadata and one server item page, retrieving an aggregate only for editing", async () => {
     const user = userEvent.setup();
     mocks.record.mockImplementation(async (_token: string, _kind: string, _id: number, summary = false) =>
@@ -103,7 +117,7 @@ describe("QRA Foundation USER workspace", () => {
     expect(mocks.record).toHaveBeenCalledWith("user", "cost", 2, true);
     expect(mocks.recordItems).toHaveBeenCalledWith("user", "cost", 2);
     await user.click(screen.getByRole("button", { name: "Edit cost source assessment" }));
-    expect(mocks.record).toHaveBeenLastCalledWith("user", "cost", 2);
+    expect(mocks.record).toHaveBeenLastCalledWith("user", "cost", 2, false);
     expect(screen.getByLabelText("Record title")).toHaveValue("Foundation");
   });
   it("displays a stable model identity independently of successor record numbering", async () => {
@@ -141,6 +155,9 @@ describe("QRA Foundation USER workspace", () => {
     const user = userEvent.setup();
     render(<QraFoundationWorkspace token="user" initialView="qra-schedule-source-readiness" />);
     await screen.findByText("Schedule source readiness · BLOCKED");
+    await user.click(screen.getByRole("button", { name: "Source Snapshot" }));
+    expect(screen.getByText("Draft source snapshot — not completed evidence")).toBeInTheDocument();
+    expect(screen.queryByText("Frozen source snapshot — immutable evidence")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Edit schedule source assessment" }));
     await user.selectOptions(screen.getByLabelText("Select governed source"), "0");
     await user.selectOptions(screen.getByLabelText("Source evidence quality"), "VERIFIED");
@@ -216,21 +233,23 @@ describe("QRA Foundation USER workspace", () => {
         evidence_refs: [{ reference: "Contract-01" }],
       },
     ];
-    await user.clear(screen.getByLabelText("inputs JSON"));
-    fireEvent.change(screen.getByLabelText("inputs JSON"), { target: { value: JSON.stringify(inputs) } });
     await user.click(screen.getByRole("button", { name: "Save model definition" }));
     await waitFor(() =>
-      expect(mocks.update).toHaveBeenCalledWith(
+      expect(mocks.updateModelMetadata).toHaveBeenCalledWith(
         "user",
-        "model",
         model,
         expect.objectContaining({
           purpose: "Governed future analysis",
           cost_source_assessment_id: 11,
-          inputs,
           correlations: { method: "NO_CORRELATION", pairs: [], groups: [], matrix: [] },
         })
       )
+    );
+    await user.click(screen.getByRole("button", { name: "Edit input page" }));
+    fireEvent.change(screen.getByLabelText("Input page JSON"), { target: { value: JSON.stringify(inputs) } });
+    await user.click(screen.getByRole("button", { name: "Save input page" }));
+    await waitFor(() =>
+      expect(mocks.updateModelInputs).toHaveBeenCalledWith("user", expect.objectContaining({ id: model.id }), inputs)
     );
   });
   it("shows approval only when allowed by backend and sends independent review notes", async () => {
@@ -270,6 +289,120 @@ describe("QRA Foundation USER workspace", () => {
     expect(mocks.refreshPreview).toHaveBeenCalledWith("user", "cost", 2);
     expect(screen.getByRole("article", { name: "QRA immutable history" })).toHaveTextContent("frozen-history-hash");
     expect(mocks.action).not.toHaveBeenCalled();
+  });
+  it("keeps full immutable snapshots when changing the selected history record or page", async () => {
+    const completed = {
+      ...draft,
+      status: "COMPLETED",
+      hash: "frozen-history-hash",
+      snapshot_json: { data_date: "2026-10-08" },
+      allowed_actions: [],
+    };
+    const other = { ...completed, id: 3, number: "CSR-000003", hash: "second-frozen-hash" };
+    mocks.records.mockResolvedValue({ items: [completed, other], total: 60, page: 1, page_size: 25 });
+    mocks.record.mockImplementation(async (_token: string, _kind: string, id: number, summary = false) => {
+      const item = id === 3 ? other : completed;
+      return summary ? { ...item, snapshot_json: {}, aggregate_json: {} } : item;
+    });
+    const user = userEvent.setup();
+    render(<QraFoundationWorkspace token="user" initialView="qra-foundation-history" />);
+    await screen.findByRole("option", { name: "CSR-000003 · v1 · COMPLETED" });
+    await user.selectOptions(screen.getByLabelText("Selected governed record"), "3");
+    await waitFor(() => expect(mocks.record).toHaveBeenLastCalledWith("user", "cost", 3, false));
+    expect(screen.getByRole("article", { name: "QRA immutable history" })).toHaveTextContent("2026-10-08");
+    await user.click(screen.getByRole("button", { name: "Next governed records page" }));
+    await waitFor(() => expect(mocks.records).toHaveBeenLastCalledWith("user", 41, "cost", 2));
+    expect(mocks.record).toHaveBeenLastCalledWith("user", "cost", 3, false);
+    expect(screen.getByRole("article", { name: "QRA immutable history" })).toHaveTextContent("second-frozen-hash");
+    expect(screen.getByRole("article", { name: "QRA immutable history" })).toHaveTextContent("2026-10-08");
+  });
+  it("exposes frozen schedule source, constraints/lags and open-end findings without recalculating logic", async () => {
+    const completed = {
+      ...draft,
+      status: "COMPLETED",
+      hash: "frozen-schedule-hash",
+      snapshot_json: {
+        source_refs: [{ reference: "P6-XML-9", hash: "frozen-import-hash" }],
+        schedule_summary: {
+          constraints: ["A-CONSTRAINED"],
+          negative_lags: ["A-1:A-2"],
+          excessive_lags: ["A-2:A-3"],
+          open_ends: ["A-OPEN"],
+          missing_predecessors: ["A-OPEN"],
+          missing_successors: [],
+        },
+      },
+      allowed_actions: [],
+    };
+    mocks.records.mockResolvedValue({ items: [completed], total: 1, page: 1, page_size: 25 });
+    const user = userEvent.setup();
+    render(<QraFoundationWorkspace token="user" initialView="qra-schedule-source-readiness" />);
+    await screen.findByText("Schedule source readiness · BLOCKED");
+    for (const label of ["Source Snapshot", "Logic Quality", "Constraints / Lags", "Open Ends"])
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Source Snapshot" }));
+    expect(screen.getByRole("article", { name: "QRA source lineage" })).toHaveTextContent("frozen-import-hash");
+    await user.click(screen.getByRole("button", { name: "Constraints / Lags" }));
+    expect(screen.getByRole("article", { name: "QRA Constraints / Lags" })).toHaveTextContent("A-CONSTRAINED");
+    expect(screen.getByRole("article", { name: "QRA Constraints / Lags" })).toHaveTextContent("A-1:A-2");
+    await user.click(screen.getByRole("button", { name: "Open Ends" }));
+    expect(screen.getByRole("article", { name: "QRA Open Ends" })).toHaveTextContent("A-OPEN");
+    expect(mocks.action).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it("clears the previous Project when a new authorized search has no results", async () => {
+    const user = userEvent.setup();
+    render(<QraFoundationWorkspace token="user" />);
+    await screen.findByText("Cost source readiness · BLOCKED");
+    mocks.options.mockResolvedValue({ projects: [], allowed_actions: [], analysis_types: [] });
+    await user.type(screen.getByLabelText("Find authorized Projects"), "No matching Project");
+    await user.click(screen.getByRole("button", { name: "Search Projects" }));
+    await screen.findByText("No governed records for this Project and domain.");
+    expect(screen.queryByRole("button", { name: "Create cost source assessment" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Cost source readiness · BLOCKED")).not.toBeInTheDocument();
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+  it("requires saving or cancelling an edit before changing Project or domain", async () => {
+    const user = userEvent.setup();
+    render(<QraFoundationWorkspace token="user" />);
+    await screen.findByText("Cost source readiness · BLOCKED");
+    await user.click(screen.getByRole("button", { name: "Edit cost source assessment" }));
+    expect(screen.getByLabelText("Project Workspace")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Search Projects" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Schedule Source Readiness" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create cost source assessment" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Cancel edit" }));
+    expect(screen.getByLabelText("Project Workspace")).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Schedule Source Readiness" })).toBeEnabled();
+  });
+  it("changes the empty-domain view when a sidebar route supplies a new initialView", async () => {
+    mocks.options.mockResolvedValue({ projects: [], allowed_actions: [], analysis_types: [] });
+    const { rerender } = render(<QraFoundationWorkspace token="user" />);
+    await screen.findByText("Cost source readiness · NOT_STARTED");
+    rerender(<QraFoundationWorkspace token="user" initialView="qra-schedule-source-readiness" />);
+    await screen.findByText("Schedule source readiness · NOT_STARTED");
+    expect(screen.getByRole("navigation", { name: "Schedule Source Readiness sections" })).toBeInTheDocument();
+    rerender(<QraFoundationWorkspace token="user" initialView="qra-model-definition" />);
+    await screen.findByText("Model definition readiness · NOT_STARTED");
+    expect(screen.getByRole("navigation", { name: "Model Definition sections" })).toBeInTheDocument();
+  });
+  it("defers sidebar route changes until the pending editor is explicitly cancelled", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<QraFoundationWorkspace token="user" />);
+    await screen.findByText("Cost source readiness · BLOCKED");
+    await user.click(screen.getByRole("button", { name: "Edit cost source assessment" }));
+    await user.clear(screen.getByLabelText("Record title"));
+    await user.type(screen.getByLabelText("Record title"), "Pending source evidence");
+    rerender(<QraFoundationWorkspace token="user" initialView="qra-model-definition" />);
+    expect(screen.getByLabelText("Record title")).toHaveValue("Pending source evidence");
+    expect(screen.getByRole("article", { name: "QRA definition editor" })).toBeInTheDocument();
+    expect(mocks.options).toHaveBeenCalledTimes(1);
+    expect(mocks.records).toHaveBeenCalledTimes(1);
+    expect(mocks.update).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Cancel edit" }));
+    await screen.findByText("Model definition readiness · BLOCKED");
+    expect(mocks.records).toHaveBeenLastCalledWith("user", 41, "model", 1);
+    expect(screen.queryByRole("article", { name: "QRA definition editor" })).not.toBeInTheDocument();
   });
   it("uses server record pagination and displays only a bounded input page", async () => {
     mocks.records.mockResolvedValue({

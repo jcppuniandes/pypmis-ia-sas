@@ -717,7 +717,7 @@ const userDefinition = node("user", {
     evidenceContributor("permit-readiness", "Permit Readiness", "permit-readiness-my", 8, permitDetails),
     evidenceContributor("basic-data-readiness", "Basic Data Readiness", "basic-data-readiness", 9),
     evidenceContributor("owner-capability-readiness", "Owner Capability Readiness", "owner-capability-readiness", 10),
-    evidenceContributor("qra-foundation", "QRA Foundation", "qra-foundation", 11, [
+    evidenceContributor("qra-foundation", "QRA", "qra-foundation", 11, [
       node("user", {
         id: "qra-cost-source-readiness",
         label: "Cost Source Readiness",
@@ -731,7 +731,18 @@ const userDefinition = node("user", {
       ...detailNodes("user", 6, "qra-foundation", [
         ["qra-schedule-source-readiness", "Schedule Source Readiness"],
         ["qra-model-definition", "Model Definition"],
-        ["qra-foundation-history", "History"],
+        ["qra-foundation-history", "Foundation History"],
+        ["qra-approved-models", "Approved Models"],
+        ["qra-runs", "Runs"],
+        ["qra-run-overview", "Run Overview"],
+        ["qra-cost-results", "Cost Results"],
+        ["qra-schedule-results", "Schedule Results"],
+        ["qra-percentiles", "Percentiles"],
+        ["qra-sensitivity", "Sensitivity / Drivers"],
+        ["qra-convergence", "Convergence"],
+        ["qra-run-evidence", "Evidence / Traceability"],
+        ["qra-run-comparison", "Run Comparison"],
+        ["qra-run-history", "Run History"],
       ]).map((item, index) => ({ ...item, order: index + 2 })),
     ]),
   ],

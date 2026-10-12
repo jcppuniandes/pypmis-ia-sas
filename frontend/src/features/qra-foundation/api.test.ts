@@ -9,6 +9,28 @@ beforeEach(() => {
 });
 const item = { id: 9, revision_version: 7 } as QraRecord;
 describe("QRA Foundation API", () => {
+  it("updates bounded input pages and metadata separately with concurrency and idempotency", async () => {
+    await qraFoundationApi.updateModelInputs("actor", item, [
+      { source_kind: "COST", source_item_ref: "A", mode: "DETERMINISTIC" },
+    ]);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "/api/v1/qra-foundation/models/9/inputs",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: { "If-Match": '"7"', "Idempotency-Key": "qra-command-key" },
+        body: '{"inputs":[{"source_kind":"COST","source_item_ref":"A","mode":"DETERMINISTIC"}]}',
+      })
+    );
+    await qraFoundationApi.updateModelMetadata("actor", item, { title: "Updated model metadata" });
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "/api/v1/qra-foundation/models/9/metadata",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: { "If-Match": '"7"', "Idempotency-Key": "qra-command-key" },
+        body: '{"title":"Updated model metadata"}',
+      })
+    );
+  });
   it("supports summary reads and server-paginated frozen item populations without writes", async () => {
     await qraFoundationApi.record("actor", "model", 9, true);
     expect(fetchMock).toHaveBeenLastCalledWith("/api/v1/qra-foundation/models/9?summary=true", { token: "actor" });

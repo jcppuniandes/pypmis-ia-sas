@@ -214,6 +214,11 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
         "ScheduleSourceReadinessEvidence.v1", {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
         notes="Current COMPLETED READY imported schedule-source evidence; no CPM, sampling or result provider.",
     ),
+    "QRA_RESULT_PROVIDER": _provider(
+        "QRA_RESULT_PROVIDER", "QRA_RESULT", "QRA_CALCULATION_ENGINE",
+        "QraResultEvidence.v1", {"EACH_PROJECT", "SELECTED_PROJECTS_ONLY"},
+        notes="Accepted current governed analytical result only. Availability never changes published Gate policies or approves investment, budget or contingency.",
+    ),
     "BUSINESS_CASE_READINESS_PROVIDER": _provider(
         "BUSINESS_CASE_READINESS_PROVIDER",
         "BUSINESS_CASE_READINESS",
@@ -1817,6 +1822,23 @@ class InvestmentEvidencePolicyService:
                 warnings=list(value.get("warnings", [])), blockers=list(value.get("blockers", [])),
                 source_module=f"QRA_{kind.upper()}_SOURCE_READINESS", source_record_id=str(value["assessment_id"]),
                 summary=f"Governed {kind} source assessment {value['assessment_id']}; readiness READY, not simulation.",
+                evidence_refs=[value],
+            )
+        if provider_key == "QRA_RESULT_PROVIDER" and scope_id is not None:
+            from app.modules.qra_engine.service import QraEngineService
+
+            # Caller has already authorized the Gate evaluation and project scope.
+            # This internal adapter reads tenant-scoped evidence, never runs QRA.
+            value = QraEngineService(self.db, self.tenant_id, self.actor_id).provider_evidence(scope_id)
+            if value.get("status") != "AVAILABLE" or not value.get("source_current"):
+                return None
+            return self._normalized_provider_payload(
+                evidence_type="QRA_RESULT", scope=scope,
+                readiness_status=str(value["readiness"]), source_current=True,
+                evidence_hash=str(value["evidence_hash"]), as_of_date=str(value["as_of"]).split("T")[0],
+                warnings=list(value.get("warnings", [])), blockers=list(value.get("blockers", [])),
+                source_module="QRA_CALCULATION_ENGINE", source_record_id=str(value["run_id"]),
+                summary=f"Accepted governed QRA run {value['run_number']}; analytical evidence only.",
                 evidence_refs=[value],
             )
         return None

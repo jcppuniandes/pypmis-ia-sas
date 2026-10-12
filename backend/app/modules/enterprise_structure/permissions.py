@@ -1709,6 +1709,13 @@ PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_configuration_admin"] |=
     "qra_foundation.read", "qra_methodology.admin.configure", "qra_methodology.admin.publish",
 }
 
+_QRA_EXECUTION = {"qra_run.read", "qra_run.create", "qra_run.execute", "qra_run.cancel"}
+_QRA_RESULT_REVIEW = {"qra_run.read", "qra_run.review", "qra_run.accept"}
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_manager"] |= _QRA_EXECUTION | _QRA_RESULT_REVIEW
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_assessor"] |= _QRA_EXECUTION
+PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_reviewer"] |= _QRA_RESULT_REVIEW
+PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_viewer"] |= {"qra_run.read"}
+
 _PERMISSION_SEED_LOCK = RLock()
 
 

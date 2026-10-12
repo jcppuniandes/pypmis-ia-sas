@@ -4,12 +4,16 @@ Canonical workspace, scope, ETag and audit primitives are reused. Evaluators and
 receipts belong exclusively here. All upstream adapters are read-only.
 """
 
+import json
 from copy import deepcopy
 from datetime import date
+from types import SimpleNamespace
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import Integer, cast, func, select, true
+from sqlalchemy.dialects.postgresql import JSONB, array
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import defer
 
 from app.api.v1.routers.admin_configuration import _workspace_path
 from app.core.time import utc_now
@@ -236,17 +240,7 @@ class QraFoundationService(BasicDataService):
         project = self._project(project_id)
         if kind == "schedule":
             return self.adapters.schedule_options(project, page=page, page_size=page_size)
-        sources = self.adapters.cost_sources(project)
-        return {
-            "items": [
-                {k: v for k, v in s.items() if k != "items"} for s in sources[(page - 1) * page_size : page * page_size]
-            ],
-            "total": len(sources),
-            "page": page,
-            "page_size": page_size,
-            "availability": "AVAILABLE" if sources else "NOT_AVAILABLE",
-            "external_reference_allowed": True,
-        }
+        return self.adapters.cost_options(project, page=page, page_size=page_size)
 
     def _row(self, kind, record_id, *, lock=False):
         model = MODELS[kind]
@@ -262,9 +256,9 @@ class QraFoundationService(BasicDataService):
         model = MODELS[kind]
         query = select(model).where(model.tenant_id == self.tenant_id, model.project_workspace_id == project_id)
         total = self.db.scalar(select(func.count()).select_from(query.subquery()))
-        rows = self.db.scalars(
-            query.order_by(model.version.desc()).offset((page - 1) * page_size).limit(page_size)
-        ).all()
+        rows = self._summary_rows(
+            query.order_by(model.version.desc()).offset((page - 1) * page_size).limit(page_size), model
+        )
         return {
             "items": [self._out(row, kind, summary=True) for row in rows],
             "total": total,
@@ -273,14 +267,86 @@ class QraFoundationService(BasicDataService):
         }
 
     def record(self, kind, record_id, *, summary=False):
+        if summary:
+            model = MODELS[kind]
+            rows = self._summary_rows(
+                select(model).where(model.tenant_id == self.tenant_id, model.id == record_id), model
+            )
+            if not rows:
+                self._error(404, "QRA_RECORD_NOT_FOUND")
+            self._project(rows[0].project_workspace_id)
+            return self._out(rows[0], kind, summary=True)
         return self._out(self._row(kind, record_id), kind, summary=summary)
 
+    def _summary_rows(self, query, model):
+        """Project JSON inside the database; never decode a full input snapshot."""
+        dialect = self.db.get_bind().dialect.name
+        if dialect == "postgresql":
+            aggregate = cast(model.aggregate_json, JSONB)
+            for key in ("inputs", "items", "gaps"):
+                aggregate = aggregate.op("-")(key)
+            aggregate = aggregate.op("#-")(array(["basis", "items"]))
+        else:
+            aggregate = func.json_remove(
+                model.aggregate_json, "$.inputs", "$.items", "$.gaps", "$.basis.items"
+            )
+        keys = ("readiness_status", "coverage", "blockers", "as_of", "no_simulation")
+        statement = query.options(defer(model.aggregate_json), defer(model.snapshot_json)).add_columns(
+            aggregate, *(model.snapshot_json[key] for key in keys)
+        )
+        results = []
+        for row, projected, *snapshot in self.db.execute(statement):
+            projected = json.loads(projected) if isinstance(projected, str) else projected
+            proxy = SimpleNamespace(**{key: value for key, value in vars(row).items() if key != "_sa_instance_state"})
+            proxy.aggregate_json = projected or {}
+            proxy.snapshot_json = dict(zip(keys, snapshot, strict=True))
+            results.append(proxy)
+        return results
+
     def record_items(self, kind, record_id, *, page=1, page_size=25):
-        row = self._row(kind, record_id)
-        items = row.aggregate_json.get("inputs", []) if kind == "model" else row.snapshot_json.get("population", [])
+        model = MODELS[kind]
+        row = self.db.scalar(
+            select(model)
+            .where(model.tenant_id == self.tenant_id, model.id == record_id)
+            .options(defer(model.aggregate_json), defer(model.snapshot_json))
+        )
+        if row is None:
+            self._error(404, "QRA_RECORD_NOT_FOUND")
+        self._project(row.project_workspace_id)
+        array = model.aggregate_json["inputs"] if kind == "model" else model.snapshot_json["population"]
+        dialect = self.db.get_bind().dialect.name
+        if dialect == "postgresql":
+            elements = (
+                func.jsonb_array_elements(cast(array, JSONB))
+                .table_valued("value", with_ordinality="ordinal")
+                .render_derived()
+            )
+            total_expression = func.jsonb_array_length(cast(array, JSONB))
+            order = elements.c.ordinal
+        else:
+            elements = func.json_each(array).table_valued("key", "value")
+            total_expression = func.json_array_length(array)
+            order = cast(elements.c.key, Integer)
+        total = (
+            self.db.scalar(select(total_expression).where(model.tenant_id == self.tenant_id, model.id == record_id))
+            or 0
+        )
+        values = (
+            self.db.scalars(
+                select(elements.c.value)
+                .select_from(model.__table__.join(elements, true()))
+                .where(model.tenant_id == self.tenant_id, model.id == record_id)
+                .order_by(order)
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+            ).all()
+            if total
+            else []
+        )
+        items = [json.loads(value) if isinstance(value, str) else value for value in values]
         return {
-            "items": deepcopy(items[(page - 1) * page_size : page * page_size]),
-            "total": len(items),
+            "items": items,
+            "total": total,
             "page": page,
             "page_size": page_size,
             "hash": row.hash,
@@ -299,8 +365,6 @@ class QraFoundationService(BasicDataService):
                     "title",
                     "comments",
                     "status",
-                    "aggregate_json",
-                    "snapshot_json",
                     "hash",
                     "created_by",
                     "submitted_by",
@@ -315,6 +379,8 @@ class QraFoundationService(BasicDataService):
                 )
             }
         )
+        if not summary:
+            result.update(aggregate_json=_json(row.aggregate_json), snapshot_json=_json(row.snapshot_json))
         result.update(
             project_id=row.project_workspace_id,
             kind=kind,
@@ -481,6 +547,75 @@ class QraFoundationService(BasicDataService):
             f"{kind}.update", key, {"id": record_id, "expected": expected, "payload": payload.model_dump()}, apply
         )
 
+    def patch_model(self, record_id, expected, payload, key, *, inputs=False):
+        """Bounded incremental client updates, preserving unedited definitions."""
+        self._row("model", record_id)
+
+        def apply():
+            row = self._row("model", record_id, lock=True)
+            self._version(row.revision_version, expected)
+            if row.status != "DRAFT":
+                self._error(409, "QRA_DRAFT_REQUIRED")
+            resolved = self.requirements(row.project_workspace_id)
+            self._current_config(row, resolved)
+            content = deepcopy(row.aggregate_json)
+            if inputs:
+                updates = payload.model_dump(mode="json")["inputs"]
+                refs = [(item["source_kind"], item["source_item_ref"]) for item in updates]
+                if len(set(refs)) != len(refs):
+                    self._error(422, "QRA_DUPLICATE_INPUT_REFERENCE")
+                positions = {
+                    (item["source_kind"], item["source_item_ref"]): index
+                    for index, item in enumerate(content.get("inputs", []))
+                }
+                content.setdefault("inputs", [])
+                for item in updates:
+                    ref = item["source_kind"], item["source_item_ref"]
+                    if ref in positions:
+                        content["inputs"][positions[ref]] = item
+                    else:
+                        content["inputs"].append(item)
+                if len(content["inputs"]) > 20000:
+                    self._error(422, "QRA_INPUT_LIMIT_EXCEEDED")
+            else:
+                content.update(payload.model_dump(mode="json", exclude_unset=True))
+            # Also rejects null identity/scope values in a metadata patch.
+            from pydantic import ValidationError
+
+            from app.modules.qra_foundation.schemas import ModelUpdateIn
+
+            try:
+                typed = ModelUpdateIn.model_validate(
+                    {key: value for key, value in content.items() if key != "preparers"}
+                )
+            except ValidationError as exc:
+                raise HTTPException(422, detail={"code": "QRA_MODEL_PATCH_INVALID", "issues": str(exc)}) from exc
+            content = typed.model_dump(mode="json")
+            content["preparers"] = sorted(
+                set(row.aggregate_json.get("preparers", [])) | {self.actor_id, row.created_by}
+            )
+            self._validate_aggregate(row.project_workspace_id, "model", content, resolved)
+            row.title, row.comments, row.aggregate_json = typed.title, typed.comments, content
+            row.analysis_type = typed.analysis_type
+            row.cost_source_assessment_id = typed.cost_source_assessment_id
+            row.schedule_source_assessment_id = typed.schedule_source_assessment_id
+            row.snapshot_json = self.evaluate(row.project_workspace_id, "model", content, resolved=resolved)
+            self._touch(row)
+            self._event(
+                "qra.model.inputs_patched" if inputs else "qra.model.metadata_patched",
+                "QraModelDefinition",
+                row.id,
+                {"no_upstream_mutation": True},
+            )
+            return self._out(row, "model", summary=True)
+
+        return self._command(
+            "model.inputs_patch" if inputs else "model.metadata_patch",
+            key,
+            {"id": record_id, "expected": expected, "payload": payload.model_dump(exclude_unset=True)},
+            apply,
+        )
+
     def _validate_aggregate(self, project_id, kind, content, resolved):
         if kind == "model":
             if content["analysis_type"] not in resolved["policy"]["analysis_types"]:
@@ -552,7 +687,7 @@ class QraFoundationService(BasicDataService):
 
     def preview(self, kind, record_id):
         row = self._row(kind, record_id)
-        result = self.evaluate(row.project_workspace_id, kind, row.aggregate_json)
+        result = self.evaluate(row.project_workspace_id, kind, row.aggregate_json, completed_at=row.completed_at)
         if row.status in {"COMPLETED", "APPROVED_FOR_ANALYSIS"}:
             result["historical_hash"] = row.hash
         return result
@@ -691,7 +826,7 @@ class QraFoundationService(BasicDataService):
                 "blockers": [],
                 "no_simulation": True,
             }
-        latest = self.evaluate(project_id, kind, row.aggregate_json)
+        latest = self.evaluate(project_id, kind, row.aggregate_json, completed_at=row.completed_at)
         stale = self._material(row.snapshot_json) != self._material(latest)
         status = "STALE" if stale else row.snapshot_json["readiness_status"]
         result = {
@@ -724,7 +859,7 @@ class QraFoundationService(BasicDataService):
 
     def refresh_preview(self, kind, record_id):
         row = self._row(kind, record_id)
-        latest = self.evaluate(row.project_workspace_id, kind, row.aggregate_json)
+        latest = self.evaluate(row.project_workspace_id, kind, row.aggregate_json, completed_at=row.completed_at)
         return {
             "persisted": False,
             "record_id": row.id,
@@ -776,10 +911,23 @@ class QraFoundationService(BasicDataService):
             "no_simulation": True,
         }
 
-    def evaluate(self, project_id, kind, content, *, resolved=None):
+    def evaluate(self, project_id, kind, content, *, resolved=None, completed_at=None):
         resolved = resolved or self.requirements(project_id)
         if kind == "model":
-            return self._evaluate_model(project_id, content, resolved)
+            result = self._evaluate_model(project_id, content, resolved)
+            maximum_age = resolved["policy"]["freshness"].get("maximum_model_age_days")
+            # Age is measured from the immutable approval, never the refreshed
+            # projection's as_of timestamp. Calendar-day boundary matches source
+            # freshness; the configured maximum remains eligible inclusively.
+            if (
+                completed_at is not None
+                and maximum_age is not None
+                and (utc_now().date() - completed_at.date()).days > maximum_age
+            ):
+                result["blockers"] = sorted(set(result["blockers"]) | {"MODEL_FRESHNESS_EXPIRED"})
+                result["readiness_status"] = "BLOCKED" if resolved["applicable"] else "NOT_APPLICABLE"
+                result["source_current"] = False
+            return result
         return self._evaluate_source(project_id, kind, content, resolved)
 
     def _evaluate_source(self, project_id, kind, content, resolved):
@@ -829,7 +977,8 @@ class QraFoundationService(BasicDataService):
                 matched = {i["ref"] for i in selected}
             if selected_refs - matched:
                 blockers.append("SCOPE_UNKNOWN_REFERENCE")
-            excluded = [i["ref"] for i in population if i not in selected]
+            selected_ids = {i["ref"] for i in selected}
+            excluded = [i["ref"] for i in population if i["ref"] not in selected_ids]
         if not selected:
             blockers.append("SOURCE_POPULATION_EMPTY")
         derived = {
@@ -1125,10 +1274,11 @@ class QraFoundationService(BasicDataService):
                 duration = None
             if duration is None or not numeric(duration) or not i.get("duration_unit"):
                 missing_duration.append(i["ref"])
-            elif not i.get("milestone", False):
-                if duration <= 0:
+            else:
+                milestone = i.get("milestone", False)
+                if duration < 0 or duration == 0 and not milestone:
                     implausible_duration.append(i["ref"])
-                if "minimum_duration" in rules or "maximum_duration" in rules:
+                if not milestone and ("minimum_duration" in rules or "maximum_duration" in rules):
                     if (
                         str(i.get("duration_unit") or "").upper()
                         != str(rules.get("duration_threshold_unit") or "").upper()

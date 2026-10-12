@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="11" time="195.685" timestamp="2026-10-11T22:38:07.022307-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_qra_engine" name="test_real_approved_model_run_reproduction_and_independence[cost]" time="111.132" /><testcase classname="tests.test_qra_engine" name="test_real_approved_model_run_reproduction_and_independence[schedule]" time="3.571" /><testcase classname="tests.test_qra_engine" name="test_seed_change_compatible_comparison" time="5.960" /><testcase classname="tests.test_qra_engine" name="test_completed_run_immutable_separate_review_acceptance_provider" time="3.353" /><testcase classname="tests.test_qra_engine" name="test_queued_manifest_immutable_before_execution" time="0.375" /><testcase classname="tests.test_qra_engine" name="test_create_and_execute_receipts_idempotency_etag_and_dispatch_failures" time="3.849" /><testcase classname="tests.test_qra_engine" name="test_cancelled_run_atomicity_not_provider_eligible" time="1.991" /><testcase classname="tests.test_qra_engine" name="test_failure_after_progress_discards_partial_result" time="1.724" /><testcase classname="tests.test_qra_engine" name="test_broker_failure_durable_queue_and_explicit_retry" time="0.873" /><testcase classname="tests.test_qra_engine" name="test_worker_crash_lease_preserves_failed_attempt" time="0.522" /><testcase classname="tests.test_qra_engine" name="test_approved_model_current_preflight_and_bounded_pagination" time="2.182"><failure message="assert not True&#10; +  where True = any(&lt;generator object test_approved_model_current_preflight_and_bounded_pagination.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000297692E9490&gt;)">governed = {'author': &lt;app.domain.models.UserAccount object at 0x0000029768FEE990&gt;, 'configuration': {'allowed_actions': [], 'cod...n_start_reevaluation']), 'engine': &lt;app.modules.qra_engine.service.QraEngineService object at 0x00000297663B7440&gt;, ...}
+
+    def test_approved_model_current_preflight_and_bounded_pagination(governed):
+        service = governed["engine"]
+        preflight = service.preflight(governed["models"]["cost"]["id"])
+        assert preflight["eligible"] and preflight["persisted"] is False
+        options = service.options(governed["project"].id)
+        assert options["no_new_admin_module_required"] and len(options["approved_models"]) == 2
+        assert "aggregate_json" not in options["approved_models"][0]
+        run = _run_completed(governed)
+        summary = service.run(run["id"])
+        assert "results" not in summary and summary["result_summary"]["mean"]
+        page = service.result_section(run["id"], "sensitivity", page_size=1)
+        assert len(page["data"]) == 1
+        statements = []
+    
+        def statement(_conn, _cursor, query, _parameters, _context, _executemany):
+            statements.append(query)
+    
+        bind = service.db.get_bind()
+        event.listen(bind, "before_cursor_execute", statement)
+        try:
+            service.runs(governed["project"].id, page_size=100)
+            large_page_queries = list(statements)
+            statements.clear()
+            service.runs(governed["project"].id, page_size=1)
+        finally:
+            event.remove(bind, "before_cursor_execute", statement)
+        assert len(statements) == len(large_page_queries), (statements, large_page_queries)
+        assert len(statements) &lt;= 20, statements
+&gt;       assert not any(
+            "qra_runs.input_snapshot_json" in q or "qra_runs.result_json" in q for q in statements + large_page_queries
+        )
+E       assert not True
+E        +  where True = any(&lt;generator object test_approved_model_current_preflight_and_bounded_pagination.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000297692E9490&gt;)
+
+tests\test_qra_engine.py:393: AssertionError</failure></testcase></testsuite></testsuites>

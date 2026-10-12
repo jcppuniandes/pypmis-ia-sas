@@ -21,10 +21,12 @@ const sections: Record<QraKind, readonly string[]> = {
   ],
   schedule: [
     "Overview",
-    "Sources",
+    "Source Snapshot",
     "Scope",
-    "Logic / Quality",
+    "Logic Quality",
     "Calendars",
+    "Constraints / Lags",
+    "Open Ends",
     "Data Date / Status",
     "Uncertainty Input Readiness",
     "Gaps",
@@ -62,9 +64,29 @@ const initialTabFor = (view?: string): Tab =>
       : view === "qra-foundation-history"
         ? "History"
         : "Cost Source Readiness";
+const needsFullRecord = (section: string) =>
+  [
+    "History",
+    "Sources",
+    "Source Snapshot",
+    "Scope",
+    "Scope / Basis",
+    "Reconciliation",
+    "Quality",
+    "Logic Quality",
+    "Calendars",
+    "Constraints / Lags",
+    "Open Ends",
+    "Data Date / Status",
+    "Gaps",
+    "Source Readiness",
+    "Validity",
+    "Correlation Rules",
+  ].includes(section);
 type Form = Record<string, string>;
 const sourceKeys = ["source_refs", "basis", "analysis_scope", "items", "gaps", "evidence_refs"];
 const modelKeys = ["analysis_scope", "inputs", "correlations"];
+const metadataKeys = ["analysis_scope", "correlations"];
 function formFor(item: QraRecord, kind: QraKind): Form {
   const aggregate = item.aggregate_json;
   const next: Form = {
@@ -105,7 +127,7 @@ function parseField(form: Form, key: string, array: boolean): unknown {
 }
 function bodyFor(form: Form, kind: QraKind): JsonRecord {
   const body: JsonRecord = { title: form.title, comments: form.comments };
-  for (const key of kind === "model" ? modelKeys : sourceKeys) {
+  for (const key of kind === "model" ? metadataKeys : sourceKeys) {
     body[key] = parseField(form, key, ["source_refs", "items", "gaps", "inputs", "evidence_refs"].includes(key));
   }
   if (kind === "model") {
@@ -140,23 +162,50 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
   const [readiness, setReadiness] = useState<JsonRecord>({});
   const [preview, setPreview] = useState<JsonRecord | null>(null);
   const [editing, setEditing] = useState(false);
+  const [inputEditing, setInputEditing] = useState(false);
+  const [inputForm, setInputForm] = useState("[]");
   const [form, setForm] = useState<Form>({});
   const [analysisType, setAnalysisType] = useState("COST_QRA");
   const [comments, setComments] = useState("");
   const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [operationBusy, setBusy] = useState(false);
   const [rowPage, setRowPage] = useState(1);
   const [itemPage, setItemPage] = useState<QraItemPage>({ items: [], total: 0, page: 1, page_size: 25 });
   const generation = useRef(0);
   const selectedRef = useRef<QraRecord | null>(null);
+  const [appliedContext, setAppliedContext] = useState<{ token: string; view?: string } | null>(null);
+  const contextChanged = appliedContext?.token !== token || appliedContext.view !== initialView;
+  const busy = operationBusy || inputEditing || (contextChanged && !editing);
   const policy = record(requirements.policy);
   const entityAllows = (action: string) => selected?.allowed_actions?.includes(action) === true;
   const actions = Array.isArray(requirements.allowed_actions)
     ? requirements.allowed_actions.map(String)
     : (options?.allowed_actions ?? []);
   const canCreate = actions.includes(`${kind}_create`);
+  const clearProject = useCallback(() => {
+    generation.current += 1;
+    selectedRef.current = null;
+    setProjectId(0);
+    setRequirements({});
+    setContexts({});
+    setCostSources({});
+    setScheduleSources({});
+    setHistory(emptyPage());
+    setReadiness({});
+    setSelected(null);
+    setItemPage({ items: [], total: 0, page: 1, page_size: 25 });
+    setEditing(false);
+    setInputEditing(false);
+    setPreview(null);
+    setRowPage(1);
+  }, []);
   const load = useCallback(
     async (id: number, nextKind: QraKind, page = 1, preferredId?: number, detailed = false) => {
+      if (!id) {
+        clearProject();
+        setKind(nextKind);
+        return;
+      }
       const current = ++generation.current;
       // A bounded, fixed batch per view, never a request per row/activity/input.
       const [rules, context, costs, schedules, records, currentReadiness] = await Promise.all([
@@ -191,12 +240,17 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
       setSelected(full);
       setItemPage(nextItems);
       setEditing(false);
+      setInputEditing(false);
       setPreview(null);
       setRowPage(1);
     },
-    [token]
+    [clearProject, token]
   );
   useEffect(() => {
+    if (appliedContext?.token === token && appliedContext.view === initialView) return;
+    // Sidebar routes can change independently of the disabled local tabs.
+    // Defer their load until the pending editor is saved or cancelled.
+    if (editing || inputEditing) return;
     let live = true;
     const nextTab = initialTabFor(initialView);
     void qraFoundationApi
@@ -204,19 +258,25 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
       .then(async (next) => {
         if (!live) return;
         setTab(nextTab);
+        setKind(kindFor(nextTab));
         setSection(nextTab === "History" ? "History" : "Overview");
         setOptions(next);
         if (next.projects[0])
           await load(next.projects[0].id, kindFor(initialTabFor(initialView)), 1, undefined, nextTab === "History");
+        else clearProject();
+        if (live) setAppliedContext({ token, view: initialView });
       })
       .catch((error: Error) => {
-        if (live) setMessage(error.message);
+        if (live) {
+          setMessage(error.message);
+          setAppliedContext({ token, view: initialView });
+        }
       });
     return () => {
       live = false;
       generation.current += 1;
     };
-  }, [initialView, load, token]);
+  }, [appliedContext, clearProject, editing, inputEditing, initialView, load, token]);
   async function execute(work: () => Promise<unknown>, success: string) {
     setBusy(true);
     setMessage("");
@@ -246,7 +306,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
       setPreview(result);
       return;
     }
-    await load(projectId, kind, history.page, Number(result.id) || selected.id);
+    await load(projectId, kind, history.page, Number(result.id) || selected.id, needsFullRecord(section));
   }
   function chooseSource(index: string) {
     const source = rows((kind === "cost" ? costSources : scheduleSources).items)[Number(index)];
@@ -277,24 +337,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
   async function showSection(next: string) {
     setSection(next);
     setRowPage(1);
-    if (
-      selected &&
-      [
-        "History",
-        "Sources",
-        "Scope",
-        "Scope / Basis",
-        "Reconciliation",
-        "Quality",
-        "Logic / Quality",
-        "Calendars",
-        "Data Date / Status",
-        "Gaps",
-        "Source Readiness",
-        "Validity",
-        "Correlation Rules",
-      ].includes(next)
-    ) {
+    if (selected && needsFullRecord(next)) {
       const current = generation.current;
       const full = await qraFoundationApi.record(token, kind, selected.id);
       if (current !== generation.current) return;
@@ -306,6 +349,8 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
   const coverage = record(readiness.coverage);
   const status = text(readiness.readiness_status ?? readiness.readiness ?? readiness.status, "NOT_STARTED");
   const aggregate = record(selected?.aggregate_json);
+  const snapshot = record(selected?.snapshot_json);
+  const scheduleSummary = record(snapshot.schedule_summary);
   const inputRows = itemPage.items;
   const sourceRequirements = rows(
     kind === "schedule" ? requirements.schedule_requirements : requirements.cost_requirements
@@ -322,7 +367,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
         : section === "Uncertainty Rules"
           ? { range_policies: policy.range_policies }
           : section === "Distribution Rules"
-            ? { distribution_families: policy.distribution_families, distribution_rules: policy.distribution_rules }
+            ? { distribution_families: policy.distribution_families }
             : section === "Correlation Rules"
               ? { policy: policy.correlation_rules, methods: policy.correlation_methods, model: aggregate.correlations }
               : section === "Governance / SoD"
@@ -341,48 +386,65 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
                     }
                   : section === "Reconciliation"
                     ? (record(selected?.snapshot_json).reconciliation ?? aggregate.basis)
-                    : section === "Logic / Quality"
+                    : section === "Logic Quality"
                       ? {
                           rules: policy.schedule_quality_rules,
-                          schedule_summary: record(selected?.snapshot_json).schedule_summary,
-                          requirement_results: record(selected?.snapshot_json).requirement_results,
-                          blockers: record(selected?.snapshot_json).blockers,
+                          schedule_summary: scheduleSummary,
+                          requirement_results: snapshot.requirement_results,
+                          blockers: snapshot.blockers,
                         }
-                      : section === "Calendars" || section === "Data Date / Status"
+                      : section === "Constraints / Lags"
                         ? {
-                            frozen_basis: record(selected?.snapshot_json).basis ?? aggregate.basis,
-                            frozen_schedule_summary: record(selected?.snapshot_json).schedule_summary,
-                            current_source_options: scheduleSources,
+                            rules: policy.schedule_quality_rules,
+                            constraints: scheduleSummary.constraints,
+                            negative_lags: scheduleSummary.negative_lags,
+                            excessive_lags: scheduleSummary.excessive_lags,
+                            invalid_relationships: scheduleSummary.invalid_relationships,
+                            blockers: snapshot.blockers,
                           }
-                        : section === "Scope" || section === "Scope / Basis"
+                        : section === "Open Ends"
                           ? {
-                              analysis_scope: aggregate.analysis_scope,
-                              basis: aggregate.basis,
-                              requirements: sourceRequirements,
+                              rules: policy.schedule_quality_rules,
+                              missing_predecessors: scheduleSummary.missing_predecessors,
+                              missing_successors: scheduleSummary.missing_successors,
+                              open_ends: scheduleSummary.open_ends,
+                              blockers: snapshot.blockers,
                             }
-                          : section === "Quality"
+                          : section === "Calendars" || section === "Data Date / Status"
                             ? {
-                                quality: aggregate.quality,
-                                confidence: aggregate.confidence,
-                                requirements: sourceRequirements,
-                                current: readiness,
+                                frozen_basis: record(selected?.snapshot_json).basis ?? aggregate.basis,
+                                frozen_schedule_summary: record(selected?.snapshot_json).schedule_summary,
+                                current_source_options: scheduleSources,
                               }
-                            : section === "Gaps"
-                              ? { gaps: aggregate.gaps, blockers: readiness.blockers, warnings: readiness.warnings }
-                              : section === "Source Readiness"
+                            : section === "Scope" || section === "Scope / Basis"
+                              ? {
+                                  analysis_scope: aggregate.analysis_scope,
+                                  basis: aggregate.basis,
+                                  requirements: sourceRequirements,
+                                }
+                              : section === "Quality"
                                 ? {
-                                    cost_source_assessment_id: aggregate.cost_source_assessment_id,
-                                    schedule_source_assessment_id: aggregate.schedule_source_assessment_id,
-                                    contexts,
+                                    quality: aggregate.quality,
+                                    confidence: aggregate.confidence,
+                                    requirements: sourceRequirements,
+                                    current: readiness,
                                   }
-                                : null;
+                                : section === "Gaps"
+                                  ? { gaps: aggregate.gaps, blockers: readiness.blockers, warnings: readiness.warnings }
+                                  : section === "Source Readiness"
+                                    ? {
+                                        cost_source_assessment_id: aggregate.cost_source_assessment_id,
+                                        schedule_source_assessment_id: aggregate.schedule_source_assessment_id,
+                                        contexts,
+                                      }
+                                    : null;
   return (
     <section className="wave2b qraFoundation" aria-label="QRA Foundation workspace">
       <CompactModuleHeader
         title="QRA Foundation"
         eyebrow="USER MODE / Business Case & Investment Development"
         tone="user"
-        description="Govern cost and schedule source evidence, methodology and model definitions before a future QRA engine. No simulation, probabilistic results, contingency calculation or CPM."
+        description="Govern cost and schedule source evidence, methodology and approved model definitions. The separate QRA Calculation Engine executes current approved definitions; Foundation never stores run results or changes operational CPM."
         metrics={[
           { label: "Readiness", value: status },
           {
@@ -393,7 +455,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
         ]}
       />
       <p className="wave2bBoundary" role="note">
-        APPROVED_FOR_ANALYSIS means an immutable definition eligible for future analysis, not QRA completed. Current
+        APPROVED_FOR_ANALYSIS means an immutable definition eligible for governed analysis, not QRA completed. Current
         readiness is resolved by the backend; previews never replace governed evidence.
       </p>
       {message ? (
@@ -405,12 +467,13 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
         <Field label="Find authorized Projects" value={search} onChange={setSearch} />
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || editing}
           onClick={() =>
             void execute(async () => {
               const next = await qraFoundationApi.options(token, search);
               setOptions(next);
-              if (next.projects[0]) await load(next.projects[0].id, kind);
+              if (next.projects[0]) await load(next.projects[0].id, kind, 1, undefined, needsFullRecord(section));
+              else clearProject();
             }, "Authorized Project search completed.")
           }
         >
@@ -420,8 +483,13 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
           label="Project Workspace"
           value={String(projectId)}
           choices={(options?.projects ?? []).map((p) => ({ value: String(p.id), label: `${p.code} · ${p.name}` }))}
-          disabled={busy}
-          onChange={(next) => void execute(() => load(Number(next), kind), "Project context loaded.")}
+          disabled={busy || editing}
+          onChange={(next) =>
+            void execute(
+              () => load(Number(next), kind, 1, undefined, needsFullRecord(section)),
+              "Project context loaded."
+            )
+          }
         />
         {(options?.project_total ?? 0) > (options?.page_size ?? 100) ? (
           <Pager
@@ -429,7 +497,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
             page={options?.page ?? 1}
             total={options?.project_total ?? 0}
             size={options?.page_size ?? 100}
-            busy={busy}
+            busy={busy || editing}
             onChange={(page) =>
               void execute(async () => {
                 const next = await qraFoundationApi.options(token, search, page);
@@ -446,7 +514,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
             key={next}
             type="button"
             aria-current={tab === next ? "page" : undefined}
-            disabled={busy}
+            disabled={busy || editing}
             onClick={() => void execute(() => changeTab(next), "QRA Foundation view loaded.")}
           >
             {next}
@@ -462,7 +530,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
             { value: "schedule", label: "Schedule Source Readiness" },
             { value: "model", label: "Model Definition" },
           ]}
-          disabled={busy}
+          disabled={busy || editing}
           onChange={(next) =>
             void execute(() => load(projectId, next as QraKind, 1, undefined, true), "History domain loaded.")
           }
@@ -474,7 +542,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               key={next}
               type="button"
               aria-current={section === next ? "page" : undefined}
-              disabled={busy}
+              disabled={busy || editing}
               onClick={() => void execute(() => showSection(next), "Governed section loaded.")}
             >
               {next}
@@ -497,7 +565,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
                 const current = ++generation.current;
                 const [full, nextItems] = next
                   ? await Promise.all([
-                      qraFoundationApi.record(token, kind, Number(next), section !== "History"),
+                      qraFoundationApi.record(token, kind, Number(next), !needsFullRecord(section)),
                       qraFoundationApi.recordItems(token, kind, Number(next)),
                     ])
                   : [null, { items: [], total: 0, page: 1, page_size: 25 }];
@@ -522,7 +590,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
           {canCreate ? (
             <button
               type="button"
-              disabled={busy || !projectId}
+              disabled={busy || editing || !projectId}
               onClick={() =>
                 void execute(async () => {
                   const created = await qraFoundationApi.create(token, projectId, kind, {
@@ -533,7 +601,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
                     comments: "",
                     ...(kind === "model" ? { analysis_type: analysisType } : {}),
                   });
-                  await load(projectId, kind, 1, created.id);
+                  await load(projectId, kind, 1, created.id, needsFullRecord(section));
                 }, "DRAFT created; no assessment or analysis result has been inferred.")
               }
             >
@@ -547,7 +615,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               onClick={() =>
                 void execute(async () => {
                   if (!selected) return;
-                  const full = await qraFoundationApi.record(token, kind, selected.id);
+                  const full = await qraFoundationApi.record(token, kind, selected.id, kind === "model");
                   selectedRef.current = full;
                   setSelected(full);
                   setForm(formFor(full, kind));
@@ -556,6 +624,18 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               }
             >
               Edit {kind === "model" ? "model definition" : `${kind} source assessment`}
+            </button>
+          ) : null}
+          {kind === "model" && entityAllows("edit") ? (
+            <button
+              type="button"
+              disabled={busy || editing}
+              onClick={() => {
+                setInputForm(json(itemPage.items));
+                setInputEditing(true);
+              }}
+            >
+              Edit input page
             </button>
           ) : null}
           {selected ? (
@@ -594,7 +674,9 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
           total={history.total}
           size={history.page_size}
           busy={busy || editing}
-          onChange={(page) => void execute(() => load(projectId, kind, page), "Record page loaded.")}
+          onChange={(page) =>
+            void execute(() => load(projectId, kind, page, undefined, needsFullRecord(section)), "Record page loaded.")
+          }
         />
       </article>
       {editing && selected ? (
@@ -676,7 +758,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               </>
             )}
           </div>
-          {(kind === "model" ? modelKeys : sourceKeys).map((key) => (
+          {(kind === "model" ? metadataKeys : sourceKeys).map((key) => (
             <JsonField
               key={key}
               label={`${key} JSON`}
@@ -695,8 +777,11 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               disabled={busy}
               onClick={() =>
                 void execute(async () => {
-                  const updated = await qraFoundationApi.update(token, kind, selected, bodyFor(form, kind));
-                  await load(projectId, kind, history.page, updated.id);
+                  const updated =
+                    kind === "model"
+                      ? await qraFoundationApi.updateModelMetadata(token, selected, bodyFor(form, kind))
+                      : await qraFoundationApi.update(token, kind, selected, bodyFor(form, kind));
+                  await load(projectId, kind, history.page, updated.id, needsFullRecord(section));
                 }, "Definition saved; readiness remains backend-owned.")
               }
             >
@@ -704,6 +789,37 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
             </button>
             <button type="button" disabled={busy} onClick={() => setEditing(false)}>
               Cancel edit
+            </button>
+          </div>
+        </article>
+      ) : null}
+      {inputEditing && selected && kind === "model" ? (
+        <article aria-label="QRA paged input editor">
+          <h3>Model input definitions · page {rowPage}</h3>
+          <p>
+            Only the current server page is edited. Saving upserts these explicit references and preserves every other
+            input and model setting. Definitions are not simulation results.
+          </p>
+          <JsonField label="Input page JSON" value={inputForm} onChange={setInputForm} />
+          <div className="wave2bToolbar">
+            <button
+              type="button"
+              disabled={operationBusy}
+              onClick={() =>
+                void execute(async () => {
+                  const inputs = parseField({ inputs: inputForm }, "inputs", true) as JsonRecord[];
+                  const updated = await qraFoundationApi.updateModelInputs(token, selected, inputs);
+                  selectedRef.current = updated;
+                  setSelected(updated);
+                  setInputEditing(false);
+                  await loadItemPage(rowPage);
+                }, "Input page saved; other inputs preserved and completeness revalidated by backend.")
+              }
+            >
+              Save input page
+            </button>
+            <button type="button" disabled={operationBusy} onClick={() => setInputEditing(false)}>
+              Cancel input edit
             </button>
           </div>
         </article>
@@ -723,7 +839,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
           <pre>{json(readiness)}</pre>
         </article>
       ) : null}
-      {section === "Sources" ? (
+      {section === "Sources" || section === "Source Snapshot" ? (
         <article aria-label="QRA source lineage">
           <h3>Existing governed sources — read only</h3>
           <pre>{json(kind === "cost" ? costSources : scheduleSources)}</pre>
@@ -737,6 +853,26 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
           />
           <h4>Selected source references</h4>
           <pre>{json(aggregate.source_refs ?? [])}</pre>
+          {kind === "schedule" ? (
+            <>
+              <h4>
+                {selected?.status === "COMPLETED"
+                  ? "Frozen source snapshot — immutable evidence"
+                  : "Draft source snapshot — not completed evidence"}
+              </h4>
+              <pre>
+                {json({
+                  source_refs: snapshot.source_refs,
+                  analysis_scope: snapshot.analysis_scope,
+                  basis: snapshot.basis,
+                  schedule_summary: snapshot.schedule_summary,
+                  as_of: snapshot.as_of,
+                  hash: selected?.hash,
+                  configuration: selected?.configuration,
+                })}
+              </pre>
+            </>
+          ) : null}
         </article>
       ) : null}
       {section === "Uncertainty Input Readiness" || (kind === "model" && section === "Uncertainty Rules") ? (

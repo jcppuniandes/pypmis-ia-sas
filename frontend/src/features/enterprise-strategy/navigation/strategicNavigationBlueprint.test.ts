@@ -24,24 +24,37 @@ const expectedPhases = [
 ];
 
 describe("strategic navigation blueprint", () => {
-  it("adds governed QRA source/model views to existing phase 6 without simulation or mode leakage", () => {
+  it("adds governed QRA foundation and execution views to existing phase 6 without mode leakage", () => {
     const user = buildStrategicMacroprocess("user");
     const admin = buildStrategicMacroprocess("admin");
     expect(user.modules).toHaveLength(8);
     expect(user.modules[6].key).toBe("phase-6-project-definition-investment-case");
     expect(user.modules[6].label).toBe("Business Case & Investment Development");
-    const qra = user.modules[6].submodules.find((item) => item.label === "QRA Foundation")!;
+    const qra = user.modules[6].submodules.find((item) => item.label === "QRA")!;
     expect(qra.children?.map((item) => item.label)).toEqual([
       "Cost Source Readiness",
       "Schedule Source Readiness",
       "Model Definition",
-      "History",
+      "Foundation History",
+      "Approved Models",
+      "Runs",
+      "Run Overview",
+      "Cost Results",
+      "Schedule Results",
+      "Percentiles",
+      "Sensitivity / Drivers",
+      "Convergence",
+      "Evidence / Traceability",
+      "Run Comparison",
+      "Run History",
     ]);
     expect(strategicRouteForView("qra-model-definition", "user")).toBe("/app/strategy/qra-model-definition");
     expect(strategicRouteForView("qra-methodology-source-readiness", "user")).toBeNull();
     expect(strategicRouteForView("qra-foundation", "admin")).toBeNull();
     expect(admin.modules[6].submodules.map((item) => item.label)).toContain("QRA Methodology & Source Readiness");
-    expect(qra.children?.some((item) => /Simulation|Results|P80/.test(item.label))).toBe(false);
+    expect(qra.children?.some((item) => /Integrated/.test(item.label))).toBe(false);
+    expect(strategicRouteForView("qra-runs", "user")).toBe("/app/strategy/qra-runs");
+    expect(strategicRouteForView("qra-runs", "admin")).toBeNull();
   });
   it("orders USER and ADMIN navigation by business phase with Foundation first", () => {
     const user = buildStrategicMacroprocess("user");
@@ -157,7 +170,7 @@ describe("strategic navigation blueprint", () => {
       "Permit Readiness",
       "Basic Data Readiness",
       "Owner Capability Readiness",
-      "QRA Foundation",
+      "QRA",
     ]);
     expect(definition?.children.every((item) => item.convergesInto === "investment-gate-preparation")).toBe(true);
     expect(governance?.children[0].predecessorIds).toEqual(definition?.children.map((item) => item.id));

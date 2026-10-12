@@ -1,0 +1,51 @@
+.qraEngine .qraRunMetadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.qraEngine .qraRunMetadata dt {
+  color: #516773;
+  font-size: 12px;
+}
+.qraEngine .qraRunMetadata dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.qraEngine progress {
+  width: 100%;
+  accent-color: #168d94;
+}
+.qraEngine .qraRunSettings {
+  margin: 12px 0;
+}
+.qraEngine .qraResultChart {
+  margin: 18px 0;
+  border: 1px solid #d5e0e5;
+  border-radius: 8px;
+  padding: 12px;
+}
+.qraEngine .qraResultChart svg {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+}
+.qraEngine .qraResultChart rect {
+  fill: #168d94;
+}
+.qraEngine .qraResultChart polyline {
+  fill: none;
+  stroke: #168d94;
+  stroke-width: 3;
+}
+.qraEngine .qraResultChart .axis {
+  fill: none;
+  stroke: #516773;
+}
+.qraEngine .qraResultChart figcaption {
+  font-size: 13px;
+  font-weight: 600;
+}
+.qraEngine .qraResultChart summary {
+  cursor: pointer;
+  font-size: 12px;
+}

@@ -121,6 +121,27 @@ def _applicability_issues(value):
     ]
 
 
+def _string_list(value):
+    return isinstance(value, list) and all(isinstance(item, str) and bool(item.strip()) for item in value)
+
+
+def _requirement_issues(entry):
+    issues = []
+    if "applicability" in entry:
+        issues.extend(_applicability_issues(entry["applicability"]))
+    for key in ("field", "dimension"):
+        if key in entry and (not isinstance(entry[key], str) or not entry[key].strip()):
+            issues.append(f"REQUIREMENT_FIELD_DIMENSION_INVALID:{key}")
+    for key in ("active", "required", "blocking", "evidence_required"):
+        if key in entry and not isinstance(entry[key], bool):
+            issues.append(f"REQUIREMENT_BOOLEAN_INVALID:{key}")
+    if "minimum_quality" in entry and entry["minimum_quality"] not in QUALITY_VALUES:
+        issues.append("REQUIREMENT_QUALITY_INVALID")
+    if "allowed_values" in entry and not isinstance(entry["allowed_values"], list):
+        issues.append("REQUIREMENT_ALLOWED_VALUES_INVALID")
+    return issues
+
+
 def configuration_issues(content):
     if not isinstance(content, dict):
         return ["CONFIGURATION_OBJECT_REQUIRED"]
@@ -144,16 +165,43 @@ def configuration_issues(content):
             issues.append(f"CONFIGURATION_SECTION_INVALID:{key}")
     if issues:
         return issues
+    # Wave 4 reuses the historical reserved section without rewriting old
+    # methodology documents. Empty content never enables calculation.
+    from app.modules.qra_engine.policy import engine_configuration_issues
+
+    issues.extend(engine_configuration_issues(content["reserved_engine_settings"]))
+    # These compatibility placeholders have no global-rule semantics yet.
+    # Reject meaningful content instead of publishing rules the evaluator ignores.
+    for key in (
+        "distribution_rules",
+        "review_approval",
+        "fel_stage_rules",
+        "gate_profile_rules",
+        "project_type_rules",
+        "governance_model_rules",
+        "risk_complexity_rules",
+    ):
+        if content.get(key, {}) != {}:
+            issues.append(f"UNSUPPORTED_CONFIGURATION_SECTION:{key}")
     scope = content["scope"]
-    if scope.get("type") not in {"tenant", "enterprise", "business-unit", "portfolio"} or (
-        scope.get("type") == "tenant"
-    ) != (scope.get("workspace_id") is None):
+    if (
+        scope.get("type") not in ("tenant", "enterprise", "business-unit", "portfolio")
+        or (scope.get("type") == "tenant") != (scope.get("workspace_id") is None)
+        or (
+            scope.get("workspace_id") is not None
+            and (type(scope["workspace_id"]) is not int or scope["workspace_id"] <= 0)
+        )
+    ):
         issues.append("CONFIGURATION_SCOPE_INVALID")
     issues += _applicability_issues(content["applicability"])
-    if not content["methodology"].get("code") or not content["methodology"].get("name"):
+    if any(
+        not isinstance(content["methodology"].get(key), str) or not content["methodology"][key].strip()
+        for key in ("code", "name")
+    ):
         issues.append("METHODOLOGY_IDENTITY_REQUIRED")
     if (
         not content["analysis_types"]
+        or not _string_list(content["analysis_types"])
         or len(set(content["analysis_types"])) != len(content["analysis_types"])
         or any(v not in ANALYSIS_TYPES for v in content["analysis_types"])
     ):
@@ -172,6 +220,17 @@ def configuration_issues(content):
             issues += _applicability_issues(entry.get("applicability", {}))
             if key.endswith("requirements") and (not entry.get("field") or not entry.get("dimension")):
                 issues.append(f"REQUIREMENT_FIELD_DIMENSION_REQUIRED:{entry['code']}")
+            if key.endswith("requirements"):
+                issues.extend(_requirement_issues(entry))
+                stage_rules = entry.get("stage_rules", {})
+                if not isinstance(stage_rules, dict) or any(
+                    not isinstance(stage, str) or not isinstance(overrides, dict)
+                    for stage, overrides in stage_rules.items()
+                ):
+                    issues.append(f"REQUIREMENT_STAGE_RULES_INVALID:{entry['code']}")
+                else:
+                    for overrides in stage_rules.values():
+                        issues.extend(_requirement_issues(overrides))
             if entry.get("minimum_quality", "NOT_AVAILABLE") not in QUALITY_VALUES:
                 issues.append(f"QUALITY_INVALID:{entry['code']}")
             for flag in (
@@ -181,6 +240,7 @@ def configuration_issues(content):
                 "zero_floor",
                 "require_evidence",
                 "require_rationale",
+                "require_lambda",
             ):
                 if flag in entry and not isinstance(entry[flag], bool):
                     issues.append(f"BOOLEAN_REQUIRED:{entry['code']}:{flag}")
@@ -191,13 +251,28 @@ def configuration_issues(content):
             numeric(entry.get("min")) and numeric(entry.get("max")) and entry["min"] > entry["max"]
         ):
             issues.append(f"RANGE_BOUNDS_INVALID:{entry['code']}")
+        if isinstance(entry, dict):
+            for key in ("required_parameters", "allowed_sources"):
+                if key in entry and not _string_list(entry[key]):
+                    issues.append(f"RANGE_LIST_INVALID:{key}")
+            if "maximum_percent" in entry and (not numeric(entry["maximum_percent"]) or entry["maximum_percent"] < 0):
+                issues.append("RANGE_MAXIMUM_PERCENT_INVALID")
     for entry in content["distribution_families"]:
         if not isinstance(entry, dict) or entry.get("code") not in DISTRIBUTIONS:
             issues.append("DISTRIBUTION_FAMILY_UNSUPPORTED")
             continue
-        if any(t not in RANGE_TYPES for t in entry.get("allowed_range_types", [])):
+        if not _string_list(entry.get("allowed_range_types", [])) or any(
+            t not in RANGE_TYPES for t in entry.get("allowed_range_types", [])
+        ):
             issues.append(f"DISTRIBUTION_RANGE_INVALID:{entry['code']}")
-        for parameter, bounds in entry.get("parameter_bounds", {}).items():
+        for key in ("parameters", "optional_parameters"):
+            if key in entry and not _string_list(entry[key]):
+                issues.append(f"DISTRIBUTION_PARAMETER_NAMES_INVALID:{entry['code']}:{key}")
+        parameter_bounds = entry.get("parameter_bounds", {})
+        if not isinstance(parameter_bounds, dict):
+            issues.append(f"PARAMETER_BOUNDS_OBJECT_REQUIRED:{entry['code']}")
+            continue
+        for parameter, bounds in parameter_bounds.items():
             if (
                 not isinstance(bounds, dict)
                 or any(k in bounds and not numeric(bounds[k]) for k in ("min", "max"))
@@ -210,8 +285,29 @@ def configuration_issues(content):
     lo, hi = rules.get("minimum_coefficient", -1), rules.get("maximum_coefficient", 1)
     if not numeric(lo) or not numeric(hi) or not -1 <= lo <= hi <= 1:
         issues.append("CORRELATION_COEFFICIENT_POLICY_INVALID")
-    if any(c not in CONTEXT_KEYS for c in content["model_governance"].get("required_contexts", [])):
+    required_contexts = content["model_governance"].get("required_contexts", [])
+    if not _string_list(required_contexts) or any(c not in CONTEXT_KEYS for c in required_contexts):
         issues.append("MODEL_CONTEXT_UNKNOWN")
+    for key in ("require_rationale", "require_complete_coverage"):
+        if key in rules and not isinstance(rules[key], bool):
+            issues.append(f"CORRELATION_BOOLEAN_INVALID:{key}")
+    governance = content["model_governance"]
+    if governance.get("require_review") is not True:
+        issues.append("INDEPENDENT_MODEL_REVIEW_REQUIRED")
+    for key in (
+        "require_review",
+        "allow_deterministic",
+        "deterministic_rationale_required",
+        "deterministic_evidence_required",
+        "reconciliation_required",
+    ):
+        if key in governance and not isinstance(governance[key], bool):
+            issues.append(f"MODEL_GOVERNANCE_BOOLEAN_INVALID:{key}")
+    if "allowed_contingency_bases" in governance and not _string_list(governance["allowed_contingency_bases"]):
+        issues.append("CONTINGENCY_BASES_INVALID")
+    for key in ("reconciliation_tolerance_absolute", "reconciliation_tolerance_percent"):
+        if key in governance and (not numeric(governance[key]) or governance[key] < 0):
+            issues.append(f"RECONCILIATION_TOLERANCE_INVALID:{key}")
     for flag, value in content["separation_of_duties"].items():
         if flag not in DEFAULT_CONFIGURATION["separation_of_duties"] or not isinstance(value, bool):
             issues.append(f"SOD_RULE_INVALID:{flag}")
@@ -219,7 +315,7 @@ def configuration_issues(content):
         issues.append("INDEPENDENT_METHODOLOGY_PUBLICATION_REQUIRED")
     numbering = content["numbering"]
     if (
-        not isinstance(numbering.get("padding"), int)
+        type(numbering.get("padding")) is not int
         or not 1 <= numbering["padding"] <= 12
         or any(
             not isinstance(numbering.get(f"{kind}_prefix"), str) or not 1 <= len(numbering[f"{kind}_prefix"]) <= 12
@@ -227,6 +323,8 @@ def configuration_issues(content):
         )
     ):
         issues.append("NUMBERING_INVALID")
+    if "separator" in numbering and not isinstance(numbering["separator"], str):
+        issues.append("NUMBERING_SEPARATOR_INVALID")
     for key in ("effective_from", "effective_to"):
         if content.get(key) is not None:
             try:
@@ -253,9 +351,11 @@ def configuration_issues(content):
             issues.append(f"SCHEDULE_THRESHOLD_INVALID:{key}")
         if key.startswith("require_") and not isinstance(value, bool):
             issues.append(f"SCHEDULE_BOOLEAN_INVALID:{key}")
+    if not _string_list(content["schedule_quality_rules"].get("allowed_open_end_refs", [])):
+        issues.append("SCHEDULE_OPEN_END_REFERENCES_INVALID")
     for key in ("maximum_source_age_days", "maximum_model_age_days"):
         value = content["freshness"].get(key)
-        if value is not None and (not isinstance(value, int) or value < 0):
+        if value is not None and (type(value) is not int or value < 0):
             issues.append(f"FRESHNESS_INVALID:{key}")
     if (
         "minimum_duration" in content["schedule_quality_rules"]
@@ -272,10 +372,10 @@ def configuration_issues(content):
 def tailored_requirements(policy, kind, context):
     result = []
     for original in policy.get(f"{kind}_requirements", []):
-        if not original.get("active", True) or not matches(original.get("applicability", {}), context):
-            continue
         entry = deepcopy(original)
         entry.update(entry.get("stage_rules", {}).get(context.get("fel_stage"), {}))
+        if not entry.get("active", True) or not matches(entry.get("applicability", {}), context):
+            continue
         result.append(entry)
     return result
 
@@ -366,6 +466,10 @@ def input_issues(item, policy, context):
         ):
             issues.append(f"DISCRETE_PARAMETERS_INVALID:{ref}")
     numbers = [v for v in values.values() if numeric(v)]
+    if representation == "DISCRETE_SCENARIO" and isinstance(scenarios, list):
+        # Scenario values obey the same configured bounds as every other range.
+        # Probabilities are weights, not quantities in the cost/duration unit.
+        numbers.extend(s["value"] for s in scenarios if isinstance(s, dict) and numeric(s.get("value")))
     if (not range_policy.get("allow_negative", False) or range_policy.get("zero_floor", False)) and any(
         v < 0 for v in numbers
     ):

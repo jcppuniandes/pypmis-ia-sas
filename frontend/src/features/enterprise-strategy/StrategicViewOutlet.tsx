@@ -15,6 +15,7 @@ import OwnerCapabilityAdminView from "../owner-capability/OwnerCapabilityAdminVi
 import OwnerCapabilityWorkspace from "../owner-capability/OwnerCapabilityWorkspace";
 import QraFoundationAdminView from "../qra-foundation/QraFoundationAdminView";
 import QraFoundationWorkspace from "../qra-foundation/QraFoundationWorkspace";
+import QraEngineWorkspace from "../qra-engine/QraEngineWorkspace";
 import BusinessCaseAdminView from "../business-case/BusinessCaseAdminView";
 import BusinessCaseWorkspace from "../business-case/BusinessCaseWorkspace";
 import CommercialStrategyAdminView from "../commercial-strategy/CommercialStrategyAdminView";
@@ -133,6 +134,17 @@ const strategicViewRenderers: Partial<Record<ControlFlowView, StrategicViewRende
   "qra-schedule-source-readiness": withInitialView(QraFoundationWorkspace),
   "qra-model-definition": withInitialView(QraFoundationWorkspace),
   "qra-foundation-history": withInitialView(QraFoundationWorkspace),
+  "qra-approved-models": withInitialView(QraEngineWorkspace),
+  "qra-runs": withInitialView(QraEngineWorkspace),
+  "qra-run-overview": withInitialView(QraEngineWorkspace),
+  "qra-cost-results": withInitialView(QraEngineWorkspace),
+  "qra-schedule-results": withInitialView(QraEngineWorkspace),
+  "qra-percentiles": withInitialView(QraEngineWorkspace),
+  "qra-sensitivity": withInitialView(QraEngineWorkspace),
+  "qra-convergence": withInitialView(QraEngineWorkspace),
+  "qra-run-evidence": withInitialView(QraEngineWorkspace),
+  "qra-run-comparison": withInitialView(QraEngineWorkspace),
+  "qra-run-history": withInitialView(QraEngineWorkspace),
   "qra-methodology-source-readiness": tokenOnly(QraFoundationAdminView),
   "project-proposal": tokenOnly(ProjectProposalWorkspace),
   "project-proposal-configuration": tokenOnly(ProjectProposalAdminView),

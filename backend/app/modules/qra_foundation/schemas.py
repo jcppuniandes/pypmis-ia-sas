@@ -101,5 +101,22 @@ class ModelUpdateIn(ModelCreateIn):
     valid_until: date | None = None
 
 
+class ModelInputsPatchIn(StrictModel):
+    inputs: list[InputIn] = Field(min_length=1, max_length=200)
+
+
+class ModelMetadataPatchIn(StrictModel):
+    title: str | None = Field(None, min_length=1, max_length=240)
+    comments: str | None = Field(None, max_length=10000)
+    purpose: str | None = Field(None, max_length=10000)
+    analysis_type: AnalysisType | None = None
+    analysis_scope: ScopeIn | None = None
+    cost_source_assessment_id: int | None = Field(None, gt=0)
+    schedule_source_assessment_id: int | None = Field(None, gt=0)
+    correlations: dict | None = None
+    valid_from: date | None = None
+    valid_until: date | None = None
+
+
 class ActionIn(StrictModel):
     comments: str = Field("", max_length=10000)

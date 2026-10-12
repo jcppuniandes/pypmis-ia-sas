@@ -5,7 +5,13 @@ from copy import deepcopy
 import pytest
 from pydantic import ValidationError
 
-from app.modules.qra_foundation.policy import DEFAULT_CONFIGURATION, correlation_issues, input_issues
+from app.modules.qra_foundation.policy import (
+    DEFAULT_CONFIGURATION,
+    configuration_issues,
+    correlation_issues,
+    input_issues,
+    tailored_requirements,
+)
 from app.modules.qra_foundation.schemas import ModelUpdateIn
 
 
@@ -129,3 +135,130 @@ def test_qra_correlation_matrix_requires_exact_symmetry_diagonal_and_known_refs(
 )
 def test_qra_correlation_references_must_be_scalar_identifiers_not_internal_errors(definition):
     assert correlation_issues(definition, {"COST:mine-development", "SCHEDULE:A-MINE"}, _policy())
+
+
+@pytest.mark.parametrize("scenario_value", [-1, 101])
+def test_qra_discrete_scenario_quantities_obey_range_and_distribution_policy(scenario_value):
+    policy = _policy()
+    policy["range_policies"] = [
+        {"code": "DISCRETE_SCENARIO", "allow_negative": False, "zero_floor": True, "min": 0, "max": 100}
+    ]
+    policy["distribution_families"] = [
+        {"code": "DISCRETE", "allowed_range_types": ["DISCRETE_SCENARIO"], "allow_negative": False}
+    ]
+    item = _input() | {
+        "range_type": "DISCRETE_SCENARIO",
+        "distribution_family": "DISCRETE",
+        "values": {"scenarios": [{"value": scenario_value, "probability": 0.5}, {"value": 50, "probability": 0.5}]},
+    }
+    issues = input_issues(item, policy, {})
+    assert any("RANGE_POLICY_BOUNDS" in issue for issue in issues)
+    if scenario_value < 0:
+        assert any("RANGE_NEGATIVE_NOT_ALLOWED" in issue for issue in issues)
+        assert any("DISTRIBUTION_NEGATIVE_NOT_ALLOWED" in issue for issue in issues)
+
+
+def test_qra_discrete_scenario_probabilities_are_not_quantity_bounds():
+    policy = _policy()
+    policy["range_policies"] = [{"code": "DISCRETE_SCENARIO", "min": 10, "max": 100}]
+    policy["distribution_families"] = [{"code": "DISCRETE", "allowed_range_types": ["DISCRETE_SCENARIO"]}]
+    item = _input() | {
+        "range_type": "DISCRETE_SCENARIO",
+        "distribution_family": "DISCRETE",
+        "values": {"scenarios": [{"value": 10, "probability": 0.25}, {"value": 100, "probability": 0.75}]},
+    }
+    assert input_issues(item, policy, {}) == []
+
+
+@pytest.mark.parametrize(
+    ("section", "field", "invalid"),
+    [
+        ("distribution_families", "parameter_bounds", []),
+        ("distribution_families", "parameter_bounds", None),
+        ("distribution_families", "allowed_range_types", None),
+        ("distribution_families", "parameters", [None]),
+        ("distribution_families", "optional_parameters", {}),
+        ("range_policies", "required_parameters", [None]),
+        ("range_policies", "allowed_sources", None),
+        ("range_policies", "maximum_percent", "100"),
+        ("cost_requirements", "field", ["currency"]),
+        ("cost_requirements", "stage_rules", None),
+        ("cost_requirements", "stage_rules", {"FEL-3": {"field": []}}),
+        ("cost_requirements", "stage_rules", {"FEL-3": {"applicability": False}}),
+        ("schedule_requirements", "minimum_quality", "FAKE"),
+    ],
+)
+def test_qra_nested_policy_types_are_rejected_without_internal_errors(section, field, invalid):
+    policy = _policy()
+    if section.endswith("requirements"):
+        policy[section] = [{"code": "currency", "field": "currency", "dimension": "CURRENCY"}]
+    policy[section][0][field] = invalid
+    assert configuration_issues(policy)
+
+
+@pytest.mark.parametrize(
+    ("section", "field", "invalid"),
+    [
+        ("scope", "type", []),
+        ("scope", "workspace_id", True),
+        ("methodology", "name", []),
+        ("model_governance", "required_contexts", [{}]),
+        ("model_governance", "reconciliation_tolerance_percent", "5"),
+        ("model_governance", "allow_deterministic", "false"),
+        ("model_governance", "require_review", False),
+        ("correlation_rules", "require_complete_coverage", "false"),
+        ("schedule_quality_rules", "allowed_open_end_refs", [{}]),
+        ("freshness", "maximum_model_age_days", True),
+        ("numbering", "padding", True),
+    ],
+)
+def test_qra_governance_policy_types_are_rejected_without_internal_errors(section, field, invalid):
+    policy = _policy()
+    policy[section][field] = invalid
+    assert configuration_issues(policy)
+
+
+def test_qra_analysis_type_entries_cannot_crash_policy_validation():
+    policy = _policy()
+    policy["analysis_types"] = [{}]
+    assert "ANALYSIS_TYPES_INVALID" in configuration_issues(policy)
+
+
+@pytest.mark.parametrize(
+    "section",
+    [
+        "distribution_rules",
+        "review_approval",
+        "fel_stage_rules",
+        "gate_profile_rules",
+        "project_type_rules",
+        "governance_model_rules",
+        "risk_complexity_rules",
+    ],
+)
+def test_qra_unimplemented_global_rule_sections_cannot_be_published_as_enforced(section):
+    policy = _policy()
+    policy[section] = {"ignored_rule": True}
+    assert f"UNSUPPORTED_CONFIGURATION_SECTION:{section}" in configuration_issues(policy)
+    policy[section] = {}
+    assert configuration_issues(policy) == []
+
+
+@pytest.mark.parametrize(("base_active", "stage_active"), [(True, False), (False, True)])
+def test_qra_stage_tailoring_resolves_active_before_selecting_denominator(base_active, stage_active):
+    policy = _policy()
+    policy["cost_requirements"] = [
+        {
+            "code": "currency",
+            "field": "currency",
+            "dimension": "CURRENCY",
+            "active": base_active,
+            "stage_rules": {"FEL-3": {"active": stage_active}},
+        }
+    ]
+    assert configuration_issues(policy) == []
+    resolved = tailored_requirements(policy, "cost", {"fel_stage": "FEL-3"})
+    assert bool(resolved) is stage_active
+    assert tailored_requirements(policy, "cost", {"fel_stage": "FEL-2"}) == (
+        policy["cost_requirements"] if base_active else []
+    )

@@ -1,8 +1,8 @@
 # Informe técnico QRA Foundation
 
-P&Pmis Construction AI · Capital Portfolio and Investment Governance · 2026-10-09
+P&Pmis Construction AI · Capital Portfolio and Investment Governance · 2026-10-11
 
-**Estado actual:** VALIDACIÓN EN CURSO
+**Estado actual:** QRA_SOURCE_READINESS_AND_METHODOLOGY_FOUNDATION_RELEASE_VALIDATED
 
 ## 1. Resumen ejecutivo
 
@@ -12,9 +12,11 @@ La implementación reutiliza la plataforma existente y conserva sus autoridades.
 
 ## 2. Baseline real del repositorio
 
-Baseline observado: rama main, HEAD 9cb0969abb5d48cc25b0c6a935b11e6bd7afd16f y head Alembic 20261008_0066. Existían 76 archivos modificados rastreados, 7.604 inserciones y 949 eliminaciones, además de incrementos previos no rastreados. Este trabajo se preservó. No se ejecutaron reset, checkout destructivo, commit ni push.
+Baseline de implementación observado el 9 de octubre: rama main, HEAD 9cb0969abb5d48cc25b0c6a935b11e6bd7afd16f y head Alembic 20261008_0066. Existían 76 archivos modificados rastreados, 7.604 inserciones y 949 eliminaciones, además de incrementos previos no rastreados. Este trabajo se preservó.
 
-El servicio local previo usaba la imagen validada de Wave 3B. Antes de migrar se creó un respaldo PostgreSQL formato custom de 1.979.037 bytes; pg_restore --list leyó 3.520 entradas. SHA-256: D26D60DC20C410309C0EBF54EDF2E1AC561982D54BF4F438520266E8218796A0. Se capturaron conteos y hashes de 35 categorías de datos y seguridad para comparación posterior. Un respaldo legible no equivale a una prueba completa de restauración.
+La reanudación del 11 de octubre parte de main d762d873fe2282a8dfe790bacc3b2450691abe83, con árbol rastreado limpio y los desarrollos anteriores ya enviados a origin. La cabeza única del código es 20261009_0067. La API operativa inicial todavía contiene 0066 y no tiene el módulo QRA; no se confunde esa imagen previa con el entorno de aceptación del nuevo código. Las correcciones de esta reanudación permanecen como cambios locales hasta un nuevo commit autorizado. No se ejecutan reset ni checkout destructivos.
+
+El servicio local previo usaba la imagen validada de Wave 3B. El respaldo histórico del 9 de octubre se preserva. En esta reanudación se creó un respaldo PostgreSQL nuevo en formato custom de 1.979.037 bytes: pg_restore --list leyó 3.520 entradas y su SHA-256 es 4602B0FAB97707C11D80AD544CC3C7237298681210CC7363468910A5F7BA93A7. Se capturaron conteos y hashes de 35 categorías de datos y seguridad antes de la actualización. Un respaldo legible no equivale a una prueba completa de restauración.
 
 ## 3. ADR QRA Foundation
 
@@ -153,7 +155,7 @@ Se comprueban ordering, cotas, positividad cuando corresponda, desviaciones y pr
 
 PERT/BETA_PERT conservan tres puntos y lambda/configuración requerida según perfil. El ejemplo usa lambda positiva dentro de límites explícitos. Se valida como parámetro de definición, sin generar una beta, calcular percentiles ni simular.
 
-La ausencia de lambda, valor no finito o fuera de límites bloquea. No se presupone lambda universal ni se interpreta una definición PERT aprobada como estimación probabilística ya calculada.
+La ausencia de lambda, valor no finito o fuera de límites bloquea. No se presupone lambda universal ni se interpreta una definición PERT aprobada como estimación probabilística ya calculada. En DISCRETE_SCENARIO se validan por separado los valores de cada escenario y sus probabilidades: un valor negativo o fuera de los límites del rango no se acepta porque sus probabilidades sumen uno.
 
 ## 24. Correlation Policy y gobierno
 
@@ -172,6 +174,10 @@ Límite explícito: no se garantiza semidefinición positiva, ni transformación
 El perfil usa AdminConfiguration kind qra_methodology_configuration. Integra scope, applicability, analysis types, requisitos de fuentes, controles de cronograma, rangos, distribuciones, correlaciones, model governance, SoD, freshness y numbering.
 
 El bootstrap crea una configuración neutral DRAFT sin requisitos operativos ni evidencias. La publicación independiente debe pasar validación; guardar un borrador no lo convierte en autoridad. Los settings reservados del futuro engine son declarativos y no ejecutables.
+
+Las reglas efectivas de distribución se configuran en distribution_families; las de aplicabilidad en applicability y requirement.stage_rules; las de revisión en model_governance y separation_of_duties. Los bloques globales distribution_rules, review_approval y los cinco aliases superiores de tailoring no tienen evaluador propio: contenido no vacío se rechaza explícitamente como UNSUPPORTED_CONFIGURATION_SECTION. No se publica una regla ignorada por el evaluador. Tipos JSON anidados incorrectos reciben rechazo de validación en vez de excepciones de servidor.
+
+El override por etapa se aplica antes de filtrar active y applicability del requisito. Desactivar todos los requisitos no produce cobertura READY de 0/0: el resultado es BLOCKED con SOURCE_REQUIREMENTS_NOT_CONFIGURED y provider UNAVAILABLE. La navegación lateral conserva edición pendiente y distingue Cost, Schedule y Model incluso cuando no existen proyectos autorizados.
 
 ## 27. Tipos de análisis
 
@@ -201,13 +207,13 @@ Un refresh de un modelo aprobado genera sucesor DRAFT, conserva model_number y l
 
 Permisos y política SoD son controles distintos. El preparador no puede aprobar donde la metodología lo impide. La aprobación exige review registrado; las restricciones adicionales pueden impedir al preparador de fuentes, publisher o decision maker actuar como aprobador único.
 
-ADMIN configuration-only no obtiene permisos de aprobar modelos operativos. La autorización se aplica a rutas directas y servicio, además del frontend. Los eventos de denegación permiten distinguir falta de permiso, proyecto fuera de alcance y conflicto de funciones.
+ADMIN configuration-only no obtiene permisos de aprobar modelos operativos. La autorización se aplica a rutas directas y servicio, además del frontend. Las respuestas de denegación permiten distinguir falta de permiso, proyecto fuera de alcance y conflicto de funciones.
 
 ## 32. Validez y staleness del modelo
 
 Se comprueba metodología efectiva, currentness de fuentes, hash y versión de assessments, contexto requerido, vencimiento y materialidad de snapshots. La validez actual se separa del estado histórico aprobado.
 
-Cambios de importación, costo, configuración o contexto pueden producir STALE. History sigue mostrando el contenido exacto aprobado. Refresh Preview no altera registros; Refresh Apply prepara una nueva versión que debe pasar otra vez sus controles y ciclo de aprobación.
+Cambios de importación, costo, configuración o contexto pueden producir STALE. También se aplica freshness.maximum_model_age_days desde la fecha inmutable de aprobación, no desde la hora de la consulta. El máximo configurado es inclusivo en días calendario; superarlo produce MODEL_FRESHNESS_EXPIRED, bloquea la preparación y retira currentness sin cambiar snapshot ni hash históricos. History sigue mostrando el contenido exacto aprobado. Refresh Preview no altera registros; Refresh Apply prepara una nueva versión que debe pasar otra vez sus controles y ciclo de aprobación.
 
 ## 33. Readiness y hash del modelo
 
@@ -297,7 +303,7 @@ Las llaves están limitadas en tamaño y son únicas por tenant. Las respuestas 
 
 ## 46. SecurityEvent
 
-Se registran creación/edición, submit, review, complete/approve, publicación y refresco, además de conflictos y denegaciones. El registro incluye actor, tenant, objetivo y metadatos acotados, sin secretos ni tokens.
+Se registran las mutaciones gobernadas de creación/edición, submit, review, complete/approve, publicación y refresco. El registro incluye actor, tenant, objetivo y metadatos acotados, sin secretos ni tokens. Los errores de autorización, ETag e idempotencia se rechazan; los controles heredados no garantizan persistencia de un SecurityEvent para cada solicitud denegada o transacción revertida. Esa cobertura no se declara validada.
 
 El publisher real de metodología se resuelve desde el evento de publicación, no se adivina desde created_by. Esto permite aplicar SoD a una revisión clonada/editada sin confundir autor, preparador, reviewer y publisher.
 
@@ -379,19 +385,19 @@ Refresh Apply crea sucesor y mantiene model_number, incrementando la versión de
 
 Los tests intentan completar/aprobar con el mismo preparador y publicar metodología por su autor. La política y API deben denegar incluso cuando el actor tenga permisos funcionales suficientes.
 
-Se prueba actor configuration-only contra operaciones vivas y USER operativo contra publicación ADMIN. Las denegaciones mantienen registro de seguridad y no crean cierres falsos. El navegador usa actores diferenciados para preparación, revisión y administración.
+Se prueba actor configuration-only contra operaciones vivas y USER operativo contra publicación ADMIN. Las denegaciones no crean cierres falsos ni alteran evidencia. El navegador usa actores diferenciados para preparación, revisión y administración. La revisión independiente del modelo es obligatoria; require_review=false se rechaza explícitamente en metodología. La persistencia de eventos para todas las denegaciones no está demostrada y se distingue de la auditoría de mutaciones exitosas.
 
 ## 59. Regresiones de independencia
 
 La integración captura huellas de fuentes y autoridades antes y después de fuentes/modelo QRA y refresh. Se incluyen proyectos, FEL, PDRI, riesgos, datos básicos, Owner, Commercial, Business Case, FIN, Budget, Resources, Funding, Benefits, Gate, FID, post-FID, cronograma y seguridad.
 
-En la base local se captura un segundo control de 35 categorías antes/después de migración y bootstrap. Se excluyen únicamente nuevos permisos/grants/configuración QRA y la nueva columna metadata de la comparación legacy; no se excluyen cambios en contenido financiero ni decisiones históricas.
+En la base local se compararon 35 categorías antes/después de migración y bootstrap: cero cambios en sus conteos o hashes. Se excluyen únicamente nuevos permisos/grants/configuración QRA y la nueva columna metadata de la comparación legacy; no se excluyen cambios en contenido financiero ni decisiones históricas. Se preservaron 31 workspaces, 138 roles, 32 membresías y las fuentes operacionales existentes.
 
 ## 60. Regresión Governance Model
 
 Applicability se resuelve desde el proyecto existente, no un selector arbitrario de QRA. CAPITAL_OWNER del ejemplo es aplicable al perfil configurado; otros modelos requieren política correspondiente. No se universaliza QRA a contratos EPC/EPCM u otros modos sin reglas explícitas.
 
-La ausencia de metodología aplicable no da READY. El perfil puede configurar governance_model_rules manteniendo la autoridad de Project Governance. Las comparaciones son de contexto y definición, sin crear un proyecto ni cambiar su governance model.
+La ausencia de metodología aplicable no da READY. El perfil restringe modelos de gobierno mediante applicability y reglas de requisitos, manteniendo la autoridad de Project Governance; el alias global governance_model_rules no vacío se rechaza porque no posee semántica implementada. Las comparaciones son de contexto y definición, sin crear un proyecto ni cambiar su governance model.
 
 ## 61. Tailoring Project Type
 
@@ -425,15 +431,25 @@ Las rutas legacy están guardadas para el kind QRA. Los tests de bootstrap niega
 
 ## 66. Observación de performance
 
-Las listas de registros y fuentes usan limit/offset y conteos en servidor; los adaptadores resuelven mapas, relaciones y fuentes por lote. Overview utiliza seis consultas de contexto/listas y dos para summary/item page, sin una petición por actividad. La página de inputs/población contiene hasta 25 registros.
+Las listas de assessments/modelos paginan registros en SQL. Las páginas de items limitan la respuesta en servidor, pero decodifican el snapshot JSON completo antes de seleccionar los 25 items: no son paginación SQL interna del JSON. Summary también serializa el agregado antes de recortarlo. Los adaptadores resuelven mapas, relaciones y fuentes por lote. Las opciones de costo materializan fuentes antes de recortar en Python. Overview usa un número fijo de solicitudes, sin una petición por actividad.
 
-El editor completo JSON permanece acotado por límites de dominio y se carga sólo a demanda; no equivale a un editor especializado de miles de líneas. La observación de escala se mide sobre definiciones y consultas, no sobre Monte Carlo. Las mediciones finales se añaden al cierre únicamente si fueron ejecutadas.
+Se ejecutó una observación sintética en SQLite exclusivamente en memoria, con 5.000 y 10.000 actividades y 4.999/9.999 relaciones FS. Población, readiness, página y total pasaron; las consultas permanecieron constantes entre ambos tamaños. No hubo acceso a bases compartidas ni cálculo probabilístico.
+
+| Operación con 10.000 actividades | Consultas y tiempo instrumentado | Pico Python y payload |
+| --- | --- | --- |
+| Adaptador canónico | 7 / 15,326 s | 79,60 MB / 5,11 MB |
+| Calidad de cronograma | 0 / 1,425 s | 2,23 MB / 90,5 KB |
+| Evaluación de fuente | 7 / 23,928 s | 79,39 MB / 4,37 MB |
+| Página de 25 items | 1 / 1,090 s | 18,47 MB / 8,29 KB |
+| Summary de un assessment | 2 / 4,522 s | 32,14 MB / 1,12 KB |
+
+Los tiempos incluyen tracemalloc y carga concurrente: no son SLA ni benchmark PostgreSQL/navegador. El pico mide asignaciones incrementales Python, no RSS. No se midieron 25 versiones masivas ni 20.000 inputs de modelo. El editor JSON completo y el detalle histórico se cargan a demanda, no equivalen a edición incremental masiva. La evidencia sustenta ausencia de N+1 a 10.000 actividades, no un PASS universal de performance.
 
 ## 67. Deuda técnica
 
 Los imports antiguos sin metadata requieren nueva importación para satisfacer reglas que exigen campos fuente. Una referencia externa con hash declarado no verifica autenticidad del contenido remoto. Granularidad FIN/Budget agregada no sustituye estimate detallado.
 
-La validación de correlación es estructural, no matemática PSD. El editor JSON completo de modelos grandes necesita evolución a edición incremental por item; lectura paginada ya está implementada. El acceso DBA directo no está cubierto por hooks ORM. La disponibilidad de perfiles operativos debe configurarse y publicarse por actores autorizados: el bootstrap no fabrica readiness.
+La validación de correlación es estructural, no matemática PSD. El editor JSON completo de modelos grandes necesita evolución a edición incremental por item; lectura paginada ya está implementada. Las opciones de costo y el detalle histórico todavía requieren materialización completa por lote. La auditoría persistente de cada denegación requiere un mecanismo de seguridad independiente de la transacción revertida. Los aliases globales sin semántica operativa se rechazan y no constituyen funciones de configuración implementadas. El acceso DBA directo no está cubierto por hooks ORM. La disponibilidad de perfiles operativos debe configurarse y publicarse por actores autorizados: el bootstrap no fabrica readiness.
 
 ## 68. Contrato futuro QRA Engine
 
@@ -445,27 +461,49 @@ El futuro run podrá poseer engine version, seed, iterations, resultados, percen
 
 | Componente | Implementación Foundation | Validación de release |
 | --- | --- | --- |
-| Cost Source Provider | Cierre READY actual y hash | Pendiente consolidación |
-| Schedule Source Provider | Import canónico y cierre actual | Pendiente consolidación |
-| Methodology Profile | Versionada publicada heredada | Pendiente consolidación |
-| Uncertainty Inputs | Cobertura y evidencia por item | Pendiente consolidación |
-| Distribution Rules | Definición y validación sin sampling | Pendiente consolidación |
-| Correlation Rules | Validación estructural sin sampling | Pendiente consolidación |
-| Model Definition | Identidad y snapshots versionados | Pendiente consolidación |
-| Model SoD | Review y approve independientes | Pendiente consolidación |
-| Model Validity | Fuentes política y contexto | Pendiente consolidación |
-| Model Staleness | Proyección y refresh sucesor | Pendiente consolidación |
+| Cost Source Provider | Cierre READY actual y hash | PASS lifecycle y provider |
+| Schedule Source Provider | Import canónico y cierre actual | PASS metadata y provider |
+| Methodology Profile | Versionada publicada heredada | PASS backend y browser ADMIN |
+| Uncertainty Inputs | Cobertura y evidencia por item | PASS inputs y negativos |
+| Distribution Rules | Definición y validación sin sampling | PASS hardening de parámetros |
+| Correlation Rules | Validación estructural sin sampling | PASS; no garantía PSD |
+| Model Definition | Identidad y snapshots versionados | PASS backend y browser USER |
+| Model SoD | Review y approve independientes | PASS actores diferenciados |
+| Model Validity | Fuentes política contexto y caducidad | PASS vigencia y edad límite |
+| Model Staleness | Proyección y refresh sucesor | PASS STALE visible e historia |
 
 No se interpreta esta matriz como QRA completado. Los límites PSD y editor masivo deben ser atendidos en el diseño del motor, sin eliminar la preparación gobernada ya existente.
 
 ## 70. Estado final del release
 
-Validación en curso. El cierre se actualizará con resultados reales PostgreSQL, Chromium, migración, regresiones, controles de independencia, deployment local y revisión del Word. No se declara el estado exclusivo RELEASE_VALIDATED antes de completar esas verificaciones.
+Estado exclusivo: QRA_SOURCE_READINESS_AND_METHODOLOGY_FOUNDATION_RELEASE_VALIDATED.
 
-La CI incorpora jobs PostgreSQL y browser QRA aislados, conserva artefactos de pruebas y verifica la nueva cabeza 0067. La configuración de CI no demuestra ejecución remota: no se ha solicitado commit ni push, y no se afirma que GitHub Actions haya corrido estos cambios.
+Salida: final_output=READY_FOR_GOVERNED_QRA_ANALYSIS. Significa Foundation preparada; no significa simulación ejecutada ni que todos los proyectos locales tengan evidencia disponible.
+
+| Comprobación ejecutada | Resultado | Alcance y evidencia |
+| --- | --- | --- |
+| QRA completa SQLite | 120 PASS / 1 omitida | Omisión PostgreSQL ejecutada por separado |
+| QRA completa PostgreSQL | 121 PASS | Incluye migraciones SQLite y PostgreSQL up/down/up |
+| Foundation y hardening finales SQLite | 94 PASS / 0 omitidas | Código final tras ajuste de stage_rules; 327,932 s |
+| Foundation y hardening finales PostgreSQL | 94 PASS / 0 omitidas | Código final; 380,938 s |
+| Regresiones previas focalizadas | 156 PASS / 12 módulos | 844,249 s; Basic Data Risk Owner FEL y políticas Gate |
+| Frontend QRA y navegación | 40 PASS | API ADMIN USER y blueprint |
+| Editor compartido y outlet | 22 PASS | Rutas ADMIN protegidas y reutilización |
+| Workspace final | 19 PASS | Incluye ruta vacía editor pendiente y StrictMode |
+| Chromium real final | 2 PASS / 0 omitidas | USER y ADMIN; 3,2 min; PostgreSQL aislado |
+| Controles de código | PASS | Ruff formato TypeScript ESLint Prettier build diff y guardrails STOP |
+| Integridad operacional | PASS / 35 categorías | Cero cambios legacy; respaldo custom legible |
+
+Las suites completas iniciales precedieron sólo al último ajuste de tailoring por etapa, revalidado por las suites finales de 94 casos en ambas bases. Los conteos de ejecuciones se solapan: no se suman como tests únicos. Una advertencia preexistente de serialización Pydantic aparece en el test negativo de scope. Intentos Windows sin permiso de loopback y un arranque de navegador anterior a readiness no se cuentan como PASS. El primer ADMIN detectó un assert que esperaba texto NOT_APPLICABLE; se corrigió para comprobar applicable=false y requisitos vacíos, preservando la regla de herencia, y la repetición final pasó.
+
+El despliegue operacional está en http://localhost:5173/app; API 8000 y frontend respondieron HTTP 200, API healthy y Alembic current/heads único 20261009_0067. Se reconstruyeron API worker beat y frontend sin eliminar volúmenes. La API expone 46 rutas QRA. El bootstrap autorizó al administrador existente del tenant 1: 16 permisos, 52 grants sobre roles existentes y metodología 866 DRAFT; cero roles, asignaciones, membresías, evaluaciones o modelos nuevos. El perfil minero de browser permanece exclusivamente en su base desechable. Para uso real un configurador y publisher independientes deben preparar y publicar una metodología aplicable.
+
+El Word de fecha 2026-10-11 incorpora las 71 secciones y se verifica mediante exportación de lectura en Word y rasterización canónica a PNG, sin sustituir el informe histórico del 9 de octubre. La revisión de accesibilidad OOXML comprueba jerarquía, alt text y encabezados de tablas; no representa certificación WCAG integral. La evidencia QA permanece privada en outputs/.qa/qra-foundation.
+
+La CI incorpora jobs PostgreSQL y browser QRA aislados, conserva artefactos de pruebas y verifica la nueva cabeza 0067. La configuración de CI no demuestra ejecución remota. Los commits anteriores se enviaron a origin por solicitud del usuario; esta reanudación no implica publicar automáticamente sus nuevas correcciones ni afirmar un resultado de GitHub Actions.
 
 ## 71. Única recomendación de próximo incremento
 
-La recomendación queda pendiente de consolidar la matriz de aceptación. Si todos los componentes Foundation están validados, la única recomendación será QRA CALCULATION ENGINE. Si falta un prerrequisito, se recomendará exclusivamente el menor incremento necesario para resolverlo.
+Única recomendación de próximo incremento: QRA CALCULATION ENGINE. La matriz Foundation está validada. Ese incremento deberá consumir una definición APPROVED_FOR_ANALYSIS actual, considerar validación matemática de correlaciones y mejorar el acceso a inputs masivos; las limitaciones instrumentadas de la sección 66 no se confunden con resultados probabilísticos ni SLA.
 
 El siguiente incremento no se implementa automáticamente. Se respeta STOP: no Monte Carlo, QraRun, percentiles, contingencia, management reserve, fechas probabilísticas, probabilistic FIN, actualización Gate07J, bloqueo FID automático ni ejecución de procurement/delivery.

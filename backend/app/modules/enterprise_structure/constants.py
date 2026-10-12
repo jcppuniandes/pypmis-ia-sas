@@ -2520,3 +2520,13 @@ PERMISSION_SEED += (
     ("qra_methodology.admin.configure", "qra_methodology_configuration", "configure", "Configurar metodologia y requisitos QRA.", "high"),
     ("qra_methodology.admin.publish", "qra_methodology_configuration", "publish", "Publicar o archivar metodologia QRA con revision independiente.", "critical"),
 )
+
+# QRA execution grants never authorize investment or source-domain writes.
+PERMISSION_SEED += (
+    ("qra_run.read", "qra_run", "read", "Consultar resultados analiticos gobernados QRA.", "standard"),
+    ("qra_run.create", "qra_run", "create", "Crear corrida desde un modelo QRA aprobado vigente.", "high"),
+    ("qra_run.execute", "qra_run", "execute", "Encolar ejecucion probabilistica gobernada QRA.", "high"),
+    ("qra_run.cancel", "qra_run", "cancel", "Cancelar corrida QRA sin publicar resultados parciales.", "high"),
+    ("qra_run.review", "qra_run", "review", "Revisar resultados analiticos QRA con independencia.", "high"),
+    ("qra_run.accept", "qra_run", "accept", "Aceptar evidencia QRA sin aprobar inversion o presupuesto.", "critical"),
+)

@@ -80,6 +80,20 @@ export const qraFoundationApi = {
       headers: headers(item),
       body: JSON.stringify(body),
     }),
+  updateModelMetadata: (token: string, item: QraRecord, body: JsonRecord) =>
+    apiFetch<QraRecord>(`${QRA_API_ROOT}/models/${item.id}/metadata`, {
+      method: "PATCH",
+      token,
+      headers: headers(item),
+      body: JSON.stringify(body),
+    }),
+  updateModelInputs: (token: string, item: QraRecord, inputs: JsonRecord[]) =>
+    apiFetch<QraRecord>(`${QRA_API_ROOT}/models/${item.id}/inputs`, {
+      method: "PATCH",
+      token,
+      headers: headers(item),
+      body: JSON.stringify({ inputs }),
+    }),
   action: (
     token: string,
     kind: QraKind,

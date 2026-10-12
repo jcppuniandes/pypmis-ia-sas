@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="11" time="186.922" timestamp="2026-10-11T22:32:28.619112-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_qra_engine" name="test_real_approved_model_run_reproduction_and_independence[cost]" time="96.869" /><testcase classname="tests.test_qra_engine" name="test_real_approved_model_run_reproduction_and_independence[schedule]" time="4.465" /><testcase classname="tests.test_qra_engine" name="test_seed_change_compatible_comparison" time="9.961" /><testcase classname="tests.test_qra_engine" name="test_completed_run_immutable_separate_review_acceptance_provider" time="4.349" /><testcase classname="tests.test_qra_engine" name="test_queued_manifest_immutable_before_execution" time="0.679" /><testcase classname="tests.test_qra_engine" name="test_create_and_execute_receipts_idempotency_etag_and_dispatch_failures" time="5.053" /><testcase classname="tests.test_qra_engine" name="test_cancelled_run_atomicity_not_provider_eligible" time="0.917" /><testcase classname="tests.test_qra_engine" name="test_failure_after_progress_discards_partial_result" time="0.974" /><testcase classname="tests.test_qra_engine" name="test_broker_failure_durable_queue_and_explicit_retry" time="0.755" /><testcase classname="tests.test_qra_engine" name="test_worker_crash_lease_preserves_failed_attempt" time="0.412" /><testcase classname="tests.test_qra_engine" name="test_approved_model_current_preflight_and_bounded_pagination" time="3.663"><failure message="AssertionError: ['SELECT user_accounts.id, user_accounts.tenant_id, user_accounts.email, user_accounts.full_name, user_accounts.title,...ted_at &#10;  FROM enterprise_workspaces &#10;  WHERE enterprise_workspaces.tenant_id = ? AND enterprise_workspaces.id = ?', ...]&#10;assert 45 &lt;= 6&#10; +  where 45 = len(['SELECT user_accounts.id, user_accounts.tenant_id, user_accounts.email, user_accounts.full_name, user_accounts.title,...ted_at \nFROM enterprise_workspaces \nWHERE enterprise_workspaces.tenant_id = ? AND enterprise_workspaces.id = ?', ...])">governed = {'author': &lt;app.domain.models.UserAccount object at 0x0000021A66BC6960&gt;, 'configuration': {'allowed_actions': [], 'cod...n_start_reevaluation']), 'engine': &lt;app.modules.qra_engine.service.QraEngineService object at 0x0000021A66F226F0&gt;, ...}
+
+    def test_approved_model_current_preflight_and_bounded_pagination(governed):
+        service = governed["engine"]
+        preflight = service.preflight(governed["models"]["cost"]["id"])
+        assert preflight["eligible"] and preflight["persisted"] is False
+        options = service.options(governed["project"].id)
+        assert options["no_new_admin_module_required"] and len(options["approved_models"]) == 2
+        assert "aggregate_json" not in options["approved_models"][0]
+        run = _run_completed(governed)
+        summary = service.run(run["id"])
+        assert "results" not in summary and summary["result_summary"]["mean"]
+        page = service.result_section(run["id"], "sensitivity", page_size=1)
+        assert len(page["data"]) == 1
+        statements = []
+    
+        def statement(_conn, _cursor, query, _parameters, _context, _executemany):
+            statements.append(query)
+    
+        bind = service.db.get_bind()
+        event.listen(bind, "before_cursor_execute", statement)
+        try:
+            service.runs(governed["project"].id, page_size=100)
+        finally:
+            event.remove(bind, "before_cursor_execute", statement)
+&gt;       assert len(statements) &lt;= 6, statements
+E       AssertionError: ['SELECT user_accounts.id, user_accounts.tenant_id, user_accounts.email, user_accounts.full_name, user_accounts.title,...ted_at 
+E         FROM enterprise_workspaces 
+E         WHERE enterprise_workspaces.tenant_id = ? AND enterprise_workspaces.id = ?', ...]
+E       assert 45 &lt;= 6
+E        +  where 45 = len(['SELECT user_accounts.id, user_accounts.tenant_id, user_accounts.email, user_accounts.full_name, user_accounts.title,...ted_at \nFROM enterprise_workspaces \nWHERE enterprise_workspaces.tenant_id = ? AND enterprise_workspaces.id = ?', ...])
+
+tests\test_qra_engine.py:388: AssertionError</failure></testcase></testsuite></testsuites>

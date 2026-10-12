@@ -13,6 +13,8 @@ from app.modules.qra_foundation.schemas import (
     ConfigurationPreviewIn,
     ConfigurationUpdateIn,
     ModelCreateIn,
+    ModelInputsPatchIn,
+    ModelMetadataPatchIn,
     ModelUpdateIn,
     SourceCreateIn,
     SourceUpdateIn,
@@ -236,6 +238,30 @@ def update_model(
 @router.post("/models/{record_id}/preview")
 def preview_model(record_id: int, service=Depends(_authorized("qra_foundation.read"))):
     return service.preview("model", record_id)
+
+
+@router.patch("/models/{record_id}/inputs")
+def patch_model_inputs(
+    record_id: int,
+    payload: ModelInputsPatchIn,
+    response: Response,
+    expected: int = Depends(_if_match),
+    key: str = Depends(_idempotency_key),
+    service=Depends(_authorized("qra_model.edit")),
+):
+    return _out(response, service.patch_model(record_id, expected, payload, key, inputs=True))
+
+
+@router.patch("/models/{record_id}/metadata")
+def patch_model_metadata(
+    record_id: int,
+    payload: ModelMetadataPatchIn,
+    response: Response,
+    expected: int = Depends(_if_match),
+    key: str = Depends(_idempotency_key),
+    service=Depends(_authorized("qra_model.edit")),
+):
+    return _out(response, service.patch_model(record_id, expected, payload, key))
 
 
 def _model_action(action):

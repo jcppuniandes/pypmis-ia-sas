@@ -99,7 +99,7 @@ test.describe.serial("QRA Foundation real governed release", () => {
     await expand(page, "Business Case & Investment Development");
     await page
       .getByRole("navigation", { name: "Control Flow" })
-      .getByRole("button", { name: "QRA Foundation", exact: true })
+      .getByRole("button", { name: "QRA", exact: true })
       .click();
     await expect(page).toHaveURL(/\/app\/strategy\/qra-foundation$/);
     const workspace = await openWorkspace(page, project.id);
@@ -272,6 +272,25 @@ test.describe.serial("QRA Foundation real governed release", () => {
       );
       expect(provider.status).toBe("AVAILABLE");
       expect(provider.source_current).toBe(true);
+      if (kind === "schedule") {
+        const sections = reviewWorkspace.getByRole("navigation", {
+          name: "Schedule Source Readiness sections",
+          exact: true,
+        });
+        await sections.getByRole("button", { name: "Source Snapshot", exact: true }).click();
+        await expect(reviewWorkspace.getByRole("article", { name: "QRA source lineage", exact: true })).toContainText(
+          String(completed.hash)
+        );
+        for (const [label, field] of [
+          ["Constraints / Lags", "negative_lags"],
+          ["Open Ends", "missing_predecessors"],
+        ] as const) {
+          await sections.getByRole("button", { name: label, exact: true }).click();
+          await expect(reviewWorkspace.getByRole("article", { name: `QRA ${label}`, exact: true })).toContainText(
+            field
+          );
+        }
+      }
     }
     await selectDomain(workspace, "model");
     await workspace.getByLabel("New model analysis type", { exact: true }).selectOption("INTEGRATED_COST_SCHEDULE_QRA");
@@ -332,11 +351,18 @@ test.describe.serial("QRA Foundation real governed release", () => {
         quality: "VERIFIED",
         status: "VALIDATED",
       });
-    await modelEditor.getByLabel("inputs JSON", { exact: true }).fill(JSON.stringify(inputs));
     await mutation(
       page,
-      `/api/v1/qra-foundation/models/${model.id}`,
+      `/api/v1/qra-foundation/models/${model.id}/metadata`,
       modelEditor.getByRole("button", { name: "Save model definition", exact: true })
+    );
+    await workspace.getByRole("button", { name: "Edit input page", exact: true }).click();
+    const inputEditor = workspace.getByRole("article", { name: "QRA paged input editor", exact: true });
+    await inputEditor.getByLabel("Input page JSON", { exact: true }).fill(JSON.stringify(inputs));
+    await mutation(
+      page,
+      `/api/v1/qra-foundation/models/${model.id}/inputs`,
+      inputEditor.getByRole("button", { name: "Save input page", exact: true })
     );
     const definitionPreview = await mutation(
       page,
@@ -388,6 +414,18 @@ test.describe.serial("QRA Foundation real governed release", () => {
       "probabilistic_completion_date",
     ])
       expect(approved).not.toHaveProperty(forbidden);
+    const modelSections = reviewWorkspace.getByRole("navigation", { name: "Model Definition sections", exact: true });
+    for (const [label, field] of [
+      ["Methodology", "methodology"],
+      ["Uncertainty Rules", "range_policies"],
+      ["Distribution Rules", "distribution_families"],
+      ["Correlation Rules", "NO_CORRELATION"],
+      ["Governance / SoD", "separation_of_duties"],
+      ["Validity", "valid_from"],
+    ] as const) {
+      await modelSections.getByRole("button", { name: label, exact: true }).click();
+      await expect(reviewWorkspace.getByRole("article", { name: `QRA ${label}`, exact: true })).toContainText(field);
+    }
     await reviewWorkspace
       .getByRole("navigation", { name: "QRA Foundation subviews", exact: true })
       .getByRole("button", { name: "History", exact: true })
@@ -511,7 +549,7 @@ test.describe.serial("QRA Foundation real governed release", () => {
     await stage("Schedule Quality Rules", { ...(content.schedule_quality_rules as Json), maximum_negative_lags: 0 });
     await stage("Uncertainty Range Policies", content.range_policies);
     await stage("Distribution Families", content.distribution_families);
-    await stage("Distribution Rules", content.distribution_rules);
+    await stage("Distribution Rules", content.distribution_families);
     await stage("Correlation Methods", content.correlation_methods);
     await stage("Correlation Rules", content.correlation_rules);
     await stage("FEL Stage Rules", ["FEL-3"]);
@@ -529,9 +567,11 @@ test.describe.serial("QRA Foundation real governed release", () => {
       admin.getByRole("button", { name: "Preview persisted=false", exact: true })
     );
     expect(excluded.persisted).toBe(false);
-    expect(JSON.stringify(excluded)).toContain("NOT_APPLICABLE");
+    expect(excluded.applicable).toBe(false);
+    expect(excluded.cost_requirements).toEqual([]);
+    expect(excluded.schedule_requirements).toEqual([]);
     await stage("Inheritance", true);
-    await stage("Review / Approval", content.review_approval);
+    await stage("Review / Approval", content.model_governance);
     const preview = await mutation(
       page,
       "/api/v1/qra-foundation/admin/preview",
@@ -580,6 +620,16 @@ test.describe.serial("QRA Foundation real governed release", () => {
     );
     expect(unchanged.hash).toBe(frozenModel!.hash);
     expect(unchanged.snapshot_json).toEqual(frozenModel!.snapshot_json);
+    await reviewPage.getByRole("button", { name: "Cambiar a USER MODE", exact: true }).click();
+    const staleWorkspace = await openWorkspace(reviewPage, project.id);
+    await selectDomain(staleWorkspace, "model");
+    await expect(
+      staleWorkspace.getByRole("heading", { name: "Model definition readiness · STALE", exact: true })
+    ).toBeVisible();
+    await expect(staleWorkspace.getByRole("button", { name: "Approve for analysis", exact: true })).toHaveCount(0);
+    await reviewPage.getByRole("button", { name: "Cambiar a ADMIN MODE", exact: true }).click();
+    await reviewPage.goto("/app/admin/strategy/qra-methodology-source-readiness");
+    await expect(reviewed.getByRole("button", { name: "Archive", exact: true })).toBeEnabled();
     await mutation(
       reviewPage,
       `/api/v1/qra-foundation/admin/configurations/${clone.id}/archive`,

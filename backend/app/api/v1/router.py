@@ -272,6 +272,7 @@ from app.modules.investment_evidence_policy import router as investment_evidence
 from app.modules.investment_gate_preparation import router as investment_gate_preparation_router
 from app.modules.owner_capability import router as owner_capability_router
 from app.modules.qra_foundation import router as qra_foundation_router
+from app.modules.qra_engine import router as qra_engine_router
 from app.modules.permit_readiness import router as permit_readiness_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
@@ -327,6 +328,7 @@ router.include_router(risk_governance_router.router, tags=["risk-governance"])
 router.include_router(basic_data_router.router, prefix="/basic-data", tags=["basic-data"])
 router.include_router(owner_capability_router.router, prefix="/owner-capability", tags=["owner-capability"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
+router.include_router(qra_engine_router.router, prefix="/qra-engine", tags=["qra-engine"])
 router.include_router(permit_readiness_router.router, tags=["permit-readiness"])
 router.include_router(post_fid_governance_router.router, tags=["post-fid-governance"])
 router.include_router(business_case_router.router, tags=["business-case"])

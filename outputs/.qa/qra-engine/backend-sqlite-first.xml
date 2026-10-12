@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="224.040" timestamp="2026-10-11T22:27:13.813672-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_qra_engine" name="test_real_approved_model_run_reproduction_and_independence[cost]" time="76.962"><failure message="assert None is not None">governed = {'author': &lt;app.domain.models.UserAccount object at 0x000002914266FEC0&gt;, 'configuration': {'allowed_actions': [], 'cod...n_start_reevaluation']), 'engine': &lt;app.modules.qra_engine.service.QraEngineService object at 0x00000291420F8680&gt;, ...}
+kind = 'cost'
+
+    @pytest.mark.parametrize("kind", ["cost", "schedule"])
+    def test_real_approved_model_run_reproduction_and_independence(governed, kind):
+        f = governed
+        db = f["engine"].db
+        authorities = {
+            "foundation": _hash([f["preparer"].record("model", v["id"]) for v in f["models"].values()]),
+            "source": _hash([f["preparer"].record(k, v["id"]) for k, v in f["sources"].items()]),
+            "operational": _hash(
+                {
+                    "import": f["schedule_import"].source_metadata,
+                    "accounts": [
+                        (a.id, a.budget, a.version)
+                        for a in db.scalars(
+                            select(ControlAccount).where(ControlAccount.project_id == f["operational_project"].id)
+                        )
+                    ],
+                }
+            ),
+        }
+        left, right = _run_completed(f, kind), _run_completed(f, kind)
+        assert left["id"] != right["id"]
+        assert left["run_number"].startswith("QRR-")
+        assert left["results"]["summary"] == right["results"]["summary"]
+        assert left["results"]["percentiles"] == right["results"]["percentiles"]
+        assert left["result_snapshot_hash"] == right["result_snapshot_hash"]
+        assert left["trace_hash"] == right["trace_hash"]
+        assert left["engine_version"] == "wave4-qra-v1"
+        assert left["formula_version"] == left["results"]["engine_manifest"]["formula_version"]
+        assert left["results"]["engine_manifest"]["prng_algorithm"] == "PCG64"
+        assert left["results"]["convergence"]["status"] == "CONVERGED"
+&gt;       assert left["results"]["sensitivity"][0]["coefficient"] is not None
+E       assert None is not None
+
+tests\test_qra_engine.py:181: AssertionError</failure></testcase></testsuite></testsuites>

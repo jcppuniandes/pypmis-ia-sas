@@ -39,11 +39,40 @@ vi.mock("../qra-foundation/QraFoundationWorkspace", () => ({
 vi.mock("../qra-foundation/QraFoundationAdminView", () => ({
   default: () => <div>QRA Foundation ADMIN methodology</div>,
 }));
+vi.mock("../qra-engine/QraEngineWorkspace", () => ({
+  default: ({ initialView }: { initialView?: string }) => <div>QRA Engine USER · {initialView}</div>,
+}));
 vi.mock("../risk-governance/RiskGovernanceAdminView", () => ({
   default: () => <div>Risk Governance ADMIN policy</div>,
 }));
 
 describe("StrategicViewOutlet", () => {
+  it("renders engine USER routes through the existing strategic outlet and rejects ADMIN mode", () => {
+    const { rerender } = render(
+      <StrategicViewOutlet canConfigure={false} mode="user" onNavigate={() => undefined} token="user" view="qra-runs" />
+    );
+    expect(screen.getByText("QRA Engine USER · qra-runs")).toBeInTheDocument();
+    for (const view of [
+      "qra-approved-models",
+      "qra-cost-results",
+      "qra-schedule-results",
+      "qra-percentiles",
+      "qra-sensitivity",
+      "qra-convergence",
+      "qra-run-evidence",
+      "qra-run-comparison",
+      "qra-run-history",
+    ] as const) {
+      rerender(
+        <StrategicViewOutlet canConfigure={false} mode="user" onNavigate={() => undefined} token="user" view={view} />
+      );
+      expect(screen.getByText(`QRA Engine USER · ${view}`)).toBeInTheDocument();
+    }
+    rerender(
+      <StrategicViewOutlet canConfigure mode="admin" onNavigate={() => undefined} token="admin" view="qra-runs" />
+    );
+    expect(screen.queryByText(/QRA Engine USER/)).not.toBeInTheDocument();
+  });
   it("renders canonical QRA USER views without exposing methodology mutation", () => {
     const { rerender } = render(
       <StrategicViewOutlet

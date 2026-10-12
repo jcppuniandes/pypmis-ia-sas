@@ -1,0 +1,117 @@
+name: pypmis-qra-engine
+
+# Disposable Wave4 validation. No operational volumes or databases are shared.
+services:
+  qra-db:
+    image: postgres:16-alpine
+    environment: {POSTGRES_DB: qra_engine, POSTGRES_USER: qra, POSTGRES_PASSWORD: qra}
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_engine]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  qra-migration-db:
+    image: postgres:16-alpine
+    environment: {POSTGRES_DB: qra_engine_migration, POSTGRES_USER: qra, POSTGRES_PASSWORD: qra}
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_engine_migration]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  qra-validation:
+    image: pypmis-qra-engine-qra-validation:latest
+    build: {context: ./backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@qra-db:5432/qra_engine
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://qra:qra@qra-db:5432/qra_engine
+      PYPMIS_QRA_ENGINE_MIGRATION_DATABASE_URL: postgresql+psycopg://qra:qra@qra-migration-db:5432/qra_engine_migration
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "true"
+      AUTH_SECRET_KEY: qra-engine-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes: [./backend:/app:ro, ./outputs/.qa/qra-engine:/artifacts]
+    command: [pytest, -p, "no:cacheprovider", -o, "addopts=", --no-cov, -q, -rA, tests/test_qra_engine.py, tests/test_qra_engine_calculation.py, tests/test_qra_engine_hardening.py, tests/postgres/test_qra_engine_migrations.py, --junitxml=/artifacts/backend-postgres.xml]
+    depends_on:
+      qra-db: {condition: service_healthy}
+      qra-migration-db: {condition: service_healthy}
+  qra-browser-db:
+    image: postgres:16-alpine
+    profiles: [browser]
+    # Foundation fixture guard is deliberately retained in this separate stack.
+    environment: {POSTGRES_DB: qra_foundation_browser, POSTGRES_USER: qra, POSTGRES_PASSWORD: qra}
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_foundation_browser]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  qra-browser-redis:
+    image: redis:7-alpine
+    profiles: [browser]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  qra-browser-api:
+    image: pypmis-qra-engine-qra-validation:latest
+    build: {context: ./backend}
+    profiles: [browser]
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@qra-browser-db:5432/qra_foundation_browser
+      REDIS_URL: redis://qra-browser-redis:6379/0
+      PYPMIS_QRA_BROWSER_FIXTURE: disposable-only
+      PYPMIS_QRA_ENGINE_BROWSER_FIXTURE: disposable-only
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: qra-engine-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5523,http://localhost:5523
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes: [./backend:/app:ro]
+    ports: ["127.0.0.1:8820:8000"]
+    command: [/bin/sh, -ec, "python -m tests.provision_qra_engine_browser; alembic stamp head; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2)"]
+      interval: 5s
+      timeout: 4s
+      retries: 40
+    depends_on:
+      qra-browser-db: {condition: service_healthy}
+      qra-browser-redis: {condition: service_healthy}
+  qra-browser-worker:
+    image: pypmis-qra-engine-qra-validation:latest
+    build: {context: ./backend}
+    profiles: [browser]
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@qra-browser-db:5432/qra_foundation_browser
+      REDIS_URL: redis://qra-browser-redis:6379/0
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: qra-engine-disposable-only
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes: [./backend:/app:ro]
+    command: [celery, -A, app.workers.celery_app, worker, --loglevel=INFO, -Q, control-core, --concurrency=1]
+    depends_on:
+      qra-browser-api: {condition: service_healthy}
+  qra-browser-frontend:
+    image: pypmis-ia-sas-frontend:latest
+    build: {context: ./frontend}
+    profiles: [browser]
+    environment:
+      VITE_API_URL: http://127.0.0.1:8820
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    command: [/bin/sh, -ec, "npm run build -- --outDir /tmp/qra-engine-browser-dist; npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/qra-engine-browser-dist"]
+    ports: ["127.0.0.1:5523:5173"]
+    volumes: [./frontend:/app:ro, /app/node_modules]
+    depends_on: [qra-browser-api]

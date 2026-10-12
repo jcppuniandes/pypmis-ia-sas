@@ -204,7 +204,7 @@ def _prepare_fel3(db, f):
     f["definition"] = service.complete_assessment(assessment.id, assessment.revision_version, _key("pdri-complete"))
 
 
-def _fixture(db, *, contexts=False):
+def _fixture(db, *, contexts=False, freshness=None, disable_cost_requirements_at_stage=False):
     f = basic_fixture(db, count=2, fel=False)
     f["project"].code, f["project"].name = (
         f"QRA-PROJECT-{f['project'].id}",
@@ -229,6 +229,11 @@ def _fixture(db, *, contexts=False):
         _key("clone"),
     )
     policy = _policy(f["enterprise"].id)
+    if freshness is not None:
+        policy["freshness"] = freshness
+    if disable_cost_requirements_at_stage:
+        for requirement in policy["cost_requirements"]:
+            requirement["stage_rules"] = {"FEL-3": {"active": False}}
     if contexts:
         policy["model_governance"]["required_contexts"] = [
             "fel_pdri",
@@ -382,7 +387,18 @@ def test_cost_schedule_model_happy_path_hash_and_zero_simulation(client):
 
 
 @pytest.mark.parametrize(
-    "case", ["open_ends", "data_date", "calendar", "duration", "raw_relationship", "scope", "constraint", "lag"]
+    "case",
+    [
+        "open_ends",
+        "data_date",
+        "calendar",
+        "duration",
+        "milestone_negative",
+        "raw_relationship",
+        "scope",
+        "constraint",
+        "lag",
+    ],
 )
 def test_schedule_negatives_are_backend_owned(client, case):
     with SessionLocal() as db:
@@ -397,6 +413,11 @@ def test_schedule_negatives_are_backend_owned(client, case):
         elif case == "duration":
             meta = deepcopy(source.source_metadata)
             meta["activities"][1]["duration_unit"] = None
+            source.source_metadata = meta
+        elif case == "milestone_negative":
+            meta = deepcopy(source.source_metadata)
+            meta["activities"][0]["original_duration"] = "-5"
+            assert meta["activities"][0]["milestone"] is True
             source.source_metadata = meta
         elif case == "raw_relationship":
             meta = deepcopy(source.source_metadata)
@@ -624,6 +645,71 @@ def test_methodology_new_revision_stales_completed_history(client):
         assert f["final"].current_readiness(f["project"].id, "model")["status"] == "STALE"
         assert f["final"].record("model", approved["id"])["hash"] == approved["hash"]
         assert f["final"].record("cost", sources["cost"]["id"])["hash"] == sources["cost"]["hash"]
+
+
+@pytest.mark.parametrize("elapsed_days", [1, 2])
+def test_model_freshness_uses_immutable_approval_date_without_rewriting_history(client, monkeypatch, elapsed_days):
+    with SessionLocal() as db:
+        f = _fixture(db, freshness={"maximum_model_age_days": 1})
+        sources = _ready_sources(f)
+        approved = _approve(f, _draft_model(f, sources))
+        frozen = deepcopy(approved)
+        approved_at = db.get(QraModelDefinition, approved["id"]).completed_at
+        monkeypatch.setattr(
+            "app.modules.qra_foundation.service.utc_now", lambda: approved_at + timedelta(days=elapsed_days)
+        )
+        current = f["final"].current_readiness(f["project"].id, "model")
+        preview = f["final"].preview("model", approved["id"])
+        refresh = f["final"].refresh_preview("model", approved["id"])
+        expired = elapsed_days > 1
+        assert current["status"] == ("STALE" if expired else "APPROVED_FOR_ANALYSIS")
+        assert current["source_current"] is not expired
+        assert ("MODEL_FRESHNESS_EXPIRED" in preview["blockers"]) is expired
+        assert refresh["stale"] is expired
+        assert refresh["persisted"] is False
+        historical = f["final"].record("model", approved["id"])
+        assert historical["hash"] == frozen["hash"]
+        assert historical["snapshot_json"] == frozen["snapshot_json"]
+
+
+def test_malformed_nested_methodology_rejected_without_persistence(client):
+    with SessionLocal() as db:
+        f = _fixture(db)
+        draft = f["preparer"].clone_configuration(
+            f["configuration"]["id"],
+            f["configuration"]["version"],
+            ConfigurationCloneIn(),
+            _key("invalid-policy-clone"),
+        )
+        invalid = deepcopy(draft["content_json"])
+        invalid["distribution_families"][0]["parameter_bounds"] = []
+        preview = f["preparer"].configuration_preview(ConfigurationPreviewIn(content_json=invalid))
+        assert preview["persisted"] is False
+        assert preview["issues"]
+        key = _key("invalid-policy-save")
+        with pytest.raises(HTTPException) as error:
+            f["preparer"].update_configuration(
+                draft["id"], draft["version"], ConfigurationUpdateIn(name=draft["name"], content_json=invalid), key
+            )
+        assert error.value.status_code == 422
+        assert error.value.detail["code"] == "QRA_CONFIGURATION_INVALID"
+        persisted = f["preparer"].configuration(draft["id"])
+        assert persisted["content_json"] == draft["content_json"]
+        assert persisted["content_hash"] == draft["content_hash"]
+        assert persisted["version"] == draft["version"]
+        assert not db.scalar(select(QraCommand.id).where(QraCommand.idempotency_key == key))
+
+
+def test_empty_stage_tailored_source_requirements_fail_closed(client):
+    with SessionLocal() as db:
+        f = _fixture(db, disable_cost_requirements_at_stage=True)
+        row = _draft_source(f, "cost")
+        snapshot = row["snapshot_json"]
+        assert snapshot["coverage"]["required"] == 0
+        assert snapshot["readiness_status"] == "BLOCKED"
+        assert "SOURCE_REQUIREMENTS_NOT_CONFIGURED" in snapshot["blockers"]
+        _complete_source(f, "cost", row)
+        assert f["final"].provider_evidence(f["project"].id, "cost")["status"] == "UNAVAILABLE"
 
 
 def test_effective_scope_dates_governance_and_preview_readonly(client):

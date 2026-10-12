@@ -1,8 +1,9 @@
 """Read-only canonical source adapters. No source import, update, CPM or FX here."""
 
+from collections import defaultdict
 from copy import deepcopy
 
-from sqlalchemy import func, select
+from sqlalchemy import String, cast, func, literal, select, union_all
 
 from app.domain.models import (
     ActivityRelationship,
@@ -222,6 +223,9 @@ class SourceAdapters:
             )
             .order_by(FinancialModelPeriod.id)
         ).all()
+        periods_by_version = defaultdict(list)
+        for period in periods:
+            periods_by_version[period.model_version_id].append(period)
         for model, version in models:
             items = [
                 {
@@ -234,8 +238,7 @@ class SourceAdapters:
                     "source_reference": p.source_reference,
                     "source_hash": p.source_hash,
                 }
-                for p in periods
-                if p.model_version_id == version.id
+                for p in periods_by_version[version.id]
             ]
             material = _json(
                 {
@@ -402,6 +405,144 @@ class SourceAdapters:
                     }
                 )
         return result
+
+    def cost_options(self, workspace, *, page=1, page_size=100):
+        """Paginate candidate identities in SQL, not every estimate's contents.
+
+        Hashes and amounts are frozen when an assessment resolves its selected
+        sources. This picker deliberately does not promise source currentness.
+        """
+
+        def columns(kind, identifier, version, status, as_of, currency):
+            return (
+                literal(kind).label("kind"),
+                identifier.label("id"),
+                version.label("version"),
+                cast(status, String).label("status"),
+                cast(as_of, String).label("as_of"),
+                currency.label("currency"),
+            )
+
+        fin = (
+            select(
+                *columns(
+                    "FIN_CAPEX",
+                    EconomicFinancialModelVersion.id,
+                    EconomicFinancialModelVersion.version_number,
+                    EconomicFinancialModelVersion.status,
+                    EconomicFinancialModelVersion.as_of_date,
+                    EconomicFinancialModelVersion.base_currency,
+                )
+            )
+            .join(EconomicFinancialModel, EconomicFinancialModel.current_version_id == EconomicFinancialModelVersion.id)
+            .where(
+                EconomicFinancialModel.tenant_id == self.tenant_id,
+                EconomicFinancialModelVersion.tenant_id == self.tenant_id,
+                EconomicFinancialModel.project_workspace_id == workspace.id,
+            )
+        )
+        cases = (
+            select(
+                *columns(
+                    "BUSINESS_CASE",
+                    BusinessCaseRevision.id,
+                    BusinessCaseRevision.revision_number,
+                    BusinessCaseRevision.status,
+                    BusinessCaseRevision.as_of_date,
+                    literal(None),
+                )
+            )
+            .join(BusinessCase, BusinessCase.current_revision_id == BusinessCaseRevision.id)
+            .where(
+                BusinessCase.tenant_id == self.tenant_id,
+                BusinessCaseRevision.tenant_id == self.tenant_id,
+                BusinessCase.project_workspace_id == workspace.id,
+            )
+        )
+        budgets = (
+            select(
+                *columns(
+                    "PORTFOLIO_BUDGET",
+                    PortfolioBudgetScenarioProject.id,
+                    PortfolioBudgetScenario.scenario_revision,
+                    PortfolioBudgetScenario.status,
+                    PortfolioBudgetScenarioProject.cost_as_of_date,
+                    PortfolioBudgetScenarioProject.currency,
+                )
+            )
+            .join(PortfolioBudgetScenario, PortfolioBudgetScenario.id == PortfolioBudgetScenarioProject.scenario_id)
+            .where(
+                PortfolioBudgetScenario.tenant_id == self.tenant_id,
+                PortfolioBudgetScenarioProject.tenant_id == self.tenant_id,
+                PortfolioBudgetScenarioProject.project_workspace_id == workspace.id,
+                PortfolioBudgetScenario.status.notin_(["VOIDED", "SUPERSEDED"]),
+            )
+        )
+        queries = [fin, cases, budgets]
+        operational = self.operational_project(workspace)
+        if operational:
+            accounts = (
+                select(
+                    *columns(
+                        "CONTROL_ACCOUNTS",
+                        literal(operational.id),
+                        func.max(ControlAccount.version),
+                        literal("CANDIDATE"),
+                        literal(None),
+                        literal(operational.currency),
+                    )
+                )
+                .where(ControlAccount.tenant_id == self.tenant_id, ControlAccount.project_id == operational.id)
+                .having(func.count(ControlAccount.id) > 0)
+            )
+            imports = select(
+                *columns(
+                    "SCHEDULE_COST",
+                    ScheduleImport.id,
+                    ScheduleImport.id,
+                    ScheduleImport.status,
+                    ScheduleImport.imported_at,
+                    ScheduleImport.detected_currency,
+                )
+            ).where(ScheduleImport.tenant_id == self.tenant_id, ScheduleImport.project_id == operational.id)
+            queries.extend((accounts, imports))
+        candidates = union_all(*queries).subquery()
+        total = self.db.scalar(select(func.count()).select_from(candidates)) or 0
+        rows = (
+            self.db.execute(
+                select(candidates)
+                .order_by(candidates.c.kind, candidates.c.id.desc())
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+            )
+            .mappings()
+            .all()
+        )
+        references = {
+            "FIN_CAPEX": "fin-capex-version",
+            "BUSINESS_CASE": "business-case-revision",
+            "PORTFOLIO_BUDGET": "portfolio-budget-project",
+            "CONTROL_ACCOUNTS": "control-account-budget",
+            "SCHEDULE_COST": "schedule-cost",
+        }
+        items = [
+            {
+                **dict(row),
+                "reference": f"{references[row['kind']]}:{row['id']}",
+                "hash": None,
+                "source_current": None,
+                "read_model": "CANDIDATE_METADATA_ONLY",
+            }
+            for row in rows
+        ]
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "availability": "AVAILABLE" if total else "NOT_AVAILABLE",
+            "external_reference_allowed": True,
+        }
 
     @staticmethod
     def external(ref, basis):
