@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy import inspect, select, text
 
 from app.database.session import Base, SessionLocal, engine
 from app.domain.models import Project, UserAccount
@@ -30,8 +31,25 @@ def main() -> None:
 
     from app.database.seed import ensure_membership, seed_demo
     from app.modules.qra_foundation.models import QraModelDefinition
+    from alembic import command
+    from alembic.config import Config
 
-    Base.metadata.create_all(engine)
+    # Legacy schema setup is test-only. New Wave4 tables/triggers must be
+    # installed by the actual additive migration, never create_all/stamphead.
+    Base.metadata.create_all(
+        engine,
+        tables=[table for table in Base.metadata.sorted_tables if table.name not in {"qra_runs", "qra_run_reviews"}],
+    )
+    with engine.connect() as connection:
+        current = connection.scalar(text("SELECT version_num FROM alembic_version")) if inspect(connection).has_table("alembic_version") else None
+        new_tables_exist = inspect(connection).has_table("qra_runs")
+    config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    config.set_main_option("script_location", str(Path(__file__).resolve().parents[1] / "alembic"))
+    if current is None:
+        if new_tables_exist:
+            raise RuntimeError("Unversioned Wave4 tables are not accepted as a migrated browser baseline")
+        command.stamp(config, "20261009_0067")
+    command.upgrade(config, "head")
     with SessionLocal() as db:
         seed_demo(db)
         existing = db.scalar(select(UserAccount).where(UserAccount.email == "qra.engine.authority@demo.local"))
