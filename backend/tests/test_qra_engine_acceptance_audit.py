@@ -6,6 +6,8 @@ never connect to the operational database, and never seed runtime tenants.
 
 import json
 import os
+import platform
+import sys
 import time
 import tracemalloc
 from copy import deepcopy
@@ -27,15 +29,18 @@ from tests.test_qra_foundation import (
 )
 
 from app.core.time import utc_now
-from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal
 from app.domain.models import (
     ActivityRelationship,
+    EnterpriseWorkspace,
+    Project,
     RelationshipType,
     ScheduleActivityMap,
     ScheduleImport,
     SecurityAccessAssignment,
     SecurityRole,
+    Tenant,
+    UserAccount,
 )
 from app.main import app
 from app.modules.basic_data.service import _hash
@@ -234,6 +239,41 @@ def test_summary_projection_preserves_editor_separation_of_duties(audit_client):
         assert exc.value.status_code == 403
 
 
+def _process_peak_rss():
+    """Process cumulative high-water RSS; not an operation-only allocation delta."""
+    if sys.platform == "win32":
+        import ctypes
+        from ctypes import wintypes
+
+        class ProcessMemoryCounters(ctypes.Structure):
+            _fields_ = [
+                ("cb", wintypes.DWORD),
+                ("PageFaultCount", wintypes.DWORD),
+                ("PeakWorkingSetSize", ctypes.c_size_t),
+                ("WorkingSetSize", ctypes.c_size_t),
+                ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+                ("PagefileUsage", ctypes.c_size_t),
+                ("PeakPagefileUsage", ctypes.c_size_t),
+            ]
+
+        counters = ProcessMemoryCounters()
+        counters.cb = ctypes.sizeof(counters)
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        psapi = ctypes.WinDLL("psapi", use_last_error=True)
+        kernel32.GetCurrentProcess.restype = wintypes.HANDLE
+        psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(ProcessMemoryCounters), wintypes.DWORD]
+        if psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+            return int(counters.PeakWorkingSetSize)
+        return None
+    import resource
+
+    value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return int(value if sys.platform == "darwin" else value * 1024)
+
+
 def _measure(bind, callback):
     queries, writes = [], []
 
@@ -247,19 +287,28 @@ def _measure(bind, callback):
     cpu_start, start = time.process_time(), time.perf_counter()
     try:
         value = callback()
+        read_wall, read_cpu = time.perf_counter() - start, time.process_time() - cpu_start
+        serialization_cpu_start, serialization_start = time.process_time(), time.perf_counter()
+        payload = len(json.dumps(value, default=str, allow_nan=False).encode())
+        serialization_wall = time.perf_counter() - serialization_start
+        serialization_cpu = time.process_time() - serialization_cpu_start
         wall, cpu = time.perf_counter() - start, time.process_time() - cpu_start
         _, peak = tracemalloc.get_traced_memory()
     finally:
         tracemalloc.stop()
         event.remove(bind, "before_cursor_execute", capture)
-    payload = len(json.dumps(value, default=str).encode())
     assert not writes, writes
     return value, {
         "queries": len(queries),
         "database_writes": len(writes),
         "wall_seconds": wall,
         "cpu_seconds": cpu,
+        "read_wall_seconds": read_wall,
+        "read_cpu_seconds": read_cpu,
+        "json_serialization_wall_seconds": serialization_wall,
+        "json_serialization_cpu_seconds": serialization_cpu,
         "peak_traced_bytes": peak,
+        "process_peak_rss_bytes": _process_peak_rss(),
         "payload_bytes": payload,
     }
 
@@ -272,12 +321,29 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
     cases = []
     try:
         with Session(engine) as db:
-            seed_demo(db)
+            # Only the minimal identity needed by the existing QRA fixtures.
+            # Broad demo control-cycle seeding is unrelated to this profiler
+            # and failed control_snapshots uniqueness before any measurement.
+            tenant = Tenant(name="Isolated QRA profiler", slug="qra-profiler", base_currency="USD")
+            db.add(tenant)
+            db.flush()
+            db.add(
+                UserAccount(
+                    tenant_id=tenant.id,
+                    email="admin@demo.local",
+                    full_name="Isolated QRA profiler administrator",
+                    title="Tenant Administrator",
+                    status="active",
+                )
+            )
+            db.commit()
             f = _fixture(db)
+            db.autoflush = False
             service = f["preparer"]
+            actor_id, workspace_id = f["author"].id, f["project"].id
+            project_id, import_id = f["operational_project"].id, f["schedule_import"].id
             for count in (5000, 10000):
                 # Only this fresh ephemeral import's logical source is replaced.
-                project_id, import_id = f["operational_project"].id, f["schedule_import"].id
                 db.execute(
                     delete(ActivityRelationship).where(
                         ActivityRelationship.project_id == project_id,
@@ -347,9 +413,14 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
                 resolved = deepcopy(service.requirements(f["project"].id))
                 resolved["policy"]["schedule_quality_rules"]["allowed_open_end_refs"] = [refs[0], refs[-1]]
                 payload = _source_payload(f, "schedule").model_dump(mode="json")
-                source, adapter = _measure(engine, lambda: service.adapters.schedule(f["project"], import_id))
+                source, adapter = _measure(
+                    engine, lambda import_id=import_id: service.adapters.schedule(f["project"], import_id)
+                )
                 evaluation, evaluator = _measure(
-                    engine, lambda: service.evaluate(f["project"].id, "schedule", payload, resolved=resolved)
+                    engine,
+                    lambda payload=payload, resolved=resolved: service.evaluate(
+                        workspace_id, "schedule", payload, resolved=resolved
+                    ),
                 )
                 assert evaluation["readiness_status"] == "READY", evaluation["blockers"]
                 assert evaluation["coverage"]["population"] == count
@@ -362,7 +433,7 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
                     title="Isolated large-model reader audit",
                     configuration_id=f["configuration"]["id"],
                     configuration_revision=f["configuration"]["revision"],
-                    configuration_hash=f["configuration"]["hash"],
+                    configuration_hash=f["configuration"]["content_hash"],
                     created_by=f["author"].id,
                     analysis_type="SCHEDULE_QRA",
                     aggregate_json={
@@ -398,8 +469,20 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
                 model_id = model.id
                 db.expunge_all()
                 service._action_cache.clear()
-                page, item_profile = _measure(engine, lambda: service.record_items("model", model_id, page_size=25))
-                summary, summary_profile = _measure(engine, lambda: service.record("model", model_id, summary=True))
+                full, full_profile = _measure(engine, lambda model_id=model_id: service.record("model", model_id))
+                assert len(full["aggregate_json"]["inputs"]) == count
+                assert len(full["snapshot_json"]["population"]) == count
+                # Independent cold identity/action caches for each projection.
+                db.expunge_all()
+                service._action_cache.clear()
+                page, item_profile = _measure(
+                    engine, lambda model_id=model_id: service.record_items("model", model_id, page_size=25)
+                )
+                db.expunge_all()
+                service._action_cache.clear()
+                summary, summary_profile = _measure(
+                    engine, lambda model_id=model_id: service.record("model", model_id, summary=True)
+                )
                 assert page["total"] == count and len(page["items"]) == 25
                 assert "inputs" not in summary["aggregate_json"]
                 assert summary_profile["payload_bytes"] < 10000
@@ -408,11 +491,15 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
                         "activities": count,
                         "adapter": adapter,
                         "source_evaluation": evaluator,
+                        "full_record": full_profile,
                         "items_page25": item_profile,
                         "summary": summary_profile,
                     }
                 )
                 # Return tracked fixture objects after expunge before next case.
+                f["author"] = db.get(UserAccount, actor_id)
+                f["project"] = db.get(EnterpriseWorkspace, workspace_id)
+                f["operational_project"] = db.get(Project, project_id)
                 f["schedule_import"] = db.get(ScheduleImport, import_id)
             # Candidate picker does not decode contents of 1,000 extra imports.
             db.add_all(
@@ -437,16 +524,37 @@ def test_foundation_5000_10000_bounded_reads_and_source_evaluation_profile():
             report = {
                 "isolation": "SQLite in-memory disposal; no runtime database connections",
                 "cases": cases,
+                "scaling_5000_to_10000": {
+                    operation: {
+                        field + "_ratio": cases[1][operation][field] / cases[0][operation][field]
+                        for field in ("wall_seconds", "cpu_seconds", "peak_traced_bytes", "payload_bytes")
+                        if cases[0][operation][field] > 0
+                    }
+                    for operation in ("adapter", "source_evaluation", "full_record", "items_page25", "summary")
+                },
                 "cost_options_1000_candidates_page25": picker_profile,
                 "production_sla": False,
-                "profiling_notes": "Tracemalloc instrumentation; retained JSON still parsed inside SQL engine, not materialized in client",
+                "profiled_at_utc": utc_now().isoformat(),
+                "runtime": {"python_version": platform.python_version(), "platform": platform.platform()},
+                "prior_attempt": {
+                    "evidence": "foundation-performance-20261011.xml",
+                    "status": "FAILED_FIXTURE_BEFORE_MEASUREMENTS",
+                    "cause": "Unrelated broad seed_demo repeated control cycles violate control_snapshots uniqueness in a fresh in-memory fixture; retry with autoflush=True also failed",
+                    "retry_evidence": "foundation-performance-fixture-retry-failed-20261012.xml",
+                    "schema_retry_evidence": "foundation-performance-fixture-schema-failed-20261012.xml",
+                    "schema_retry_cause": "Previously unreachable profiler constructor referenced configuration.hash instead of the actual configuration.content_hash field; source evaluation already passed 5k before this fixture-only KeyError",
+                    "resolution": "Profiler seeds only its isolated Tenant/admin identity, then existing QRA fixtures establish roles, configuration, imported source and FEL context; measured reads use autoflush=False. No production seed change.",
+                },
+                "current_attempt": "PASS",
+                "complexity_scope": "Single synthetic 5k/10k chain only. Adapter deepcopy, canonical JSON/hash, and evaluator population deepcopy still materialize whole source (O(N) storage); schedule checks use sets/indexes, with sorted refs O(N log N). Measured ratios are observations, not proof of complexity or an SLA. Bounded page/summary client decoding does not make SQLite JSON parsing O(page_size).",
+                "profiling_notes": "Wall/CPU and traced peak include response JSON serialization; read and serialization components are also separate. RSS is cumulative process high-water including imports/setup/prior cases. Full record materializes all inputs/population; page25/summary project inside SQLite without decoding full model JSON in the client. No HTTP/network timing or production SLA.",
             }
             output = (
                 Path(__file__).resolve().parents[2]
                 / "outputs"
                 / ".qa"
                 / "qra-engine"
-                / "foundation-query-audit-20261011.json"
+                / "foundation-query-audit-final-20261012.json"
             )
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

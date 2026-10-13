@@ -232,10 +232,13 @@ export default function QraEngineWorkspace({ token, initialView }: { token: stri
           selectedRef.current?.id !== id
         )
           return;
-        selectedRef.current = next;
-        setRun(next);
-        if (active(next)) timer = setTimeout(() => void poll(), 1500);
-        else {
+        if (active(next)) {
+          selectedRef.current = next;
+          setRun(next);
+          timer = setTimeout(() => void poll(), 1500);
+        } else {
+          // Committing a terminal status stops this effect and aborts its controller.
+          // Finish the detail read first so history and comparison receive the final run.
           const full = await qraEngineApi.run(token, id, controller.signal);
           if (
             !controller.signal.aborted &&

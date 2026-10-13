@@ -11,22 +11,22 @@ def service():
 
 
 def xml_activity(extra=""):
-    return f'''<Project xmlns="http://xmlns.oracle.com/Primavera/P6/V19/API/BusinessObjects">
+    return f"""<Project xmlns="http://xmlns.oracle.com/Primavera/P6/V19/API/BusinessObjects">
       <DataDate>2026-10-09T08:00:00</DataDate>
       <Calendar><ObjectId>7</ObjectId><Name>Declared 5 day</Name><Type>Project</Type></Calendar>
       <WBS><ObjectId>10</ObjectId><Code>PLANT</Code><Name>Plant</Name></WBS>
       <Activity><ObjectId>100</ObjectId><Id>A100</Id><Name>Design</Name><WBSObjectId>10</WBSObjectId>
       <PlannedStartDate>2026-10-09T08:00:00</PlannedStartDate>
       <PlannedFinishDate>2026-10-14T17:00:00</PlannedFinishDate>{extra}</Activity>
-    </Project>'''.encode()
+    </Project>""".encode()
 
 
 def test_xml_metadata_keeps_calendar_constraints_status_and_raw_durations():
-    content = xml_activity('''<CalendarObjectId>7</CalendarObjectId><PlannedDuration>40</PlannedDuration>
+    content = xml_activity("""<CalendarObjectId>7</CalendarObjectId><PlannedDuration>40</PlannedDuration>
       <RemainingDuration>24</RemainingDuration><DurationUnit>HOURS</DurationUnit>
       <Type>Task Dependent</Type><Status>In Progress</Status>
       <PrimaryConstraintType>Start On</PrimaryConstraintType><PrimaryConstraintDate>2026-10-09</PrimaryConstraintDate>
-      <ActualStartDate>2026-10-09T08:00:00</ActualStartDate>''')
+      <ActualStartDate>2026-10-09T08:00:00</ActualStartDate>""")
     parsed = service().parse("manual-p6.xml", content)
     metadata = parsed.source_metadata
     assert metadata["source_file_hash"] == hashlib.sha256(content).hexdigest()
@@ -54,6 +54,26 @@ def test_xml_missing_units_and_attributes_remain_unknown_not_date_derived():
     for key in ("remaining_duration", "duration_unit", "status", "calendar_ref", "milestone"):
         assert row[key] is None
     assert row["primary_constraint_type"] is None
+
+
+def test_xml_each_activity_keeps_its_own_declared_metadata():
+    content = xml_activity(
+        "<CalendarObjectId>7</CalendarObjectId><PlannedDuration>40</PlannedDuration>"
+        "<RemainingDuration>24</RemainingDuration><DurationUnit>HOURS</DurationUnit>"
+        "<Status>In Progress</Status><Type>Task Dependent</Type>"
+    ).replace(
+        b"</Project>",
+        b"<Activity><ObjectId>200</ObjectId><Id>A200</Id><Name>Finish</Name>"
+        b"<CalendarObjectId>9</CalendarObjectId><PlannedDuration>0</PlannedDuration>"
+        b"<RemainingDuration>0</RemainingDuration><DurationUnit>DAYS</DurationUnit>"
+        b"<Status>Not Started</Status><Type>Finish Milestone</Type></Activity></Project>",
+    )
+    rows = service().parse("two-activities.xml", content).source_metadata["activities"]
+    assert [
+        (row["external_id"], row["calendar_ref"], row["original_duration"], row["duration_unit"]) for row in rows
+    ] == [("A100", "7", "40", "HOURS"), ("A200", "9", "0", "DAYS")]
+    assert [row["status"] for row in rows] == ["In Progress", "Not Started"]
+    assert [row["milestone"] for row in rows] == [False, True]
 
 
 def test_xml_zero_negative_and_invalid_declared_duration_not_repaired():
@@ -114,15 +134,20 @@ def test_legacy_schedule_import_has_no_fabricated_metadata():
 
 
 def test_p6_project_deadline_is_not_a_data_date():
-    content = xml_activity().replace(b"<DataDate>2026-10-09T08:00:00</DataDate>", b"<MustFinishByDate>2026-12-31</MustFinishByDate>")
+    content = xml_activity().replace(
+        b"<DataDate>2026-10-09T08:00:00</DataDate>", b"<MustFinishByDate>2026-12-31</MustFinishByDate>"
+    )
     assert service().parse("source.xml", content).data_date is None
 
 
 def test_invalid_raw_relationship_type_is_not_silently_repaired_in_metadata():
-    content = xml_activity().replace(b"</Project>", b'''<Relationship>
+    content = xml_activity().replace(
+        b"</Project>",
+        b"""<Relationship>
       <PredecessorActivityObjectId>100</PredecessorActivityObjectId>
       <SuccessorActivityId>A999</SuccessorActivityId><Type>UNKNOWN_LOGIC</Type>
-      <Lag>-16</Lag><LagUnit>HOURS</LagUnit></Relationship></Project>''')
+      <Lag>-16</Lag><LagUnit>HOURS</LagUnit></Relationship></Project>""",
+    )
     relationship = service().parse("source.xml", content).source_metadata["relationships"][0]
     assert relationship["predecessor"] == "A100"
     assert relationship["successor"] == "A999"

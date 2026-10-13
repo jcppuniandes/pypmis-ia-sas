@@ -6,15 +6,17 @@ import argparse
 import ctypes
 import json
 import math
+import platform
 import sys
 import time
 import tracemalloc
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-from app.modules.qra_engine.calculation import (
+from app.modules.qra_engine.calculation import (  # noqa: E402 - explicit standalone backend path bootstrap
     ENGINE_VERSION,
     calculate,
     engine_manifest,
@@ -49,9 +51,7 @@ def process_peak_rss() -> int | None:
             ctypes.POINTER(ProcessMemoryCounters),
             wintypes.DWORD,
         ]
-        if psapi.GetProcessMemoryInfo(
-            kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb
-        ):
+        if psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
             return int(counters.PeakWorkingSetSize)
         return None
     import resource
@@ -77,9 +77,7 @@ def snapshot(kind, count):
                 "values": {} if milestone else {"min": 9, "max": 11},
                 "unit": "HOURS" if schedule_mode else "USD",
                 "allow_negative": False,
-                "input_type": "DURATION_UNCERTAINTY"
-                if schedule_mode
-                else "ESTIMATE_UNCERTAINTY",
+                "input_type": "DURATION_UNCERTAINTY" if schedule_mode else "ESTIMATE_UNCERTAINTY",
                 "risk_refs": [],
             }
         )
@@ -115,6 +113,8 @@ def snapshot(kind, count):
                     "duration_unit": "HOURS",
                     "calendar_ref": "BENCH-CAL",
                     "status": "NOT_STARTED",
+                    "original_duration": item["base_value"],
+                    "remaining_duration": item["base_value"],
                 }
                 for item in inputs
             ],
@@ -167,9 +167,7 @@ def benchmark(kind, count, iterations):
         "process_peak_rss_bytes": process_peak_rss(),
         "iterations_per_second": iterations / wall,
         "sampled_input_values_per_second": iterations * count / wall,
-        "result_payload_bytes": len(
-            json.dumps(result, sort_keys=True, allow_nan=False).encode()
-        ),
+        "result_payload_bytes": len(json.dumps(result, sort_keys=True, allow_nan=False).encode()),
         "progress_callbacks": len(callbacks),
         "database_reads": 0,
         "database_writes": 0,
@@ -194,6 +192,9 @@ def main():
     ]
     report = {
         "engine_manifest": engine_manifest(),
+        "profiled_at_utc": datetime.now(UTC).isoformat(),
+        "runtime": {"python_version": platform.python_version(), "platform": platform.platform()},
+        "fixture_semantics": "Explicit NOT_STARTED activities; remaining duration equals base; chain FS with final zero-duration milestone",
         "cases": cases,
         "release_claim": "ISOLATED_SYNTHETIC_PROFILE_NOT_PRODUCTION_SLA",
     }
@@ -202,9 +203,7 @@ def main():
         output = args.output.resolve()
         allowed = (ROOT / "outputs" / ".qa").resolve()
         if allowed not in output.parents or output.suffix != ".json":
-            raise ValueError(
-                "Benchmark output must be JSON below repository outputs/.qa"
-            )
+            raise ValueError("Benchmark output must be JSON below repository outputs/.qa")
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered + "\n", encoding="utf-8")
     print(rendered)

@@ -32,6 +32,8 @@ describe("QRA Foundation API", () => {
     );
   });
   it("supports summary reads and server-paginated frozen item populations without writes", async () => {
+    await qraFoundationApi.modelCorrelations("actor", 9);
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/v1/qra-foundation/models/9/correlations", { token: "actor" });
     await qraFoundationApi.record("actor", "model", 9, true);
     expect(fetchMock).toHaveBeenLastCalledWith("/api/v1/qra-foundation/models/9?summary=true", { token: "actor" });
     await qraFoundationApi.recordItems("actor", "schedule", 9, 3);

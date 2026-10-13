@@ -1697,16 +1697,23 @@ _QRA_PREPARATION = frozenset({"qra_foundation.read"}) | frozenset(
     for resource in ("qra_cost_source", "qra_schedule_source", "qra_model")
     for action in ("create", "edit", "submit")
 )
-_QRA_REVIEW = frozenset({
-    "qra_foundation.read", "qra_cost_source.review", "qra_schedule_source.review",
-    "qra_model.review", "qra_model.approve",
-})
+_QRA_REVIEW = frozenset(
+    {
+        "qra_foundation.read",
+        "qra_cost_source.review",
+        "qra_schedule_source.review",
+        "qra_model.review",
+        "qra_model.approve",
+    }
+)
 PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_manager"] |= _QRA_PREPARATION | _QRA_REVIEW
 PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_assessor"] |= _QRA_PREPARATION
 PROJECT_DEFINITION_ROLE_PERMISSIONS["definition_reviewer"] |= _QRA_REVIEW
 PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_viewer"] |= {"qra_foundation.read"}
 PROJECT_DEFINITION_ROLE_PERMISSIONS["project_definition_configuration_admin"] |= {
-    "qra_foundation.read", "qra_methodology.admin.configure", "qra_methodology.admin.publish",
+    "qra_foundation.read",
+    "qra_methodology.admin.configure",
+    "qra_methodology.admin.publish",
 }
 
 _QRA_EXECUTION = {"qra_run.read", "qra_run.create", "qra_run.execute", "qra_run.cancel"}

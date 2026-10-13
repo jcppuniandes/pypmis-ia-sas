@@ -34,8 +34,10 @@ services:
       RATE_LIMIT_ENABLED: "false"
       OPENBLAS_NUM_THREADS: "1"
       PYTHONDONTWRITEBYTECODE: "1"
+      PYPMIS_PYTEST_RUNTIME_DIR: /tmp/qra-engine-tests
+      PYPMIS_PYTEST_BASETEMP: /tmp/qra-engine-tests
     volumes: [./backend:/app:ro, ./outputs/.qa/qra-engine:/artifacts]
-    command: [pytest, -p, "no:cacheprovider", -o, "addopts=", --no-cov, -q, -rA, tests/test_qra_engine.py, tests/test_qra_engine_calculation.py, tests/test_qra_engine_hardening.py, tests/postgres/test_qra_engine_migrations.py, --junitxml=/artifacts/backend-postgres.xml]
+    command: [pytest, -p, "no:cacheprovider", -o, "addopts=", --no-cov, -q, -rA, tests/test_qra_engine.py, tests/test_qra_engine_calculation.py, tests/test_qra_engine_hardening.py, tests/test_qra_engine_acceptance_audit.py, tests/postgres/test_qra_engine_migrations.py, tests/test_qra_foundation.py, tests/test_qra_release_hardening.py, tests/test_qra_governed_context_integration.py, tests/test_qra_provider_integration.py, tests/test_qra_legacy_configuration_guard.py, tests/test_qra_engine_bootstrap.py, tests/test_qra_bootstrap.py, tests/test_qra_schedule_import_metadata.py, tests/test_risk_readiness_gate07j_risk.py, tests/test_permit_readiness_gate07j_permit.py, --basetemp=/tmp/qra-engine-pytest, --junitxml=/artifacts/backend-postgres-final.xml]
     depends_on:
       qra-db: {condition: service_healthy}
       qra-migration-db: {condition: service_healthy}
@@ -79,12 +81,13 @@ services:
       PYTHONDONTWRITEBYTECODE: "1"
     volumes: [./backend:/app:ro]
     ports: ["127.0.0.1:8820:8000"]
-    command: [/bin/sh, -ec, "python -m tests.provision_qra_engine_browser; alembic stamp head; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    command: [/bin/sh, -ec, "python -m tests.provision_qra_engine_browser; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2)"]
+      start_period: 180s
       interval: 5s
       timeout: 4s
-      retries: 40
+      retries: 60
     depends_on:
       qra-browser-db: {condition: service_healthy}
       qra-browser-redis: {condition: service_healthy}

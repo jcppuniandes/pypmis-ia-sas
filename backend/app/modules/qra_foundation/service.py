@@ -283,16 +283,21 @@ class QraFoundationService(BasicDataService):
         dialect = self.db.get_bind().dialect.name
         if dialect == "postgresql":
             aggregate = cast(model.aggregate_json, JSONB)
-            for key in ("inputs", "items", "gaps"):
+            for key in ("inputs", "items", "gaps", "correlations"):
                 aggregate = aggregate.op("-")(key)
             aggregate = aggregate.op("#-")(array(["basis", "items"]))
         else:
             aggregate = func.json_remove(
-                model.aggregate_json, "$.inputs", "$.items", "$.gaps", "$.basis.items"
+                model.aggregate_json, "$.inputs", "$.items", "$.gaps", "$.correlations", "$.basis.items"
             )
         keys = ("readiness_status", "coverage", "blockers", "as_of", "no_simulation")
+        coverage = model.snapshot_json["coverage"]
+        if dialect == "postgresql":
+            coverage = cast(coverage, JSONB).op("-")("missing_refs").op("-")("unknown_refs")
+        else:
+            coverage = func.json_remove(coverage, "$.missing_refs", "$.unknown_refs")
         statement = query.options(defer(model.aggregate_json), defer(model.snapshot_json)).add_columns(
-            aggregate, *(model.snapshot_json[key] for key in keys)
+            aggregate, *(coverage if key == "coverage" else model.snapshot_json[key] for key in keys)
         )
         results = []
         for row, projected, *snapshot in self.db.execute(statement):
@@ -300,8 +305,22 @@ class QraFoundationService(BasicDataService):
             proxy = SimpleNamespace(**{key: value for key, value in vars(row).items() if key != "_sa_instance_state"})
             proxy.aggregate_json = projected or {}
             proxy.snapshot_json = dict(zip(keys, snapshot, strict=True))
+            if isinstance(proxy.snapshot_json.get("coverage"), str):
+                proxy.snapshot_json["coverage"] = json.loads(proxy.snapshot_json["coverage"])
             results.append(proxy)
         return results
+
+    def model_correlations(self, record_id):
+        model = MODELS["model"]
+        row = self.db.execute(
+            select(model.project_workspace_id, model.revision_version, model.aggregate_json["correlations"]).where(
+                model.tenant_id == self.tenant_id, model.id == record_id
+            )
+        ).first()
+        if row is None:
+            self._error(404, "QRA_RECORD_NOT_FOUND")
+        self._project(row[0])
+        return {"correlations": row[2] or {}, "revision_version": row[1]}
 
     def record_items(self, kind, record_id, *, page=1, page_size=25):
         model = MODELS[kind]

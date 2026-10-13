@@ -90,7 +90,11 @@ async function executeRun(page: Page, workspace: Locator, run: Run, token: strin
       { timeout: 180_000, intervals: [500, 1000, 2000] }
     )
     .toBe("COMPLETED");
-  await expect(workspace.getByText("COMPLETED", { exact: true }).first()).toBeVisible({ timeout: 30_000 });
+  const selected = workspace.getByRole("combobox", { name: "Selected QRA run", exact: true });
+  await expect(selected).toHaveValue(String(run.id));
+  await expect(selected.locator(`option[value="${run.id}"]`)).toContainText("COMPLETED", {
+    timeout: 30_000,
+  });
   const completed = await json<Run>(
     await page.request.get(`${apiRoot}/runs/${run.id}?summary=true`, { headers: { Authorization: `Bearer ${token}` } })
   );
@@ -99,7 +103,7 @@ async function executeRun(page: Page, workspace: Locator, run: Run, token: strin
 }
 test.use({ trace: "on" });
 test.describe.serial("QRA Wave 4 actual worker governed browser release", () => {
-  test("read-only USER cannot execute or configure approved models", async ({ page }) => {
+  test("read-only USER cannot execute or configure approved models", async ({ page }, testInfo) => {
     test.setTimeout(300_000);
     const token = await login(page, "qra.engine.reader@demo.local");
     const headers = { Authorization: `Bearer ${token}` };
@@ -126,12 +130,14 @@ test.describe.serial("QRA Wave 4 actual worker governed browser release", () => 
       data: { seed: 1, iterations: 1024 },
     });
     expect(denied.status()).toBe(403);
+    await page.screenshot({ path: testInfo.outputPath("qra-engine-read-only.png"), fullPage: true });
+    await workspace.screenshot({ path: testInfo.outputPath("qra-engine-read-only-focused.png") });
     await page.goto("/app/admin/strategy/qra-methodology-source-readiness");
     await expect(page.getByRole("region", { name: "QRA Methodology & Source Readiness", exact: true })).toHaveCount(0);
   });
   test("ADMIN execution governance uses the existing QRA methodology editor without a duplicate manager or run controls", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(300_000);
     const token = await login(page, "admin");
     const headers = { Authorization: `Bearer ${token}` };
@@ -188,11 +194,19 @@ test.describe.serial("QRA Wave 4 actual worker governed browser release", () => 
       await page.request.get(`${apiRoot}/projects/${project!.id}/options`, { headers })
     );
     expect(unchanged.engine_policy).toEqual(options.engine_policy);
+    await page.screenshot({ path: testInfo.outputPath("qra-engine-admin-draft-policy.png"), fullPage: true });
+    await draft.getByRole("button", { name: "Edit policy", exact: true }).click();
+    await editor
+      .getByRole("navigation", { name: "Policy section editor", exact: true })
+      .getByRole("button", { name: "Execution Policy", exact: true })
+      .click();
+    await expect(field).toHaveValue(JSON.stringify(modified, null, 2));
+    await editor.screenshot({ path: testInfo.outputPath("qra-engine-admin-draft-policy-focused.png") });
   });
   test("USER execution, reproducible cost results, schedule dates, comparison, cancellation and independent acceptance", async ({
     page,
     browser,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(900_000);
     const token = await login(page, "admin");
     const headers = { Authorization: `Bearer ${token}` };
@@ -237,6 +251,11 @@ test.describe.serial("QRA Wave 4 actual worker governed browser release", () => 
       .getByRole("button", { name: "Run Overview", exact: true })
       .click();
     await expect(workspace.getByRole("img", { name: "Simulated outcome histogram" })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath("qra-engine-completed-cost.png"), fullPage: true });
+    await workspace
+      .locator(".qraResultChart")
+      .first()
+      .screenshot({ path: testInfo.outputPath("qra-engine-cost-histogram.png") });
     for (const [section, table] of [
       ["Percentiles", "Backend-governed percentiles"],
       ["Sensitivity / Drivers", "Backend-governed sensitivity"],
@@ -286,6 +305,10 @@ test.describe.serial("QRA Wave 4 actual worker governed browser release", () => 
     await expect(workspace.getByRole("table", { name: "Backend-governed percentiles", exact: true })).toContainText(
       "completion_date"
     );
+    await page.screenshot({ path: testInfo.outputPath("qra-engine-completed-schedule.png"), fullPage: true });
+    await workspace
+      .getByRole("table", { name: "Backend-governed percentiles", exact: true })
+      .screenshot({ path: testInfo.outputPath("qra-engine-schedule-percentiles.png") });
     const cancelled = await createRun(page, workspace, costModel!.id, 99);
     const cancelResult = await mutation(
       page,
@@ -339,6 +362,13 @@ test.describe.serial("QRA Wave 4 actual worker governed browser release", () => 
     expect(provider.status).toBe("AVAILABLE");
     expect(provider.not_investment_approval).toBe(true);
     expect(provider.raw_samples).toBe("NOT_EXPOSED");
+    await authorityPage.screenshot({
+      path: testInfo.outputPath("qra-engine-independent-acceptance.png"),
+      fullPage: true,
+    });
+    await reviewer
+      .locator(".qraRunMetadata")
+      .screenshot({ path: testInfo.outputPath("qra-engine-accepted-metadata.png") });
     await independent.close();
   });
 });

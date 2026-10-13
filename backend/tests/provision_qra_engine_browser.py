@@ -24,6 +24,8 @@ def main() -> None:
         raise RuntimeError("Wave 4 browser provisioning is restricted to explicitly disposable PostgreSQL")
 
     # Only imported after the database/environment guard.
+    from alembic import command
+    from alembic.config import Config
     from tests.provision_qra_foundation_browser import credential
     from tests.test_capital_allocation_wave2a import _user
     from tests.test_owner_capability_wave3b import _grant
@@ -31,8 +33,6 @@ def main() -> None:
 
     from app.database.seed import ensure_membership, seed_demo
     from app.modules.qra_foundation.models import QraModelDefinition
-    from alembic import command
-    from alembic.config import Config
 
     # Legacy schema setup is test-only. New Wave4 tables/triggers must be
     # installed by the actual additive migration, never create_all/stamphead.
@@ -41,7 +41,11 @@ def main() -> None:
         tables=[table for table in Base.metadata.sorted_tables if table.name not in {"qra_runs", "qra_run_reviews"}],
     )
     with engine.connect() as connection:
-        current = connection.scalar(text("SELECT version_num FROM alembic_version")) if inspect(connection).has_table("alembic_version") else None
+        current = (
+            connection.scalar(text("SELECT version_num FROM alembic_version"))
+            if inspect(connection).has_table("alembic_version")
+            else None
+        )
         new_tables_exist = inspect(connection).has_table("qra_runs")
     config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
     config.set_main_option("script_location", str(Path(__file__).resolve().parents[1] / "alembic"))

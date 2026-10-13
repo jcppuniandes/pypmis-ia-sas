@@ -4,6 +4,7 @@ Broker dispatch is injected in service tests; the calculation kernel, Foundation
 sources, actual currentness, RBAC, database receipts and reviews are real.
 """
 
+import re
 from copy import deepcopy
 from dataclasses import replace
 from datetime import timedelta
@@ -30,6 +31,7 @@ from app.domain.models import (
 )
 from app.main import app
 from app.modules.basic_data.service import _hash
+from app.modules.investment_evidence_policy.service import PROVIDER_REGISTRY, InvestmentEvidencePolicyService
 from app.modules.qra_engine.calculation import EngineCalculationError
 from app.modules.qra_engine.models import QraRun
 from app.modules.qra_engine.schemas import RunActionIn, RunCreateIn
@@ -208,7 +210,25 @@ def test_real_approved_model_run_reproduction_and_independence(governed, kind):
             }
         ),
     }
-    left, right = _run_completed(f, kind), _run_completed(f, kind)
+    writes = []
+
+    def audit_writes(_connection, _cursor, statement, _parameters, _context, _many):
+        match = re.match(r'\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+([\w".]+)', statement, re.IGNORECASE)
+        if match:
+            writes.append(match.group(1).strip('"').lower())
+
+    event.listen(db.get_bind(), "before_cursor_execute", audit_writes)
+    try:
+        left, right = _run_completed(f, kind), _run_completed(f, kind)
+    finally:
+        event.remove(db.get_bind(), "before_cursor_execute", audit_writes)
+    assert writes and set(writes) <= {
+        "qra_runs",
+        "qra_run_reviews",
+        "qra_commands",
+        "security_events",
+        "admin_number_sequences",
+    }, writes
     assert left["id"] != right["id"]
     assert left["run_number"].startswith("QRR-")
     assert left["results"]["summary"] == right["results"]["summary"]
@@ -246,6 +266,63 @@ def test_real_approved_model_run_reproduction_and_independence(governed, kind):
         ),
     }
     assert after == authorities
+
+
+def test_governed_cost_model_non_psd_matrix_blocks_before_run_insert(client):
+    with SessionLocal() as db:
+        f = _engine_fixture(db, extra_cost_inputs=2, correlated_cost=False)
+        refs = [f"COST:{i.source_item_ref}" for i in _inputs({"cost": f["sources"]["cost"]})]
+        assert len(refs) == 3
+        model = _approved_model(
+            f,
+            f["sources"],
+            correlations={
+                "method": "MATRIX_CORRELATION",
+                "refs": refs,
+                "matrix": [[1, 0.9, 0.9], [0.9, 1, -0.9], [0.9, -0.9, 1]],
+                "rationale": "Structurally valid approved matrix; PSD must be independently validated by engine",
+            },
+        )
+        assert model["status"] == "APPROVED_FOR_ANALYSIS"
+        preflight = f["engine"].preflight(model["id"])
+        assert not preflight["eligible"] and "CORRELATION_MATRIX_NOT_PSD" in preflight["blockers"]
+        count = db.scalar(select(func.count(QraRun.id)))
+        with pytest.raises(HTTPException) as exc:
+            f["engine"].create_run(model["id"], RunCreateIn(seed=123), _key("non-psd"))
+        assert exc.value.status_code == 409 and "CORRELATION_MATRIX_NOT_PSD" in exc.value.detail["blockers"]
+        assert db.scalar(select(func.count(QraRun.id))) == count
+
+
+def test_independent_registry_provider_accepted_current_evidence_without_gate_mutation(governed):
+    f = governed
+    db = f["engine"].db
+    gate = InvestmentEvidencePolicyService(db, f["author"].tenant_id, f["reviewer"].id)
+    assert PROVIDER_REGISTRY["QRA_RESULT_PROVIDER"]["status"] == "AVAILABLE"
+    assert gate._provider_payload("QRA_RESULT_PROVIDER", {}, "EACH_PROJECT", f["project"].id) is None
+    run = _run_completed(f)
+    reviewed = f["review_engine"].review_action(
+        run["id"], run["revision_version"], RunActionIn(), _key("registry-review"), "review"
+    )
+    f["review_engine"].review_action(
+        run["id"], reviewed["revision_version"], RunActionIn(), _key("registry-accept"), "accept"
+    )
+    writes = []
+
+    def collect(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().upper().startswith(("INSERT ", "UPDATE ", "DELETE ")):
+            writes.append(statement)
+
+    event.listen(db.get_bind(), "before_cursor_execute", collect)
+    try:
+        payload = gate._provider_payload("QRA_RESULT_PROVIDER", {}, "EACH_PROJECT", f["project"].id)
+        assert payload and not gate.validate_provider_contract(payload)
+    finally:
+        event.remove(db.get_bind(), "before_cursor_execute", collect)
+    assert payload["source_current"] and payload["source_record_id"] == str(run["id"])
+    assert payload["readiness_status"] in {"READY", "READY_WITH_WARNINGS"}
+    assert payload["evidence_refs"][0]["trace_hash"] == run["trace_hash"]
+    assert payload["evidence_refs"][0]["not_investment_approval"] is True
+    assert not writes, writes
 
 
 def test_seed_change_compatible_comparison(governed):

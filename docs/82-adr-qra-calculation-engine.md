@@ -1,6 +1,6 @@
 # ADR Wave 4 QRA Calculation Engine
 
-Estado: implementado en desarrollo local; cierre condicionado a la evidencia de validación del informe de release.
+Estado: QRA_CALCULATION_ENGINE_RELEASE_VALIDATED al 2026-10-12, con alcance COST_QRA y SCHEDULE_QRA. Evidencia y límites en docs/83-qra-engine-release.md. El tenant local conserva metodología DRAFT; no se publicó automáticamente.
 
 ## Contexto y baseline
 

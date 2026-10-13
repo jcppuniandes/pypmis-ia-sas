@@ -49,10 +49,19 @@ def engine_configuration_issues(settings):
     if settings.get("engine_version") != ENGINE_VERSION:
         issues.append("ENGINE_VERSION_NOT_SUPPORTED")
     analyses = settings.get("supported_analysis_types")
-    if not isinstance(analyses, list) or not analyses or any(not isinstance(v, str) or v not in ANALYSIS_TYPES for v in analyses):
+    if (
+        not isinstance(analyses, list)
+        or not analyses
+        or any(not isinstance(v, str) or v not in ANALYSIS_TYPES for v in analyses)
+    ):
         issues.append("ENGINE_ANALYSIS_TYPES_INVALID")
     values = settings.get("percentiles")
-    if not isinstance(values, list) or not values or len(values) > 25 or any(not _number(v) or not 0 <= v <= 100 for v in values):
+    if (
+        not isinstance(values, list)
+        or not values
+        or len(values) > 25
+        or any(not _number(v) or not 0 <= v <= 100 for v in values)
+    ):
         issues.append("ENGINE_PERCENTILES_INVALID")
     elif len(set(values)) != len(values):
         issues.append("ENGINE_PERCENTILES_DUPLICATED")

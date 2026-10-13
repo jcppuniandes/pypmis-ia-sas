@@ -78,7 +78,9 @@ async function selectRecord(workspace: Locator, id: number) {
 }
 async function fixtureProject(page: Page, headers: Record<string, string>) {
   const options = await json<{ projects: ProjectOption[] }>(await page.request.get(`${apiRoot}/options`, { headers }));
-  const project = options.projects.find((item) => /QRA Foundation|QRA-PROJECT/.test(item.name + item.code));
+  const project = process.env.E2E_QRA_FOUNDATION_PROJECT_ID
+    ? options.projects.find((item) => item.id === Number(process.env.E2E_QRA_FOUNDATION_PROJECT_ID))
+    : options.projects.find((item) => /QRA Foundation|QRA-PROJECT/.test(item.name + item.code));
   expect(
     project,
     "Provision the guarded disposable QRA Project before running the real browser acceptance"
@@ -503,11 +505,13 @@ test.describe.serial("QRA Foundation real governed release", () => {
     });
     for (const label of labels) await expect(sectionNav).toContainText(label);
     await admin.getByLabel("Workspace context for preview", { exact: true }).fill(String(project.id));
-    const configuration = admin
-      .locator("[data-configuration-id]")
-      .filter({ has: page.getByRole("button", { name: "Clone to DRAFT", exact: true }) })
-      .filter({ hasText: "QRA" })
-      .first();
+    const configuration = process.env.E2E_QRA_FOUNDATION_CONFIGURATION_ID
+      ? admin.locator(`[data-configuration-id="${Number(process.env.E2E_QRA_FOUNDATION_CONFIGURATION_ID)}"]`)
+      : admin
+          .locator("[data-configuration-id]")
+          .filter({ has: page.getByRole("button", { name: "Clone to DRAFT", exact: true }) })
+          .filter({ hasText: "QRA" })
+          .first();
     const clone = (await mutation(
       page,
       `/api/v1/qra-foundation/admin/configurations/${await configuration.getAttribute("data-configuration-id")}/clone`,

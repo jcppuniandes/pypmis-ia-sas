@@ -12,10 +12,20 @@ from app.bootstrap_qra_foundation import QRA_CONFIGURATION_KEYS, QRA_PERMISSION_
 from app.database.session import Base
 from app.domain.models import AdminConfiguration, AdminNumberSequence, PermissionCatalog, SecurityRolePermission
 from app.modules.enterprise_structure.permissions import PROJECT_DEFINITION_ROLE_PERMISSIONS
-from app.modules.qra_foundation.models import CostSourceReadinessAssessment, QraCommand, QraModelDefinition, ScheduleSourceReadinessAssessment
+from app.modules.qra_foundation.models import (
+    CostSourceReadinessAssessment,
+    QraCommand,
+    QraModelDefinition,
+    ScheduleSourceReadinessAssessment,
+)
 from app.modules.qra_foundation.service import CONFIGURATION_KIND, DEFAULT_CONFIGURATION, QraFoundationService
 
-TABLE_MODELS = baseline.TABLE_MODELS + (CostSourceReadinessAssessment, ScheduleSourceReadinessAssessment, QraModelDefinition, QraCommand)
+TABLE_MODELS = baseline.TABLE_MODELS + (
+    CostSourceReadinessAssessment,
+    ScheduleSourceReadinessAssessment,
+    QraModelDefinition,
+    QraCommand,
+)
 
 
 @pytest.fixture
@@ -35,23 +45,35 @@ def test_provision_only_adds_qra_catalog_existing_role_grants_and_neutral_draft(
     tenant, actor = baseline._tenant(db)
     codes = set(PROJECT_DEFINITION_ROLE_PERMISSIONS) | {"organization_admin", "configuration_admin", "custom_role"}
     roles = {code: baseline._role(db, tenant, code) for code in sorted(codes)}
-    source = baseline._configuration(db, tenant, actor, kind="owner_capability_readiness_configuration", code="unchanged")
+    source = baseline._configuration(
+        db, tenant, actor, kind="owner_capability_readiness_configuration", code="unchanged"
+    )
     db.add(AdminNumberSequence(tenant_id=tenant.id, rule_code="owner_capability_assessment", next_value=83, version=4))
     db.commit()
     before = snapshot(db)
     result = provision_qra_foundation(db, tenant.id, actor.id)
     assert result["permission_entries_added"] == len(QRA_PERMISSION_KEYS) == 16
     assert result["configuration_status"] == "draft"
-    for key in ("roles_created", "assignments_created", "memberships_created", "live_assessments_created", "live_models_created"):
+    for key in (
+        "roles_created",
+        "assignments_created",
+        "memberships_created",
+        "live_assessments_created",
+        "live_models_created",
+    ):
         assert result[key] == 0
     config = db.get(AdminConfiguration, result["configuration_id"])
     assert config.content_json == DEFAULT_CONFIGURATION
     assert config.content_json["cost_requirements"] == config.content_json["schedule_requirements"] == []
     assert config.published_at is None
     for code, role in roles.items():
-        actual = set(db.scalars(select(PermissionCatalog.key).join(SecurityRolePermission, SecurityRolePermission.permission_id == PermissionCatalog.id).where(
-            SecurityRolePermission.role_id == role.id, PermissionCatalog.key.in_(QRA_PERMISSION_KEYS)
-        )))
+        actual = set(
+            db.scalars(
+                select(PermissionCatalog.key)
+                .join(SecurityRolePermission, SecurityRolePermission.permission_id == PermissionCatalog.id)
+                .where(SecurityRolePermission.role_id == role.id, PermissionCatalog.key.in_(QRA_PERMISSION_KEYS))
+            )
+        )
         expected = PROJECT_DEFINITION_ROLE_PERMISSIONS.get(code, frozenset()) & QRA_PERMISSION_KEYS
         if code == "organization_admin":
             expected = QRA_PERMISSION_KEYS
@@ -59,16 +81,27 @@ def test_provision_only_adds_qra_catalog_existing_role_grants_and_neutral_draft(
             expected = QRA_CONFIGURATION_KEYS
         assert actual == expected
     after = snapshot(db)
-    changed = {"permission_catalog", "security_role_permissions", "admin_configurations", "admin_number_sequences", "security_events"}
+    changed = {
+        "permission_catalog",
+        "security_role_permissions",
+        "admin_configurations",
+        "admin_number_sequences",
+        "security_events",
+    }
     assert all(before[name] == rows for name, rows in after.items() if name not in changed)
     assert baseline._rows(db, AdminConfiguration, AdminConfiguration.id == source.id) == before["admin_configurations"]
-    assert baseline._rows(db, AdminNumberSequence, AdminNumberSequence.rule_code == "owner_capability_assessment") == before["admin_number_sequences"]
+    assert (
+        baseline._rows(db, AdminNumberSequence, AdminNumberSequence.rule_code == "owner_capability_assessment")
+        == before["admin_number_sequences"]
+    )
     again = provision_qra_foundation(db, tenant.id, actor.id)
     assert again["permission_entries_added"] == again["role_grants_added"] == 0
     assert snapshot(db) == after
 
 
-@pytest.mark.parametrize("scenario", ["empty-tenant", "workspace-only", "missing-tenant", "foreign-user", "inactive-user"])
+@pytest.mark.parametrize(
+    "scenario", ["empty-tenant", "workspace-only", "missing-tenant", "foreign-user", "inactive-user"]
+)
 def test_missing_or_wrong_authority_does_not_write(db, scenario):
     tenant, actor = baseline._tenant(db, can_configure=False, with_project=scenario != "empty-tenant")
     selected_tenant = tenant.id
@@ -78,6 +111,7 @@ def test_missing_or_wrong_authority_does_not_write(db, scenario):
         selected_tenant += 100
     elif scenario == "foreign-user":
         from app.domain.models import Tenant
+
         other = Tenant(name="Other", slug="other")
         db.add(other)
         db.flush()
@@ -117,8 +151,10 @@ def test_seed_failure_atomically_rolls_back_catalog_and_grants(db, monkeypatch):
     baseline._role(db, tenant, "organization_admin")
     db.commit()
     before = deepcopy(snapshot(db))
+
     def fail(_service):
         raise RuntimeError("forced QRA seed failure")
+
     monkeypatch.setattr(QraFoundationService, "ensure_seed", fail)
     with pytest.raises(RuntimeError, match="forced QRA seed failure"):
         provision_qra_foundation(db, tenant.id, actor.id)

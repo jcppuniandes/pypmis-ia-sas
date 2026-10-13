@@ -87,6 +87,8 @@ export const qraFoundationApi = {
       headers: headers(item),
       body: JSON.stringify(body),
     }),
+  modelCorrelations: (token: string, id: number) =>
+    apiFetch<{ correlations: JsonRecord }>(`${QRA_API_ROOT}/models/${id}/correlations`, { token }),
   updateModelInputs: (token: string, item: QraRecord, inputs: JsonRecord[]) =>
     apiFetch<QraRecord>(`${QRA_API_ROOT}/models/${item.id}/inputs`, {
       method: "PATCH",

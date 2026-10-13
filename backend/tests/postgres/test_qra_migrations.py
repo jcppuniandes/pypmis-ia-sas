@@ -18,7 +18,9 @@ def _round_trip(url):
         metadata = MetaData()
         for name in ("tenants", "enterprise_workspaces", "user_accounts", "admin_configurations", *AUTHORITIES):
             Table(name, metadata, Column("id", Integer, primary_key=True))
-        imports = Table("schedule_imports", metadata, Column("id", Integer, primary_key=True), Column("source", String(40)))
+        imports = Table(
+            "schedule_imports", metadata, Column("id", Integer, primary_key=True), Column("source", String(40))
+        )
         version = Table("alembic_version", metadata, Column("version_num", String(32), primary_key=True))
         metadata.create_all(engine)
         with engine.begin() as connection:
@@ -34,17 +36,25 @@ def _round_trip(url):
             assert ("source_metadata" in {c["name"] for c in inspector.get_columns("schedule_imports")}) is up
             with engine.connect() as connection:
                 assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (AFTER if up else BEFORE)
-                assert connection.scalar(text("SELECT source FROM schedule_imports WHERE id=7001")) == "historical-P6-XML"
+                assert (
+                    connection.scalar(text("SELECT source FROM schedule_imports WHERE id=7001")) == "historical-P6-XML"
+                )
                 for name in AUTHORITIES:
                     assert connection.scalar(text(f'SELECT count(*) FROM "{name}" WHERE id=7001')) == 1
                 if up:
-                    assert str(connection.scalar(text("SELECT source_metadata FROM schedule_imports WHERE id=7001"))) in ("{}",)
+                    assert str(
+                        connection.scalar(text("SELECT source_metadata FROM schedule_imports WHERE id=7001"))
+                    ) in ("{}",)
             if up:
                 for table in TABLES:
                     assert all(len(i["name"]) <= 63 for i in inspector.get_indexes(table))
-                assert any("model_number" in u["column_names"] and "version" in u["column_names"]
-                           for u in inspector.get_unique_constraints("qra_model_definitions"))
-                assert any("idempotency_key" in u["column_names"] for u in inspector.get_unique_constraints("qra_commands"))
+                assert any(
+                    "model_number" in u["column_names"] and "version" in u["column_names"]
+                    for u in inspector.get_unique_constraints("qra_model_definitions")
+                )
+                assert any(
+                    "idempotency_key" in u["column_names"] for u in inspector.get_unique_constraints("qra_commands")
+                )
                 for table in TABLES - {"qra_commands"}:
                     assert any("hash IS NOT NULL" in c["sqltext"] for c in inspector.get_check_constraints(table))
 

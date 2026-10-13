@@ -317,9 +317,8 @@ class QraEngineService(QraFoundationService):
         ).all()
         if any(r.snapshot_json.get("analysis_scope") == row.snapshot_json.get("analysis_scope") for r in successors):
             blockers.append("QRA_MODEL_SUPERSEDED")
-        if row.reviewed_by in {row.created_by, row.submitted_by} or row.approved_by in set(
-            row.aggregate_json.get("preparers", [])
-        ) | {row.created_by, row.submitted_by}:
+        preparers = set(row.aggregate_json.get("preparers", [])) | {row.created_by, row.submitted_by}
+        if row.reviewed_by in preparers or row.approved_by in preparers:
             blockers.append("QRA_MODEL_SEPARATION_OF_DUTIES_INVALID")
         return row, resolved, sorted(set(blockers)), latest
 

@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   update: vi.fn(),
   updateModelMetadata: vi.fn(),
   updateModelInputs: vi.fn(),
+  modelCorrelations: vi.fn(),
   action: vi.fn(),
   refreshPreview: vi.fn(),
 }));
@@ -94,6 +95,9 @@ beforeEach(() => {
   mocks.update.mockResolvedValue(draft);
   mocks.updateModelMetadata.mockResolvedValue(draft);
   mocks.updateModelInputs.mockResolvedValue(draft);
+  mocks.modelCorrelations.mockResolvedValue({
+    correlations: { method: "NO_CORRELATION", pairs: [], groups: [], matrix: [] },
+  });
   mocks.action.mockResolvedValue({ persisted: false, readiness_status: "READY_FOR_QRA_ANALYSIS" });
   mocks.refreshPreview.mockResolvedValue({ persisted: false, changes: ["SOURCE_CHANGED"] });
 });
@@ -241,10 +245,10 @@ describe("QRA Foundation USER workspace", () => {
         expect.objectContaining({
           purpose: "Governed future analysis",
           cost_source_assessment_id: 11,
-          correlations: { method: "NO_CORRELATION", pairs: [], groups: [], matrix: [] },
         })
       )
     );
+    expect(mocks.updateModelMetadata.mock.calls[0][2]).not.toHaveProperty("correlations");
     await user.click(screen.getByRole("button", { name: "Edit input page" }));
     fireEvent.change(screen.getByLabelText("Input page JSON"), { target: { value: JSON.stringify(inputs) } });
     await user.click(screen.getByRole("button", { name: "Save input page" }));
@@ -270,6 +274,32 @@ describe("QRA Foundation USER workspace", () => {
         "Independent review completed"
       )
     );
+  });
+  it("loads correlation rules only on explicit edit and never replaces omitted correlations or inputs", async () => {
+    const model = {
+      ...draft,
+      number: "QRM-000002",
+      aggregate_json: { analysis_type: "COST_QRA", purpose: "", inputs: [] },
+    };
+    mocks.records.mockResolvedValue({ items: [model], total: 1, page: 1, page_size: 25 });
+    const user = userEvent.setup();
+    render(<QraFoundationWorkspace token="user" initialView="qra-model-definition" />);
+    await screen.findByText("Model definition readiness · BLOCKED");
+    await user.click(screen.getByRole("button", { name: "Edit model definition" }));
+    expect(mocks.record).toHaveBeenLastCalledWith("user", "model", model.id, true);
+    expect(screen.queryByLabelText("correlations JSON")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Load correlation rules for editing" }));
+    await screen.findByLabelText("correlations JSON");
+    expect(mocks.modelCorrelations).toHaveBeenCalledWith("user", model.id);
+    await user.click(screen.getByRole("button", { name: "Save model definition" }));
+    await waitFor(() => expect(mocks.updateModelMetadata).toHaveBeenCalled());
+    expect(mocks.updateModelMetadata.mock.calls[0][2].correlations).toEqual({
+      method: "NO_CORRELATION",
+      pairs: [],
+      groups: [],
+      matrix: [],
+    });
+    expect(mocks.updateModelMetadata.mock.calls[0][2]).not.toHaveProperty("inputs");
   });
   it("keeps immutable history hashes and uses read-only refresh preview", async () => {
     const completed = {

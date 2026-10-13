@@ -444,40 +444,50 @@ class ScheduleIngestionService:
         relationships: list[dict] = []
         if source == ScheduleSource.p6_xer:
             tables = self._xer_rows(content)
-            activity_codes = {row.get("task_id"): row.get("task_code") or row.get("task_id") for row in tables.get("TASK", [])}
+            activity_codes = {
+                row.get("task_id"): row.get("task_code") or row.get("task_id") for row in tables.get("TASK", [])
+            }
             for row in tables.get("TASKPRED", []):
-                relationships.append({
-                    "predecessor": activity_codes.get(row.get("pred_task_id"), row.get("pred_task_id")),
-                    "successor": activity_codes.get(row.get("task_id"), row.get("task_id")),
-                    "relationship_type": row.get("pred_type") or None,
-                    "lag": row.get("lag_hr_cnt") or None,
-                    "lag_unit": "HOURS" if row.get("lag_hr_cnt") is not None else None,
-                })
+                relationships.append(
+                    {
+                        "predecessor": activity_codes.get(row.get("pred_task_id"), row.get("pred_task_id")),
+                        "successor": activity_codes.get(row.get("task_id"), row.get("task_id")),
+                        "relationship_type": row.get("pred_type") or None,
+                        "lag": row.get("lag_hr_cnt") or None,
+                        "lag_unit": "HOURS" if row.get("lag_hr_cnt") is not None else None,
+                    }
+                )
             for calendar in tables.get("CALENDAR", []):
-                calendars.append({
-                    "source_id": calendar.get("clndr_id") or None,
-                    "name": calendar.get("clndr_name") or None,
-                    "type": calendar.get("clndr_type") or None,
-                    "source_data": calendar.get("clndr_data") or None,
-                })
+                calendars.append(
+                    {
+                        "source_id": calendar.get("clndr_id") or None,
+                        "name": calendar.get("clndr_name") or None,
+                        "type": calendar.get("clndr_type") or None,
+                        "source_data": calendar.get("clndr_data") or None,
+                    }
+                )
             for row in tables.get("TASK", []):
                 activity_type = row.get("task_type") or None
-                activities.append({
-                    "external_id": row.get("task_code") or row.get("task_id"),
-                    "calendar_ref": row.get("clndr_id") or None,
-                    "original_duration": row.get("target_drtn_hr_cnt") or None,
-                    "remaining_duration": row.get("remain_drtn_hr_cnt") or None,
-                    "duration_unit": "HOURS" if row.get("target_drtn_hr_cnt") or row.get("remain_drtn_hr_cnt") else None,
-                    "status": row.get("status_code") or None,
-                    "activity_type": activity_type,
-                    "milestone": activity_type in {"TT_Mile", "TT_FinMile"} if activity_type else None,
-                    "primary_constraint_type": row.get("cstr_type") or None,
-                    "primary_constraint_date": row.get("cstr_date") or None,
-                    "secondary_constraint_type": row.get("cstr_type2") or None,
-                    "secondary_constraint_date": row.get("cstr_date2") or None,
-                    "actual_start": row.get("act_start_date") or None,
-                    "actual_finish": row.get("act_end_date") or None,
-                })
+                activities.append(
+                    {
+                        "external_id": row.get("task_code") or row.get("task_id"),
+                        "calendar_ref": row.get("clndr_id") or None,
+                        "original_duration": row.get("target_drtn_hr_cnt") or None,
+                        "remaining_duration": row.get("remain_drtn_hr_cnt") or None,
+                        "duration_unit": "HOURS"
+                        if row.get("target_drtn_hr_cnt") or row.get("remain_drtn_hr_cnt")
+                        else None,
+                        "status": row.get("status_code") or None,
+                        "activity_type": activity_type,
+                        "milestone": activity_type in {"TT_Mile", "TT_FinMile"} if activity_type else None,
+                        "primary_constraint_type": row.get("cstr_type") or None,
+                        "primary_constraint_date": row.get("cstr_date") or None,
+                        "secondary_constraint_type": row.get("cstr_type2") or None,
+                        "secondary_constraint_date": row.get("cstr_date2") or None,
+                        "actual_start": row.get("act_start_date") or None,
+                        "actual_finish": row.get("act_end_date") or None,
+                    }
+                )
         elif source == ScheduleSource.p6_xml:
             try:
                 root = ElementTree.fromstring(content)
@@ -485,51 +495,65 @@ class ScheduleIngestionService:
                 root = None
             if root is not None:
                 activity_codes = {
-                    self._child_text(element, "ObjectId"): self._first_child_text(element, ["Id", "ActivityId", "Code", "ObjectId"])
-                    for element in root.iter() if self._local_name(element.tag) == "Activity"
+                    self._child_text(element, "ObjectId"): self._first_child_text(
+                        element, ["Id", "ActivityId", "Code", "ObjectId"]
+                    )
+                    for element in root.iter()
+                    if self._local_name(element.tag) == "Activity"
                 }
                 for element in root.iter():
                     name = self._local_name(element.tag)
                     if name == "Calendar":
-                        calendars.append({
-                            "source_id": self._first_child_text(element, ["ObjectId", "Id"]) or None,
-                            "name": self._child_text(element, "Name") or None,
-                            "type": self._child_text(element, "Type") or None,
-                            "source_data": ElementTree.tostring(element, encoding="unicode"),
-                        })
+                        calendars.append(
+                            {
+                                "source_id": self._first_child_text(element, ["ObjectId", "Id"]) or None,
+                                "name": self._child_text(element, "Name") or None,
+                                "type": self._child_text(element, "Type") or None,
+                                "source_data": ElementTree.tostring(element, encoding="unicode"),
+                            }
+                        )
                     elif name == "Activity":
-                        def declared(*names: str) -> str | None:
-                            return self._first_child_text(element, list(names)) or None
+
+                        def declared(*names: str, source_element=element) -> str | None:
+                            return self._first_child_text(source_element, list(names)) or None
 
                         activity_type = declared("Type", "ActivityType")
-                        activities.append({
-                            "external_id": declared("Id", "ActivityId", "Code", "ObjectId"),
-                            "calendar_ref": declared("CalendarObjectId", "CalendarId"),
-                            "original_duration": declared("PlannedDuration", "OriginalDuration"),
-                            "remaining_duration": declared("RemainingDuration"),
-                            # Without a declared unit we keep it unknown. The
-                            # readiness policy, not this parser, decides fit.
-                            "duration_unit": declared("DurationUnit", "DurationUnits"),
-                            "status": declared("Status", "ActivityStatus"),
-                            "activity_type": activity_type,
-                            "milestone": "milestone" in activity_type.lower() if activity_type else None,
-                            "primary_constraint_type": declared("PrimaryConstraintType"),
-                            "primary_constraint_date": declared("PrimaryConstraintDate"),
-                            "secondary_constraint_type": declared("SecondaryConstraintType"),
-                            "secondary_constraint_date": declared("SecondaryConstraintDate"),
-                            "actual_start": declared("ActualStartDate"),
-                            "actual_finish": declared("ActualFinishDate"),
-                        })
+                        activities.append(
+                            {
+                                "external_id": declared("Id", "ActivityId", "Code", "ObjectId"),
+                                "calendar_ref": declared("CalendarObjectId", "CalendarId"),
+                                "original_duration": declared("PlannedDuration", "OriginalDuration"),
+                                "remaining_duration": declared("RemainingDuration"),
+                                # Without a declared unit we keep it unknown. The
+                                # readiness policy, not this parser, decides fit.
+                                "duration_unit": declared("DurationUnit", "DurationUnits"),
+                                "status": declared("Status", "ActivityStatus"),
+                                "activity_type": activity_type,
+                                "milestone": "milestone" in activity_type.lower() if activity_type else None,
+                                "primary_constraint_type": declared("PrimaryConstraintType"),
+                                "primary_constraint_date": declared("PrimaryConstraintDate"),
+                                "secondary_constraint_type": declared("SecondaryConstraintType"),
+                                "secondary_constraint_date": declared("SecondaryConstraintDate"),
+                                "actual_start": declared("ActualStartDate"),
+                                "actual_finish": declared("ActualFinishDate"),
+                            }
+                        )
                     elif name == "Relationship":
-                        predecessor = self._first_child_text(element, ["PredecessorActivityObjectId", "PredecessorActivityId"])
-                        successor = self._first_child_text(element, ["SuccessorActivityObjectId", "SuccessorActivityId"])
-                        relationships.append({
-                            "predecessor": activity_codes.get(predecessor, predecessor),
-                            "successor": activity_codes.get(successor, successor),
-                            "relationship_type": self._child_text(element, "Type") or None,
-                            "lag": self._child_text(element, "Lag") or None,
-                            "lag_unit": self._child_text(element, "LagUnit") or None,
-                        })
+                        predecessor = self._first_child_text(
+                            element, ["PredecessorActivityObjectId", "PredecessorActivityId"]
+                        )
+                        successor = self._first_child_text(
+                            element, ["SuccessorActivityObjectId", "SuccessorActivityId"]
+                        )
+                        relationships.append(
+                            {
+                                "predecessor": activity_codes.get(predecessor, predecessor),
+                                "successor": activity_codes.get(successor, successor),
+                                "relationship_type": self._child_text(element, "Type") or None,
+                                "lag": self._child_text(element, "Lag") or None,
+                                "lag_unit": self._child_text(element, "LagUnit") or None,
+                            }
+                        )
         return {
             "schema_version": 1,
             "imported_source": source.value,

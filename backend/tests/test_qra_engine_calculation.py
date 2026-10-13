@@ -6,13 +6,16 @@ from datetime import datetime
 
 import numpy as np
 import pytest
+from scipy.stats import norm
 
 from app.modules.qra_engine.calculation import (
     ENGINE_VERSION,
     EngineCalculationError,
     EngineCancelled,
     _correlation_blocks,
+    _Pearson,
     _sample,
+    _stats,
     calculate,
     engine_manifest,
     validate_snapshot,
@@ -193,6 +196,60 @@ def test_uniform_quantiles_targets_and_indicator_not_contingency_approval():
         result["analytical_contingency_indicator"]["interpretation"]
         == "ANALYTICAL_INDICATOR_ONLY_NOT_APPROVED_CONTINGENCY"
     )
+
+
+def test_percentiles_type7_known_nonconstant_unsorted_series():
+    # Sorted [2, 7, 11, 19, 31], h=(N-1)*p: these references are
+    # hand-calculated order-statistic interpolations, not numpy.percentile.
+    expected = {0: 2, 10: 4, 25: 7, 50: 11, 75: 19, 80: 21.4, 90: 26.2, 100: 31}
+    result = _stats(np.asarray([31.0, 2.0, 7.0, 11.0, 19.0]), policy(percentiles=list(expected)))
+    assert {p["percentile"]: p["value"] for p in result["percentiles"]} == pytest.approx(expected, abs=1e-12)
+    assert result["summary"]["mean"] == 14
+    assert result["summary"]["standard_deviation"] == pytest.approx(math.sqrt(103.2), abs=1e-12)
+
+
+def test_lognormal_quantiles_against_analytic_reference_with_explicit_sampling_band():
+    count, alpha = 40000, 1e-6
+    mu, sigma = math.log(20), 0.3
+    definition = item(family="LOGNORMAL", parameters={"mu": mu, "sigma": sigma})
+    uniforms = np.random.Generator(np.random.PCG64(720145)).random((1, count))
+    samples = _sample(uniforms, [definition], policy())[0]
+    quantiles = (10, 50, 80, 90)
+    result = _stats(samples, policy(percentiles=list(quantiles)))
+    # DKW simultaneous CDF band, failure probability alpha, with one order
+    # statistic/N allowance for type-7 interpolation. The analytic lognormal
+    # reference exp(mu+sigma*Phi^-1(p)) is independent of the kernel sampler.
+    epsilon = math.sqrt(math.log(2 / alpha) / (2 * count)) + 1 / count
+    for row in result["percentiles"]:
+        probability = row["percentile"] / 100
+        reference = math.exp(mu + sigma * float(norm.ppf(probability)))
+        lower = math.exp(mu + sigma * float(norm.ppf(probability - epsilon)))
+        upper = math.exp(mu + sigma * float(norm.ppf(probability + epsilon)))
+        assert lower <= row["value"] <= upper, (row, reference, lower, upper)
+    assert math.exp(mu + sigma * float(norm.ppf(0.5))) == pytest.approx(20, abs=1e-12)
+
+
+@pytest.mark.parametrize("base", [0.0, 1e12])
+def test_streaming_pearson_matches_independent_numpy_full_sample_with_large_base(base):
+    count = 4099
+    generator = np.random.Generator(np.random.PCG64(81721))
+    centered = generator.normal(0, 250, (3, count))
+    x = base + centered
+    y = base + 0.7 * centered[0] - 0.3 * centered[1] + 0.15 * centered[2] + generator.normal(0, 40, count)
+    expected = np.corrcoef(np.vstack((x, y)))[:3, 3]
+    refs = ["COST:A", "COST:B", "COST:C"]
+    scale = min(float(np.min(np.std(x, axis=1))), float(np.std(y)))
+    # Centering a 1e12-offset float64 series loses low-order bits: allow 16
+    # input ULPs relative to the observed scale for batch-mean/merge rounding.
+    # At zero offset the reference must match to 1e-12, not a statistical band.
+    tolerance = max(1e-12, 16 * float(np.spacing(base)) / scale)
+    for chunk_size in (128, 257):
+        accumulator = _Pearson(3)
+        for start in range(0, count, chunk_size):
+            accumulator.update(x[:, start : start + chunk_size], y[start : start + chunk_size])
+        actual = {row["input_ref"]: row["coefficient"] for row in accumulator.results(refs)}
+        assert [actual[ref] for ref in refs] == pytest.approx(expected, abs=tolerance)
+        assert accumulator.n == count
 
 
 def test_independent_sum_theoretical_moments_and_dominant_pearson_driver():

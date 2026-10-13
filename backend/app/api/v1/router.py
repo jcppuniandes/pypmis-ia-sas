@@ -271,8 +271,6 @@ from app.modules.investment_decision import router as investment_decision_router
 from app.modules.investment_evidence_policy import router as investment_evidence_policy_router
 from app.modules.investment_gate_preparation import router as investment_gate_preparation_router
 from app.modules.owner_capability import router as owner_capability_router
-from app.modules.qra_foundation import router as qra_foundation_router
-from app.modules.qra_engine import router as qra_engine_router
 from app.modules.permit_readiness import router as permit_readiness_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
 from app.modules.physical_workspace_initialization import router as physical_workspace_initialization_router
@@ -288,6 +286,8 @@ from app.modules.project_creation import router as project_creation_router
 from app.modules.project_definition import router as project_definition_router
 from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
+from app.modules.qra_engine import router as qra_engine_router
+from app.modules.qra_foundation import router as qra_foundation_router
 from app.modules.risk_governance import router as risk_governance_router
 from app.modules.risk_readiness import router as risk_readiness_router
 from app.modules.strategic_benefits import router as strategic_benefits_router

@@ -223,6 +223,11 @@ def model_items(
     return service.record_items("model", record_id, page=page, page_size=page_size)
 
 
+@router.get("/models/{record_id}/correlations")
+def model_correlations(record_id: int, response: Response, service=Depends(_authorized("qra_foundation.read"))):
+    return _out(response, service.model_correlations(record_id))
+
+
 @router.put("/models/{record_id}")
 def update_model(
     record_id: int,

@@ -14,6 +14,83 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  qra-engine-postgres:
+    name: Wave4 QRA calculation and accepted evidence (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate Wave4 additive migration and architecture boundaries
+        run: python scripts/validate_qra_engine_guardrails.py
+      - name: Run QRA engine, audit, Foundation regressions and real 0068 round trip
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/qra-engine
+          chmod 0777 outputs/.qa/qra-engine
+          docker compose -p pypmis-qra-engine-ci -f docker-compose.qra-engine.yml up \
+            --build --abort-on-container-exit --exit-code-from qra-validation \
+            qra-validation 2>&1 | tee outputs/.qa/qra-engine/postgres-validation.log
+      - name: Preserve Wave4 PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-engine-postgres-validation
+          path: |
+            outputs/.qa/qra-engine/postgres-validation.log
+            outputs/.qa/qra-engine/backend-postgres-final.xml
+          if-no-files-found: error
+      - name: Destroy isolated Wave4 acceptance environment
+        if: always()
+        run: docker compose -p pypmis-qra-engine-ci -f docker-compose.qra-engine.yml down --remove-orphans
+
+  qra-engine-browser:
+    name: Wave4 QRA USER and ADMIN with real Celery and Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [qra-engine-postgres, backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start isolated migrated API, Celery worker and production frontend
+        run: |
+          docker compose -p pypmis-qra-engine-browser-ci -f docker-compose.qra-engine.yml \
+            --profile browser up -d --build qra-browser-worker qra-browser-frontend
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8820/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5523 >/dev/null; do sleep 2; done'
+      - name: Validate governed Wave4 lifecycle with an independent analysis authority
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5523
+          E2E_API_URL: http://127.0.0.1:8820
+        run: cd frontend && npx playwright test qra-engine.spec.ts --project=chromium --workers=1
+      - name: Preserve Wave4 browser diagnostics
+        if: always()
+        run: |
+          mkdir -p outputs/.qa/qra-engine
+          docker compose -p pypmis-qra-engine-browser-ci -f docker-compose.qra-engine.yml \
+            --profile browser logs --no-color > outputs/.qa/qra-engine/browser-stack.log
+      - name: Preserve Wave4 Chromium evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-engine-browser-evidence
+          path: |
+            frontend/test-results/
+            outputs/.qa/qra-engine/browser-stack.log
+          if-no-files-found: ignore
+      - name: Destroy isolated Wave4 browser environment
+        if: always()
+        run: docker compose -p pypmis-qra-engine-browser-ci -f docker-compose.qra-engine.yml --profile browser down --remove-orphans
+
   qra-foundation-postgres:
     name: QRA Foundation source methodology and model (PostgreSQL)
     runs-on: ubuntu-latest
@@ -392,6 +469,8 @@ jobs:
       - run: pip install ruff==0.16.3
       - run: ruff format --check backend/app/ backend/tests/
       - run: ruff check backend/app/ backend/tests/ --output-format=github
+      - run: ruff format --check scripts/validate_qra_engine_guardrails.py
+      - run: ruff check scripts/validate_qra_engine_guardrails.py --output-format=github
 
   frontend-lint:
     name: Frontend lint (ESLint + Prettier)

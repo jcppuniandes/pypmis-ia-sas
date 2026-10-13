@@ -279,7 +279,12 @@ describe("QRA governed execution USER workspace", () => {
   });
   it("does not display a late creation response from the previous token context", async () => {
     let resolveCreate!: (value: QraRun) => void;
-    mocks.create.mockImplementationOnce(() => new Promise((resolve) => { resolveCreate = resolve; }));
+    mocks.create.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveCreate = resolve;
+        })
+    );
     const user = userEvent.setup();
     const { rerender } = render(<QraEngineWorkspace token="old" />);
     await screen.findByText("QRR-000002");
@@ -313,6 +318,31 @@ describe("QRA governed execution USER workspace", () => {
     expect(signal.aborted).toBe(true);
     await act(async () => resolveStatus(queued));
     expect(mocks.status).toHaveBeenCalledTimes(1);
+  });
+  it("finishes the terminal detail read before stopping polling and retains completed comparison choices", async () => {
+    const final = { ...completed, id: queued.id, run_number: queued.run_number };
+    let resolveFinal!: (value: QraRun) => void;
+    mocks.run.mockResolvedValueOnce(queued).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFinal = resolve;
+        })
+    );
+    mocks.runs.mockResolvedValue({ items: [queued, completed], total: 2, page: 1, page_size: 25 });
+    mocks.status.mockResolvedValue(final);
+    const user = userEvent.setup();
+    render(<QraEngineWorkspace token="user" />);
+    await screen.findByText("QRR-000003");
+    await waitFor(() => expect(mocks.run).toHaveBeenCalledTimes(2));
+    const signal = mocks.run.mock.calls[1][2] as AbortSignal;
+    expect(signal.aborted).toBe(false);
+    expect(screen.getByLabelText("Selected QRA run")).toHaveDisplayValue(/QUEUED/);
+    await act(async () => resolveFinal(final));
+    await waitFor(() => expect(screen.getByLabelText("Selected QRA run")).toHaveDisplayValue(/COMPLETED/));
+    await user.selectOptions(screen.getByLabelText("Selected QRA run"), String(completed.id));
+    await user.click(screen.getByRole("button", { name: "Run Comparison" }));
+    await waitFor(() => expect(screen.getByLabelText("Compare against run")).toContainHTML('value="3"'));
+    expect(signal.aborted).toBe(true);
   });
   it("keeps integrated execution disabled without falsely presenting supported results", async () => {
     mocks.options.mockResolvedValue({

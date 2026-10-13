@@ -125,9 +125,11 @@ function parseField(form: Form, key: string, array: boolean): unknown {
   }
   return value;
 }
-function bodyFor(form: Form, kind: QraKind): JsonRecord {
+function bodyFor(form: Form, kind: QraKind, includeModelCorrelations = false): JsonRecord {
   const body: JsonRecord = { title: form.title, comments: form.comments };
-  for (const key of kind === "model" ? metadataKeys : sourceKeys) {
+  for (const key of kind === "model"
+    ? metadataKeys.filter((key) => key !== "correlations" || includeModelCorrelations)
+    : sourceKeys) {
     body[key] = parseField(form, key, ["source_refs", "items", "gaps", "inputs", "evidence_refs"].includes(key));
   }
   if (kind === "model") {
@@ -164,6 +166,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
   const [editing, setEditing] = useState(false);
   const [inputEditing, setInputEditing] = useState(false);
   const [inputForm, setInputForm] = useState("[]");
+  const [correlationEditing, setCorrelationEditing] = useState(false);
   const [form, setForm] = useState<Form>({});
   const [analysisType, setAnalysisType] = useState("COST_QRA");
   const [comments, setComments] = useState("");
@@ -619,6 +622,7 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
                   selectedRef.current = full;
                   setSelected(full);
                   setForm(formFor(full, kind));
+                  setCorrelationEditing(false);
                   setEditing(true);
                 }, "Editable aggregate loaded; policy validation remains backend-owned.")
               }
@@ -758,7 +762,25 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
               </>
             )}
           </div>
-          {(kind === "model" ? metadataKeys : sourceKeys).map((key) => (
+          {kind === "model" && !correlationEditing ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() =>
+                void execute(async () => {
+                  const response = await qraFoundationApi.modelCorrelations(token, selected.id);
+                  setForm((previous) => ({ ...previous, correlations: json(response.correlations) }));
+                  setCorrelationEditing(true);
+                }, "Correlation rules explicitly loaded without the input population.")
+              }
+            >
+              Load correlation rules for editing
+            </button>
+          ) : null}
+          {(kind === "model"
+            ? metadataKeys.filter((key) => key !== "correlations" || correlationEditing)
+            : sourceKeys
+          ).map((key) => (
             <JsonField
               key={key}
               label={`${key} JSON`}
@@ -779,7 +801,11 @@ export default function QraFoundationWorkspace({ token, initialView }: { token: 
                 void execute(async () => {
                   const updated =
                     kind === "model"
-                      ? await qraFoundationApi.updateModelMetadata(token, selected, bodyFor(form, kind))
+                      ? await qraFoundationApi.updateModelMetadata(
+                          token,
+                          selected,
+                          bodyFor(form, kind, correlationEditing)
+                        )
                       : await qraFoundationApi.update(token, kind, selected, bodyFor(form, kind));
                   await load(projectId, kind, history.page, updated.id, needsFullRecord(section));
                 }, "Definition saved; readiness remains backend-owned.")
