@@ -97,8 +97,40 @@ beforeEach(() => {
 });
 afterEach(() => {
   vi.useRealTimers();
+  window.history.replaceState({}, "", "/");
 });
 describe("QRA governed execution USER workspace", () => {
+  it("opens the exact governed evidence run even when it is outside the first run page", async () => {
+    window.history.replaceState({}, "", "/?project_id=41&run_id=19");
+    mocks.run.mockResolvedValue({ ...completed, id: 19, run_number: "QRR-000019" });
+    render(<QraEngineWorkspace token="reader" initialView="qra-run-overview" />);
+    await screen.findByText("QRR-000019");
+    expect(mocks.run).toHaveBeenCalledWith("reader", 19, expect.any(AbortSignal));
+    expect(mocks.run).not.toHaveBeenCalledWith("reader", 2, expect.any(AbortSignal));
+  });
+  it("does not silently substitute another run for an invalid or unauthorized QRA source link", async () => {
+    window.history.replaceState({}, "", "/?project_id=41&run_id=19");
+    mocks.run.mockResolvedValue({ ...completed, id: 19, project_id: 99 });
+    render(<QraEngineWorkspace token="reader" initialView="qra-run-overview" />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Project/run mismatch");
+    expect(screen.queryByText("QRR-000002")).not.toBeInTheDocument();
+    expect(mocks.read).not.toHaveBeenCalled();
+  });
+  it("rejects a malformed source link before requesting a Project or run", async () => {
+    window.history.replaceState({}, "", "/?project_id=41&run_id=not-an-id");
+    render(<QraEngineWorkspace token="reader" initialView="qra-run-overview" />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid QRA source link");
+    expect(mocks.options).not.toHaveBeenCalled();
+    expect(mocks.run).not.toHaveBeenCalled();
+  });
+  it("keeps a forbidden source link as an explicit error instead of falling back to the latest run", async () => {
+    window.history.replaceState({}, "", "/?project_id=41&run_id=19");
+    mocks.run.mockRejectedValueOnce(new Error("403: QRA_READ_PERMISSION_REQUIRED"));
+    render(<QraEngineWorkspace token="reader" initialView="qra-run-overview" />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("QRA_READ_PERMISSION_REQUIRED");
+    expect(mocks.run).toHaveBeenCalledOnce();
+    expect(mocks.read).not.toHaveBeenCalled();
+  });
   it("loads approved model identities in bounded pages without revalidating every listed model", async () => {
     const configured = await mocks.options();
     mocks.options.mockResolvedValue({ ...configured, approved_model_total: 60 });

@@ -966,7 +966,11 @@ class BasicDataService:
         fel_evidence = (
             ProjectDefinitionService(self.db, self.tenant_id, self.actor_id)
             .investment_gate_evidence(project.id)
-            .model_dump(mode="json")
+            # Gate-only provenance is additive to the public DTO, not a new
+            # material Basic Data / Owner / QRA context dimension. Preserve the
+            # established v1 projection; every existing FEL id/hash/readiness
+            # field remains subject to the original material fingerprint.
+            .model_dump(mode="json", exclude={"project_source_reference"})
         )
         return {
             "project_type": ProjectDefinitionService._project_type(project),

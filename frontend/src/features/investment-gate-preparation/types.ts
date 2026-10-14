@@ -32,6 +32,8 @@ export type InvestmentGateEvidence = {
   as_of?: string | null;
   resolution_status: string;
   revision_version: number;
+  qra_applicability?: Record<string, unknown> | null;
+  qra_summary?: Record<string, unknown> | null;
 };
 
 export type CriterionEvaluationResult = {

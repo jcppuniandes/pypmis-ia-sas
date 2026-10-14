@@ -811,21 +811,22 @@ class QraEngineService(QraFoundationService):
         if row.status == "COMPLETED":
             _, _, current_blockers, _ = self._validate_model(row.model_definition_id, row.model_hash)
             blockers.extend(current_blockers)
-            newer = self.db.scalars(
-                select(QraRun)
+            # Scope-qualified supersession must not load every frozen input
+            # manifest merely to compare its small scope qualifier.
+            newer_scopes = self.db.scalars(
+                select(QraRun.input_snapshot_json["analysis_scope"])
                 .join(QraRunReview, QraRunReview.run_id == QraRun.id)
                 .where(
                     QraRun.tenant_id == self.tenant_id,
                     QraRun.project_workspace_id == row.project_workspace_id,
                     QraRun.analysis_type == row.analysis_type,
+                    QraRun.status == "COMPLETED",
                     QraRun.id > row.id,
+                    QraRunReview.tenant_id == self.tenant_id,
                     QraRunReview.status == "ACCEPTED",
                 )
             ).all()
-            if any(
-                r.input_snapshot_json.get("analysis_scope") == row.input_snapshot_json.get("analysis_scope")
-                for r in newer
-            ):
+            if row.input_snapshot_json.get("analysis_scope") in newer_scopes:
                 blockers.append("QRA_RESULT_SUPERSEDED")
             if row.result_snapshot_hash != _hash(row.result_json):
                 blockers.append("QRA_RESULT_INTEGRITY_INVALID")
@@ -854,8 +855,20 @@ class QraEngineService(QraFoundationService):
             scope["refs_total"] = len(scope_refs)
             scope["refs_preview_only"] = True
         scope["scope_hash"] = _hash(row.input_snapshot_json.get("analysis_scope", {}))
+        warnings = deepcopy(result.get("warnings", []))
+        # Wave4 convergence certifies mean stability, not percentile tails.
+        limitations = ["TAIL_PERCENTILE_CONVERGENCE_NOT_CERTIFIED"]
+        if row.analysis_type == "SCHEDULE_QRA":
+            limitations.extend(
+                [
+                    "SCHEDULE_QRA_NORMALIZED_ELAPSED_TIME_ONLY",
+                    "P6_WORK_CALENDARS_NOT_REPRODUCED",
+                    "ACTUAL_PROGRESS_AND_REMAINING_DURATION_NOT_SUPPORTED",
+                ]
+            )
         return {
             "provider_key": PROVIDER_KEY,
+            "provider_contract_version": "1.1",
             "source_module": "QRA_CALCULATION_ENGINE",
             "evidence_type": "QRA_RESULT",
             "scope": "EACH_PROJECT",
@@ -866,20 +879,39 @@ class QraEngineService(QraFoundationService):
             "analysis_scope": scope,
             "result_semantics": semantics,
             "model_definition_id": row.model_definition_id,
+            "model_number": row.model_number,
+            "model_version": row.model_version,
             "model_hash": row.model_hash,
             "run_hash": row.result_snapshot_hash,
             "trace_hash": row.trace_hash,
             "engine_version": row.engine_version,
+            "methodology_id": row.configuration_id,
+            "methodology_revision": row.configuration_revision,
+            "methodology_hash": row.configuration_hash,
+            "review_id": review.id if review else None,
+            "accepted_review_id": review.id if review else None,
+            "accepted_status": review.status if review else "NOT_REVIEWED",
+            "accepted": bool(review and review.status == "ACCEPTED"),
+            "accepted_at": _json(review.accepted_at) if review else None,
             "selected_percentiles": deepcopy(result.get("percentiles", [])),
             "target_probabilities": probabilities,
             "convergence": deepcopy(result.get("convergence", {})),
+            "convergence_status": result.get("convergence", {}).get("status"),
+            "tail_convergence": "NOT_CERTIFIED",
+            "tail_convergence_certified": False,
+            # Execution capability is not acceptance/currentness. The Gate
+            # adapter separately evaluates the present Project capability fit.
+            "engine_capability_fit": "SUPPORTED_WITH_LIMITATIONS" if row.status == "COMPLETED" else "NOT_EVALUATED",
+            "capability_as_of": _json(row.completed_at),
+            "capability_limitations": limitations,
             "status": "AVAILABLE" if available else "UNAVAILABLE",
             "source_current": available,
             "evidence_hash": review.acceptance_hash if available else None,
             "acceptance_hash": review.acceptance_hash if review else None,
             "quality": result.get("result_quality"),
             "readiness": result.get("analytical_readiness"),
-            "warnings": deepcopy(result.get("warnings", [])),
+            "analytical_readiness": result.get("analytical_readiness"),
+            "warnings": sorted(set(warnings + limitations)),
             "blockers": sorted(set(blockers)),
             "as_of": _json(row.completed_at),
             "evidence_refs": [{"reference": f"qra-run:{row.id}", "hash": row.result_snapshot_hash}],
@@ -887,32 +919,68 @@ class QraEngineService(QraFoundationService):
             "raw_samples": "NOT_EXPOSED",
         }
 
-    def provider_evidence(self, project_id, analysis_type=None):
+    def provider_evidence(self, project_id, analysis_type=None, *, scope_requirement=None, analysis_scope=None):
         self._permission("read", project_id)
+        if analysis_type is not None and analysis_type not in {"COST_QRA", "SCHEDULE_QRA"}:
+            self._error(422, "QRA_ANALYSIS_TYPE_NOT_SUPPORTED")
         query = (
             select(QraRun)
             .join(QraRunReview, QraRunReview.run_id == QraRun.id)
             .where(
                 QraRun.tenant_id == self.tenant_id,
                 QraRun.project_workspace_id == project_id,
+                QraRunReview.tenant_id == self.tenant_id,
+                QraRun.status == "COMPLETED",
                 QraRunReview.status == "ACCEPTED",
             )
         )
         if analysis_type:
             query = query.where(QraRun.analysis_type == analysis_type)
-        row = self.db.scalar(query.order_by(QraRun.id.desc()).limit(1))
+        if scope_requirement == "WHOLE_PROJECT":
+            query = query.where(QraRun.input_snapshot_json["analysis_scope"]["type"].as_string() == "ENTIRE_PROJECT")
+        # The existing governed rule is newest accepted attempt by immutable ID
+        # within an analysis and scope. Never fall back to a superseded/stale
+        # attempt because it happens to satisfy a quality threshold.
+        if analysis_scope is not None:
+            candidates = self.db.execute(
+                query.with_only_columns(QraRun.id, QraRun.input_snapshot_json["analysis_scope"]).order_by(
+                    QraRun.id.desc()
+                )
+            )
+            run_id = next((rid for rid, scope in candidates if scope == analysis_scope), None)
+            row = self._run(run_id) if run_id is not None else None
+        else:
+            row = self.db.scalar(query.order_by(QraRun.id.desc()).limit(1))
         if row:
             return self.evidence(row.id)
+        reason = "QRA_ACCEPTED_RESULT_REQUIRED"
+        if scope_requirement == "WHOLE_PROJECT":
+            other = self.db.scalar(
+                select(QraRun.id)
+                .join(QraRunReview, QraRunReview.run_id == QraRun.id)
+                .where(
+                    QraRun.tenant_id == self.tenant_id,
+                    QraRun.project_workspace_id == project_id,
+                    QraRunReview.tenant_id == self.tenant_id,
+                    QraRunReview.status == "ACCEPTED",
+                    QraRun.analysis_type == analysis_type if analysis_type else True,
+                )
+                .limit(1)
+            )
+            if other is not None:
+                reason = "QRA_SCOPE_MISMATCH"
         return {
             "provider_key": PROVIDER_KEY,
+            "provider_contract_version": "1.1",
             "source_module": "QRA_CALCULATION_ENGINE",
             "evidence_type": "QRA_RESULT",
             "scope": "EACH_PROJECT",
             "project_id": project_id,
+            "analysis_type": analysis_type,
             "status": "UNAVAILABLE",
             "source_current": False,
             "evidence_hash": None,
-            "blockers": ["QRA_ACCEPTED_RESULT_REQUIRED"],
+            "blockers": [reason],
             "not_investment_approval": True,
         }
 

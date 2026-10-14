@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.time import utc_now
@@ -29,8 +29,19 @@ from app.modules.investment_evidence_policy.decision_criteria import (
     CONTROLLED_OPERATORS,
     DECISION_CRITERION_TYPES,
     EVIDENCE_QUALITY_STATES,
+    _criterion_applicable,
     decision_criterion_policy,
+    evaluate_criteria,
     validate_criterion_policy,
+)
+from app.modules.investment_evidence_policy.qra_evidence import (
+    QRA_EVIDENCE_TYPES,
+    SCHEDULE_LIMITATIONS,
+    apply_qra_context,
+    is_qra_requirement,
+    qra_policy_issues,
+    qra_result_issues,
+    qra_summary,
 )
 from app.modules.investment_evidence_policy.schemas import (
     PolicyConfigurationOut,
@@ -40,6 +51,8 @@ from app.modules.investment_evidence_policy.schemas import (
 )
 from app.modules.permit_readiness.service import PermitReadinessService
 from app.modules.portfolio_convergence.service import PortfolioConvergenceService
+from app.modules.portfolio_planning.models import PortfolioProjectMembership
+from app.modules.project_definition.models import ProjectFELStatus
 from app.modules.project_definition.service import ProjectDefinitionService
 from app.modules.risk_readiness.service import RiskReadinessService
 from app.modules.strategic_benefits.service import StrategicBenefitsService
@@ -80,6 +93,8 @@ EVIDENCE_TYPES = (
     "STAKEHOLDER_READINESS",
     "TECHNICAL_ASSURANCE",
     "OTHER_GOVERNED_EVIDENCE",
+    "COST_QRA_RESULT",
+    "SCHEDULE_QRA_RESULT",
 )
 
 REQUIRED_PROVIDER_FIELDS = {
@@ -272,6 +287,9 @@ PROVIDER_REGISTRY: dict[str, dict[str, Any]] = {
 # Compatibility is registry metadata only.  It does not add or reclassify a
 # requirement in any published/default Gate07J-EVID policy.
 PROVIDER_REGISTRY["COMMERCIAL_READINESS_PROVIDER"]["compatible_evidence_types"] = ["CONTRACTING_STRATEGY_READINESS"]
+PROVIDER_REGISTRY["QRA_RESULT_PROVIDER"]["compatible_evidence_types"] = list(QRA_EVIDENCE_TYPES)
+PROVIDER_REGISTRY["QRA_RESULT_PROVIDER"]["analysis_types"] = list(QRA_EVIDENCE_TYPES.values())
+PROVIDER_REGISTRY["QRA_RESULT_PROVIDER"]["version"] = "1.1"
 
 
 def _requirement(
@@ -846,9 +864,32 @@ class InvestmentEvidencePolicyService:
             raise HTTPException(status_code=404, detail="Investment evidence provider not found")
         return self._provider_out(value)
 
-    def clone_configuration(self, configuration_id: int, expected_version: int) -> AdminConfiguration:
+    @staticmethod
+    def _clone_name(source_name: str, suffix: str) -> str:
+        """Bound the display prefix, retaining the complete new revision suffix."""
+        limit = AdminConfiguration.__table__.c.name.type.length
+        return source_name[: limit - len(suffix)].rstrip() + suffix
+
+    def clone_configuration(
+        self, configuration_id: int, expected_version: int, idempotency_key: str | None = None
+    ) -> AdminConfiguration:
         source = self._configuration(configuration_id, lock=True)
         self._check_version(source.version, expected_version)
+        if idempotency_key:
+            request_hash = _hash(
+                {"source_id": source.id, "expected_version": expected_version, "actor_id": self.actor_id}
+            )
+            events = self.db.scalars(
+                select(SecurityEvent).where(
+                    SecurityEvent.tenant_id == self.tenant_id,
+                    SecurityEvent.event_type == "investment_evidence_policy.cloned",
+                )
+            ).all()
+            previous = next((e for e in events if e.metadata_json.get("idempotency_key") == idempotency_key), None)
+            if previous:
+                if previous.metadata_json.get("request_hash") != request_hash:
+                    raise HTTPException(status_code=409, detail={"code": "IDEMPOTENCY_KEY_REUSED"})
+                return self._configuration(previous.target_id)
         revision = (
             int(
                 self.db.scalar(
@@ -866,7 +907,7 @@ class InvestmentEvidencePolicyService:
             tenant_id=self.tenant_id,
             kind=CONFIGURATION_KIND,
             code=source.code,
-            name=f"{source.name} · revision {revision}",
+            name=self._clone_name(source.name, f" · revision {revision}"),
             description=source.description,
             status="draft",
             revision=revision,
@@ -877,7 +918,19 @@ class InvestmentEvidencePolicyService:
         )
         self.db.add(clone)
         self.db.flush()
-        self._event("investment_evidence_policy.cloned", "AdminConfiguration", clone.id, {})
+        self._event(
+            "investment_evidence_policy.cloned",
+            "AdminConfiguration",
+            clone.id,
+            {
+                "source_policy_id": source.id,
+                "source_policy_revision": source.revision,
+                "source_policy_hash": source.content_hash,
+                "source_policy_name": source.name,
+                "clone_name": clone.name,
+                **({"idempotency_key": idempotency_key, "request_hash": request_hash} if idempotency_key else {}),
+            },
+        )
         self.db.commit()
         return clone
 
@@ -934,7 +987,7 @@ class InvestmentEvidencePolicyService:
             tenant_id=self.tenant_id,
             kind=CONFIGURATION_KIND,
             code=source.code,
-            name=f"{source.name} · Gate 07J-EVID-2 revision {revision}",
+            name=self._clone_name(source.name, f" · Gate 07J-EVID-2 revision {revision}"),
             description=(
                 "Governed Gate evidence policy with a separate decision-criteria layer; "
                 "DRAFT until explicitly previewed and published."
@@ -948,8 +1001,9 @@ class InvestmentEvidencePolicyService:
         )
         self.db.add(clone)
         self.db.flush()
-        self._event("investment_evidence_policy.cloned", "AdminConfiguration", clone.id, marker)
-        self._event("gate_policy.cloned", "AdminConfiguration", clone.id, marker)
+        audit_marker = {**marker, "source_policy_name": source.name, "clone_name": clone.name}
+        self._event("investment_evidence_policy.cloned", "AdminConfiguration", clone.id, audit_marker)
+        self._event("gate_policy.cloned", "AdminConfiguration", clone.id, audit_marker)
         self._event(
             "gate_criterion.created",
             "AdminConfiguration",
@@ -1002,9 +1056,23 @@ class InvestmentEvidencePolicyService:
         if record.status != "draft":
             raise HTTPException(status_code=409, detail={"code": "POLICY_NOT_DRAFT"})
         content = deepcopy(record.content_json)
+        if content.get("sod", {}).get("author_must_differ_from_publisher"):
+            authors = {record.created_by_user_id}
+            events = self.db.scalars(
+                select(SecurityEvent).where(
+                    SecurityEvent.tenant_id == self.tenant_id,
+                    SecurityEvent.target_type == "AdminConfiguration",
+                    SecurityEvent.target_id == record.id,
+                    SecurityEvent.event_type == "investment_evidence_policy.updated",
+                )
+            ).all()
+            authors.update(event.user_id for event in events)
+            if self.actor_id in authors:
+                raise HTTPException(status_code=403, detail={"code": "POLICY_AUTHOR_PUBLISHER_SOD_VIOLATION"})
         if not content.get("effective_from"):
             content["effective_from"] = utc_now().isoformat()
         self._validate_policy(content)
+        self._validate_qra_output_contract(content)
         effective_from = _effective_datetime(content)
         scope = dict(record.content_json.get("scope", {}))
         for previous in self.configurations():
@@ -1150,6 +1218,43 @@ class InvestmentEvidencePolicyService:
         )
         criterion_policy = decision_criterion_policy(content) if content.get("decision_criterion_policy") else {}
         decision_criteria = deepcopy(criterion_policy.get("criteria_by_profile", {}).get(gate_profile_code, []))
+        qra_criteria = [item for item in decision_criteria if item.get("source_evidence_type") in QRA_EVIDENCE_TYPES]
+        if qra_criteria:
+            evaluations = evaluate_criteria(
+                qra_criteria,
+                [
+                    {
+                        **deepcopy(item),
+                        "scope_id": item.get("project_workspace_id"),
+                        "source_payload": deepcopy(item.get("qra_summary") or {}),
+                    }
+                    for item in evidence
+                    if item["evidence_type"] in QRA_EVIDENCE_TYPES
+                ],
+                {},
+                self._resolved_project_contexts(projects, matrix),
+                policy_revision=record.revision if record else None,
+                policy_hash=_hash(content),
+                evaluated_at=utc_now().isoformat(),
+            )
+            for criterion in decision_criteria:
+                if criterion.get("source_evidence_type") in QRA_EVIDENCE_TYPES:
+                    criterion["preview_evaluations"] = [
+                        item for item in evaluations if item["criterion_code"] == criterion.get("criterion_code")
+                    ]
+            blockers = sorted(
+                set(blockers)
+                | {
+                    f"MANDATORY_CRITERION_NOT_SATISFIED:{item['criterion_code']}"
+                    for item in evaluations
+                    if item.get("criterion_type") in {"MUST_MEET", "DECISION_HURDLE"}
+                    and item.get("required")
+                    and item.get("blocking")
+                    and item["result"] not in {"SATISFIED", "NOT_APPLICABLE"}
+                }
+            )
+            warnings = sorted(set(warnings) | {warning for item in evaluations for warning in item.get("warnings", [])})
+            would_be_ready = would_be_ready and not blockers
         criterion_issues = validate_criterion_policy(content, set(EVIDENCE_TYPES)) if criterion_policy else []
         return PolicyPreviewOut(
             policy={
@@ -1162,7 +1267,7 @@ class InvestmentEvidencePolicyService:
             },
             gate_profile_code=gate_profile_code,
             portfolio_workspace_id=portfolio_id,
-            project_contexts=[self._project_context(item) for item in projects],
+            project_contexts=self._resolved_project_contexts(projects, matrix),
             effective_matrix=matrix,
             provider_registry_snapshot=self.providers(),
             current_evidence_status=evidence,
@@ -1234,7 +1339,7 @@ class InvestmentEvidencePolicyService:
                     }
                 }
                 for item in matrix
-                if item["evidence_type"] == requirement["evidence_type"]
+                if item["requirement_key"] == requirement["requirement_key"]
                 and item.get("project_workspace_id") is not None
             }
             if resolutions:
@@ -1257,11 +1362,15 @@ class InvestmentEvidencePolicyService:
             "policy_id": record.id,
             "policy_revision": record.revision,
             "policy_hash": record.content_hash,
+            "published_at": record.published_at.isoformat() if record.published_at else None,
+            "effective_from": record.content_json.get("effective_from"),
+            "scope": deepcopy(record.content_json.get("scope", {})),
+            "new_round_policy": "CURRENT_EFFECTIVE_POLICY_AT_NEW_OR_EXPLICIT_REFRESH_PREPARATION",
             "gate_profile_code": gate_profile_code,
             "requirements": requirements,
             "effective_matrix": matrix,
             "provider_registry_snapshot": [item.model_dump(mode="json") for item in self.providers()],
-            "project_contexts": [self._project_context(item) for item in projects],
+            "project_contexts": self._resolved_project_contexts(projects, matrix),
             "decision_criterion_policy": (
                 {
                     "policy_id": record.id,
@@ -1301,11 +1410,34 @@ class InvestmentEvidencePolicyService:
         scope = str(requirement.get("scope"))
         if not self._scope_supported(provider, scope):
             return None, "SCOPE_UNSUPPORTED"
+        if is_qra_requirement(requirement):
+            determination = requirement.get("qra_applicability", {})
+            if determination.get("outcome") == "NOT_EVALUABLE":
+                return None, "QRA_APPLICABILITY_NOT_EVALUABLE"
+            if scope_id is None:
+                return None, "QRA_PROJECT_SCOPE_REQUIRED"
+            self._assert_scope(scope_id)
         try:
-            payload = self._provider_payload(str(provider_key), contract, scope, scope_id)
+            payload = (
+                self._qualified_qra_payload(requirement, scope_id)
+                if is_qra_requirement(requirement)
+                else self._provider_payload(str(provider_key), contract, scope, scope_id)
+            )
         except HTTPException:
             payload = None
+        if payload and payload.get("_qra_unavailable"):
+            if requirement.get("qra_policy", {}).get(
+                "analysis_type"
+            ) == "SCHEDULE_QRA" and self._schedule_context_unsupported(scope_id):
+                return None, "ENGINE_CAPABILITY_NOT_SUPPORTED"
+            return None, payload["_qra_unavailable"][0]
         if payload is None:
+            if (
+                is_qra_requirement(requirement)
+                and requirement.get("qra_policy", {}).get("analysis_type") == "SCHEDULE_QRA"
+            ):
+                if self._schedule_context_unsupported(scope_id):
+                    return None, "ENGINE_CAPABILITY_NOT_SUPPORTED"
             return None, "SOURCE_EVIDENCE_UNAVAILABLE"
         # One governed source may expose several explicitly registered evidence
         # aliases (for example FEL also supplies definition, PDRI and estimate
@@ -1315,12 +1447,254 @@ class InvestmentEvidencePolicyService:
         issues = self.validate_provider_contract(payload)
         if issues:
             return None, "PROVIDER_CONTRACT_INVALID"
+        if is_qra_requirement(requirement) and "ENGINE_CAPABILITY_NOT_SUPPORTED" in payload.get("blockers", []):
+            return payload, "ENGINE_CAPABILITY_NOT_SUPPORTED"
         if not payload["source_current"]:
             return payload, "SOURCE_STALE"
+        if is_qra_requirement(requirement):
+            blockers = payload.get("blockers", [])
+            return payload, blockers[0] if blockers else None
         minimum = str(requirement.get("minimum_readiness_status") or "").upper()
         if minimum and str(payload["readiness_status"]).upper() not in {minimum, "VALID", "READY"}:
             return payload, "MINIMUM_READINESS_NOT_MET"
         return payload, None
+
+    def qra_requirements_for_project(
+        self, project_id: int, gate_profile_code: str | None = None, *, portfolio_id: int | None = None
+    ) -> dict:
+        """Resolve policy/context only; safe for BC without a BC-provider cycle."""
+        self._assert_scope(project_id)
+        projects = self._projects([project_id])
+        if not projects:
+            raise HTTPException(status_code=404, detail="Project workspace not found")
+        project = projects[0]
+        metadata = dict((project.defaults_json or {}).get("_project", {}))
+        profile = gate_profile_code or metadata.get("gate_profile") or metadata.get("gate_profile_code")
+        if not profile:
+            return {"policy_ref": {}, "gate_profile_code": None, "requirements": []}
+        if profile not in {"PYP-FFA", "PYP-INV-SELECT"}:
+            raise HTTPException(status_code=422, detail={"code": "GATE_PROFILE_NOT_CONFIGURED"})
+        policy_workspace, portfolio_context = self._qra_policy_workspace(project, portfolio_id, profile)
+        record = self._effective_configuration(policy_workspace)
+        if record is None:
+            return {
+                "policy_ref": {},
+                "gate_profile_code": profile,
+                "requirements": [],
+                "portfolio_context": portfolio_context,
+            }
+        rows = self._effective_matrix(record.content_json, profile, projects)
+        return {
+            "policy_ref": {
+                "policy_id": record.id,
+                "policy_revision": record.revision,
+                "policy_hash": record.content_hash,
+                "effective_from": record.content_json.get("effective_from"),
+                "published_at": record.published_at.isoformat() if record.published_at else None,
+                "portfolio_context": deepcopy(portfolio_context),
+            },
+            "gate_profile_code": profile,
+            "requirements": [row for row in rows if is_qra_requirement(row)],
+            "portfolio_context": portfolio_context,
+        }
+
+    def _qra_policy_workspace(
+        self, project: EnterpriseWorkspace, portfolio_id: int | None, gate_profile_code: str | None = None
+    ) -> tuple[EnterpriseWorkspace, dict]:
+        """Resolve the governed analytical membership without reparenting.
+
+        BC can supply its Proposal's declared target Portfolio. Otherwise only
+        an unambiguous current membership is usable; N:M ordering or a newer
+        policy is not authority to choose a Portfolio for investment evidence.
+        """
+        now = utc_now()
+        declared_portfolio_id = portfolio_id
+        memberships = list(
+            self.db.scalars(
+                select(PortfolioProjectMembership).where(
+                    PortfolioProjectMembership.tenant_id == self.tenant_id,
+                    PortfolioProjectMembership.project_workspace_id == project.id,
+                    PortfolioProjectMembership.status == "ACTIVE",
+                    PortfolioProjectMembership.effective_from <= now,
+                    or_(
+                        PortfolioProjectMembership.effective_to.is_(None),
+                        PortfolioProjectMembership.effective_to >= now,
+                    ),
+                )
+            ).all()
+        )
+        ancestors = [row for row in self._workspace_path(project) if row.workspace_type_code == "portfolio"]
+        if portfolio_id is not None:
+            candidates = [row for row in memberships if row.portfolio_workspace_id == portfolio_id]
+            if not candidates and not any(row.id == portfolio_id for row in ancestors):
+                raise HTTPException(status_code=409, detail={"code": "QRA_PROJECT_PORTFOLIO_CONTEXT_NOT_GOVERNED"})
+        else:
+            candidates = memberships
+            if len({row.portfolio_workspace_id for row in candidates}) > 1:
+                profile = gate_profile_code or (project.defaults_json or {}).get("_project", {}).get("gate_profile")
+                workspaces = list(
+                    self.db.scalars(
+                        select(EnterpriseWorkspace).where(
+                            EnterpriseWorkspace.tenant_id == self.tenant_id,
+                            EnterpriseWorkspace.id.in_([row.portfolio_workspace_id for row in candidates]),
+                            EnterpriseWorkspace.workspace_type_code == "portfolio",
+                        )
+                    ).all()
+                ) + [project]
+                for workspace in workspaces:
+                    policy = self._effective_configuration(workspace)
+                    if policy is None:
+                        continue
+                    profiles = [profile] if profile else list(policy.content_json.get("gate_profiles", {}))
+                    for configured_profile in profiles:
+                        matrix = self._effective_matrix(policy.content_json, configured_profile, [project])
+                        if any(
+                            is_qra_requirement(row)
+                            and row.get("classification") != "C"
+                            and row.get("qra_applicability", {}).get("required")
+                            for row in matrix
+                        ):
+                            raise HTTPException(status_code=409, detail={"code": "QRA_PORTFOLIO_CONTEXT_NOT_EVALUABLE"})
+                # Default policies without contextual QRA must not introduce a
+                # new blocker into legacy multi-Portfolio Business Cases.
+                return project, {
+                    "status": "NOT_REQUIRED",
+                    "source": "PORTFOLIO_PROJECT_MEMBERSHIPS",
+                    "selection": "NO_APPLICABLE_QRA_REQUIREMENT",
+                    "portfolio_ids": sorted({row.portfolio_workspace_id for row in candidates}),
+                }
+            portfolio_id = (
+                candidates[0].portfolio_workspace_id if candidates else ancestors[-1].id if ancestors else None
+            )
+        if portfolio_id is None:
+            return project, {"status": "NO_PORTFOLIO_CONTEXT", "source": "CANONICAL_WORKSPACE_ANCESTRY"}
+        workspace = self.db.scalar(
+            select(EnterpriseWorkspace).where(
+                EnterpriseWorkspace.tenant_id == self.tenant_id,
+                EnterpriseWorkspace.id == portfolio_id,
+                EnterpriseWorkspace.workspace_type_code == "portfolio",
+            )
+        )
+        if workspace is None:
+            raise HTTPException(status_code=409, detail={"code": "QRA_PROJECT_PORTFOLIO_CONTEXT_NOT_GOVERNED"})
+        membership = candidates[0] if candidates else None
+        return workspace, {
+            "status": "GOVERNED",
+            "source": "PORTFOLIO_PROJECT_MEMBERSHIP" if membership else "CANONICAL_WORKSPACE_ANCESTRY",
+            "portfolio_workspace_id": workspace.id,
+            "portfolio_id": workspace.id,
+            "membership_id": membership.id if membership else None,
+            "membership_revision": membership.revision_version if membership else None,
+            "effective_from": membership.effective_from.isoformat() if membership else None,
+            "effective_to": membership.effective_to.isoformat() if membership and membership.effective_to else None,
+            "selection": "WORKSPACE_ANCESTRY"
+            if membership is None
+            else "PROPOSAL_TARGET"
+            if declared_portfolio_id is not None
+            else "UNIQUE_ACTIVE_MEMBERSHIP",
+        }
+
+    def _qualified_qra_payload(self, requirement: dict, project_id: int) -> dict | None:
+        from app.modules.qra_engine.service import QraEngineService
+
+        qra = requirement.get("qra_policy", {})
+        value = QraEngineService(self.db, self.tenant_id, self.actor_id).provider_evidence(
+            project_id, analysis_type=qra.get("analysis_type"), scope_requirement=qra.get("scope_requirement")
+        )
+        if not value.get("run_id") or not value.get("acceptance_hash"):
+            blockers = value.get("blockers", [])
+            return {"_qra_unavailable": blockers} if blockers else None
+        # Stale accepted evidence keeps its immutable identity visible, but
+        # source_current=False prevents it from satisfying any current Gate.
+        value["evidence_hash"] = value.get("evidence_hash") or value["acceptance_hash"]
+        summary = qra_summary(value, qra)
+        blockers = list(value.get("blockers", [])) + qra_result_issues(requirement, value, now=utc_now())
+        if qra.get("analysis_type") == "SCHEDULE_QRA" and self._schedule_context_unsupported(project_id):
+            blockers.append("ENGINE_CAPABILITY_NOT_SUPPORTED")
+        warnings = list(value.get("warnings", []))
+        convergence = value.get("convergence", {}).get("status")
+        if convergence == "NOT_CONVERGED":
+            warnings.append("NOT_CONVERGED")
+        warnings.append("MEAN_CONVERGENCE_ONLY_NO_TAIL_CERTIFICATION")
+        if qra.get("analysis_type") == "SCHEDULE_QRA":
+            warnings.extend(SCHEDULE_LIMITATIONS)
+        determination = deepcopy(requirement.get("qra_applicability", {}))
+        determination["capability_fit"] = (
+            "NOT_SUPPORTED"
+            if "ENGINE_CAPABILITY_NOT_SUPPORTED" in blockers
+            else "SUPPORTED_WITH_LIMITATIONS"
+            if qra.get("analysis_type") == "SCHEDULE_QRA"
+            else "SUPPORTED"
+        )
+        summary.update(
+            qra_applicability=determination,
+            warnings=sorted(set(warnings)),
+            blockers=sorted(set(blockers)),
+            readiness_status=value.get("analytical_readiness") or value.get("readiness"),
+            as_of_date=str(value.get("as_of", "")).split("T")[0],
+        )
+        return self._normalized_provider_payload(
+            evidence_type=requirement["evidence_type"],
+            scope=requirement["scope"],
+            readiness_status=summary["readiness_status"],
+            source_current=bool(value.get("source_current")),
+            evidence_hash=value["evidence_hash"],
+            as_of_date=summary["as_of_date"],
+            warnings=summary["warnings"],
+            blockers=summary["blockers"],
+            source_module="QRA_CALCULATION_ENGINE",
+            source_record_id=str(value["run_id"]),
+            summary=f"Accepted {value['analysis_type']} run {value['run_number']}; analytical evidence, not approval.",
+            evidence_refs=[summary],
+            qra_summary=summary,
+            qra_applicability=determination,
+        )
+
+    def _schedule_context_unsupported(self, project_id: int) -> bool:
+        """Read imported metadata only; no CPM or duration reconciliation."""
+        from app.domain.models import ScheduleImport
+        from app.modules.qra_foundation.adapters import SourceAdapters
+
+        projects = self._projects([project_id])
+        if not projects:
+            return False
+        project = projects[0]
+        operational = SourceAdapters(self.db, self.tenant_id).operational_project(project)
+        if operational is None:
+            return False
+        metadata = self.db.scalar(
+            select(ScheduleImport.source_metadata)
+            .where(ScheduleImport.tenant_id == self.tenant_id, ScheduleImport.project_id == operational.id)
+            .order_by(ScheduleImport.imported_at.desc(), ScheduleImport.id.desc())
+            .limit(1)
+        )
+        if not metadata:
+            return False
+        for activity in metadata.get("activities", []):
+            if not isinstance(activity, dict):
+                continue
+            status = (
+                str(activity.get("activity_status") or activity.get("status") or "")
+                .strip()
+                .upper()
+                .replace(" ", "")
+                .replace("_", "")
+                .replace("-", "")
+            )
+            if status and status not in {"NOTSTARTED", "TKNOTSTART"}:
+                return True
+            if activity.get("actual_start") or activity.get("actual_finish"):
+                return True
+            progress = activity.get("percent_complete") or activity.get("physical_percent_complete") or 0
+            try:
+                if float(progress) != 0:
+                    return True
+            except (TypeError, ValueError):
+                return True
+            original, remaining = activity.get("original_duration"), activity.get("remaining_duration")
+            if remaining is not None and original != remaining:
+                return True
+        return False
 
     @staticmethod
     def validate_provider_contract(payload: dict) -> list[str]:
@@ -1380,6 +1754,7 @@ class InvestmentEvidencePolicyService:
                 "provider_key": requirement.get("provider_key"),
                 "warnings": [],
                 "blockers": [],
+                "qra_applicability": deepcopy(requirement.get("qra_applicability")),
             }
             if requirement["classification"] == "C":
                 item.update(status="NOT_REQUIRED", reason="CLASS_C")
@@ -1389,7 +1764,9 @@ class InvestmentEvidencePolicyService:
                     item["blockers"] = ["MANUAL_EVIDENCE_NOT_VALIDATED"]
                 else:
                     item["warnings"] = ["MANUAL_EVIDENCE_NOT_VALIDATED"]
-            elif portfolio_id is None or contract is None:
+            elif (portfolio_id is None or contract is None) and not (
+                is_qra_requirement(requirement) and requirement.get("project_workspace_id")
+            ):
                 provider = PROVIDER_REGISTRY.get(str(requirement.get("provider_key") or ""))
                 if provider and provider.get("status") == "AVAILABLE":
                     item.update(status="PROVIDER_AVAILABLE", reason="SOURCE_NOT_EVALUATED")
@@ -1400,8 +1777,13 @@ class InvestmentEvidencePolicyService:
                     item.update(status="MANUAL_EVIDENCE_REQUIRED", reason="GOVERNED_EVIDENCE_SUFFICIENT")
             else:
                 payload, error = self.resolve_governed_payload(
-                    requirement, contract, requirement.get("project_workspace_id")
+                    requirement, contract or {}, requirement.get("project_workspace_id")
                 )
+                if payload and is_qra_requirement(requirement):
+                    item.update(
+                        qra_summary=deepcopy(payload.get("qra_summary")),
+                        qra_applicability=deepcopy(payload.get("qra_applicability")),
+                    )
                 if payload and not error:
                     item.update(
                         status="VALID",
@@ -1421,6 +1803,11 @@ class InvestmentEvidencePolicyService:
                 else:
                     item.update(status=error or "SOURCE_EVIDENCE_UNAVAILABLE", reason="NO_SILENT_FALLBACK")
                     item["blockers"] = [error or "SOURCE_EVIDENCE_UNAVAILABLE"]
+                    if payload:
+                        item["warnings"] = payload.get("warnings", [])
+                        item["blockers"] = sorted(set(item["blockers"] + payload.get("blockers", [])))
+                    if error == "ENGINE_CAPABILITY_NOT_SUPPORTED" and item.get("qra_applicability"):
+                        item["qra_applicability"]["capability_fit"] = "NOT_SUPPORTED"
             output.append(item)
         return output
 
@@ -1915,6 +2302,23 @@ class InvestmentEvidencePolicyService:
         profile = content.get("gate_profiles", {}).get(gate_profile_code)
         if profile is None:
             raise HTTPException(status_code=422, detail={"code": "GATE_PROFILE_NOT_CONFIGURED"})
+        # Read the existing governed FEL stage once; never infer maturity from a
+        # draft assessment, mutate FEL status, or invoke its readiness engine.
+        fel_contexts: dict[int, dict] = {}
+        if projects and any(is_qra_requirement(row) for row in profile.get("requirements", [])):
+            fel_rows = self.db.execute(
+                select(
+                    ProjectFELStatus.project_workspace_id,
+                    ProjectFELStatus.id,
+                    ProjectFELStatus.current_stage_code,
+                    ProjectFELStatus.revision_version,
+                    ProjectFELStatus.definition_source_hash,
+                ).where(
+                    ProjectFELStatus.tenant_id == self.tenant_id,
+                    ProjectFELStatus.project_workspace_id.in_([project.id for project in projects]),
+                )
+            ).mappings()
+            fel_contexts = {int(row["project_workspace_id"]): dict(row) for row in fel_rows}
         output: list[dict] = []
         for base in sorted(profile.get("requirements", []), key=lambda item: int(item.get("order", 0))):
             scope = base.get("scope")
@@ -1926,6 +2330,15 @@ class InvestmentEvidencePolicyService:
                 if project is not None:
                     effective = self._apply_override(content, gate_profile_code, effective, project)
                     context = self._project_context(project)
+                    if is_qra_requirement(effective) and project.id in fel_contexts:
+                        fel = fel_contexts[project.id]
+                        context["fel_stage"] = fel["current_stage_code"]
+                        context["fel_source"] = {
+                            "provider": "PROJECT_FEL_STATUS",
+                            "id": fel["id"],
+                            "revision": fel["revision_version"],
+                            "hash": fel["definition_source_hash"],
+                        }
                     if context["governance_model"] not in set(content.get("applicable_governance_models", [])):
                         effective.update(
                             classification="C",
@@ -1966,6 +2379,22 @@ class InvestmentEvidencePolicyService:
                             rationale="Recommended Project Set governance is outside policy applicability.",
                         )
                 provider = PROVIDER_REGISTRY.get(str(effective.get("provider_key") or ""))
+                if is_qra_requirement(effective):
+                    effective = apply_qra_context(effective, context)
+                    if context.get("governance_model") and context["governance_model"] not in set(
+                        content.get("applicable_governance_models", [])
+                    ):
+                        # A row cannot widen its parent policy's governed scope.
+                        determination = effective["qra_applicability"]
+                        determination.update(outcome="NOT_APPLICABLE", required=False, capability_fit="NOT_APPLICABLE")
+                        determination["reasons"] = ["OUTSIDE_PUBLISHED_POLICY_GOVERNANCE_SCOPE"]
+                        effective.update(
+                            classification="C",
+                            required=False,
+                            blocking=False,
+                            provider_required=False,
+                            allow_manual_reference=False,
+                        )
                 effective.update(
                     gate_profile_code=gate_profile_code,
                     **context,
@@ -2202,6 +2631,7 @@ class InvestmentEvidencePolicyService:
                     issues.append(f"INVALID_REQUIREMENT_KEY:{profile_code}")
                 keys.add(key)
                 classification = row.get("classification")
+                issues.extend(f"{issue}:{profile_code}:{key}" for issue in qra_policy_issues(row))
                 if row.get("evidence_type") not in EVIDENCE_TYPES:
                     issues.append(f"INVALID_EVIDENCE_TYPE:{profile_code}:{key}")
                 if classification not in CLASSIFICATIONS:
@@ -2240,12 +2670,317 @@ class InvestmentEvidencePolicyService:
                 issues.append("INVALID_PROJECT_TYPE_OVERRIDE")
             if not override.get("project_type_filter"):
                 issues.append("PROJECT_TYPE_FILTER_REQUIRED")
+            for row in profiles.get(override.get("gate_profile_code"), {}).get("requirements", []):
+                if row.get("evidence_type") != override.get("evidence_type"):
+                    continue
+                effective = {**deepcopy(row), **deepcopy(override)}
+                if not is_qra_requirement(effective):
+                    continue
+                issues.extend(f"{issue}:PROJECT_TYPE_OVERRIDE" for issue in qra_policy_issues(effective))
+                if effective.get("classification") == "A" and (
+                    effective.get("allow_manual_reference") or not effective.get("provider_required")
+                ):
+                    issues.append("CLASS_A_NO_SILENT_FALLBACK:PROJECT_TYPE_OVERRIDE")
+                if effective.get("classification") == "B" and not effective.get("allow_manual_reference"):
+                    issues.append("CLASS_B_MANUAL_EVIDENCE_REQUIRED:PROJECT_TYPE_OVERRIDE")
+                if effective.get("classification") == "C" and (effective.get("required") or effective.get("blocking")):
+                    issues.append("CLASS_C_MUST_NOT_BLOCK:PROJECT_TYPE_OVERRIDE")
         if content.get("decision_criterion_policy"):
             issues.extend(validate_criterion_policy(content, set(EVIDENCE_TYPES)))
+            for profile_code, criteria in content["decision_criterion_policy"].get("criteria_by_profile", {}).items():
+                qra_rows = [
+                    row for row in profiles.get(profile_code, {}).get("requirements", []) if is_qra_requirement(row)
+                ]
+                for criterion in criteria:
+                    if criterion.get("source_evidence_type") not in QRA_EVIDENCE_TYPES:
+                        continue
+                    matching = [
+                        row for row in qra_rows if row.get("evidence_type") == criterion.get("source_evidence_type")
+                    ]
+                    if not matching:
+                        issues.append(f"QRA_CRITERION_QUALIFIED_REQUIREMENT_REQUIRED:{profile_code}")
+                    config = criterion.get("qra_criterion") or {}
+                    if not isinstance(config, dict):
+                        continue  # Validation above reports the controlled error.
+                    if config.get("metric") == "PERCENTILE" and matching:
+                        percentile = config.get("percentile")
+                        for row in matching:
+                            qra = row.get("qra_policy") or {}
+                            if not isinstance(qra, dict):
+                                continue
+                            selected = qra.get("selected_percentiles", [])
+                            if not isinstance(selected, list):
+                                continue
+                            if percentile not in selected:
+                                issues.append(f"QRA_CRITERION_PERCENTILE_NOT_SELECTED:{profile_code}")
         if issues:
             raise HTTPException(
                 status_code=422, detail={"code": "INVALID_EVIDENCE_POLICY", "issues": sorted(set(issues))}
             )
+
+    def _validate_qra_output_contract(self, content: dict) -> None:
+        """Publication checks stored output contracts, never simulates a model.
+
+        Existing Projects use the Foundation's actual scoped resolution. With no
+        matching live context, a published executable contract covering the
+        configured filters and policy scope is required; a draft/default is not
+        authority to promise an unavailable percentile.
+        """
+        from app.modules.qra_engine.policy import engine_configuration_issues
+        from app.modules.qra_foundation.service import QraFoundationService
+
+        criteria_by_profile = content.get("decision_criterion_policy", {}).get("criteria_by_profile", {})
+        percentile_criteria = {
+            profile: [
+                criterion
+                for criterion in criteria
+                if criterion.get("source_evidence_type") in QRA_EVIDENCE_TYPES
+                and criterion.get("qra_criterion", {}).get("metric") == "PERCENTILE"
+                and criterion.get("status", "ACTIVE") == "ACTIVE"
+            ]
+            for profile, criteria in criteria_by_profile.items()
+        }
+        # A selected output is a published promise even without a numeric Gate
+        # criterion. Validate that promise against the same governed methodology
+        # contract; a missing percentile must not be discovered only at freeze.
+        for profile, configuration in content.get("gate_profiles", {}).items():
+            rows = list(configuration.get("requirements", []))
+            for override in content.get("project_type_overrides", []):
+                if override.get("gate_profile_code") == profile:
+                    rows.extend(
+                        {**deepcopy(row), **deepcopy(override), "_output_override": True}
+                        for row in configuration.get("requirements", [])
+                        if row.get("evidence_type") == override.get("evidence_type")
+                    )
+            for row in rows:
+                if (
+                    not is_qra_requirement(row)
+                    or row.get("classification") == "C"
+                    or row["qra_policy"]["applicability"] in {"NOT_REQUIRED", "NOT_APPLICABLE"}
+                ):
+                    continue
+                for percentile in row["qra_policy"].get("selected_percentiles", []):
+                    percentile_criteria.setdefault(profile, []).append(
+                        {
+                            "source_evidence_type": row["evidence_type"],
+                            "criterion_code": f"SELECTED_OUTPUT:{row['requirement_key']}:{percentile}",
+                            "selected_requirement_key": row["requirement_key"],
+                            "selected_requirement": row,
+                            **(
+                                {
+                                    "project_type_filter": row.get("project_type_filter", ["*"]),
+                                    "governance_model_filter": row.get("governance_model_filter", ["*"]),
+                                }
+                                if row.get("_output_override")
+                                else {}
+                            ),
+                            "qra_criterion": {
+                                "analysis_type": row["qra_policy"]["analysis_type"],
+                                "percentile": percentile,
+                            },
+                        }
+                    )
+        if not any(percentile_criteria.values()):
+            return
+        query = select(EnterpriseWorkspace).where(
+            EnterpriseWorkspace.tenant_id == self.tenant_id, EnterpriseWorkspace.workspace_type_code == "project"
+        )
+        scope_id = content.get("scope", {}).get("workspace_id")
+        scope_workspace = None
+        if scope_id is not None:
+            scope_workspace = self.db.scalar(
+                select(EnterpriseWorkspace).where(
+                    EnterpriseWorkspace.tenant_id == self.tenant_id, EnterpriseWorkspace.id == scope_id
+                )
+            )
+            descendants = (
+                select(EnterpriseWorkspace.id)
+                .where(EnterpriseWorkspace.tenant_id == self.tenant_id, EnterpriseWorkspace.id == scope_id)
+                .cte("qra_contract_scope", recursive=True)
+            )
+            descendants = descendants.union_all(
+                select(EnterpriseWorkspace.id)
+                .join(descendants, EnterpriseWorkspace.parent_id == descendants.c.id)
+                .where(EnterpriseWorkspace.tenant_id == self.tenant_id)
+            )
+            now = utc_now()
+            member_projects = select(PortfolioProjectMembership.project_workspace_id).where(
+                PortfolioProjectMembership.tenant_id == self.tenant_id,
+                PortfolioProjectMembership.portfolio_workspace_id.in_(select(descendants.c.id)),
+                PortfolioProjectMembership.status == "ACTIVE",
+                PortfolioProjectMembership.effective_from <= now,
+                or_(PortfolioProjectMembership.effective_to.is_(None), PortfolioProjectMembership.effective_to >= now),
+            )
+            query = query.where(
+                or_(
+                    EnterpriseWorkspace.id.in_(select(descendants.c.id)),
+                    EnterpriseWorkspace.id.in_(member_projects),
+                )
+            )
+        projects = list(self.db.scalars(query).all())
+        by_id = {project.id: project for project in projects}
+        foundation = QraFoundationService(self.db, self.tenant_id, self.actor_id)
+        resolved: dict[tuple[int, str], tuple] = {}
+        methods = None
+        issues = []
+        for profile, criteria in percentile_criteria.items():
+            if not criteria:
+                continue
+            matrix = self._effective_matrix(content, profile, projects)
+            for criterion in criteria:
+                analysis = criterion["qra_criterion"]["analysis_type"]
+                percentile = criterion["qra_criterion"]["percentile"]
+                matching = [
+                    row
+                    for row in matrix
+                    if row["evidence_type"] == criterion["source_evidence_type"]
+                    and row.get("classification") != "C"
+                    and (
+                        not criterion.get("selected_requirement_key")
+                        or row["requirement_key"] == criterion["selected_requirement_key"]
+                    )
+                    and _criterion_applicable(criterion, row)
+                ]
+                targets = [row for row in matching if row.get("project_workspace_id") in by_id]
+                contracts = []
+                for row in targets:
+                    project = by_id[row["project_workspace_id"]]
+                    key = project.id, profile
+                    if key not in resolved:
+                        metadata = dict((project.defaults_json or {}).get("_project", {}))
+                        context = {
+                            **metadata,
+                            **row,
+                            "gate_profile": profile,
+                            "risk": row.get("project_risk"),
+                            "complexity": row.get("project_complexity"),
+                            "uncertainty": row.get("uncertainty_level"),
+                            "industry": metadata.get("industry", metadata.get("sector", "")),
+                        }
+                        resolved[key] = foundation._effective(project, context)
+                    method, method_content, _chain = resolved[key]
+                    if method is None:
+                        issues.append(f"QRA_PUBLISHED_OUTPUT_CONTRACT_NOT_EVALUABLE:{profile}:{project.id}")
+                    else:
+                        contracts.append(method_content.get("reserved_engine_settings", {}))
+                if not targets:
+                    if methods is None:
+                        path_ids = {workspace.id for workspace in self._workspace_path(scope_workspace)}
+                        today = utc_now().date().isoformat()
+                        methods = [
+                            method
+                            for method in self.db.scalars(
+                                select(AdminConfiguration).where(
+                                    AdminConfiguration.tenant_id == self.tenant_id,
+                                    AdminConfiguration.kind == "qra_methodology_configuration",
+                                    AdminConfiguration.status == "published",
+                                )
+                            ).all()
+                            if (
+                                method.content_json.get("scope", {}).get("workspace_id") is None
+                                or method.content_json.get("scope", {}).get("workspace_id") in path_ids
+                            )
+                            and (method.content_json.get("effective_from") or today) <= today
+                            and (method.content_json.get("effective_to") or today) >= today
+                            and (
+                                method.content_json.get("scope", {}).get("workspace_id") == scope_id
+                                or method.content_json.get("inherit_to_descendants", True)
+                            )
+                        ]
+                    base_rows = [
+                        row
+                        for row in content["gate_profiles"][profile]["requirements"]
+                        if row["evidence_type"] == criterion["source_evidence_type"]
+                        and (
+                            not criterion.get("selected_requirement_key")
+                            or row["requirement_key"] == criterion["selected_requirement_key"]
+                        )
+                    ]
+                    if criterion.get("selected_requirement"):
+                        base_rows = [criterion["selected_requirement"]]
+                    # If every configured row is explicitly optional/inapplicable,
+                    # no mandatory analytical value is promised by this criterion.
+                    if all(
+                        row["qra_policy"]["applicability"] in {"NOT_REQUIRED", "NOT_APPLICABLE"} for row in base_rows
+                    ):
+                        continue
+                    for row in base_rows:
+                        compatible = [
+                            method.content_json.get("reserved_engine_settings", {})
+                            for method in methods
+                            if self._qra_method_filters_cover(method.content_json, row, profile)
+                        ]
+                        compatible = [
+                            settings
+                            for settings in compatible
+                            if settings
+                            and not engine_configuration_issues(settings)
+                            and analysis in settings.get("supported_analysis_types", [])
+                            and percentile in settings.get("percentiles", [])
+                            and (
+                                analysis != "SCHEDULE_QRA"
+                                or criterion.get("selected_requirement_key")
+                                or (
+                                    settings.get("schedule_unit") == criterion["qra_criterion"].get("unit")
+                                    and settings.get("schedule_method") == criterion["qra_criterion"].get("time_basis")
+                                )
+                            )
+                        ]
+                        if not compatible:
+                            issues.append(
+                                f"QRA_PUBLISHED_OUTPUT_CONTRACT_NOT_EVALUABLE:{profile}:{criterion['criterion_code']}"
+                            )
+                for settings in contracts:
+                    if (
+                        not settings
+                        or engine_configuration_issues(settings)
+                        or analysis not in settings.get("supported_analysis_types", [])
+                    ):
+                        issues.append(f"QRA_EXECUTABLE_METHOD_CONTRACT_REQUIRED:{profile}:{analysis}")
+                    elif percentile not in settings.get("percentiles", []):
+                        issues.append(
+                            f"QRA_CRITERION_PERCENTILE_NOT_IN_PUBLISHED_OUTPUT_CONTRACT:{profile}:{percentile}"
+                        )
+                    elif (
+                        analysis == "SCHEDULE_QRA"
+                        and not criterion.get("selected_requirement_key")
+                        and (
+                            settings.get("schedule_unit") != criterion["qra_criterion"].get("unit")
+                            or settings.get("schedule_method") != criterion["qra_criterion"].get("time_basis")
+                        )
+                    ):
+                        issues.append(f"QRA_CRITERION_TIME_BASIS_NOT_IN_PUBLISHED_OUTPUT_CONTRACT:{profile}")
+        if issues:
+            raise HTTPException(
+                status_code=422, detail={"code": "INVALID_EVIDENCE_POLICY", "issues": sorted(set(issues))}
+            )
+
+    @staticmethod
+    def _qra_method_filters_cover(method: dict, requirement: dict, profile: str) -> bool:
+        filters = {
+            "governance_models": "governance_model_filter",
+            "project_types": "project_type_filter",
+            "fel_stages": "fel_stage_filter",
+            "risks": "project_risk_filter",
+            "complexities": "project_complexity_filter",
+            "uncertainty_levels": "uncertainty_level_filter",
+        }
+        applicability = method.get("applicability", {})
+        for method_key, row_key in filters.items():
+            allowed = {str(value).upper() for value in applicability.get(method_key, ["*"])}
+            requested = {
+                str(value).upper()
+                for value in requirement["qra_policy"].get(
+                    row_key, ["CAPITAL_OWNER"] if row_key == "governance_model_filter" else ["*"]
+                )
+            }
+            if allowed and "*" not in allowed and not requested.issubset(allowed):
+                return False
+        gates = set(applicability.get("gate_profiles", ["*"]))
+        # Industry is not a released evidence-policy tailoring dimension. A
+        # narrow industry contract cannot certify a future unspecified context.
+        industries = set(applicability.get("industries", ["*"]))
+        return (not gates or "*" in gates or profile in gates) and (not industries or "*" in industries)
 
     def _effective_configuration(self, workspace: EnterpriseWorkspace | None) -> AdminConfiguration | None:
         records = list(
@@ -2260,7 +2995,7 @@ class InvestmentEvidencePolicyService:
         if not records:
             return None
         path_ids = {item.id for item in self._workspace_path(workspace)}
-        candidates: list[tuple[int, datetime, int, AdminConfiguration]] = []
+        candidates: list[tuple[int, datetime, int, int, AdminConfiguration]] = []
         for record in records:
             effective_at = _effective_datetime(record.content_json)
             if effective_at > utc_now():
@@ -2277,8 +3012,8 @@ class InvestmentEvidencePolicyService:
             # Revision numbers are local to a configuration identity and cannot
             # order two independently published policy records (for example an
             # old rev 9 versus policy 787 rev 1 at its effective boundary).
-            candidates.append((specificity, effective_at, record.revision, record))
-        return max(candidates, key=lambda item: item[:3])[3] if candidates else None
+            candidates.append((specificity, effective_at, record.revision, record.id, record))
+        return max(candidates, key=lambda item: item[:4])[4] if candidates else None
 
     def _configuration(self, configuration_id: int | None, *, lock: bool = False) -> AdminConfiguration:
         statement = select(AdminConfiguration).where(
@@ -2360,7 +3095,30 @@ class InvestmentEvidencePolicyService:
                 metadata.get("project_complexity") or metadata.get("complexity_level") or "UNSPECIFIED"
             ).upper(),
             "uncertainty_level": str(metadata.get("uncertainty_level") or "UNSPECIFIED").upper(),
+            "estimated_budget": metadata.get("estimated_budget"),
+            "currency_code": metadata.get("currency_code"),
         }
+
+    def _resolved_project_contexts(self, projects: list[EnterpriseWorkspace], matrix: list[dict]) -> list[dict]:
+        """Capture the same governed FEL context used by applicability.
+
+        Gate criteria consume this frozen context. Falling back to old creation
+        metadata after the requirement resolved ProjectFELStatus could otherwise
+        exempt a FEL-3 mandatory criterion while its QRA evidence is required.
+        """
+        fel_by_project = {
+            row["project_workspace_id"]: row
+            for row in matrix
+            if row.get("project_workspace_id") is not None and row.get("fel_source")
+        }
+        output = []
+        for project in projects:
+            context = self._project_context(project)
+            if project.id in fel_by_project:
+                context["fel_stage"] = fel_by_project[project.id]["fel_stage"]
+                context["fel_source"] = deepcopy(fel_by_project[project.id]["fel_source"])
+            output.append(context)
+        return output
 
     @staticmethod
     def _check_version(actual: int, expected: int) -> None:

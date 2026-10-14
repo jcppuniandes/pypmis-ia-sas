@@ -12,6 +12,8 @@ export type BusinessCaseSourceEvidence = {
   source_current?: boolean;
   blocking?: boolean;
   view?: string | null;
+  analysis_type?: "COST_QRA" | "SCHEDULE_QRA";
+  qra_summary?: Record<string, unknown>;
 };
 
 export type FiveCaseSection = {

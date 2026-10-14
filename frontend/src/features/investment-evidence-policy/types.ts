@@ -10,6 +10,8 @@ export type EvidencePolicyConfiguration = {
   version: number;
   content_json: EvidencePolicyContent;
   content_hash: string;
+  published_at?: string | null;
+  effective_from?: string | null;
 };
 
 export type GateCriterionType =
@@ -32,7 +34,33 @@ export type GateCriterionOperator =
   | "IS_FALSE"
   | "IS_READY"
   | "IS_CURRENT"
-  | "COVERAGE_AT_LEAST";
+  | "COVERAGE_AT_LEAST"
+  | "WITHIN_RANGE";
+
+export const QRA_EVIDENCE_TYPES = ["COST_QRA_RESULT", "SCHEDULE_QRA_RESULT"] as const;
+
+export type QraEvidencePolicy = {
+  analysis_type: "COST_QRA" | "SCHEDULE_QRA";
+  applicability: "REQUIRED" | "CONDITIONAL" | "NOT_REQUIRED" | "NOT_APPLICABLE";
+  governance_model_filter: string[];
+  project_type_filter: string[];
+  fel_stage_filter: string[];
+  project_risk_filter: string[];
+  project_complexity_filter: string[];
+  uncertainty_level_filter: string[];
+  value_band?: { source: "PROJECT_CREATION_ESTIMATED_BUDGET"; currency: string; minimum?: number; maximum?: number };
+  analytical_readiness: "READY_ONLY" | "WARNINGS_ALLOWED";
+  convergence: "REQUIRED" | "WARNING_ALLOWED" | "NOT_REQUIRED";
+  scope_requirement: "WHOLE_PROJECT" | "PARTIAL_ALLOWED";
+  freshness_days?: number | null;
+  selected_percentiles?: number[];
+  capability_requirements?: {
+    schedule_state: "NOT_STARTED";
+    remaining_duration: "SOURCE_DURATION";
+    calendar_mode: "NORMALIZED_ELAPSED_TIME_V1";
+  };
+  bc_consistency_required: boolean;
+};
 
 export type GateDecisionCriterion = {
   criterion_id?: string | number;
@@ -80,6 +108,8 @@ export type EvidenceRequirement = {
   manual_validation_required: boolean;
   rationale: string;
   order: number;
+  qra_policy?: QraEvidencePolicy;
+  qra_applicability?: Record<string, unknown>;
 };
 
 export type EvidencePolicyContent = {
@@ -141,6 +171,8 @@ export type EvidenceProvider = {
   notes: string;
   contract_valid: boolean;
   contract_issues: string[];
+  compatible_evidence_types?: string[];
+  analysis_types?: string[];
 };
 
 export type MissingProvider = {

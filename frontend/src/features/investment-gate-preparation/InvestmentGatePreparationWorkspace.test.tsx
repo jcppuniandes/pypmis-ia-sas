@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import InvestmentGatePreparationWorkspace from "./InvestmentGatePreparationWorkspace";
+import { investmentGatePreparationApi } from "./api";
 
 vi.mock("../portfolio-planning/api", () => ({
   portfolioPlanningApi: { portfolioOptions: vi.fn().mockResolvedValue([{ id: 71, name: "Capital Portfolio" }]) },
@@ -185,5 +186,60 @@ describe("InvestmentGatePreparationWorkspace", () => {
       "Success criteria candidates"
     );
     expect(screen.getByRole("region", { name: "Frozen Portfolio context" })).toHaveTextContent("PORTFOLIO");
+  });
+
+  it("shows separate QRA rows with policy reason, current acceptance and no manual Class A fallback", async () => {
+    const baseline = await investmentGatePreparationApi.overview("token", 71);
+    const preparation = baseline.preparations[0];
+    const qraRows = ["COST_QRA", "SCHEDULE_QRA"].map((analysis, index) => ({
+      ...preparation.evidence[0],
+      id: 130 + index,
+      requirement_key: `${analysis.toLowerCase()}-result`,
+      evidence_type: `${analysis.split("_QRA")[0]}_QRA_RESULT`,
+      evidence_origin: "MANUAL_REFERENCE" as const,
+      qra_applicability: {
+        outcome: "REQUIRED",
+        analysis_type: analysis,
+        reasons: ["PUBLISHED_POLICY_QRA_REQUIRED"],
+        capability_fit: "SUPPORTED_WITH_LIMITATIONS",
+      },
+      qra_summary: {
+        analysis_type: analysis,
+        project_id: 33,
+        run_id: 130 + index,
+        run_number: `QRR-${index + 1}`,
+        accepted_status: "ACCEPTED",
+        source_current: true,
+        readiness: "READY_WITH_WARNINGS",
+        convergence: { status: "CONVERGED" },
+        selected_percentiles: [{ percentile: 90, value: 120 }],
+        target_probabilities: { probability_at_target: 0.83 },
+        warnings: [],
+        blockers: [],
+      },
+    }));
+    vi.mocked(investmentGatePreparationApi.overview).mockResolvedValueOnce({
+      ...baseline,
+      preparations: [{ ...preparation, evidence: qraRows }],
+    });
+    const user = userEvent.setup();
+    render(<InvestmentGatePreparationWorkspace token="token" />);
+    await screen.findByRole("heading", { name: "Investment Gate Preparation" });
+    await user.click(screen.getByRole("button", { name: "Evidence Package" }));
+    expect(await screen.findByRole("region", { name: "COST_QRA evidence summary" })).toHaveTextContent("ACCEPTED");
+    expect(screen.getByRole("region", { name: "SCHEDULE_QRA evidence summary" })).toHaveTextContent(
+      "PUBLISHED_POLICY_QRA_REQUIRED"
+    );
+    expect(screen.getAllByRole("link", { name: "View QRA" })).toHaveLength(2);
+    expect(
+      within(screen.getByRole("region", { name: "COST_QRA evidence summary" })).getByRole("link", { name: "View QRA" })
+    ).toHaveAttribute("href", "/app/strategy/qra-run-overview?project_id=33&run_id=130");
+    expect(
+      within(screen.getByRole("region", { name: "SCHEDULE_QRA evidence summary" })).getByRole("link", {
+        name: "View QRA",
+      })
+    ).toHaveAttribute("href", "/app/strategy/qra-run-overview?project_id=33&run_id=131");
+    expect(screen.queryByRole("button", { name: "Submit reference" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /simulate|execute qra|run qra/i })).not.toBeInTheDocument();
   });
 });

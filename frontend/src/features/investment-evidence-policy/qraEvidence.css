@@ -1,0 +1,125 @@
+.qraPolicyEditor {
+  display: grid;
+  gap: 14px;
+}
+.qraPolicyEditor > article,
+.qraEvidenceSummary {
+  min-width: 0;
+  border: 1px solid #d5dfe6;
+  border-radius: 9px;
+  background: #f8fafb;
+  padding: 14px;
+}
+.qraPolicyEditor h3 {
+  margin: 0 0 8px;
+}
+.qraPolicyFields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.qraPolicyFields label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.qraPolicyFields input,
+.qraPolicyFields select {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  box-sizing: border-box;
+  border: 1px solid #bdc9d4;
+  border-radius: 5px;
+  background: white;
+  padding: 6px 8px;
+}
+.qraPolicyFields select[multiple] {
+  min-height: 88px;
+}
+.qraPolicyFields .qraPolicyCheckbox {
+  display: flex;
+  align-items: center;
+}
+.qraPolicyCheckbox input {
+  width: auto;
+  min-height: auto;
+}
+.qraPolicyFields :disabled {
+  opacity: 0.65;
+}
+.qraCapabilityNotice {
+  border-left: 3px solid #ac7c17;
+  padding: 8px 10px;
+  background: #fff7e6;
+  color: #765715;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.qraEvidenceSummary dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.qraEvidenceSummary dl > div {
+  display: grid;
+  gap: 4px;
+}
+.qraEvidenceSummary dt {
+  font-size: 11px;
+  color: #607487;
+  font-weight: 700;
+}
+.qraEvidenceSummary dd {
+  margin: 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.qraEvidenceNumbers {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.qraEvidenceNumbers > div {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.qraEvidenceSummary p {
+  margin: 8px 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.qraEvidenceSummary > small {
+  display: block;
+  margin-top: 10px;
+  color: #7b433b;
+}
+.qraEvidenceSummary a,
+.qraEvidenceSummary button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #0b6273;
+  font-weight: 700;
+}
+.gateMatrix .qraEvidenceSummary {
+  min-width: 300px;
+}
+.businessCaseQraSources {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.evidenceGrid article.gateQraEvidence {
+  border-top: 4px solid #276da0;
+  grid-column: span 2;
+}
+@media (max-width: 700px) {
+  .evidenceGrid article.gateQraEvidence {
+    grid-column: span 1;
+  }
+}

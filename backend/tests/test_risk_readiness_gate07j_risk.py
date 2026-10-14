@@ -95,6 +95,21 @@ def test_project_and_project_set_happy_path_supply_current_governed_evidence() -
         assert evidence.source_current is True
         assert evidence.can_supply_investment_gate_evidence is True
         assert evidence.can_enter_fid is False
+        assert evidence.project_source_references == [
+            {
+                "project_workspace_id": item.project_workspace_id,
+                "assessment_id": item.assessment_id,
+                "assessment_hash": item.assessment_hash,
+                "risk_readiness_hash": item.risk_readiness_hash,
+                "source_current": item.source_current,
+                "readiness_status": item.readiness_status,
+            }
+            for item in aggregate.project_readiness
+        ]
+        assert {item["project_workspace_id"] for item in evidence.project_source_references} == {
+            item.id for item in projects
+        }
+        assert all(item["assessment_id"] and item["risk_readiness_hash"] for item in evidence.project_source_references)
         assert service.overview().final_release_status == FINAL_RELEASE_STATUS
     finally:
         db.close()

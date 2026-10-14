@@ -1,4 +1,5 @@
 import { apiFetch } from "../../api/client";
+import { createIdempotencyKey } from "../capital-planning/api";
 import type {
   EvidencePolicyConfiguration,
   EvidencePolicyContent,
@@ -31,10 +32,14 @@ export const investmentEvidencePolicyApi = {
         governance_model: governanceModel || null,
       }),
     }),
-  clone: (token: string, configuration: EvidencePolicyConfiguration) =>
+  clone: (token: string, configuration: EvidencePolicyConfiguration, idempotencyKey = createIdempotencyKey()) =>
     apiFetch<EvidencePolicyConfiguration>(
       `/api/v1/investment-evidence-policy/configurations/${configuration.id}/clone`,
-      { method: "POST", token, headers: { "If-Match": `"${configuration.version}"` } }
+      {
+        method: "POST",
+        token,
+        headers: { "If-Match": `"${configuration.version}"`, "Idempotency-Key": idempotencyKey },
+      }
     ),
   cloneGate07jEvid2: (token: string, configuration: EvidencePolicyConfiguration) =>
     apiFetch<EvidencePolicyConfiguration>(

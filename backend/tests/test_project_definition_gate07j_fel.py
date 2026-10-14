@@ -135,12 +135,35 @@ def test_custom_framework_happy_path_supplies_gate07j_evidence_without_fid() -> 
         assert contract.source_module == "PROJECT_DEFINITION_FEL"
         assert contract.evidence_origin == "GOVERNED_SOURCE"
         assert contract.minimum_requirement_met is True
+        native_status = service.fel_status(project.id)
+        assert readiness.project_source_reference == {
+            "project_workspace_id": project.id,
+            "status_id": native_status.id,
+            "status_revision": native_status.revision_version,
+            "definition_source_hash": native_status.definition_source_hash,
+            "definition_readiness_hash": readiness.definition_readiness_hash,
+        }
+        assert contract.project_source_reference == readiness.project_source_reference
 
         payload = InvestmentGatePreparationService(db, tenant_id, actor_id)._governed_payload(
             {"evidence_type": "FEL_STAGE_READINESS"}, {}, project.id
         )
         assert payload is not None
         assert payload["source_module"] == "project_definition_fel"
+        policy_payload, provider_error = InvestmentGatePreparationService(
+            db, tenant_id, actor_id
+        )._policy_governed_payload(
+            {
+                "provider_key": "GATE07J_FEL_PROJECT_DEFINITION",
+                "classification": "A",
+                "evidence_type": "PROJECT_DEFINITION_READINESS",
+                "scope": "PROJECT",
+            },
+            {},
+            project.id,
+        )
+        assert provider_error is None
+        assert policy_payload["evidence_refs"][0]["project_source_reference"] == readiness.project_source_reference
 
         submitted = service.submit_stage_review(
             project.id, service.fel_status(project.id).revision_version, f"submit-{uuid4()}"

@@ -1,9 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
 import { Copy, Database, Eye, Save, Send, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createIdempotencyKey } from "../capital-planning/api";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
 import { portfolioPlanningApi } from "../portfolio-planning/api";
 import { investmentEvidencePolicyApi } from "./api";
+import QraEvidenceSummary from "./QraEvidenceSummary";
+import QraPolicyEditor from "./QraPolicyEditor";
+import { QRA_EVIDENCE_TYPES } from "./types";
 import type {
   EvidencePolicyConfiguration,
   EvidencePolicyContent,
@@ -17,6 +21,7 @@ import "./investmentEvidencePolicy.css";
 const sections = [
   "Overview",
   "Evidence Policy",
+  "QRA Applicability",
   "Evidence Classes",
   "Provider Registry",
   "Gate Profiles",
@@ -100,11 +105,10 @@ function display(value: unknown): string {
 
 function configuredCriteria(content: EvidencePolicyContent | null): GateDecisionCriterion[] {
   if (!content) return [];
-  const direct = content.decision_criteria;
-  if (Array.isArray(direct)) return direct;
   const policy = record(content.decision_criterion_policy);
   const byProfile = record(policy.criteria_by_profile);
-  return Object.values(byProfile).flatMap((items) => records(items)) as GateDecisionCriterion[];
+  const governed = Object.values(byProfile).flatMap((items) => records(items)) as GateDecisionCriterion[];
+  return governed.length ? governed : content.decision_criteria || [];
 }
 
 export default function InvestmentEvidencePolicyAdminView({ token }: { token: string }) {
@@ -119,6 +123,7 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
   const [governanceModel, setGovernanceModel] = useState("CAPITAL_OWNER");
   const [preview, setPreview] = useState<EvidencePolicyPreview | null>(null);
   const [message, setMessage] = useState("");
+  const cloneRequest = useRef<{ signature: string; key: string } | null>(null);
   const parsed = useMemo(() => parseContent(content), [content]);
 
   const matrixRows = useMemo(() => {
@@ -164,7 +169,13 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
     if (!selected) return;
     try {
       let result = selected;
-      if (action === "clone") result = await investmentEvidencePolicyApi.clone(token, selected);
+      if (action === "clone") {
+        const signature = `${selected.id}:${selected.version}`;
+        if (cloneRequest.current?.signature !== signature)
+          cloneRequest.current = { signature, key: createIdempotencyKey() };
+        result = await investmentEvidencePolicyApi.clone(token, selected, cloneRequest.current.key);
+        cloneRequest.current = null;
+      }
       if (action === "clone-evid2") result = await investmentEvidencePolicyApi.cloneGate07jEvid2(token, selected);
       if (action === "save") {
         if (!parsed) throw new Error("Policy JSON is invalid.");
@@ -334,6 +345,19 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
   function sectionContent() {
     if (!overview || !parsed) return <p>Loading controlled evidence policy…</p>;
     if (section === "Evidence Policy") return renderMatrix(matrixRows);
+    if (section === "QRA Applicability") {
+      return (
+        <QraPolicyEditor
+          content={parsed}
+          disabled={selected?.status !== "draft"}
+          profile={gateProfile}
+          onChange={(next) => {
+            setContent(JSON.stringify(next, null, 2));
+            setPreview(null);
+          }}
+        />
+      );
+    }
     if (section === "Evidence Classes") {
       return (
         <div className="evidencePolicyCards evidenceClassCards">
@@ -458,7 +482,11 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
                     <small>{item.provider_key}</small>
                   </td>
                   <td>{item.source_module}</td>
-                  <td>{item.source_contract}</td>
+                  <td>
+                    {item.source_contract}
+                    <small>{item.analysis_types?.join(" · ")}</small>
+                    <small>{item.compatible_evidence_types?.join(" · ")}</small>
+                  </td>
                   <td>
                     <span className={`providerState ${item.status.toLowerCase()}`}>{item.status}</span>
                   </td>
@@ -647,6 +675,28 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
             <span>{preview.blockers.join(" · ") || "No blocking provider gaps for this context."}</span>
           </div>
           {renderMatrix(preview.effective_matrix)}
+          {preview.effective_matrix
+            .filter((item) => QRA_EVIDENCE_TYPES.some((type) => type === item.evidence_type))
+            .map((item, index) => {
+              const status = preview.current_evidence_status.find(
+                (source) =>
+                  source.evidence_type === item.evidence_type &&
+                  (!item.project_workspace_id || source.project_workspace_id === item.project_workspace_id)
+              );
+              return (
+                <QraEvidenceSummary
+                  key={`${item.requirement_key}-${index}`}
+                  applicability={record(status?.qra_applicability || item.qra_applicability)}
+                  summary={{
+                    ...record(status),
+                    ...record(status?.qra_summary),
+                    analysis_type: item.qra_policy?.analysis_type,
+                    classification: item.classification,
+                    provider_status: item.provider_status,
+                  }}
+                />
+              );
+            })}
           <h3 className="evidencePolicySubheading">Effective decision criteria</h3>
           {renderCriteria(preview.decision_criteria || criteria)}
           {(preview.criterion_validation_issues || []).length ? (
@@ -714,6 +764,26 @@ export default function InvestmentEvidencePolicyAdminView({ token }: { token: st
               <b>Revision {item.revision}</b>
               <span>{item.status}</span>
               <code>{item.content_hash.slice(0, 18)}…</code>
+              <small>
+                Published {item.published_at || "Not published"} · effective{" "}
+                {display(item.effective_from || item.content_json.effective_from)} · scope{" "}
+                {item.content_json.applicable_governance_models.join(", ")}
+              </small>
+              <details>
+                <summary>QRA rules · revision {item.revision}</summary>
+                <pre>
+                  {JSON.stringify(
+                    Object.fromEntries(
+                      Object.entries(item.content_json.gate_profiles).map(([profile, definition]) => [
+                        profile,
+                        definition.requirements.filter((requirement) => requirement.qra_policy),
+                      ])
+                    ),
+                    null,
+                    2
+                  )}
+                </pre>
+              </details>
             </article>
           ))}
         </div>

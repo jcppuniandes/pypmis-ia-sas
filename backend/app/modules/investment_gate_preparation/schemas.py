@@ -107,6 +107,8 @@ class EvidenceItemOut(BaseModel):
     quality_origin: str | None = None
     source_version: str | int | None = None
     as_of: str | None = None
+    qra_summary: dict | None = None
+    qra_applicability: dict | None = None
     resolution_status: str
     revision_version: int
 

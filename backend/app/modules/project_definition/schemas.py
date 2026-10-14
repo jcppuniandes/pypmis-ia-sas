@@ -169,6 +169,7 @@ class DefinitionReadinessOut(BaseModel):
     definition_readiness_hash: str
     source_current: bool
     can_supply_investment_gate_evidence: bool
+    project_source_reference: dict[str, Any] = Field(default_factory=dict)
 
 
 class InvestmentGateEvidenceOut(BaseModel):
@@ -196,6 +197,7 @@ class InvestmentGateEvidenceOut(BaseModel):
     definition_readiness_hash: str
     source_current: bool
     can_supply_investment_gate_evidence: bool
+    project_source_reference: dict[str, Any] = Field(default_factory=dict)
 
 
 class DefinitionOverviewOut(BaseModel):

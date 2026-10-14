@@ -608,6 +608,13 @@ class ProjectDefinitionService:
             definition_readiness_hash=_hash(payload),
             source_current=source_current,
             can_supply_investment_gate_evidence=readiness_status == "READY",
+            project_source_reference={
+                "project_workspace_id": project_id,
+                "status_id": status.id,
+                "status_revision": status.revision_version,
+                "definition_source_hash": status.definition_source_hash,
+                "definition_readiness_hash": _hash(payload),
+            },
         )
 
     def submit_stage_review(self, project_id: int, expected_version: int, idempotency_key: str) -> ProjectFELStatusOut:
@@ -791,6 +798,7 @@ class ProjectDefinitionService:
             definition_readiness_hash=readiness.definition_readiness_hash,
             source_current=readiness.source_current,
             can_supply_investment_gate_evidence=readiness.can_supply_investment_gate_evidence,
+            project_source_reference=deepcopy(getattr(readiness, "project_source_reference", {})),
         )
 
     def maturity_trend(self, project_id: int) -> list[dict[str, Any]]:

@@ -83,10 +83,11 @@ def clone_configuration(
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_tenant_id),
     user_id: int = Depends(get_user_id),
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key", min_length=8, max_length=160),
 ) -> PolicyConfigurationOut:
     result = _authorized(
         db, tenant_id, user_id, "investment_evidence_policy.configure", CONFIGURATION_ROLES
-    ).clone_configuration(configuration_id, expected_version)
+    ).clone_configuration(configuration_id, expected_version, idempotency_key=idempotency_key)
     _etag(response, result.version)
     return PolicyConfigurationOut.model_validate(result)
 

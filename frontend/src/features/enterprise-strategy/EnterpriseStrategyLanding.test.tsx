@@ -80,7 +80,7 @@ describe("Enterprise Strategy landing", () => {
     render(<StrategicBreadcrumb mode="user" view="portfolio-scorecard" />);
     const breadcrumb = screen.getByRole("navigation", { name: "Strategic workflow breadcrumb" });
     expect(within(breadcrumb).getByText("Enterprise Strategy Manager")).toBeInTheDocument();
-    expect(within(breadcrumb).getByText("Portfolio Planning")).toBeInTheDocument();
+    expect(within(breadcrumb).getByText("Portfolio Planning & Review")).toBeInTheDocument();
     expect(within(breadcrumb).getByText("Portfolio Analysis")).toBeInTheDocument();
     expect(within(breadcrumb).getByText("Portfolio Scorecard")).toHaveAttribute("aria-current", "page");
   });

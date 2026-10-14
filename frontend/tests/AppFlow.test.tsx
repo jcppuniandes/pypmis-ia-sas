@@ -15,6 +15,50 @@ import type { Dashboard, Project, RoleProfile, User } from "../src/types";
 
 const routerFuture = { v7_relativeSplatPath: true, v7_startTransition: true } as const;
 
+/** Keep the normal visible-role/name assertion, but bound positive navigation queries to their label's branch. */
+function withinVisibleNavigation(container: HTMLElement) {
+  const queries = within(container);
+  if (container.tagName !== "NAV") return queries;
+  return {
+    ...queries,
+    getByRole<TElement extends HTMLElement = HTMLElement>(
+      role: Parameters<typeof queries.getByRole>[0],
+      options?: Parameters<typeof queries.getByRole>[1]
+    ): TElement {
+      const name = options?.name;
+      if (
+        role !== "button" ||
+        options?.hidden !== undefined ||
+        (typeof name !== "string" && !(name instanceof RegExp)) ||
+        (name instanceof RegExp && name.global) ||
+        container.querySelector("button[aria-labelledby]")
+      )
+        return queries.getByRole<TElement>(role, options);
+      const labelledButtons = Array.from(container.querySelectorAll<HTMLButtonElement>("button[aria-label]")).filter(
+        (button) => {
+          const label = (button.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ");
+          return typeof name === "string" ? label === name : name.test(label);
+        }
+      );
+      const candidates = [
+        ...new Set(
+          [
+            ...queries.queryAllByText(name, { exact: true }).map((label) => label.closest("button")),
+            ...labelledButtons,
+          ].filter(
+            (button): button is HTMLButtonElement =>
+              button !== null && !button.closest('[hidden], [aria-hidden="true"]')
+          )
+        ),
+      ];
+      if (candidates.length !== 1 || !candidates[0].parentElement) return queries.getByRole<TElement>(role, options);
+      const matched = within(candidates[0].parentElement).getByRole<TElement>(role, options);
+      expect(matched).toBe(candidates[0]);
+      return matched;
+    },
+  };
+}
+
 const authLogout = vi.hoisted(() => vi.fn());
 
 const demoProject: Project = {
@@ -1260,6 +1304,9 @@ describe("served project control flow", () => {
   });
 
   it("uses a simplified project information flow instead of scattered navigation", async () => {
+    // The full rail includes collapsed template branches. Rechecking every button's computed accessible name for
+    // each click dominated this scenario; negative queries and all original role, name and visibility checks remain.
+    const within = withinVisibleNavigation;
     setValidationMode(true);
 
     render(

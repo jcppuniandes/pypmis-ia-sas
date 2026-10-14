@@ -35,6 +35,7 @@ class PolicyConfigurationOut(BaseModel):
     version: int
     content_json: dict
     content_hash: str
+    published_at: datetime | None = None
 
 
 class ProviderOut(BaseModel):
@@ -56,6 +57,8 @@ class ProviderOut(BaseModel):
     notes: str
     contract_valid: bool
     contract_issues: list[str]
+    compatible_evidence_types: list[str] = Field(default_factory=list)
+    analysis_types: list[str] = Field(default_factory=list)
 
 
 class PolicyPreviewOut(BaseModel):

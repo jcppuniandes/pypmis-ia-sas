@@ -231,6 +231,7 @@ class InvestmentGateRiskEvidenceOut(BaseModel):
     can_supply_investment_gate_evidence: bool
     evidence_origin: str = "GOVERNED_SOURCE"
     can_enter_fid: bool = False
+    project_source_references: list[dict] = Field(default_factory=list)
 
 
 class RefreshPreviewOut(BaseModel):

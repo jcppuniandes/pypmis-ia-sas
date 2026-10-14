@@ -64,6 +64,7 @@ outputs/.qa/wave2b-risk-basic-data/
 outputs/.qa/wave3b-owner-capability/
 outputs/.qa/qra-foundation/
 outputs/.qa/qra-engine/
+outputs/.qa/qra-evidence/
 
 # Local repository backup exceeds GitHub's regular Git file-size limit.
 outputs/.qa/strategic-hardening/baseline-9cb0969.zip

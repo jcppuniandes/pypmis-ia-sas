@@ -14,6 +14,79 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  qra-evidence-postgres:
+    name: Contextual QRA evidence policy BC and FID (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run isolated contextual policy and real strategic source integration
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p outputs/.qa/qra-evidence
+          chmod 0777 outputs/.qa/qra-evidence
+          docker compose -p pypmis-qra-evidence-ci -f docker-compose.qra-evidence.yml up \
+            --build --abort-on-container-exit --exit-code-from evidence-validation \
+            evidence-validation 2>&1 | tee outputs/.qa/qra-evidence/postgres-validation.log
+      - name: Preserve contextual QRA PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-evidence-postgres-validation
+          path: |
+            outputs/.qa/qra-evidence/postgres-validation.log
+            outputs/.qa/qra-evidence/backend-postgres-final.xml
+            outputs/.qa/qra-evidence/actual-stack-ci.json
+          if-no-files-found: error
+      - name: Destroy disposable evidence validation environment
+        if: always()
+        run: docker compose -p pypmis-qra-evidence-ci -f docker-compose.qra-evidence.yml down --remove-orphans
+
+  qra-evidence-browser:
+    name: Contextual QRA ADMIN and USER real Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [qra-evidence-postgres, backend-lint, frontend-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Start disposable QRA evidence API and production frontend
+        run: |
+          docker compose -p pypmis-qra-evidence-browser-ci -f docker-compose.qra-evidence.yml \
+            --profile browser up -d --build evidence-browser-frontend
+          timeout 900 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8830/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5533 >/dev/null; do sleep 2; done'
+      - name: Validate contextual evidence policy Gate freeze and BC references
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5533
+          E2E_API_URL: http://127.0.0.1:8830
+        run: cd frontend && npx playwright test qra-evidence-policy.spec.ts --project=chromium --workers=1
+      - name: Preserve isolated browser diagnostics
+        if: always()
+        run: |
+          mkdir -p outputs/.qa/qra-evidence
+          docker compose -p pypmis-qra-evidence-browser-ci -f docker-compose.qra-evidence.yml \
+            --profile browser logs --no-color > outputs/.qa/qra-evidence/browser-stack.log
+      - name: Preserve contextual QRA Chromium evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qra-evidence-browser-validation
+          path: |
+            frontend/test-results/
+            outputs/.qa/qra-evidence/browser-stack.log
+          if-no-files-found: ignore
+      - name: Destroy disposable browser environment
+        if: always()
+        run: docker compose -p pypmis-qra-evidence-browser-ci -f docker-compose.qra-evidence.yml --profile browser down --remove-orphans
+
   qra-engine-postgres:
     name: Wave4 QRA calculation and accepted evidence (PostgreSQL)
     runs-on: ubuntu-latest
@@ -546,9 +619,9 @@ jobs:
       - name: Apply and verify QRA Foundation additive schema head
         run: |
           docker compose exec -T api alembic upgrade head
-          docker compose exec -T api alembic current | grep 20261009_0067
+          docker compose exec -T api alembic current | grep 20261011_0068
       - name: Run Playwright production smoke
-        run: cd frontend && npm run test:e2e -- --grep-invert "Wave 3A real|Wave 2B real|Wave 3B real|QRA Foundation real"
+        run: cd frontend && npm run test:e2e -- --grep-invert "Wave 3A real|Wave 2B real|Wave 3B real|QRA Foundation real|QRA Wave 4 actual|Contextual QRA evidence real"
       - name: Start disposable Wave 3A USER and ADMIN browser stack
         run: |
           docker compose -p pypmis-wave3a-browser-ci -f docker-compose.wave3a.yml \

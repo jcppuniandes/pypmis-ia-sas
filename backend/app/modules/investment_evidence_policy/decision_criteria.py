@@ -12,6 +12,12 @@ from copy import deepcopy
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from app.modules.investment_evidence_policy.qra_evidence import (
+    QRA_EVIDENCE_TYPES,
+    qra_criterion_issues,
+    qra_criterion_value,
+)
+
 DECISION_CRITERION_TYPES = (
     "READINESS_CHECK",
     "MUST_MEET",
@@ -38,6 +44,7 @@ CONTROLLED_OPERATORS = (
     "IS_READY",
     "IS_CURRENT",
     "COVERAGE_AT_LEAST",
+    "WITHIN_RANGE",
 )
 
 CRITERION_RESULTS = (
@@ -316,6 +323,7 @@ def validate_criterion_policy(source: dict[str, Any], evidence_types: set[str]) 
             continue
         keys: set[str] = set()
         for row in rows:
+            issues.extend(f"{issue}:{profile_code}" for issue in qra_criterion_issues(row))
             code = str(row.get("criterion_code") or row.get("criterion_id") or "")
             if not code or code in keys:
                 issues.append(f"INVALID_DECISION_CRITERION_CODE:{profile_code}")
@@ -364,6 +372,19 @@ def evaluate_criteria(
             context = contexts.get(int(scope_id)) if scope_id is not None else None
             applicable = _criterion_applicable(configured, context)
             actual = _value_at(source or {}, str(configured.get("source_field") or "")) if source else None
+            qra_details, qra_warnings = {}, []
+            if source_type in QRA_EVIDENCE_TYPES and source:
+                if source.get("qra_applicability", {}).get("outcome") in {"NOT_APPLICABLE", "NOT_REQUIRED"}:
+                    applicable = False
+                    actual = None
+                    qra_details = {
+                        "analysis_type": configured.get("qra_criterion", {}).get("analysis_type"),
+                        "metric": configured.get("qra_criterion", {}).get("metric"),
+                        "qra_applicability": deepcopy(source["qra_applicability"]),
+                        "tail_convergence_certified": False,
+                    }
+                else:
+                    actual, qra_details, qra_warnings = qra_criterion_value(configured, source)
             result = _criterion_result(configured, source, actual, applicable)
             results.append(
                 {
@@ -389,6 +410,7 @@ def evaluate_criteria(
                     "evaluated_at": evaluated_at,
                     "policy_revision": policy_revision,
                     "policy_hash": policy_hash,
+                    **({"qra_evidence": qra_details, "warnings": qra_warnings} if qra_details else {}),
                 }
             )
     return results
@@ -487,6 +509,18 @@ def _criterion_result(configured: dict[str, Any], source: dict[str, Any] | None,
         return "STALE"
     if actual is None:
         return "NOT_EVALUABLE"
+    if (
+        configured.get("source_evidence_type") in QRA_EVIDENCE_TYPES
+        and configured.get("qra_criterion", {}).get("metric") in {"PERCENTILE", "TARGET_PROBABILITY"}
+        and configured.get("operator") == "EQUALS"
+    ):
+        # Governed QRA values may be serialized as JSON numbers or numeric
+        # strings, and UTC instants as Z or equivalent offsets. Normalize only
+        # their representation after the adapter checked currency/time basis.
+        left, right = _comparable(actual), _comparable(configured.get("expected_value"))
+        if left is None or right is None:
+            return "NOT_EVALUABLE"
+        return "SATISFIED" if left == right else "NOT_SATISFIED"
     return (
         "SATISFIED"
         if _operator_satisfied(str(configured.get("operator")), actual, configured.get("expected_value"))
@@ -509,6 +543,11 @@ def _operator_satisfied(operator: str, actual: Any, expected: Any) -> bool:
         return actual in (expected if isinstance(expected, list | tuple | set) else [expected])
     if operator == "NOT_IN":
         return actual not in (expected if isinstance(expected, list | tuple | set) else [expected])
+    if operator == "WITHIN_RANGE":
+        if not isinstance(expected, list) or len(expected) != 2:
+            return False
+        value, lower, upper = _comparable(actual), _comparable(expected[0]), _comparable(expected[1])
+        return value is not None and lower is not None and upper is not None and lower <= value <= upper
     left, right = _comparable(actual), _comparable(expected)
     if left is None or right is None:
         return False
@@ -528,9 +567,20 @@ def _comparable(value: Any) -> Decimal | None:
     if normalized in FEL_LEVELS:
         return Decimal(FEL_LEVELS[normalized])
     try:
-        return Decimal(str(value))
+        numeric = Decimal(str(value))
+        return numeric if numeric.is_finite() else None
     except (InvalidOperation, TypeError, ValueError):
-        return None
+        # Schedule criterion dates are ISO values, never duration/calendar
+        # conversions. Time basis was explicitly checked by the QRA adapter.
+        from datetime import UTC, datetime
+
+        try:
+            parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=UTC)
+            return Decimal(str(parsed.timestamp()))
+        except (TypeError, ValueError, OverflowError, OSError):
+            return None
 
 
 def _value_at(source: dict[str, Any], path: str) -> Any:

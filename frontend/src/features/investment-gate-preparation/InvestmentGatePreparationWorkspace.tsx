@@ -2,6 +2,8 @@
 import { Archive, CheckCircle2, FileCheck2, RefreshCw, ShieldAlert } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
+import { createIdempotencyKey } from "../capital-planning/api";
+import QraEvidenceSummary from "../investment-evidence-policy/QraEvidenceSummary";
 import { portfolioPlanningApi } from "../portfolio-planning/api";
 import "../portfolio-planning/portfolioPlanning.css";
 import { investmentGatePreparationApi } from "./api";
@@ -25,6 +27,12 @@ const views: Array<[View, string]> = [
 ];
 
 const gate07mEvidence = new Set(["BUSINESS_CASE_READINESS", "ECONOMIC_FINANCIAL_READINESS"]);
+const qraEvidence = new Set(["COST_QRA_RESULT", "SCHEDULE_QRA_RESULT"]);
+
+function qraSource(item: InvestmentGateEvidence) {
+  const ref = item.evidence_refs.find((source) => source.analysis_type || source.qra_summary);
+  return { classification: item.classification, ...(item.qra_summary || record(ref?.qra_summary || ref)) };
+}
 
 const criterionTypeLabels: Record<string, string> = {
   READINESS_CHECK: "Readiness checks",
@@ -172,6 +180,9 @@ function GateMatrix({ preparation }: { preparation: InvestmentGatePreparation })
                     <summary>View source</summary>
                     <pre>{JSON.stringify(item.evidence_refs, null, 2)}</pre>
                   </details>
+                  {qraEvidence.has(item.evidence_type) ? (
+                    <QraEvidenceSummary applicability={item.qra_applicability} summary={qraSource(item)} />
+                  ) : null}
                 </td>
               </tr>
             ))}
@@ -301,6 +312,8 @@ function GovernedContext({ preparation }: { preparation: InvestmentGatePreparati
 }
 
 function EvidenceSourceDetails({ item }: { item: InvestmentGateEvidence }) {
+  if (qraEvidence.has(item.evidence_type))
+    return <QraEvidenceSummary applicability={item.qra_applicability} summary={qraSource(item)} />;
   if (!gate07mEvidence.has(item.evidence_type)) return null;
   const sourceLabel = item.evidence_type === "BUSINESS_CASE_READINESS" ? "Business Case" : "Economic / Financial";
   return (
@@ -351,6 +364,12 @@ export default function InvestmentGatePreparationWorkspace({
   const [projectReadiness, setProjectReadiness] = useState<ProjectReadiness | null>(null);
   const [handoff, setHandoff] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState("");
+  const [refreshPreview, setRefreshPreview] = useState<{
+    preparationId: number;
+    version: number;
+    key: string;
+    content: Record<string, unknown>;
+  } | null>(null);
 
   useEffect(() => {
     if (portfolioId) {
@@ -412,6 +431,12 @@ export default function InvestmentGatePreparationWorkspace({
     if (!preparation) return;
     try {
       const result = await investmentGatePreparationApi.refreshPreview(token, preparation.id);
+      setRefreshPreview({
+        preparationId: preparation.id,
+        version: preparation.revision_version,
+        key: createIdempotencyKey(),
+        content: result,
+      });
       setMessage(`Refresh preview generated; persisted=${String(result.persisted)}.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to preview refresh");
@@ -425,6 +450,30 @@ export default function InvestmentGatePreparationWorkspace({
       setMessage("Frozen package handoff loaded. This is not an investment decision or FID.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to load handoff");
+    }
+  }
+  async function applyRefresh() {
+    if (
+      !preparation ||
+      !refreshPreview ||
+      refreshPreview.preparationId !== preparation.id ||
+      refreshPreview.version !== preparation.revision_version
+    )
+      return;
+    try {
+      const next = await investmentGatePreparationApi.refresh(
+        token,
+        preparation,
+        String(refreshPreview.content.proposed_source_hash),
+        refreshPreview.key
+      );
+      await load(next);
+      setRefreshPreview(null);
+      setMessage(
+        "Current governed evidence explicitly refreshed; no QRA was recalculated and historical frozen packages remain unchanged."
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to apply controlled evidence refresh");
     }
   }
 
@@ -557,6 +606,18 @@ export default function InvestmentGatePreparationWorkspace({
                   <RefreshCw size={14} /> Preview refresh
                 </button>
                 <button
+                  disabled={
+                    !preparation.allowed_actions.includes("can_refresh_preparation") ||
+                    !refreshPreview ||
+                    refreshPreview.preparationId !== preparation.id ||
+                    refreshPreview.version !== preparation.revision_version
+                  }
+                  onClick={() => void applyRefresh()}
+                  type="button"
+                >
+                  Apply evidence refresh
+                </button>
+                <button
                   disabled={!preparation.allowed_actions.includes("can_submit_for_readiness_review")}
                   onClick={() =>
                     void replace(
@@ -585,6 +646,12 @@ export default function InvestmentGatePreparationWorkspace({
                 </button>
               </div>
               {handoff ? <pre className="gateHandoff">{JSON.stringify(handoff, null, 2)}</pre> : null}
+              {refreshPreview?.preparationId === preparation.id ? (
+                <details className="gateEvidenceSource">
+                  <summary>Refresh preview · persisted=false</summary>
+                  <pre>{JSON.stringify(refreshPreview.content, null, 2)}</pre>
+                </details>
+              ) : null}
             </>
           )}
           <div className="gateBoundaries">
@@ -607,7 +674,7 @@ export default function InvestmentGatePreparationWorkspace({
           <div className="evidenceGrid">
             {preparation?.evidence.map((item) => (
               <article
-                className={`${item.status.toLowerCase()} ${gate07mEvidence.has(item.evidence_type) ? "gate07mEvidence" : ""}`}
+                className={`${item.status.toLowerCase()} ${gate07mEvidence.has(item.evidence_type) ? "gate07mEvidence" : ""} ${qraEvidence.has(item.evidence_type) ? "gateQraEvidence" : ""}`}
                 key={item.id}
               >
                 <div>
@@ -616,7 +683,11 @@ export default function InvestmentGatePreparationWorkspace({
                       ? "Business Case Readiness"
                       : item.evidence_type === "ECONOMIC_FINANCIAL_READINESS"
                         ? "Economic / Financial Readiness"
-                        : item.requirement_key}
+                        : item.evidence_type === "COST_QRA_RESULT"
+                          ? "Cost QRA Result"
+                          : item.evidence_type === "SCHEDULE_QRA_RESULT"
+                            ? "Schedule QRA Result"
+                            : item.requirement_key}
                   </strong>
                   <b>{item.resolution_status || item.status}</b>
                 </div>
@@ -641,7 +712,9 @@ export default function InvestmentGatePreparationWorkspace({
                 </div>
                 <small>{item.summary}</small>
                 <EvidenceSourceDetails item={item} />
-                {item.evidence_origin === "MANUAL_REFERENCE" && item.scope_id ? (
+                {item.evidence_origin === "MANUAL_REFERENCE" &&
+                item.scope_id &&
+                !qraEvidence.has(item.evidence_type) ? (
                   <div className="evidenceActions">
                     <select
                       aria-label={`FEL stage ${item.scope_id}`}

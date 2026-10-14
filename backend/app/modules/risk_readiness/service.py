@@ -960,6 +960,17 @@ class RiskReadinessService:
             source_current=current,
             can_supply_investment_gate_evidence=can_supply,
             can_enter_fid=False,
+            project_source_references=[
+                {
+                    "project_workspace_id": item.project_workspace_id,
+                    "assessment_id": item.assessment_id,
+                    "assessment_hash": item.assessment_hash,
+                    "risk_readiness_hash": item.risk_readiness_hash,
+                    "source_current": item.source_current,
+                    "readiness_status": item.readiness_status,
+                }
+                for item in aggregate.project_readiness
+            ],
         )
 
     def _compute(self, project_id: int, content: dict, as_of: datetime) -> dict[str, Any]:

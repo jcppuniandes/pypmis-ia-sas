@@ -120,13 +120,20 @@ export default function QraEngineWorkspace({ token, initialView }: { token: stri
       setModelId(nextOptions.approved_models[0]?.id ?? 0);
       setIterations(String(record(nextOptions.engine_policy.iteration_policy).default ?? ""));
       setSeed("");
-      const candidate = nextHistory.items.find((item) => item.id === preferred) ?? nextHistory.items[0];
-      if (candidate) {
-        const full = await qraEngineApi.run(token, candidate.id, signal);
+      const candidateId = preferred ?? nextHistory.items[0]?.id;
+      if (candidateId) {
+        const full = await qraEngineApi.run(token, candidateId, signal);
         if (!mounted.current || generation !== context.current) return;
+        if (full.project_id !== id) throw new Error("QRA source link Project/run mismatch. No other run was selected.");
         selectedRef.current = full;
         setRun(full);
       }
+      // The normal picker is paged; an explicitly linked Project is shown only after its authorized GET succeeds.
+      setProjects((current) =>
+        current && !current.projects.some((project) => project.id === id)
+          ? { ...current, projects: [...current.projects, { id, code: `#${id}`, name: "Authorized linked Project" }] }
+          : current
+      );
     },
     [token]
   );
@@ -154,10 +161,27 @@ export default function QraEngineWorkspace({ token, initialView }: { token: stri
       setResultPage(1);
       setSection(viewSections[initialView ?? ""] ?? "Approved Models");
       try {
+        const query = new URLSearchParams(window.location.search);
+        const linked = query.has("project_id") || query.has("run_id");
+        const linkedProject = Number(query.get("project_id"));
+        const linkedRun = Number(query.get("run_id"));
+        if (
+          linked &&
+          (!Number.isSafeInteger(linkedProject) ||
+            linkedProject <= 0 ||
+            !Number.isSafeInteger(linkedRun) ||
+            linkedRun <= 0)
+        )
+          throw new Error("Invalid QRA source link. Both governed Project and run IDs are required.");
         const next = await qraFoundationApi.options(token);
         if (!mounted.current || generation !== context.current) return;
         setProjects(next);
-        await loadProject(next.projects[0]?.id ?? 0, 1, undefined, controller.signal);
+        await loadProject(
+          linked ? linkedProject : (next.projects[0]?.id ?? 0),
+          1,
+          linked ? linkedRun : undefined,
+          controller.signal
+        );
       } catch (cause: unknown) {
         if (!controller.signal.aborted && mounted.current)
           setError(cause instanceof Error ? cause.message : String(cause));

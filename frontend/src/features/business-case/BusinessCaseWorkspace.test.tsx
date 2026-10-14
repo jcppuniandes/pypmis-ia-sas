@@ -208,6 +208,68 @@ describe("Gate 07M-BC Business Case Manager", () => {
     expect(onNavigate).toHaveBeenCalledWith("project-proposal");
   });
 
+  it("shows compact QRA references in Five Case sources without any simulation or completed-revision mutation", async () => {
+    const onNavigate = vi.fn();
+    const summary = {
+      analysis_type: "COST_QRA",
+      project_id: 14,
+      run_id: 16,
+      run_number: "QRR-16",
+      model_definition_id: 10,
+      model_version: 3,
+      run_hash: "e".repeat(64),
+      accepted: true,
+      source_current: true,
+      readiness: "READY_WITH_WARNINGS",
+      convergence: { status: "CONVERGED" },
+      selected_percentiles: [{ percentile: 90, value: 1600000 }],
+      target_probabilities: { probability_cost_at_or_below_target: 0.82 },
+      warnings: ["POTENTIAL_OVERLAP_EXISTING_ALLOWANCE_OR_CONTINGENCY_REVIEW_REQUIRED"],
+      blockers: [],
+      as_of: "2026-10-12T10:00:00Z",
+    };
+    const completed = {
+      ...revision,
+      status: "COMPLETED",
+      source_references_json: { ...revision.source_references_json, cost_qra_result: summary },
+      source_evidence_matrix_json: [
+        {
+          case: "economic_case",
+          source_module: "COST_QRA_RESULT",
+          source_id: 16,
+          version: 3,
+          hash: "f".repeat(64),
+          source_status: "AVAILABLE",
+          source_current: true,
+          readiness: "READY_WITH_WARNINGS",
+          analysis_type: "COST_QRA",
+          qra_summary: summary,
+        },
+      ],
+    };
+    api.list.mockResolvedValueOnce([{ ...record, status: "COMPLETED", current_revision: completed }]);
+    api.revisions.mockResolvedValueOnce([completed]);
+    render(<BusinessCaseWorkspace initialView="business-case-economic" onNavigate={onNavigate} token="token" />);
+    const compact = await screen.findByRole("region", { name: "COST_QRA evidence summary" });
+    expect(compact).toHaveTextContent("QRR-16");
+    expect(compact).toHaveTextContent("1600000");
+    expect(compact).toHaveTextContent("Tail-convergence limitation");
+    const exactSource = "/app/strategy/qra-run-overview?project_id=14&run_id=16";
+    expect(within(compact).getByRole("link", { name: "View QRA" })).toHaveAttribute("href", exactSource);
+    const tableSource = screen.getByRole("link", { name: "View Source Cost Qra Result" });
+    expect(tableSource).toHaveAttribute("href", exactSource);
+    const sourceCells = within(tableSource.closest("tr")!).getAllByRole("cell");
+    expect(sourceCells[2]).toHaveTextContent("QRR-16 / 3");
+    expect(sourceCells[3]).toHaveTextContent("f".repeat(12));
+    expect(sourceCells[3]).toHaveAttribute("title", "f".repeat(64));
+    expect(sourceCells[4]).toHaveTextContent("READY_WITH_WARNINGS");
+    expect(sourceCells[5]).toHaveTextContent("CURRENT");
+    expect(sourceCells[6]).not.toHaveTextContent("—");
+    expect(onNavigate).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: /simulate|execute qra|run qra/i })).not.toBeInTheDocument();
+    expect(api.updateRevision).not.toHaveBeenCalled();
+  });
+
   it("shows refresh preview as non-persistent", async () => {
     render(<BusinessCaseWorkspace token="token" />);
     fireEvent.click(await screen.findByRole("button", { name: /Refresh preview/i }));

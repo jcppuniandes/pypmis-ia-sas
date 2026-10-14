@@ -130,6 +130,7 @@ def test_legacy_published_policy_is_not_silently_reinterpreted(monkeypatch: pyte
         revision=4,
         content_hash=_hash(legacy),
         content_json=legacy,
+        published_at=None,
     )
     project = SimpleNamespace(id=101)
     service = InvestmentEvidencePolicyService(None, tenant_id=1, actor_id=1)

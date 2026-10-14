@@ -26,6 +26,7 @@ from app.modules.investment_evidence_policy.decision_criteria import (
     evaluate_criteria,
     success_criteria_candidates,
 )
+from app.modules.investment_evidence_policy.qra_evidence import QRA_EVIDENCE_TYPES, is_qra_requirement
 from app.modules.investment_evidence_policy.service import InvestmentEvidencePolicyService
 from app.modules.investment_gate_preparation.models import (
     InvestmentGateEvidenceItem,
@@ -74,6 +75,8 @@ EVIDENCE_TYPES = {
     "SCHEDULE_MATURITY",
     "COST_ESTIMATE_MATURITY",
     "OTHER_GOVERNED_EVIDENCE",
+    "COST_QRA_RESULT",
+    "SCHEDULE_QRA_RESULT",
 }
 
 MISSING_BLOCKERS = {
@@ -1249,6 +1252,13 @@ class InvestmentGatePreparationService:
                     item.evidence_origin = "GOVERNED_SOURCE"
                     item.summary = "Not required by the published Investment Gate Profile."
                     item.blockers_json = []
+                    item.warnings_json = []
+                    if is_qra_requirement(effective_requirement):
+                        item.evidence_refs_json = [
+                            {"qra_applicability": deepcopy(effective_requirement.get("qra_applicability", {}))}
+                        ]
+                        item.source_hash = None
+                        item.source_record_id = None
                 elif payload is not None:
                     item.evidence_origin = "GOVERNED_SOURCE"
                     item.source_module = str(payload["source_module"])
@@ -1414,6 +1424,8 @@ class InvestmentGatePreparationService:
                 {},
             )
             effective = self._effective_evidence_status(item, record)
+            if item.evidence_type in QRA_EVIDENCE_TYPES:
+                effective = self._qra_evidence_status(item, record, requirement)
             source_current_value = source.get("source_current")
             source_current = (
                 source_current_value
@@ -1447,6 +1459,7 @@ class InvestmentGatePreparationService:
                     "readiness_status": str(readiness),
                     "source_current": bool(source_current),
                     "source_module": item.source_module,
+                    "evidence_origin": item.evidence_origin,
                     "source_record_id": item.source_record_id,
                     "source_hash": item.source_hash,
                     "source_version": source.get("version")
@@ -1461,6 +1474,10 @@ class InvestmentGatePreparationService:
                     "quality_origin": ("GOVERNED_SOURCE" if quality != "NOT_AVAILABLE" else "NOT_DECLARED_BY_SOURCE"),
                     "coverage": requirement.get("coverage_requirement"),
                     "source_payload": source,
+                    "qra_applicability": deepcopy(
+                        requirement.get("qra_applicability") or source.get("qra_applicability") or {}
+                    ),
+                    "bc_consistency_required": bool(requirement.get("qra_policy", {}).get("bc_consistency_required")),
                     "warnings": deepcopy(item.warnings_json or []),
                     "blockers": deepcopy(item.blockers_json or []),
                 }
@@ -1495,7 +1512,51 @@ class InvestmentGatePreparationService:
                 ]
                 current = candidates[0] if candidates else None
                 actual = current.get("source_hash") if current else None
-                status = "CONSISTENT" if actual == expected else "MISMATCH" if actual else "SOURCE_MISSING"
+                provider_hash = actual
+                hash_basis = "PROVIDER_EVIDENCE_HASH"
+                source_record_id = None
+                identity_matches = True
+                expected_reference = dict(
+                    business_case.get("source_payload", {}).get("source_references", {}).get(source_key) or {}
+                )
+                payload = dict(current.get("source_payload") or {}) if current else {}
+                # The readiness wrapper/aggregate hash is not BC's native
+                # Project source hash. Compare only explicitly captured native
+                # references at the same Project + record layer, retaining both
+                # hashes for audit. Never query/recalculate live sources here.
+                trusted_origin = current is not None and current.get("evidence_origin") == "GOVERNED_SOURCE"
+                if trusted_origin and source_key == "fel" and payload.get("project_source_reference"):
+                    reference = payload["project_source_reference"]
+                    actual = reference.get("definition_source_hash")
+                    source_record_id = reference.get("status_id")
+                    hash_basis = "PROJECT_FEL_STATUS_DEFINITION_SOURCE"
+                    identity_matches = (
+                        reference.get("project_workspace_id") == business_case.get("scope_id")
+                        and source_record_id is not None
+                        and source_record_id == expected_reference.get("id")
+                    )
+                elif trusted_origin and source_key == "risk" and "project_source_references" in payload:
+                    references = [
+                        reference
+                        for reference in payload["project_source_references"]
+                        if reference.get("project_workspace_id") == business_case.get("scope_id")
+                    ]
+                    reference = references[0] if len(references) == 1 else {}
+                    actual = reference.get("risk_readiness_hash") or reference.get("assessment_hash")
+                    source_record_id = reference.get("assessment_id")
+                    hash_basis = "PROJECT_RISK_READINESS_ASSESSMENT"
+                    identity_matches = (
+                        len(references) == 1
+                        and source_record_id is not None
+                        and source_record_id == expected_reference.get("id")
+                    )
+                status = (
+                    "CONSISTENT"
+                    if actual == expected and identity_matches
+                    else "MISMATCH"
+                    if actual
+                    else "SOURCE_MISSING"
+                )
                 results.append(
                     {
                         "business_case_scope_id": business_case.get("scope_id"),
@@ -1503,7 +1564,41 @@ class InvestmentGatePreparationService:
                         "evidence_type": evidence_type,
                         "expected_hash": expected,
                         "actual_hash": actual,
+                        "provider_evidence_hash": provider_hash,
+                        "hash_basis": hash_basis,
+                        "native_source_record_id": source_record_id,
+                        "expected_native_source_record_id": expected_reference.get("id"),
                         "status": status,
+                    }
+                )
+            for qra_key, qra_type in (
+                ("cost_qra_result", "COST_QRA_RESULT"),
+                ("schedule_qra_result", "SCHEDULE_QRA_RESULT"),
+            ):
+                candidates = [
+                    item
+                    for item in evidence
+                    if item["evidence_type"] == qra_type
+                    and item.get("scope_id") == business_case.get("scope_id")
+                    and item.get("bc_consistency_required")
+                    and item.get("qra_applicability", {}).get("required")
+                ]
+                if not candidates:
+                    continue
+                expected = expected_hashes.get(qra_key)
+                actual = candidates[0].get("source_hash")
+                results.append(
+                    {
+                        "business_case_scope_id": business_case.get("scope_id"),
+                        "source_key": qra_key,
+                        "evidence_type": qra_type,
+                        "expected_hash": expected,
+                        "actual_hash": actual,
+                        "status": "CONSISTENT"
+                        if expected and expected == actual
+                        else "MISMATCH"
+                        if actual
+                        else "SOURCE_MISSING",
                     }
                 )
         return results
@@ -1585,6 +1680,9 @@ class InvestmentGatePreparationService:
                 if record.status == "FROZEN" or historical
                 else self._effective_evidence_status(item, record)
             )
+            if item.evidence_type in QRA_EVIDENCE_TYPES and record.status != "FROZEN" and not historical:
+                effective = self._qra_evidence_status(item, record, requirement or {})
+            warnings.extend(item.warnings_json or [])
             category = self._category(item.evidence_type)
             bucket = categories.setdefault(category, {"required": 0, "valid": 0, "blocked": 0})
             if requirement:
@@ -1611,6 +1709,8 @@ class InvestmentGatePreparationService:
                         warnings.append(f"NON_BLOCKING_EVIDENCE_{item.evidence_type}_{effective}")
                     else:
                         item_blockers = set(item.blockers_json or [])
+                        if item.evidence_type in QRA_EVIDENCE_TYPES:
+                            blockers.extend(sorted(item_blockers) or ["QRA_REQUIRED_EVIDENCE_UNAVAILABLE"])
                         if "SOURCE_PROVIDER_MISSING" in item_blockers:
                             blockers.append("SOURCE_PROVIDER_MISSING")
                         elif "PROVIDER_CONTRACT_INVALID" in item_blockers:
@@ -1848,7 +1948,13 @@ class InvestmentGatePreparationService:
             valid = [
                 item
                 for item in rows
-                if (item.status if record.status == "FROZEN" else self._effective_evidence_status(item, record))
+                if (
+                    self._qra_evidence_status(item, record, project_requirements[item.requirement_key])
+                    if item.evidence_type in QRA_EVIDENCE_TYPES
+                    else item.status
+                    if record.status == "FROZEN"
+                    else self._effective_evidence_status(item, record)
+                )
                 == "VALID"
             ]
             missing = sorted(set(project_requirements) - {item.requirement_key for item in valid})
@@ -2009,6 +2115,10 @@ class InvestmentGatePreparationService:
         )
         as_of = source.get("as_of_date") or source.get("assessment_date")
         effective_status = item.status if record.status == "FROZEN" else self._effective_evidence_status(item, record)
+        if item.evidence_type in QRA_EVIDENCE_TYPES:
+            effective_status = self._qra_evidence_status(item, record, requirement)
+            if record.status not in {"FROZEN", "SUPERSEDED", "VOIDED"} and effective_status == "STALE":
+                source_current = False
         resolution_status = effective_status
         if effective_status == "STALE" or source_current is False:
             resolution_status = "STALE"
@@ -2054,9 +2164,37 @@ class InvestmentGatePreparationService:
             quality_origin=("GOVERNED_SOURCE" if evidence_quality != "NOT_AVAILABLE" else "NOT_DECLARED_BY_SOURCE"),
             source_version=source_version,
             as_of=str(as_of) if as_of is not None else None,
+            qra_summary={**deepcopy(source), "source_current": source_current}
+            if item.evidence_type in QRA_EVIDENCE_TYPES and source.get("run_id")
+            else None,
+            qra_applicability=deepcopy(source.get("qra_applicability") or requirement.get("qra_applicability"))
+            if item.evidence_type in QRA_EVIDENCE_TYPES
+            else None,
             resolution_status=resolution_status,
             revision_version=item.revision_version,
         )
+
+    def _qra_evidence_status(
+        self, item: InvestmentGateEvidenceItem, record: InvestmentGatePreparation, requirement: dict
+    ) -> str:
+        if record.status in {"FROZEN", "SUPERSEDED", "VOIDED"}:
+            return item.status
+        effective = self._effective_evidence_status(item, record)
+        if not requirement.get("required") or requirement.get("classification") == "C":
+            return "NOT_REQUIRED"
+        if effective != "VALID":
+            return effective
+        payload, error = InvestmentEvidencePolicyService(
+            self.db, self.tenant_id, self.actor_id, self.context
+        ).resolve_governed_payload(requirement, record.source_snapshot_json, item.scope_id)
+        if (
+            payload is None
+            or payload.get("source_current") is False
+            or error == "SOURCE_STALE"
+            or payload.get("evidence_hash") != item.source_hash
+        ):
+            return "STALE"
+        return "INVALID" if error else effective
 
     @staticmethod
     def _allowed_actions(record: InvestmentGatePreparation, readiness: PreparationReadinessOut) -> list[str]:
@@ -2105,6 +2243,8 @@ class InvestmentGatePreparationService:
         if not requirements or len(keys) != len(set(keys)) or any(not key for key in keys):
             issues.append("INVALID_EVIDENCE_REQUIREMENTS")
         for item in requirements:
+            if is_qra_requirement(item):
+                issues.append("QRA_REQUIREMENTS_USE_EXISTING_EVIDENCE_POLICY_NOT_GATE_PROFILE")
             if item.get("evidence_type") not in EVIDENCE_TYPES:
                 issues.append("INVALID_EVIDENCE_TYPE")
             if item.get("scope") not in {"PORTFOLIO", "PROJECT_SET", "EACH_PROJECT", "SELECTED_PROJECTS_ONLY"}:

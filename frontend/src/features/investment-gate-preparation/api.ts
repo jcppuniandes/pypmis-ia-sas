@@ -73,6 +73,13 @@ export const investmentGatePreparationApi = {
       method: "POST",
       token,
     }),
+  refresh: (token: string, preparation: InvestmentGatePreparation, sourceHash: string, idempotencyKey: string) =>
+    apiFetch<InvestmentGatePreparation>(`/api/v1/investment-gate-preparations/${preparation.id}/refresh`, {
+      method: "POST",
+      token,
+      headers: { "If-Match": `"${preparation.revision_version}"` },
+      body: JSON.stringify({ expected_source_hash: sourceHash, idempotency_key: idempotencyKey }),
+    }),
   updateCondition: (token: string, preparation: InvestmentGatePreparation, conditionIndex: number, status: string) =>
     apiFetch<InvestmentGatePreparation>(
       `/api/v1/investment-gate-preparations/${preparation.id}/conditions/${conditionIndex}`,

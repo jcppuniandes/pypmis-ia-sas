@@ -3,6 +3,8 @@ import { AlertTriangle, Camera, CheckCircle2, ExternalLink, FilePlus2, RefreshCw
 import { useEffect, useMemo, useState } from "react";
 import type { ControlFlowView } from "../../navigation/applicationNavigation";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
+import QraEvidenceSummary from "../investment-evidence-policy/QraEvidenceSummary";
+import { qraEvidenceSourceHref } from "../investment-evidence-policy/qraSourceLink";
 import { businessCaseApi } from "./api";
 import type {
   BusinessCase,
@@ -97,6 +99,7 @@ const CASE_DEFINITIONS: Record<CaseView, { question: string; key: CaseKey; sourc
 };
 
 const SOURCE_ROUTES: Array<[string[], ControlFlowView]> = [
+  [["QRA"], "qra-run-overview"],
   [["STRATEGIC_OBJECTIVE", "IDEA"], "idea-lifecycle"],
   [["BUSINESS_ANALYSIS", "OPTION"], "business-analysis-options"],
   [["PROJECT_PROPOSAL", "PROPOSAL"], "project-proposal"],
@@ -141,6 +144,14 @@ function sourceRoute(source: BusinessCaseSourceEvidence): ControlFlowView | null
   return SOURCE_ROUTES.find(([hints]) => hints.some((hint) => normalized.includes(hint)))?.[1] ?? null;
 }
 
+function qraSourceSummary(source: BusinessCaseSourceEvidence, revision?: BusinessCaseRevision) {
+  const key =
+    source.analysis_type === "SCHEDULE_QRA" || String(source.source_module).toUpperCase().includes("SCHEDULE")
+      ? "schedule_qra_result"
+      : "cost_qra_result";
+  return source.qra_summary || revision?.source_references_json[key] || (source as Record<string, unknown>);
+}
+
 function normalizedSources(revision: BusinessCaseRevision): BusinessCaseSourceEvidence[] {
   if (Array.isArray(revision.source_evidence_matrix_json) && revision.source_evidence_matrix_json.length) {
     return revision.source_evidence_matrix_json;
@@ -164,6 +175,9 @@ function normalizedSources(revision: BusinessCaseRevision): BusinessCaseSourceEv
         as_of_date: asText(source.as_of_date, ""),
         source_current: typeof current === "boolean" ? current : !String(readiness || "").includes("STALE"),
         blocking: Boolean(source.blocking),
+        ...(source.analysis_type
+          ? { analysis_type: source.analysis_type as "COST_QRA" | "SCHEDULE_QRA", qra_summary: source }
+          : {}),
       };
     });
 }
@@ -195,6 +209,11 @@ function sourcesForCase(sources: BusinessCaseSourceEvidence[], view: CaseView) {
     const namedCase = `${source.case || ""}`.toLowerCase().replace(/[^a-z]/g, "");
     if (namedCase) return namedCase.includes(view);
     const module = `${source.source_module || ""}`.toUpperCase();
+    if (source.analysis_type || module.includes("QRA")) {
+      return source.analysis_type === "SCHEDULE_QRA"
+        ? view === "management"
+        : view === "economic" || view === "financial";
+    }
     return definition.sourceHints.some((hint) => module.includes(hint));
   });
 }
@@ -260,63 +279,135 @@ function readableDate(value: string | null | undefined) {
 function EvidenceTable({
   onNavigate,
   rows,
+  revision,
 }: {
   onNavigate?: (view: ControlFlowView) => void;
   rows: BusinessCaseSourceEvidence[];
+  revision?: BusinessCaseRevision;
 }) {
   return (
-    <div className="businessCaseTableWrap">
-      <table className="businessCaseEvidenceTable">
-        <thead>
-          <tr>
-            <th>Case</th>
-            <th>Source module</th>
-            <th>ID / Version</th>
-            <th>Hash</th>
-            <th>Readiness</th>
-            <th>Current</th>
-            <th>As-of</th>
-            <th>Blocking</th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length ? (
-            rows.map((source, index) => {
-              const route = sourceRoute(source);
-              return (
-                <tr key={`${source.case}-${source.source_module}-${source.source_id}-${index}`}>
-                  <td>{source.case ? sourceName(source.case) : "Cross-case"}</td>
-                  <td>{sourceName(source.source_module || "Unknown source")}</td>
-                  <td>
-                    {source.source_id ?? "—"} / {source.source_version_id ?? "—"}
-                  </td>
-                  <td title={source.source_hash || undefined}>{source.source_hash?.slice(0, 12) || "—"}</td>
-                  <td>{source.source_readiness || source.source_status || "NOT_AVAILABLE"}</td>
-                  <td>{source.source_current === false ? "STALE" : "CURRENT"}</td>
-                  <td>{readableDate(source.as_of_date)}</td>
-                  <td>{source.blocking ? "YES" : "NO"}</td>
-                  <td>
-                    <button
-                      aria-label={`View Source ${sourceName(source.source_module || "Unknown source")}`}
-                      disabled={!route || !onNavigate}
-                      onClick={() => route && onNavigate?.(route)}
-                      type="button"
-                    >
-                      <ExternalLink size={13} /> View Source
-                    </button>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
+    <>
+      <div className="businessCaseTableWrap">
+        <table className="businessCaseEvidenceTable">
+          <thead>
             <tr>
-              <td colSpan={9}>No governed source evidence is available for this revision.</td>
+              <th>Case</th>
+              <th>Source module</th>
+              <th>ID / Version</th>
+              <th>Hash</th>
+              <th>Readiness</th>
+              <th>Current</th>
+              <th>As-of</th>
+              <th>Blocking</th>
+              <th>Source</th>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rows.length ? (
+              rows.map((source, index) => {
+                const route = sourceRoute(source);
+                const qra =
+                  route === "qra-run-overview" || source.analysis_type ? qraSourceSummary(source, revision) : null;
+                const rawQraRow = qra ? asRecord(source) : {};
+                const qraHref = qra ? qraEvidenceSourceHref(qra) : undefined;
+                const sourceId = qra
+                  ? asText(qra.run_number || qra.qra_run_number || qra.run_id || source.source_id, "—")
+                  : (source.source_id ?? "—");
+                const sourceVersion = qra
+                  ? asText(qra.model_version ?? qra.version ?? source.source_version_id ?? rawQraRow.version, "—")
+                  : (source.source_version_id ?? "—");
+                const sourceHash = qra
+                  ? asText(
+                      source.source_hash || rawQraRow.hash || qra.evidence_hash || qra.acceptance_hash || qra.run_hash,
+                      ""
+                    )
+                  : source.source_hash;
+                const sourceReadiness = qra
+                  ? asText(
+                      source.source_readiness ||
+                        rawQraRow.readiness ||
+                        qra.readiness ||
+                        qra.analytical_readiness ||
+                        source.source_status,
+                      "NOT_AVAILABLE"
+                    )
+                  : source.source_readiness || source.source_status || "NOT_AVAILABLE";
+                const qraCurrent =
+                  source.source_current === false || qra?.source_current === false || qra?.current === false
+                    ? false
+                    : source.source_current === true || qra?.source_current === true || qra?.current === true
+                      ? true
+                      : undefined;
+                const sourceCurrent = qra
+                  ? qraCurrent === false
+                    ? "STALE"
+                    : qraCurrent === true
+                      ? "CURRENT"
+                      : "NOT EVALUATED"
+                  : source.source_current === false
+                    ? "STALE"
+                    : "CURRENT";
+                const sourceAsOf = qra
+                  ? asText(source.as_of_date || qra.as_of_date || qra.as_of, "")
+                  : source.as_of_date;
+                return (
+                  <tr key={`${source.case}-${source.source_module}-${source.source_id}-${index}`}>
+                    <td>{source.case ? sourceName(source.case) : "Cross-case"}</td>
+                    <td>{sourceName(source.source_module || "Unknown source")}</td>
+                    <td>
+                      {sourceId} / {sourceVersion}
+                    </td>
+                    <td title={sourceHash || undefined}>{sourceHash?.slice(0, 12) || "—"}</td>
+                    <td>{sourceReadiness}</td>
+                    <td>{sourceCurrent}</td>
+                    <td>{readableDate(sourceAsOf)}</td>
+                    <td>{source.blocking ? "YES" : "NO"}</td>
+                    <td>
+                      {qraHref ? (
+                        <a
+                          aria-label={`View Source ${sourceName(source.source_module || "Unknown source")}`}
+                          href={qraHref}
+                        >
+                          <ExternalLink size={13} /> View Source
+                        </a>
+                      ) : (
+                        <button
+                          aria-label={`View Source ${sourceName(source.source_module || "Unknown source")}`}
+                          disabled={!route || !onNavigate}
+                          onClick={() => route && onNavigate?.(route)}
+                          type="button"
+                        >
+                          <ExternalLink size={13} /> View Source
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={9}>No governed source evidence is available for this revision.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="businessCaseQraSources">
+        {rows
+          .filter((source) => source.analysis_type || String(source.source_module).toUpperCase().includes("QRA"))
+          .map((source, index) => {
+            const summary = qraSourceSummary(source, revision);
+            return (
+              <QraEvidenceSummary
+                key={`${source.source_id}-${index}`}
+                summary={summary}
+                applicability={asRecord(summary.qra_applicability || summary.applicability)}
+                onView={onNavigate ? () => onNavigate("qra-run-overview") : undefined}
+              />
+            );
+          })}
+      </div>
+    </>
   );
 }
 
@@ -396,7 +487,7 @@ function FiveCasePanel({
       </article>
       <section className="businessCaseCaseEvidence" aria-label={`${labels[view]} source evidence`}>
         <h4>Key source evidence</h4>
-        <EvidenceTable onNavigate={onNavigate} rows={evidence} />
+        <EvidenceTable onNavigate={onNavigate} revision={revision} rows={evidence} />
       </section>
     </div>
   );
@@ -716,7 +807,7 @@ export default function BusinessCaseWorkspace({
                 Governed source records are read-only in Business Case Manager. IDs, versions and hashes preserve
                 lineage.
               </p>
-              <EvidenceTable onNavigate={onNavigate} rows={sources} />
+              <EvidenceTable onNavigate={onNavigate} revision={revision} rows={sources} />
             </section>
           ) : view === "readiness" ? (
             <div className="businessCaseReadinessView">

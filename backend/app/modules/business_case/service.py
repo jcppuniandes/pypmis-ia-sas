@@ -51,6 +51,21 @@ CASE_SOURCE_MAP: dict[str, tuple[str, ...]] = {
     "financial_case": ("budget", "funding", "economic_financial_model", "benefits"),
     "management_case": ("fel", "resource", "risk", "permit", "benefits", "commercial_strategy"),
 }
+QRA_CASE_SOURCE_MAP = {
+    "economic_case": ("cost_qra_result",),
+    "financial_case": ("cost_qra_result",),
+    "management_case": ("schedule_qra_result",),
+}
+
+
+def _case_sources(case_key: str, references: dict) -> tuple[str, ...]:
+    # Only revisions which explicitly captured this increment receive the new
+    # projection. Adding empty rows globally would change historical 5C hashes.
+    return CASE_SOURCE_MAP[case_key] + (
+        QRA_CASE_SOURCE_MAP.get(case_key, ()) if references.get("_qra_evidence") else ()
+    )
+
+
 CASE_QUESTIONS = {
     "strategic_case": "Why should the organization intervene and how does the investment align with strategy?",
     "economic_case": "Which option provides the best overall value?",
@@ -609,7 +624,7 @@ class BusinessCaseService:
             force_five_case=True,
         )
         changes_by_case = {
-            case_key: [deepcopy(item) for item in changes if item["source"] in CASE_SOURCE_MAP[case_key]]
+            case_key: [deepcopy(item) for item in changes if item["source"] in _case_sources(case_key, preview_refs)]
             for case_key in FIVE_CASE_KEYS
         }
         readiness_keys = (*FIVE_CASE_KEYS, "overall_business_case_readiness")
@@ -1304,6 +1319,77 @@ class BusinessCaseService:
                 "blockers": list(permit.blockers_json or []),
             }
             hashes["permit"] = permit.permit_readiness_hash or permit.permit_source_hash
+        qra_refs, qra_hashes = self._qra_source_bundle(project_id, portfolio_id=proposal.target_portfolio_workspace_id)
+        refs.update(qra_refs)
+        hashes.update(qra_hashes)
+        return refs, hashes
+
+    def _qra_source_bundle(self, project_id: int, *, portfolio_id: int | None = None) -> tuple[dict, dict]:
+        """Consume the same qualified provider and applicability as Gate07J.
+
+        No BC/Gate refresh performs a calculation. A published context must opt
+        in; absent/nonapplicable policy leaves legacy source bundles unchanged.
+        """
+        from app.modules.investment_evidence_policy.service import InvestmentEvidencePolicyService
+
+        resolver = InvestmentEvidencePolicyService(self.db, self.tenant_id, self.actor_id, self.context)
+        # Portfolio is an N:M analytical membership, not necessarily a parent
+        # workspace. The captured Proposal supplies the explicit decision
+        # context; the policy resolver verifies that membership, never picks a
+        # different portfolio merely because it has a newer policy.
+        contract = (
+            resolver.qra_requirements_for_project(project_id, portfolio_id=portfolio_id)
+            if portfolio_id is not None
+            else resolver.qra_requirements_for_project(project_id)
+        )
+        requirements = [r for r in contract["requirements"] if r.get("classification") != "C"]
+        if not requirements:
+            return {}, {}
+        refs, hashes = {}, {}
+        marker = {"schema_version": "1.0", "policy_ref": contract["policy_ref"], "requirements": []}
+        for requirement in requirements:
+            source = "cost_qra_result" if requirement["evidence_type"] == "COST_QRA_RESULT" else "schedule_qra_result"
+            payload, error = resolver.resolve_governed_payload(requirement, {}, project_id)
+            summary = deepcopy((payload or {}).get("qra_summary") or {})
+            mandatory = requirement.get("classification") == "A" or bool(requirement.get("blocking"))
+            marker["requirements"].append(
+                {
+                    "source": source,
+                    "classification": requirement["classification"],
+                    "blocking": mandatory,
+                    "applicability": deepcopy(requirement.get("qra_applicability", {})),
+                    "policy": deepcopy(requirement.get("qra_policy", {})),
+                    "resolution_error": error,
+                }
+            )
+            # Optional unavailable evidence is disclosed in the policy marker,
+            # not fabricated as a current source nor made universally blocking.
+            if (not summary or error) and not mandatory:
+                continue
+            current = bool(payload and payload.get("source_current") and not error)
+            refs[source] = {
+                **summary,
+                "id": summary.get("run_id"),
+                "version": summary.get("model_version"),
+                "status": "AVAILABLE" if current else "BLOCKED",
+                "readiness": summary.get("analytical_readiness") or summary.get("readiness") or "NOT_AVAILABLE",
+                "source_current": current,
+                "as_of_date": summary.get("as_of"),
+                "warnings": sorted(set((payload or {}).get("warnings", []))),
+                "blockers": sorted(set((payload or {}).get("blockers", []) + ([error] if error else []))),
+                "policy_ref": deepcopy(contract["policy_ref"]),
+                "classification": requirement["classification"],
+                "qra_applicability": deepcopy(
+                    (payload or {}).get("qra_applicability") or requirement.get("qra_applicability", {})
+                ),
+                "not_probabilistic_fin": True,
+                "not_investment_approval": True,
+            }
+            hashes[source] = str((payload or {}).get("evidence_hash") or _hash(refs[source]))
+        refs["_qra_evidence"] = marker
+        # The marker is frozen policy provenance in the existing JSON bundle;
+        # changing applicability requires a successor, never editing completion.
+        hashes["_qra_evidence"] = _hash(marker)
         return refs, hashes
 
     def _five_case_marker(
@@ -1417,7 +1503,10 @@ class BusinessCaseService:
             blockers: list[str] = []
             warnings: list[str] = []
             stale = False
-            relevant_sources = CASE_SOURCE_MAP[case_key]
+            relevant_sources = _case_sources(case_key, stored_refs)
+            for rule in (stored_refs.get("_qra_evidence") or {}).get("requirements", []):
+                if rule.get("blocking") and rule.get("source") in relevant_sources:
+                    required_sources.add(rule["source"])
             for source_key in relevant_sources:
                 ref = deepcopy(stored_refs.get(source_key) or {})
                 stored_hash = stored_hashes.get(source_key)
@@ -1441,6 +1530,8 @@ class BusinessCaseService:
                         "source_id": ref.get("id"),
                     },
                 }
+                if source_key in {"cost_qra_result", "schedule_qra_result"}:
+                    row["qra_summary"] = deepcopy(ref)
                 rows.append(row)
                 matrix.append(deepcopy(row))
                 if not required:
@@ -1456,7 +1547,12 @@ class BusinessCaseService:
                 warnings.extend(str(value) for value in list(ref.get("warnings") or []))
                 blockers.extend(str(value) for value in list(ref.get("blockers") or []))
 
-            if enabled and case_key in required_cases and case_key == "economic_case":
+            if (
+                enabled
+                and case_key in required_cases
+                and case_key == "economic_case"
+                and not (stored_refs.get("cost_qra_result") or {}).get("source_current")
+            ):
                 warnings.append("QRA_CONFIDENCE_NOT_AVAILABLE")
             if enabled and case_key in required_cases and case_key == "management_case":
                 warnings.extend(["OWNER_CAPABILITY_READINESS_NOT_AVAILABLE", "BASIC_DATA_READINESS_NOT_AVAILABLE"])
@@ -1630,6 +1726,8 @@ class BusinessCaseService:
             "economic_financial_model": "ECONOMIC_FINANCIAL_MODEL",
             "risk": "RISK_READINESS",
             "permit": "PERMIT_READINESS",
+            "cost_qra_result": "QRA_CALCULATION_ENGINE",
+            "schedule_qra_result": "QRA_CALCULATION_ENGINE",
         }.get(source_key, source_key.upper())
 
     @staticmethod
