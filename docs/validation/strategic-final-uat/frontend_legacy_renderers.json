@@ -1,0 +1,79 @@
+[
+  {
+    "view": "business-case-current-revision",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-alternatives",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-benefits",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-project-definition",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-budget-resources",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-funding",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-risk-permits",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-execution",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-assumptions",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-recommendation",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  },
+  {
+    "view": "business-case-material-changes",
+    "route": null,
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation."
+  }
+]

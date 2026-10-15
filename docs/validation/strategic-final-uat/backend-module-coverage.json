@@ -1,0 +1,632 @@
+[
+  {
+    "module": "admin_configuration",
+    "registered_endpoints": 12,
+    "admin_endpoints": 12,
+    "shared_read_endpoints": 0,
+    "user_write_endpoints": 0,
+    "test_files": [
+      "backend/tests/test_admin_configuration.py",
+      "backend/tests/test_admin_configuration_characterization.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "basic_data",
+    "registered_endpoints": 24,
+    "admin_endpoints": 6,
+    "shared_read_endpoints": 10,
+    "user_write_endpoints": 8,
+    "test_files": [
+      "backend/tests/postgres/test_wave2b_risk_basic_data_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_owner_capability_bootstrap.py",
+      "backend/tests/test_qra_engine.py",
+      "backend/tests/test_qra_engine_acceptance_audit.py",
+      "backend/tests/test_qra_engine_worker_profile.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_governed_context_integration.py",
+      "backend/tests/test_wave2b_legacy_configuration_guard.py",
+      "backend/tests/test_wave2b_provider_integration.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "business_analysis",
+    "registered_endpoints": 17,
+    "admin_endpoints": 6,
+    "shared_read_endpoints": 6,
+    "user_write_endpoints": 5,
+    "test_files": [
+      "backend/tests/postgres/test_business_analysis_gate07a_ba_postgres.py",
+      "backend/tests/postgres/test_business_analysis_gate07a_migration_postgres.py",
+      "backend/tests/postgres/test_business_analysis_gate07a_postgres.py",
+      "backend/tests/test_business_analysis_gate07a_ba.py",
+      "backend/tests/test_business_analysis_gate07a_migration.py",
+      "backend/tests/test_business_case_gate07m.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "business_case",
+    "registered_endpoints": 22,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 8,
+    "user_write_endpoints": 9,
+    "test_files": [
+      "backend/tests/postgres/test_business_case_postgres.py",
+      "backend/tests/test_business_case_gate07m.py",
+      "backend/tests/test_business_case_gate07m_bc_5c.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_qra_evidence_business_case.py",
+      "backend/tests/test_qra_evidence_stack.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "capital_planning",
+    "registered_endpoints": 32,
+    "admin_endpoints": 4,
+    "shared_read_endpoints": 14,
+    "user_write_endpoints": 14,
+    "test_files": [
+      "backend/tests/postgres/test_wave1_capital_planning_migration_postgres.py",
+      "backend/tests/postgres/test_wave1_capital_planning_release_postgres.py",
+      "backend/tests/postgres/test_wave2a_strategic_capital_allocation_postgres.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_capital_planning_wave1.py",
+      "backend/tests/test_capital_planning_wave1_rbac_http.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "commercial_strategy",
+    "registered_endpoints": 20,
+    "admin_endpoints": 6,
+    "shared_read_endpoints": 7,
+    "user_write_endpoints": 7,
+    "test_files": [
+      "backend/tests/postgres/test_commercial_strategy_gate07m_comm_migration_postgres.py",
+      "backend/tests/test_commercial_strategy_gate07m_comm.py",
+      "backend/tests/test_commercial_strategy_gate07m_comm_migration.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "economic_financial_model",
+    "registered_endpoints": 33,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 14,
+    "user_write_endpoints": 14,
+    "test_files": [
+      "backend/tests/postgres/test_economic_financial_model_postgres.py",
+      "backend/tests/test_economic_financial_model_gate07m_fin.py",
+      "backend/tests/test_gate07m_fid_e2e.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "enterprise_structure",
+    "registered_endpoints": 64,
+    "admin_endpoints": 56,
+    "shared_read_endpoints": 8,
+    "user_write_endpoints": 0,
+    "test_files": [
+      "backend/tests/postgres/test_business_analysis_gate07a_ba_postgres.py",
+      "backend/tests/postgres/test_enterprise_structure_postgres_e2e.py",
+      "backend/tests/postgres/test_wave1_capital_planning_release_postgres.py",
+      "backend/tests/postgres/test_wave2a_strategic_capital_allocation_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_business_analysis_gate07a_ba.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_capital_planning_wave1.py",
+      "backend/tests/test_enterprise_structure.py",
+      "backend/tests/test_enterprise_structure_apply.py",
+      "backend/tests/test_enterprise_structure_hardening_contract.py",
+      "backend/tests/test_enterprise_structure_importer.py",
+      "backend/tests/test_enterprise_structure_revisions.py",
+      "backend/tests/test_idea_demand_gate07a.py",
+      "backend/tests/test_owner_capability_bootstrap.py",
+      "backend/tests/test_physical_workspace_configuration.py",
+      "backend/tests/test_physical_workspace_creation.py",
+      "backend/tests/test_physical_workspace_initialization.py",
+      "backend/tests/test_portfolio_planning_gate07d.py",
+      "backend/tests/test_portfolio_review_wave3a.py",
+      "backend/tests/test_project_creation_process.py",
+      "backend/tests/test_project_proposal_gate07b.py",
+      "backend/tests/test_project_workspace_configuration.py",
+      "backend/tests/test_project_workspace_initialization.py",
+      "backend/tests/test_qra_bootstrap.py",
+      "backend/tests/test_qra_engine_bootstrap.py",
+      "backend/tests/test_risk_governance_wave2b.py",
+      "backend/tests/test_strategic_final_uat_project_authority.py",
+      "backend/tests/test_workspace_context.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "funds_manager",
+    "registered_endpoints": 38,
+    "admin_endpoints": 6,
+    "shared_read_endpoints": 13,
+    "user_write_endpoints": 19,
+    "test_files": [
+      "backend/tests/postgres/test_funds_manager_postgres.py",
+      "backend/tests/test_funds_manager_gate07j_fund.py",
+      "backend/tests/test_gate07m_fid_e2e.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "idea_demand",
+    "registered_endpoints": 16,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 5,
+    "user_write_endpoints": 6,
+    "test_files": [
+      "backend/tests/postgres/test_business_analysis_gate07a_ba_postgres.py",
+      "backend/tests/postgres/test_wave1_capital_planning_release_postgres.py",
+      "backend/tests/test_business_case_gate07m.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_capital_planning_wave1.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_idea_demand_gate07a.py",
+      "backend/tests/test_portfolio_planning_gate07d.py",
+      "backend/tests/test_project_proposal_gate07b.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "investment_decision",
+    "registered_endpoints": 20,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 7,
+    "user_write_endpoints": 8,
+    "test_files": [
+      "backend/tests/postgres/test_investment_decision_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_gate07j_evid2_decision_criteria.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_investment_decision_gate07k.py",
+      "backend/tests/test_portfolio_review_wave3a.py",
+      "backend/tests/test_post_fid_governance_gate07l.py",
+      "backend/tests/test_qra_evidence_stack.py",
+      "backend/tests/test_strategic_final_uat_routes.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "investment_evidence_policy",
+    "registered_endpoints": 11,
+    "admin_endpoints": 11,
+    "shared_read_endpoints": 0,
+    "user_write_endpoints": 0,
+    "test_files": [
+      "backend/tests/postgres/test_gate07j_evid2_postgres.py",
+      "backend/tests/postgres/test_investment_evidence_policy_postgres.py",
+      "backend/tests/test_commercial_strategy_gate07m_comm.py",
+      "backend/tests/test_economic_financial_model_gate07m_fin.py",
+      "backend/tests/test_gate07j_evid2_decision_criteria.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_investment_evidence_policy_gate07j_evid.py",
+      "backend/tests/test_investment_evidence_policy_gate07m_evid.py",
+      "backend/tests/test_permit_readiness_gate07j_permit.py",
+      "backend/tests/test_qra_engine.py",
+      "backend/tests/test_qra_evidence_business_case.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_evidence_policy_persistence.py",
+      "backend/tests/test_qra_provider_integration.py",
+      "backend/tests/test_risk_readiness_gate07j_risk.py",
+      "backend/tests/test_strategic_benefits_gate07m_ben.py",
+      "backend/tests/test_wave2b_provider_integration.py",
+      "backend/tests/test_wave3b_provider_integration.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "investment_gate_preparation",
+    "registered_endpoints": 24,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 6,
+    "user_write_endpoints": 13,
+    "test_files": [
+      "backend/tests/postgres/test_gate07j_evid2_postgres.py",
+      "backend/tests/postgres/test_investment_gate_preparation_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_gate07j_evid2_decision_criteria.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_investment_decision_gate07k.py",
+      "backend/tests/test_investment_evidence_policy_gate07j_evid.py",
+      "backend/tests/test_investment_evidence_policy_gate07m_evid.py",
+      "backend/tests/test_investment_gate_preparation_gate07j.py",
+      "backend/tests/test_portfolio_review_wave3a.py",
+      "backend/tests/test_project_definition_gate07j_fel.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_evidence_stack.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "owner_capability",
+    "registered_endpoints": 28,
+    "admin_endpoints": 9,
+    "shared_read_endpoints": 9,
+    "user_write_endpoints": 10,
+    "test_files": [
+      "backend/tests/postgres/test_wave3b_owner_capability_postgres.py",
+      "backend/tests/test_owner_capability_bootstrap.py",
+      "backend/tests/test_owner_capability_wave3b.py",
+      "backend/tests/test_wave3b_legacy_configuration_guard.py",
+      "backend/tests/test_wave3b_provider_integration.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "permit_readiness",
+    "registered_endpoints": 27,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 12,
+    "user_write_endpoints": 10,
+    "test_files": [
+      "backend/tests/postgres/test_permit_readiness_postgres.py",
+      "backend/tests/test_permit_readiness_gate07j_permit.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "physical_workspace_creation",
+    "registered_endpoints": 14,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 4,
+    "user_write_endpoints": 10,
+    "test_files": [
+      "backend/tests/test_physical_workspace_creation.py",
+      "backend/tests/test_physical_workspace_initialization.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "enterprise_structure/physical_configuration.py"
+  },
+  {
+    "module": "physical_workspace_initialization",
+    "registered_endpoints": 6,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 2,
+    "user_write_endpoints": 4,
+    "test_files": [
+      "backend/tests/test_physical_workspace_initialization.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "enterprise_structure/physical_configuration.py"
+  },
+  {
+    "module": "portfolio_analysis",
+    "registered_endpoints": 12,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 6,
+    "user_write_endpoints": 1,
+    "test_files": [
+      "backend/tests/postgres/test_portfolio_analysis_postgres.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_portfolio_analysis_gate07f.py",
+      "backend/tests/test_portfolio_budget_gate07g.py",
+      "backend/tests/test_portfolio_convergence_gate07i.py",
+      "backend/tests/test_portfolio_resource_gate07h.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_budget",
+    "registered_endpoints": 31,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 11,
+    "user_write_endpoints": 15,
+    "test_files": [
+      "backend/tests/postgres/test_portfolio_budget_postgres.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_portfolio_budget_gate07g.py",
+      "backend/tests/test_portfolio_budget_gate07g_a.py",
+      "backend/tests/test_portfolio_convergence_gate07i.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_convergence",
+    "registered_endpoints": 22,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 5,
+    "user_write_endpoints": 12,
+    "test_files": [
+      "backend/tests/postgres/test_portfolio_convergence_postgres.py",
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_investment_gate_preparation_gate07j.py",
+      "backend/tests/test_portfolio_convergence_gate07i.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_evaluation",
+    "registered_endpoints": 14,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 4,
+    "user_write_endpoints": 5,
+    "test_files": [
+      "backend/tests/postgres/test_portfolio_analysis_postgres.py",
+      "backend/tests/postgres/test_portfolio_evaluation_postgres.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_portfolio_analysis_gate07f.py",
+      "backend/tests/test_portfolio_budget_gate07g.py",
+      "backend/tests/test_portfolio_convergence_gate07i.py",
+      "backend/tests/test_portfolio_evaluation_gate07e.py",
+      "backend/tests/test_portfolio_resource_gate07h.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_planning",
+    "registered_endpoints": 18,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 9,
+    "user_write_endpoints": 4,
+    "test_files": [
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_portfolio_analysis_gate07f.py",
+      "backend/tests/test_portfolio_evaluation_gate07e.py",
+      "backend/tests/test_portfolio_planning_gate07d.py",
+      "backend/tests/test_portfolio_planning_gate07d_hardening.py",
+      "backend/tests/test_qra_evidence_policy_persistence.py",
+      "backend/tests/test_strategic_final_uat_routes.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_resource",
+    "registered_endpoints": 32,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 11,
+    "user_write_endpoints": 16,
+    "test_files": [
+      "backend/tests/postgres/test_portfolio_resource_postgres.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_portfolio_convergence_gate07i.py",
+      "backend/tests/test_portfolio_resource_gate07h.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "portfolio_review",
+    "registered_endpoints": 31,
+    "admin_endpoints": 4,
+    "shared_read_endpoints": 11,
+    "user_write_endpoints": 16,
+    "test_files": [
+      "backend/tests/postgres/test_wave3a_periodic_portfolio_review_migration_postgres.py",
+      "backend/tests/postgres/test_wave3a_periodic_portfolio_review_postgres.py",
+      "backend/tests/test_portfolio_review_wave3a.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "post_fid_governance",
+    "registered_endpoints": 15,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 7,
+    "user_write_endpoints": 3,
+    "test_files": [
+      "backend/tests/postgres/test_post_fid_governance_postgres.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_post_fid_governance_gate07l.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "project_creation",
+    "registered_endpoints": 19,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 5,
+    "user_write_endpoints": 14,
+    "test_files": [
+      "backend/tests/test_capital_allocation_wave2a.py",
+      "backend/tests/test_portfolio_planning_gate07d.py",
+      "backend/tests/test_portfolio_planning_gate07d_hardening.py",
+      "backend/tests/test_portfolio_review_wave3a.py",
+      "backend/tests/test_project_creation_process.py",
+      "backend/tests/test_project_workspace_initialization.py",
+      "backend/tests/test_strategic_final_uat_project_authority.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "enterprise_structure/project_configuration.py"
+  },
+  {
+    "module": "project_definition",
+    "registered_endpoints": 25,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 8,
+    "user_write_endpoints": 12,
+    "test_files": [
+      "backend/tests/postgres/test_project_definition_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_owner_capability_wave3b.py",
+      "backend/tests/test_project_definition_gate07j_fel.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_evidence_policy_persistence.py",
+      "backend/tests/test_qra_foundation.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "project_proposal",
+    "registered_endpoints": 18,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 7,
+    "user_write_endpoints": 6,
+    "test_files": [
+      "backend/tests/test_business_case_gate07m.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_project_proposal_gate07b.py",
+      "backend/tests/test_strategic_gate_gate07c.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "project_workspace_initialization",
+    "registered_endpoints": 6,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 2,
+    "user_write_endpoints": 4,
+    "test_files": [
+      "backend/tests/test_post_fid_governance_gate07l.py",
+      "backend/tests/test_project_workspace_initialization.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "enterprise_structure/project_configuration.py"
+  },
+  {
+    "module": "qra_engine",
+    "registered_endpoints": 23,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 18,
+    "user_write_endpoints": 5,
+    "test_files": [
+      "backend/tests/postgres/test_qra_engine_migrations.py",
+      "backend/tests/test_qra_engine.py",
+      "backend/tests/test_qra_engine_acceptance_audit.py",
+      "backend/tests/test_qra_engine_bootstrap.py",
+      "backend/tests/test_qra_engine_calculation.py",
+      "backend/tests/test_qra_engine_hardening.py",
+      "backend/tests/test_qra_engine_worker_profile.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_evidence_policy_persistence.py",
+      "backend/tests/test_qra_evidence_stack.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "qra_foundation/policy.py + qra_foundation/router.py"
+  },
+  {
+    "module": "qra_foundation",
+    "registered_endpoints": 26,
+    "admin_endpoints": 9,
+    "shared_read_endpoints": 10,
+    "user_write_endpoints": 7,
+    "test_files": [
+      "backend/tests/test_qra_bootstrap.py",
+      "backend/tests/test_qra_engine.py",
+      "backend/tests/test_qra_engine_acceptance_audit.py",
+      "backend/tests/test_qra_engine_hardening.py",
+      "backend/tests/test_qra_engine_worker_profile.py",
+      "backend/tests/test_qra_evidence_policy.py",
+      "backend/tests/test_qra_evidence_policy_persistence.py",
+      "backend/tests/test_qra_foundation.py",
+      "backend/tests/test_qra_governed_context_integration.py",
+      "backend/tests/test_qra_legacy_configuration_guard.py",
+      "backend/tests/test_qra_provider_integration.py",
+      "backend/tests/test_qra_release_hardening.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "risk_governance",
+    "registered_endpoints": 12,
+    "admin_endpoints": 9,
+    "shared_read_endpoints": 2,
+    "user_write_endpoints": 1,
+    "test_files": [
+      "backend/tests/test_risk_governance_wave2b.py",
+      "backend/tests/test_wave2b_legacy_configuration_guard.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "risk_readiness",
+    "registered_endpoints": 24,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 10,
+    "user_write_endpoints": 9,
+    "test_files": [
+      "backend/tests/postgres/test_risk_readiness_postgres.py",
+      "backend/tests/test_basic_data_wave2b.py",
+      "backend/tests/test_gate07m_fid_e2e.py",
+      "backend/tests/test_owner_capability_wave3b.py",
+      "backend/tests/test_portfolio_review_wave3a.py",
+      "backend/tests/test_risk_governance_wave2b.py",
+      "backend/tests/test_risk_readiness_gate07j_risk.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "strategic_benefits",
+    "registered_endpoints": 25,
+    "admin_endpoints": 6,
+    "shared_read_endpoints": 8,
+    "user_write_endpoints": 11,
+    "test_files": [
+      "backend/tests/postgres/test_strategic_benefits_gate07m_ben_migration_postgres.py",
+      "backend/tests/postgres/test_strategic_benefits_gate07m_ben_postgres.py",
+      "backend/tests/test_strategic_benefits_gate07m_ben.py",
+      "backend/tests/test_strategic_benefits_gate07m_ben_migration.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "strategic_gate",
+    "registered_endpoints": 18,
+    "admin_endpoints": 5,
+    "shared_read_endpoints": 7,
+    "user_write_endpoints": 6,
+    "test_files": [
+      "backend/tests/test_strategic_gate_gate07c.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "DEDICATED_SOURCE_ENDPOINTS_PRESENT"
+  },
+  {
+    "module": "workspace_context",
+    "registered_endpoints": 8,
+    "admin_endpoints": 0,
+    "shared_read_endpoints": 6,
+    "user_write_endpoints": 2,
+    "test_files": [
+      "backend/tests/test_workspace_context.py"
+    ],
+    "current_uat_status": "NOT_EXECUTED_BY_INVENTORY",
+    "admin_prerequisite": "enterprise_structure + admin_configuration Workspace Type/module/navigation configuration"
+  }
+]

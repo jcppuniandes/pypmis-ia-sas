@@ -83,14 +83,14 @@ function categoryContent(category: ConfigurationVersion) {
 export default function AdminEnterpriseStructurePage({
   token,
   canConfigure,
-  initialTab = "hierarchy",
+  initialTab,
 }: {
   token: string;
   canConfigure: boolean;
   initialTab?: AdminTab;
 }) {
   const [data, setData] = useState<EnterpriseStructureConfiguration | null>(null);
-  const [tab, setTab] = useState<AdminTab>(initialTab);
+  const [tab, setTab] = useState<AdminTab>(initialTab ?? "hierarchy");
   const initialTabResolved = useRef(false);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [nodeMode, setNodeMode] = useState<"create" | "edit">("create");
@@ -142,7 +142,7 @@ export default function AdminEnterpriseStructurePage({
       const response = await enterpriseStructureApi.configuration(token);
       setData(response);
       if (!initialTabResolved.current) {
-        setTab(response.published_release ? "revisions" : "hierarchy");
+        setTab(initialTab ?? (response.published_release ? "revisions" : "hierarchy"));
         initialTabResolved.current = true;
       }
       setSelectedCategoryCode((current) => current || response.categories[0]?.code || "");
@@ -151,7 +151,7 @@ export default function AdminEnterpriseStructurePage({
       else setSelectedNodeId((current) => current ?? flattenTree(response.tree)[0]?.id ?? null);
       return response;
     },
-    [token]
+    [initialTab, token]
   );
 
   useEffect(() => {

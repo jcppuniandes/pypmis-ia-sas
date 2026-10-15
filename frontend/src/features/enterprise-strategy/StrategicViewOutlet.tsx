@@ -97,6 +97,14 @@ const strategicViewRenderers: Partial<Record<ControlFlowView, StrategicViewRende
   "foundation-strategic-objectives": ({ canConfigure, token }) => (
     <AdminEnterpriseStructurePage canConfigure={canConfigure} initialTab="catalogs" token={token} />
   ),
+  "enterprise-workspace-structure": ({ canConfigure, token }) => (
+    <AdminEnterpriseStructurePage
+      canConfigure={canConfigure}
+      initialTab="rules"
+      key="composition-rules"
+      token={token}
+    />
+  ),
   "capital-planning-cycles": ({ onNavigate, token, view }) => (
     <CapitalPlanningWorkspace initialView={view} onNavigate={onNavigate} token={token} />
   ),
@@ -403,7 +411,6 @@ for (const view of financialViews) strategicViewRenderers[view] = withInitialVie
 
 const genericAdminViews = [
   "workspace-types",
-  "enterprise-workspace-structure",
   "workspace-defaults",
   "module-catalog-activation",
   "workspace-navigation-profiles",

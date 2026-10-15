@@ -63,6 +63,19 @@ describe("Enterprise Strategy landing", () => {
     expect(within(foundation).getByRole("heading", { name: "Investment Origination & Shaping" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Parallel Budget and Resource scenario branches" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Investment evidence contributors" })).toBeInTheDocument();
+    const scenarios = screen.getByRole("region", { name: "Parallel Budget and Resource scenario branches" });
+    expect(
+      within(scenarios)
+        .getAllByRole("button")
+        .map((button) => button.textContent)
+    ).toEqual([
+      "Budget Planning & ScenariosParallel input",
+      "Resource Planning & ScenariosParallel input",
+      "Scenario Convergence & Recommendation",
+      "Periodic Portfolio Review",
+    ]);
+    fireEvent.click(within(scenarios).getByRole("button", { name: "Periodic Portfolio Review" }));
+    expect(onNavigate).toHaveBeenCalledWith("portfolio-review-sessions");
 
     await waitFor(() => expect(within(foundation).getByText("READY")).toBeInTheDocument());
     fireEvent.click(within(foundation).getByRole("button", { name: /start capital planning/i }));

@@ -1,0 +1,27 @@
+{
+  "inventory_kind": "STATIC_SOURCE_READ_ONLY",
+  "endpoints": 787,
+  "modules": 36,
+  "tables": 119,
+  "mode_counts": {
+    "ADMIN MODE": 229,
+    "READ-ONLY SHARED CONTEXT": 272,
+    "USER MODE": 286
+  },
+  "table_classification_counts": {
+    "ACTIVE": 91,
+    "CONFIGURATION": 8,
+    "HISTORICAL_REQUIRED": 14,
+    "TRANSIENT/COMMAND_RECEIPT": 6
+  },
+  "role_codes": 136,
+  "role_permission_pairs": 1665,
+  "constant_extraction_errors": [],
+  "limitations": [
+    "Permission extraction may union action-dispatch helper permissions; not a substitute for HTTP denial tests.",
+    "GET is classified shared-read by API semantics; consumer mode and business side effects require separate audit.",
+    "Frontend consumers use direct/static-template matching; no match is not proof of dead code.",
+    "Test-file presence is evidence inventory, never PASS. No DB connection or live app imported.",
+    "Database classification is source-based retention guidance, not proof of physical rows, deployment usage, or orphanhood."
+  ]
+}

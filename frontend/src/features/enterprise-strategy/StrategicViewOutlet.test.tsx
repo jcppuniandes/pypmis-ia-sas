@@ -2,6 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import StrategicViewOutlet from "./StrategicViewOutlet";
 
+vi.mock("../enterprise-structure/pages/AdminEnterpriseStructurePage", () => ({
+  default: ({ initialTab }: { initialTab?: string }) => <div>Enterprise ADMIN configuration · {initialTab}</div>,
+}));
+
 vi.mock("../business-analysis/BusinessAnalysisAdminView", () => ({
   default: () => <div>Business Analysis ADMIN editor</div>,
 }));
@@ -47,6 +51,41 @@ vi.mock("../risk-governance/RiskGovernanceAdminView", () => ({
 }));
 
 describe("StrategicViewOutlet", () => {
+  it("routes Composition Rules to reusable ADMIN configuration without a live Workspace creation form", () => {
+    const { rerender } = render(
+      <StrategicViewOutlet
+        canConfigure
+        mode="admin"
+        onNavigate={() => undefined}
+        token="admin"
+        view="enterprise-workspace-structure"
+      />
+    );
+    expect(screen.getByText("Enterprise ADMIN configuration · rules")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /crear workspace/i })).not.toBeInTheDocument();
+    rerender(
+      <StrategicViewOutlet
+        canConfigure={false}
+        mode="admin"
+        onNavigate={() => undefined}
+        token="user"
+        view="enterprise-workspace-structure"
+      />
+    );
+    expect(screen.getByRole("alert", { name: "Strategic configuration access denied" })).toBeInTheDocument();
+    expect(screen.queryByText("Enterprise ADMIN configuration · rules")).not.toBeInTheDocument();
+    rerender(
+      <StrategicViewOutlet
+        canConfigure
+        mode="user"
+        onNavigate={() => undefined}
+        token="admin"
+        view="enterprise-workspace-structure"
+      />
+    );
+    expect(screen.queryByText("Enterprise ADMIN configuration · rules")).not.toBeInTheDocument();
+  });
+
   it("renders engine USER routes through the existing strategic outlet and rejects ADMIN mode", () => {
     const { rerender } = render(
       <StrategicViewOutlet canConfigure={false} mode="user" onNavigate={() => undefined} token="user" view="qra-runs" />

@@ -1,0 +1,1856 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="30" failures="8" skipped="0" tests="39" time="88.348" timestamp="2026-10-14T14:30:33.426653-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_enterprise_structure_revisions" name="test_create_revision_preserves_published_baseline_and_identity" time="0.041"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_create_revision_preserves_published_baseline_and_identity() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:296: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_draft_add_edit_preview_move_archive_and_classification_operations" time="0.070"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_draft_add_edit_preview_move_archive_and_classification_operations() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_move_preserves_external_key_and_recodes_descendants" time="0.175"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_move_preserves_external_key_and_recodes_descendants() -&gt; None:
+        # CORE preserves and adopts the historical Project; USER owns new creation.
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_enterprise_structure_revisions.py:385: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_validate_and_diff_cover_added_modified_moved_archived_and_classifications" time="0.040"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_validate_and_diff_cover_added_modified_moved_archived_and_classifications() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:441: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_invalid_revision_detects_duplicate_codes_orphans_cycles_and_cross_tenant" time="0.114"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_invalid_revision_detects_duplicate_codes_orphans_cycles_and_cross_tenant() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:502: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_approval_hash_guards_publish_successor_idempotency_and_immutability" time="0.102"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_approval_hash_guards_publish_successor_idempotency_and_immutability() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:526: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_base_release_change_blocks_publish" time="0.191"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_base_release_change_blocks_publish() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:575: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_logical_rollback_requires_confirmation_and_restores_previous_release" time="0.056"><failure message="sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'">def test_logical_rollback_requires_confirmation_and_restores_previous_release() -&gt; None:
+&gt;       db, service, published = _seed()
+
+tests\test_enterprise_structure_revisions.py:618: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</failure></testcase><testcase classname="tests.test_enterprise_structure_revisions" name="test_gate04_permissions_and_postgresql_revision_are_declared" time="0.019" /><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[draft-project]" time="0.185"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[draft-PROJECT]" time="0.099"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[draft- ProJect ]" time="0.040"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[active-project]" time="0.069"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[active-PROJECT]" time="0.068"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[active- ProJect ]" time="0.075"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[inactive-project]" time="0.116"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[inactive-PROJECT]" time="0.045"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[inactive- ProJect ]" time="0.074"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[archived-project]" time="0.143"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[archived-PROJECT]" time="0.044"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_add_project_is_denied_before_draft_mutation_or_dml[archived- ProJect ]" time="0.113"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_edit_project_status_denied_before_any_mutation[draft]" time="0.040"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_edit_project_status_denied_before_any_mutation[inactive]" time="0.066"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_edit_project_status_denied_before_any_mutation[archived]" time="0.046"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_core_archive_project_is_a_guarded_lifecycle_change" time="0.051"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_legacy_draft_project_is_invalid_and_cannot_materialize[draft]" time="0.060"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_legacy_draft_project_is_invalid_and_cannot_materialize[active]" time="0.056"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_legacy_draft_project_is_invalid_and_cannot_materialize[inactive]" time="0.031"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_legacy_draft_project_is_invalid_and_cannot_materialize[archived]" time="0.057"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_previously_approved_bypass_cannot_publish_any_dml[&lt;lambda&gt;-PROJECT_CREATION_PROCESS_REQUIRED0]" time="0.062"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_previously_approved_bypass_cannot_publish_any_dml[&lt;lambda&gt;-PROJECT_WORKSPACE_LIFECYCLE_REQUIRED]" time="0.053"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_previously_approved_bypass_cannot_publish_any_dml[&lt;lambda&gt;-PROJECT_WORKSPACE_TYPE_IMMUTABLE]" time="0.043"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_previously_approved_bypass_cannot_publish_any_dml[&lt;lambda&gt;-PROJECT_CREATION_PROCESS_REQUIRED1]" time="0.053"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_omitted_live_project_cannot_be_archived_by_materializer" time="0.038"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_user_lifecycle_change_after_approval_cannot_be_reverted_by_core" time="0.048"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_materializer_rejects_foreign_snapshot_before_any_dml" time="0.048"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_foreign_tenant_project_id_and_key_cannot_authorize_creation" time="0.054"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_historical_project_adoption_publish_replay_and_rollback_preserve_identity_and_status" time="0.037"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase><testcase classname="tests.test_strategic_final_uat_core_project_authority" name="test_rollback_cannot_revert_project_lifecycle_after_publication" time="0.039"><error message="failed on setup with &quot;sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'&quot;">@pytest.fixture
+    def core():
+&gt;       db, service, published = _seed(with_historical_project=True)
+
+tests\test_strategic_final_uat_core_project_authority.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_enterprise_structure_revisions.py:91: in _seed
+    Base.metadata.create_all(engine)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5868: in create_all
+    bind._run_ddl_visitor(
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:3253: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+.venv\Lib\site-packages\sqlalchemy\engine\base.py:2459: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:896: in visit_metadata
+    collection = sort_tables_and_constraints(
+.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1328: in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:4753: in referred_table
+    return self.elements[0].column.table
+.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:1141: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3170: in column
+    return self._resolve_column()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ForeignKey('ideas.id')
+
+    def _resolve_column(
+        self, *, raiseerr: bool = True
+    ) -&gt; Optional[Column[Any]]:
+        _column: Column[Any]
+    
+        if isinstance(self._colspec, str):
+            parenttable, tablekey, colname = self._resolve_col_tokens()
+    
+            if self._unresolvable or tablekey not in parenttable.metadata:
+                if not raiseerr:
+                    return None
+&gt;               raise exc.NoReferencedTableError(
+                    f"Foreign key associated with column "
+                    f"'{self.parent}' could not find "
+                    f"table '{tablekey}' with which to generate a "
+                    f"foreign key to target column '{colname}'",
+                    tablekey,
+E                   sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'project_creation_requests.source_idea_id' could not find table 'ideas' with which to generate a foreign key to target column 'id'
+
+.venv\Lib\site-packages\sqlalchemy\sql\schema.py:3193: NoReferencedTableError</error></testcase></testsuite></testsuites>

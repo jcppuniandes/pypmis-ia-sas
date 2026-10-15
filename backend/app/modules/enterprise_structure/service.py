@@ -60,6 +60,10 @@ from app.modules.enterprise_structure.schemas import (
     WorkspaceLinkCreate,
     WorkspaceLinkOut,
 )
+from app.modules.project_creation.entrypoint_guard import (
+    require_governed_project_activation,
+    require_non_project_admin_creation,
+)
 
 SEED_VERSION = "gate-06a-physical-workspace-v1.0"
 
@@ -148,10 +152,12 @@ class EnterpriseStructureService:
     def create_node(self, payload: EnterpriseNodeCreate) -> EnterpriseNodeOut:
         self._ensure_core_editable()
         type_code = _configuration_code(payload.workspace_type_code)
+        require_non_project_admin_creation(type_code)
         node_code = _workspace_code(payload.code)
         if self.repository.workspace_by_code(node_code):
             raise HTTPException(status_code=409, detail="Workspace code already exists")
         workspace_type = self._published_type(type_code)
+        require_non_project_admin_creation(workspace_type.code)
         self._validate_status(payload.status)
         if payload.valid_from and payload.valid_to and payload.valid_to <= payload.valid_from:
             raise HTTPException(status_code=422, detail="valid_to must be after valid_from")
@@ -198,6 +204,9 @@ class EnterpriseStructureService:
         self._ensure_core_editable()
         workspace = self._workspace(workspace_id)
         self._require_version(workspace, payload.expected_version)
+        require_governed_project_activation(
+            workspace.workspace_type_code, workspace.status, payload.status, workspace.id
+        )
         move_metadata: dict[str, Any] | None = None
         if "parent_id" in payload.model_fields_set and payload.parent_id != workspace.parent_id:
             old_record_code = workspace.record_code
@@ -277,6 +286,7 @@ class EnterpriseStructureService:
     def archive_node(self, workspace_id: int) -> EnterpriseNodeOut:
         self._ensure_core_editable()
         workspace = self._workspace(workspace_id)
+        require_governed_project_activation(workspace.workspace_type_code, workspace.status, "archived", workspace.id)
         if self.repository.active_children(workspace.id):
             raise HTTPException(status_code=409, detail="Cannot archive a workspace with active children")
         workspace.status = "archived"

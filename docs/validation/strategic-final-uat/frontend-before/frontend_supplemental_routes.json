@@ -1,0 +1,50 @@
+[
+  {
+    "route": "/workspaces/:workspaceId/*",
+    "mode": "USER",
+    "component": "frontend/src/features/workspace-context/WorkspaceOperationalPage.tsx",
+    "scope": "Backend-returned navigator codes; this shell does not render every canonical strategic module.",
+    "permission": "RequireAuth + backend context",
+    "source": "frontend/src/App.tsx:8157"
+  },
+  {
+    "route": "/app/strategy/enterprise-explorer",
+    "internalState": "projectView=create",
+    "mode": "USER",
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "permission": "Backend allowed_actions and request authority",
+    "source": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx"
+  },
+  {
+    "route": "/app/strategy/enterprise-explorer",
+    "internalState": "projectView=requests",
+    "mode": "USER",
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "permission": "Backend allowed_actions and request authority",
+    "source": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx"
+  },
+  {
+    "route": "/app/strategy/enterprise-explorer",
+    "internalState": "projectView=workspaces",
+    "mode": "USER",
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "permission": "Backend allowed_actions and request authority",
+    "source": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx"
+  },
+  {
+    "route": "/app/strategy/enterprise-explorer",
+    "internalState": "projectView=review",
+    "mode": "USER",
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "permission": "Backend allowed_actions and request authority",
+    "source": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx"
+  },
+  {
+    "route": "/app/strategy/enterprise-explorer",
+    "internalState": "projectView=overview",
+    "mode": "USER",
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "permission": "Backend allowed_actions and request authority",
+    "source": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx"
+  }
+]

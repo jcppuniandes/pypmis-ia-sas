@@ -1,0 +1,57 @@
+name: pypmis-strategic-final-uat
+
+# Isolated UAT only. Reuses the validated QRA fixture and locally cached image.
+# No operational database, Redis, storage volume or host database port is shared.
+services:
+  evidence-browser-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: qra_evidence_browser
+      POSTGRES_USER: qra
+      POSTGRES_PASSWORD: qra
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U qra -d qra_evidence_browser]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  evidence-browser-redis:
+    image: redis:7-alpine
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  evidence-browser-api:
+    image: pypmis-qra-engine-qra-validation:latest
+    environment:
+      DATABASE_URL: postgresql+psycopg://qra:qra@evidence-browser-db:5432/qra_evidence_browser
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://qra:qra@evidence-browser-db:5432/qra_evidence_browser
+      REDIS_URL: redis://evidence-browser-redis:6379/0
+      PYPMIS_QRA_EVIDENCE_BROWSER_FIXTURE: disposable-only
+      PYPMIS_PYTEST_RUNTIME_DIR: /tmp/strategic-uat
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: strategic-uat-disposable-only
+      DEMO_USER_PASSWORD: "1234"
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5533,http://localhost:5533
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    volumes:
+      - ./backend:/app:ro
+      - ./outputs/.qa/strategic-final-uat:/artifacts
+    tmpfs: [/tmp]
+    ports: ["127.0.0.1:8830:8000"]
+    command: [/bin/sh, -ec, "python -m tests.provision_qra_evidence_browser && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2)"]
+      start_period: 180s
+      interval: 5s
+      timeout: 4s
+      retries: 60
+    depends_on:
+      evidence-browser-db: {condition: service_healthy}
+      evidence-browser-redis: {condition: service_healthy}

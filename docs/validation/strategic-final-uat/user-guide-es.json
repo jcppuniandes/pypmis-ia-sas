@@ -1,0 +1,395 @@
+{
+  "A1": {
+    "purpose": "Consultar la estructura empresarial y el contexto del Workspace sin duplicar la identidad del Project. El registro canónico conserva workspace_type_code=project, external_key y Record Code.",
+    "prerequisites": [
+      "Enterprise, Business Unit y Portfolio activos según el contexto autorizado",
+      "Workspace Types configurados y permisos de consulta para el alcance seleccionado"
+    ],
+    "steps": [
+      "Abra Enterprise Explorer y espere a que termine la carga de la estructura autorizada.",
+      "Localice el Workspace y consulte su jerarquía, Record Code y external_key; confirme que pertenece al contexto de trabajo previsto.",
+      "Abra Workspace Context para consultar la identidad y sus límites de acceso. Para solicitar un Project nuevo, utilice Create Project; no trate de crearlo mediante una configuración genérica."
+    ]
+  },
+  "A2": {
+    "purpose": "Registrar la demanda estratégica y comparar las posiciones Target, Current, Recommended y Approved con trazabilidad. Una asignación de planificación no constituye autorización formal de inversión ni de fondos.",
+    "prerequisites": [
+      "Configuración de planificación y buckets publicada y vigente para el alcance",
+      "Catálogos de objetivos y temas activos"
+    ],
+    "steps": [
+      "Seleccione el ciclo aplicable o cree uno cuando su permiso lo permita; complete la demanda, guarde el borrador y preséntelo para el respaldo correspondiente.",
+      "Registre los objetivos de asignación y clasifique la demanda en los buckets configurados. Congele únicamente la revisión respaldada que corresponda conservar.",
+      "Compare Target, Current, Recommended y Approved. Mantenga separadas las monedas no comparables y resuelva cualquier incompatibilidad antes de interpretar importes agregados."
+    ]
+  },
+  "A3": {
+    "purpose": "Evaluar una Idea y preparar su avance a Project Proposal. ACCEPTED no crea un Workspace: si la política exige Business Analysis, primero debe completarse esa evaluación independiente y obtenerse READY_FOR_PROJECT_PROPOSAL.",
+    "prerequisites": [
+      "Workspace de origen elegible y fuente CAPITAL_OWNER",
+      "Políticas de Idea y Business Analysis publicadas y aplicables"
+    ],
+    "steps": [
+      "Registre la Idea con necesidad, objetivos y alcance. Preséntela para que los actores autorizados realicen la clasificación, el enrutamiento y la asignación de responsable.",
+      "Complete la evaluación del contexto y someta su aceptación al actor autorizado.",
+      "Consulte la salida de disponibilidad. Si indica READY_FOR_BUSINESS_ANALYSIS, documente y evalúe las alternativas en Business Analysis y obtenga su revisión independiente antes de continuar a Project Proposal."
+    ]
+  },
+  "A4": {
+    "purpose": "Desarrollar una propuesta sustentada en la Idea y en las evaluaciones exigidas. El estado guardado READY_FOR_STRATEGIC_GATE y la salida READY_FOR_STRATEGIC_GATE_DECISION permiten identificar la preparación para el Strategic Gate; no autorizan la inversión.",
+    "prerequisites": [
+      "Idea aceptada y elegible",
+      "Business Analysis completado y actual cuando sea obligatorio, o una referencia histórica legítimamente admitida por la política"
+    ],
+    "steps": [
+      "Cree Project Proposal a partir de la Idea elegible para conservar su referencia de origen.",
+      "Complete alcance, necesidad y justificación, beneficios, estimación ROM, fechas, riesgos, supuestos y restricciones.",
+      "Presente la propuesta y atienda la revisión y evaluación. Continúe al Strategic Gate únicamente cuando la aplicación indique que la propuesta está preparada."
+    ]
+  },
+  "A5": {
+    "purpose": "Registrar la decisión estratégica sobre una Project Proposal. APPROVE produce READY_FOR_PORTFOLIO_INTAKE; la creación posterior del Project, el FID y su activación son procesos distintos.",
+    "prerequisites": [
+      "Project Proposal preparada para Strategic Gate",
+      "Perfil de Strategic Gate publicado y autoridad de decisión válida e independiente"
+    ],
+    "steps": [
+      "Previsualice la decisión y cree el registro vinculado a la Project Proposal correspondiente.",
+      "Prepare y presente el expediente para revisión. El actor independiente autorizado registra la decisión y su justificación.",
+      "Consulte la salida de la decisión. Continúe al intake si corresponde APPROVE; atienda RETURN, REJECT o DEFER según el resultado real, sin tratarlos como una aprobación."
+    ]
+  },
+  "A6": {
+    "purpose": "Crear una única identidad canónica de Project mediante la solicitud gobernada y conservar su trazabilidad de origen. El Project nace pending; inicializarlo no equivale a activarlo y la activación requiere la autorización de ejecución aplicable.",
+    "prerequisites": [
+      "Decisión APPROVE con salida de intake vigente",
+      "Plantilla exacta publicada, manager habilitado y Portfolio o Program padre elegible"
+    ],
+    "steps": [
+      "Prepare la entrada de planificación estratégica con la decisión, la salida de disponibilidad y sus hashes actuales.",
+      "Presente la solicitud compartida de creación; obtenga la aprobación independiente y ejecute la materialización solo cuando la aplicación la habilite.",
+      "Consulte el Project pending y su lista de inicialización. Complete la preparación que corresponda y revise los bloqueos de activación; no adelante la activación de CAPITAL_OWNER por haber creado la identidad."
+    ]
+  },
+  "A7": {
+    "purpose": "Incorporar el Project CAPITAL_OWNER correcto al Portfolio mediante su membership, sin crear una segunda identidad ni cambiar por ese motivo su padre canónico.",
+    "prerequisites": [
+      "Project CAPITAL_OWNER materializado",
+      "Intake estratégico aprobado para el Portfolio de destino"
+    ],
+    "steps": [
+      "Consulte la entrada de planificación y confirme el Project y el Portfolio de destino.",
+      "Compruebe que la membership aplicable está ACTIVE y que conserva STRATEGIC_INTAKE como fuente.",
+      "Si el Project participa en otro Portfolio, consulte esa membership en su propio contexto. No duplique el Project ni cambie su padre canónico para representar una participación adicional."
+    ]
+  },
+  "A8": {
+    "purpose": "Evaluar y priorizar los Projects dentro de cada Portfolio. Portfolio Rank es contextual, excluye memberships inactivas y conserva las revisiones de evaluación completadas.",
+    "prerequisites": [
+      "Membership de capital ACTIVE",
+      "Criterios de evaluación vigentes para el Portfolio"
+    ],
+    "steps": [
+      "Seleccione el Portfolio y comience la evaluación contextual de sus Projects elegibles.",
+      "Registre las calificaciones y complete la revisión de puntuación mediante las acciones habilitadas.",
+      "Consulte Portfolio Rank y su revisión. Al cambiar de Portfolio, vuelva a revisar el contexto: una posición no representa un ranking global del Project."
+    ]
+  },
+  "A9": {
+    "purpose": "Consultar Portfolio Analysis, Investor Map y Scorecard a partir de la priorización existente, sin modificar Portfolio Rank ni convertir monedas de manera implícita. La disponibilidad de análisis de Budget y Resource se muestra por separado.",
+    "prerequisites": [
+      "Evaluaciones y ranking contextuales actuales",
+      "Catálogo de análisis publicado y aplicable"
+    ],
+    "steps": [
+      "Abra Investor Map y Scorecard del Portfolio seleccionado.",
+      "Revise el hash de la fuente y la disponibilidad de las ramas de análisis antes de utilizar sus conclusiones.",
+      "Si hay monedas incompatibles, consulte qué rama monetaria queda bloqueada y corrija los datos en el dominio responsable. No mezcle monedas ni presuponga una conversión que la aplicación no haya definido."
+    ]
+  },
+  "A10": {
+    "purpose": "Preparar y comparar escenarios analíticos de Budget. FROZEN conserva una alternativa inmutable, pero no aprueba la inversión ni modifica el presupuesto fuente; un exceso sobre el objetivo se muestra como resultado del análisis.",
+    "prerequisites": [
+      "Análisis actual del Portfolio",
+      "Configuración de Budget publicada y objetivo aplicable al contexto"
+    ],
+    "steps": [
+      "Prepare el Budget Target con sus periodos y publíquelo cuando su permiso y las validaciones lo permitan.",
+      "Cree las alternativas de escenario y revise selección, CAPEX/Expense, distribución temporal y Waterline.",
+      "Congele la alternativa que deba conservar y compárela con las demás. Documente cualquier exceso sobre el objetivo; no interprete FROZEN como aprobación ni como actualización del presupuesto fuente."
+    ]
+  },
+  "A11": {
+    "purpose": "Analizar capacidad y demanda estratégicas por rol y periodo. Este proceso no asigna personas, no nivela recursos en P6 y no completa con datos inventados la demanda ausente.",
+    "prerequisites": [
+      "Capacity Plan publicado",
+      "Perfiles reales de demanda de los Projects y análisis actual"
+    ],
+    "steps": [
+      "Registre o consulte la capacidad por rol y periodo y la demanda de cada Project; publique los datos cuando corresponda a su función.",
+      "Prepare escenarios y revise las sobrecargas, su distribución temporal y la comparación entre alternativas.",
+      "Congele la alternativa que corresponda conservar. Resuelva la demanda faltante en su fuente; no interprete el escenario como asignación de personal ni como cambio de fechas del Project."
+    ]
+  },
+  "A12": {
+    "purpose": "Emitir una recomendación de alternativa con referencias y hashes de sus escenarios fuente. La recomendación no constituye FID ni activa el Project.",
+    "prerequisites": [
+      "Alternativas Budget y Resource congeladas y compatibles cuando la configuración efectiva las exija"
+    ],
+    "steps": [
+      "Cree la convergencia y vincule cada alternativa con los escenarios Budget y Resource correspondientes.",
+      "Evalúe su viabilidad conjunta y alineación; revise las incompatibilidades y conflictos que indique la aplicación.",
+      "Recomiende únicamente una alternativa viable. Si las fuentes no coinciden o existe un conflicto bloqueante, corrija el origen y vuelva a evaluar; no fuerce la recomendación."
+    ]
+  },
+  "A13": {
+    "purpose": "Registrar revisiones periódicas del Portfolio y sus acciones de gobernanza preservando las fuentes históricas. HOLD_FOR_CAPACITY es una solicitud de acción del Portfolio y no equivale a HOLD de Gate07K.",
+    "prerequisites": [
+      "Política de revisión aplicable",
+      "Fuentes de asignación, Budget, Resource y Gate disponibles cuando sean exigidas"
+    ],
+    "steps": [
+      "Prepare la sesión de revisión y previsualice o capture su snapshot; siga las acciones habilitadas para congelar y revisar el expediente.",
+      "Consulte Project Matrix, las conclusiones y las referencias a las autoridades de origen.",
+      "Registre la acción de gobernanza, su responsable y vencimiento. Trátela como una solicitud de seguimiento: no sustituye una decisión del dominio fuente ni reinterpreta una fuente congelada."
+    ]
+  },
+  "A14": {
+    "purpose": "Completar Five Case Business Case con referencias gobernadas y conservar cada revisión histórica. El vínculo con FIN debe identificar el modelo fuente exacto por ID, versión y hash.",
+    "prerequisites": [
+      "Project de capital canónico con trazabilidad a Proposal y Business Analysis",
+      "Fuentes gobernadas actuales requeridas por la política"
+    ],
+    "steps": [
+      "Cree la revisión del Business Case a partir del conjunto real de fuentes del Project.",
+      "Complete Strategic Case, Economic Case, Commercial Case, Financial Case y Management Case con sus referencias de evidencia.",
+      "Presente la revisión y obtenga su finalización independiente. Para incorporar cambios posteriores, cree una revisión sucesora; no modifique una revisión COMPLETED."
+    ]
+  },
+  "A15": {
+    "purpose": "Definir beneficios estratégicos, responsables y medidas trazables. Una línea base desconocida permanece sin valor y bloquea cuando sea obligatoria; este registro no ejecuta Benefits Realization.",
+    "prerequisites": [
+      "Project de capital y configuración de beneficios vigente",
+      "Referencias a los objetivos y fuentes que sustentan los beneficios"
+    ],
+    "steps": [
+      "Cree el Plan o Register y registre cada beneficio con su identidad estable.",
+      "Asigne el responsable y las medidas principales; documente la línea base y la meta con su unidad y fecha. Si la línea base es desconocida, no la reemplace por cero ni por un valor supuesto.",
+      "Presente el registro para revisión y finalización. Consulte su disponibilidad e historia y atienda los requisitos obligatorios pendientes en la fuente correspondiente."
+    ]
+  },
+  "A16": {
+    "purpose": "Preparar evidencia estratégica comercial y de contratación. Esta estrategia no adjudica contratos ni ejecuta compras o compromisos.",
+    "prerequisites": [
+      "Marco comercial vigente y contexto real de fuentes del Project"
+    ],
+    "steps": [
+      "Cree una versión de la estrategia y documente entrega, paquetes, modelo comercial, contratación y asignación de riesgos según las opciones gobernadas.",
+      "Revise su disponibilidad, la vigencia de las fuentes y las advertencias.",
+      "Presente la estrategia para su finalización independiente. Conserve la versión terminada y utilice una revisión sucesora cuando deban incorporarse cambios."
+    ]
+  },
+  "A17": {
+    "purpose": "Desarrollar la etapa FEL y evaluar su madurez de definición. La etapa del ciclo de vida y el puntaje PDRI son conceptos diferentes; un puntaje favorable no elimina brechas obligatorias.",
+    "prerequisites": [
+      "Marco de etapas vigente",
+      "Project canónico y condiciones de entrada a la etapa satisfechas"
+    ],
+    "steps": [
+      "Inicie la etapa FEL que corresponda y complete la evaluación de madurez específica de esa etapa.",
+      "Presente la evaluación para revisión y finalización independiente, respetando las condiciones de avance de etapa.",
+      "Consulte los elementos bloqueantes, las acciones pendientes y la historia. Resuelva las brechas exigidas; no utilice el puntaje agregado para omitirlas."
+    ]
+  },
+  "A18": {
+    "purpose": "Evaluar disponibilidad, validación, calidad, confianza y vigencia de los datos básicos. Basic Data Readiness es independiente de FEL/PDRI y un porcentaje global alto no compensa un dato crítico obligatorio ausente.",
+    "prerequisites": [
+      "Política y requisitos de Basic Data vigentes para la etapa del Project"
+    ],
+    "steps": [
+      "Complete cada dato requerido con su disponibilidad, calidad, confianza, referencia y fechas de la fuente.",
+      "Obtenga la validación independiente de los elementos y complete la evaluación mediante las acciones habilitadas.",
+      "Revise el total exacto de requisitos y los bloqueos por datos críticos ausentes o vencidos. Actualice la fuente pendiente antes de continuar, aunque el porcentaje general sea alto."
+    ]
+  },
+  "A19": {
+    "purpose": "Consultar el contexto efectivo de capacidad, apetito y umbrales de riesgo. La política declarativa no toma decisiones de inversión y project_type no equivale a governance_model.",
+    "prerequisites": [
+      "Política de riesgo publicada, con alcance y fechas aplicables al contexto"
+    ],
+    "steps": [
+      "Confirme el Project y consulte la política efectiva, incluida la herencia que corresponda.",
+      "Revise los umbrales configurados y su evaluación frente a los datos gobernados disponibles.",
+      "Consulte la revisión histórica cuando necesite explicar una evaluación anterior. Los cambios de umbrales reutilizables corresponden a ADMIN, no a la consulta USER."
+    ]
+  },
+  "A20": {
+    "purpose": "Completar la evidencia gobernada de riesgos y su disponibilidad actual. El responsable no puede aceptar su propio riesgo residual alto; los vencimientos o cambios pueden volver obsoleta la evidencia actual sin reescribir su historia.",
+    "prerequisites": [
+      "Política de riesgo aplicable y riesgos reales dentro del alcance del Project"
+    ],
+    "steps": [
+      "Registre la exposición inherente y residual, los responsables, tratamientos y evidencias de cada riesgo.",
+      "Cuando se requiera aceptar un riesgo residual alto, remítalo al actor independiente autorizado para esa aceptación.",
+      "Complete la evaluación y consulte la cobertura exacta por Project o conjunto. Atienda los vencimientos, tratamientos y cambios de fuente antes de utilizar la evidencia como actual."
+    ]
+  },
+  "A21": {
+    "purpose": "Evaluar los permisos realmente aplicables y su vigencia. Un permiso obligatorio ausente, presentado pero no emitido, rechazado, suspendido o vencido no satisface la cobertura exigida para FFA.",
+    "prerequisites": [
+      "Catálogo y requisitos de permisos aplicables al contexto",
+      "Registros reales de permisos del Project"
+    ],
+    "steps": [
+      "Asigne los requisitos aplicables y vincule los registros de permisos que los sustentan.",
+      "Documente el estado real de emisión, las fechas y las condiciones bloqueantes o no bloqueantes. No marque un permiso como emitido sin su respaldo.",
+      "Complete la evaluación actual del Project o conjunto y revise la cobertura Class A exigida. Resuelva en su fuente los permisos o condiciones que continúen bloqueando."
+    ]
+  },
+  "A22": {
+    "purpose": "Evaluar la capacidad del propietario con evidencia de madurez, calidad y confianza. No equivale a planificación de recursos, capacidad del contratista ni disponibilidad operacional; una mitigación aceptada no elimina por sí sola una brecha crítica.",
+    "prerequisites": [
+      "Marco de capacidad del propietario vigente",
+      "Sponsor, responsabilidades y evidencia reales del contexto"
+    ],
+    "steps": [
+      "Califique la madurez de cada requisito y registre por separado la calidad y la confianza de la evidencia.",
+      "Documente si la capacidad se obtiene de forma interna, externa o híbrida, junto con las brechas y mitigaciones correspondientes.",
+      "Presente la evaluación para revisión y finalización independientes. Consulte los bloqueos, la vigencia y la historia; no dé por resuelta una brecha crítica únicamente porque tenga una mitigación aceptada."
+    ]
+  },
+  "A23": {
+    "purpose": "Trazar Funding Source, Fund y Funding Assignment y evaluar la cobertura de fondos sin duplicar asignaciones entre padres e hijos. Funding es distinto de Budget y no registra movimientos de contabilidad o tesorería.",
+    "prerequisites": [
+      "Política de Funding publicada y fondos aprobados",
+      "Necesidades monetarias pertinentes del Project o Portfolio"
+    ],
+    "steps": [
+      "Registre la Funding Source, el Fund y las Funding Assignments correspondientes, conservando su relación y alcance.",
+      "Someta las asignaciones a la confirmación independiente requerida y actualice la evaluación de cobertura.",
+      "Revise cobertura actual, moneda, restricciones e historia. Evite contar una misma asignación en el nivel padre y en el hijo como si fueran fondos adicionales."
+    ]
+  },
+  "A24": {
+    "purpose": "Preparar el modelo económico o financiero determinístico con indicadores y trazabilidad de fuentes. Los resultados no generan asientos ni modifican Treasury o Accounting.",
+    "prerequisites": [
+      "Línea base real del Business Case y Project",
+      "Evidencia de Funding y configuración FIN publicada"
+    ],
+    "steps": [
+      "Cree el modelo comercial o económico aplicable y complete flujos de caja, WACC e instrumentos de capital con datos sustentados.",
+      "Calcule los resultados y revise la conciliación entre Funding, deuda y retornos.",
+      "Presente el modelo para finalización independiente. Vincule en Business Case el ID, versión y hash exactos del modelo FIN y consulte su trazabilidad; no sustituya esa referencia por el estado de disponibilidad de otra fuente."
+    ]
+  },
+  "A25": {
+    "purpose": "Preparar y aprobar el modelo QRA con metodología y fuentes actuales, respetando la separación de funciones. APPROVED_FOR_ANALYSIS habilita el análisis del modelo; QRA Foundation no ejecuta la simulación ni acepta sus resultados.",
+    "prerequisites": [
+      "Metodología efectiva y fuentes reales gobernadas de Cost o Schedule",
+      "Capacidad del motor soportada para el tipo de análisis seleccionado"
+    ],
+    "steps": [
+      "Prepare y valide los snapshots de fuentes y el conjunto de entradas que integran el modelo.",
+      "Defina distribuciones, rangos y correlaciones, y revise el alcance y el total exacto de entradas incluidas.",
+      "Presente el modelo para aprobación independiente del análisis. Si las fuentes o la metodología están obsoletas, actualice el origen antes de solicitar APPROVED_FOR_ANALYSIS."
+    ]
+  },
+  "A26": {
+    "purpose": "Obtener y revisar resultados QRA cuando la política del contexto los exija. Un resultado de ejecución no es una aceptación; QRA_RESULT_PROVIDER requiere evidencia compatible y actual y no aprueba FID ni modifica automáticamente contingencia, Budget o Schedule.",
+    "prerequisites": [
+      "Política aplicable y modelo actual APPROVED_FOR_ANALYSIS",
+      "Tipo y alcance de análisis soportados; QRA no es un requisito universal"
+    ],
+    "steps": [
+      "Cree y ejecute el análisis Cost o Schedule soportado que corresponda al modelo aprobado.",
+      "Revise percentiles, probabilidad, convergencia, advertencias y procedencia. El actor independiente autorizado registra la aceptación cuando el resultado la justifique.",
+      "Consulte la evidencia del provider contextual y confirme ACCEPTED, vigencia, tipo, alcance y capacidad. Si falta evidencia válida, atienda el origen; un adjunto manual no sustituye un provider Class A obligatorio."
+    ]
+  },
+  "A27": {
+    "purpose": "Preparar la evidencia y evaluar los criterios de inversión en Gate07J. Este proceso no toma la decisión Gate07K y no permite reemplazar por un adjunto manual una fuente Class A obligatoria.",
+    "prerequisites": [
+      "Convergencia recomendada y fuentes gobernadas reales",
+      "Gate Profile, política de evidencia y criterios publicados y aplicables"
+    ],
+    "steps": [
+      "Cree la preparación para el Portfolio y el conjunto exacto de Projects de la decisión.",
+      "Consulte la matriz efectiva Class A/B/C, los providers y la cobertura de cada Project, distinguiendo los requisitos obligatorios de los no aplicables.",
+      "Evalúe criterios, excepciones y advertencias. Resuelva los bloqueos en el dominio responsable y compruebe la preparación para revisión, sin interpretar READY como una decisión de inversión."
+    ]
+  },
+  "A28": {
+    "purpose": "Comprobar que Business Case y Gate utilizan las fuentes nativas correctas y sus hashes exactos. Una coincidencia de estados de disponibilidad no sustituye la identidad de la fuente; una inconsistencia obligatoria impide continuar.",
+    "prerequisites": [
+      "Reglas de consistencia entre fuentes configuradas en la política",
+      "Business Case completado y providers nativos reales para el alcance"
+    ],
+    "steps": [
+      "Compare las referencias y hashes de las fuentes nativas del Project con los capturados en el snapshot de Business Case.",
+      "Revise las inconsistencias o duplicidades que señale la aplicación y determine qué dominio debe corregirlas.",
+      "Actualice las fuentes y cree las revisiones nuevas que correspondan. Conserve sin cambios el Business Case completado y el paquete congelado; no edite hashes manualmente para ocultar una diferencia."
+    ]
+  },
+  "A29": {
+    "purpose": "Conservar un paquete de Gate FROZEN con alcance, fuentes, política y criterios capturados. Los cambios posteriores afectan las evaluaciones actuales o nuevas, no reescriben el paquete histórico.",
+    "prerequisites": [
+      "Preparación actual READY y criterios obligatorios satisfechos",
+      "Evidencia Class A/B válida para el alcance y revisor independiente autorizado"
+    ],
+    "steps": [
+      "El autor presenta el paquete preparado y lo marca disponible para revisión mediante las acciones habilitadas.",
+      "El revisor independiente revisa la evidencia y congela el paquete cuando se cumplen sus condiciones.",
+      "Consulte el expediente FROZEN y sus referencias de perfil, política, providers, fuentes, hashes y advertencias. Utilice esa entrega histórica para la decisión; congelar no autoriza inversión ni ejecuta QRA."
+    ]
+  },
+  "A30": {
+    "purpose": "Registrar una decisión formal independiente en Gate07K. GO bajo PYP-FFA establece FID y las autorizaciones de inversión y fondos correspondientes; un GO de selección no es FID y ninguna evidencia produce GO o activación automáticamente.",
+    "prerequisites": [
+      "Paquete Gate congelado válido",
+      "Autoridad o comité y quorum vigentes, separación de funciones y checklist de decisión configurado"
+    ],
+    "steps": [
+      "Prepare, presente y revise el expediente de decisión vinculado al paquete congelado.",
+      "La autoridad independiente evalúa el expediente y registra el resultado real, su justificación, condiciones e importe y moneda autorizados. No seleccione GO por el solo hecho de que la evidencia esté READY.",
+      "Consulte las salidas de FID, autorización de inversión y fondos según el perfil aplicado. Atienda HOLD, RECYCLE o KILL conforme a su decisión real; no los utilice como pasos de ensayo dentro de un expediente operativo."
+    ]
+  },
+  "A31": {
+    "purpose": "Evaluar condiciones y elegibilidad posteriores al FID por Project, sin ejecutar la entrega operacional. Un FID válido puede producir READY_FOR_INITIALIZATION y mantener can_activate=false si faltan requisitos de activación.",
+    "prerequisites": [
+      "FID formal decidido y política Post-FID vigente",
+      "Estado y condiciones reales del Project conservados"
+    ],
+    "steps": [
+      "Consulte la evaluación de elegibilidad y las condiciones del Project vinculadas a la decisión.",
+      "Revise el enrutamiento y los bloqueos de inicialización o activación. Continúe por el flujo existente únicamente cuando la aplicación y su autorización lo permitan.",
+      "Si el Project ya está activo, consulte su situación sin reactivarlo. Finalice este recorrido en la gobernanza y elegibilidad; la ejecución de Project Delivery queda fuera de este proceso."
+    ]
+  },
+  "B1": {
+    "purpose": "Crear, inicializar y activar un Project CONTRACTOR_DELIVERY con identidad canónica y fuente contractual trazable. La ruta no impone por defecto Idea, Portfolio, FEL, Funding, QRA o FID ni crea decisiones de inversión o memberships artificiales.",
+    "prerequisites": [
+      "Política de origen contractual publicada y plantilla exacta de Project",
+      "Padre elegible, manager activo y actores con permisos para solicitud, revisión, aprobación, materialización, inicialización y activación, respetando la independencia exigida",
+      "Autorización de la fuente contractual para la activación cuando corresponda"
+    ],
+    "steps": [
+      "Previsualice la solicitud y confirme CONTRACTOR_DELIVERY, la fuente contractual y la plantilla aplicable. Revise los requisitos efectivos del contexto, sin añadir la ruta Capital Owner por defecto.",
+      "Cree y presente la solicitud CONTRACT_AWARD. Obtenga la revisión y aprobación independientes exigidas y materialice un único Project pending.",
+      "Complete la inicialización y consulte su elegibilidad. El actor independiente autorizado activa el Project con el respaldo contractual requerido, como mobilization_authorized o notice_to_proceed_date según corresponda. No intente activar antes de cumplir las condiciones ni confunda la activación con ejecución operacional."
+    ]
+  },
+  "C1": {
+    "purpose": "Crear, inicializar y activar un Project DIRECT_INTERNAL con identidad canónica y autorización interna trazable. La ruta no impone por defecto Idea, Portfolio, FEL, Funding, QRA o FID ni fabrica una decisión de inversión.",
+    "prerequisites": [
+      "Política de autorización interna publicada y plantilla exacta de Project",
+      "Padre elegible, manager activo y actores con permisos para solicitud, revisión, aprobación, materialización, inicialización y activación, respetando la independencia exigida",
+      "Autorización interna de la fuente aprobada cuando sea requisito de activación"
+    ],
+    "steps": [
+      "Previsualice la solicitud y confirme DIRECT_INTERNAL, su autorización de origen y la plantilla aplicable. Consulte los requisitos efectivos sin asumir que debe recorrer Capital Owner.",
+      "Cree y presente la solicitud DIRECT_AUTHORIZATION. Obtenga la revisión y aprobación independientes exigidas y materialice un único Project pending.",
+      "Complete la inicialización y consulte los bloqueos pendientes. El actor independiente autorizado activa el Project únicamente con la aprobación interna exigida, incluida authorization_approved cuando corresponda. Conserve la identidad de origen y deténgase antes de la ejecución operacional."
+    ]
+  }
+}

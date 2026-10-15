@@ -1,0 +1,275 @@
+[
+  {
+    "rule_id": "BR-01",
+    "business_rule": "Project = canonical PROJECT Workspace Instance",
+    "implemented_behavior": "Strategic Project FKs use enterprise_workspaces.id; legacy projects table is a referenced operational compatibility source, not a new strategic identity.",
+    "evidence": "backend/app/modules/project_creation/service.py:591; backend/app/modules/portfolio_planning/models.py; backend/app/modules/investment_decision/models.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-02",
+    "business_rule": "ADMIN configures; USER creates Project Instances",
+    "implemented_behavior": "Generic ADMIN and live CORE revisions reject new PROJECT identities and lifecycle changes before materialization. Existing canonical PROJECT adoption (including matching USER pending state) remains supported without retroactive process records. Narrow historical CORE migration tooling remains an explicit compatibility exception, not a USER creation route.",
+    "evidence": "backend/app/modules/project_creation/entrypoint_guard.py; backend/app/modules/enterprise_structure/revisions.py; backend-core-project-bypass-evidence.json; backend-core-project-authority-remediation.json",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-03",
+    "business_rule": "Idea is a strategic record, not a Workspace",
+    "implemented_behavior": "Idea records retain owning_workspace_id and do not materialize a Project Workspace.",
+    "evidence": "backend/app/modules/idea_demand/models.py; service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-04",
+    "business_rule": "Idea needs eligible owner context",
+    "implemented_behavior": "Idea options/create resolve owning Workspace, effective policy and eligibility.",
+    "evidence": "backend/app/modules/idea_demand/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-05",
+    "business_rule": "Proposal follows accepted Idea readiness",
+    "implemented_behavior": "Proposal is governed source content with review/evaluation and Gate-ready transition, not an investment decision.",
+    "evidence": "backend/app/modules/project_proposal/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-06",
+    "business_rule": "Strategic Gate is not FID",
+    "implemented_behavior": "APPROVE produces READY_FOR_PORTFOLIO_INTAKE; RETURN/REJECT/DEFER remain distinct states.",
+    "evidence": "backend/app/modules/strategic_gate/service.py:110",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-07",
+    "business_rule": "Exact Project identity creation point",
+    "implemented_behavior": "ProjectCreationService.materialize inserts EnterpriseWorkspace only after approved request; workspace starts pending, not active.",
+    "evidence": "backend/app/modules/project_creation/service.py:591",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-08",
+    "business_rule": "Alternative governance routes",
+    "implemented_behavior": "CONTRACTOR_DELIVERY and DIRECT_INTERNAL use explicit governed creation sources and policy, without default full owner-only gates.",
+    "evidence": "backend/app/modules/project_creation/governance.py; router.py:112; router.py:139",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-09",
+    "business_rule": "Initialization is not Activation",
+    "implemented_behavior": "Lifecycle start/validate and activate have separate permissions; validation and independent eligible activation are checked.",
+    "evidence": "backend/app/modules/project_workspace_initialization/router.py:96; service.py:258",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-10",
+    "business_rule": "Allocation is strategic intent",
+    "implemented_behavior": "Capital target/current/recommended/approved positions do not authorize Budget or Funding.",
+    "evidence": "backend/app/modules/capital_planning/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-11",
+    "business_rule": "Portfolio Rank is contextual",
+    "implemented_behavior": "Portfolio evaluation/prioritization is scoped to the Portfolio; completed assessments preserve their source context.",
+    "evidence": "backend/app/modules/portfolio_evaluation/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-12",
+    "business_rule": "Currency guardrails",
+    "implemented_behavior": "Portfolio comparisons retain source currency context instead of silently mixing incompatible amounts.",
+    "evidence": "backend/app/modules/portfolio_analysis/service.py; portfolio_budget/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-13",
+    "business_rule": "FROZEN is not approved",
+    "implemented_behavior": "Budget/Resource freeze protects planning alternatives; it does not record formal investment authorization.",
+    "evidence": "backend/app/modules/portfolio_budget/service.py:603; portfolio_resource/service.py:667",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-14",
+    "business_rule": "Resource planning is strategic",
+    "implemented_behavior": "Capacity and demand scenarios neither assign named staff nor mutate source Project dates/P6 leveling.",
+    "evidence": "backend/app/modules/portfolio_resource/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-15",
+    "business_rule": "Recommendation is not FID",
+    "implemented_behavior": "Scenario Convergence records recommendation/hash and combined feasibility, not Gate07K authority.",
+    "evidence": "backend/app/modules/portfolio_convergence/service.py:787; service.py:1566",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-16",
+    "business_rule": "Portfolio HOLD is not Gate HOLD",
+    "implemented_behavior": "HOLD_FOR_CAPACITY remains Portfolio Governance request context, not investment Gate07K HOLD.",
+    "evidence": "backend/app/modules/portfolio_review/service.py:2479",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-17",
+    "business_rule": "Five Case revisions preserve sources",
+    "implemented_behavior": "Completed Business Case revisions/snapshots preserve source references and hashes; refresh creates governed successors.",
+    "evidence": "backend/app/modules/business_case/service.py; models.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-18",
+    "business_rule": "Benefits planning boundary",
+    "implemented_behavior": "Plan/register/ownership/measures/strategy traceability are strategic; Benefits Realization execution is not released here.",
+    "evidence": "backend/app/modules/strategic_benefits/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-19",
+    "business_rule": "Commercial strategy boundary",
+    "implemented_behavior": "Delivery/packaging/commercial/risk-allocation strategy does not execute procurement.",
+    "evidence": "backend/app/modules/commercial_strategy/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-20",
+    "business_rule": "FEL stage differs from PDRI maturity",
+    "implemented_behavior": "ProjectFELStatus and definition assessments are separate governed entities and readiness concerns.",
+    "evidence": "backend/app/modules/project_definition/models.py; service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-21",
+    "business_rule": "Basic Data differs from FEL/PDRI",
+    "implemented_behavior": "Availability, validation, quality/confidence/freshness and stage-aware readiness are their own assessment.",
+    "evidence": "backend/app/modules/basic_data/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-22",
+    "business_rule": "Risk Governance is reusable ADMIN policy",
+    "implemented_behavior": "Effective capacity/appetite/threshold configuration is separate from live Project risk readiness.",
+    "evidence": "backend/app/modules/risk_governance/router.py; risk_readiness/router.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-23",
+    "business_rule": "Permit readiness is applicability and coverage",
+    "implemented_behavior": "Requirements, Project permits and conditions stay governed source evidence, not automatic approval.",
+    "evidence": "backend/app/modules/permit_readiness/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-24",
+    "business_rule": "Owner Capability differs from Resources",
+    "implemented_behavior": "Owner maturity, gaps and mitigations do not become resource leveling, contractor capability or Operational Readiness.",
+    "evidence": "backend/app/modules/owner_capability/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-25",
+    "business_rule": "Funding differs from Budget",
+    "implemented_behavior": "FundingSource → Fund → Assignment → Readiness stays a separate authority from portfolio Budget targets/scenarios.",
+    "evidence": "backend/app/modules/funds_manager/service.py; models.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-26",
+    "business_rule": "FIN is deterministic economics",
+    "implemented_behavior": "Financial model/version, metrics, debt/investors/scenarios and reconciliation are not Treasury or Accounting mutations.",
+    "evidence": "backend/app/modules/economic_financial_model/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-27",
+    "business_rule": "QRA Foundation approval is not result acceptance",
+    "implemented_behavior": "Only APPROVED_FOR_ANALYSIS models can run; sources/model SoD and currentness precede analysis.",
+    "evidence": "backend/app/modules/qra_foundation/service.py:770; qra_engine/service.py:277",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-28",
+    "business_rule": "QRA result requires independent acceptance",
+    "implemented_behavior": "Run COMPLETED plus independent ACCEPTED review are required for provider evidence; creator/executor cannot accept their own result.",
+    "evidence": "backend/app/modules/qra_engine/service.py:751; service.py:809",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-29",
+    "business_rule": "Provider AVAILABLE is not universal QRA requirement",
+    "implemented_behavior": "Policy resolves contextual REQUIRED/NOT_REQUIRED/NOT_APPLICABLE/NOT_EVALUABLE per governance/profile/scope/analysis.",
+    "evidence": "backend/app/modules/investment_evidence_policy/qra_evidence.py; service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-30",
+    "business_rule": "No Integrated QRA release",
+    "implemented_behavior": "Supported Cost and Schedule analyses remain separate; integrated active policy requirement is rejected.",
+    "evidence": "backend/app/modules/qra_foundation/policy.py; investment_evidence_policy/qra_evidence.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-31",
+    "business_rule": "Class A forbids manual fallback",
+    "implemented_behavior": "Gate rejects manual references for governed-only evidence and stale mandatory sources block readiness.",
+    "evidence": "backend/app/modules/investment_gate_preparation/service.py:436",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-32",
+    "business_rule": "Gate freeze is immutable evidence",
+    "implemented_behavior": "FROZEN READY package snapshots include policy/provider/source and criteria hashes; edits are rejected.",
+    "evidence": "backend/app/modules/investment_gate_preparation/service.py:816; service.py:2477",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-33",
+    "business_rule": "Gate07J differs from Gate07K",
+    "implemented_behavior": "Preparation and evidence freeze do not authorize investment; explicit scoped decision actor and authority are needed.",
+    "evidence": "backend/app/modules/investment_decision/router.py:207; service.py:567",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-34",
+    "business_rule": "PYP-FFA GO is FID",
+    "implemented_behavior": "Only profile PYP-FFA plus GO sets is_fid/investment_authorized/full_funds_authorized; SELECT GO is not FID.",
+    "evidence": "backend/app/modules/investment_decision/service.py:600; service.py:623",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-35",
+    "business_rule": "Committee authority remains configured",
+    "implemented_behavior": "Single maker identity/SoD or committee membership/quorum/voting rules must pass; evidence/QRA never auto-decides.",
+    "evidence": "backend/app/modules/investment_decision/service.py:882",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-36",
+    "business_rule": "FID differs from Activation",
+    "implemented_behavior": "FID event explicitly reports can_activate_project=False; Post-FID evaluates conditions/eligibility separately.",
+    "evidence": "backend/app/modules/investment_decision/service.py:664; post_fid_governance/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-37",
+    "business_rule": "Scope is tenant plus assigned context",
+    "implemented_behavior": "JWT principal fixes tenant/user; enterprise RBAC resolves active time-valid scoped grants, then service checks Workspace visibility.",
+    "evidence": "backend/app/api/deps.py; enterprise_structure/permissions.py:1738; workspace_context/service.py:336",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-38",
+    "business_rule": "Published configuration is immutable",
+    "implemented_behavior": "Clone/preview/validate/publish produces successor configuration; historical snapshots are not rewritten by publishing a policy.",
+    "evidence": "backend/app/api/v1/routers/admin_configuration.py:_require_draft; investment_evidence_policy/service.py",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  },
+  {
+    "rule_id": "BR-39",
+    "business_rule": "Legacy GET may bootstrap",
+    "implemented_behavior": "Several legacy authorization helpers bootstrap/commit configuration on GET; inventory did not call them against operational DB.",
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py:1749",
+    "validation_status": "SOURCE_INSPECTED_NOT_EXECUTION_PASS"
+  }
+]

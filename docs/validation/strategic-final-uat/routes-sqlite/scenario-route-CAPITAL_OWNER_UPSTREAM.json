@@ -1,0 +1,26 @@
+{
+  "case": "CAPITAL_OWNER_UPSTREAM",
+  "status": "PASS",
+  "database_dialect": "sqlite",
+  "idea_id": 1,
+  "accepted_evaluation_id": 1,
+  "business_analysis_id": 1,
+  "business_analysis_completion_hash": "8e460b4175f241ece65062b227befe5b138f303a1f31ac8ea686e383cf858063",
+  "proposal_id": 1,
+  "strategic_gate_id": 1,
+  "strategic_gate_hash": "a2ae88be7fdac38bf1b2d483654c3dea4dd03daf696ed30d81e36e1fcbbf640b",
+  "request_id": 3,
+  "project_workspace_id": 5,
+  "project_type": "capital",
+  "project_status": "pending",
+  "membership_source": "STRATEGIC_INTAKE",
+  "fid_count_before_after": [
+    0,
+    0
+  ],
+  "project14_hash_before_after": [
+    null,
+    null
+  ],
+  "proof_boundary": "Real HTTP Idea\u2192evaluation\u2192BA\u2192Proposal\u2192Strategic Gate\u2192Project/membership only; not A0-A31"
+}

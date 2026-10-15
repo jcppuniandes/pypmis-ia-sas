@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-14T23:29:58Z",
+  "method": "PostgreSQL BEGIN READ ONLY; SELECT; ROLLBACK; MD5 of to_jsonb(workspace_row)::text",
+  "baseline_comparison": "Same workspace14 MD5 and identity as before this UAT; same published policy hashes as preceding validated baseline",
+  "workspace_count": 31,
+  "workspace14": {"id":14,"tenant_id":1,"workspace_type_code":"project","code":"PRJ-PPMIS","external_key":"PRJ-PYP-PPMIS","record_code":"01.03.01.02.01","status":"active","version":1,"row_md5":"ef67b78a4d4902d2dc6db3efb017b80b"},
+  "published_configuration_count": 95,
+  "published_evidence_policies": [
+    {"id":787,"hash":"a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392"},
+    {"id":829,"hash":"01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016"},
+    {"id":836,"hash":"be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30"},
+    {"id":845,"hash":"7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4"},
+    {"id":854,"hash":"7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6"}
+  ],
+  "qra_methodology": {"id":866,"status":"draft","hash":"659864784231a52e583474b0a5c859a9ee32bc04524cdf8dada65fd2284c01e4"},
+  "qra_run_count": 0,
+  "alembic_head": "20261011_0068",
+  "operational_schema_migration_executed": false,
+  "operational_policy_published": false,
+  "agent_commit": false,
+  "agent_push": false
+}

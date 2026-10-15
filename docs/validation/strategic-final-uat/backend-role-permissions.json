@@ -1,0 +1,3159 @@
+[
+  {
+    "role_code": "auditor",
+    "permission_keys": [
+      "enterprise_structure.export",
+      "enterprise_structure.read",
+      "enterprise_structure.read_history"
+    ],
+    "source_families": [
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "benefits_plan_author",
+    "permission_keys": [
+      "benefits_plan.create",
+      "benefits_plan.create_revision",
+      "benefits_plan.edit",
+      "benefits_plan.read",
+      "benefits_plan.refresh",
+      "benefits_plan.submit",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_BENEFITS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "benefits_plan_config_admin",
+    "permission_keys": [
+      "benefits_plan.admin.configure",
+      "benefits_plan.admin.publish"
+    ],
+    "source_families": [
+      "STRATEGIC_BENEFITS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "benefits_plan_reviewer",
+    "permission_keys": [
+      "benefits_plan.complete",
+      "benefits_plan.read",
+      "benefits_plan.review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_BENEFITS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "benefits_plan_viewer",
+    "permission_keys": [
+      "benefits_plan.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_BENEFITS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_analysis_author",
+    "permission_keys": [
+      "business_analysis.create",
+      "business_analysis.edit",
+      "business_analysis.read",
+      "business_analysis.submit",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_analysis_config_admin",
+    "permission_keys": [
+      "business_analysis.admin.configure",
+      "business_analysis.admin.publish",
+      "business_analysis.read"
+    ],
+    "source_families": [
+      "BUSINESS_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_analysis_reviewer",
+    "permission_keys": [
+      "business_analysis.read",
+      "business_analysis.review",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_analysis_viewer",
+    "permission_keys": [
+      "business_analysis.read",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_case_configuration_admin",
+    "permission_keys": [
+      "business_case.admin.configure",
+      "business_case.admin.publish",
+      "business_case.read"
+    ],
+    "source_families": [
+      "BUSINESS_CASE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_case_preparer",
+    "permission_keys": [
+      "business_case.create",
+      "business_case.create_revision",
+      "business_case.edit",
+      "business_case.read",
+      "business_case.refresh",
+      "business_case.submit_review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_CASE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_case_reviewer",
+    "permission_keys": [
+      "business_case.complete",
+      "business_case.material_change.review",
+      "business_case.read",
+      "business_case.review",
+      "business_case.snapshot",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_CASE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "business_case_viewer",
+    "permission_keys": [
+      "business_case.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "BUSINESS_CASE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_allocation_author",
+    "permission_keys": [
+      "capital_planning.allocation.create",
+      "capital_planning.allocation.edit",
+      "capital_planning.allocation.read",
+      "capital_planning.allocation.submit",
+      "capital_planning.bucket.classify",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_allocation_endorser",
+    "permission_keys": [
+      "capital_planning.allocation.endorse",
+      "capital_planning.allocation.read",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_allocation_reviewer",
+    "permission_keys": [
+      "capital_planning.allocation.read",
+      "capital_planning.allocation.review",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_author",
+    "permission_keys": [
+      "capital_planning.allocation.create",
+      "capital_planning.allocation.edit",
+      "capital_planning.allocation.read",
+      "capital_planning.allocation.submit",
+      "capital_planning.bucket.classify",
+      "capital_planning.demand.create",
+      "capital_planning.demand.edit",
+      "capital_planning.demand.submit",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_bucket_classifier",
+    "permission_keys": [
+      "capital_planning.allocation.read",
+      "capital_planning.bucket.classify",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_config_admin",
+    "permission_keys": [
+      "capital_planning.admin.bucket.configure",
+      "capital_planning.admin.bucket.publish",
+      "capital_planning.admin.configure",
+      "capital_planning.admin.publish",
+      "capital_planning.read"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_cycle_manager",
+    "permission_keys": [
+      "capital_planning.cycle.close",
+      "capital_planning.cycle.create",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_endorser",
+    "permission_keys": [
+      "capital_planning.allocation.endorse",
+      "capital_planning.allocation.read",
+      "capital_planning.demand.endorse",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_originator",
+    "permission_keys": [
+      "capital_planning.idea.originate",
+      "capital_planning.read",
+      "idea.create",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_reviewer",
+    "permission_keys": [
+      "capital_planning.allocation.read",
+      "capital_planning.allocation.review",
+      "capital_planning.demand.review",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "capital_planning_viewer",
+    "permission_keys": [
+      "capital_planning.allocation.read",
+      "capital_planning.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "CAPITAL_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "commercial_strategy_author",
+    "permission_keys": [
+      "commercial_strategy.create",
+      "commercial_strategy.create_revision",
+      "commercial_strategy.edit",
+      "commercial_strategy.read",
+      "commercial_strategy.refresh",
+      "commercial_strategy.submit",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "COMMERCIAL_STRATEGY_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "commercial_strategy_config_admin",
+    "permission_keys": [
+      "commercial_strategy.admin.configure",
+      "commercial_strategy.admin.publish"
+    ],
+    "source_families": [
+      "COMMERCIAL_STRATEGY_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "commercial_strategy_reviewer",
+    "permission_keys": [
+      "commercial_strategy.complete",
+      "commercial_strategy.read",
+      "commercial_strategy.review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "COMMERCIAL_STRATEGY_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "commercial_strategy_viewer",
+    "permission_keys": [
+      "commercial_strategy.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "COMMERCIAL_STRATEGY_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "configuration_admin",
+    "permission_keys": [
+      "admin.composition_rule.manage",
+      "admin.composition_rule.publish",
+      "admin.composition_rule.read",
+      "admin.enterprise_category.manage",
+      "admin.enterprise_category.publish",
+      "admin.enterprise_category.read",
+      "admin.enterprise_structure.creation_policy.manage",
+      "admin.enterprise_structure.facility.manage",
+      "admin.enterprise_structure.geography.manage",
+      "admin.enterprise_structure.manage",
+      "admin.enterprise_structure.physical_numbering.manage",
+      "admin.enterprise_structure.physical_policy.manage",
+      "admin.enterprise_structure.physical_templates.manage",
+      "admin.enterprise_structure.project_numbering.manage",
+      "admin.enterprise_structure.project_template.manage",
+      "admin.enterprise_structure.project_type.manage",
+      "admin.enterprise_structure.property.manage",
+      "admin.enterprise_structure.publish",
+      "admin.enterprise_structure.read",
+      "admin.enterprise_structure.revision.approve",
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.revision.create",
+      "admin.enterprise_structure.revision.edit",
+      "admin.enterprise_structure.revision.validate",
+      "admin.enterprise_structure.rollback",
+      "admin.enterprise_structure.warehouse.manage",
+      "admin.workspace_type.manage",
+      "admin.workspace_type.publish",
+      "admin.workspace_type.read",
+      "basic_data.admin.configure",
+      "basic_data.admin.publish",
+      "basic_data.read",
+      "benefits_plan.admin.configure",
+      "benefits_plan.admin.publish",
+      "business_analysis.admin.configure",
+      "business_analysis.admin.publish",
+      "business_analysis.read",
+      "business_case.admin.configure",
+      "business_case.admin.publish",
+      "business_case.read",
+      "capital_planning.admin.bucket.configure",
+      "capital_planning.admin.bucket.publish",
+      "capital_planning.admin.configure",
+      "capital_planning.admin.publish",
+      "capital_planning.read",
+      "commercial_strategy.admin.configure",
+      "commercial_strategy.admin.publish",
+      "economic_financial_model.admin.configure",
+      "economic_financial_model.admin.publish",
+      "economic_financial_model.read",
+      "enterprise_structure.export",
+      "enterprise_structure.read",
+      "enterprise_structure.read_history",
+      "funding_readiness.read",
+      "funds.admin.configure",
+      "funds.admin.publish",
+      "funds.read",
+      "idea.admin.configure",
+      "idea.admin.publish",
+      "idea.read",
+      "investment_decision.admin.configure",
+      "investment_decision.admin.publish",
+      "investment_decision.read",
+      "investment_evidence_policy.configure",
+      "investment_evidence_policy.publish",
+      "investment_evidence_policy.read",
+      "investment_evidence_provider.read",
+      "investment_gate_permit_evidence.read",
+      "investment_gate_preparation.admin.configure",
+      "investment_gate_preparation.admin.publish",
+      "investment_gate_preparation.read",
+      "investment_gate_risk_evidence.read",
+      "owner_capability.admin.configure",
+      "owner_capability.admin.publish",
+      "owner_capability.read",
+      "permit.read",
+      "permit_readiness.admin.configure",
+      "permit_readiness.admin.publish",
+      "permit_readiness.read",
+      "portfolio_analysis.admin.configure",
+      "portfolio_analysis.admin.publish",
+      "portfolio_analysis.read",
+      "portfolio_budget.admin.configure",
+      "portfolio_budget.admin.publish",
+      "portfolio_budget.read",
+      "portfolio_convergence.admin.configure",
+      "portfolio_convergence.admin.publish",
+      "portfolio_convergence.read",
+      "portfolio_evaluation.admin.configure",
+      "portfolio_evaluation.admin.publish",
+      "portfolio_evaluation.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.admin.configure",
+      "portfolio_project.admin.publish",
+      "portfolio_project.read",
+      "portfolio_resource.admin.configure",
+      "portfolio_resource.admin.publish",
+      "portfolio_resource.read",
+      "portfolio_review.admin.configure",
+      "portfolio_review.admin.publish",
+      "portfolio_review.read",
+      "post_fid_governance.admin.configure",
+      "post_fid_governance.admin.publish",
+      "post_fid_governance.read",
+      "project_definition.admin.configure",
+      "project_definition.admin.publish",
+      "project_definition.read",
+      "project_proposal.admin.configure",
+      "project_proposal.admin.publish",
+      "project_proposal.read",
+      "project_risk.read",
+      "qra_foundation.read",
+      "qra_methodology.admin.configure",
+      "qra_methodology.admin.publish",
+      "risk_governance.admin.configure",
+      "risk_governance.admin.publish",
+      "risk_governance.read",
+      "risk_readiness.admin.configure",
+      "risk_readiness.admin.publish",
+      "risk_readiness.read",
+      "strategic_gate.admin.configure",
+      "strategic_gate.admin.publish",
+      "strategic_gate.read"
+    ],
+    "source_families": [
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "definition_assessor",
+    "permission_keys": [
+      "basic_data.assessment.create",
+      "basic_data.assessment.submit",
+      "basic_data.item.create",
+      "basic_data.item.edit",
+      "basic_data.item.validate",
+      "basic_data.read",
+      "owner_capability.assessment.create",
+      "owner_capability.assessment.edit",
+      "owner_capability.assessment.submit",
+      "owner_capability.mitigation.edit",
+      "owner_capability.read",
+      "project_definition.read",
+      "project_definition_action.manage",
+      "project_definition_assessment.complete",
+      "project_definition_assessment.create",
+      "project_definition_assessment.edit",
+      "project_definition_assessment.reevaluate",
+      "qra_cost_source.create",
+      "qra_cost_source.edit",
+      "qra_cost_source.submit",
+      "qra_foundation.read",
+      "qra_model.create",
+      "qra_model.edit",
+      "qra_model.submit",
+      "qra_run.cancel",
+      "qra_run.create",
+      "qra_run.execute",
+      "qra_run.read",
+      "qra_schedule_source.create",
+      "qra_schedule_source.edit",
+      "qra_schedule_source.submit",
+      "risk_governance.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_DEFINITION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "definition_reviewer",
+    "permission_keys": [
+      "basic_data.assessment.complete",
+      "basic_data.assessment.review",
+      "basic_data.read",
+      "investment_gate_preparation.read",
+      "owner_capability.assessment.complete",
+      "owner_capability.assessment.review",
+      "owner_capability.read",
+      "project_definition.read",
+      "project_definition_stage.review",
+      "qra_cost_source.review",
+      "qra_foundation.read",
+      "qra_model.approve",
+      "qra_model.review",
+      "qra_run.accept",
+      "qra_run.read",
+      "qra_run.review",
+      "qra_schedule_source.review",
+      "risk_governance.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_DEFINITION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_configuration_admin",
+    "permission_keys": [
+      "economic_financial_model.admin.configure",
+      "economic_financial_model.admin.publish",
+      "economic_financial_model.read"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_finance_reviewer",
+    "permission_keys": [
+      "economic_financial_model.complete",
+      "economic_financial_model.read",
+      "economic_financial_model.review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_owner",
+    "permission_keys": [
+      "economic_financial_model.create",
+      "economic_financial_model.create_version",
+      "economic_financial_model.read",
+      "economic_financial_model.refresh",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_preparer",
+    "permission_keys": [
+      "economic_financial_model.calculate",
+      "economic_financial_model.create",
+      "economic_financial_model.create_version",
+      "economic_financial_model.edit",
+      "economic_financial_model.read",
+      "economic_financial_model.refresh",
+      "economic_financial_model.scenario.manage",
+      "economic_financial_model.sensitivity.run",
+      "economic_financial_model.submit_review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_reviewer",
+    "permission_keys": [
+      "economic_financial_model.complete",
+      "economic_financial_model.read",
+      "economic_financial_model.review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "financial_model_viewer",
+    "permission_keys": [
+      "economic_financial_model.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "ECONOMIC_FINANCIAL_MODEL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "funding_configuration_admin",
+    "permission_keys": [
+      "funding_readiness.read",
+      "funds.admin.configure",
+      "funds.admin.publish",
+      "funds.read"
+    ],
+    "source_families": [
+      "FUNDS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "funding_manager",
+    "permission_keys": [
+      "fund.authorize",
+      "fund.create",
+      "fund.edit",
+      "fund.manage_status",
+      "funding_assignment.cancel",
+      "funding_assignment.confirm",
+      "funding_assignment.create",
+      "funding_assignment.edit",
+      "funding_assignment.release",
+      "funding_assignment.reserve",
+      "funding_readiness.read",
+      "funding_readiness.refresh",
+      "funding_source.create",
+      "funding_source.edit",
+      "funding_source.manage_status",
+      "funds.read",
+      "investment_gate_preparation.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "FUNDS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "funding_planner",
+    "permission_keys": [
+      "fund.create",
+      "fund.edit",
+      "funding_assignment.cancel",
+      "funding_assignment.create",
+      "funding_assignment.edit",
+      "funding_assignment.release",
+      "funding_assignment.reserve",
+      "funding_readiness.read",
+      "funding_readiness.refresh",
+      "funding_source.create",
+      "funding_source.edit",
+      "funds.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "FUNDS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "funding_reviewer",
+    "permission_keys": [
+      "fund.authorize",
+      "funding_assignment.confirm",
+      "funding_readiness.read",
+      "funds.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "FUNDS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "funding_viewer",
+    "permission_keys": [
+      "funding_readiness.read",
+      "funds.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "FUNDS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "gate_committee_member",
+    "permission_keys": [
+      "project_proposal.read",
+      "strategic_gate.decide",
+      "strategic_gate.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "gate_configuration_admin",
+    "permission_keys": [
+      "strategic_gate.admin.configure",
+      "strategic_gate.admin.publish",
+      "strategic_gate.read"
+    ],
+    "source_families": [
+      "STRATEGIC_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "gate_decision_maker",
+    "permission_keys": [
+      "project_proposal.read",
+      "strategic_gate.decide",
+      "strategic_gate.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "gate_preparer",
+    "permission_keys": [
+      "project_proposal.read",
+      "strategic_gate.create",
+      "strategic_gate.edit",
+      "strategic_gate.read",
+      "strategic_gate.submit",
+      "strategic_gate.void",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "gate_reviewer",
+    "permission_keys": [
+      "project_proposal.read",
+      "strategic_gate.read",
+      "strategic_gate.review",
+      "strategic_gate.void",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "STRATEGIC_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "idea_configuration_admin",
+    "permission_keys": [
+      "idea.admin.configure",
+      "idea.admin.publish",
+      "idea.read"
+    ],
+    "source_families": [
+      "IDEA_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "idea_decision_maker",
+    "permission_keys": [
+      "idea.decide",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "IDEA_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "idea_intake_reviewer",
+    "permission_keys": [
+      "idea.assign_owner",
+      "idea.read",
+      "idea.route",
+      "idea.screen",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "IDEA_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "idea_owner",
+    "permission_keys": [
+      "idea.evaluate",
+      "idea.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "IDEA_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "idea_requestor",
+    "permission_keys": [
+      "idea.cancel",
+      "idea.create",
+      "idea.edit",
+      "idea.read",
+      "idea.submit",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "IDEA_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_committee_chair",
+    "permission_keys": [
+      "investment_decision.decide",
+      "investment_decision.read",
+      "investment_decision.vote",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_committee_member",
+    "permission_keys": [
+      "investment_decision.decide",
+      "investment_decision.read",
+      "investment_decision.vote",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_configuration_admin",
+    "permission_keys": [
+      "investment_decision.admin.configure",
+      "investment_decision.admin.publish",
+      "investment_decision.read"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_maker",
+    "permission_keys": [
+      "investment_decision.decide",
+      "investment_decision.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_preparer",
+    "permission_keys": [
+      "investment_decision.create",
+      "investment_decision.edit",
+      "investment_decision.read",
+      "investment_decision.submit",
+      "investment_decision.void",
+      "investment_gate_preparation.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_reviewer",
+    "permission_keys": [
+      "investment_decision.read",
+      "investment_decision.review",
+      "investment_decision.void",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_decision_viewer",
+    "permission_keys": [
+      "investment_decision.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_DECISION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_evidence_policy_admin",
+    "permission_keys": [
+      "investment_evidence_policy.configure",
+      "investment_evidence_policy.publish",
+      "investment_evidence_policy.read",
+      "investment_evidence_provider.read",
+      "investment_gate_preparation.read"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_evidence_policy_viewer",
+    "permission_keys": [
+      "investment_evidence_policy.read",
+      "investment_evidence_provider.read",
+      "investment_gate_preparation.read"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_evidence_reviewer",
+    "permission_keys": [
+      "investment_gate_evidence.validate",
+      "investment_gate_preparation.freeze",
+      "investment_gate_preparation.read",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_gate_configuration_admin",
+    "permission_keys": [
+      "investment_gate_preparation.admin.configure",
+      "investment_gate_preparation.admin.publish",
+      "investment_gate_preparation.read"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_gate_preparation_viewer",
+    "permission_keys": [
+      "investment_gate_preparation.read",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "investment_gate_preparer",
+    "permission_keys": [
+      "investment_gate_evidence.add",
+      "investment_gate_preparation.clone",
+      "investment_gate_preparation.create",
+      "investment_gate_preparation.edit",
+      "investment_gate_preparation.read",
+      "investment_gate_preparation.refresh",
+      "investment_gate_preparation.void",
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "INVESTMENT_GATE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "organization_admin",
+    "permission_keys": [
+      "admin.composition_rule.manage",
+      "admin.composition_rule.publish",
+      "admin.composition_rule.read",
+      "admin.enterprise_category.manage",
+      "admin.enterprise_category.publish",
+      "admin.enterprise_category.read",
+      "admin.enterprise_structure.creation_policy.manage",
+      "admin.enterprise_structure.facility.manage",
+      "admin.enterprise_structure.geography.manage",
+      "admin.enterprise_structure.manage",
+      "admin.enterprise_structure.physical_numbering.manage",
+      "admin.enterprise_structure.physical_policy.manage",
+      "admin.enterprise_structure.physical_templates.manage",
+      "admin.enterprise_structure.project_numbering.manage",
+      "admin.enterprise_structure.project_template.manage",
+      "admin.enterprise_structure.project_type.manage",
+      "admin.enterprise_structure.property.manage",
+      "admin.enterprise_structure.publish",
+      "admin.enterprise_structure.read",
+      "admin.enterprise_structure.revision.approve",
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.revision.create",
+      "admin.enterprise_structure.revision.edit",
+      "admin.enterprise_structure.revision.validate",
+      "admin.enterprise_structure.rollback",
+      "admin.enterprise_structure.warehouse.manage",
+      "admin.workspace_type.manage",
+      "admin.workspace_type.publish",
+      "admin.workspace_type.read",
+      "basic_data.admin.configure",
+      "basic_data.admin.publish",
+      "basic_data.assessment.complete",
+      "basic_data.assessment.create",
+      "basic_data.assessment.review",
+      "basic_data.assessment.submit",
+      "basic_data.item.create",
+      "basic_data.item.edit",
+      "basic_data.item.validate",
+      "basic_data.read",
+      "benefits_plan.admin.configure",
+      "benefits_plan.admin.publish",
+      "benefits_plan.complete",
+      "benefits_plan.create",
+      "benefits_plan.create_revision",
+      "benefits_plan.edit",
+      "benefits_plan.read",
+      "benefits_plan.refresh",
+      "benefits_plan.review",
+      "benefits_plan.submit",
+      "business_analysis.admin.configure",
+      "business_analysis.admin.publish",
+      "business_analysis.create",
+      "business_analysis.edit",
+      "business_analysis.read",
+      "business_analysis.review",
+      "business_analysis.submit",
+      "business_case.admin.configure",
+      "business_case.admin.publish",
+      "business_case.complete",
+      "business_case.create",
+      "business_case.create_revision",
+      "business_case.edit",
+      "business_case.material_change.review",
+      "business_case.read",
+      "business_case.refresh",
+      "business_case.review",
+      "business_case.snapshot",
+      "business_case.submit_review",
+      "capital_planning.admin.bucket.configure",
+      "capital_planning.admin.bucket.publish",
+      "capital_planning.admin.configure",
+      "capital_planning.admin.publish",
+      "capital_planning.allocation.create",
+      "capital_planning.allocation.edit",
+      "capital_planning.allocation.endorse",
+      "capital_planning.allocation.read",
+      "capital_planning.allocation.review",
+      "capital_planning.allocation.submit",
+      "capital_planning.bucket.classify",
+      "capital_planning.cycle.close",
+      "capital_planning.cycle.create",
+      "capital_planning.demand.create",
+      "capital_planning.demand.edit",
+      "capital_planning.demand.endorse",
+      "capital_planning.demand.review",
+      "capital_planning.demand.submit",
+      "capital_planning.idea.originate",
+      "capital_planning.read",
+      "commercial_strategy.admin.configure",
+      "commercial_strategy.admin.publish",
+      "commercial_strategy.complete",
+      "commercial_strategy.create",
+      "commercial_strategy.create_revision",
+      "commercial_strategy.edit",
+      "commercial_strategy.read",
+      "commercial_strategy.refresh",
+      "commercial_strategy.review",
+      "commercial_strategy.submit",
+      "economic_financial_model.admin.configure",
+      "economic_financial_model.admin.publish",
+      "economic_financial_model.calculate",
+      "economic_financial_model.complete",
+      "economic_financial_model.create",
+      "economic_financial_model.create_version",
+      "economic_financial_model.edit",
+      "economic_financial_model.read",
+      "economic_financial_model.refresh",
+      "economic_financial_model.review",
+      "economic_financial_model.scenario.manage",
+      "economic_financial_model.sensitivity.run",
+      "economic_financial_model.submit_review",
+      "enterprise_structure.export",
+      "enterprise_structure.read",
+      "enterprise_structure.read_history",
+      "fund.authorize",
+      "fund.create",
+      "fund.edit",
+      "fund.manage_status",
+      "funding_assignment.cancel",
+      "funding_assignment.confirm",
+      "funding_assignment.create",
+      "funding_assignment.edit",
+      "funding_assignment.release",
+      "funding_assignment.reserve",
+      "funding_readiness.read",
+      "funding_readiness.refresh",
+      "funding_source.create",
+      "funding_source.edit",
+      "funding_source.manage_status",
+      "funds.admin.configure",
+      "funds.admin.publish",
+      "funds.read",
+      "idea.admin.configure",
+      "idea.admin.publish",
+      "idea.assign_owner",
+      "idea.cancel",
+      "idea.create",
+      "idea.decide",
+      "idea.edit",
+      "idea.evaluate",
+      "idea.read",
+      "idea.route",
+      "idea.screen",
+      "idea.submit",
+      "investment_decision.admin.configure",
+      "investment_decision.admin.publish",
+      "investment_decision.create",
+      "investment_decision.decide",
+      "investment_decision.edit",
+      "investment_decision.read",
+      "investment_decision.review",
+      "investment_decision.submit",
+      "investment_decision.void",
+      "investment_decision.vote",
+      "investment_evidence_policy.configure",
+      "investment_evidence_policy.publish",
+      "investment_evidence_policy.read",
+      "investment_evidence_provider.read",
+      "investment_gate_evidence.add",
+      "investment_gate_evidence.validate",
+      "investment_gate_permit_evidence.read",
+      "investment_gate_preparation.admin.configure",
+      "investment_gate_preparation.admin.publish",
+      "investment_gate_preparation.clone",
+      "investment_gate_preparation.create",
+      "investment_gate_preparation.edit",
+      "investment_gate_preparation.freeze",
+      "investment_gate_preparation.read",
+      "investment_gate_preparation.refresh",
+      "investment_gate_preparation.void",
+      "investment_gate_risk_evidence.read",
+      "owner_capability.admin.configure",
+      "owner_capability.admin.publish",
+      "owner_capability.assessment.complete",
+      "owner_capability.assessment.create",
+      "owner_capability.assessment.edit",
+      "owner_capability.assessment.review",
+      "owner_capability.assessment.submit",
+      "owner_capability.mitigation.edit",
+      "owner_capability.read",
+      "permit.condition.manage",
+      "permit.create",
+      "permit.edit",
+      "permit.read",
+      "permit.status.manage",
+      "permit_readiness.admin.configure",
+      "permit_readiness.admin.publish",
+      "permit_readiness.complete",
+      "permit_readiness.create",
+      "permit_readiness.edit",
+      "permit_readiness.read",
+      "permit_readiness.reassess",
+      "permit_readiness.refresh",
+      "physical_workspace.activation.execute",
+      "physical_workspace.initialization.execute",
+      "physical_workspace.initialization.read",
+      "physical_workspace_creation.approve",
+      "physical_workspace_creation.materialize",
+      "physical_workspace_creation.request.create",
+      "physical_workspace_creation.request.edit",
+      "physical_workspace_creation.request.read",
+      "physical_workspace_creation.request.submit",
+      "physical_workspace_creation.review",
+      "portfolio_analysis.admin.configure",
+      "portfolio_analysis.admin.publish",
+      "portfolio_analysis.read",
+      "portfolio_analysis.snapshot.create",
+      "portfolio_budget.admin.configure",
+      "portfolio_budget.admin.publish",
+      "portfolio_budget.read",
+      "portfolio_budget_scenario.compare",
+      "portfolio_budget_scenario.create",
+      "portfolio_budget_scenario.edit",
+      "portfolio_budget_scenario.force",
+      "portfolio_budget_scenario.freeze",
+      "portfolio_budget_scenario.void",
+      "portfolio_budget_target.create",
+      "portfolio_budget_target.publish",
+      "portfolio_convergence.admin.configure",
+      "portfolio_convergence.admin.publish",
+      "portfolio_convergence.compare",
+      "portfolio_convergence.create",
+      "portfolio_convergence.edit",
+      "portfolio_convergence.read",
+      "portfolio_convergence.refresh",
+      "portfolio_dependency.manage",
+      "portfolio_dependency.read",
+      "portfolio_evaluation.admin.configure",
+      "portfolio_evaluation.admin.publish",
+      "portfolio_evaluation.complete",
+      "portfolio_evaluation.create",
+      "portfolio_evaluation.edit",
+      "portfolio_evaluation.read",
+      "portfolio_evaluation.reevaluate",
+      "portfolio_planning.readiness.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.admin.configure",
+      "portfolio_project.admin.publish",
+      "portfolio_project.intake",
+      "portfolio_project.membership.manage",
+      "portfolio_project.read",
+      "portfolio_recommendation.recommend",
+      "portfolio_recommendation.return",
+      "portfolio_recommendation.submit",
+      "portfolio_resource.admin.configure",
+      "portfolio_resource.admin.publish",
+      "portfolio_resource.read",
+      "portfolio_resource_capacity.create",
+      "portfolio_resource_capacity.publish",
+      "portfolio_resource_demand.create",
+      "portfolio_resource_demand.publish",
+      "portfolio_resource_demand.read",
+      "portfolio_resource_scenario.compare",
+      "portfolio_resource_scenario.create",
+      "portfolio_resource_scenario.edit",
+      "portfolio_resource_scenario.force",
+      "portfolio_resource_scenario.freeze",
+      "portfolio_resource_scenario.void",
+      "portfolio_review.action.approve",
+      "portfolio_review.action.create",
+      "portfolio_review.action.dispatch",
+      "portfolio_review.action.update",
+      "portfolio_review.admin.configure",
+      "portfolio_review.admin.publish",
+      "portfolio_review.complete",
+      "portfolio_review.conduct",
+      "portfolio_review.create",
+      "portfolio_review.freeze_snapshot",
+      "portfolio_review.prepare",
+      "portfolio_review.read",
+      "post_fid_governance.admin.configure",
+      "post_fid_governance.admin.publish",
+      "post_fid_governance.evaluate",
+      "post_fid_governance.read",
+      "post_fid_governance.refresh",
+      "project_creation.approve",
+      "project_creation.contract_source.create",
+      "project_creation.direct.create",
+      "project_creation.materialize",
+      "project_creation.request.create",
+      "project_creation.request.edit",
+      "project_creation.request.read",
+      "project_creation.request.submit",
+      "project_creation.review",
+      "project_definition.admin.configure",
+      "project_definition.admin.publish",
+      "project_definition.read",
+      "project_definition.readiness.read",
+      "project_definition.refresh",
+      "project_definition.status.manage",
+      "project_definition_action.manage",
+      "project_definition_assessment.complete",
+      "project_definition_assessment.create",
+      "project_definition_assessment.edit",
+      "project_definition_assessment.reevaluate",
+      "project_definition_stage.review",
+      "project_definition_stage.submit",
+      "project_governance_model.configure",
+      "project_governance_model.publish",
+      "project_governance_model.read",
+      "project_proposal.admin.configure",
+      "project_proposal.admin.publish",
+      "project_proposal.cancel",
+      "project_proposal.create",
+      "project_proposal.edit",
+      "project_proposal.evaluate",
+      "project_proposal.mark_gate_ready",
+      "project_proposal.read",
+      "project_proposal.return",
+      "project_proposal.review",
+      "project_proposal.submit",
+      "project_risk.accept",
+      "project_risk.create",
+      "project_risk.edit",
+      "project_risk.manage_status",
+      "project_risk.read",
+      "project_workspace.activation.execute",
+      "project_workspace.initialization.execute",
+      "project_workspace.initialization.read",
+      "qra_cost_source.create",
+      "qra_cost_source.edit",
+      "qra_cost_source.review",
+      "qra_cost_source.submit",
+      "qra_foundation.read",
+      "qra_methodology.admin.configure",
+      "qra_methodology.admin.publish",
+      "qra_model.approve",
+      "qra_model.create",
+      "qra_model.edit",
+      "qra_model.review",
+      "qra_model.submit",
+      "qra_run.accept",
+      "qra_run.cancel",
+      "qra_run.create",
+      "qra_run.execute",
+      "qra_run.read",
+      "qra_run.review",
+      "qra_schedule_source.create",
+      "qra_schedule_source.edit",
+      "qra_schedule_source.review",
+      "qra_schedule_source.submit",
+      "risk_governance.admin.configure",
+      "risk_governance.admin.publish",
+      "risk_governance.read",
+      "risk_readiness.admin.configure",
+      "risk_readiness.admin.publish",
+      "risk_readiness.read",
+      "risk_readiness.refresh",
+      "risk_readiness_assessment.complete",
+      "risk_readiness_assessment.create",
+      "risk_readiness_assessment.edit",
+      "risk_readiness_assessment.reassess",
+      "strategic_gate.admin.configure",
+      "strategic_gate.admin.publish",
+      "strategic_gate.create",
+      "strategic_gate.decide",
+      "strategic_gate.edit",
+      "strategic_gate.read",
+      "strategic_gate.review",
+      "strategic_gate.submit",
+      "strategic_gate.void",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_assessor",
+    "permission_keys": [
+      "investment_gate_permit_evidence.read",
+      "permit.read",
+      "permit_readiness.create",
+      "permit_readiness.edit",
+      "permit_readiness.read",
+      "permit_readiness.reassess",
+      "permit_readiness.refresh",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_configuration_admin",
+    "permission_keys": [
+      "investment_gate_permit_evidence.read",
+      "permit.read",
+      "permit_readiness.admin.configure",
+      "permit_readiness.admin.publish",
+      "permit_readiness.read"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_manager",
+    "permission_keys": [
+      "investment_gate_permit_evidence.read",
+      "permit.condition.manage",
+      "permit.create",
+      "permit.edit",
+      "permit.read",
+      "permit.status.manage",
+      "permit_readiness.complete",
+      "permit_readiness.create",
+      "permit_readiness.edit",
+      "permit_readiness.read",
+      "permit_readiness.reassess",
+      "permit_readiness.refresh",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_owner",
+    "permission_keys": [
+      "permit.condition.manage",
+      "permit.create",
+      "permit.edit",
+      "permit.read",
+      "permit.status.manage",
+      "permit_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_reviewer",
+    "permission_keys": [
+      "investment_gate_permit_evidence.read",
+      "permit.read",
+      "permit_readiness.complete",
+      "permit_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "permit_viewer",
+    "permission_keys": [
+      "investment_gate_permit_evidence.read",
+      "permit.read",
+      "permit_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PERMIT_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_activator",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace.activation.execute",
+      "physical_workspace.initialization.read"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_approver",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace_creation.approve",
+      "physical_workspace_creation.request.read"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_initializer",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace.initialization.execute",
+      "physical_workspace.initialization.read"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_materialization_service",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace_creation.materialize",
+      "physical_workspace_creation.request.read"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_requestor",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace_creation.request.create",
+      "physical_workspace_creation.request.edit",
+      "physical_workspace_creation.request.read",
+      "physical_workspace_creation.request.submit"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_responsible",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace.initialization.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "physical_workspace_reviewer",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "physical_workspace_creation.request.read",
+      "physical_workspace_creation.review"
+    ],
+    "source_families": [
+      "PHYSICAL_WORKSPACE_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_analysis_configuration_admin",
+    "permission_keys": [
+      "portfolio_analysis.admin.configure",
+      "portfolio_analysis.admin.publish",
+      "portfolio_analysis.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_analysis_viewer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_analyst",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_evaluation.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_ANALYSIS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_budget_configuration_admin",
+    "permission_keys": [
+      "portfolio_budget.admin.configure",
+      "portfolio_budget.admin.publish",
+      "portfolio_budget.read",
+      "portfolio_dependency.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_BUDGET_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_budget_planner",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_budget_scenario.compare",
+      "portfolio_budget_scenario.create",
+      "portfolio_budget_scenario.edit",
+      "portfolio_budget_scenario.force",
+      "portfolio_budget_scenario.freeze",
+      "portfolio_budget_scenario.void",
+      "portfolio_budget_target.create",
+      "portfolio_budget_target.publish",
+      "portfolio_dependency.manage",
+      "portfolio_dependency.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_BUDGET_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_budget_viewer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_budget_scenario.compare",
+      "portfolio_dependency.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_BUDGET_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_configuration_admin",
+    "permission_keys": [
+      "portfolio_project.admin.configure",
+      "portfolio_project.admin.publish",
+      "portfolio_project.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_convergence_configuration_admin",
+    "permission_keys": [
+      "portfolio_convergence.admin.configure",
+      "portfolio_convergence.admin.publish",
+      "portfolio_convergence.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_convergence_viewer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.compare",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_evaluation_configuration_admin",
+    "permission_keys": [
+      "portfolio_evaluation.admin.configure",
+      "portfolio_evaluation.admin.publish",
+      "portfolio_evaluation.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_EVALUATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_evaluator",
+    "permission_keys": [
+      "portfolio_evaluation.complete",
+      "portfolio_evaluation.create",
+      "portfolio_evaluation.edit",
+      "portfolio_evaluation.read",
+      "portfolio_evaluation.reevaluate",
+      "portfolio_planning.readiness.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_EVALUATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_intake_planner",
+    "permission_keys": [
+      "portfolio_planning.readiness.read",
+      "portfolio_project.intake",
+      "portfolio_project.read",
+      "project_creation.request.create",
+      "project_creation.request.edit",
+      "project_creation.request.read",
+      "project_creation.request.submit",
+      "project_definition.readiness.read",
+      "project_governance_model.read",
+      "strategic_gate.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_membership_manager",
+    "permission_keys": [
+      "portfolio_planning.readiness.read",
+      "portfolio_project.membership.manage",
+      "portfolio_project.read",
+      "project_definition.readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_PLANNING_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_prioritization_viewer",
+    "permission_keys": [
+      "portfolio_evaluation.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_EVALUATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_recommendation_preparer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.compare",
+      "portfolio_convergence.create",
+      "portfolio_convergence.edit",
+      "portfolio_convergence.read",
+      "portfolio_convergence.refresh",
+      "portfolio_project.read",
+      "portfolio_recommendation.submit",
+      "portfolio_resource.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_recommendation_reviewer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.compare",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "portfolio_recommendation.return",
+      "portfolio_resource.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_recommender",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.compare",
+      "portfolio_convergence.read",
+      "portfolio_project.read",
+      "portfolio_recommendation.recommend",
+      "portfolio_resource.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_CONVERGENCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_resource_configuration_admin",
+    "permission_keys": [
+      "portfolio_resource.admin.configure",
+      "portfolio_resource.admin.publish",
+      "portfolio_resource.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_RESOURCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_resource_planner",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_prioritization.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "portfolio_resource_capacity.create",
+      "portfolio_resource_capacity.publish",
+      "portfolio_resource_demand.create",
+      "portfolio_resource_demand.publish",
+      "portfolio_resource_demand.read",
+      "portfolio_resource_scenario.compare",
+      "portfolio_resource_scenario.create",
+      "portfolio_resource_scenario.edit",
+      "portfolio_resource_scenario.force",
+      "portfolio_resource_scenario.freeze",
+      "portfolio_resource_scenario.void",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_RESOURCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_resource_viewer",
+    "permission_keys": [
+      "portfolio_analysis.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "portfolio_resource_demand.read",
+      "portfolio_resource_scenario.compare",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_RESOURCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_action_approver",
+    "permission_keys": [
+      "portfolio_review.action.approve",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_action_dispatcher",
+    "permission_keys": [
+      "portfolio_review.action.dispatch",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_action_owner",
+    "permission_keys": [
+      "portfolio_review.action.update",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_authority",
+    "permission_keys": [
+      "capital_planning.read",
+      "investment_decision.read",
+      "investment_gate_preparation.read",
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.read",
+      "portfolio_evaluation.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "portfolio_review.action.approve",
+      "portfolio_review.action.dispatch",
+      "portfolio_review.complete",
+      "portfolio_review.conduct",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_board_member",
+    "permission_keys": [
+      "portfolio_review.action.approve",
+      "portfolio_review.conduct",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_configuration_admin",
+    "permission_keys": [
+      "portfolio_review.admin.configure",
+      "portfolio_review.admin.publish",
+      "portfolio_review.read"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_preparer",
+    "permission_keys": [
+      "capital_planning.read",
+      "investment_decision.read",
+      "investment_gate_preparation.read",
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.read",
+      "portfolio_evaluation.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "portfolio_review.action.create",
+      "portfolio_review.action.update",
+      "portfolio_review.create",
+      "portfolio_review.freeze_snapshot",
+      "portfolio_review.prepare",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "portfolio_review_viewer",
+    "permission_keys": [
+      "capital_planning.read",
+      "investment_decision.read",
+      "investment_gate_preparation.read",
+      "portfolio_analysis.read",
+      "portfolio_budget.read",
+      "portfolio_convergence.read",
+      "portfolio_evaluation.read",
+      "portfolio_project.read",
+      "portfolio_resource.read",
+      "portfolio_review.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PORTFOLIO_REVIEW_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "post_fid_governance_configuration_admin",
+    "permission_keys": [
+      "post_fid_governance.admin.configure",
+      "post_fid_governance.admin.publish",
+      "post_fid_governance.read"
+    ],
+    "source_families": [
+      "POST_FID_GOVERNANCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "post_fid_governance_manager",
+    "permission_keys": [
+      "post_fid_governance.evaluate",
+      "post_fid_governance.read",
+      "post_fid_governance.refresh",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "POST_FID_GOVERNANCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "post_fid_governance_viewer",
+    "permission_keys": [
+      "post_fid_governance.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "POST_FID_GOVERNANCE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_approver",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_creation.approve",
+      "project_creation.request.read",
+      "project_governance_model.read"
+    ],
+    "source_families": [
+      "PROJECT_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_definition_configuration_admin",
+    "permission_keys": [
+      "basic_data.admin.configure",
+      "basic_data.admin.publish",
+      "basic_data.read",
+      "owner_capability.admin.configure",
+      "owner_capability.admin.publish",
+      "owner_capability.read",
+      "project_definition.admin.configure",
+      "project_definition.admin.publish",
+      "project_definition.read",
+      "qra_foundation.read",
+      "qra_methodology.admin.configure",
+      "qra_methodology.admin.publish",
+      "risk_governance.read"
+    ],
+    "source_families": [
+      "PROJECT_DEFINITION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_definition_manager",
+    "permission_keys": [
+      "basic_data.assessment.complete",
+      "basic_data.assessment.create",
+      "basic_data.assessment.review",
+      "basic_data.assessment.submit",
+      "basic_data.item.create",
+      "basic_data.item.edit",
+      "basic_data.item.validate",
+      "basic_data.read",
+      "investment_gate_preparation.read",
+      "owner_capability.assessment.complete",
+      "owner_capability.assessment.create",
+      "owner_capability.assessment.edit",
+      "owner_capability.assessment.review",
+      "owner_capability.assessment.submit",
+      "owner_capability.mitigation.edit",
+      "owner_capability.read",
+      "project_definition.read",
+      "project_definition.refresh",
+      "project_definition.status.manage",
+      "project_definition_action.manage",
+      "project_definition_assessment.complete",
+      "project_definition_assessment.create",
+      "project_definition_assessment.edit",
+      "project_definition_assessment.reevaluate",
+      "project_definition_stage.submit",
+      "qra_cost_source.create",
+      "qra_cost_source.edit",
+      "qra_cost_source.review",
+      "qra_cost_source.submit",
+      "qra_foundation.read",
+      "qra_model.approve",
+      "qra_model.create",
+      "qra_model.edit",
+      "qra_model.review",
+      "qra_model.submit",
+      "qra_run.accept",
+      "qra_run.cancel",
+      "qra_run.create",
+      "qra_run.execute",
+      "qra_run.read",
+      "qra_run.review",
+      "qra_schedule_source.create",
+      "qra_schedule_source.edit",
+      "qra_schedule_source.review",
+      "qra_schedule_source.submit",
+      "risk_governance.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_DEFINITION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_definition_viewer",
+    "permission_keys": [
+      "basic_data.read",
+      "investment_gate_preparation.read",
+      "owner_capability.read",
+      "project_definition.read",
+      "qra_foundation.read",
+      "qra_run.read",
+      "risk_governance.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_DEFINITION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_manager",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_governance_model.read",
+      "project_workspace.initialization.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_materialization_service",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_creation.materialize",
+      "project_creation.request.read",
+      "project_governance_model.read"
+    ],
+    "source_families": [
+      "PROJECT_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_requestor",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_creation.contract_source.create",
+      "project_creation.direct.create",
+      "project_creation.request.create",
+      "project_creation.request.edit",
+      "project_creation.request.read",
+      "project_creation.request.submit",
+      "project_governance_model.read"
+    ],
+    "source_families": [
+      "PROJECT_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_reviewer",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_creation.request.read",
+      "project_creation.review",
+      "project_governance_model.read"
+    ],
+    "source_families": [
+      "PROJECT_CREATION_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_workspace_activator",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_workspace.activation.execute",
+      "project_workspace.initialization.read"
+    ],
+    "source_families": [
+      "PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "project_workspace_initializer",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "project_workspace.initialization.execute",
+      "project_workspace.initialization.read"
+    ],
+    "source_families": [
+      "PROJECT_WORKSPACE_LIFECYCLE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "proposal_configuration_admin",
+    "permission_keys": [
+      "project_proposal.admin.configure",
+      "project_proposal.admin.publish",
+      "project_proposal.read"
+    ],
+    "source_families": [
+      "PROJECT_PROPOSAL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "proposal_evaluator",
+    "permission_keys": [
+      "project_proposal.evaluate",
+      "project_proposal.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_PROPOSAL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "proposal_owner",
+    "permission_keys": [
+      "project_proposal.edit",
+      "project_proposal.evaluate",
+      "project_proposal.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_PROPOSAL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "proposal_requestor",
+    "permission_keys": [
+      "project_proposal.cancel",
+      "project_proposal.create",
+      "project_proposal.edit",
+      "project_proposal.read",
+      "project_proposal.submit",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_PROPOSAL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "proposal_reviewer",
+    "permission_keys": [
+      "project_proposal.mark_gate_ready",
+      "project_proposal.read",
+      "project_proposal.return",
+      "project_proposal.review",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "PROJECT_PROPOSAL_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_acceptance_authority",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.accept",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_assessor",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.create",
+      "project_risk.edit",
+      "project_risk.manage_status",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "risk_readiness.refresh",
+      "risk_readiness_assessment.complete",
+      "risk_readiness_assessment.create",
+      "risk_readiness_assessment.edit",
+      "risk_readiness_assessment.reassess",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_configuration_admin",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.read",
+      "risk_governance.admin.configure",
+      "risk_governance.admin.publish",
+      "risk_governance.read",
+      "risk_readiness.admin.configure",
+      "risk_readiness.admin.publish",
+      "risk_readiness.read"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_manager",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.accept",
+      "project_risk.create",
+      "project_risk.edit",
+      "project_risk.manage_status",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "risk_readiness.refresh",
+      "risk_readiness_assessment.complete",
+      "risk_readiness_assessment.create",
+      "risk_readiness_assessment.edit",
+      "risk_readiness_assessment.reassess",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_owner",
+    "permission_keys": [
+      "project_risk.create",
+      "project_risk.edit",
+      "project_risk.manage_status",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_reviewer",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "risk_viewer",
+    "permission_keys": [
+      "investment_gate_risk_evidence.read",
+      "project_risk.read",
+      "risk_governance.read",
+      "risk_readiness.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "RISK_READINESS_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "structure_approver",
+    "permission_keys": [
+      "admin.enterprise_structure.revision.approve",
+      "admin.enterprise_structure.revision.compare"
+    ],
+    "source_families": [
+      "STRUCTURE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "structure_editor",
+    "permission_keys": [
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.revision.create",
+      "admin.enterprise_structure.revision.edit",
+      "admin.enterprise_structure.revision.validate"
+    ],
+    "source_families": [
+      "STRUCTURE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "structure_publisher",
+    "permission_keys": [
+      "admin.enterprise_structure.publish",
+      "admin.enterprise_structure.revision.compare",
+      "admin.enterprise_structure.rollback"
+    ],
+    "source_families": [
+      "STRUCTURE_ROLE_PERMISSIONS",
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  },
+  {
+    "role_code": "viewer",
+    "permission_keys": [
+      "enterprise_structure.read",
+      "workspace.home.read",
+      "workspace.navigator.read",
+      "workspace.open",
+      "workspace.recent.read",
+      "workspace.recent.write"
+    ],
+    "source_families": [
+      "grants_by_role"
+    ],
+    "evidence": "backend/app/modules/enterprise_structure/permissions.py",
+    "execution_status": "SOURCE_INSPECTED_NOT_EXECUTED"
+  }
+]

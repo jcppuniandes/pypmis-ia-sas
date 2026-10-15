@@ -1,0 +1,27 @@
+{
+  "case": "DIRECT_INTERNAL",
+  "status": "PASS",
+  "database_dialect": "sqlite",
+  "governance_model": "DIRECT_INTERNAL",
+  "source_context_type": "DIRECT_AUTHORIZATION",
+  "request_id": 2,
+  "source_hash": "e3cdef524a86c4d2023b179939670268229d471b7bf6b534a42ce02ed3cb2ffd",
+  "creation_policy_hash": "be189f6cddde0b5e7d68a8e6899783903fa50b573c541a4f26b0c1c7dfc1111b",
+  "project_identity": [
+    4,
+    "PYP-PRJ-00002",
+    "PRJ-2ae6a164-daa1-4f78-a8af-34ca00456178",
+    "01.01.02"
+  ],
+  "initialization_state": "READY_FOR_ACTIVATION",
+  "activation_state": "ACTIVATED",
+  "fid_count_before_after": [
+    0,
+    0
+  ],
+  "project14_hash_before_after": [
+    null,
+    null
+  ],
+  "proof_boundary": "Real HTTP compact route through independent activation; no operational delivery"
+}

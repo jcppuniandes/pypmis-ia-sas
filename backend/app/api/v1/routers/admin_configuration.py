@@ -42,6 +42,10 @@ from app.domain.schemas import (
     WorkspaceModuleSettingUpdate,
 )
 from app.modules.enterprise_structure.record_codes import next_record_code
+from app.modules.project_creation.entrypoint_guard import (
+    require_governed_project_activation,
+    require_non_project_admin_creation,
+)
 
 router = APIRouter(prefix="/admin-configuration")
 
@@ -314,8 +318,10 @@ def create_workspace(
 ) -> EnterpriseWorkspaceOut:
     actor = require_tenant_configurator(db, tenant_id, user_id)
     type_code = _normalized_code(payload.workspace_type_code)
+    require_non_project_admin_creation(type_code)
     workspace_code = _normalized_code(payload.code)
-    _published_configuration(db, tenant_id, "workspace_type", type_code)
+    workspace_type = _published_configuration(db, tenant_id, "workspace_type", type_code)
+    require_non_project_admin_creation(workspace_type.code)
     if payload.parent_id is not None:
         parent = _workspace(db, tenant_id, payload.parent_id)
         parent_type = _published_configuration(db, tenant_id, "workspace_type", parent.workspace_type_code)
@@ -355,6 +361,7 @@ def update_workspace(
     actor = require_tenant_configurator(db, tenant_id, user_id)
     workspace = _workspace(db, tenant_id, workspace_id)
     require_current_version(workspace, payload.expected_version)
+    require_governed_project_activation(workspace.workspace_type_code, workspace.status, payload.status, workspace.id)
     if payload.parent_id is not None and payload.parent_id != workspace.parent_id:
         _workspace(db, tenant_id, payload.parent_id)
         _ensure_no_workspace_cycle(db, tenant_id, workspace.id, payload.parent_id)

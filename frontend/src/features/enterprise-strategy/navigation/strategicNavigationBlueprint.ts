@@ -368,6 +368,41 @@ const portfolioAnalysisChildren = [
   }),
 ];
 
+const userPeriodicPortfolioReview = node("user", {
+  id: "periodic-portfolio-review",
+  label: "Periodic Portfolio Review",
+  description:
+    "Run recurring Portfolio-level governance sessions from frozen source evidence without replacing Project Gates or source-authority decisions.",
+  phase: 5,
+  order: 4,
+  view: "portfolio-review-sessions",
+  predecessorIds: ["scenario-convergence-recommendation"],
+  governanceModels: OWNER_MODELS,
+  workspaceTypes: ["PORTFOLIO"],
+  longitudinal: true,
+  children: detailNodes(
+    "user",
+    5,
+    "portfolio-review",
+    [
+      ["portfolio-review-sessions", "Review Calendar / Sessions"],
+      ["portfolio-review-overview", "Overview"],
+      ["portfolio-review-snapshot", "Portfolio Snapshot"],
+      ["portfolio-review-allocation", "Strategic Allocation", "READ_ONLY_SHARED"],
+      ["portfolio-review-project-matrix", "Project Matrix", "READ_ONLY_SHARED"],
+      ["portfolio-review-budget-resources", "Budget & Resources", "READ_ONLY_SHARED"],
+      ["portfolio-review-gate-fid", "Gate / FID Status", "READ_ONLY_SHARED"],
+      ["portfolio-review-exceptions", "Exceptions", "READ_ONLY_SHARED"],
+      ["portfolio-review-conclusions", "Conclusions"],
+      ["portfolio-review-actions", "Actions"],
+      ["portfolio-review-history", "History", "READ_ONLY_SHARED"],
+      ["portfolio-review-trends", "Trends", "READ_ONLY_SHARED"],
+    ],
+    OWNER_MODELS,
+    ["PORTFOLIO"]
+  ),
+});
+
 const userPortfolioPlanning = node("user", {
   id: "phase-4-portfolio-planning",
   label: "Portfolio Planning & Review",
@@ -451,40 +486,6 @@ const userPortfolioPlanning = node("user", {
         ...portfolioAnalysisChildren,
       ],
     }),
-    node("user", {
-      id: "periodic-portfolio-review",
-      label: "Periodic Portfolio Review",
-      description:
-        "Run recurring Portfolio-level governance sessions from frozen source evidence without replacing Project Gates or source-authority decisions.",
-      phase: 4,
-      order: 4,
-      view: "portfolio-review-sessions",
-      predecessorIds: ["scenario-convergence-recommendation"],
-      governanceModels: OWNER_MODELS,
-      workspaceTypes: ["PORTFOLIO"],
-      longitudinal: true,
-      children: detailNodes(
-        "user",
-        4,
-        "portfolio-review",
-        [
-          ["portfolio-review-sessions", "Review Calendar / Sessions"],
-          ["portfolio-review-overview", "Overview"],
-          ["portfolio-review-snapshot", "Portfolio Snapshot"],
-          ["portfolio-review-allocation", "Strategic Allocation", "READ_ONLY_SHARED"],
-          ["portfolio-review-project-matrix", "Project Matrix", "READ_ONLY_SHARED"],
-          ["portfolio-review-budget-resources", "Budget & Resources", "READ_ONLY_SHARED"],
-          ["portfolio-review-gate-fid", "Gate / FID Status", "READ_ONLY_SHARED"],
-          ["portfolio-review-exceptions", "Exceptions", "READ_ONLY_SHARED"],
-          ["portfolio-review-conclusions", "Conclusions"],
-          ["portfolio-review-actions", "Actions"],
-          ["portfolio-review-history", "History", "READ_ONLY_SHARED"],
-          ["portfolio-review-trends", "Trends", "READ_ONLY_SHARED"],
-        ],
-        OWNER_MODELS,
-        ["PORTFOLIO"]
-      ),
-    }),
   ],
 });
 
@@ -547,6 +548,7 @@ const userScenarioPlanning = node("user", {
       governanceModels: OWNER_MODELS,
       workspaceTypes: ["PORTFOLIO"],
     }),
+    userPeriodicPortfolioReview,
   ],
 });
 

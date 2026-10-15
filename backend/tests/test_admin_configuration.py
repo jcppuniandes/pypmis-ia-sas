@@ -90,7 +90,10 @@ def test_workspace_hierarchy_inheritance_and_cycle_guard() -> None:
                 "parent_id": program.json()["id"],
             },
         )
-        assert project.status_code == 201, project.text
+        assert project.status_code == 409, project.text
+        assert project.json()["detail"]["code"] == "PROJECT_CREATION_PROCESS_REQUIRED"
+        # ADMIN still configures ordinary hierarchy nodes; live Projects use
+        # Project Creation Process instead of bypassing initialization.
         updated_defaults = client.put(
             f"/api/v1/admin-configuration/workspaces/{program.json()['id']}/defaults",
             headers=headers,
@@ -98,13 +101,13 @@ def test_workspace_hierarchy_inheritance_and_cycle_guard() -> None:
         )
         assert updated_defaults.status_code == 200, updated_defaults.text
         effective = client.get(
-            f"/api/v1/admin-configuration/workspaces/{project.json()['id']}/effective",
+            f"/api/v1/admin-configuration/workspaces/{program.json()['id']}/effective",
             headers=headers,
         )
         cycle = client.patch(
             f"/api/v1/admin-configuration/workspaces/{program.json()['id']}",
             headers=headers,
-            json={"parent_id": project.json()["id"], "expected_version": updated_defaults.json()["version"]},
+            json={"parent_id": program.json()["id"], "expected_version": updated_defaults.json()["version"]},
         )
 
     assert effective.status_code == 200, effective.text

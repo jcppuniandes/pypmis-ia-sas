@@ -1,0 +1,101 @@
+{
+  "verified_at": "2026-10-14T23:53:41.900404+00:00",
+  "release_decision": "NO_GO",
+  "release_state": "NOT_VALIDATED",
+  "next_increment": "B. REMEDIATE STRATEGIC UAT BLOCKERS",
+  "human_signoff": "PENDING",
+  "source_results_sha256": "5fd5d32afe1d5910e7acddc41a58d084e06d605018836d6c4fdb3a08c810b21c",
+  "backend_reconciliation_sha256": "2a5a5d5f632ed5f5029229338a3cc5e7b423245bc1e3e34f5e8f3c35e4147a63",
+  "backend_regression_counts": {
+    "FAIL": 1,
+    "PASS": 944,
+    "SKIP": 15
+  },
+  "all_word_pages_visually_reviewed": 108,
+  "review_method": "Full page PNG inspection; unchanged pages after final narrow edits verified by raster SHA256",
+  "artifacts": [
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_Business_Process.docx",
+      "bytes": 88270,
+      "sha256": "6215adbe01e76b9ff84152508b66a5e64b17b0f7ded67b120009140e21cd878e",
+      "rendered_pages": 13,
+      "visual_qa": "PASS all pages",
+      "accessibility_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_User_Guide.docx",
+      "bytes": 96946,
+      "sha256": "5f54a1dbde99e87c9895d5b80e4be72faf2214885e09c9fd0bf7b626706d4c51",
+      "rendered_pages": 23,
+      "visual_qa": "PASS all pages",
+      "accessibility_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_Admin_Guide.docx",
+      "bytes": 86449,
+      "sha256": "df34677ba75b4ab1c14f2971aa680517347ff5f6aad2c140aac04f398ecd0ba2",
+      "rendered_pages": 29,
+      "visual_qa": "PASS all pages",
+      "accessibility_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_UAT_Plan_and_Results.docx",
+      "bytes": 98105,
+      "sha256": "0b16186ed7d9f5e130299ba299610cb43c0e7af37e1d29d40858486e99a5bc0a",
+      "rendered_pages": 32,
+      "visual_qa": "PASS all pages",
+      "accessibility_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_Final_Release_Closeout.docx",
+      "bytes": 91565,
+      "sha256": "6c92c9f787db425cd2ab1b6affad52dda27d61fc9827218b4ea155082e310092",
+      "rendered_pages": 11,
+      "visual_qa": "PASS all pages",
+      "accessibility_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "P&Pmis_Strategic_Macroprocess_UAT_Traceability.xlsx",
+      "bytes": 129747,
+      "sha256": "6ac2e4aefc0794bb4be7de5c1af175c941d5d7bf7ab8604ab57f303529843733",
+      "sheets": [
+        "01_Process_Matrix",
+        "02_UAT_Cases",
+        "03_Admin_User_Matrix",
+        "04_Navigation_Matrix",
+        "05_Business_Rules",
+        "06_Defects",
+        "07_Code_Cleanup",
+        "08_Release_Criteria"
+      ],
+      "uat_counts": {
+        "BLOCKED": 46,
+        "PASS": 5
+      },
+      "unsigned_areas": 15,
+      "cached_formula_errors": [],
+      "visual_qa": "PASS sheet panels; affected panels rechecked",
+      "formula_behavior": "Artifact Tool recalculation verified unsigned ACCEPTED remains BLOCKED"
+    }
+  ]
+}

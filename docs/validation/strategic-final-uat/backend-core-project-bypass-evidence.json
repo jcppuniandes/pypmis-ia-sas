@@ -1,0 +1,21 @@
+{
+  "defect_id": "BACKEND-S2-CORE-REVISION-PROJECT-AUTHORITY",
+  "severity": "S2 CRITICAL",
+  "status": "OPEN_REPRODUCED",
+  "evidence_kind": "ISOLATED_SQLITE_IN_MEMORY_SERVICE_PATH",
+  "operational_database_access": false,
+  "actual": {
+    "published_release_state": "published",
+    "workspace_type_code": "project",
+    "workspace_status": "active",
+    "project_creation_requests": 0,
+    "project_workspace_initializations": 0
+  },
+  "expected": "ADMIN CORE revisions preserve/adopt historical PROJECT identities; new live Projects must follow USER Project Creation, Initialization and Activation.",
+  "reproduced": true,
+  "scope_limit": "Service path after normal CORE validation, independent approver and publisher. HTTP RBAC not exercised; no claim of unauthorized anonymous access.",
+  "source": [
+    "backend/app/modules/enterprise_structure/revisions.py:add_workspace",
+    "backend/app/modules/enterprise_structure/revisions.py:_materialize_snapshot"
+  ]
+}

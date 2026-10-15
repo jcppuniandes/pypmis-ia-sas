@@ -1,0 +1,541 @@
+[
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-current-revision",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-alternatives",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-benefits",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-project-definition",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-budget-resources",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-funding",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-risk-permits",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-execution",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-assumptions",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-recommendation",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "LEGACY_VIEW",
+    "target": "business-case-material-changes",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Renderer registered but strategicNodeForView has no canonical node in either mode; outlet returns null before renderer invocation.",
+    "action": "Document migration/redirect intent; do not delete in validation."
+  },
+  {
+    "category": "DUPLICATE_RESOLVER_ASSIGNMENT",
+    "target": "BusinessCaseWorkspace initialViewRenderers group overridden by dedicated loop",
+    "classification": "STILL_REFERENCED",
+    "evidence": "StrategicViewOutlet.tsx initialViewRenderers includes BC group; later loop overwrites all BC entries to add onNavigate.",
+    "action": "Small cleanup possible after dedicated equivalence regression; no deletion performed."
+  },
+  {
+    "category": "NAVIGATION_ALIAS",
+    "target": "Ancestor and leaf nodes sharing one route",
+    "classification": "STILL_REFERENCED",
+    "evidence": "30 repeated node-to-route representations; strategicNodeForView canonicalizes registry.",
+    "action": "Keep; not duplicate screens or competing authorities."
+  },
+  {
+    "category": "SECONDARY_NAVIGATOR_ORDER",
+    "target": "ENTERPRISE_WORKSPACE_ORDER / PROJECT_WORKSPACE_ORDER",
+    "classification": "STILL_REFERENCED",
+    "evidence": "WorkspaceOperationalPage.tsx imports orderStrategicWorkspaceNavigator; backend module codes differ from ControlFlowView.",
+    "action": "Compatibility adapter; do not create new navigation arrays."
+  },
+  {
+    "category": "TEST_ONLY_HELPER_IN_PRODUCTION",
+    "target": "strategicNodeApplies",
+    "classification": "UNKNOWN",
+    "evidence": "Exported from canonical blueprint; direct production references absent, tests call applicability metadata only.",
+    "action": "Determine intended UI applicability contract before removing; tests are not runtime enforcement."
+  },
+  {
+    "category": "LIVE_LEGACY_ADMIN_CREATION_ROUTE",
+    "target": "/app/admin/strategy/enterprise-workspace-structure",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "Blueprint label Composition Rules resolves AdminConfigurationView live Workspace creation and POST /api/v1/admin-configuration/workspaces; server directly creates status=active.",
+    "action": "S2 candidate; confirm isolated behavior and obtain authorized remediation. Do not simply delete historical API or data."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.configurations",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:24",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.clone",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:25",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.update",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:32",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.publish",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:39",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.archive",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:45",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.preview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:51",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "basicDataApi.assessment",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/basic-data/api.ts:91",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.list",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:19",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.configurations",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:58",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.previewConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:60",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.cloneConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:66",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.updateConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:72",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "businessAnalysisApi.publishConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/business-analysis/api.ts:83",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "strategicAllocationApi.updatePlan",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/capital-allocation/api.ts:320",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "capitalPlanningApi.updateCycle",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/capital-planning/api.ts:100",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "capitalPlanningApi.cycleSummary",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/capital-planning/api.ts:125",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "commercialStrategyApi.detail",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/commercial-strategy/api.ts:65",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "commercialStrategyApi.byProject",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/commercial-strategy/api.ts:67",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "commercialStrategyApi.providerEvidence",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/commercial-strategy/api.ts:130",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "enterpriseStructureApi.previewProjectGovernancePolicy",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/enterprise-structure/api/index.ts:172",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "enterpriseStructureApi.coreRevision",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/enterprise-structure/api/index.ts:286",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "enterpriseStructureApi.updateCoreRevision",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/enterprise-structure/api/index.ts:289",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "enterpriseStructureApi.createProjectRequest",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/enterprise-structure/api/index.ts:424",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "enterpriseStructureApi.updateProjectRequest",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/enterprise-structure/api/index.ts:447",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ideaDemandApi.update",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/idea-demand/api.ts:13",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ideaDemandApi.previewConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/idea-demand/api.ts:29",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.configurations",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:24",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.clone",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:25",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.update",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:32",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.publish",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:39",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.archive",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:45",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.preview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:51",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "ownerCapabilityApi.assessment",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/owner-capability/api.ts:51",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "permitReadinessApi.overview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/permit-readiness/api.ts:14",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "permitReadinessApi.changeStatus",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/permit-readiness/api.ts:23",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "permitReadinessApi.createCondition",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/permit-readiness/api.ts:32",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "portfolioAnalysisApi.preview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/portfolio-analysis/api.ts:18",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "portfolioEvaluationApi.get",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/portfolio-evaluation/api.ts:26",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "portfolioPlanningApi.portfolioEvaluationReadiness",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/portfolio-planning/api.ts:42",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "portfolioPlanningApi.projectDefinitionReadiness",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/portfolio-planning/api.ts:44",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "postFIDGovernanceApi.get",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/post-fid-governance/api.ts:8",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "projectProposalApi.get",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/project-proposal/api.ts:10",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "projectProposalApi.previewConfiguration",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/project-proposal/api.ts:48",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "qraFoundationApi.configurations",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:24",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "qraFoundationApi.clone",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:25",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "qraFoundationApi.publish",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:39",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "qraFoundationApi.archive",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:45",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "qraFoundationApi.preview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:51",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.configurations",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:24",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.clone",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:25",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.update",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:32",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.publish",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:39",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.archive",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:45",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskGovernanceApi.preview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-governance/policyApi.ts:51",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskReadinessApi.overview",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-readiness/api.ts:7",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "riskReadinessApi.changeStatus",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/risk-readiness/api.ts:23",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "strategicBenefitsApi.byProject",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/strategic-benefits/api.ts:100",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "strategicBenefitsApi.providerEvidence",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/strategic-benefits/api.ts:222",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "strategicGateApi.get",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/strategic-gate/api.ts:21",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "strategicGateApi.relatedToIdea",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/strategic-gate/api.ts:82",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  },
+  {
+    "category": "API_METHOD_NO_DIRECT_CONSUMER",
+    "target": "workspaceContextApi.context",
+    "classification": "UNKNOWN",
+    "evidence": "frontend/src/features/workspace-context/api.ts:22",
+    "action": "Check dynamic member access, external clients, server and historical compatibility; absence of client reference is insufficient for deletion."
+  }
+]

@@ -1,0 +1,88 @@
+[
+  {
+    "id": "FE-S2-001",
+    "severity": "S2 CRITICAL",
+    "classification": "DEFECT",
+    "title": "Composition Rules exposed legacy live PROJECT Workspace creation in ADMIN",
+    "before": "The ADMIN Composition Rules canonical route resolved AdminConfigurationView and its live Workspace creation form; POST /api/v1/admin-configuration/workspaces created PROJECT status=active without Project Creation/Initialization.",
+    "after": "Canonical route resolves the existing AdminEnterpriseStructurePage rules editor; explicit initialTab survives remote load. Backend remediation is owned by uat_backend_inventory and denies PROJECT bypass with 409 PROJECT_CREATION_PROCESS_REQUIRED.",
+    "status": "FRONTEND_REMEDIATION_FOCUSED_TESTS_PASS_BACKEND_AND_INTEGRATED_RELEASE_EVIDENCE_OWNED_BY_PARENT",
+    "evidence": [
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:Composition Rules",
+      "frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx:enterprise-workspace-structure",
+      "frontend/src/components/AdminConfigurationView.tsx:createWorkspace",
+      "frontend/src/api/adminConfiguration.ts:createWorkspace",
+      "backend/app/api/v1/routers/admin_configuration.py:create_workspace",
+      "frontend-before/frontend_routes.json",
+      "frontend_routes.json",
+      "frontend/src/features/enterprise-strategy/StrategicViewOutlet.test.tsx:routes Composition Rules",
+      "frontend/tests/enterprise-structure.test.tsx:keeps the explicit Composition Rules entry"
+    ],
+    "releaseImpact": "Blocking until backend negative regression and scoped remediation are validated; frontend tests alone do not close backend security.",
+    "removedDataOrCode": "None; strategic renderer rewired, legacy branch retained for deliberate deprecation."
+  },
+  {
+    "id": "FE-S3-001",
+    "severity": "S3 MAJOR",
+    "classification": "UX/NAVIGATION GAP",
+    "title": "Periodic Portfolio Review appeared before its Scenario Convergence predecessor",
+    "before": "USER Review was a phase4 child, displayed before phase5 scenario planning although predecessorIds already named scenario-convergence-recommendation.",
+    "after": "USER Review and detail views are phase5/order4 after Scenario Convergence; landing derives its review button from the same blueprint longitudinal metadata. URLs, business names and eight phases are preserved. ADMIN review policy remains a reusable prerequisite in phase4.",
+    "status": "FIXED_FOCUSED_REGRESSION_PASS",
+    "evidence": [
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:userPeriodicPortfolioReview",
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:userScenarioPlanning",
+      "frontend/src/features/enterprise-strategy/EnterpriseStrategyLanding.tsx:StrategicWorkflowMap",
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts:registers Periodic Portfolio Review",
+      "frontend/src/features/enterprise-strategy/EnterpriseStrategyLanding.test.tsx:separates Enterprise Foundation"
+    ],
+    "releaseImpact": "No independent decision authority changed. Focused metadata/DOM regression required; no business sign-off claimed."
+  },
+  {
+    "id": "FE-S4-001",
+    "severity": "S4 MINOR",
+    "classification": "CODE/TECHNICAL DEBT",
+    "title": "Governance applicability helper is not a runtime navigation filter",
+    "status": "OPEN_NONBLOCKING_REVIEW",
+    "evidence": [
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:strategicNodeApplies",
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.test.ts:preserves CAPITAL_OWNER applicability",
+      "frontend/src/App.tsx:ModuleNavigationItems",
+      "frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx:canAccessStrategicNode"
+    ],
+    "actual": "Production callers do not invoke strategicNodeApplies. The metadata test proves a helper result, not contextual menu hiding or backend permission enforcement.",
+    "workaround": "Use published backend eligibility and allowed_actions; do not infer mandatory CAPITAL_OWNER governance for Contractor/Direct from menu presence.",
+    "recommendedAction": "Clarify contextual discoverability contract during release hardening; do not use UI helper as security authority."
+  },
+  {
+    "id": "FE-S4-002",
+    "severity": "S4 MINOR",
+    "classification": "CODE/TECHNICAL DEBT",
+    "title": "Eleven Business Case legacy renderers are outside canonical route registry",
+    "status": "OPEN_REQUIRES_DEPRECATION",
+    "evidence": [
+      "frontend_legacy_renderers.json",
+      "frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx:initialViewRenderers and dedicated BusinessCase loop",
+      "frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx:if (!match || !renderer) return null",
+      "frontend/src/features/business-case/BusinessCaseWorkspace.tsx:VIEW_BY_ROUTE"
+    ],
+    "actual": "Historical names remain in renderer/type/view-map contracts, but strategicNodeForView has no canonical node and the outlet returns null. Duplicate initial assignment of the BC renderer group is overwritten by the dedicated onNavigate loop.",
+    "workaround": "Use canonical Five Case Business Case routes only, as listed in frontend_guide_routes.md.",
+    "recommendedAction": "Confirm old external deep-link consumers and deprecation/redirect requirements before removal. No business capability missing has been inferred."
+  },
+  {
+    "id": "FE-S4-003",
+    "severity": "S4 MINOR",
+    "classification": "DOCUMENTATION GAP",
+    "title": "Enterprise Explorer READ_ONLY_SHARED metadata understates embedded USER transactions",
+    "status": "OPEN_NONBLOCKING_REVIEW",
+    "evidence": [
+      "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:enterprise-explorer",
+      "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx:projectCreationActions",
+      "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx"
+    ],
+    "actual": "Explorer classification is READ_ONLY_SHARED while the USER screen hosts live Project Creation and review navigation. It is not an ADMIN configuration control leak; transaction authority remains backend-controlled.",
+    "workaround": "Administration/User guide explicitly describes creation and lifecycle actions as USER operations under Explorer.",
+    "recommendedAction": "Align classification semantics with the composite screen after agreeing whether the classification describes the landing or all embedded operations."
+  }
+]

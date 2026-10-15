@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="60.979" timestamp="2026-10-14T08:56:18.041228-05:00" hostname="LAPTOP-4TR3E31D"><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_create_project_before_any_dml[project]" time="0.726"><failure message="AssertionError: PROJECT_DML_REACHED">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002380410D8E0&gt;
+type_code = 'project'
+
+    @pytest.mark.parametrize("type_code", ["project", "PROJECT", "  ProJect  "])
+    def test_legacy_admin_cannot_create_project_before_any_dml(monkeypatch, type_code):
+        db = Mock()
+        # If the command reaches add(), it has crossed the governed boundary.
+        db.add.side_effect = AssertionError("PROJECT_DML_REACHED")
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(
+            legacy, "_published_configuration", lambda *_: SimpleNamespace(code="project", content_json={})
+        )
+        monkeypatch.setattr(legacy, "_next_workspace_record_code", lambda *_: "UAT-001")
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.create_workspace(
+                EnterpriseWorkspaceCreate(code="uat-project", name="UAT Project", workspace_type_code=type_code),
+                db=db,
+                tenant_id=1,
+                user_id=1,
+            )
+
+tests\test_strategic_final_uat_project_authority.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+app\api\v1\routers\admin_configuration.py:339: in create_workspace
+    db.add(workspace)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1139: in __call__
+    return self._mock_call(*args, **kwargs)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1143: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Mock name='mock.add' id='2439609636704'&gt;
+args = (&lt;app.domain.models.EnterpriseWorkspace object at 0x000002380410DA60&gt;,)
+kwargs = {}, effect = AssertionError('PROJECT_DML_REACHED')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+&gt;               raise effect
+E               AssertionError: PROJECT_DML_REACHED
+
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1198: AssertionError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_create_project_before_any_dml[PROJECT]" time="0.007"><failure message="AssertionError: PROJECT_DML_REACHED">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804494890&gt;
+type_code = 'PROJECT'
+
+    @pytest.mark.parametrize("type_code", ["project", "PROJECT", "  ProJect  "])
+    def test_legacy_admin_cannot_create_project_before_any_dml(monkeypatch, type_code):
+        db = Mock()
+        # If the command reaches add(), it has crossed the governed boundary.
+        db.add.side_effect = AssertionError("PROJECT_DML_REACHED")
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(
+            legacy, "_published_configuration", lambda *_: SimpleNamespace(code="project", content_json={})
+        )
+        monkeypatch.setattr(legacy, "_next_workspace_record_code", lambda *_: "UAT-001")
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.create_workspace(
+                EnterpriseWorkspaceCreate(code="uat-project", name="UAT Project", workspace_type_code=type_code),
+                db=db,
+                tenant_id=1,
+                user_id=1,
+            )
+
+tests\test_strategic_final_uat_project_authority.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+app\api\v1\routers\admin_configuration.py:339: in create_workspace
+    db.add(workspace)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1139: in __call__
+    return self._mock_call(*args, **kwargs)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1143: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Mock name='mock.add' id='2439613335552'&gt;
+args = (&lt;app.domain.models.EnterpriseWorkspace object at 0x0000023804495580&gt;,)
+kwargs = {}, effect = AssertionError('PROJECT_DML_REACHED')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+&gt;               raise effect
+E               AssertionError: PROJECT_DML_REACHED
+
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1198: AssertionError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_create_project_before_any_dml[  ProJect  ]" time="0.007"><failure message="AssertionError: PROJECT_DML_REACHED">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804496C60&gt;
+type_code = '  ProJect  '
+
+    @pytest.mark.parametrize("type_code", ["project", "PROJECT", "  ProJect  "])
+    def test_legacy_admin_cannot_create_project_before_any_dml(monkeypatch, type_code):
+        db = Mock()
+        # If the command reaches add(), it has crossed the governed boundary.
+        db.add.side_effect = AssertionError("PROJECT_DML_REACHED")
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(
+            legacy, "_published_configuration", lambda *_: SimpleNamespace(code="project", content_json={})
+        )
+        monkeypatch.setattr(legacy, "_next_workspace_record_code", lambda *_: "UAT-001")
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.create_workspace(
+                EnterpriseWorkspaceCreate(code="uat-project", name="UAT Project", workspace_type_code=type_code),
+                db=db,
+                tenant_id=1,
+                user_id=1,
+            )
+
+tests\test_strategic_final_uat_project_authority.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+app\api\v1\routers\admin_configuration.py:339: in create_workspace
+    db.add(workspace)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1139: in __call__
+    return self._mock_call(*args, **kwargs)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1143: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Mock name='mock.add' id='2439613343280'&gt;
+args = (&lt;app.domain.models.EnterpriseWorkspace object at 0x0000023804496EA0&gt;,)
+kwargs = {}, effect = AssertionError('PROJECT_DML_REACHED')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+&gt;               raise effect
+E               AssertionError: PROJECT_DML_REACHED
+
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1198: AssertionError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_checks_resolved_project_taxonomy_before_any_dml" time="0.009"><failure message="AssertionError: PROJECT_DML_REACHED">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804497A40&gt;
+
+    def test_legacy_admin_checks_resolved_project_taxonomy_before_any_dml(monkeypatch):
+        """Check the published type too; a resolver alias must not evade the guard."""
+        db = Mock()
+        db.add.side_effect = AssertionError("PROJECT_DML_REACHED")
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(
+            legacy, "_published_configuration", lambda *_: SimpleNamespace(code="PROJECT", content_json={})
+        )
+        monkeypatch.setattr(legacy, "_next_workspace_record_code", lambda *_: "UAT-001")
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.create_workspace(
+                EnterpriseWorkspaceCreate(code="uat-project", name="UAT Project", workspace_type_code="resolved-alias"),
+                db=db,
+                tenant_id=1,
+                user_id=1,
+            )
+
+tests\test_strategic_final_uat_project_authority.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+app\api\v1\routers\admin_configuration.py:339: in create_workspace
+    db.add(workspace)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1139: in __call__
+    return self._mock_call(*args, **kwargs)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1143: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Mock name='mock.add' id='2439613343856'&gt;
+args = (&lt;app.domain.models.EnterpriseWorkspace object at 0x00000238044979B0&gt;,)
+kwargs = {}, effect = AssertionError('PROJECT_DML_REACHED')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+&gt;               raise effect
+E               AssertionError: PROJECT_DML_REACHED
+
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1198: AssertionError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_activate_existing_project[project]" time="0.010"><failure message="pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut&#10;parent_id&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;code&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;name&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;defaults_json&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;sort_order&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804497E90&gt;
+stored_type = 'project'
+
+    @pytest.mark.parametrize("stored_type", ["project", "PROJECT", "  Project "])
+    def test_legacy_admin_cannot_activate_existing_project(monkeypatch, stored_type):
+        db = Mock()
+        workspace = SimpleNamespace(id=9, workspace_type_code=stored_type, status="initialized", version=2)
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(legacy, "_workspace", lambda *_: workspace)
+        monkeypatch.setattr(legacy, "_event", Mock())
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.update_workspace(
+                9, EnterpriseWorkspaceUpdate(status="active", expected_version=2), db=db, tenant_id=1, user_id=1
+            )
+
+tests\test_strategic_final_uat_project_authority.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+workspace_id = 9
+payload = EnterpriseWorkspaceUpdate(name=None, parent_id=None, status='active', sort_order=None, expected_version=2)
+db = &lt;Mock id='2439613348848'&gt;, tenant_id = 1, user_id = 1
+
+    @router.patch("/workspaces/{workspace_id}", response_model=EnterpriseWorkspaceOut)
+    def update_workspace(
+        workspace_id: int,
+        payload: EnterpriseWorkspaceUpdate,
+        db: Session = Depends(get_db),
+        tenant_id: int = Depends(get_tenant_id),
+        user_id: int = Depends(get_user_id),
+    ) -&gt; EnterpriseWorkspaceOut:
+        actor = require_tenant_configurator(db, tenant_id, user_id)
+        workspace = _workspace(db, tenant_id, workspace_id)
+        require_current_version(workspace, payload.expected_version)
+        if payload.parent_id is not None and payload.parent_id != workspace.parent_id:
+            _workspace(db, tenant_id, payload.parent_id)
+            _ensure_no_workspace_cycle(db, tenant_id, workspace.id, payload.parent_id)
+            workspace.parent_id = payload.parent_id
+        if payload.name is not None:
+            workspace.name = _required(payload.name, "Workspace name")
+        if payload.status is not None:
+            workspace.status = payload.status.strip().lower()
+        if payload.sort_order is not None:
+            workspace.sort_order = payload.sort_order
+        touch_collaborative_record(workspace)
+        _event(db, tenant_id, actor.id, "enterprise_workspace.updated", workspace)
+        db.commit()
+        db.refresh(workspace)
+&gt;       return EnterpriseWorkspaceOut.model_validate(workspace)
+E       pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut
+E       parent_id
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       code
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       name
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       defaults_json
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       sort_order
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+app\api\v1\routers\admin_configuration.py:372: ValidationError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_activate_existing_project[PROJECT]" time="0.006"><failure message="pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut&#10;parent_id&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;code&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;name&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;defaults_json&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;sort_order&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804495E50&gt;
+stored_type = 'PROJECT'
+
+    @pytest.mark.parametrize("stored_type", ["project", "PROJECT", "  Project "])
+    def test_legacy_admin_cannot_activate_existing_project(monkeypatch, stored_type):
+        db = Mock()
+        workspace = SimpleNamespace(id=9, workspace_type_code=stored_type, status="initialized", version=2)
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(legacy, "_workspace", lambda *_: workspace)
+        monkeypatch.setattr(legacy, "_event", Mock())
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.update_workspace(
+                9, EnterpriseWorkspaceUpdate(status="active", expected_version=2), db=db, tenant_id=1, user_id=1
+            )
+
+tests\test_strategic_final_uat_project_authority.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+workspace_id = 9
+payload = EnterpriseWorkspaceUpdate(name=None, parent_id=None, status='active', sort_order=None, expected_version=2)
+db = &lt;Mock id='2439613341936'&gt;, tenant_id = 1, user_id = 1
+
+    @router.patch("/workspaces/{workspace_id}", response_model=EnterpriseWorkspaceOut)
+    def update_workspace(
+        workspace_id: int,
+        payload: EnterpriseWorkspaceUpdate,
+        db: Session = Depends(get_db),
+        tenant_id: int = Depends(get_tenant_id),
+        user_id: int = Depends(get_user_id),
+    ) -&gt; EnterpriseWorkspaceOut:
+        actor = require_tenant_configurator(db, tenant_id, user_id)
+        workspace = _workspace(db, tenant_id, workspace_id)
+        require_current_version(workspace, payload.expected_version)
+        if payload.parent_id is not None and payload.parent_id != workspace.parent_id:
+            _workspace(db, tenant_id, payload.parent_id)
+            _ensure_no_workspace_cycle(db, tenant_id, workspace.id, payload.parent_id)
+            workspace.parent_id = payload.parent_id
+        if payload.name is not None:
+            workspace.name = _required(payload.name, "Workspace name")
+        if payload.status is not None:
+            workspace.status = payload.status.strip().lower()
+        if payload.sort_order is not None:
+            workspace.sort_order = payload.sort_order
+        touch_collaborative_record(workspace)
+        _event(db, tenant_id, actor.id, "enterprise_workspace.updated", workspace)
+        db.commit()
+        db.refresh(workspace)
+&gt;       return EnterpriseWorkspaceOut.model_validate(workspace)
+E       pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut
+E       parent_id
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       code
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       name
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       defaults_json
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       sort_order
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+app\api\v1\routers\admin_configuration.py:372: ValidationError</failure></testcase><testcase classname="tests.test_strategic_final_uat_project_authority" name="test_legacy_admin_cannot_activate_existing_project[  Project ]" time="0.008"><failure message="pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut&#10;parent_id&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;code&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;name&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;defaults_json&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing&#10;sort_order&#10;  Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/missing">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000023804516390&gt;
+stored_type = '  Project '
+
+    @pytest.mark.parametrize("stored_type", ["project", "PROJECT", "  Project "])
+    def test_legacy_admin_cannot_activate_existing_project(monkeypatch, stored_type):
+        db = Mock()
+        workspace = SimpleNamespace(id=9, workspace_type_code=stored_type, status="initialized", version=2)
+        monkeypatch.setattr(legacy, "require_tenant_configurator", lambda *_: SimpleNamespace(id=1))
+        monkeypatch.setattr(legacy, "_workspace", lambda *_: workspace)
+        monkeypatch.setattr(legacy, "_event", Mock())
+    
+        with pytest.raises(HTTPException) as caught:
+&gt;           legacy.update_workspace(
+                9, EnterpriseWorkspaceUpdate(status="active", expected_version=2), db=db, tenant_id=1, user_id=1
+            )
+
+tests\test_strategic_final_uat_project_authority.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+workspace_id = 9
+payload = EnterpriseWorkspaceUpdate(name=None, parent_id=None, status='active', sort_order=None, expected_version=2)
+db = &lt;Mock id='2439613866704'&gt;, tenant_id = 1, user_id = 1
+
+    @router.patch("/workspaces/{workspace_id}", response_model=EnterpriseWorkspaceOut)
+    def update_workspace(
+        workspace_id: int,
+        payload: EnterpriseWorkspaceUpdate,
+        db: Session = Depends(get_db),
+        tenant_id: int = Depends(get_tenant_id),
+        user_id: int = Depends(get_user_id),
+    ) -&gt; EnterpriseWorkspaceOut:
+        actor = require_tenant_configurator(db, tenant_id, user_id)
+        workspace = _workspace(db, tenant_id, workspace_id)
+        require_current_version(workspace, payload.expected_version)
+        if payload.parent_id is not None and payload.parent_id != workspace.parent_id:
+            _workspace(db, tenant_id, payload.parent_id)
+            _ensure_no_workspace_cycle(db, tenant_id, workspace.id, payload.parent_id)
+            workspace.parent_id = payload.parent_id
+        if payload.name is not None:
+            workspace.name = _required(payload.name, "Workspace name")
+        if payload.status is not None:
+            workspace.status = payload.status.strip().lower()
+        if payload.sort_order is not None:
+            workspace.sort_order = payload.sort_order
+        touch_collaborative_record(workspace)
+        _event(db, tenant_id, actor.id, "enterprise_workspace.updated", workspace)
+        db.commit()
+        db.refresh(workspace)
+&gt;       return EnterpriseWorkspaceOut.model_validate(workspace)
+E       pydantic_core._pydantic_core.ValidationError: 5 validation errors for EnterpriseWorkspaceOut
+E       parent_id
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       code
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       name
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       defaults_json
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+E       sort_order
+E         Field required [type=missing, input_value=namespace(id=9, workspace...tus='active', version=3), input_type=SimpleNamespace]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+app\api\v1\routers\admin_configuration.py:372: ValidationError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,27 @@
+{
+  "case": "CONTRACTOR_DELIVERY",
+  "status": "PASS",
+  "database_dialect": "sqlite",
+  "governance_model": "CONTRACTOR_DELIVERY",
+  "source_context_type": "CONTRACT_AWARD",
+  "request_id": 1,
+  "source_hash": "6b5fd9ba7f46321706a300ff81ae7b67aae499aff1ef04216d4e2ec3956d5912",
+  "creation_policy_hash": "476f6ff89995b5a990afd252c45714142e957e12d89cd509943c7774eb53e819",
+  "project_identity": [
+    3,
+    "PYP-PRJ-00001",
+    "PRJ-9140ae0b-b1f4-41cf-b3de-f29c727083f5",
+    "01.01.01"
+  ],
+  "initialization_state": "READY_FOR_ACTIVATION",
+  "activation_state": "ACTIVATED",
+  "fid_count_before_after": [
+    0,
+    0
+  ],
+  "project14_hash_before_after": [
+    null,
+    null
+  ],
+  "proof_boundary": "Real HTTP compact route through independent activation; no operational delivery"
+}

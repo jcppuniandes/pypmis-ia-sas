@@ -1,0 +1,182 @@
+[
+  {
+    "candidate_id": "CL-BE-01",
+    "candidate": "Legacy ADMIN Workspace creation/status API",
+    "review_category": "superseded endpoints / old strategic paths",
+    "classification": "REQUIRES_DEPRECATION",
+    "evidence": "backend/app/api/v1/routers/admin_configuration.py; frontend/src/api/adminConfiguration.ts",
+    "rationale": "Live consumer exists. PROJECT guard fixed; retain other types and configuration until explicit compatibility deprecation.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-02",
+    "candidate": "EnterpriseStructureService create/update/archive live nodes",
+    "review_category": "unused routes / services",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/enterprise_structure/router_admin.py; service.py",
+    "rationale": "Used by foundation and history regression. PROJECT lifecycle guards added; not dead code.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-03",
+    "candidate": "CORE revisions add_workspace / materialize snapshot",
+    "review_category": "duplicate Workspace creation authority",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/enterprise_structure/revisions.py",
+    "rationale": "Reproduced S2 live authority defect was guarded at mutation and shared pre-DML materialization boundaries; targeted execution evidence is separate from full release UAT. Preserve historical identity adoption and CORE revision functionality; not removable dead code.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-04",
+    "candidate": "Approved CORE YAML apply/publish",
+    "review_category": "temporary compatibility / old strategic paths",
+    "classification": "HISTORICAL_COMPATIBILITY_REQUIRED",
+    "evidence": "backend/app/modules/enterprise_structure/importer/apply.py; publish.py",
+    "rationale": "Exact reconciliation/count/hash/tenant release checks and protected historical identities; no generic removal or operational execution authorized.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-05",
+    "candidate": "Operational Project ORM/table",
+    "review_category": "models / duplicate identity suspicion",
+    "classification": "HISTORICAL_COMPATIBILITY_REQUIRED",
+    "evidence": "backend/app/domain/models.py:79; strategic provider adapters",
+    "rationale": "projects is used by operational controls and QRA source refs. Strategic identity is enterprise_workspaces. Do not drop or merge in UAT.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-06",
+    "candidate": "Per-router ETag / If-Match helpers",
+    "review_category": "duplicate helpers / ETag",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/portfolio_budget/router.py; investment_decision/router.py; project_definition/router.py",
+    "rationale": "Repeated active contract with slight historical error-envelope differences. Consolidation needs targeted HTTP compatibility regression.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-07",
+    "candidate": "Per-domain _hash functions",
+    "review_category": "hash comparison / duplicate logic",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/business_case/service.py; investment_decision/service.py; investment_gate_preparation/service.py",
+    "rationale": "Same hashing primitive does not imply same semantic hash authority; preserve frozen canonicalization and historical payloads.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-08",
+    "candidate": "QRA provider currentness and policy adapter",
+    "review_category": "duplicate resolver suspicion",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/qra_engine/service.py; investment_evidence_policy/qra_evidence.py",
+    "rationale": "Engine proves run/model validity; adapter proves policy applicability/quality. Different authorities, not duplicate decision logic.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-09",
+    "candidate": "Business Case source resolver vs Gate bundle",
+    "review_category": "duplicate source resolution",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/business_case/service.py; investment_gate_preparation/service.py",
+    "rationale": "Separate longitudinal BC and as-of Gate consumers; source/hash consistency is policy-governed, not interchangeable snapshots.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-10",
+    "candidate": "QRA result section dynamic routes",
+    "review_category": "unused APIs / unreachable branch suspicion",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/qra_engine/router.py:_result_route; frontend/src/features/qra-engine/api.ts",
+    "rationale": "Registered dynamically for summary/percentiles/convergence/etc.; missing literal consumer is not proof unused.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-11",
+    "candidate": "Domain schemas without direct frontend type match",
+    "review_category": "unused DTOs / schemas",
+    "classification": "UNKNOWN",
+    "evidence": "backend/app/modules/*/schemas.py; backend-api-inventory.json",
+    "rationale": "FastAPI response schemas, nested DTOs and API consumers require symbol/contract reachability. No deletion supported by the literal inventory.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-12",
+    "candidate": "LEGACY_UNCLASSIFIED governance branches",
+    "review_category": "unreachable branches / obsolete enum suspicion",
+    "classification": "HISTORICAL_COMPATIBILITY_REQUIRED",
+    "evidence": "backend/app/modules/project_creation/governance.py; frontend strategicNavigationBlueprint.ts",
+    "rationale": "Needed to read unreconciled historical records; must not silently force CAPITAL_OWNER.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-13",
+    "candidate": "Manual references for Class B legacy evidence",
+    "review_category": "temporary compatibility code",
+    "classification": "HISTORICAL_COMPATIBILITY_REQUIRED",
+    "evidence": "backend/app/modules/investment_gate_preparation/service.py",
+    "rationale": "Class A forbidden; Class B behavior depends on effective historical policy and must not be deleted as universally obsolete.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-14",
+    "candidate": "QRA methodology legacy generic guard",
+    "review_category": "superseded configuration endpoint",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/api/v1/routers/admin_configuration.py:GOVERNED_CONFIGURATION_APIS",
+    "rationale": "Explicit rejection protects dedicated policy authority; removing guard would reintroduce bypass.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-15",
+    "candidate": "Known strategic hotspots",
+    "review_category": "large shared service/model files",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/api/v1/router.py; backend/app/domain/models.py; backend/app/domain/schemas.py",
+    "rationale": "No big-bang refactor, migration rewrite or added strategic module in closeout.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-16",
+    "candidate": "Development-only fixture imports in production",
+    "review_category": "production fixture contamination",
+    "classification": "UNKNOWN",
+    "evidence": "backend/app/modules and backend/tests directory separation",
+    "rationale": "No demonstrated production import established by this review; absence of a quick match is not full import-graph proof.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-17",
+    "candidate": "Dead feature flags",
+    "review_category": "feature flags",
+    "classification": "UNKNOWN",
+    "evidence": "backend/app/core/config.py; backend/app/modules",
+    "rationale": "No strategic flag is proven dead by source-only endpoint inventory; require deployed config and branch coverage.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  },
+  {
+    "candidate_id": "CL-BE-18",
+    "candidate": "Duplicate constants/enums across frontend/backend",
+    "review_category": "duplicate constants / enums",
+    "classification": "STILL_REFERENCED",
+    "evidence": "backend/app/modules/*/schemas.py; frontend/src/features/*/types.ts",
+    "rationale": "Cross-language contract copies are not automatically removable; validate schema generation strategy separately.",
+    "removed": false,
+    "regression_proves_removal_safe": false
+  }
+]

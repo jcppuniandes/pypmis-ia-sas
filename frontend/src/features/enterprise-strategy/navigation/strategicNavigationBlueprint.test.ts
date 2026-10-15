@@ -119,11 +119,25 @@ describe("strategic navigation blueprint", () => {
   });
 
   it("registers Periodic Portfolio Review USER sessions and ADMIN policy from the canonical blueprint", () => {
-    const userPhase = buildStrategicMacroprocess("user").modules[4];
+    const userPhase = buildStrategicMacroprocess("user").modules[5];
     const review = userPhase.submodules.find((item) => item.label === "Periodic Portfolio Review");
     const adminPhase = buildStrategicMacroprocess("admin").modules[4];
 
-    expect(userPhase.label).toBe("Portfolio Planning & Review");
+    expect(userPhase.label).toBe("Portfolio Scenario Planning");
+    expect(userPhase.submodules.map((item) => item.label)).toEqual([
+      "Budget Planning & Scenarios",
+      "Resource Planning & Scenarios",
+      "Scenario Convergence & Recommendation",
+      "Periodic Portfolio Review",
+    ]);
+    expect(
+      buildStrategicMacroprocess("user").modules[4].submodules.some(
+        (item) => item.label === "Periodic Portfolio Review"
+      )
+    ).toBe(false);
+    const reviewNode = strategicNavigationBlueprint.find((item) => item.mode === "user" && item.phase === 5)
+      ?.children[3];
+    expect(reviewNode?.predecessorIds).toEqual(["scenario-convergence-recommendation"]);
     expect(review?.children?.map((item) => item.label)).toEqual([
       "Review Calendar / Sessions",
       "Overview",
@@ -141,7 +155,7 @@ describe("strategic navigation blueprint", () => {
     expect(strategicRouteForView("portfolio-review-actions", "user")).toBe("/app/strategy/portfolio-review-actions");
     expect(strategicBreadcrumb("portfolio-review-actions", "user")).toEqual([
       "Enterprise Strategy Manager",
-      "Portfolio Planning & Review",
+      "Portfolio Scenario Planning",
       "Periodic Portfolio Review",
       "Actions",
     ]);

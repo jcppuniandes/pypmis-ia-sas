@@ -45,6 +45,10 @@ from app.modules.enterprise_structure.schemas import (
     RevisionWorkspaceOut,
     RevisionWorkspaceUpdate,
 )
+from app.modules.project_creation.entrypoint_guard import (
+    require_governed_project_activation,
+    require_non_project_admin_creation,
+)
 
 REVISION_STATES = {"draft", "published", "superseded", "unpublished"}
 
@@ -68,12 +72,19 @@ class EnterpriseStructureRevisionService:
         existing = self.repository.latest_draft_release()
         if existing is not None:
             if existing.previous_release_id == source.id:
+                snapshot = self._normalized_snapshot(existing)
+                self._adopt_live_projects_for_draft(snapshot)
+                if snapshot != self._normalized_snapshot(existing):
+                    expected_version = existing.revision_version
+                    self._refresh_draft(existing, snapshot, operation="live_projects_adopted")
+                    self._commit_revision(existing.id, expected_version)
                 return self.revision_out(existing)
             raise HTTPException(status_code=409, detail="Another draft revision already exists")
 
         revision_number = max(source.revision_number + 1, self.repository.release_count() + 1)
         release_code = self._next_release_code(revision_number)
         snapshot = self._normalized_snapshot(source)
+        self._adopt_live_projects_for_draft(snapshot)
         now = utc_now()
         release_name = f"Workspace Structure Revision {revision_number:03d}"
         draft_hash = _snapshot_hash(release_code, snapshot, release_name)
@@ -189,6 +200,7 @@ class EnterpriseStructureRevisionService:
         workspaces = snapshot["workspaces"]
         parent = self._workspace(workspaces, payload.parent_key)
         type_code = _configuration_code(payload.workspace_type_code)
+        require_non_project_admin_creation(type_code)
         self._ensure_allowed_child(parent, type_code)
         status = payload.status.strip().lower()
         if status not in WORKSPACE_STATUSES:
@@ -231,6 +243,9 @@ class EnterpriseStructureRevisionService:
         self._assert_revision_version(release, expected_version)
         snapshot = self._normalized_snapshot(release)
         workspace = self._workspace(snapshot["workspaces"], workspace_key)
+        require_governed_project_activation(
+            workspace["workspace_type_code"], workspace["status"], payload.status, workspace.get("id") or 0
+        )
         if payload.name is not None:
             workspace["name"] = _required(payload.name, "Workspace name")
         if payload.description is not None:
@@ -239,7 +254,10 @@ class EnterpriseStructureRevisionService:
             workspace["responsible_user_id"] = payload.responsible_user_id
         if payload.status is not None:
             status = payload.status.strip().lower()
-            if status not in WORKSPACE_STATUSES:
+            project_pending_adoption = (
+                workspace["workspace_type_code"] == "project" and workspace["status"] == status == "pending"
+            )
+            if status not in WORKSPACE_STATUSES and not project_pending_adoption:
                 raise HTTPException(status_code=422, detail=f"Unsupported workspace status: {status}")
             if workspace["status"] == "archived" and status != "archived":
                 raise HTTPException(status_code=409, detail="Archived workspaces cannot be reactivated inside a draft")
@@ -299,6 +317,9 @@ class EnterpriseStructureRevisionService:
         snapshot = self._normalized_snapshot(release)
         workspaces = snapshot["workspaces"]
         workspace = self._workspace(workspaces, workspace_key)
+        require_governed_project_activation(
+            workspace["workspace_type_code"], workspace["status"], "archived", workspace.get("id") or 0
+        )
         children = [
             item
             for item in workspaces
@@ -424,6 +445,9 @@ class EnterpriseStructureRevisionService:
         ):
             raise HTTPException(status_code=409, detail={"reason": "APPROVAL_INVALIDATED"})
         self._ensure_hash_match(release, current_diff, payload.draft_hash, payload.diff_hash)
+        # Recheck persisted legacy drafts against live identities before validation
+        # or materialization can write anything; approval is not Project authority.
+        self._assert_project_authority(self._normalized_snapshot(release))
         validation = self._validate(release)
         if not validation.valid or release.validated_draft_hash != release.content_fingerprint:
             raise HTTPException(status_code=409, detail="The revision must pass validation again before publishing")
@@ -592,11 +616,18 @@ class EnterpriseStructureRevisionService:
             "no_orphans": True,
             "status_transitions": True,
             "codes_unique": True,
+            "project_lifecycle_authority": True,
         }
         tenant = snapshot.get("tenant", {})
         if tenant.get("id") != self.tenant_id:
             checks["cross_tenant_zero"] = False
             errors.append("Snapshot tenant does not match the authenticated tenant")
+        try:
+            self._assert_project_authority(snapshot)
+        except HTTPException as exc:
+            checks["project_lifecycle_authority"] = False
+            reason = exc.detail.get("code", "PROJECT_WORKSPACE_LIFECYCLE_REQUIRED")
+            errors.append(f"CORE cannot apply this Project mutation: {reason}")
 
         keys = [str(item.get("external_key") or "") for item in workspaces]
         if "" in keys or len(keys) != len(set(keys)):
@@ -636,11 +667,17 @@ class EnterpriseStructureRevisionService:
         for workspace in workspaces:
             key = workspace["external_key"]
             status = workspace["status"]
-            if status not in WORKSPACE_STATUSES:
+            # USER creation legitimately materializes pending Projects. CORE may
+            # adopt that exact live state, but may not mint or transition it.
+            project_live_adoption = (
+                workspace["workspace_type_code"] == "project" and checks["project_lifecycle_authority"]
+            )
+            project_pending_adoption = project_live_adoption and status == "pending"
+            if status not in WORKSPACE_STATUSES and not project_pending_adoption:
                 checks["status_transitions"] = False
                 errors.append(f"{key}: unsupported status {status}")
             baseline = base_by_key.get(key)
-            if baseline and not self._valid_status_transition(baseline["status"], status):
+            if baseline and not self._valid_status_transition(baseline["status"], status) and not project_live_adoption:
                 checks["status_transitions"] = False
                 errors.append(f"{key}: invalid status transition {baseline['status']} -> {status}")
             workspace_type = types.get(workspace["workspace_type_code"])
@@ -860,6 +897,121 @@ class EnterpriseStructureRevisionService:
         snapshot["classifications"] = normalized_classifications
         return snapshot
 
+    def _adopt_live_projects_for_draft(self, snapshot: dict[str, Any]) -> None:
+        """Copy actual USER-owned identities/state into an explicitly requested draft.
+
+        A published CORE predates later Project creation and activation. Adopting
+        those facts is not an ADMIN lifecycle transition; historical snapshots
+        and live rows remain untouched. Never infer missing non-Project parents.
+        """
+        if snapshot.get("tenant", {}).get("id") != self.tenant_id:
+            raise HTTPException(status_code=409, detail={"code": "CROSS_TENANT_CORE_SNAPSHOT"})
+        with self.db.no_autoflush:
+            live = self.repository.workspaces()
+            classifications = self.repository.classifications()
+        live_by_id = {workspace.id: workspace for workspace in live}
+        draft_by_key = {item["external_key"]: item for item in snapshot["workspaces"]}
+        for workspace in live:
+            if _configuration_code(workspace.workspace_type_code) != "project":
+                continue
+            key = str(workspace.external_key or "").strip().upper()
+            item = draft_by_key.get(key)
+            if item is not None:
+                if item.get("id") is not None and item["id"] != workspace.id:
+                    raise HTTPException(
+                        status_code=409,
+                        detail={"code": "PROJECT_WORKSPACE_IDENTITY_MISMATCH", "workspace_id": workspace.id},
+                    )
+                if item["workspace_type_code"] != "project":
+                    raise HTTPException(
+                        status_code=409,
+                        detail={"code": "PROJECT_WORKSPACE_TYPE_IMMUTABLE", "workspace_id": workspace.id},
+                    )
+                item.update(id=workspace.id, technical_id=workspace.id, status=workspace.status.strip().lower())
+                continue
+            parent = live_by_id.get(workspace.parent_id)
+            parent_key = str(parent.external_key or "").strip().upper() if parent is not None else ""
+            draft_parent = draft_by_key.get(parent_key)
+            if not key or parent is None or draft_parent is None or draft_parent.get("id") != parent.id:
+                raise HTTPException(
+                    status_code=409,
+                    detail={"code": "PROJECT_PARENT_RECONCILIATION_REQUIRED", "workspace_id": workspace.id},
+                )
+            metadata = dict((workspace.defaults_json or {}).get("_enterprise") or {})
+            item = {
+                "id": workspace.id,
+                "technical_id": workspace.id,
+                "external_key": key,
+                "parent_id": parent.id,
+                "parent_external_key": parent_key,
+                "record_code": workspace.record_code,
+                "code": workspace.code,
+                "name": workspace.name,
+                "workspace_type": "project",
+                "workspace_type_code": "project",
+                "description": str(metadata.get("description") or ""),
+                "responsible_user_id": metadata.get("responsible_user_id"),
+                "status": workspace.status.strip().lower(),
+                "sort_order": workspace.sort_order,
+            }
+            snapshot["workspaces"].append(item)
+            draft_by_key[key] = item
+            snapshot["classifications"].extend(
+                {
+                    "workspace_id": workspace.id,
+                    "workspace_external_key": key,
+                    "category_set_code": classification.category_set_code,
+                    "category_item_code": classification.category_item_code,
+                }
+                for classification in classifications
+                if classification.workspace_id == workspace.id
+            )
+        self._assert_project_authority(snapshot, live)
+
+    def _assert_project_authority(
+        self, snapshot: dict[str, Any], existing: list[EnterpriseWorkspace] | None = None
+    ) -> None:
+        """CORE may adopt live Projects, never create or change their lifecycle.
+
+        Compare with tenant-scoped live rows, not just the previous snapshot: a
+        USER lifecycle transition after drafting must not be reverted by publish
+        or rollback. Historical Projects do not need retroactive creation records.
+        """
+        if snapshot.get("tenant", {}).get("id") != self.tenant_id:
+            raise HTTPException(status_code=409, detail={"code": "CROSS_TENANT_CORE_SNAPSHOT"})
+        with self.db.no_autoflush:
+            current = existing if existing is not None else self.repository.workspaces()
+        by_key = {str(item.external_key or "").strip().upper(): item for item in current}
+        desired = {item["external_key"]: item for item in snapshot["workspaces"]}
+        for key, item in desired.items():
+            workspace = by_key.get(key)
+            if workspace is None:
+                require_non_project_admin_creation(item["workspace_type_code"])
+                continue
+            current_type = _configuration_code(workspace.workspace_type_code)
+            requested_type = item["workspace_type_code"]
+            if current_type != "project":
+                # A non-Project identity cannot be converted into a Project by a snapshot.
+                require_non_project_admin_creation(requested_type)
+                continue
+            if requested_type != current_type:
+                raise HTTPException(
+                    status_code=409,
+                    detail={"code": "PROJECT_WORKSPACE_TYPE_IMMUTABLE", "workspace_id": workspace.id},
+                )
+            if item.get("id") is not None and item["id"] != workspace.id:
+                raise HTTPException(
+                    status_code=409,
+                    detail={"code": "PROJECT_WORKSPACE_IDENTITY_MISMATCH", "workspace_id": workspace.id},
+                )
+            require_governed_project_activation(current_type, workspace.status, item["status"], workspace.id)
+        for key, workspace in by_key.items():
+            if key not in desired:
+                # Materialization archives omitted rows; that is also a lifecycle change.
+                require_governed_project_activation(
+                    workspace.workspace_type_code, workspace.status, "archived", workspace.id
+                )
+
     def _materialize_snapshot(self, raw_snapshot: dict[str, Any]) -> dict[str, Any]:
         holder = EnterpriseCoreRelease(
             id=-1,
@@ -881,7 +1033,11 @@ class EnterpriseStructureRevisionService:
         )
         snapshot = self._normalized_snapshot(holder)
         desired = snapshot["workspaces"]
-        existing = self.repository.workspaces()
+        with self.db.no_autoflush:
+            existing = self.repository.workspaces()
+        # Shared final guard covers publish, rollback and direct/internal apply.
+        # It must precede parent detachment, temporary record codes and flushes.
+        self._assert_project_authority(snapshot, existing)
         existing_by_key = {str(item.external_key or "").upper(): item for item in existing}
         original_codes = {item.id: item.record_code for item in existing}
         desired_record_codes = {item["record_code"] for item in desired}

@@ -1,0 +1,2721 @@
+[
+  {
+    "table": "activity_relationships",
+    "model": "ActivityRelationship",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:808",
+    "foreign_keys": [
+      "projects.id",
+      "schedule_imports.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "admin_configurations",
+    "model": "AdminConfiguration",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:462",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/schemas.py",
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/enterprise_structure/classifications.py",
+      "backend/app/modules/enterprise_structure/composition_rules.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/physical_configuration.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/permit_readiness/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_evaluation/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/post_fid_governance/service.py",
+      "backend/app/modules/project_creation/governance.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_definition/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/risk_readiness/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py",
+      "backend/app/modules/workspace_context/navigator.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "admin_number_sequences",
+    "model": "AdminNumberSequence",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:527",
+    "foreign_keys": [
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/enterprise_structure/physical_configuration.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/permit_readiness/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/risk_readiness/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "baseline_versions",
+    "model": "BaselineVersion",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:667",
+    "foreign_keys": [
+      "projects.id",
+      "schedule_imports.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "basic_data_commands",
+    "model": "BasicDataCommand",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/basic_data/models.py:115",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "basic_data_readiness_assessments",
+    "model": "BasicDataReadinessAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/basic_data/models.py:74",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "basic_data_readiness_assessments.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/owner_capability/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "budgets",
+    "model": "Budget",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:1048",
+    "foreign_keys": [
+      "control_accounts.id",
+      "projects.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/models.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/portfolio_budget/__init__.py",
+      "backend/app/modules/portfolio_budget/models.py",
+      "backend/app/modules/portfolio_budget/router.py",
+      "backend/app/modules/portfolio_budget/schemas.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_review/models.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/workspace_context/navigator.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "business_analyses",
+    "model": "BusinessAnalysis",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/business_analysis/models.py:24",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "business_analyses.id",
+      "enterprise_workspaces.id",
+      "idea_evaluations.id",
+      "ideas.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "business_analysis_revisions",
+    "model": "BusinessAnalysisRevision",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/business_analysis/models.py:77",
+    "foreign_keys": [
+      "business_analyses.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "business_case_decision_snapshots",
+    "model": "BusinessCaseDecisionSnapshot",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/business_case/models.py:161",
+    "foreign_keys": [
+      "business_case_revisions.id",
+      "business_cases.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "business_case_revisions",
+    "model": "BusinessCaseRevision",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/business_case/models.py:71",
+    "foreign_keys": [
+      "business_cases.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/qra_foundation/adapters.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "business_cases",
+    "model": "BusinessCase",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/business_case/models.py:30",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "project_proposals.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/qra_foundation/adapters.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "capital_demand_idea_origins",
+    "model": "CapitalDemandIdeaOrigin",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:175",
+    "foreign_keys": [
+      "ideas.id",
+      "strategic_capital_demands.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "capital_planning_cycle_themes",
+    "model": "CapitalPlanningCycleTheme",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:198",
+    "foreign_keys": [
+      "capital_planning_cycles.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "capital_planning_cycles",
+    "model": "CapitalPlanningCycle",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:34",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "commercial_contracting_strategies",
+    "model": "CommercialContractingStrategy",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/commercial_strategy/models.py:30",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "commercial_strategy_versions",
+    "model": "CommercialStrategyVersion",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/commercial_strategy/models.py:68",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "commercial_contracting_strategies.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "contracts",
+    "model": "Contract",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:1400",
+    "foreign_keys": [
+      "control_accounts.id",
+      "funding_sources.id",
+      "projects.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/workspace_context/navigator.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "control_accounts",
+    "model": "ControlAccount",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:714",
+    "foreign_keys": [
+      "projects.id",
+      "wbs.id",
+      "work_packages.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "economic_financial_model_versions",
+    "model": "EconomicFinancialModelVersion",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:68",
+    "foreign_keys": [
+      "business_case_revisions.id",
+      "economic_financial_models.id",
+      "funding_readiness_snapshots.id",
+      "portfolio_budget_scenarios.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/qra_foundation/adapters.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "economic_financial_models",
+    "model": "EconomicFinancialModel",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:29",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "business_cases.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/qra_foundation/adapters.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "enterprise_core_releases",
+    "model": "EnterpriseCoreRelease",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/enterprise_structure/models.py:33",
+    "foreign_keys": [
+      "enterprise_core_releases.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/physical_workspace_initialization/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "enterprise_strategic_objectives",
+    "model": "EnterpriseStrategicObjective",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/enterprise_structure/models.py:12",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "enterprise_workspace_classifications",
+    "model": "EnterpriseWorkspaceClassification",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/enterprise_structure/models.py:119",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "enterprise_workspace_links",
+    "model": "EnterpriseWorkspaceLink",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/enterprise_structure/models.py:133",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "enterprise_workspaces",
+    "model": "EnterpriseWorkspace",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:486",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/enterprise_structure/classifications.py",
+      "backend/app/modules/enterprise_structure/composition_rules.py",
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/links.py",
+      "backend/app/modules/enterprise_structure/physical_configuration.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/idea_demand/models.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/permit_readiness/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_evaluation/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/post_fid_governance/service.py",
+      "backend/app/modules/project_creation/governance.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_definition/service.py",
+      "backend/app/modules/project_proposal/models.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/risk_readiness/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py",
+      "backend/app/modules/workspace_context/navigator.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_assumptions",
+    "model": "FinancialModelAssumption",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:173",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_cash_flows",
+    "model": "FinancialModelCashFlow",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:386",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "financial_model_periods.id",
+      "financial_model_scenarios.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_debt_schedules",
+    "model": "FinancialModelDebtSchedule",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:417",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "financial_model_financing_instruments.id",
+      "financial_model_periods.id",
+      "financial_model_scenarios.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_financing_instruments",
+    "model": "FinancialModelFinancingInstrument",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:248",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "funding_assignments.id",
+      "funds.id",
+      "strategic_funding_sources.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_investors",
+    "model": "FinancialModelInvestor",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:295",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "financial_model_financing_instruments.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_metric_results",
+    "model": "FinancialModelMetricResult",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:447",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "financial_model_scenarios.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_periods",
+    "model": "FinancialModelPeriod",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:209",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_scenario_overrides",
+    "model": "FinancialModelScenarioOverride",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:368",
+    "foreign_keys": [
+      "financial_model_scenarios.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_scenarios",
+    "model": "FinancialModelScenario",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:334",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "financial_model_sensitivity_results",
+    "model": "FinancialModelSensitivityResult",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/economic_financial_model/models.py:465",
+    "foreign_keys": [
+      "economic_financial_model_versions.id",
+      "financial_model_scenarios.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "funding_assignments",
+    "model": "FundingAssignment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/funds_manager/models.py:139",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "funding_assignments.id",
+      "funds.id",
+      "portfolio_scenario_convergences.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/funds_manager/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "funding_readiness_snapshots",
+    "model": "FundingReadinessSnapshot",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/funds_manager/models.py:214",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_budget_scenarios.id",
+      "portfolio_scenario_convergences.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/funds_manager/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "funds",
+    "model": "Fund",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/funds_manager/models.py:80",
+    "foreign_keys": [
+      "strategic_funding_sources.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/funds_manager/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "idea_evaluations",
+    "model": "IdeaEvaluation",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/idea_demand/models.py:66",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "ideas.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "ideas",
+    "model": "Idea",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/idea_demand/models.py:18",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "strategic_capital_demands.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/models.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/idea_demand/__init__.py",
+      "backend/app/modules/idea_demand/router.py",
+      "backend/app/modules/idea_demand/schemas.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "investment_decision_votes",
+    "model": "InvestmentDecisionVote",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/investment_decision/models.py:147",
+    "foreign_keys": [
+      "investment_decisions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/investment_decision/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "investment_decisions",
+    "model": "InvestmentDecision",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/investment_decision/models.py:28",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "investment_gate_preparations.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/post_fid_governance/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "investment_gate_evidence_items",
+    "model": "InvestmentGateEvidenceItem",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/investment_gate_preparation/models.py:109",
+    "foreign_keys": [
+      "investment_gate_preparations.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/investment_gate_preparation/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "investment_gate_preparations",
+    "model": "InvestmentGatePreparation",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/investment_gate_preparation/models.py:24",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "portfolio_converged_alternatives.id",
+      "portfolio_scenario_convergences.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "organization_units",
+    "model": "OrganizationUnit",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:337",
+    "foreign_keys": [
+      "organization_units.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "owner_capability_assessments",
+    "model": "OwnerCapabilityAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/owner_capability/models.py:24",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "owner_capability_assessments.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/owner_capability/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "owner_capability_commands",
+    "model": "OwnerCapabilityCommand",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/owner_capability/models.py:65",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/owner_capability/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "permission_catalog",
+    "model": "PermissionCatalog",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:386",
+    "foreign_keys": [],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/importer/security.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "permit_conditions",
+    "model": "PermitCondition",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/permit_readiness/models.py:106",
+    "foreign_keys": [
+      "project_permits.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/permit_readiness/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "permit_readiness_assessments",
+    "model": "PermitReadinessAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/permit_readiness/models.py:140",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/permit_readiness/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "physical_workspace_creation_requests",
+    "model": "PhysicalWorkspaceCreationRequest",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/physical_workspace_creation/models.py:12",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "physical_workspace_initializations",
+    "model": "PhysicalWorkspaceInitialization",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/physical_workspace_initialization/models.py:12",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_budget_scenario_projects",
+    "model": "PortfolioBudgetScenarioProject",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_budget/models.py:192",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_budget_scenarios.id",
+      "portfolio_project_memberships.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/portfolio_budget/__init__.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_budget_scenarios",
+    "model": "PortfolioBudgetScenario",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_budget/models.py:120",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_budget_targets.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/portfolio_budget/__init__.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_budget_target_periods",
+    "model": "PortfolioBudgetTargetPeriod",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_budget/models.py:89",
+    "foreign_keys": [
+      "portfolio_budget_targets.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_budget/__init__.py",
+      "backend/app/modules/portfolio_budget/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_budget_targets",
+    "model": "PortfolioBudgetTarget",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_budget/models.py:28",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_budget/__init__.py",
+      "backend/app/modules/portfolio_budget/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_converged_alternatives",
+    "model": "PortfolioConvergedAlternative",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_convergence/models.py:105",
+    "foreign_keys": [
+      "portfolio_budget_scenarios.id",
+      "portfolio_resource_scenarios.id",
+      "portfolio_scenario_convergences.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_project_evaluations",
+    "model": "PortfolioProjectEvaluation",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_evaluation/models.py:17",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "portfolio_project_memberships.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_evaluation/__init__.py",
+      "backend/app/modules/portfolio_evaluation/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_project_memberships",
+    "model": "PortfolioProjectMembership",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_planning/models.py:16",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "project_proposals.id",
+      "strategic_gate_decisions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_evaluation/service.py",
+      "backend/app/modules/portfolio_planning/__init__.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_resource_capacity_periods",
+    "model": "PortfolioResourceCapacityPeriod",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:69",
+    "foreign_keys": [
+      "portfolio_resource_capacity_plans.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_resource/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_resource_capacity_plans",
+    "model": "PortfolioResourceCapacityPlan",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:26",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_resource/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_resource_scenario_projects",
+    "model": "PortfolioResourceScenarioProject",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:251",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_project_memberships.id",
+      "portfolio_resource_scenarios.id",
+      "project_resource_demand_profiles.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_resource_scenarios",
+    "model": "PortfolioResourceScenario",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:187",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_resource_capacity_plans.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_review_actions",
+    "model": "PortfolioReviewAction",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_review/models.py:169",
+    "foreign_keys": [
+      "portfolio_review_sessions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_review_commands",
+    "model": "PortfolioReviewCommand",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_review/models.py:230",
+    "foreign_keys": [
+      "portfolio_review_actions.id",
+      "portfolio_review_sessions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_review_conclusions",
+    "model": "PortfolioReviewConclusion",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_review/models.py:145",
+    "foreign_keys": [
+      "portfolio_review_sessions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_review_sessions",
+    "model": "PortfolioReviewSession",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_review/models.py:30",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "capital_planning_cycles.id",
+      "enterprise_workspaces.id",
+      "strategic_capital_allocation_plans.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_review_snapshots",
+    "model": "PortfolioReviewSnapshot",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_review/models.py:116",
+    "foreign_keys": [
+      "portfolio_review_sessions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "portfolio_scenario_convergences",
+    "model": "PortfolioScenarioConvergence",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_convergence/models.py:25",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "post_fid_project_eligibilities",
+    "model": "PostFIDProjectEligibility",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/post_fid_governance/models.py:32",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "investment_decisions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/post_fid_governance/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_basic_data_items",
+    "model": "ProjectBasicDataItem",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/basic_data/models.py:25",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_creation_requests",
+    "model": "ProjectCreationRequest",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_creation/models.py:13",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "ideas.id",
+      "project_proposals.id",
+      "strategic_gate_decisions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_definition_actions",
+    "model": "ProjectDefinitionAction",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_definition/models.py:148",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "project_definition_assessments.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/project_definition/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_definition_assessments",
+    "model": "ProjectDefinitionAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_definition/models.py:24",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/project_definition/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_dependencies",
+    "model": "ProjectDependency",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_budget/models.py:270",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_budget/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_fel_statuses",
+    "model": "ProjectFELStatus",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_definition/models.py:92",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "project_definition_assessments.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/project_definition/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_permits",
+    "model": "ProjectPermit",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/permit_readiness/models.py:40",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "project_permits.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/permit_readiness/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_proposal_evaluations",
+    "model": "ProjectProposalEvaluation",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_proposal/models.py:96",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "project_proposals.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_proposals",
+    "model": "ProjectProposal",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_proposal/models.py:29",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "business_analyses.id",
+      "enterprise_workspaces.id",
+      "idea_evaluations.id",
+      "ideas.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_resource_demand_periods",
+    "model": "ProjectResourceDemandPeriod",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:155",
+    "foreign_keys": [
+      "project_resource_demand_profiles.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_resource/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_resource_demand_profiles",
+    "model": "ProjectResourceDemandProfile",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/portfolio_resource/models.py:101",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_resource/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_risks",
+    "model": "ProjectRisk",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/risk_readiness/models.py:26",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/risk_readiness/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "project_workspace_initializations",
+    "model": "ProjectWorkspaceInitialization",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/project_workspace_initialization/models.py:12",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/post_fid_governance/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "projects",
+    "model": "Project",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:79",
+    "foreign_keys": [
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/models.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/models.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/models.py",
+      "backend/app/modules/economic_financial_model/models.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/validator.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/project_schemas.py",
+      "backend/app/modules/funds_manager/models.py",
+      "backend/app/modules/investment_decision/models.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/investment_evidence_policy/decision_criteria.py",
+      "backend/app/modules/investment_evidence_policy/qra_evidence.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/owner_capability/models.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/permit_readiness/models.py",
+      "backend/app/modules/permit_readiness/router.py",
+      "backend/app/modules/permit_readiness/service.py",
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_budget/models.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_evaluation/models.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_resource/models.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/post_fid_governance/__init__.py",
+      "backend/app/modules/post_fid_governance/models.py",
+      "backend/app/modules/post_fid_governance/router.py",
+      "backend/app/modules/post_fid_governance/schemas.py",
+      "backend/app/modules/post_fid_governance/service.py",
+      "backend/app/modules/project_creation/__init__.py",
+      "backend/app/modules/project_creation/entrypoint_guard.py",
+      "backend/app/modules/project_creation/governance.py",
+      "backend/app/modules/project_creation/models.py",
+      "backend/app/modules/project_creation/router.py",
+      "backend/app/modules/project_creation/schemas.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_definition/__init__.py",
+      "backend/app/modules/project_definition/models.py",
+      "backend/app/modules/project_definition/router.py",
+      "backend/app/modules/project_definition/schemas.py",
+      "backend/app/modules/project_definition/service.py",
+      "backend/app/modules/project_proposal/__init__.py",
+      "backend/app/modules/project_proposal/models.py",
+      "backend/app/modules/project_proposal/router.py",
+      "backend/app/modules/project_proposal/schemas.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/__init__.py",
+      "backend/app/modules/project_workspace_initialization/models.py",
+      "backend/app/modules/project_workspace_initialization/router.py",
+      "backend/app/modules/project_workspace_initialization/schemas.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/adapters.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/risk_governance/__init__.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/risk_readiness/models.py",
+      "backend/app/modules/risk_readiness/router.py",
+      "backend/app/modules/risk_readiness/service.py",
+      "backend/app/modules/strategic_benefits/models.py",
+      "backend/app/modules/strategic_gate/models.py",
+      "backend/app/modules/strategic_gate/service.py",
+      "backend/app/modules/workspace_context/navigator.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_commands",
+    "model": "QraCommand",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_foundation/models.py:115",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_cost_source_assessments",
+    "model": "CostSourceReadinessAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_foundation/models.py:51",
+    "foreign_keys": [
+      "qra_cost_source_assessments.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_model_definitions",
+    "model": "QraModelDefinition",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_foundation/models.py:85",
+    "foreign_keys": [
+      "qra_cost_source_assessments.id",
+      "qra_model_definitions.id",
+      "qra_schedule_source_assessments.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_run_reviews",
+    "model": "QraRunReview",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_engine/models.py:88",
+    "foreign_keys": [
+      "qra_runs.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_engine/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_runs",
+    "model": "QraRun",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_engine/models.py:24",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "qra_model_definitions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_engine/tasks.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "qra_schedule_source_assessments",
+    "model": "ScheduleSourceReadinessAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/qra_foundation/models.py:68",
+    "foreign_keys": [
+      "qra_schedule_source_assessments.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "recent_workspaces",
+    "model": "RecentWorkspace",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/workspace_context/models.py:12",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "resources",
+    "model": "Resource",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:1036",
+    "foreign_keys": [
+      "projects.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/capital_planning/models.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/portfolio_resource/__init__.py",
+      "backend/app/modules/portfolio_resource/models.py",
+      "backend/app/modules/portfolio_resource/router.py",
+      "backend/app/modules/portfolio_resource/schemas.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/models.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/workspace_context/navigator.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "risk_readiness_assessments",
+    "model": "RiskReadinessAssessment",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/risk_readiness/models.py:112",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/risk_readiness/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "schedule_activity_maps",
+    "model": "ScheduleActivityMap",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:767",
+    "foreign_keys": [
+      "activities.id",
+      "projects.id",
+      "schedule_imports.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "schedule_imports",
+    "model": "ScheduleImport",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:614",
+    "foreign_keys": [
+      "projects.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "schedule_validation_findings",
+    "model": "ScheduleValidationFinding",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:653",
+    "foreign_keys": [
+      "projects.id",
+      "schedule_imports.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/qra_foundation/adapters.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "security_access_assignments",
+    "model": "SecurityAccessAssignment",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:428",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "organization_units.id",
+      "security_groups.id",
+      "security_roles.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/importer/security.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "security_events",
+    "model": "SecurityEvent",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:448",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/business_analysis/service.py",
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/commercial_strategy/service.py",
+      "backend/app/modules/economic_financial_model/service.py",
+      "backend/app/modules/enterprise_structure/constants.py",
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/report.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/physical_configuration.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/funds_manager/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/investment_evidence_policy/service.py",
+      "backend/app/modules/investment_gate_preparation/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/permit_readiness/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/portfolio_analysis/service.py",
+      "backend/app/modules/portfolio_budget/service.py",
+      "backend/app/modules/portfolio_convergence/service.py",
+      "backend/app/modules/portfolio_evaluation/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_resource/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/post_fid_governance/service.py",
+      "backend/app/modules/project_creation/governance.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_definition/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/risk_readiness/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py",
+      "backend/app/modules/workspace_context/router.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "security_group_members",
+    "model": "SecurityGroupMember",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:373",
+    "foreign_keys": [
+      "security_groups.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/importer/security.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "security_role_permissions",
+    "model": "SecurityRolePermission",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:415",
+    "foreign_keys": [
+      "permission_catalog.id",
+      "security_roles.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/importer/security.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "security_roles",
+    "model": "SecurityRole",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:398",
+    "foreign_keys": [
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_benefit_measures",
+    "model": "StrategicBenefitMeasure",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_benefits/models.py:233",
+    "foreign_keys": [
+      "strategic_benefit_version_snapshots.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_benefit_version_snapshots",
+    "model": "StrategicBenefitVersionSnapshot",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_benefits/models.py:174",
+    "foreign_keys": [
+      "organization_units.id",
+      "security_roles.id",
+      "strategic_benefits.id",
+      "strategic_benefits_plan_versions.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_benefits",
+    "model": "StrategicBenefit",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_benefits/models.py:148",
+    "foreign_keys": [
+      "strategic_benefits_plans.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_benefits_plan_versions",
+    "model": "StrategicBenefitsPlanVersion",
+    "classification": "HISTORICAL_REQUIRED",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_benefits/models.py:70",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "strategic_benefits_plans.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_benefits_plans",
+    "model": "StrategicBenefitsPlan",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_benefits/models.py:32",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/business_case/service.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/strategic_benefits/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_bucket_classifications",
+    "model": "StrategicBucketClassification",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:415",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "portfolio_project_memberships.id",
+      "strategic_capital_allocation_plans.id",
+      "strategic_capital_demands.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_allocation_commands",
+    "model": "StrategicCapitalAllocationCommand",
+    "classification": "TRANSIENT/COMMAND_RECEIPT",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:481",
+    "foreign_keys": [
+      "strategic_capital_allocation_plans.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_allocation_lines",
+    "model": "StrategicCapitalAllocationLine",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:347",
+    "foreign_keys": [
+      "strategic_capital_allocation_plans.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_allocation_plans",
+    "model": "StrategicCapitalAllocationPlan",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:246",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "capital_planning_cycles.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/portfolio_review/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_demand_objectives",
+    "model": "StrategicCapitalDemandObjective",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:230",
+    "foreign_keys": [
+      "strategic_capital_demands.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_demand_themes",
+    "model": "StrategicCapitalDemandTheme",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:214",
+    "foreign_keys": [
+      "strategic_capital_demands.id",
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_capital_demands",
+    "model": "StrategicCapitalDemand",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/capital_planning/models.py:84",
+    "foreign_keys": [
+      "capital_planning_cycles.id",
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_funding_sources",
+    "model": "StrategicFundingSource",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/funds_manager/models.py:33",
+    "foreign_keys": [
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/funds_manager/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "strategic_gate_decisions",
+    "model": "StrategicGateDecision",
+    "classification": "ACTIVE",
+    "scope": "STRATEGIC_MODULE",
+    "evidence": "backend/app/modules/strategic_gate/models.py:31",
+    "foreign_keys": [
+      "admin_configurations.id",
+      "enterprise_workspaces.id",
+      "idea_evaluations.id",
+      "ideas.id",
+      "project_proposal_evaluations.id",
+      "project_proposals.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/strategic_gate/__init__.py",
+      "backend/app/modules/strategic_gate/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "tenants",
+    "model": "Tenant",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:65",
+    "foreign_keys": [],
+    "source_consumers": [
+      "backend/app/modules/basic_data/service.py",
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/cli.py",
+      "backend/app/modules/enterprise_structure/importer/diff.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/report.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/enterprise_structure/physical_configuration.py",
+      "backend/app/modules/enterprise_structure/project_configuration.py",
+      "backend/app/modules/enterprise_structure/repository.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/funds_manager/models.py",
+      "backend/app/modules/investment_gate_preparation/models.py",
+      "backend/app/modules/owner_capability/service.py",
+      "backend/app/modules/permit_readiness/models.py",
+      "backend/app/modules/portfolio_budget/models.py",
+      "backend/app/modules/portfolio_convergence/models.py",
+      "backend/app/modules/portfolio_evaluation/models.py",
+      "backend/app/modules/portfolio_resource/models.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/project_creation/governance.py",
+      "backend/app/modules/project_definition/models.py",
+      "backend/app/modules/qra_foundation/service.py",
+      "backend/app/modules/risk_governance/service.py",
+      "backend/app/modules/risk_readiness/models.py",
+      "backend/app/modules/workspace_context/router.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "user_accounts",
+    "model": "UserAccount",
+    "classification": "ACTIVE",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:324",
+    "foreign_keys": [
+      "tenants.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/capital_planning/service.py",
+      "backend/app/modules/enterprise_structure/importer/apply.py",
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/publish.py",
+      "backend/app/modules/enterprise_structure/importer/security.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/enterprise_structure/permissions.py",
+      "backend/app/modules/enterprise_structure/revisions.py",
+      "backend/app/modules/enterprise_structure/service.py",
+      "backend/app/modules/idea_demand/service.py",
+      "backend/app/modules/investment_decision/service.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/portfolio_planning/service.py",
+      "backend/app/modules/portfolio_review/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_proposal/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/qra_engine/service.py",
+      "backend/app/modules/strategic_benefits/service.py",
+      "backend/app/modules/strategic_gate/service.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  },
+  {
+    "table": "workspace_module_settings",
+    "model": "WorkspaceModuleSetting",
+    "classification": "CONFIGURATION",
+    "scope": "SHARED_REFERENCED_OR_OPERATIONAL_COMPATIBILITY",
+    "evidence": "backend/app/domain/models.py:512",
+    "foreign_keys": [
+      "enterprise_workspaces.id",
+      "tenants.id",
+      "user_accounts.id"
+    ],
+    "source_consumers": [
+      "backend/app/modules/enterprise_structure/importer/inventory.py",
+      "backend/app/modules/enterprise_structure/importer/snapshot.py",
+      "backend/app/modules/physical_workspace_creation/service.py",
+      "backend/app/modules/physical_workspace_initialization/service.py",
+      "backend/app/modules/project_creation/service.py",
+      "backend/app/modules/project_workspace_initialization/service.py",
+      "backend/app/modules/workspace_context/navigator.py",
+      "backend/app/modules/workspace_context/service.py"
+    ],
+    "usage_evidence": "DECLARED_MODEL_AND_SOURCE_REFERENCES_NOT_ROW_COUNTS",
+    "drop_authorized": false,
+    "retention_note": "Operational/source references and immutable historical rows must remain; receipt expiry is not deletion approval."
+  }
+]

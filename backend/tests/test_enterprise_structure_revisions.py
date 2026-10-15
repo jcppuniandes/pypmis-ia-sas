@@ -80,7 +80,9 @@ def _workspace(
     )
 
 
-def _seed() -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCoreRelease]:
+def _seed(
+    *, with_historical_project: bool = False, historical_project_status: str = "active"
+) -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCoreRelease]:
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -161,11 +163,47 @@ def _seed() -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCore
     )
     db.add_all([portfolio_one, portfolio_two])
     db.flush()
+    workspaces = [root, business_unit, portfolio_one, portfolio_two]
     classifications = [
         (business_unit, "responsible-area", "corporate"),
         (portfolio_one, "strategic-objective", "growth"),
         (portfolio_two, "strategic-objective", "growth"),
     ]
+    if with_historical_project:
+        program = _workspace(
+            tenant.id,
+            actor.id,
+            "PRG-HISTORY",
+            "PRG-HISTORY",
+            "01.01.01.01",
+            "Portfolio Program",
+            "program",
+            portfolio_one.id,
+            10,
+        )
+        db.add(program)
+        db.flush()
+        project = _workspace(
+            tenant.id,
+            actor.id,
+            "PRJ-HISTORY",
+            "PRJ-HISTORY",
+            "01.01.01.01.01",
+            "Program Project",
+            "project",
+            program.id,
+            10,
+        )
+        db.add(project)
+        project.status = historical_project_status
+        db.flush()
+        workspaces.extend([program, project])
+        classifications.extend(
+            [
+                (program, "strategic-objective", "growth"),
+                (project, "strategic-objective", "growth"),
+            ]
+        )
     for workspace, category, item in classifications:
         db.add(
             EnterpriseWorkspaceClassification(
@@ -190,7 +228,7 @@ def _seed() -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCore
                 "status": item.status,
                 "sort_order": item.sort_order,
             }
-            for item in (root, business_unit, portfolio_one, portfolio_two)
+            for item in workspaces
         ],
         "strategic_objectives": [],
         "classifications": [
@@ -218,9 +256,9 @@ def _seed() -> tuple[Session, EnterpriseStructureRevisionService, EnterpriseCore
         previous_release_id=None,
         base_content_fingerprint="d" * 64,
         snapshot_json=snapshot,
-        workspace_count=4,
+        workspace_count=len(workspaces),
         objective_count=0,
-        classification_count=3,
+        classification_count=len(classifications),
         link_count=0,
         validation_json={"valid": True, "errors": [], "conflicts": [], "checks": {}, "draft_hash": "", "diff_hash": ""},
         diff_hash="e" * 64,
@@ -344,35 +382,10 @@ def test_draft_add_edit_preview_move_archive_and_classification_operations() -> 
 
 
 def test_move_preserves_external_key_and_recodes_descendants() -> None:
-    db, service, published = _seed()
+    # CORE preserves and adopts the historical Project; USER owns new creation.
+    db, service, published = _seed(with_historical_project=True)
     draft = service.create_revision(published.id)
-    draft = service.add_workspace(
-        draft.id,
-        RevisionWorkspaceCreate(
-            name="Portfolio Program",
-            workspace_type_code="program",
-            parent_key="PF-ONE",
-            status="active",
-            applicable_classifications=[
-                RevisionClassificationIn(category_set_code="strategic-objective", category_item_code="growth")
-            ],
-        ),
-        expected_version=draft.revision_version,
-    )
     program = next(item for item in draft.workspaces if item.name == "Portfolio Program")
-    draft = service.add_workspace(
-        draft.id,
-        RevisionWorkspaceCreate(
-            name="Program Project",
-            workspace_type_code="project",
-            parent_key=program.workspace_key,
-            status="active",
-            applicable_classifications=[
-                RevisionClassificationIn(category_set_code="strategic-objective", category_item_code="growth")
-            ],
-        ),
-        expected_version=draft.revision_version,
-    )
     project = next(item for item in draft.workspaces if item.name == "Program Project")
     draft = service.add_workspace(
         draft.id,

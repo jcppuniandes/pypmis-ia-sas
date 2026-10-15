@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 from app.database.session import SessionLocal
 from app.domain.models import EnterpriseWorkspace
@@ -46,6 +47,52 @@ def _create_node(
     )
     assert response.status_code == 201, response.text
     return response.json()
+
+
+def _historical_project_fixture(client: TestClient, headers: dict[str, str], parent_id: int) -> dict:
+    """Preserve pre-governance records for read/composition tests, not an API bypass."""
+    denied = client.post(
+        "/api/v1/admin-configuration/enterprise-structure/nodes",
+        headers=headers,
+        json={
+            "code": "PR-LEVEL2A",
+            "name": "Expansion Project",
+            "workspace_type_code": "project",
+            "parent_id": parent_id,
+        },
+    )
+    assert denied.status_code == 409, denied.text
+    assert denied.json()["detail"]["code"] == "PROJECT_CREATION_PROCESS_REQUIRED"
+    # Only the isolated pytest database is used. This fixture represents legacy
+    # history so hierarchy/read regression does not imply live ADMIN creation.
+    with SessionLocal() as db:
+        parent = db.get(EnterpriseWorkspace, parent_id)
+        assert parent is not None
+        siblings = db.scalars(
+            select(EnterpriseWorkspace.record_code).where(
+                EnterpriseWorkspace.tenant_id == parent.tenant_id, EnterpriseWorkspace.parent_id == parent.id
+            )
+        ).all()
+        project = EnterpriseWorkspace(
+            tenant_id=parent.tenant_id,
+            parent_id=parent.id,
+            workspace_type_code="project",
+            code="PR-LEVEL2A",
+            external_key="UAT-HISTORICAL-PR-LEVEL2A",
+            record_code=next_record_code(parent.record_code, list(siblings)),
+            name="Expansion Project",
+            status="active",
+            defaults_json={"_enterprise": {"region_code": "CO-DC"}},
+            sort_order=0,
+            version=1,
+            created_by_user_id=parent.created_by_user_id,
+        )
+        db.add(project)
+        db.commit()
+        project_id = project.id
+    response = client.get(f"/api/v1/enterprise-structure/nodes/{project_id}", headers=headers)
+    assert response.status_code == 200, response.text
+    return response.json()["node"]
 
 
 def test_enterprise_configuration_seeds_seven_types_categories_and_one_root() -> None:
@@ -102,14 +149,7 @@ def test_enterprise_hierarchy_applies_composition_cycle_and_archive_rules() -> N
             workspace_type="program",
             parent_id=portfolio["id"],
         )
-        project = _create_node(
-            client,
-            headers,
-            code="PR-LEVEL2A",
-            name="Expansion Project",
-            workspace_type="project",
-            parent_id=program["id"],
-        )
+        project = _historical_project_fixture(client, headers, program["id"])
         property_node = _create_node(
             client,
             headers,

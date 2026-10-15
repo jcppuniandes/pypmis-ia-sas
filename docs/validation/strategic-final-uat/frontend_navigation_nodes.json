@@ -1,0 +1,6696 @@
+[
+  {
+    "id": "phase-0-enterprise-foundation",
+    "label": "Enterprise Foundation",
+    "mode": "USER",
+    "phase": 0,
+    "order": 0,
+    "route": "/app/strategy/enterprise-strategy-overview",
+    "view": "enterprise-strategy-overview",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Enterprise Foundation",
+    "orderPath": [
+      0
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "foundation-status",
+    "label": "Foundation Status",
+    "mode": "USER",
+    "phase": 0,
+    "order": 1,
+    "route": "/app/strategy/enterprise-strategy-overview",
+    "view": "enterprise-strategy-overview",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Foundation Status",
+    "orderPath": [
+      0,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "enterprise-explorer",
+    "label": "Enterprise Explorer",
+    "mode": "USER",
+    "phase": 0,
+    "order": 2,
+    "route": "/app/strategy/enterprise-explorer",
+    "view": "enterprise-explorer",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Enterprise Explorer",
+    "orderPath": [
+      0,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "workspace-context",
+    "label": "Workspace Context",
+    "mode": "USER",
+    "phase": 0,
+    "order": 3,
+    "route": "/app/strategy/workspace-context",
+    "view": "workspace-context",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Workspace Context",
+    "orderPath": [
+      0,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-1-strategic-capital-planning-demand",
+    "label": "Strategic Capital Planning & Demand",
+    "mode": "USER",
+    "phase": 1,
+    "order": 1,
+    "route": "/app/strategy/capital-demand-pipeline",
+    "view": "capital-demand-pipeline",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Strategic Capital Planning & Demand",
+    "orderPath": [
+      1
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-0-enterprise-foundation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-planning-cycles",
+    "label": "Planning Cycles",
+    "mode": "USER",
+    "phase": 1,
+    "order": 1,
+    "route": "/app/strategy/capital-planning-cycles",
+    "view": "capital-planning-cycles",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Planning Cycles",
+    "orderPath": [
+      1,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-0-enterprise-foundation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-demand-pipeline",
+    "label": "Capital Demand Pipeline",
+    "mode": "USER",
+    "phase": 1,
+    "order": 2,
+    "route": "/app/strategy/capital-demand-pipeline",
+    "view": "capital-demand-pipeline",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Capital Demand Pipeline",
+    "orderPath": [
+      1,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-planning-cycles"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-demand-my",
+    "label": "My Demands",
+    "mode": "USER",
+    "phase": 1,
+    "order": 3,
+    "route": "/app/strategy/capital-demand-my",
+    "view": "capital-demand-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > My Demands",
+    "orderPath": [
+      1,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-planning-cycles"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-demand-review",
+    "label": "Demands in Review",
+    "mode": "USER",
+    "phase": 1,
+    "order": 4,
+    "route": "/app/strategy/capital-demand-review",
+    "view": "capital-demand-review",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Demands in Review",
+    "orderPath": [
+      1,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-demand-pipeline"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-demand-endorsed",
+    "label": "Endorsed Demands",
+    "mode": "USER",
+    "phase": 1,
+    "order": 5,
+    "route": "/app/strategy/capital-demand-endorsed",
+    "view": "capital-demand-endorsed",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Endorsed Demands",
+    "orderPath": [
+      1,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-demand-review"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "capital-demand-history",
+    "label": "Demand History",
+    "mode": "USER",
+    "phase": 1,
+    "order": 6,
+    "route": "/app/strategy/capital-demand-history",
+    "view": "capital-demand-history",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Demand History",
+    "orderPath": [
+      1,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-demand-pipeline"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-capital-allocation",
+    "label": "Strategic Capital Allocation",
+    "mode": "USER",
+    "phase": 1,
+    "order": 7,
+    "route": "/app/strategy/strategic-capital-allocation",
+    "view": "strategic-capital-allocation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Strategic Capital Allocation",
+    "orderPath": [
+      1,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "capital-demand-pipeline"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-capital-allocation-history",
+    "label": "Allocation History",
+    "mode": "USER",
+    "phase": 1,
+    "order": 8,
+    "route": "/app/strategy/strategic-capital-allocation-history",
+    "view": "strategic-capital-allocation-history",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand > Allocation History",
+    "orderPath": [
+      1,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "strategic-capital-allocation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-1-idea-demand",
+    "label": "Investment Origination & Shaping",
+    "mode": "USER",
+    "phase": 2,
+    "order": 2,
+    "route": "/app/strategy/idea-lifecycle",
+    "view": "idea-lifecycle",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Investment Origination & Shaping",
+    "orderPath": [
+      2
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "phase-1-strategic-capital-planning-demand"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "idea-lifecycle",
+    "label": "Idea Lifecycle",
+    "mode": "USER",
+    "phase": 2,
+    "order": 1,
+    "route": "/app/strategy/idea-lifecycle",
+    "view": "idea-lifecycle",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping > Idea Lifecycle",
+    "orderPath": [
+      2,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "phase-1-strategic-capital-planning-demand"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-analysis-options",
+    "label": "Business Analysis & Options",
+    "mode": "USER",
+    "phase": 2,
+    "order": 2,
+    "route": "/app/strategy/business-analysis-options",
+    "view": "business-analysis-options",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping > Business Analysis & Options",
+    "orderPath": [
+      2,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "idea-lifecycle"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "project-proposals",
+    "label": "Project Proposals",
+    "mode": "USER",
+    "phase": 2,
+    "order": 3,
+    "route": "/app/strategy/project-proposal",
+    "view": "project-proposal",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping > Project Proposals",
+    "orderPath": [
+      2,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "business-analysis-options"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-3-strategic-gate",
+    "label": "Strategic Gate",
+    "mode": "USER",
+    "phase": 3,
+    "order": 3,
+    "route": "/app/strategy/strategic-gate-decision",
+    "view": "strategic-gate-decision",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Strategic Gate",
+    "orderPath": [
+      3
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "phase-1-idea-demand"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-gate-decision",
+    "label": "Strategic Gate Decision",
+    "mode": "USER",
+    "phase": 3,
+    "order": 1,
+    "route": "/app/strategy/strategic-gate-decision",
+    "view": "strategic-gate-decision",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Strategic Gate > Strategic Gate Decision",
+    "orderPath": [
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "project-proposals"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-4-portfolio-planning",
+    "label": "Portfolio Planning & Review",
+    "mode": "USER",
+    "phase": 4,
+    "order": 4,
+    "route": "/app/strategy/strategic-project-planning-entry",
+    "view": "strategic-project-planning-entry",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Portfolio Planning & Review",
+    "orderPath": [
+      4
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-3-strategic-gate"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-intake-planning",
+    "label": "Portfolio Intake & Planning",
+    "mode": "USER",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/strategy/strategic-project-planning-entry",
+    "view": "strategic-project-planning-entry",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review > Portfolio Intake & Planning",
+    "orderPath": [
+      4,
+      1
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "strategic-gate-decision"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-intake-portfolio-structure",
+    "label": "Portfolio Structure",
+    "mode": "USER",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/strategy/portfolio-structure",
+    "view": "portfolio-structure",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Intake & Planning > Portfolio Structure",
+    "orderPath": [
+      4,
+      1,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-intake-strategic-project-planning-entry",
+    "label": "Strategic Planning Entry",
+    "mode": "USER",
+    "phase": 4,
+    "order": 2,
+    "route": "/app/strategy/strategic-project-planning-entry",
+    "view": "strategic-project-planning-entry",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Intake & Planning > Strategic Planning Entry",
+    "orderPath": [
+      4,
+      1,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-intake-portfolio-projects",
+    "label": "Portfolio Projects",
+    "mode": "USER",
+    "phase": 4,
+    "order": 3,
+    "route": "/app/strategy/portfolio-projects",
+    "view": "portfolio-projects",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Intake & Planning > Portfolio Projects",
+    "orderPath": [
+      4,
+      1,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-evaluation-prioritization",
+    "label": "Evaluation & Prioritization",
+    "mode": "USER",
+    "phase": 4,
+    "order": 2,
+    "route": "/app/strategy/portfolio-evaluation",
+    "view": "portfolio-evaluation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review > Evaluation & Prioritization",
+    "orderPath": [
+      4,
+      2
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "portfolio-intake-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-evaluation-portfolio-evaluation",
+    "label": "Portfolio Evaluation",
+    "mode": "USER",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/strategy/portfolio-evaluation",
+    "view": "portfolio-evaluation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Evaluation & Prioritization > Portfolio Evaluation",
+    "orderPath": [
+      4,
+      2,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-evaluation-strategic-prioritization-matrix",
+    "label": "Prioritization Matrix",
+    "mode": "USER",
+    "phase": 4,
+    "order": 2,
+    "route": "/app/strategy/strategic-prioritization-matrix",
+    "view": "strategic-prioritization-matrix",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Evaluation & Prioritization > Prioritization Matrix",
+    "orderPath": [
+      4,
+      2,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-analysis",
+    "label": "Portfolio Analysis",
+    "mode": "USER",
+    "phase": 4,
+    "order": 3,
+    "route": "/app/strategy/portfolio-analysis",
+    "view": "portfolio-analysis",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review > Portfolio Analysis",
+    "orderPath": [
+      4,
+      3
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "portfolio-evaluation-prioritization"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-analysis-overview",
+    "label": "Analysis Overview",
+    "mode": "USER",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/strategy/portfolio-analysis",
+    "view": "portfolio-analysis",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Analysis > Analysis Overview",
+    "orderPath": [
+      4,
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-investor-map",
+    "label": "Investor Map",
+    "mode": "USER",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/strategy/portfolio-investor-map",
+    "view": "portfolio-investor-map",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Analysis > Investor Map",
+    "orderPath": [
+      4,
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-scorecard",
+    "label": "Portfolio Scorecard",
+    "mode": "USER",
+    "phase": 4,
+    "order": 2,
+    "route": "/app/strategy/portfolio-scorecard",
+    "view": "portfolio-scorecard",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Planning & Review > Portfolio Analysis > Portfolio Scorecard",
+    "orderPath": [
+      4,
+      3,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-5-portfolio-scenario-planning",
+    "label": "Portfolio Scenario Planning",
+    "mode": "USER",
+    "phase": 5,
+    "order": 5,
+    "route": "/app/strategy/portfolio-scenario-convergence",
+    "view": "portfolio-scenario-convergence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Portfolio Scenario Planning",
+    "orderPath": [
+      5
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-4-portfolio-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "budget-planning-scenarios",
+    "label": "Budget Planning & Scenarios",
+    "mode": "USER",
+    "phase": 5,
+    "order": 1,
+    "route": "/app/strategy/portfolio-budget-planning",
+    "view": "portfolio-budget-planning",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning > Budget Planning & Scenarios",
+    "orderPath": [
+      5,
+      1
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "portfolio-analysis"
+    ],
+    "parallelGroup": "portfolio-scenario-inputs",
+    "convergesInto": "scenario-convergence-recommendation"
+  },
+  {
+    "id": "portfolio-budget-portfolio-budget-planning",
+    "label": "Budget Planning Workspace",
+    "mode": "USER",
+    "phase": 5,
+    "order": 1,
+    "route": "/app/strategy/portfolio-budget-planning",
+    "view": "portfolio-budget-planning",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Budget Planning & Scenarios > Budget Planning Workspace",
+    "orderPath": [
+      5,
+      1,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-budget-portfolio-cash-flow",
+    "label": "Portfolio Cash Flow",
+    "mode": "USER",
+    "phase": 5,
+    "order": 2,
+    "route": "/app/strategy/portfolio-cash-flow",
+    "view": "portfolio-cash-flow",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Budget Planning & Scenarios > Portfolio Cash Flow",
+    "orderPath": [
+      5,
+      1,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "resource-planning-scenarios",
+    "label": "Resource Planning & Scenarios",
+    "mode": "USER",
+    "phase": 5,
+    "order": 2,
+    "route": "/app/strategy/portfolio-resource-planning",
+    "view": "portfolio-resource-planning",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning > Resource Planning & Scenarios",
+    "orderPath": [
+      5,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "portfolio-analysis"
+    ],
+    "parallelGroup": "portfolio-scenario-inputs",
+    "convergesInto": "scenario-convergence-recommendation"
+  },
+  {
+    "id": "scenario-convergence-recommendation",
+    "label": "Scenario Convergence & Recommendation",
+    "mode": "USER",
+    "phase": 5,
+    "order": 3,
+    "route": "/app/strategy/portfolio-scenario-convergence",
+    "view": "portfolio-scenario-convergence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning > Scenario Convergence & Recommendation",
+    "orderPath": [
+      5,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "budget-planning-scenarios",
+      "resource-planning-scenarios"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "periodic-portfolio-review",
+    "label": "Periodic Portfolio Review",
+    "mode": "USER",
+    "phase": 5,
+    "order": 4,
+    "route": "/app/strategy/portfolio-review-sessions",
+    "view": "portfolio-review-sessions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review",
+    "orderPath": [
+      5,
+      4
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "scenario-convergence-recommendation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-sessions",
+    "label": "Review Calendar / Sessions",
+    "mode": "USER",
+    "phase": 5,
+    "order": 1,
+    "route": "/app/strategy/portfolio-review-sessions",
+    "view": "portfolio-review-sessions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Review Calendar / Sessions",
+    "orderPath": [
+      5,
+      4,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 5,
+    "order": 2,
+    "route": "/app/strategy/portfolio-review-overview",
+    "view": "portfolio-review-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Overview",
+    "orderPath": [
+      5,
+      4,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-snapshot",
+    "label": "Portfolio Snapshot",
+    "mode": "USER",
+    "phase": 5,
+    "order": 3,
+    "route": "/app/strategy/portfolio-review-snapshot",
+    "view": "portfolio-review-snapshot",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Portfolio Snapshot",
+    "orderPath": [
+      5,
+      4,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-allocation",
+    "label": "Strategic Allocation",
+    "mode": "USER",
+    "phase": 5,
+    "order": 4,
+    "route": "/app/strategy/portfolio-review-allocation",
+    "view": "portfolio-review-allocation",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Strategic Allocation",
+    "orderPath": [
+      5,
+      4,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-project-matrix",
+    "label": "Project Matrix",
+    "mode": "USER",
+    "phase": 5,
+    "order": 5,
+    "route": "/app/strategy/portfolio-review-project-matrix",
+    "view": "portfolio-review-project-matrix",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Project Matrix",
+    "orderPath": [
+      5,
+      4,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-budget-resources",
+    "label": "Budget & Resources",
+    "mode": "USER",
+    "phase": 5,
+    "order": 6,
+    "route": "/app/strategy/portfolio-review-budget-resources",
+    "view": "portfolio-review-budget-resources",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Budget & Resources",
+    "orderPath": [
+      5,
+      4,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-gate-fid",
+    "label": "Gate / FID Status",
+    "mode": "USER",
+    "phase": 5,
+    "order": 7,
+    "route": "/app/strategy/portfolio-review-gate-fid",
+    "view": "portfolio-review-gate-fid",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Gate / FID Status",
+    "orderPath": [
+      5,
+      4,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-exceptions",
+    "label": "Exceptions",
+    "mode": "USER",
+    "phase": 5,
+    "order": 8,
+    "route": "/app/strategy/portfolio-review-exceptions",
+    "view": "portfolio-review-exceptions",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Exceptions",
+    "orderPath": [
+      5,
+      4,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-conclusions",
+    "label": "Conclusions",
+    "mode": "USER",
+    "phase": 5,
+    "order": 9,
+    "route": "/app/strategy/portfolio-review-conclusions",
+    "view": "portfolio-review-conclusions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Conclusions",
+    "orderPath": [
+      5,
+      4,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-actions",
+    "label": "Actions",
+    "mode": "USER",
+    "phase": 5,
+    "order": 10,
+    "route": "/app/strategy/portfolio-review-actions",
+    "view": "portfolio-review-actions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Actions",
+    "orderPath": [
+      5,
+      4,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-history",
+    "label": "History",
+    "mode": "USER",
+    "phase": 5,
+    "order": 11,
+    "route": "/app/strategy/portfolio-review-history",
+    "view": "portfolio-review-history",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > History",
+    "orderPath": [
+      5,
+      4,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "portfolio-review-portfolio-review-trends",
+    "label": "Trends",
+    "mode": "USER",
+    "phase": 5,
+    "order": 12,
+    "route": "/app/strategy/portfolio-review-trends",
+    "view": "portfolio-review-trends",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Portfolio Scenario Planning > Periodic Portfolio Review > Trends",
+    "orderPath": [
+      5,
+      4,
+      12
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PORTFOLIO"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-6-project-definition-investment-case",
+    "label": "Business Case & Investment Development",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/project-definition-fel",
+    "view": "project-definition-fel",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Business Case & Investment Development",
+    "orderPath": [
+      6
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "project-definition-fel",
+    "label": "Project Definition / FEL",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/project-definition-fel",
+    "view": "project-definition-fel",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Project Definition / FEL",
+    "orderPath": [
+      6,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "business-case-manager",
+    "label": "Business Case Manager",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/business-case-my",
+    "view": "business-case-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Business Case Manager",
+    "orderPath": [
+      6,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "business-case-business-case-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/business-case-overview",
+    "view": "business-case-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Overview",
+    "orderPath": [
+      6,
+      2,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-strategic",
+    "label": "Strategic Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/business-case-strategic",
+    "view": "business-case-strategic",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Strategic Case",
+    "orderPath": [
+      6,
+      2,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-economic",
+    "label": "Economic Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/business-case-economic",
+    "view": "business-case-economic",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Economic Case",
+    "orderPath": [
+      6,
+      2,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-commercial",
+    "label": "Commercial Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/business-case-commercial",
+    "view": "business-case-commercial",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Commercial Case",
+    "orderPath": [
+      6,
+      2,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-financial",
+    "label": "Financial Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/business-case-financial",
+    "view": "business-case-financial",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Financial Case",
+    "orderPath": [
+      6,
+      2,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-management",
+    "label": "Management Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/business-case-management",
+    "view": "business-case-management",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Management Case",
+    "orderPath": [
+      6,
+      2,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-sources-evidence",
+    "label": "Sources & Evidence",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/business-case-sources-evidence",
+    "view": "business-case-sources-evidence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Sources & Evidence",
+    "orderPath": [
+      6,
+      2,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-readiness",
+    "label": "Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/business-case-readiness",
+    "view": "business-case-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Readiness",
+    "orderPath": [
+      6,
+      2,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-decision-snapshots",
+    "label": "Decision Snapshots",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/business-case-decision-snapshots",
+    "view": "business-case-decision-snapshots",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > Decision Snapshots",
+    "orderPath": [
+      6,
+      2,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "business-case-business-case-history",
+    "label": "History",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/business-case-history",
+    "view": "business-case-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Business Case Manager > History",
+    "orderPath": [
+      6,
+      2,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-plan",
+    "label": "Strategic Benefits Plan & Traceability",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/strategic-benefits-my",
+    "view": "strategic-benefits-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability",
+    "orderPath": [
+      6,
+      3
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-my",
+    "label": "My Plans",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/strategic-benefits-my",
+    "view": "strategic-benefits-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > My Plans",
+    "orderPath": [
+      6,
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/strategic-benefits-overview",
+    "view": "strategic-benefits-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Overview",
+    "orderPath": [
+      6,
+      3,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-strategic-alignment",
+    "label": "Strategic Alignment",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/strategic-benefits-strategic-alignment",
+    "view": "strategic-benefits-strategic-alignment",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Strategic Alignment",
+    "orderPath": [
+      6,
+      3,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-outputs",
+    "label": "Outputs",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/strategic-benefits-outputs",
+    "view": "strategic-benefits-outputs",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Outputs",
+    "orderPath": [
+      6,
+      3,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-outcomes",
+    "label": "Outcomes",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/strategic-benefits-outcomes",
+    "view": "strategic-benefits-outcomes",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Outcomes",
+    "orderPath": [
+      6,
+      3,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-register",
+    "label": "Benefits Register",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/strategic-benefits-register",
+    "view": "strategic-benefits-register",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Benefits Register",
+    "orderPath": [
+      6,
+      3,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-measures",
+    "label": "Measures / KPIs",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/strategic-benefits-measures",
+    "view": "strategic-benefits-measures",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Measures / KPIs",
+    "orderPath": [
+      6,
+      3,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-owners",
+    "label": "Benefit Owners",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/strategic-benefits-owners",
+    "view": "strategic-benefits-owners",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Benefit Owners",
+    "orderPath": [
+      6,
+      3,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-baselines-targets",
+    "label": "Baselines & Targets",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/strategic-benefits-baselines-targets",
+    "view": "strategic-benefits-baselines-targets",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Baselines & Targets",
+    "orderPath": [
+      6,
+      3,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-expected-value",
+    "label": "Expected Value",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/strategic-benefits-expected-value",
+    "view": "strategic-benefits-expected-value",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Expected Value",
+    "orderPath": [
+      6,
+      3,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-dependencies",
+    "label": "Dependencies",
+    "mode": "USER",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/strategy/strategic-benefits-dependencies",
+    "view": "strategic-benefits-dependencies",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Dependencies",
+    "orderPath": [
+      6,
+      3,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-assumptions-constraints",
+    "label": "Assumptions / Constraints",
+    "mode": "USER",
+    "phase": 6,
+    "order": 12,
+    "route": "/app/strategy/strategic-benefits-assumptions-constraints",
+    "view": "strategic-benefits-assumptions-constraints",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Assumptions / Constraints",
+    "orderPath": [
+      6,
+      3,
+      12
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-risk-references",
+    "label": "Risk References",
+    "mode": "USER",
+    "phase": 6,
+    "order": 13,
+    "route": "/app/strategy/strategic-benefits-risk-references",
+    "view": "strategic-benefits-risk-references",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Risk References",
+    "orderPath": [
+      6,
+      3,
+      13
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-traceability",
+    "label": "Traceability",
+    "mode": "USER",
+    "phase": 6,
+    "order": 14,
+    "route": "/app/strategy/strategic-benefits-traceability",
+    "view": "strategic-benefits-traceability",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Traceability",
+    "orderPath": [
+      6,
+      3,
+      14
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-readiness",
+    "label": "Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 15,
+    "route": "/app/strategy/strategic-benefits-readiness",
+    "view": "strategic-benefits-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > Readiness",
+    "orderPath": [
+      6,
+      3,
+      15
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "strategic-benefits-strategic-benefits-history",
+    "label": "History",
+    "mode": "USER",
+    "phase": 6,
+    "order": 16,
+    "route": "/app/strategy/strategic-benefits-history",
+    "view": "strategic-benefits-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Strategic Benefits Plan & Traceability > History",
+    "orderPath": [
+      6,
+      3,
+      16
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-contracting-strategy",
+    "label": "Commercial & Contracting Strategy",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/commercial-strategy-my",
+    "view": "commercial-strategy-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy",
+    "orderPath": [
+      6,
+      4
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-my",
+    "label": "My Strategies",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/commercial-strategy-my",
+    "view": "commercial-strategy-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > My Strategies",
+    "orderPath": [
+      6,
+      4,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/commercial-strategy-overview",
+    "view": "commercial-strategy-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Overview",
+    "orderPath": [
+      6,
+      4,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-context",
+    "label": "Commercial Context",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/commercial-strategy-context",
+    "view": "commercial-strategy-context",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Commercial Context",
+    "orderPath": [
+      6,
+      4,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-procurement",
+    "label": "Procurement Approach",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/commercial-strategy-procurement",
+    "view": "commercial-strategy-procurement",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Procurement Approach",
+    "orderPath": [
+      6,
+      4,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-packages",
+    "label": "Packages",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/commercial-strategy-packages",
+    "view": "commercial-strategy-packages",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Packages",
+    "orderPath": [
+      6,
+      4,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-contracting-model",
+    "label": "Contracting Model",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/commercial-strategy-contracting-model",
+    "view": "commercial-strategy-contracting-model",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Contracting Model",
+    "orderPath": [
+      6,
+      4,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-market",
+    "label": "Market Assessment",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/commercial-strategy-market",
+    "view": "commercial-strategy-market",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Market Assessment",
+    "orderPath": [
+      6,
+      4,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-supply-chain",
+    "label": "Supply Chain",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/commercial-strategy-supply-chain",
+    "view": "commercial-strategy-supply-chain",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Supply Chain",
+    "orderPath": [
+      6,
+      4,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-risk-allocation",
+    "label": "Risk Allocation",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/commercial-strategy-risk-allocation",
+    "view": "commercial-strategy-risk-allocation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Risk Allocation",
+    "orderPath": [
+      6,
+      4,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-payment-incentives",
+    "label": "Payment & Incentives",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/commercial-strategy-payment-incentives",
+    "view": "commercial-strategy-payment-incentives",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Payment & Incentives",
+    "orderPath": [
+      6,
+      4,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-assumptions",
+    "label": "Assumptions / Constraints",
+    "mode": "USER",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/strategy/commercial-strategy-assumptions",
+    "view": "commercial-strategy-assumptions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Assumptions / Constraints",
+    "orderPath": [
+      6,
+      4,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-recommendation",
+    "label": "Recommendation",
+    "mode": "USER",
+    "phase": 6,
+    "order": 12,
+    "route": "/app/strategy/commercial-strategy-recommendation",
+    "view": "commercial-strategy-recommendation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Recommendation",
+    "orderPath": [
+      6,
+      4,
+      12
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-readiness",
+    "label": "Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 13,
+    "route": "/app/strategy/commercial-strategy-readiness",
+    "view": "commercial-strategy-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > Readiness",
+    "orderPath": [
+      6,
+      4,
+      13
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "commercial-strategy-commercial-strategy-history",
+    "label": "History",
+    "mode": "USER",
+    "phase": 6,
+    "order": 14,
+    "route": "/app/strategy/commercial-strategy-history",
+    "view": "commercial-strategy-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Commercial & Contracting Strategy > History",
+    "orderPath": [
+      6,
+      4,
+      14
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funding-readiness",
+    "label": "Funds & Funding Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/funds-overview",
+    "view": "funds-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness",
+    "orderPath": [
+      6,
+      5
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "funds-funds-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/funds-overview",
+    "view": "funds-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Overview",
+    "orderPath": [
+      6,
+      5,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-sources",
+    "label": "Funding Sources",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/funds-sources",
+    "view": "funds-sources",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Funding Sources",
+    "orderPath": [
+      6,
+      5,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-envelopes",
+    "label": "Funds",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/funds-envelopes",
+    "view": "funds-envelopes",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Funds",
+    "orderPath": [
+      6,
+      5,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-assignments",
+    "label": "Funding Assignments",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/funds-assignments",
+    "view": "funds-assignments",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Funding Assignments",
+    "orderPath": [
+      6,
+      5,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-coverage",
+    "label": "Funding Coverage",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/funds-coverage",
+    "view": "funds-coverage",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Funding Coverage",
+    "orderPath": [
+      6,
+      5,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-readiness",
+    "label": "Funding Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/funds-readiness",
+    "view": "funds-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > Funding Readiness",
+    "orderPath": [
+      6,
+      5,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "funds-funds-history",
+    "label": "History / Audit",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/funds-history",
+    "view": "funds-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Funds & Funding Readiness > History / Audit",
+    "orderPath": [
+      6,
+      5,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "economic-financial-model",
+    "label": "Economic & Financial Model",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/financial-model-my-models",
+    "view": "financial-model-my-models",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Economic & Financial Model",
+    "orderPath": [
+      6,
+      6
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "financial-model-financial-model-my-models",
+    "label": "My Models",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/financial-model-my-models",
+    "view": "financial-model-my-models",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > My Models",
+    "orderPath": [
+      6,
+      6,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-overview",
+    "label": "Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/financial-model-overview",
+    "view": "financial-model-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Overview",
+    "orderPath": [
+      6,
+      6,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-current-version",
+    "label": "Current Version",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/financial-model-current-version",
+    "view": "financial-model-current-version",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Current Version",
+    "orderPath": [
+      6,
+      6,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-assumptions",
+    "label": "Assumptions",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/financial-model-assumptions",
+    "view": "financial-model-assumptions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Assumptions",
+    "orderPath": [
+      6,
+      6,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-economic-case",
+    "label": "Economic Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/financial-model-economic-case",
+    "view": "financial-model-economic-case",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Economic Case",
+    "orderPath": [
+      6,
+      6,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-financial-case",
+    "label": "Financial Case",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/financial-model-financial-case",
+    "view": "financial-model-financial-case",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Financial Case",
+    "orderPath": [
+      6,
+      6,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-capex-opex",
+    "label": "CAPEX / OPEX",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/financial-model-capex-opex",
+    "view": "financial-model-capex-opex",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > CAPEX / OPEX",
+    "orderPath": [
+      6,
+      6,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-revenue-benefits",
+    "label": "Revenue / Benefits",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/financial-model-revenue-benefits",
+    "view": "financial-model-revenue-benefits",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Revenue / Benefits",
+    "orderPath": [
+      6,
+      6,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-capital-structure",
+    "label": "Capital Structure",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/financial-model-capital-structure",
+    "view": "financial-model-capital-structure",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Capital Structure",
+    "orderPath": [
+      6,
+      6,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-funding-linkage",
+    "label": "Funding Linkage",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/financial-model-funding-linkage",
+    "view": "financial-model-funding-linkage",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Funding Linkage",
+    "orderPath": [
+      6,
+      6,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-investors",
+    "label": "Investors",
+    "mode": "USER",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/strategy/financial-model-investors",
+    "view": "financial-model-investors",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Investors",
+    "orderPath": [
+      6,
+      6,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-debt",
+    "label": "Debt",
+    "mode": "USER",
+    "phase": 6,
+    "order": 12,
+    "route": "/app/strategy/financial-model-debt",
+    "view": "financial-model-debt",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Debt",
+    "orderPath": [
+      6,
+      6,
+      12
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-cash-flow",
+    "label": "Cash Flow",
+    "mode": "USER",
+    "phase": 6,
+    "order": 13,
+    "route": "/app/strategy/financial-model-cash-flow",
+    "view": "financial-model-cash-flow",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Cash Flow",
+    "orderPath": [
+      6,
+      6,
+      13
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-debt-service",
+    "label": "Debt Service",
+    "mode": "USER",
+    "phase": 6,
+    "order": 14,
+    "route": "/app/strategy/financial-model-debt-service",
+    "view": "financial-model-debt-service",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Debt Service",
+    "orderPath": [
+      6,
+      6,
+      14
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-indicators",
+    "label": "Indicators",
+    "mode": "USER",
+    "phase": 6,
+    "order": 15,
+    "route": "/app/strategy/financial-model-indicators",
+    "view": "financial-model-indicators",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Indicators",
+    "orderPath": [
+      6,
+      6,
+      15
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-covenants",
+    "label": "Covenants",
+    "mode": "USER",
+    "phase": 6,
+    "order": 16,
+    "route": "/app/strategy/financial-model-covenants",
+    "view": "financial-model-covenants",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Covenants",
+    "orderPath": [
+      6,
+      6,
+      16
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-scenarios",
+    "label": "Scenarios",
+    "mode": "USER",
+    "phase": 6,
+    "order": 17,
+    "route": "/app/strategy/financial-model-scenarios",
+    "view": "financial-model-scenarios",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Scenarios",
+    "orderPath": [
+      6,
+      6,
+      17
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-sensitivities",
+    "label": "Sensitivities",
+    "mode": "USER",
+    "phase": 6,
+    "order": 18,
+    "route": "/app/strategy/financial-model-sensitivities",
+    "view": "financial-model-sensitivities",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Sensitivities",
+    "orderPath": [
+      6,
+      6,
+      18
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-break-even",
+    "label": "Break-Even",
+    "mode": "USER",
+    "phase": 6,
+    "order": 19,
+    "route": "/app/strategy/financial-model-break-even",
+    "view": "financial-model-break-even",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Break-Even",
+    "orderPath": [
+      6,
+      6,
+      19
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-readiness",
+    "label": "Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 20,
+    "route": "/app/strategy/financial-model-readiness",
+    "view": "financial-model-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Readiness",
+    "orderPath": [
+      6,
+      6,
+      20
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-source-lineage",
+    "label": "Source Lineage",
+    "mode": "USER",
+    "phase": 6,
+    "order": 21,
+    "route": "/app/strategy/financial-model-source-lineage",
+    "view": "financial-model-source-lineage",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Source Lineage",
+    "orderPath": [
+      6,
+      6,
+      21
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-compare-versions",
+    "label": "Compare Versions",
+    "mode": "USER",
+    "phase": 6,
+    "order": 22,
+    "route": "/app/strategy/financial-model-compare-versions",
+    "view": "financial-model-compare-versions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > Compare Versions",
+    "orderPath": [
+      6,
+      6,
+      22
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "financial-model-financial-model-history-audit",
+    "label": "History / Audit",
+    "mode": "USER",
+    "phase": 6,
+    "order": 23,
+    "route": "/app/strategy/financial-model-history-audit",
+    "view": "financial-model-history-audit",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Economic & Financial Model > History / Audit",
+    "orderPath": [
+      6,
+      6,
+      23
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-readiness",
+    "label": "Risk Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/risk-readiness-my",
+    "view": "risk-readiness-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Risk Readiness",
+    "orderPath": [
+      6,
+      7
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "risk-risk-readiness-my",
+    "label": "My Risk Work",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/risk-readiness-my",
+    "view": "risk-readiness-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > My Risk Work",
+    "orderPath": [
+      6,
+      7,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-portfolio",
+    "label": "Project Set Risk Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/risk-readiness-portfolio",
+    "view": "risk-readiness-portfolio",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Project Set Risk Readiness",
+    "orderPath": [
+      6,
+      7,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-register",
+    "label": "Project Risk Register",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/risk-readiness-register",
+    "view": "risk-readiness-register",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Project Risk Register",
+    "orderPath": [
+      6,
+      7,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-assessments",
+    "label": "Risk Assessments",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/risk-readiness-assessments",
+    "view": "risk-readiness-assessments",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Risk Assessments",
+    "orderPath": [
+      6,
+      7,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-treatments",
+    "label": "Treatments",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/risk-readiness-treatments",
+    "view": "risk-readiness-treatments",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Treatments",
+    "orderPath": [
+      6,
+      7,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-residual",
+    "label": "Residual Risk & Acceptance",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/risk-readiness-residual",
+    "view": "risk-readiness-residual",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Residual Risk & Acceptance",
+    "orderPath": [
+      6,
+      7,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-dashboard",
+    "label": "Risk Readiness Dashboard",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/risk-readiness-dashboard",
+    "view": "risk-readiness-dashboard",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > Risk Readiness Dashboard",
+    "orderPath": [
+      6,
+      7,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "risk-risk-readiness-history",
+    "label": "History / Audit",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/risk-readiness-history",
+    "view": "risk-readiness-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Risk Readiness > History / Audit",
+    "orderPath": [
+      6,
+      7,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-readiness",
+    "label": "Permit Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/permit-readiness-my",
+    "view": "permit-readiness-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Permit Readiness",
+    "orderPath": [
+      6,
+      8
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "permit-permit-readiness-my",
+    "label": "My Permit Work",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/permit-readiness-my",
+    "view": "permit-readiness-my",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > My Permit Work",
+    "orderPath": [
+      6,
+      8,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-register",
+    "label": "Project Permit Register",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/permit-readiness-register",
+    "view": "permit-readiness-register",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Project Permit Register",
+    "orderPath": [
+      6,
+      8,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-requirements",
+    "label": "Permit Requirements",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/permit-readiness-requirements",
+    "view": "permit-readiness-requirements",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Permit Requirements",
+    "orderPath": [
+      6,
+      8,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-conditions",
+    "label": "Permit Conditions",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/permit-readiness-conditions",
+    "view": "permit-readiness-conditions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Permit Conditions",
+    "orderPath": [
+      6,
+      8,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-project",
+    "label": "Project Permit Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/permit-readiness-project",
+    "view": "permit-readiness-project",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Project Permit Readiness",
+    "orderPath": [
+      6,
+      8,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-portfolio",
+    "label": "Project Set Permit Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/permit-readiness-portfolio",
+    "view": "permit-readiness-portfolio",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Project Set Permit Readiness",
+    "orderPath": [
+      6,
+      8,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "permit-permit-readiness-history",
+    "label": "Permit History / Audit",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/permit-readiness-history",
+    "view": "permit-readiness-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > Permit Readiness > Permit History / Audit",
+    "orderPath": [
+      6,
+      8,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "basic-data-readiness",
+    "label": "Basic Data Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/basic-data-readiness",
+    "view": "basic-data-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Basic Data Readiness",
+    "orderPath": [
+      6,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "owner-capability-readiness",
+    "label": "Owner Capability Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/owner-capability-readiness",
+    "view": "owner-capability-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > Owner Capability Readiness",
+    "orderPath": [
+      6,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "qra-foundation",
+    "label": "QRA",
+    "mode": "USER",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/strategy/qra-foundation",
+    "view": "qra-foundation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Business Case & Investment Development > QRA",
+    "orderPath": [
+      6,
+      11
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": "investment-gate-preparation"
+  },
+  {
+    "id": "qra-cost-source-readiness",
+    "label": "Cost Source Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/strategy/qra-foundation",
+    "view": "qra-foundation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Cost Source Readiness",
+    "orderPath": [
+      6,
+      11,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-schedule-source-readiness",
+    "label": "Schedule Source Readiness",
+    "mode": "USER",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/strategy/qra-schedule-source-readiness",
+    "view": "qra-schedule-source-readiness",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Schedule Source Readiness",
+    "orderPath": [
+      6,
+      11,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-model-definition",
+    "label": "Model Definition",
+    "mode": "USER",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/strategy/qra-model-definition",
+    "view": "qra-model-definition",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Model Definition",
+    "orderPath": [
+      6,
+      11,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-foundation-history",
+    "label": "Foundation History",
+    "mode": "USER",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/strategy/qra-foundation-history",
+    "view": "qra-foundation-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Foundation History",
+    "orderPath": [
+      6,
+      11,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-approved-models",
+    "label": "Approved Models",
+    "mode": "USER",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/strategy/qra-approved-models",
+    "view": "qra-approved-models",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Approved Models",
+    "orderPath": [
+      6,
+      11,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-runs",
+    "label": "Runs",
+    "mode": "USER",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/strategy/qra-runs",
+    "view": "qra-runs",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Runs",
+    "orderPath": [
+      6,
+      11,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-run-overview",
+    "label": "Run Overview",
+    "mode": "USER",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/strategy/qra-run-overview",
+    "view": "qra-run-overview",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Run Overview",
+    "orderPath": [
+      6,
+      11,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-cost-results",
+    "label": "Cost Results",
+    "mode": "USER",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/strategy/qra-cost-results",
+    "view": "qra-cost-results",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Cost Results",
+    "orderPath": [
+      6,
+      11,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-schedule-results",
+    "label": "Schedule Results",
+    "mode": "USER",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/strategy/qra-schedule-results",
+    "view": "qra-schedule-results",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Schedule Results",
+    "orderPath": [
+      6,
+      11,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-percentiles",
+    "label": "Percentiles",
+    "mode": "USER",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/strategy/qra-percentiles",
+    "view": "qra-percentiles",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Percentiles",
+    "orderPath": [
+      6,
+      11,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-sensitivity",
+    "label": "Sensitivity / Drivers",
+    "mode": "USER",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/strategy/qra-sensitivity",
+    "view": "qra-sensitivity",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Sensitivity / Drivers",
+    "orderPath": [
+      6,
+      11,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-convergence",
+    "label": "Convergence",
+    "mode": "USER",
+    "phase": 6,
+    "order": 12,
+    "route": "/app/strategy/qra-convergence",
+    "view": "qra-convergence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Convergence",
+    "orderPath": [
+      6,
+      11,
+      12
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-run-evidence",
+    "label": "Evidence / Traceability",
+    "mode": "USER",
+    "phase": 6,
+    "order": 13,
+    "route": "/app/strategy/qra-run-evidence",
+    "view": "qra-run-evidence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Evidence / Traceability",
+    "orderPath": [
+      6,
+      11,
+      13
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-run-comparison",
+    "label": "Run Comparison",
+    "mode": "USER",
+    "phase": 6,
+    "order": 14,
+    "route": "/app/strategy/qra-run-comparison",
+    "view": "qra-run-comparison",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Run Comparison",
+    "orderPath": [
+      6,
+      11,
+      14
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "qra-foundation-qra-run-history",
+    "label": "Run History",
+    "mode": "USER",
+    "phase": 6,
+    "order": 15,
+    "route": "/app/strategy/qra-run-history",
+    "view": "qra-run-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Business Case & Investment Development > QRA > Run History",
+    "orderPath": [
+      6,
+      11,
+      15
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "phase-7-investment-governance",
+    "label": "Investment Governance",
+    "mode": "USER",
+    "phase": 7,
+    "order": 7,
+    "route": "/app/strategy/investment-gate-preparation",
+    "view": "investment-gate-preparation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 0,
+    "trail": "Investment Governance",
+    "orderPath": [
+      7
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "phase-6-project-definition-investment-case"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-gate-preparation",
+    "label": "Investment Gate Preparation",
+    "mode": "USER",
+    "phase": 7,
+    "order": 1,
+    "route": "/app/strategy/investment-gate-preparation",
+    "view": "investment-gate-preparation",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Governance > Investment Gate Preparation",
+    "orderPath": [
+      7,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "project-definition-fel",
+      "business-case-manager",
+      "strategic-benefits-plan",
+      "commercial-contracting-strategy",
+      "funds-funding-readiness",
+      "economic-financial-model",
+      "risk-readiness",
+      "permit-readiness",
+      "basic-data-readiness",
+      "owner-capability-readiness",
+      "qra-foundation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-fid",
+    "label": "Investment Decision / FID",
+    "mode": "USER",
+    "phase": 7,
+    "order": 2,
+    "route": "/app/strategy/investment-decision-queue",
+    "view": "investment-decision-queue",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Governance > Investment Decision / FID",
+    "orderPath": [
+      7,
+      2
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "investment-gate-preparation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-queue",
+    "label": "Decision Queue",
+    "mode": "USER",
+    "phase": 7,
+    "order": 1,
+    "route": "/app/strategy/investment-decision-queue",
+    "view": "investment-decision-queue",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Decision Queue",
+    "orderPath": [
+      7,
+      2,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-mine",
+    "label": "My Decisions",
+    "mode": "USER",
+    "phase": 7,
+    "order": 2,
+    "route": "/app/strategy/investment-decision-mine",
+    "view": "investment-decision-mine",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > My Decisions",
+    "orderPath": [
+      7,
+      2,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-package",
+    "label": "Investment Decision Package",
+    "mode": "USER",
+    "phase": 7,
+    "order": 3,
+    "route": "/app/strategy/investment-decision-package",
+    "view": "investment-decision-package",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Investment Decision Package",
+    "orderPath": [
+      7,
+      2,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-evidence",
+    "label": "Evidence Summary",
+    "mode": "USER",
+    "phase": 7,
+    "order": 4,
+    "route": "/app/strategy/investment-decision-evidence",
+    "view": "investment-decision-evidence",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Evidence Summary",
+    "orderPath": [
+      7,
+      2,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-checklist",
+    "label": "Decision Checklist",
+    "mode": "USER",
+    "phase": 7,
+    "order": 5,
+    "route": "/app/strategy/investment-decision-checklist",
+    "view": "investment-decision-checklist",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Decision Checklist",
+    "orderPath": [
+      7,
+      2,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-conditions",
+    "label": "Conditions",
+    "mode": "USER",
+    "phase": 7,
+    "order": 6,
+    "route": "/app/strategy/investment-decision-conditions",
+    "view": "investment-decision-conditions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Conditions",
+    "orderPath": [
+      7,
+      2,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-committee",
+    "label": "Committee / Votes",
+    "mode": "USER",
+    "phase": 7,
+    "order": 7,
+    "route": "/app/strategy/investment-decision-committee",
+    "view": "investment-decision-committee",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Committee / Votes",
+    "orderPath": [
+      7,
+      2,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-history",
+    "label": "Decision History",
+    "mode": "USER",
+    "phase": 7,
+    "order": 8,
+    "route": "/app/strategy/investment-decision-history",
+    "view": "investment-decision-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Decision History",
+    "orderPath": [
+      7,
+      2,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "investment-decision-investment-decision-output",
+    "label": "Authorization Output",
+    "mode": "USER",
+    "phase": 7,
+    "order": 9,
+    "route": "/app/strategy/investment-decision-output",
+    "view": "investment-decision-output",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Investment Decision / FID > Authorization Output",
+    "orderPath": [
+      7,
+      2,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-project-governance",
+    "label": "Post-FID Project Governance",
+    "mode": "USER",
+    "phase": 7,
+    "order": 3,
+    "route": "/app/strategy/post-fid-queue",
+    "view": "post-fid-queue",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Investment Governance > Post-FID Project Governance",
+    "orderPath": [
+      7,
+      3
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [
+      "investment-decision-fid"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-queue",
+    "label": "Post-FID Queue",
+    "mode": "USER",
+    "phase": 7,
+    "order": 1,
+    "route": "/app/strategy/post-fid-queue",
+    "view": "post-fid-queue",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Post-FID Queue",
+    "orderPath": [
+      7,
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-handoff",
+    "label": "FID Handoff",
+    "mode": "USER",
+    "phase": 7,
+    "order": 2,
+    "route": "/app/strategy/post-fid-handoff",
+    "view": "post-fid-handoff",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > FID Handoff",
+    "orderPath": [
+      7,
+      3,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-eligibility-matrix",
+    "label": "Project Eligibility Matrix",
+    "mode": "USER",
+    "phase": 7,
+    "order": 3,
+    "route": "/app/strategy/post-fid-eligibility-matrix",
+    "view": "post-fid-eligibility-matrix",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Project Eligibility Matrix",
+    "orderPath": [
+      7,
+      3,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-conditions",
+    "label": "Post-FID Conditions",
+    "mode": "USER",
+    "phase": 7,
+    "order": 4,
+    "route": "/app/strategy/post-fid-conditions",
+    "view": "post-fid-conditions",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Post-FID Conditions",
+    "orderPath": [
+      7,
+      3,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-initialization-handoff",
+    "label": "Initialization Handoff",
+    "mode": "USER",
+    "phase": 7,
+    "order": 5,
+    "route": "/app/strategy/post-fid-initialization-handoff",
+    "view": "post-fid-initialization-handoff",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Initialization Handoff",
+    "orderPath": [
+      7,
+      3,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-activation-handoff",
+    "label": "Activation Handoff",
+    "mode": "USER",
+    "phase": 7,
+    "order": 6,
+    "route": "/app/strategy/post-fid-activation-handoff",
+    "view": "post-fid-activation-handoff",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Activation Handoff",
+    "orderPath": [
+      7,
+      3,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "post-fid-post-fid-history",
+    "label": "Post-FID History / Audit",
+    "mode": "USER",
+    "phase": 7,
+    "order": 7,
+    "route": "/app/strategy/post-fid-history",
+    "view": "post-fid-history",
+    "classification": "USER_TRANSACTION",
+    "permission": "authenticated",
+    "depth": 2,
+    "trail": "Investment Governance > Post-FID Project Governance > Post-FID History / Audit",
+    "orderPath": [
+      7,
+      3,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-0-enterprise-foundation",
+    "label": "Enterprise Foundation",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 0,
+    "route": "/app/admin/strategy/enterprise-strategy-overview",
+    "view": "enterprise-strategy-overview",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Enterprise Foundation",
+    "orderPath": [
+      0
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-enterprise-strategy-overview",
+    "label": "Foundation Configuration / Preview",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 1,
+    "route": "/app/admin/strategy/enterprise-strategy-overview",
+    "view": "enterprise-strategy-overview",
+    "classification": "READ_ONLY_SHARED",
+    "permission": "authenticated",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Foundation Configuration / Preview",
+    "orderPath": [
+      0,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-enterprise-structure-configuration",
+    "label": "Enterprise Structure & Workspace Manager",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 2,
+    "route": "/app/admin/strategy/enterprise-structure-configuration",
+    "view": "enterprise-structure-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Enterprise Structure & Workspace Manager",
+    "orderPath": [
+      0,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-workspace-types",
+    "label": "Workspace Types",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 3,
+    "route": "/app/admin/strategy/workspace-types",
+    "view": "workspace-types",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Workspace Types",
+    "orderPath": [
+      0,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-enterprise-workspace-structure",
+    "label": "Composition Rules",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 4,
+    "route": "/app/admin/strategy/enterprise-workspace-structure",
+    "view": "enterprise-workspace-structure",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Composition Rules",
+    "orderPath": [
+      0,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-foundation-strategic-objectives",
+    "label": "Strategic Objectives",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 5,
+    "route": "/app/admin/strategy/foundation-strategic-objectives",
+    "view": "foundation-strategic-objectives",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Strategic Objectives",
+    "orderPath": [
+      0,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-workspace-defaults",
+    "label": "Workspace Defaults & Inheritance",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 6,
+    "route": "/app/admin/strategy/workspace-defaults",
+    "view": "workspace-defaults",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Workspace Defaults & Inheritance",
+    "orderPath": [
+      0,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-module-catalog-activation",
+    "label": "Module Catalog & Activation",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 7,
+    "route": "/app/admin/strategy/module-catalog-activation",
+    "view": "module-catalog-activation",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Module Catalog & Activation",
+    "orderPath": [
+      0,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-workspace-navigation-profiles",
+    "label": "Workspace Navigation Profiles",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 8,
+    "route": "/app/admin/strategy/workspace-navigation-profiles",
+    "view": "workspace-navigation-profiles",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Workspace Navigation Profiles",
+    "orderPath": [
+      0,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-risk-governance-configuration",
+    "label": "Risk Governance",
+    "mode": "ADMIN",
+    "phase": 0,
+    "order": 9,
+    "route": "/app/admin/strategy/risk-governance-configuration",
+    "view": "risk-governance-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Enterprise Foundation > Risk Governance",
+    "orderPath": [
+      0,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-1-capital-planning-demand",
+    "label": "Strategic Capital Planning & Demand Configuration",
+    "mode": "ADMIN",
+    "phase": 1,
+    "order": 1,
+    "route": "/app/admin/strategy/capital-planning-configuration",
+    "view": "capital-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Strategic Capital Planning & Demand Configuration",
+    "orderPath": [
+      1
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-0-enterprise-foundation"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-capital-planning-configuration",
+    "label": "Strategic Capital Planning & Demand Configuration",
+    "mode": "ADMIN",
+    "phase": 1,
+    "order": 1,
+    "route": "/app/admin/strategy/capital-planning-configuration",
+    "view": "capital-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand Configuration > Strategic Capital Planning & Demand Configuration",
+    "orderPath": [
+      1,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-strategic-capital-bucket-configuration",
+    "label": "Strategic Capital Buckets",
+    "mode": "ADMIN",
+    "phase": 1,
+    "order": 2,
+    "route": "/app/admin/strategy/strategic-capital-bucket-configuration",
+    "view": "strategic-capital-bucket-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Strategic Capital Planning & Demand Configuration > Strategic Capital Buckets",
+    "orderPath": [
+      1,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-2-investment-origination-shaping",
+    "label": "Investment Origination & Shaping Configuration",
+    "mode": "ADMIN",
+    "phase": 2,
+    "order": 2,
+    "route": "/app/admin/strategy/idea-demand-configuration",
+    "view": "idea-demand-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Investment Origination & Shaping Configuration",
+    "orderPath": [
+      2
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-1-capital-planning-demand"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-idea-demand-configuration",
+    "label": "Idea & Demand Configuration",
+    "mode": "ADMIN",
+    "phase": 2,
+    "order": 1,
+    "route": "/app/admin/strategy/idea-demand-configuration",
+    "view": "idea-demand-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping Configuration > Idea & Demand Configuration",
+    "orderPath": [
+      2,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-business-analysis-configuration",
+    "label": "Business Analysis Configuration",
+    "mode": "ADMIN",
+    "phase": 2,
+    "order": 2,
+    "route": "/app/admin/strategy/business-analysis-configuration",
+    "view": "business-analysis-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping Configuration > Business Analysis Configuration",
+    "orderPath": [
+      2,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-project-proposal-configuration",
+    "label": "Project Proposal Configuration",
+    "mode": "ADMIN",
+    "phase": 2,
+    "order": 3,
+    "route": "/app/admin/strategy/project-proposal-configuration",
+    "view": "project-proposal-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Origination & Shaping Configuration > Project Proposal Configuration",
+    "orderPath": [
+      2,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-3-strategic-gate",
+    "label": "Strategic Gate Decision Configuration",
+    "mode": "ADMIN",
+    "phase": 3,
+    "order": 3,
+    "route": "/app/admin/strategy/strategic-gate-configuration",
+    "view": "strategic-gate-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Strategic Gate Decision Configuration",
+    "orderPath": [
+      3
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-2-investment-origination-shaping"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-strategic-gate-configuration",
+    "label": "Strategic Gate Decision Configuration",
+    "mode": "ADMIN",
+    "phase": 3,
+    "order": 1,
+    "route": "/app/admin/strategy/strategic-gate-configuration",
+    "view": "strategic-gate-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Strategic Gate Decision Configuration > Strategic Gate Decision Configuration",
+    "orderPath": [
+      3,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-4-portfolio-planning",
+    "label": "Portfolio Planning & Review Configuration",
+    "mode": "ADMIN",
+    "phase": 4,
+    "order": 4,
+    "route": "/app/admin/strategy/portfolio-planning-configuration",
+    "view": "portfolio-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Portfolio Planning & Review Configuration",
+    "orderPath": [
+      4
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-3-strategic-gate"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-planning-configuration",
+    "label": "Portfolio Intake",
+    "mode": "ADMIN",
+    "phase": 4,
+    "order": 1,
+    "route": "/app/admin/strategy/portfolio-planning-configuration",
+    "view": "portfolio-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review Configuration > Portfolio Intake",
+    "orderPath": [
+      4,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-evaluation-configuration",
+    "label": "Evaluation & Prioritization",
+    "mode": "ADMIN",
+    "phase": 4,
+    "order": 2,
+    "route": "/app/admin/strategy/portfolio-evaluation-configuration",
+    "view": "portfolio-evaluation-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review Configuration > Evaluation & Prioritization",
+    "orderPath": [
+      4,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-analysis-configuration",
+    "label": "Portfolio Analysis",
+    "mode": "ADMIN",
+    "phase": 4,
+    "order": 3,
+    "route": "/app/admin/strategy/portfolio-analysis-configuration",
+    "view": "portfolio-analysis-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review Configuration > Portfolio Analysis",
+    "orderPath": [
+      4,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-review-configuration",
+    "label": "Periodic Portfolio Review",
+    "mode": "ADMIN",
+    "phase": 4,
+    "order": 4,
+    "route": "/app/admin/strategy/portfolio-review-configuration",
+    "view": "portfolio-review-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Planning & Review Configuration > Periodic Portfolio Review",
+    "orderPath": [
+      4,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-5-portfolio-scenario-planning",
+    "label": "Portfolio Scenario Planning Configuration",
+    "mode": "ADMIN",
+    "phase": 5,
+    "order": 5,
+    "route": "/app/admin/strategy/portfolio-budget-planning-configuration",
+    "view": "portfolio-budget-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Portfolio Scenario Planning Configuration",
+    "orderPath": [
+      5
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-4-portfolio-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-budget-planning-configuration",
+    "label": "Budget Planning",
+    "mode": "ADMIN",
+    "phase": 5,
+    "order": 1,
+    "route": "/app/admin/strategy/portfolio-budget-planning-configuration",
+    "view": "portfolio-budget-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning Configuration > Budget Planning",
+    "orderPath": [
+      5,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-resource-planning-configuration",
+    "label": "Resource Planning",
+    "mode": "ADMIN",
+    "phase": 5,
+    "order": 2,
+    "route": "/app/admin/strategy/portfolio-resource-planning-configuration",
+    "view": "portfolio-resource-planning-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning Configuration > Resource Planning",
+    "orderPath": [
+      5,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-portfolio-scenario-convergence-configuration",
+    "label": "Scenario Convergence",
+    "mode": "ADMIN",
+    "phase": 5,
+    "order": 3,
+    "route": "/app/admin/strategy/portfolio-scenario-convergence-configuration",
+    "view": "portfolio-scenario-convergence-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Portfolio Scenario Planning Configuration > Scenario Convergence",
+    "orderPath": [
+      5,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-6-project-definition-investment-case",
+    "label": "Project Definition & Investment Case",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/admin/strategy/project-definition-configuration",
+    "view": "project-definition-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Project Definition & Investment Case",
+    "orderPath": [
+      6
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-5-portfolio-scenario-planning"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-project-definition-configuration",
+    "label": "Project Definition / FEL",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 1,
+    "route": "/app/admin/strategy/project-definition-configuration",
+    "view": "project-definition-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Project Definition / FEL",
+    "orderPath": [
+      6,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-business-case-configuration",
+    "label": "Business Case Manager",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 2,
+    "route": "/app/admin/strategy/business-case-configuration",
+    "view": "business-case-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Business Case Manager",
+    "orderPath": [
+      6,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-benefits-configuration",
+    "label": "Benefits Configuration",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 3,
+    "route": "/app/admin/strategy/benefits-configuration",
+    "view": "benefits-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Benefits Configuration",
+    "orderPath": [
+      6,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-commercial-strategy-configuration",
+    "label": "Commercial Strategy Configuration",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 4,
+    "route": "/app/admin/strategy/commercial-strategy-configuration",
+    "view": "commercial-strategy-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Commercial Strategy Configuration",
+    "orderPath": [
+      6,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-funds-manager-configuration",
+    "label": "Funds & Funding Readiness",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 5,
+    "route": "/app/admin/strategy/funds-manager-configuration",
+    "view": "funds-manager-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Funds & Funding Readiness",
+    "orderPath": [
+      6,
+      5
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-financial-model-configuration",
+    "label": "Economic & Financial Model",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 6,
+    "route": "/app/admin/strategy/financial-model-configuration",
+    "view": "financial-model-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Economic & Financial Model",
+    "orderPath": [
+      6,
+      6
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-risk-readiness-configuration",
+    "label": "Risk Readiness",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 7,
+    "route": "/app/admin/strategy/risk-readiness-configuration",
+    "view": "risk-readiness-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Risk Readiness",
+    "orderPath": [
+      6,
+      7
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-permit-readiness-configuration",
+    "label": "Permit Readiness",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 8,
+    "route": "/app/admin/strategy/permit-readiness-configuration",
+    "view": "permit-readiness-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Permit Readiness",
+    "orderPath": [
+      6,
+      8
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-basic-data-configuration",
+    "label": "Basic Data Readiness Configuration",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 9,
+    "route": "/app/admin/strategy/basic-data-configuration",
+    "view": "basic-data-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Basic Data Readiness Configuration",
+    "orderPath": [
+      6,
+      9
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-owner-capability-configuration",
+    "label": "Owner Capability Readiness Configuration",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 10,
+    "route": "/app/admin/strategy/owner-capability-configuration",
+    "view": "owner-capability-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > Owner Capability Readiness Configuration",
+    "orderPath": [
+      6,
+      10
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-qra-methodology-source-readiness",
+    "label": "QRA Methodology & Source Readiness",
+    "mode": "ADMIN",
+    "phase": 6,
+    "order": 11,
+    "route": "/app/admin/strategy/qra-methodology-source-readiness",
+    "view": "qra-methodology-source-readiness",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Project Definition & Investment Case > QRA Methodology & Source Readiness",
+    "orderPath": [
+      6,
+      11
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-phase-7-investment-governance",
+    "label": "Investment Governance",
+    "mode": "ADMIN",
+    "phase": 7,
+    "order": 7,
+    "route": "/app/admin/strategy/investment-decision-evidence-policy",
+    "view": "investment-decision-evidence-policy",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 0,
+    "trail": "Investment Governance",
+    "orderPath": [
+      7
+    ],
+    "canonical": false,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [
+      "admin-phase-6-project-definition-investment-case"
+    ],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-investment-decision-evidence-policy",
+    "label": "Evidence & Decision Policy",
+    "mode": "ADMIN",
+    "phase": 7,
+    "order": 1,
+    "route": "/app/admin/strategy/investment-decision-evidence-policy",
+    "view": "investment-decision-evidence-policy",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Governance > Evidence & Decision Policy",
+    "orderPath": [
+      7,
+      1
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-investment-gate-preparation-configuration",
+    "label": "Investment Gate Preparation",
+    "mode": "ADMIN",
+    "phase": 7,
+    "order": 2,
+    "route": "/app/admin/strategy/investment-gate-preparation-configuration",
+    "view": "investment-gate-preparation-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Governance > Investment Gate Preparation",
+    "orderPath": [
+      7,
+      2
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-investment-decision-configuration",
+    "label": "Investment Decision / FID",
+    "mode": "ADMIN",
+    "phase": 7,
+    "order": 3,
+    "route": "/app/admin/strategy/investment-decision-configuration",
+    "view": "investment-decision-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Governance > Investment Decision / FID",
+    "orderPath": [
+      7,
+      3
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  },
+  {
+    "id": "admin-post-fid-governance-configuration",
+    "label": "Post-FID Project Governance",
+    "mode": "ADMIN",
+    "phase": 7,
+    "order": 4,
+    "route": "/app/admin/strategy/post-fid-governance-configuration",
+    "view": "post-fid-governance-configuration",
+    "classification": "ADMIN_CONFIGURATION",
+    "permission": "can_configure",
+    "depth": 1,
+    "trail": "Investment Governance > Post-FID Project Governance",
+    "orderPath": [
+      7,
+      4
+    ],
+    "canonical": true,
+    "workspaceTypes": [
+      "ENTERPRISE",
+      "BUSINESS_UNIT",
+      "PORTFOLIO",
+      "PROJECT"
+    ],
+    "governanceModels": [
+      "CAPITAL_OWNER",
+      "CONTRACTOR_DELIVERY",
+      "DIRECT_INTERNAL",
+      "LEGACY_UNCLASSIFIED"
+    ],
+    "predecessorIds": [],
+    "parallelGroup": null,
+    "convergesInto": null
+  }
+]

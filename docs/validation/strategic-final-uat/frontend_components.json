@@ -1,0 +1,2810 @@
+[
+  {
+    "component": "frontend/src/App.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 9,
+      "button": 48,
+      "h1": 3,
+      "select": 27,
+      "h2": 58,
+      "input": 60,
+      "table": 16,
+      "textarea": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/AdminConfigurationView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/workspace-types",
+      "/app/admin/strategy/workspace-defaults",
+      "/app/admin/strategy/module-catalog-activation",
+      "/app/admin/strategy/workspace-navigation-profiles"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/workspace-types",
+      "/app/admin/strategy/workspace-defaults",
+      "/app/admin/strategy/module-catalog-activation",
+      "/app/admin/strategy/workspace-navigation-profiles",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 9,
+      "h2": 1,
+      "h3": 6,
+      "input": 5,
+      "select": 3,
+      "textarea": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/BimApuReviewPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 1,
+      "button": 4,
+      "table": 1,
+      "input": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/BimBudgetPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 1,
+      "button": 7,
+      "input": 6,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/BimGeometryBatchPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 1,
+      "button": 3,
+      "select": 1,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/BimIfcModelViewer.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 26,
+      "input": 5,
+      "h3": 4,
+      "select": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/BimScopeValidationPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 5,
+      "button": 9,
+      "table": 2,
+      "input": 10,
+      "select": 4
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/CostCurrencyGate.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/GuidedProcessRail.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/NextActionPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/OpcGapReadinessPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 1,
+      "h3": 3,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/OrganizationSecurityView.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 9,
+      "h2": 1,
+      "h3": 13,
+      "input": 10,
+      "select": 10,
+      "textarea": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/ProductLogo.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/ProjectControlsHandbook.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 17,
+      "button": 7,
+      "select": 8,
+      "input": 16,
+      "textarea": 2,
+      "table": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/ProjectCreateDrawer.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 1,
+      "button": 2,
+      "input": 10,
+      "select": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/components/TenantCommandBar.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "select": 1,
+      "h1": 1,
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/basic-data/BasicDataAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/basic-data-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/basic-data-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/basic-data/BasicDataWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/basic-data-readiness"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/basic-data-readiness"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 2,
+      "button": 19,
+      "select": 4,
+      "h3": 8,
+      "table": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/business-analysis/BusinessAnalysisAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/business-analysis-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/business-analysis-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "input": 10,
+      "button": 11,
+      "textarea": 1,
+      "CompactModuleHeader": 1,
+      "h3": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/business-analysis/BusinessAnalysisWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/business-analysis-options"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/business-analysis-options",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 20,
+      "input": 3,
+      "h3": 3,
+      "select": 5,
+      "textarea": 20
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/business-case/BusinessCaseAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/business-case-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/business-case-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "input": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/business-case/BusinessCaseWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/business-case-my",
+      "/app/strategy/business-case-overview",
+      "/app/strategy/business-case-strategic",
+      "/app/strategy/business-case-economic",
+      "/app/strategy/business-case-commercial",
+      "/app/strategy/business-case-financial",
+      "/app/strategy/business-case-management",
+      "/app/strategy/business-case-sources-evidence",
+      "/app/strategy/business-case-readiness",
+      "/app/strategy/business-case-decision-snapshots",
+      "/app/strategy/business-case-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/business-case-my",
+      "/app/strategy/business-case-overview",
+      "/app/strategy/business-case-strategic",
+      "/app/strategy/business-case-economic",
+      "/app/strategy/business-case-commercial",
+      "/app/strategy/business-case-financial",
+      "/app/strategy/business-case-management",
+      "/app/strategy/business-case-sources-evidence",
+      "/app/strategy/business-case-readiness",
+      "/app/strategy/business-case-decision-snapshots",
+      "/app/strategy/business-case-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "table": 1,
+      "button": 10,
+      "CompactModuleHeader": 1,
+      "select": 1,
+      "h3": 3,
+      "input": 3,
+      "textarea": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/capital-allocation/StrategicCapitalAllocationWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/strategic-capital-allocation",
+      "/app/strategy/strategic-capital-allocation-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/strategic-capital-allocation",
+      "/app/strategy/strategic-capital-allocation-history",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "select": 9,
+      "button": 12,
+      "h3": 9,
+      "input": 7,
+      "textarea": 1,
+      "table": 3
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/capital-planning/CapitalPlanningAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/capital-planning-configuration",
+      "/app/admin/strategy/strategic-capital-bucket-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/capital-planning-configuration",
+      "/app/admin/strategy/strategic-capital-bucket-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 1,
+      "button": 9,
+      "h3": 2,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/capital-planning/CapitalPlanningWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/capital-planning-cycles",
+      "/app/strategy/capital-demand-pipeline",
+      "/app/strategy/capital-demand-my",
+      "/app/strategy/capital-demand-review",
+      "/app/strategy/capital-demand-endorsed",
+      "/app/strategy/capital-demand-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/capital-planning-cycles",
+      "/app/strategy/capital-demand-pipeline",
+      "/app/strategy/capital-demand-my",
+      "/app/strategy/capital-demand-review",
+      "/app/strategy/capital-demand-endorsed",
+      "/app/strategy/capital-demand-history",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 6,
+      "button": 29,
+      "table": 1,
+      "CompactModuleHeader": 1,
+      "input": 13,
+      "select": 26,
+      "textarea": 8
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/commercial-strategy/CommercialStrategyAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/commercial-strategy-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/commercial-strategy-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "textarea": 7,
+      "CompactModuleHeader": 1,
+      "button": 7,
+      "h3": 1,
+      "input": 9
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/commercial-strategy/CommercialStrategyWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/commercial-strategy-my",
+      "/app/strategy/commercial-strategy-overview",
+      "/app/strategy/commercial-strategy-context",
+      "/app/strategy/commercial-strategy-procurement",
+      "/app/strategy/commercial-strategy-packages",
+      "/app/strategy/commercial-strategy-contracting-model",
+      "/app/strategy/commercial-strategy-market",
+      "/app/strategy/commercial-strategy-supply-chain",
+      "/app/strategy/commercial-strategy-risk-allocation",
+      "/app/strategy/commercial-strategy-payment-incentives",
+      "/app/strategy/commercial-strategy-assumptions",
+      "/app/strategy/commercial-strategy-recommendation",
+      "/app/strategy/commercial-strategy-readiness",
+      "/app/strategy/commercial-strategy-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/commercial-strategy-my",
+      "/app/strategy/commercial-strategy-overview",
+      "/app/strategy/commercial-strategy-context",
+      "/app/strategy/commercial-strategy-procurement",
+      "/app/strategy/commercial-strategy-packages",
+      "/app/strategy/commercial-strategy-contracting-model",
+      "/app/strategy/commercial-strategy-market",
+      "/app/strategy/commercial-strategy-supply-chain",
+      "/app/strategy/commercial-strategy-risk-allocation",
+      "/app/strategy/commercial-strategy-payment-incentives",
+      "/app/strategy/commercial-strategy-assumptions",
+      "/app/strategy/commercial-strategy-recommendation",
+      "/app/strategy/commercial-strategy-readiness",
+      "/app/strategy/commercial-strategy-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 19,
+      "input": 18,
+      "select": 4,
+      "h3": 3,
+      "textarea": 14
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/economic-financial-model/EconomicFinancialModelAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/financial-model-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/financial-model-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "input": 2,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/economic-financial-model/EconomicFinancialModelWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/financial-model-my-models",
+      "/app/strategy/financial-model-overview",
+      "/app/strategy/financial-model-current-version",
+      "/app/strategy/financial-model-assumptions",
+      "/app/strategy/financial-model-economic-case",
+      "/app/strategy/financial-model-financial-case",
+      "/app/strategy/financial-model-capex-opex",
+      "/app/strategy/financial-model-revenue-benefits",
+      "/app/strategy/financial-model-capital-structure",
+      "/app/strategy/financial-model-funding-linkage",
+      "/app/strategy/financial-model-investors",
+      "/app/strategy/financial-model-debt",
+      "/app/strategy/financial-model-cash-flow",
+      "/app/strategy/financial-model-debt-service",
+      "/app/strategy/financial-model-indicators",
+      "/app/strategy/financial-model-covenants",
+      "/app/strategy/financial-model-scenarios",
+      "/app/strategy/financial-model-sensitivities",
+      "/app/strategy/financial-model-break-even",
+      "/app/strategy/financial-model-readiness",
+      "/app/strategy/financial-model-source-lineage",
+      "/app/strategy/financial-model-compare-versions",
+      "/app/strategy/financial-model-history-audit"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/financial-model-my-models",
+      "/app/strategy/financial-model-overview",
+      "/app/strategy/financial-model-current-version",
+      "/app/strategy/financial-model-assumptions",
+      "/app/strategy/financial-model-economic-case",
+      "/app/strategy/financial-model-financial-case",
+      "/app/strategy/financial-model-capex-opex",
+      "/app/strategy/financial-model-revenue-benefits",
+      "/app/strategy/financial-model-capital-structure",
+      "/app/strategy/financial-model-funding-linkage",
+      "/app/strategy/financial-model-investors",
+      "/app/strategy/financial-model-debt",
+      "/app/strategy/financial-model-cash-flow",
+      "/app/strategy/financial-model-debt-service",
+      "/app/strategy/financial-model-indicators",
+      "/app/strategy/financial-model-covenants",
+      "/app/strategy/financial-model-scenarios",
+      "/app/strategy/financial-model-sensitivities",
+      "/app/strategy/financial-model-break-even",
+      "/app/strategy/financial-model-readiness",
+      "/app/strategy/financial-model-source-lineage",
+      "/app/strategy/financial-model-compare-versions",
+      "/app/strategy/financial-model-history-audit"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 5,
+      "select": 1,
+      "h3": 2,
+      "input": 2,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-strategy/EnterpriseStrategyLanding.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/enterprise-strategy-overview",
+      "/app/strategy/enterprise-strategy-overview"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-strategy-overview",
+      "/app/strategy/enterprise-strategy-overview",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 3,
+      "button": 9,
+      "h2": 2,
+      "h1": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-strategy/StrategicViewOutlet.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/CompactModuleHeader.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/admin/strategy/risk-governance-configuration",
+      "/app/admin/strategy/capital-planning-configuration",
+      "/app/admin/strategy/strategic-capital-bucket-configuration",
+      "/app/admin/strategy/idea-demand-configuration",
+      "/app/admin/strategy/business-analysis-configuration",
+      "/app/admin/strategy/project-proposal-configuration",
+      "/app/admin/strategy/strategic-gate-configuration",
+      "/app/admin/strategy/portfolio-planning-configuration",
+      "/app/admin/strategy/portfolio-evaluation-configuration",
+      "/app/admin/strategy/portfolio-analysis-configuration",
+      "/app/admin/strategy/portfolio-review-configuration",
+      "/app/admin/strategy/portfolio-budget-planning-configuration",
+      "/app/admin/strategy/portfolio-resource-planning-configuration",
+      "/app/admin/strategy/portfolio-scenario-convergence-configuration",
+      "/app/admin/strategy/project-definition-configuration",
+      "/app/admin/strategy/business-case-configuration",
+      "/app/admin/strategy/benefits-configuration",
+      "/app/admin/strategy/commercial-strategy-configuration",
+      "/app/admin/strategy/funds-manager-configuration",
+      "/app/admin/strategy/financial-model-configuration",
+      "/app/admin/strategy/risk-readiness-configuration",
+      "/app/admin/strategy/permit-readiness-configuration",
+      "/app/admin/strategy/basic-data-configuration",
+      "/app/admin/strategy/owner-capability-configuration",
+      "/app/admin/strategy/qra-methodology-source-readiness",
+      "/app/admin/strategy/investment-decision-evidence-policy",
+      "/app/admin/strategy/investment-gate-preparation-configuration",
+      "/app/admin/strategy/investment-decision-configuration",
+      "/app/admin/strategy/post-fid-governance-configuration",
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/workspace-context",
+      "/app/strategy/capital-planning-cycles",
+      "/app/strategy/capital-demand-pipeline",
+      "/app/strategy/capital-demand-my",
+      "/app/strategy/capital-demand-review",
+      "/app/strategy/capital-demand-endorsed",
+      "/app/strategy/capital-demand-history",
+      "/app/strategy/strategic-capital-allocation",
+      "/app/strategy/strategic-capital-allocation-history",
+      "/app/strategy/idea-lifecycle",
+      "/app/strategy/business-analysis-options",
+      "/app/strategy/project-proposal",
+      "/app/strategy/strategic-gate-decision",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/strategic-project-planning-entry",
+      "/app/strategy/portfolio-projects",
+      "/app/strategy/portfolio-evaluation",
+      "/app/strategy/strategic-prioritization-matrix",
+      "/app/strategy/portfolio-analysis",
+      "/app/strategy/portfolio-investor-map",
+      "/app/strategy/portfolio-scorecard",
+      "/app/strategy/portfolio-budget-planning",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/portfolio-resource-planning",
+      "/app/strategy/portfolio-scenario-convergence",
+      "/app/strategy/portfolio-review-sessions",
+      "/app/strategy/portfolio-review-overview",
+      "/app/strategy/portfolio-review-snapshot",
+      "/app/strategy/portfolio-review-allocation",
+      "/app/strategy/portfolio-review-project-matrix",
+      "/app/strategy/portfolio-review-budget-resources",
+      "/app/strategy/portfolio-review-gate-fid",
+      "/app/strategy/portfolio-review-exceptions",
+      "/app/strategy/portfolio-review-conclusions",
+      "/app/strategy/portfolio-review-actions",
+      "/app/strategy/portfolio-review-history",
+      "/app/strategy/portfolio-review-trends",
+      "/app/strategy/project-definition-fel",
+      "/app/strategy/business-case-my",
+      "/app/strategy/business-case-overview",
+      "/app/strategy/business-case-strategic",
+      "/app/strategy/business-case-economic",
+      "/app/strategy/business-case-commercial",
+      "/app/strategy/business-case-financial",
+      "/app/strategy/business-case-management",
+      "/app/strategy/business-case-sources-evidence",
+      "/app/strategy/business-case-readiness",
+      "/app/strategy/business-case-decision-snapshots",
+      "/app/strategy/business-case-history",
+      "/app/strategy/strategic-benefits-my",
+      "/app/strategy/strategic-benefits-overview",
+      "/app/strategy/strategic-benefits-strategic-alignment",
+      "/app/strategy/strategic-benefits-outputs",
+      "/app/strategy/strategic-benefits-outcomes",
+      "/app/strategy/strategic-benefits-register",
+      "/app/strategy/strategic-benefits-measures",
+      "/app/strategy/strategic-benefits-owners",
+      "/app/strategy/strategic-benefits-baselines-targets",
+      "/app/strategy/strategic-benefits-expected-value",
+      "/app/strategy/strategic-benefits-dependencies",
+      "/app/strategy/strategic-benefits-assumptions-constraints",
+      "/app/strategy/strategic-benefits-risk-references",
+      "/app/strategy/strategic-benefits-traceability",
+      "/app/strategy/strategic-benefits-readiness",
+      "/app/strategy/strategic-benefits-history",
+      "/app/strategy/commercial-strategy-my",
+      "/app/strategy/commercial-strategy-overview",
+      "/app/strategy/commercial-strategy-context",
+      "/app/strategy/commercial-strategy-procurement",
+      "/app/strategy/commercial-strategy-packages",
+      "/app/strategy/commercial-strategy-contracting-model",
+      "/app/strategy/commercial-strategy-market",
+      "/app/strategy/commercial-strategy-supply-chain",
+      "/app/strategy/commercial-strategy-risk-allocation",
+      "/app/strategy/commercial-strategy-payment-incentives",
+      "/app/strategy/commercial-strategy-assumptions",
+      "/app/strategy/commercial-strategy-recommendation",
+      "/app/strategy/commercial-strategy-readiness",
+      "/app/strategy/commercial-strategy-history",
+      "/app/strategy/funds-overview",
+      "/app/strategy/funds-sources",
+      "/app/strategy/funds-envelopes",
+      "/app/strategy/funds-assignments",
+      "/app/strategy/funds-coverage",
+      "/app/strategy/funds-readiness",
+      "/app/strategy/funds-history",
+      "/app/strategy/financial-model-my-models",
+      "/app/strategy/financial-model-overview",
+      "/app/strategy/financial-model-current-version",
+      "/app/strategy/financial-model-assumptions",
+      "/app/strategy/financial-model-economic-case",
+      "/app/strategy/financial-model-financial-case",
+      "/app/strategy/financial-model-capex-opex",
+      "/app/strategy/financial-model-revenue-benefits",
+      "/app/strategy/financial-model-capital-structure",
+      "/app/strategy/financial-model-funding-linkage",
+      "/app/strategy/financial-model-investors",
+      "/app/strategy/financial-model-debt",
+      "/app/strategy/financial-model-cash-flow",
+      "/app/strategy/financial-model-debt-service",
+      "/app/strategy/financial-model-indicators",
+      "/app/strategy/financial-model-covenants",
+      "/app/strategy/financial-model-scenarios",
+      "/app/strategy/financial-model-sensitivities",
+      "/app/strategy/financial-model-break-even",
+      "/app/strategy/financial-model-readiness",
+      "/app/strategy/financial-model-source-lineage",
+      "/app/strategy/financial-model-compare-versions",
+      "/app/strategy/financial-model-history-audit",
+      "/app/strategy/risk-readiness-my",
+      "/app/strategy/risk-readiness-portfolio",
+      "/app/strategy/risk-readiness-register",
+      "/app/strategy/risk-readiness-assessments",
+      "/app/strategy/risk-readiness-treatments",
+      "/app/strategy/risk-readiness-residual",
+      "/app/strategy/risk-readiness-dashboard",
+      "/app/strategy/risk-readiness-history",
+      "/app/strategy/permit-readiness-my",
+      "/app/strategy/permit-readiness-register",
+      "/app/strategy/permit-readiness-requirements",
+      "/app/strategy/permit-readiness-conditions",
+      "/app/strategy/permit-readiness-project",
+      "/app/strategy/permit-readiness-portfolio",
+      "/app/strategy/permit-readiness-history",
+      "/app/strategy/basic-data-readiness",
+      "/app/strategy/owner-capability-readiness",
+      "/app/strategy/qra-foundation",
+      "/app/strategy/qra-schedule-source-readiness",
+      "/app/strategy/qra-model-definition",
+      "/app/strategy/qra-foundation-history",
+      "/app/strategy/qra-approved-models",
+      "/app/strategy/qra-runs",
+      "/app/strategy/qra-run-overview",
+      "/app/strategy/qra-cost-results",
+      "/app/strategy/qra-schedule-results",
+      "/app/strategy/qra-percentiles",
+      "/app/strategy/qra-sensitivity",
+      "/app/strategy/qra-convergence",
+      "/app/strategy/qra-run-evidence",
+      "/app/strategy/qra-run-comparison",
+      "/app/strategy/qra-run-history",
+      "/app/strategy/investment-gate-preparation",
+      "/app/strategy/investment-decision-queue",
+      "/app/strategy/investment-decision-mine",
+      "/app/strategy/investment-decision-package",
+      "/app/strategy/investment-decision-evidence",
+      "/app/strategy/investment-decision-checklist",
+      "/app/strategy/investment-decision-conditions",
+      "/app/strategy/investment-decision-committee",
+      "/app/strategy/investment-decision-history",
+      "/app/strategy/investment-decision-output",
+      "/app/strategy/post-fid-queue",
+      "/app/strategy/post-fid-handoff",
+      "/app/strategy/post-fid-eligibility-matrix",
+      "/app/strategy/post-fid-conditions",
+      "/app/strategy/post-fid-initialization-handoff",
+      "/app/strategy/post-fid-activation-handoff",
+      "/app/strategy/post-fid-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h2": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/EnterpriseTable.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "table": 1,
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/EnterpriseTree.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/NodeDetailPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/PhysicalWorkspaceConfigurationPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 6,
+      "h3": 7,
+      "input": 4,
+      "select": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/PhysicalWorkspaceCreationWorkspace.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 6,
+      "button": 15,
+      "h2": 1,
+      "input": 11,
+      "select": 5,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/PhysicalWorkspaceLifecycle.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 8,
+      "h2": 1,
+      "h3": 3,
+      "select": 3
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/ProjectCreationWorkspace.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 11,
+      "button": 11,
+      "h2": 2,
+      "input": 16,
+      "select": 3,
+      "textarea": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/ProjectWorkspaceConfigurationPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 8,
+      "button": 11,
+      "input": 8,
+      "textarea": 1,
+      "select": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/ProjectWorkspaceLifecycle.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 8,
+      "h2": 1,
+      "h3": 3,
+      "select": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/StructureFilters.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "input": 2,
+      "select": 4
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/StructureNodeForm.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "input": 4,
+      "select": 3,
+      "textarea": 1,
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/components/WorkspaceRevisionManager.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 14,
+      "h3": 4,
+      "input": 2,
+      "select": 5,
+      "textarea": 1,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/pages/AdminEnterpriseStructurePage.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/enterprise-structure-configuration",
+      "/app/admin/strategy/enterprise-workspace-structure",
+      "/app/admin/strategy/foundation-strategic-objectives",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 26,
+      "h3": 7,
+      "select": 4,
+      "input": 11,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/enterprise-structure/pages/EnterpriseExplorerPage.tsx",
+    "directRoutes": [
+      "/app/strategy/enterprise-explorer"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 20,
+      "h3": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/funds-manager/FundsManagerAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/funds-manager-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/funds-manager-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 5,
+      "h3": 1,
+      "input": 8,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/funds-manager/FundsManagerWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/funds-overview",
+      "/app/strategy/funds-sources",
+      "/app/strategy/funds-envelopes",
+      "/app/strategy/funds-assignments",
+      "/app/strategy/funds-coverage",
+      "/app/strategy/funds-readiness",
+      "/app/strategy/funds-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/funds-overview",
+      "/app/strategy/funds-sources",
+      "/app/strategy/funds-envelopes",
+      "/app/strategy/funds-assignments",
+      "/app/strategy/funds-coverage",
+      "/app/strategy/funds-readiness",
+      "/app/strategy/funds-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 18,
+      "select": 4,
+      "h3": 7,
+      "input": 6,
+      "table": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/idea-demand/IdeaDemandAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/idea-demand-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/idea-demand-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "h3": 2,
+      "button": 6,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/idea-demand/IdeaLifecycleWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/idea-lifecycle"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/idea-lifecycle",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 17,
+      "input": 6,
+      "h3": 2,
+      "select": 5,
+      "textarea": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-decision/InvestmentDecisionAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/investment-decision-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/investment-decision-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-decision/InvestmentDecisionWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/investment-decision-queue",
+      "/app/strategy/investment-decision-mine",
+      "/app/strategy/investment-decision-package",
+      "/app/strategy/investment-decision-evidence",
+      "/app/strategy/investment-decision-checklist",
+      "/app/strategy/investment-decision-conditions",
+      "/app/strategy/investment-decision-committee",
+      "/app/strategy/investment-decision-history",
+      "/app/strategy/investment-decision-output"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/investment-decision-queue",
+      "/app/strategy/investment-decision-mine",
+      "/app/strategy/investment-decision-package",
+      "/app/strategy/investment-decision-evidence",
+      "/app/strategy/investment-decision-checklist",
+      "/app/strategy/investment-decision-conditions",
+      "/app/strategy/investment-decision-committee",
+      "/app/strategy/investment-decision-history",
+      "/app/strategy/investment-decision-output"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 8,
+      "select": 3,
+      "h3": 6,
+      "input": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-evidence-policy/InvestmentEvidencePolicyAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/investment-decision-evidence-policy"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/investment-decision-evidence-policy",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "table": 4,
+      "h3": 18,
+      "textarea": 1,
+      "CompactModuleHeader": 1,
+      "select": 5,
+      "input": 1,
+      "button": 6
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-evidence-policy/QraEvidenceSummary.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/investment-decision-evidence-policy",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/business-case-my",
+      "/app/strategy/business-case-overview",
+      "/app/strategy/business-case-strategic",
+      "/app/strategy/business-case-economic",
+      "/app/strategy/business-case-commercial",
+      "/app/strategy/business-case-financial",
+      "/app/strategy/business-case-management",
+      "/app/strategy/business-case-sources-evidence",
+      "/app/strategy/business-case-readiness",
+      "/app/strategy/business-case-decision-snapshots",
+      "/app/strategy/business-case-history",
+      "/app/strategy/investment-gate-preparation"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-evidence-policy/QraPolicyEditor.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/investment-decision-evidence-policy",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "select": 3,
+      "h3": 3,
+      "button": 2,
+      "input": 11
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-gate-preparation/InvestmentGatePreparationAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/investment-gate-preparation-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/investment-gate-preparation-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/investment-gate-preparation/InvestmentGatePreparationWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/investment-gate-preparation"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/investment-gate-preparation"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "table": 1,
+      "CompactModuleHeader": 1,
+      "button": 12,
+      "select": 4,
+      "h3": 7,
+      "input": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/owner-capability/OwnerCapabilityAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/owner-capability-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/owner-capability-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/owner-capability/OwnerCapabilityWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/owner-capability-readiness"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/owner-capability-readiness"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 18,
+      "select": 3,
+      "h3": 7,
+      "table": 1,
+      "input": 3,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/permit-readiness/PermitReadinessAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/permit-readiness-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/permit-readiness-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "textarea": 1,
+      "select": 2,
+      "table": 1,
+      "input": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/permit-readiness/PermitReadinessWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/permit-readiness-my",
+      "/app/strategy/permit-readiness-register",
+      "/app/strategy/permit-readiness-requirements",
+      "/app/strategy/permit-readiness-conditions",
+      "/app/strategy/permit-readiness-project",
+      "/app/strategy/permit-readiness-portfolio",
+      "/app/strategy/permit-readiness-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/permit-readiness-my",
+      "/app/strategy/permit-readiness-register",
+      "/app/strategy/permit-readiness-requirements",
+      "/app/strategy/permit-readiness-conditions",
+      "/app/strategy/permit-readiness-project",
+      "/app/strategy/permit-readiness-portfolio",
+      "/app/strategy/permit-readiness-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 7,
+      "select": 4,
+      "h3": 6,
+      "table": 5,
+      "input": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-analysis/PortfolioAnalysisAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-analysis-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-analysis-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "select": 5,
+      "input": 3,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-analysis/PortfolioAnalysisWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-analysis",
+      "/app/strategy/portfolio-investor-map",
+      "/app/strategy/portfolio-scorecard"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-analysis",
+      "/app/strategy/portfolio-investor-map",
+      "/app/strategy/portfolio-scorecard",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 4,
+      "button": 6,
+      "table": 1,
+      "CompactModuleHeader": 1,
+      "select": 5
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-budget/PortfolioBudgetAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-budget-planning-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-budget-planning-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "input": 9,
+      "select": 3,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-budget/PortfolioBudgetWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-budget-planning"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-budget-planning",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "select": 15,
+      "input": 15,
+      "button": 17,
+      "h3": 7,
+      "table": 5,
+      "CompactModuleHeader": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-convergence/PortfolioConvergenceAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-scenario-convergence-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-scenario-convergence-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 5,
+      "h3": 1,
+      "input": 6,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-convergence/PortfolioConvergenceWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-scenario-convergence"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/portfolio-scenario-convergence"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 9,
+      "select": 5,
+      "h3": 5,
+      "input": 3,
+      "textarea": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-evaluation/PortfolioEvaluationAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-evaluation-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-evaluation-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-evaluation/PortfolioEvaluationWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-evaluation",
+      "/app/strategy/strategic-prioritization-matrix"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-evaluation",
+      "/app/strategy/strategic-prioritization-matrix",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 2,
+      "input": 3,
+      "textarea": 1,
+      "button": 7,
+      "CompactModuleHeader": 1,
+      "select": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-planning/PortfolioPlanningAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-planning-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-planning-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 5,
+      "h3": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-planning/PortfolioProjectsWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-projects"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-projects",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "select": 1,
+      "button": 1,
+      "h3": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-planning/ProjectStrategicContext.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h3": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-planning/StrategicPlanningEntryWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/strategic-project-planning-entry"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/strategic-project-planning-entry",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "select": 4,
+      "button": 3,
+      "h3": 6,
+      "input": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-resource/PortfolioResourceAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-resource-planning-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-resource-planning-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "select": 4,
+      "input": 6,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-resource/PortfolioResourceWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-resource-planning"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/portfolio-resource-planning"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "select": 4,
+      "input": 14,
+      "button": 14,
+      "CompactModuleHeader": 1,
+      "h3": 5,
+      "table": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-review/PortfolioReviewAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/portfolio-review-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/portfolio-review-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 2,
+      "button": 9,
+      "h3": 3,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/portfolio-review/PortfolioReviewWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/portfolio-review-sessions",
+      "/app/strategy/portfolio-review-overview",
+      "/app/strategy/portfolio-review-snapshot",
+      "/app/strategy/portfolio-review-allocation",
+      "/app/strategy/portfolio-review-project-matrix",
+      "/app/strategy/portfolio-review-budget-resources",
+      "/app/strategy/portfolio-review-gate-fid",
+      "/app/strategy/portfolio-review-exceptions",
+      "/app/strategy/portfolio-review-conclusions",
+      "/app/strategy/portfolio-review-actions",
+      "/app/strategy/portfolio-review-history",
+      "/app/strategy/portfolio-review-trends"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/portfolio-review-sessions",
+      "/app/strategy/portfolio-review-overview",
+      "/app/strategy/portfolio-review-snapshot",
+      "/app/strategy/portfolio-review-allocation",
+      "/app/strategy/portfolio-review-project-matrix",
+      "/app/strategy/portfolio-review-budget-resources",
+      "/app/strategy/portfolio-review-gate-fid",
+      "/app/strategy/portfolio-review-exceptions",
+      "/app/strategy/portfolio-review-conclusions",
+      "/app/strategy/portfolio-review-actions",
+      "/app/strategy/portfolio-review-history",
+      "/app/strategy/portfolio-review-trends"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 26,
+      "select": 11,
+      "button": 21,
+      "h3": 15,
+      "h2": 1,
+      "table": 6,
+      "textarea": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/post-fid-governance/PostFIDGovernanceAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/post-fid-governance-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/post-fid-governance-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/post-fid-governance/PostFIDGovernanceWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/post-fid-queue",
+      "/app/strategy/post-fid-handoff",
+      "/app/strategy/post-fid-eligibility-matrix",
+      "/app/strategy/post-fid-conditions",
+      "/app/strategy/post-fid-initialization-handoff",
+      "/app/strategy/post-fid-activation-handoff",
+      "/app/strategy/post-fid-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/post-fid-queue",
+      "/app/strategy/post-fid-handoff",
+      "/app/strategy/post-fid-eligibility-matrix",
+      "/app/strategy/post-fid-conditions",
+      "/app/strategy/post-fid-initialization-handoff",
+      "/app/strategy/post-fid-activation-handoff",
+      "/app/strategy/post-fid-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 5,
+      "select": 1,
+      "h3": 6,
+      "table": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/project-definition/ProjectDefinitionAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/project-definition-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/project-definition-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/project-definition/ProjectDefinitionWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/project-definition-fel"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/project-definition-fel"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "select": 1,
+      "button": 12,
+      "h3": 10,
+      "input": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/project-proposal/ProjectProposalAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/project-proposal-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/project-proposal-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "h3": 2,
+      "button": 6,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/project-proposal/ProjectProposalWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/project-proposal"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/project-proposal",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 20,
+      "input": 6,
+      "h3": 3,
+      "select": 4,
+      "textarea": 8
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/qra-engine/QraEngineWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/qra-approved-models",
+      "/app/strategy/qra-runs",
+      "/app/strategy/qra-run-overview",
+      "/app/strategy/qra-cost-results",
+      "/app/strategy/qra-schedule-results",
+      "/app/strategy/qra-percentiles",
+      "/app/strategy/qra-sensitivity",
+      "/app/strategy/qra-convergence",
+      "/app/strategy/qra-run-evidence",
+      "/app/strategy/qra-run-comparison",
+      "/app/strategy/qra-run-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/qra-approved-models",
+      "/app/strategy/qra-runs",
+      "/app/strategy/qra-run-overview",
+      "/app/strategy/qra-cost-results",
+      "/app/strategy/qra-schedule-results",
+      "/app/strategy/qra-percentiles",
+      "/app/strategy/qra-sensitivity",
+      "/app/strategy/qra-convergence",
+      "/app/strategy/qra-run-evidence",
+      "/app/strategy/qra-run-comparison",
+      "/app/strategy/qra-run-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 3,
+      "button": 13,
+      "select": 4,
+      "h3": 3,
+      "textarea": 1,
+      "table": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/qra-foundation/QraFoundationAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/qra-methodology-source-readiness"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/qra-methodology-source-readiness",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/qra-foundation/QraFoundationWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/qra-foundation",
+      "/app/strategy/qra-schedule-source-readiness",
+      "/app/strategy/qra-model-definition",
+      "/app/strategy/qra-foundation-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/qra-foundation",
+      "/app/strategy/qra-schedule-source-readiness",
+      "/app/strategy/qra-model-definition",
+      "/app/strategy/qra-foundation-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 17,
+      "h3": 8,
+      "table": 1,
+      "input": 1,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/risk-governance/GovernedPolicyEditor.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/admin/strategy/risk-governance-configuration",
+      "/app/admin/strategy/basic-data-configuration",
+      "/app/admin/strategy/owner-capability-configuration",
+      "/app/admin/strategy/qra-methodology-source-readiness",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "input": 2,
+      "button": 9,
+      "h3": 2,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/risk-governance/RiskGovernanceAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/risk-governance-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/risk-governance-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/risk-readiness/RiskReadinessAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/risk-readiness-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/risk-readiness-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 6,
+      "h3": 1,
+      "input": 2,
+      "textarea": 1,
+      "select": 2,
+      "table": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/risk-readiness/RiskReadinessWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/risk-readiness-my",
+      "/app/strategy/risk-readiness-portfolio",
+      "/app/strategy/risk-readiness-register",
+      "/app/strategy/risk-readiness-assessments",
+      "/app/strategy/risk-readiness-treatments",
+      "/app/strategy/risk-readiness-residual",
+      "/app/strategy/risk-readiness-dashboard",
+      "/app/strategy/risk-readiness-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/risk-readiness-my",
+      "/app/strategy/risk-readiness-portfolio",
+      "/app/strategy/risk-readiness-register",
+      "/app/strategy/risk-readiness-assessments",
+      "/app/strategy/risk-readiness-treatments",
+      "/app/strategy/risk-readiness-residual",
+      "/app/strategy/risk-readiness-dashboard",
+      "/app/strategy/risk-readiness-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 9,
+      "select": 3,
+      "h3": 7,
+      "table": 4,
+      "input": 3
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/strategic-benefits/StrategicBenefitsAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/benefits-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/benefits-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "textarea": 3,
+      "CompactModuleHeader": 1,
+      "button": 7,
+      "h3": 1,
+      "input": 8
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/strategic-benefits/StrategicBenefitsWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/strategic-benefits-my",
+      "/app/strategy/strategic-benefits-overview",
+      "/app/strategy/strategic-benefits-strategic-alignment",
+      "/app/strategy/strategic-benefits-outputs",
+      "/app/strategy/strategic-benefits-outcomes",
+      "/app/strategy/strategic-benefits-register",
+      "/app/strategy/strategic-benefits-measures",
+      "/app/strategy/strategic-benefits-owners",
+      "/app/strategy/strategic-benefits-baselines-targets",
+      "/app/strategy/strategic-benefits-expected-value",
+      "/app/strategy/strategic-benefits-dependencies",
+      "/app/strategy/strategic-benefits-assumptions-constraints",
+      "/app/strategy/strategic-benefits-risk-references",
+      "/app/strategy/strategic-benefits-traceability",
+      "/app/strategy/strategic-benefits-readiness",
+      "/app/strategy/strategic-benefits-history"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow",
+      "/app/strategy/strategic-benefits-my",
+      "/app/strategy/strategic-benefits-overview",
+      "/app/strategy/strategic-benefits-strategic-alignment",
+      "/app/strategy/strategic-benefits-outputs",
+      "/app/strategy/strategic-benefits-outcomes",
+      "/app/strategy/strategic-benefits-register",
+      "/app/strategy/strategic-benefits-measures",
+      "/app/strategy/strategic-benefits-owners",
+      "/app/strategy/strategic-benefits-baselines-targets",
+      "/app/strategy/strategic-benefits-expected-value",
+      "/app/strategy/strategic-benefits-dependencies",
+      "/app/strategy/strategic-benefits-assumptions-constraints",
+      "/app/strategy/strategic-benefits-risk-references",
+      "/app/strategy/strategic-benefits-traceability",
+      "/app/strategy/strategic-benefits-readiness",
+      "/app/strategy/strategic-benefits-history"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 19,
+      "input": 8,
+      "select": 5,
+      "h3": 2,
+      "textarea": 2,
+      "table": 1
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/strategic-gate/ProposalGateDecisionsPanel.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/project-proposal",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 2
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/strategic-gate/StrategicGateAdminView.tsx",
+    "directRoutes": [
+      "/app/admin/strategy/strategic-gate-configuration"
+    ],
+    "indirectRoutes": [
+      "/app/admin/strategy/strategic-gate-configuration",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "h3": 2,
+      "button": 7,
+      "select": 1,
+      "textarea": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/strategic-gate/StrategicGateWorkspace.tsx",
+    "directRoutes": [
+      "/app/strategy/strategic-gate-decision"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/strategic-gate-decision",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "CompactModuleHeader": 1,
+      "button": 18,
+      "input": 2,
+      "h3": 3,
+      "textarea": 4,
+      "select": 2
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/workspace-context/MyWorkspacesPanel.tsx",
+    "directRoutes": [
+      "/app/strategy/workspace-context"
+    ],
+    "indirectRoutes": [
+      "/app/strategy/enterprise-explorer",
+      "/app/strategy/workspace-context",
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "button": 3,
+      "CompactModuleHeader": 1,
+      "input": 4,
+      "select": 2,
+      "h3": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/workspace-context/WorkspaceContextProvider.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {},
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": true,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/features/workspace-context/WorkspaceOperationalPage.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "select": 1,
+      "h1": 1,
+      "button": 1,
+      "CompactModuleHeader": 1,
+      "h2": 6,
+      "h3": 4
+    },
+    "backendAllowedActionsReference": true,
+    "activeWorkspaceContextHook": true,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  },
+  {
+    "component": "frontend/src/views/LoginView.tsx",
+    "directRoutes": [],
+    "indirectRoutes": [
+      "/app/strategy/portfolio-structure",
+      "/app/strategy/portfolio-cash-flow"
+    ],
+    "used": true,
+    "reusedAcrossRoutes": true,
+    "duplicateStatus": "REUSE_NOT_PROOF_OF_DUPLICATE_UI",
+    "removalCandidate": false,
+    "lexicalControlCounts": {
+      "h1": 1,
+      "input": 2,
+      "button": 1
+    },
+    "backendAllowedActionsReference": false,
+    "activeWorkspaceContextHook": false,
+    "verification": "STATIC_JSX_COUNTS_NOT_RENDERED_ACCESSIBILITY_UAT"
+  }
+]

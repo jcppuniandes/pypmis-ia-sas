@@ -131,6 +131,15 @@ function StrategicWorkflowMap({
               {scenarios.children[2].label}
             </button>
           </div>
+          {scenarios.children
+            .filter((item) => item.longitudinal)
+            .map((item) => (
+              <div className="strategicConvergence" key={item.id}>
+                <button onClick={() => onNavigate(item.view)} type="button">
+                  {item.label}
+                </button>
+              </div>
+            ))}
         </section>
       ) : null}
 

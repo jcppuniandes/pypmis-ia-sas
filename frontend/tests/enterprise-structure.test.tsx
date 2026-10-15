@@ -414,6 +414,16 @@ describe("Nivel 2A Enterprise Structure", () => {
     expect(screen.getByRole("button", { name: /validar/i })).toBeInTheDocument();
   });
 
+  it("keeps the explicit Composition Rules entry on reusable rules after remote loading", async () => {
+    render(<AdminEnterpriseStructurePage canConfigure initialTab="rules" token="token" />);
+
+    expect(await screen.findByText("Tipos hijo permitidos")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /guardar regla/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /crear workspace|nuevo nodo|materializar/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tree", { name: "Enterprise hierarchy" })).not.toBeInTheDocument();
+    expect(enterpriseStructureApi.createNode).not.toHaveBeenCalled();
+  });
+
   it("configures PROJECT, templates, allowed parents, attributes and readonly preview outputs", async () => {
     const user = userEvent.setup();
     render(<AdminEnterpriseStructurePage canConfigure token="token" />);
