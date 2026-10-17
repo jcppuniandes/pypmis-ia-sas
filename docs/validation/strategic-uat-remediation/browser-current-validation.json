@@ -1,0 +1,385 @@
+{
+  "execution_date_bogota": "2026-10-15",
+  "finished_at_utc": "2026-10-15T18:11:45.204Z",
+  "test_file": "frontend/e2e/strategic-capital-current.spec.ts",
+  "browser": "Chromium",
+  "real_stack": true,
+  "api_url": "http://127.0.0.1:8840",
+  "frontend_url": "http://127.0.0.1:5543",
+  "tests": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "errors": 0,
+  "junit_total_seconds": 147.70839200000003,
+  "test_seconds": 135.968,
+  "outcome": "BLOCKED",
+  "defect_id": "UAT-S2-003",
+  "severity": "S2",
+  "classification": "MANDATORY_MANUAL_EVIDENCE_NOT_PROVIDED",
+  "blocker_code": "BLOCKED_NO_COMPLETED_FRESH_CHAIN_NO_FID",
+  "blocked_route": null,
+  "first_blocked_stage": "DOWNSTREAM_CHAIN_PREFLIGHT_NO_FID",
+  "observed_ui": "Eight USER strategic views including the actual COMPLETED READY Business Case and DRAFT BLOCKED Gate; no frozen package, FID or Post-FID.",
+  "cause": "The current same-Project Gate lacks four blocking Class B manual references under the unchanged effective policy. The browser retains an explicit failing NO_FID boundary after real read-only partial evidence; no reference, validation, freeze or decision was fabricated.",
+  "backend_blocker": {
+    "stage": "A27_A29_GATE_PREPARATION_FREEZE",
+    "preparation_id": 1,
+    "status": "DRAFT",
+    "readiness": "BLOCKED",
+    "source_current": true,
+    "blockers": [
+      "MISSING_CONTRACTING_READINESS",
+      "MISSING_EXECUTION_PLAN_READINESS",
+      "MISSING_PERMIT_READINESS",
+      "MISSING_REQUIRED_EVIDENCE",
+      "PROJECT_COVERAGE_INCOMPLETE"
+    ],
+    "missing_blocking_manual_reference_types": [
+      "CONTRACTING_READINESS",
+      "EXECUTION_PLAN_READINESS",
+      "PERMIT_READINESS",
+      "SCHEDULE_MATURITY"
+    ],
+    "note": "Four manual requirements are observed in the actual evidence UI; a missing schedule reference is covered by generic required-evidence blockers rather than a separate MISSING_SCHEDULE_MATURITY string."
+  },
+  "closed_defects": [
+    {
+      "id": "UAT-S2-004",
+      "status": "CLOSED_SCOPED_UI",
+      "proof": "Actual Chromium reached eight USER strategic views using the canonical pending Project without an operational legacy Project. Closed scoped UI access only, not global browser E2E.",
+      "implementation": "Root-authorized App fallback to StrategicWorkspaceShell reuses WorkspaceNavigation and StrategicViewOutlet with canConfigure=false. This browser agent made no App changes."
+    }
+  ],
+  "code_locations": [
+    "frontend/e2e/strategic-capital-current.spec.ts:375"
+  ],
+  "identity": {
+    "tenant_id": 4,
+    "actor_id": 43,
+    "idea_id": 4,
+    "analysis_id": 4,
+    "proposal_id": 4,
+    "strategic_gate_id": 4,
+    "project_id": 16,
+    "portfolio_id": 15,
+    "business_case_id": 4,
+    "business_case_revision_id": 6,
+    "preparation_id": 1
+  },
+  "positive_api_observations": [
+    {
+      "endpoint": "POST /api/v1/auth/login",
+      "http_status": 200,
+      "scope": "Real fresh tenant 4 / author 43; no credentials retained in summary."
+    },
+    {
+      "endpoint": "GET /api/v1/ideas/4",
+      "http_status": 200,
+      "elapsed_ms": 1881
+    },
+    {
+      "endpoint": "GET /api/v1/ideas/4/project-proposals",
+      "http_status": 200,
+      "elapsed_ms": 3666
+    },
+    {
+      "endpoint": "GET /api/v1/business-analyses/4",
+      "http_status": 200,
+      "elapsed_ms": 1737
+    },
+    {
+      "endpoint": "GET /api/v1/business-analyses/4/readiness",
+      "http_status": 200,
+      "elapsed_ms": 4078
+    },
+    {
+      "endpoint": "GET /api/v1/project-proposals/4",
+      "http_status": 200,
+      "elapsed_ms": 974
+    },
+    {
+      "endpoint": "GET /api/v1/project-proposals/4/gate-readiness",
+      "http_status": 200,
+      "elapsed_ms": 7503
+    },
+    {
+      "endpoint": "GET /api/v1/project-proposals/4/strategic-gate-decisions",
+      "http_status": 200,
+      "elapsed_ms": 476
+    },
+    {
+      "endpoint": "GET /api/v1/strategic-gate-decisions/4",
+      "http_status": 200,
+      "elapsed_ms": 766
+    },
+    {
+      "endpoint": "GET /api/v1/strategic-gate-decisions/4/portfolio-intake-readiness",
+      "http_status": 200,
+      "elapsed_ms": 1632
+    },
+    {
+      "endpoint": "GET /api/v1/project-workspaces/16/overview",
+      "http_status": 200,
+      "elapsed_ms": 798
+    },
+    {
+      "endpoint": "GET /api/v1/business-cases",
+      "http_status": 200,
+      "elapsed_ms": 744
+    },
+    {
+      "endpoint": "GET /api/v1/business-cases/4/readiness",
+      "http_status": 200,
+      "elapsed_ms": 1189
+    },
+    {
+      "endpoint": "GET /api/v1/business-cases/4/revisions",
+      "http_status": 200,
+      "elapsed_ms": 513
+    },
+    {
+      "endpoint": "GET /api/v1/portfolios/15/investment-gate-preparation",
+      "http_status": 200,
+      "elapsed_ms": 3076
+    },
+    {
+      "endpoint": "GET /api/v1/business-cases/4/revisions",
+      "http_status": 200,
+      "elapsed_ms": 641
+    },
+    {
+      "endpoint": "GET /api/v1/portfolios/15/investment-gate-preparation",
+      "http_status": 200,
+      "elapsed_ms": 2075
+    },
+    {
+      "endpoint": "GET /api/v1/project-workspaces/16/overview",
+      "http_status": 200,
+      "elapsed_ms": 683
+    }
+  ],
+  "reached_strategic_views": 8,
+  "visited_views": [
+    "idea-lifecycle",
+    "business-analysis-options",
+    "project-proposal",
+    "strategic-gate-decision",
+    "enterprise-explorer",
+    "portfolio-projects",
+    "business-case-my",
+    "investment-gate-preparation"
+  ],
+  "downstream_browser_stages": "NO_FROZEN_PACKAGE_NO_FID_NO_POST_FID",
+  "runtime_errors": [],
+  "http_errors": [
+    "403 /api/v1/physical-workspace-creation-requests/options",
+    "403 /api/v1/physical-workspace-creation-requests/options",
+    "403 /api/v1/physical-workspace-creation-requests/options"
+  ],
+  "http_error_observation": "Enterprise Explorer attempted three physical-creation eligibility reads for a Capital Owner author. Denials were retained, not mocked or suppressed; Project Overview remained navigable. No clean-network or global browser PASS is claimed.",
+  "browser_business_writes": [],
+  "mocks": false,
+  "terminal_state_seeds": false,
+  "created_legacy_project_workaround": false,
+  "app_tsx_modified": true,
+  "app_tsx_modified_by_browser_agent": false,
+  "app_tsx_sha256": "31D42B406755CBC5F90A83DA403ADFA2BDB18ADC8468076B19E79C7F6584C930",
+  "human_signoff": "PENDING_NOT_ASSUMED",
+  "release_status": "STRATEGIC_MACROPROCESS_NOT_VALIDATED",
+  "screenshot_visual_review": {
+    "count": 10,
+    "reviewed_unique_images": 9,
+    "duplicate_verified_by_sha256": "first-blocker.png equals 07b-fresh-actual-governed-evidence-blocked.png",
+    "content": "Nine progress screenshots reviewed: six upstream views, completed BC current-source screen, blocked DRAFT Gate, and actual evidence package. Upstream readiness hydration waited for real API values, including Proposal REWORK rather than invented READY.",
+    "visible_tokens": false
+  },
+  "artifacts": [
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser/strategic-capital-current.xml",
+      "bytes": 11528,
+      "sha256": "ACBDD095F70B99CEE9232C5ED892A018E6E970441F3BE78CE655FC4E87339205"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/fresh-browser-result.json",
+      "bytes": 14746,
+      "sha256": "3546274789A1A010ECC2103F0E6208E9CAAA8F501735124E61784964FFC443CF"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/01-fresh-idea.png",
+      "bytes": 193035,
+      "sha256": "4F87DFE708BB5CF51346FF6D698C3276A144D472C71101F65F68DB06B25BF77B"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/02-fresh-analysis.png",
+      "bytes": 251644,
+      "sha256": "F71360E174D45E6DA66BCF0B5204748EB72BF4DA83BA84599CB71EF4024EC9C0"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/03-fresh-proposal.png",
+      "bytes": 285009,
+      "sha256": "35F811EEE2287A0E7EDCF9FBC110AF3B55CA943A2D64C35C46967C409D7FE1A8"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/04-fresh-strategic-gate.png",
+      "bytes": 220979,
+      "sha256": "60A59B7571DBBD9DEFA39E975C1C318FA4B00AC9B7E47C908FADF08215235FDD"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/05-fresh-project-portfolio.png",
+      "bytes": 160510,
+      "sha256": "8D30AD3F3E2514F435774F98C7EA8B9CE4CAB20723FE7CFA1A1EF173B9D5067C"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/05a-fresh-canonical-project-overview.png",
+      "bytes": 256846,
+      "sha256": "4CDED7A34FE1F54B730520C3BF8C0E0C61F7DBC8C2582AD47D7B8B645C354744"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/06-fresh-completed-five-case-current-sources.png",
+      "bytes": 293725,
+      "sha256": "9F736F2BCCA45F7943313ABA060D11D23E910B1FDEEDEA2525D29C27BC722FD8"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/07a-fresh-actual-blocked-draft-gate.png",
+      "bytes": 194580,
+      "sha256": "4A13186101CD390696C5BC2D6EE05F7F58F09FE7D53A02054E15722C972CB831"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/07b-fresh-actual-governed-evidence-blocked.png",
+      "bytes": 420485,
+      "sha256": "C6050305EB573232324DFE7BF3459D34C9AB6CE07ABB7B5880C0580AA3C6AEFB"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/error-context.md",
+      "bytes": 33829,
+      "sha256": "B516AD7C160FBD5F45C1F48B235BAB7BDF9171BEA690AE731F705CBEAEFCAAF3"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/first-blocker.png",
+      "bytes": 420485,
+      "sha256": "C6050305EB573232324DFE7BF3459D34C9AB6CE07ABB7B5880C0580AA3C6AEFB"
+    },
+    {
+      "path": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/trace.zip",
+      "bytes": 13833543,
+      "sha256": "79E638638D38E31F7DA40055828B3F009437AE9559EF42C5DCAFEDD6D0C4DC40",
+      "restriction": "PRIVATE_AUTHENTICATED_TRACE_MAY_CONTAIN_REQUEST_CREDENTIALS_DO_NOT_PUBLISH_UNRESTRICTED"
+    }
+  ],
+  "prior_execution": {
+    "tenant_id": 1,
+    "project_id": 4,
+    "outcome": "BLOCKED_SAME_UAT_S2_004",
+    "preserved_before_rerun": true,
+    "archive_directory": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4",
+    "archived_junit_path": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4/strategic-capital-current.xml",
+    "archived_junit_sha256": "8E5B2D6D97477A2E4D81BB1E4AC86F06304D2D099D18634E8F604A4BE3B30DDD",
+    "archived_screenshot_path": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/first-blocker.png",
+    "archived_screenshot_sha256": "DE0081D89A0C0A8B76054F724C72C8E893765D481F19D9989B7A3062411B7492",
+    "note": "Each execution has one failed test. These are historical revisions, not two independent successful scenarios or a merged release denominator. The empty screen has identical pixels across both actors, so identical PNG hashes are expected."
+  },
+  "previous_selected_execution": {
+    "tenant_id": 3,
+    "project_id": 12,
+    "outcome": "BLOCKED_FEL_BEFORE_SAME_EXECUTION_CONTINUATION",
+    "preserved_before_rerun": true,
+    "archive_directory": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant3-project12",
+    "archived_junit_sha256": "12F3FBDD005642B71E88D32629351F9478DE71FBFA05F1123DEA04B94B4EF002",
+    "archived_screenshot_sha256": "0AD7A0596B27B8BCE41C8594D6AE1C33B8490A38394D94C6CFA7061CCDDF5CD2"
+  },
+  "static_validation": {
+    "playwright_list": "1 test discovered",
+    "prettier": "PASS",
+    "individual_typescript": "PASS using existing bundled @types/node; no dependency installed"
+  },
+  "coverage_boundary": "Actual same-record navigation validated eight USER strategic views and read-only preservation. The single Chromium test remains FAIL at the explicit NO_FID boundary: the unchanged policy's blocking manual evidence is absent. Eight views and completed BC are not a full A0-A31 browser or release PASS.",
+  "historical_executions": [
+    {
+      "tenant_id": 1,
+      "project_id": 4,
+      "outcome": "BLOCKED_SAME_UAT_S2_004",
+      "preserved_before_rerun": true,
+      "archive_directory": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4",
+      "archived_junit_path": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4/strategic-capital-current.xml",
+      "archived_junit_sha256": "8E5B2D6D97477A2E4D81BB1E4AC86F06304D2D099D18634E8F604A4BE3B30DDD",
+      "archived_screenshot_path": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant1-project4/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/first-blocker.png",
+      "archived_screenshot_sha256": "DE0081D89A0C0A8B76054F724C72C8E893765D481F19D9989B7A3062411B7492",
+      "note": "Each execution has one failed test. These are historical revisions, not two independent successful scenarios or a merged release denominator. The empty screen has identical pixels across both actors, so identical PNG hashes are expected."
+    },
+    {
+      "tenant_id": 2,
+      "project_id": 8,
+      "outcome": "BLOCKED_UAT_S2_004_BEFORE_SCOPED_SHELL_FIX",
+      "preserved_before_rerun": true,
+      "archive_directory": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant2-project8",
+      "archived_junit_sha256": "DB14907B8826D1C7719989F8AF5C87C220017D318F56447438FA16A79B36856C",
+      "archived_screenshot_sha256": "DE0081D89A0C0A8B76054F724C72C8E893765D481F19D9989B7A3062411B7492"
+    },
+    {
+      "tenant_id": 3,
+      "project_id": 12,
+      "outcome": "BLOCKED_FEL_BEFORE_SAME_EXECUTION_CONTINUATION",
+      "preserved_before_rerun": true,
+      "archive_directory": "outputs/.qa/strategic-uat-remediation/browser-prior-tenant3-project12",
+      "archived_junit_sha256": "12F3FBDD005642B71E88D32629351F9478DE71FBFA05F1123DEA04B94B4EF002",
+      "archived_screenshot_sha256": "0AD7A0596B27B8BCE41C8594D6AE1C33B8490A38394D94C6CFA7061CCDDF5CD2"
+    }
+  ],
+  "hydrated_upstream_readiness": {
+    "business_analysis": "READY",
+    "project_proposal": "GATE07B_REWORK_REQUIRED",
+    "strategic_intake": "READY_FOR_PORTFOLIO_INTAKE",
+    "source": "Actual read-only API statuses reflected in the UI; no READY value inferred or manufactured."
+  },
+  "partial_business_case": {
+    "id": 4,
+    "revision_id": 6,
+    "status": "COMPLETED",
+    "readiness": "READY",
+    "source_current": true,
+    "revision_hash": "9659ea8f80ffcd144a3d1fe4edbb3632991ae2f6400bcd92bbe8ac6edce6a80d"
+  },
+  "partial_gate": {
+    "id": 1,
+    "status": "DRAFT",
+    "readiness": "BLOCKED",
+    "source_current": true,
+    "required_requirement_count": 19,
+    "valid_requirement_count": 11,
+    "coverage_percent": 0,
+    "blockers": [
+      "MISSING_CONTRACTING_READINESS",
+      "MISSING_EXECUTION_PLAN_READINESS",
+      "MISSING_PERMIT_READINESS",
+      "MISSING_REQUIRED_EVIDENCE",
+      "PROJECT_COVERAGE_INCOMPLETE"
+    ],
+    "can_enter_investment_decision": false,
+    "can_enter_fid": false,
+    "frozen": false
+  },
+  "partial_read_only_preservation": "PASS_FOR_SELECTED_PROJECT_BC_REVISIONS_AND_DRAFT_GATE",
+  "presentation_observations": [
+    {
+      "id": "OBS-BC-SOURCE-MATRIX-MAPPING",
+      "status": "OPEN_SCOPED_PRESENTATION",
+      "observed": "BC Sources table displays NOT_AVAILABLE / empty hashes for rows whose serialized matrix supplies readiness/hash/version. Funding row is rendered STALE from an unavailable/nonblocking matrix entry; this is NOT evidence that the live funding provider is stale.",
+      "locations": [
+        "frontend/src/features/business-case/BusinessCaseWorkspace.tsx:normalizedSources",
+        "backend/app/modules/business_case/service.py:BusinessCaseService._five_case_contract"
+      ],
+      "boundary": "BC4 revision6 API readiness READY/source_current=true and Gate governed funding/BC sources current remain authoritative. No product fix made."
+    },
+    {
+      "id": "OBS-PROPOSAL-AFTER-APPROVE-READINESS",
+      "status": "OPEN_SCOPED_LIFECYCLE_LABEL",
+      "observed": "Proposal4 is STRATEGIC_GATE_APPROVED with actual DECIDED APPROVE history, but its next-entry readiness displays GATE07B_REWORK_REQUIRED / PROPOSAL_NOT_EVALUATED.",
+      "locations": [
+        "backend/app/modules/project_proposal/service.py:ProjectProposalService._gate_readiness",
+        "frontend/src/features/project-proposal/ProjectProposalWorkspace.tsx:proposalReadiness"
+      ],
+      "boundary": "The current next-entry status was captured literally; it does not erase the prior approved Gate snapshot or establish a new FID blocker."
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+{
+  "captured_at": "2026-10-15T00:37:39.8655264Z",
+  "qualification": "Read-only source checkpoint during collection; not an immutable image snapshot",
+  "original_junit_sha256": "BE606E6D5381338A2F3BA000556C523E7C683BFD7563924CCD2653DEFD656DFC",
+  "original_file_count": 61,
+  "files": [
+    {
+      "path": "backend/tests/test_basic_data_wave2b.py",
+      "sha256": "AD3ECB49BFFD4FFB568540768F2EABFCA1B61A50E97967790DDE4D192B4D63D9"
+    },
+    {
+      "path": "backend/tests/test_business_analysis_gate07a_ba.py",
+      "sha256": "E166412A9204E9D83370D947718A13E04117B3BBB5F89B2B09F4088420D9FEE9"
+    },
+    {
+      "path": "backend/tests/test_business_case_gate07m_bc_5c.py",
+      "sha256": "2C67891ED44532EAC45681562CACF789D31B0C206993667348865959BD5AB61B"
+    },
+    {
+      "path": "backend/tests/test_business_case_gate07m.py",
+      "sha256": "7BD387E2F34A405040F5A4CA6C769ADB8F57DDE196C47FA5348E35D7944F2DAD"
+    },
+    {
+      "path": "backend/tests/test_capital_allocation_wave2a.py",
+      "sha256": "E59861BC3222F707C93377556BC3B63165784918DFFD0EC47857666336B03940"
+    },
+    {
+      "path": "backend/tests/test_capital_planning_wave1_rbac_http.py",
+      "sha256": "24F95B4511CB5F4239E86A1A1B3DDF2E1EC070BEF5101DCB9E2E38316606DB00"
+    },
+    {
+      "path": "backend/tests/test_capital_planning_wave1.py",
+      "sha256": "BB179A2EF37955A319BBF81A6C5438D1B6DE2F7AF5E17BF0912113496B6F8675"
+    },
+    {
+      "path": "backend/tests/test_commercial_strategy_gate07m_comm.py",
+      "sha256": "BD6ABCE565DE7E342DFC741DED1832C68D22D33BE5E6C638599D412FC160C9D4"
+    },
+    {
+      "path": "backend/tests/test_economic_financial_model_gate07m_fin.py",
+      "sha256": "6DB0003899FEAF5AE31E1B3D3FE3D78A716DB641E2A0FD2F991E70FF743FF021"
+    },
+    {
+      "path": "backend/tests/test_enterprise_structure_apply.py",
+      "sha256": "9A04BF0F700BE4B1D80FCEBC86B3D93E00B5C29981FEDAF35B653E6FAE995E4B"
+    },
+    {
+      "path": "backend/tests/test_enterprise_structure_hardening_contract.py",
+      "sha256": "8CEB0BCB9319075B9AE5214CCD4FB5448A7CCD6C79032F3800BB5255F1B4E2D6"
+    },
+    {
+      "path": "backend/tests/test_enterprise_structure_importer.py",
+      "sha256": "1CD0A09C3F742F5F45A2C77064F406F759AE6704535051B803624E6615F131BD"
+    },
+    {
+      "path": "backend/tests/test_enterprise_structure_revisions.py",
+      "sha256": "64F9B4C892F2E69686F3BBF4ED3F8C043CEB0280872A6ADC0B4554FC7F528EB3"
+    },
+    {
+      "path": "backend/tests/test_enterprise_structure.py",
+      "sha256": "A6478274B460415C2F4A9BF545E136F474D6297F8899EED223AB6818E5C4A8EB"
+    },
+    {
+      "path": "backend/tests/test_funds_manager_gate07j_fund.py",
+      "sha256": "47FFBCB5DABF126C4C75AF74D6909521504E8AD862FAB3D5D6415E73AD742DAE"
+    },
+    {
+      "path": "backend/tests/test_gate07j_evid2_decision_criteria.py",
+      "sha256": "489A990BF1E6F9111ED2C5C0B8FA0E2EDC2A4B2DF6ED7A8BBCD249E8474C5A7F"
+    },
+    {
+      "path": "backend/tests/test_gate07m_fid_e2e.py",
+      "sha256": "4844CBF420ECB527D0AB5B9EBE4BD36CC84441EB94E2808EF6DA424B9AC971DB"
+    },
+    {
+      "path": "backend/tests/test_idea_demand_gate07a.py",
+      "sha256": "B7BB91FC4656593C256362CCEDEA91B4DCE81F64E393018B932622212FFD0A5F"
+    },
+    {
+      "path": "backend/tests/test_investment_decision_gate07k.py",
+      "sha256": "8101F95AD6B7D77C0068144A030705D50CBAA3DFD97C1B60434527079C221AA0"
+    },
+    {
+      "path": "backend/tests/test_investment_evidence_policy_gate07j_evid.py",
+      "sha256": "71E1E1E0A949DABCF6AEB82F7064B409524D95D7A2DE31A080BDAA5708B08A01"
+    },
+    {
+      "path": "backend/tests/test_investment_evidence_policy_gate07m_evid.py",
+      "sha256": "F1193CBC25BEB08F192E3FCCC9C4D65C51EAFA6FD0438E4342F390F0C61B5C32"
+    },
+    {
+      "path": "backend/tests/test_investment_gate_preparation_gate07j.py",
+      "sha256": "00D5212EF9AF4191667F651866BCED7E444FAB797DDC6526FE95F8A48812E3C5"
+    },
+    {
+      "path": "backend/tests/test_owner_capability_wave3b.py",
+      "sha256": "398F047C4D25B3EAC2CCE53D4438F992B7BE70A735BD3E067DBB5AC3EA7CCA51"
+    },
+    {
+      "path": "backend/tests/test_permit_readiness_gate07j_permit.py",
+      "sha256": "4A19F30EBA3FBEE5A32B1F952D20F3EB05EDD7B49D6A1E259DFC04B64405D597"
+    },
+    {
+      "path": "backend/tests/test_portfolio_analysis_gate07f.py",
+      "sha256": "A0DCE4133500EF21EA9FBF01DFE2DEC6FB968EAC9DAD538A35927EA71E66CC67"
+    },
+    {
+      "path": "backend/tests/test_portfolio_budget_gate07g_a.py",
+      "sha256": "2F1DA8DD5A322F3AD933F7AA84D848C1A8616838671A06BF08209502624F26F2"
+    },
+    {
+      "path": "backend/tests/test_portfolio_budget_gate07g.py",
+      "sha256": "AB4E02F3DFE7C7DF7F77F7694A13013A4D1A378FEDA94363091EB29DE92E6D36"
+    },
+    {
+      "path": "backend/tests/test_portfolio_convergence_gate07i.py",
+      "sha256": "EAAEE120658B66E89AD1399D5ECC5C56E4C4394DBBC25A873A43B6D7AE6D308A"
+    },
+    {
+      "path": "backend/tests/test_portfolio_evaluation_gate07e.py",
+      "sha256": "EF3B72899F116D2732D31DDFF790928E8F48B3E457A56DCD5624C22412C7BD0A"
+    },
+    {
+      "path": "backend/tests/test_portfolio_planning_gate07d_hardening.py",
+      "sha256": "22D17051387913D717BA75B8577847BC5E25723BB3603DCE7B713222562E2874"
+    },
+    {
+      "path": "backend/tests/test_portfolio_planning_gate07d.py",
+      "sha256": "2DC6F30D7757FB3D0D1396DFD0AE7DF1A3AF3C9CBE971C6392B11151DD3F9A9D"
+    },
+    {
+      "path": "backend/tests/test_portfolio_resource_gate07h.py",
+      "sha256": "6ED6689419099FD037615437A6B4E442E1C764FA97F03542B916E6FCDB4228DC"
+    },
+    {
+      "path": "backend/tests/test_portfolio_review_wave3a.py",
+      "sha256": "D2644016E7FE67E2AD7CA53564037D5F4A4DE508A1AA5D2FD2F71CDEEC0FD8F0"
+    },
+    {
+      "path": "backend/tests/test_post_fid_governance_gate07l.py",
+      "sha256": "2711C2A053221DADD6057B76B44F93C18ECD0D7B01529D8173B2C0C4BDBECFCA"
+    },
+    {
+      "path": "backend/tests/test_project_creation_process.py",
+      "sha256": "DE355F718E7295C40E253890838AB5F39F6B36217A185DABB42EC1BBBD95996E"
+    },
+    {
+      "path": "backend/tests/test_project_definition_gate07j_fel.py",
+      "sha256": "3BBC0CAC232382640AE0728D74FC652DBF784FEA673E78B4E7FBA8A36EFCB781"
+    },
+    {
+      "path": "backend/tests/test_project_proposal_gate07b.py",
+      "sha256": "C23EB905163CCA834524D43A3780BD8B9609B7F5EE686B29D6A39AB756C7D325"
+    },
+    {
+      "path": "backend/tests/test_project_workspace_configuration.py",
+      "sha256": "57AD50F4D802A7C6C2CC2428A77AD1B081DF65C5E9D2FDED1023A4F9A9A877BA"
+    },
+    {
+      "path": "backend/tests/test_project_workspace_initialization.py",
+      "sha256": "D64938F47F4327DB7E473F68FEACAFCA0267AB39E1DDE189E4AF411C061F3F5F"
+    },
+    {
+      "path": "backend/tests/test_qra_engine_acceptance_audit.py",
+      "sha256": "921ABBDA2EDB7AEFD18D8C6AA71124BC9701541F7EEE237268EF31ADFB2B2D89"
+    },
+    {
+      "path": "backend/tests/test_qra_engine_calculation.py",
+      "sha256": "1002CAFF05096C1F6142CF8DA513C8D449CD32C92BAD0D836F03E3E4BA483717"
+    },
+    {
+      "path": "backend/tests/test_qra_engine_hardening.py",
+      "sha256": "EE573A92C6F48FE87FFB367C11266D15DE9EF618E37A0CE2C67CDEB8BD20E177"
+    },
+    {
+      "path": "backend/tests/test_qra_engine_worker_profile.py",
+      "sha256": "6366C9418DA6645138EE031631F6A0B8392C7E1086B8ED2ED4D3700263CC014F"
+    },
+    {
+      "path": "backend/tests/test_qra_engine.py",
+      "sha256": "E5E4B4D6450C6281B84A0BC2EEE776790F139ED4D463238BA34CD8D7C0E46581"
+    },
+    {
+      "path": "backend/tests/test_qra_evidence_business_case.py",
+      "sha256": "CD2F85A52A32544697230CCA0CC3A03E2AE837778352323DD3B26CE95646D71F"
+    },
+    {
+      "path": "backend/tests/test_qra_evidence_policy_persistence.py",
+      "sha256": "94E9720B15A086C682ED932BD9F6DF9EA334CCEBF8E0EF43757F0721DAE480A5"
+    },
+    {
+      "path": "backend/tests/test_qra_evidence_policy.py",
+      "sha256": "562354D92A3E0609D4489E70742A55EC97627FAF65452010F19906F72F6D40CA"
+    },
+    {
+      "path": "backend/tests/test_qra_evidence_stack.py",
+      "sha256": "B6BF82DCBBCB0A8C70D44A2D5E83275E0C083F01CB8E220CCEDD25024162CEAB"
+    },
+    {
+      "path": "backend/tests/test_qra_foundation.py",
+      "sha256": "4AB23430BA4CDC52C80E6E93AFE132D0F812B5CF3EB786B264BE7E077F520D5E"
+    },
+    {
+      "path": "backend/tests/test_qra_governed_context_integration.py",
+      "sha256": "E4C9C8D1D5519DB994168132561A46D9932A638D15EC546EA84909BF648DF5F1"
+    },
+    {
+      "path": "backend/tests/test_qra_legacy_configuration_guard.py",
+      "sha256": "9A131AAE40527811D93E648586BD6BB0ACBDA1CAB18F2A90EDAEAF5CC31C31C7"
+    },
+    {
+      "path": "backend/tests/test_qra_provider_integration.py",
+      "sha256": "946B457345BEC770BB183B43AA64454D170585EA8F4854C5CA9284C8DA1DF104"
+    },
+    {
+      "path": "backend/tests/test_qra_release_hardening.py",
+      "sha256": "61B87B0E75B24D0EB4832F207C154258FF6D4E03E2BDC3459E8A4FC17486A4DF"
+    },
+    {
+      "path": "backend/tests/test_qra_schedule_import_metadata.py",
+      "sha256": "8A5391ECFB53A7AF1DECF76B81B98E430A428A94A5D0A04105D1014865669F43"
+    },
+    {
+      "path": "backend/tests/test_risk_governance_wave2b.py",
+      "sha256": "94671F89ED5ADF510CBAC37385755715951F11448AF4048E6885DE4A17B36781"
+    },
+    {
+      "path": "backend/tests/test_risk_readiness_gate07j_risk.py",
+      "sha256": "F7734F2CFCB1BDFE9B0C6382A9C095408F2A09A863C17F933F7FE258050CE82A"
+    },
+    {
+      "path": "backend/tests/test_strategic_benefits_gate07m_ben.py",
+      "sha256": "3B0DB7201EFA9CD1FBB42B6BC94A032055FEF3179F91F4B2FE42F3F4C9F7BE98"
+    },
+    {
+      "path": "backend/tests/test_strategic_final_uat_project_authority.py",
+      "sha256": "8DEA6D958FEDEBB5886D84F3470DDD517E99C602A54D764033B27AA9973665A8"
+    },
+    {
+      "path": "backend/tests/test_strategic_final_uat_routes.py",
+      "sha256": "F124909F6E502DF9FA25D348B280B00FE8C9CA9F339B53183DDFB3F607266F21"
+    },
+    {
+      "path": "backend/tests/test_strategic_gate_gate07c.py",
+      "sha256": "65D3228F3D009E699A47D503FF7BAD88E50F8B12A33BB6B24F6AF725307E089C"
+    },
+    {
+      "path": "backend/tests/test_workspace_context.py",
+      "sha256": "623716BFC62F8CB9BFBEBBC4C6BF011C9627D0BE5D508F6995A43C6847D48506"
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "sha256": "9ADC4F95EA25F00F1E193A8EA1B9068ED494D43DFFB32D8251DF929F72513E3F"
+    },
+    {
+      "path": "backend/tests/sqlite_isolation.py",
+      "sha256": "DA192D9C22EA0B7A6B8EB7832EA0E6DEACBEB5D295AE54131C72E2287698AA7D"
+    }
+  ]
+}

@@ -31,6 +31,7 @@ from app.domain.models import (
 )
 from app.modules.business_analysis.models import BusinessAnalysis
 from app.modules.business_case.models import BusinessCase, BusinessCaseRevision
+from app.modules.business_case.source_links import current_bundle_matches_completed_case_link
 from app.modules.commercial_strategy.models import CommercialContractingStrategy, CommercialStrategyVersion
 from app.modules.economic_financial_model.models import EconomicFinancialModel, EconomicFinancialModelVersion
 from app.modules.enterprise_structure.models import EnterpriseStrategicObjective
@@ -1400,7 +1401,20 @@ class StrategicBenefitsService:
         project = self._project(plan.project_workspace_id)
         configuration, _ = self._resolve_configuration(project)
         _current_refs, current_hashes = self._source_bundle(project.id)
-        source_current = current_hashes == dict(version.source_hashes_json or {})
+        source_current = current_bundle_matches_completed_case_link(
+            self.db,
+            tenant_id=self.tenant_id,
+            project_id=project.id,
+            source_key="benefits",
+            aggregate_id=plan.id,
+            version_id=version.id,
+            version_number=version.version_number,
+            source_hash=version.benefits_plan_hash,
+            source_status=version.status,
+            captured_references=dict(version.source_references_json or {}),
+            captured_hashes=dict(version.source_hashes_json or {}),
+            current_hashes=current_hashes,
+        )
         configuration_current = configuration.content_hash == version.configuration_hash
         policy = self._tailored_policy(project, configuration.content_json, version.fel_stage_code)
         snapshots = [item for item in self._snapshots(version.id) if item.status == "ACTIVE"]

@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0",
+  "scope": {
+    "audit_type": "READ_ONLY_SUPPLEMENTAL_A0_A7",
+    "database": "strategic_fresh_uat",
+    "tenant_id": 1,
+    "project_id": 4,
+    "api_base_url": "http://127.0.0.1:8840/api/v1",
+    "database_observed_at": "2026-10-15T12:52:36.407073+00:00",
+    "api_observed_at": "2026-10-15T12:53:15.966780Z",
+    "final_new_chain_coverage": false,
+    "scope_warning": "These results concern only tenant 1 / Project 4. They must not be promoted to the later new tenant / Project chain or to full A0-A31 release proof.",
+    "business_mutations_by_auditor": 0,
+    "human_signoff": "PENDING_NOT_ASSUMED"
+  },
+  "method": [
+    "Read prompt sections 8-16 and historical scenario-coverage-register A0-A7 definitions; historical results were not edited.",
+    "Corroborated the actually executed fresh setup manifest with PostgreSQL SELECT in BEGIN READ ONLY / ROLLBACK.",
+    "Read existing records through five authenticated GET endpoints using the application's token issuer and actual tenant-scoped actor 4; no mock API and no business command were used.",
+    "A PASS here means the specifically stated backend case assertions were observed. It never means browser execution, full A0-A31 completion, release readiness, or authorized business acceptance.",
+    "Composite cases remain BLOCKED where their wider register assertions, required UI traversal, or current read-model behavior were not validated. Source presence alone is not execution evidence."
+  ],
+  "evidence": {
+    "setup_manifest": "outputs/.qa/strategic-uat-remediation/fresh-setup-tenant-1.json",
+    "setup_before_role_reconciliation": "outputs/.qa/strategic-uat-remediation/fresh-setup-tenant-1-before-reviewer-grants.json",
+    "prior_source_register": "docs/validation/strategic-final-uat/scenario-coverage-register.json",
+    "browser_result": "outputs/.qa/strategic-uat-remediation/fresh-browser-result.json",
+    "browser_context": "outputs/.qa/strategic-uat-remediation/browser-current/strategic-capital-current--594c1-D-without-browser-mutations-chromium/error-context.md",
+    "executed_setup": "backend/tests/helpers/strategic_capital_fresh_setup.py",
+    "prior_downstream_attempt": "outputs/.qa/strategic-uat-remediation/fresh-capital-owner-chain-project4-currency-blocker.json"
+  },
+  "current_database_facts": {
+    "workspaces": [
+      {"id": 1, "parent_id": null, "type": "enterprise", "record_code": "01", "external_key": null, "status": "active"},
+      {"id": 2, "parent_id": 1, "type": "business-unit", "record_code": "01.01", "external_key": null, "status": "active"},
+      {"id": 3, "parent_id": 2, "type": "portfolio", "record_code": "01.01.01", "external_key": null, "status": "active"},
+      {"id": 4, "parent_id": 3, "type": "project", "record_code": "01.01.01.01", "external_key": "PRJ-cf9fe2d6-4906-4999-83b8-974aac1cfa3d", "status": "pending"}
+    ],
+    "tenant_project_count": 1,
+    "project_creation_request": {
+      "id": 1,
+      "state": "created",
+      "governance_model": "CAPITAL_OWNER",
+      "approved_by_user_id": 9,
+      "materialized_workspace_id": 4,
+      "created_at": "2026-10-15T12:41:09.064689",
+      "materialized_at": "2026-10-15T12:41:12.035508"
+    },
+    "membership": {
+      "id": 1,
+      "portfolio_workspace_id": 3,
+      "project_workspace_id": 4,
+      "source": "STRATEGIC_INTAKE",
+      "status": "ACTIVE",
+      "source_strategic_gate_decision_id": 1,
+      "source_project_proposal_id": 1,
+      "effective_from": "2026-10-15T12:41:12.078998"
+    },
+    "investment_decision_count": 0,
+    "published_configuration_count": 70,
+    "configuration_count_is_not_effective_inventory_proof": true
+  },
+  "cases": [
+    {
+      "uat_id": "A0",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "ADMIN reusable preparation",
+      "status": "BLOCKED",
+      "backend_journey_status": "PARTIAL",
+      "actual": "Independent configuration author/publisher and actual scoped roles were provisioned. Workspace types, numbering, Project template, governance and upstream policies have recorded IDs/revisions/hashes. The manifest does not provide the entire required section-8 effective configuration/inheritance inventory before A0, and no fresh USER policy-edit refusal was executed on this chain.",
+      "missing": [
+        "Complete contextual pre-A0 inventory across all required domains, including applicable Composition Rules, Risk Governance, QRA methodology/evidence policy, and Decision Criteria.",
+        "Actual same-chain functional proof that USER cannot edit reusable policy and that ADMIN-only editors stay ADMIN-only.",
+        "Independent pre-publication/post-publication no-live-business side-effect assertions; the setup's declared initial Project count alone is not that complete proof."
+      ],
+      "evidence": ["setup_manifest#configurations", "setup_manifest#actors", "current_database_facts.published_configuration_count"],
+      "ui_status": "NOT_PROVEN"
+    },
+    {
+      "uat_id": "A1",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Enterprise structure and Workspace context",
+      "status": "BLOCKED",
+      "backend_journey_status": "PASS_HIERARCHY_AND_PROJECT_IDENTITY_ONLY",
+      "actual": "Actual Enterprise 1 > Business Unit 2 > Portfolio 3 > canonical Project 4 hierarchy and generated Record Codes were confirmed. Project external_key equals its materialization snapshot and remains stable. Enterprise/BU/Portfolio external_key values are null; their schema is nullable, so this is an explicit contract-validation limitation, not by itself a proven product defect. Enterprise Explorer and Workspace Context were not traversed in Chromium.",
+      "missing": [
+        "Resolve and explicitly verify the intended external_key contract for the non-Project hierarchy types.",
+        "Open Enterprise Explorer and Workspace Context with the fresh tenant; actual browser stopped before the strategic outlet."
+      ],
+      "evidence": ["setup_manifest#events.A1", "setup_manifest#events.A6.project", "current_database_facts.workspaces", "browser_result#blocker"],
+      "ui_status": "BLOCKED_LEGACY_PROJECT_APP_GUARD"
+    },
+    {
+      "uat_id": "A2",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Strategic capital demand, cycles, buckets and allocation",
+      "status": "PASS",
+      "backend_journey_status": "PASS",
+      "actual": "Cycle 1 OPEN covers 2027-01-01 to 2030-12-31. Demand 1 was endorsed by actor 8 after author 4 / reviewer 5. Allocation 1 ENDORSED records grow/sustain targets 80/20 and a retained endorsed snapshot hash. Authenticated comparison GET reports USD 100,000,000 current demand in grow, classification coverage 100%, no FX conversion, and empty Recommended/Approved positions. Thus this observed planning endorsement did not become Budget/FID authorization.",
+      "comparison": {
+        "endpoint": "GET /capital-planning/allocation-plans/1/comparison",
+        "status_code": 200,
+        "configuration_id": 54,
+        "configuration_hash": "0d40ce9544c959fee07b845ad60f41e24df372d5ac486eba54b4db9fb127ac90",
+        "endorsed_snapshot_hash": "99df0f7e27e2e5a53bf53f8c671e5c6d3a902dd551acc4c9822afbbf1c5da087",
+        "plan_hash": "7a13354059a69927182442c47616ff62e32d5066e3aaad81189b0522dfa08b2c",
+        "current_demand_usd": "100000000.00",
+        "recommended_item_count": 0,
+        "approved_item_count": 0,
+        "classification_coverage_percentage": "100.00",
+        "multi_currency": false,
+        "source_hash": "249dfc9ca8d383dd7f0342f7779b2d7cbc0abc55bdb85898920d9acfd346b9fc"
+      },
+      "limitations": ["Backend case only; the corresponding screen was not opened in the blocked browser journey."],
+      "evidence": ["setup_manifest#events.A2", "comparison", "current_database_facts.investment_decision_count"],
+      "ui_status": "NOT_PROVEN"
+    },
+    {
+      "uat_id": "A3",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Idea, evaluation and governed Business Analysis",
+      "status": "PASS",
+      "backend_journey_status": "PASS",
+      "actual": "Idea 1 was originated from Demand 1, submitted, independently screened/routed, evaluated and accepted. The completed setup executed the mandatory READY_FOR_BUSINESS_ANALYSIS assertion before BA. BA 1 was authored by actor 4 and completed by independent reviewer 5 using the real lifecycle and evaluated alternatives. Its completion hash is retained by Proposal 1. Current authenticated Idea readiness GET is READY_FOR_PROJECT_PROPOSAL with no blockers.",
+      "readiness": {
+        "endpoint": "GET /ideas/1/proposal-readiness",
+        "status_code": 200,
+        "status": "READY_FOR_PROJECT_PROPOSAL",
+        "can_create_project_proposal": true,
+        "business_analysis_id": 1,
+        "completion_hash": "e96549cbe70ebe3f60c4a8284de55c6685a74ff4973fb0fc9c9665a957a49a28",
+        "author_id": 4,
+        "reviewer_id": 5
+      },
+      "limitations": ["The intermediate READY_FOR_BUSINESS_ANALYSIS assertion passed in the completed execution but its full response was not independently serialized as a separate snapshot.", "No browser BA/Idea screen was reached."],
+      "evidence": ["setup_manifest#events.A2.idea_origin", "setup_manifest#events.A3", "readiness"],
+      "ui_status": "BLOCKED_AT_IDEA_BEFORE_OUTLET"
+    },
+    {
+      "uat_id": "A4",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Project Proposal",
+      "status": "BLOCKED",
+      "backend_journey_status": "PASS_HISTORICAL_PRE_GATE_HANDOFF",
+      "actual": "Proposal 1 was created from the same eligible Idea/BA, populated with scope, need, justification, benefits, USD 100,000,000 ROM, 2027-2030 dates, risks, assumptions, constraints, sponsor and owner; it reached stored READY_FOR_STRATEGIC_GATE. Gate 1's persisted input proves handoff READY_FOR_STRATEGIC_GATE_DECISION at entry. After APPROVE, Proposal 1 is STRATEGIC_GATE_APPROVED, but its current gate-readiness GET reports GATE07B_REWORK_REQUIRED / PROPOSAL_NOT_EVALUATED. This inconsistent current read-model prevents claiming the wider current case as unqualified PASS.",
+      "historical_handoff": {
+        "stored_proposal_status": "READY_FOR_STRATEGIC_GATE",
+        "gate_persisted_input_status": "READY_FOR_STRATEGIC_GATE_DECISION"
+      },
+      "current_read_model": {
+        "endpoint": "GET /project-proposals/1/gate-readiness",
+        "status_code": 200,
+        "stored_proposal_status": "STRATEGIC_GATE_APPROVED",
+        "status": "GATE07B_REWORK_REQUIRED",
+        "can_enter_strategic_gate": false,
+        "blockers": ["PROPOSAL_NOT_EVALUATED"]
+      },
+      "evidence": ["setup_manifest#events.A4", "current_database_facts", "historical_handoff", "current_read_model"],
+      "ui_status": "NOT_PROVEN"
+    },
+    {
+      "uat_id": "A5",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Strategic Gate",
+      "status": "PASS",
+      "backend_journey_status": "PASS_APPROVE_PATH",
+      "actual": "Gate 1 was prepared by actor 4, submitted, independently reviewed, and formally APPROVE-decided by authorized actor 7. Authenticated intake-readiness GET remains READY_FOR_PORTFOLIO_INTAKE with no blockers. The tenant still has no investment decision and Project 4 remains pending: this strategic approval was not FID or activation.",
+      "readiness": {
+        "endpoint": "GET /strategic-gate-decisions/1/portfolio-intake-readiness",
+        "status_code": 200,
+        "status": "READY_FOR_PORTFOLIO_INTAKE",
+        "outcome": "APPROVE",
+        "decision_hash": "2eec1dffddbf481f2c4fcf7d56d5ed6e6aebf9302443e9b35623be6d784d6b8f",
+        "blocking_issues": []
+      },
+      "limitations": ["Happy-path APPROVE only; RETURN/REJECT/DEFER negative cases are not promoted from source coverage.", "No Strategic Gate screen was visited in Chromium."],
+      "evidence": ["setup_manifest#events.A5", "readiness", "current_database_facts.investment_decision_count", "current_database_facts.workspaces"],
+      "ui_status": "NOT_PROVEN"
+    },
+    {
+      "uat_id": "A6",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Governed Project creation / materialization and timing",
+      "status": "BLOCKED",
+      "backend_journey_status": "PASS_PRIMARY_MATERIALIZATION",
+      "actual": "Governed Request 1 CAPITAL_OWNER was submitted by actor 4, reviewed by actor 5, independently approved by actor 9 and materialized by actor 10. Exactly one canonical tenant Project currently exists: 4, pending, with generated Record Code and stable non-null external_key. Intake effective_from follows materialization. The wider case's initialization/activation eligibility and duplicate/replay materialization boundaries were not all executed on this same chain.",
+      "missing": ["Actual initialization/activation eligibility and pre-FID refusal evidence for this same Project.", "Explicit duplicate/replay materialization assertion; a current count of one is not a concurrency/idempotency proof."],
+      "evidence": ["setup_manifest#events.A6", "setup_manifest#events.A7.entry.project_creation_request", "current_database_facts.project_creation_request", "current_database_facts.tenant_project_count", "current_database_facts.membership"],
+      "ui_status": "NOT_PROVEN"
+    },
+    {
+      "uat_id": "A7",
+      "tenant_id": 1,
+      "project_id": 4,
+      "business_process": "Portfolio Intake and membership",
+      "status": "BLOCKED",
+      "backend_journey_status": "PASS_PRIMARY_STRATEGIC_INTAKE",
+      "actual": "Current API and SQL confirm Membership 1 ACTIVE / STRATEGIC_INTAKE joins Portfolio 3 to the same pending CAPITAL_OWNER Project 4, with original Proposal 1 and Strategic Gate 1 lineage. Planning GET is READY_FOR_PORTFOLIO_PLANNING; portfolio evaluation and Project definition entry are allowed. The source register also requires independent membership in another Portfolio without changing canonical parent; that wider assertion was not executed.",
+      "readiness": {
+        "endpoint": "GET /strategic-project-planning/1",
+        "status_code": 200,
+        "status": "READY_FOR_PORTFOLIO_PLANNING",
+        "can_enter_portfolio_evaluation": true,
+        "can_enter_project_definition": true,
+        "governance_model": "CAPITAL_OWNER",
+        "planning_entry_hash": "5b9df4de50050fac223ec2ed128eac689628c7ed0b500e6dfceaeb5cb9a5020a"
+      },
+      "missing": ["Create/validate another independent Portfolio membership without reparenting or duplicating this canonical Project.", "Browser Portfolio Intake traversal on this tenant."],
+      "evidence": ["setup_manifest#events.A7", "current_database_facts.membership", "current_database_facts.project_creation_request", "readiness"],
+      "ui_status": "NOT_PROVEN"
+    }
+  ],
+  "statistics": {
+    "audited_cases": 8,
+    "pass": 3,
+    "blocked": 5,
+    "browser_cases_passed": 0,
+    "full_A0_A31": "NOT_PROVEN",
+    "release_status": "STRATEGIC_MACROPROCESS_NOT_VALIDATED"
+  },
+  "cross_cutting_browser_blocker": {
+    "status": "BLOCKED",
+    "stage": "IDEA",
+    "code": "BLOCKED_STRATEGIC_UI_REQUIRES_LEGACY_PROJECT",
+    "actual": "Authenticated Chromium reached Create your first project instead of the strategic outlet despite the canonical Project in enterprise_workspaces. No strategic screen visit was recorded.",
+    "browser_business_writes": 0,
+    "not_a_basis_for_any_ui_pass": true
+  },
+  "history_policy": "The prior scenario coverage register and prior results remain historical evidence; no historical PASS/BLOCKED has been overwritten by this audit."
+}

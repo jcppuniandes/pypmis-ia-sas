@@ -59,6 +59,8 @@ from app.modules.enterprise_structure.schemas import (
     RevisionClassificationsUpdate,
     RevisionDiffOut,
     RevisionMoveRequest,
+    RevisionParentReconciliationOut,
+    RevisionParentReconciliationRequest,
     RevisionPublishRequest,
     RevisionRecordCodePreviewOut,
     RevisionRecordCodePreviewRequest,
@@ -116,6 +118,7 @@ def _revision_service(
     permission: str,
     *,
     organization_scope: bool = True,
+    bootstrap: bool = True,
 ) -> EnterpriseStructureRevisionService:
     context = require_enterprise_permission(
         db,
@@ -123,10 +126,12 @@ def _revision_service(
         user_id,
         permission,
         allowed_role_codes=REVISION_DUTY_ROLES.get(permission),
+        bootstrap=bootstrap,
     )
     if organization_scope:
         require_organization_scope(context)
-    EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
+    if bootstrap:
+        EnterpriseStructureService(db, tenant_id, context.user.id).ensure_seed()
     return EnterpriseStructureRevisionService(db, tenant_id, context.user.id)
 
 
@@ -791,6 +796,49 @@ def core_revision(
         "admin.enterprise_structure.read",
         organization_scope=False,
     ).get_revision(release_id)
+    return _set_revision_etag(response, revision)
+
+
+@router.get(
+    "/enterprise-core-releases/{release_id}/parent-reconciliation",
+    response_model=RevisionParentReconciliationOut,
+)
+def core_parent_reconciliation(
+    release_id: int,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> RevisionParentReconciliationOut:
+    return _revision_service(
+        db, tenant_id, user_id, "admin.enterprise_structure.read", organization_scope=True, bootstrap=False
+    ).parent_reconciliation(release_id)
+
+
+@router.post(
+    "/enterprise-core-releases/{release_id}/reconcile-live-parents",
+    response_model=CoreRevisionOut,
+)
+def reconcile_core_live_parents(
+    release_id: int,
+    payload: RevisionParentReconciliationRequest,
+    response: Response,
+    expected_version: int = Depends(_revision_if_match),
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_tenant_id),
+    user_id: int = Depends(get_user_id),
+) -> CoreRevisionOut:
+    # Both capabilities are needed: this command may create a successor or edit
+    # its existing DRAFT, but grants neither approval nor publication authority.
+    service = _revision_service(db, tenant_id, user_id, "admin.enterprise_structure.revision.edit", bootstrap=False)
+    require_enterprise_permission(
+        db,
+        tenant_id,
+        user_id,
+        "admin.enterprise_structure.revision.create",
+        allowed_role_codes=REVISION_DUTY_ROLES.get("admin.enterprise_structure.revision.create"),
+        bootstrap=False,
+    )
+    revision = service.reconcile_live_parents(release_id, payload, expected_version=expected_version)
     return _set_revision_etag(response, revision)
 
 

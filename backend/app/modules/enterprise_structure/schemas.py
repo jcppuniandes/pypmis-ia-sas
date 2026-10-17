@@ -208,6 +208,29 @@ class RevisionMoveRequest(BaseModel):
     new_parent_key: str
 
 
+class RevisionParentReconciliationRequest(BaseModel):
+    """Explicit existing identities only; names/ancestry cannot be supplied."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    parent_workspace_ids: list[int] = Field(min_length=1, max_length=100)
+
+
+class RevisionParentReconciliationItem(BaseModel):
+    workspace_id: int
+    external_key: str
+    parent_workspace_id: int | None
+    workspace_type_code: str
+    record_code: str
+
+
+class RevisionParentReconciliationOut(BaseModel):
+    release_id: int
+    revision_version: int
+    required_parent_workspaces: list[RevisionParentReconciliationItem]
+    project_workspace_ids: list[int]
+
+
 class RevisionClassificationsUpdate(BaseModel):
     classifications: list[RevisionClassificationIn]
 

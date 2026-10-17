@@ -1,0 +1,36 @@
+{
+  "workspace_count": 31,
+  "workspace14": {
+    "id": 14,
+    "code": "PRJ-PPMIS",
+    "status": "active",
+    "row_md5": "ef67b78a4d4902d2dc6db3efb017b80b",
+    "version": 1,
+    "external_key": "PRJ-PYP-PPMIS"
+  },
+  "published_count": 95,
+  "evidence_policies": [
+    {
+      "id": 787,
+      "hash": "a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392"
+    },
+    {
+      "id": 829,
+      "hash": "01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016"
+    },
+    {
+      "id": 836,
+      "hash": "be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30"
+    },
+    {
+      "id": 845,
+      "hash": "7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4"
+    },
+    {
+      "id": 854,
+      "hash": "7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6"
+    }
+  ],
+  "qra_run_count": 0,
+  "head": "20261011_0068"
+}

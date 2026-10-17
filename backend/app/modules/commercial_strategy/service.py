@@ -23,6 +23,7 @@ from app.core.time import utc_now
 from app.domain.models import AdminConfiguration, AdminNumberSequence, EnterpriseWorkspace, SecurityEvent
 from app.modules.business_analysis.models import BusinessAnalysis
 from app.modules.business_case.models import BusinessCase, BusinessCaseRevision
+from app.modules.business_case.source_links import current_bundle_matches_completed_case_link
 from app.modules.commercial_strategy.models import CommercialContractingStrategy, CommercialStrategyVersion
 from app.modules.commercial_strategy.schemas import (
     CommercialConfigurationPreviewOut,
@@ -1143,7 +1144,20 @@ class CommercialStrategyService:
         configuration, _chain = self._resolve_configuration(project)
         content = deepcopy(version.content_json or {})
         current_refs, current_hashes = self._source_bundle(project.id)
-        source_current = current_hashes == dict(version.source_hashes_json or {})
+        source_current = current_bundle_matches_completed_case_link(
+            self.db,
+            tenant_id=self.tenant_id,
+            project_id=project.id,
+            source_key="commercial_strategy",
+            aggregate_id=strategy.id,
+            version_id=version.id,
+            version_number=version.version_number,
+            source_hash=version.commercial_strategy_hash,
+            source_status=version.status,
+            captured_references=dict(version.source_references_json or {}),
+            captured_hashes=dict(version.source_hashes_json or {}),
+            current_hashes=current_hashes,
+        )
         configuration_current = configuration.content_hash == version.configuration_hash
         effective_policy = self._tailored_policy(project, configuration.content_json, version.fel_stage_code)
         dimensions, warnings, blockers = self._readiness_dimensions(

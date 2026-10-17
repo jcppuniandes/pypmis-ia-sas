@@ -445,12 +445,28 @@ export default function ProjectProposalWorkspace({ token, workspaceId }: { token
                 )}
               </section>
 
+              {selected.status.startsWith("STRATEGIC_GATE_") && (
+                <section className="proposalReview" aria-label="Recorded Strategic Gate outcome">
+                  <h4>Recorded Strategic Gate outcome</h4>
+                  <strong>{selected.status}</strong>
+                  <p>
+                    This recorded outcome remains part of the Proposal history. Current eligibility for another gate
+                    entry below does not reverse or replace that decision.
+                  </p>
+                </section>
+              )}
+
               <section
+                aria-label="Current Strategic Gate entry eligibility"
                 className={readiness?.can_enter_strategic_gate ? "proposalReadiness ready" : "proposalReadiness"}
               >
                 <Flag size={19} />
                 <div>
-                  <strong>Gate Readiness</strong>
+                  <strong>
+                    {selected.status.startsWith("STRATEGIC_GATE_")
+                      ? "Current Strategic Gate re-entry eligibility"
+                      : "Current Strategic Gate entry eligibility"}
+                  </strong>
                   <span>{readiness?.status || "Loading readiness…"}</span>
                 </div>
                 <small>

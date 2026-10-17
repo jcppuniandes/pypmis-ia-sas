@@ -24,13 +24,27 @@ def main() -> None:
     if len(sys.argv) != 4:
         raise SystemExit("usage: render_word_export.py DOCX EXPORTED_PDF OUTPUT_DIR")
     docx, pdf, output_dir = (Path(value).resolve() for value in sys.argv[1:])
-    if not docx.is_relative_to(OUTPUT) or docx.suffix != ".docx":
+    task_output = OUTPUT
+    task_qa = QA
+    current_output = ROOT / "outputs/strategic-uat-remediation-20261015"
+    if docx.is_relative_to(current_output):
+        task_output = current_output
+        task_qa = ROOT / "outputs/.qa/strategic-uat-remediation"
+    class_b_output = ROOT / "outputs/gate07j-controlled-class-b-20261015"
+    if docx.is_relative_to(class_b_output):
+        task_output = class_b_output
+        task_qa = ROOT / "outputs/.qa/gate07j-controlled-class-b"
+    rebuild_output = ROOT / "outputs/gate07j-controlled-class-b-20261016"
+    if docx.is_relative_to(rebuild_output):
+        task_output = rebuild_output
+        task_qa = ROOT / "outputs/.qa/gate07j-controlled-class-b-rebuild"
+    if not docx.is_relative_to(task_output) or docx.suffix != ".docx":
         raise ValueError("Expected scoped strategic UAT DOCX")
-    if not pdf.is_relative_to(QA) or not output_dir.is_relative_to(QA):
+    if not pdf.is_relative_to(task_qa) or not output_dir.is_relative_to(task_qa):
         raise ValueError("Expected scoped private strategic UAT QA paths")
     if pdf.stem != docx.stem or not pdf.is_file():
         raise ValueError("Expected completed matching read-only Word PDF export")
-    task_temp = QA / "word-render-tmp"
+    task_temp = task_qa / "word-render-tmp"
     task_temp.mkdir(parents=True, exist_ok=True)
     tempfile.tempdir = str(task_temp)
     spec = importlib.util.spec_from_file_location(

@@ -1,0 +1,174 @@
+{
+  "release_status": "STRATEGIC_MACROPROCESS_NOT_VALIDATED",
+  "operational_preservation": "IDENTICAL_READ_ONLY_SNAPSHOTS",
+  "word_page_review_queue": {
+    "Admin_Guide": {
+      "new_or_changed_pages": [
+        30
+      ],
+      "previously_reviewed_identical_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    "UAT_Plan_and_Results": {
+      "new_or_changed_pages": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "previously_reviewed_identical_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ]
+    },
+    "Final_Release_Closeout": {
+      "new_or_changed_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "previously_reviewed_identical_pages": []
+    }
+  },
+  "artifacts": [
+    {
+      "name": "P&Pmis_Strategic_Macroprocess_Admin_Guide.docx",
+      "sha256": "793a3fc8fe185228610a1e570e77f301315d6b0f8b16498d0b0ef80a2b9b0d0a",
+      "bytes": 87805,
+      "pages": 30,
+      "changed_package_parts": [
+        "docProps/core.xml",
+        "word/document.xml"
+      ],
+      "a11y": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "name": "P&Pmis_Strategic_Macroprocess_UAT_Plan_and_Results.docx",
+      "sha256": "46dac72729f42bb12dde98865cc416d917c28f3682e45183e55d0bf0d41bee32",
+      "bytes": 102394,
+      "pages": 36,
+      "changed_package_parts": [
+        "docProps/core.xml",
+        "word/document.xml"
+      ],
+      "a11y": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "name": "P&Pmis_Strategic_Macroprocess_Final_Release_Closeout.docx",
+      "sha256": "74960224500665625a19737b6f1f3d5d923cf5cf2b03ec3c8590f69425de5324",
+      "bytes": 99260,
+      "pages": 16,
+      "changed_package_parts": [
+        "docProps/core.xml",
+        "word/document.xml",
+        "word/footer1.xml"
+      ],
+      "a11y": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "name": "P&Pmis_Strategic_Macroprocess_UAT_Traceability.xlsx",
+      "sha256": "935678363f2ddc1b26ed3780b58a9a75102c3990e40ac16c406f2156f8cd2ffa",
+      "sheets": [
+        "01_Process_Matrix",
+        "02_UAT_Cases",
+        "03_Admin_User_Matrix",
+        "04_Navigation_Matrix",
+        "05_Business_Rules",
+        "06_Defects",
+        "07_Code_Cleanup",
+        "08_Release_Criteria"
+      ],
+      "uat_current_counts": {
+        "BLOCKED": 51
+      },
+      "history_preserved_cases": 51,
+      "unsigned_areas": 15,
+      "cached_formula_errors": []
+    }
+  ],
+  "visual_review": "PASS_ROOT_VISUAL_REVIEW_OF_FINAL_WORD_PAGES_AND_CHANGED_WORKBOOK_PANELS"
+}

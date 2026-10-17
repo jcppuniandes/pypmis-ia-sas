@@ -34,6 +34,9 @@ from app.modules.enterprise_structure.schemas import (
     RevisionDiffItem,
     RevisionDiffOut,
     RevisionMoveRequest,
+    RevisionParentReconciliationItem,
+    RevisionParentReconciliationOut,
+    RevisionParentReconciliationRequest,
     RevisionPublishRequest,
     RevisionRecordCodeImpact,
     RevisionRecordCodePreviewOut,
@@ -61,6 +64,9 @@ class EnterpriseStructureRevisionService:
         self.repository = EnterpriseStructureRepository(db, tenant_id)
 
     def create_revision(self, published_id: int) -> CoreRevisionOut:
+        return self._create_revision(published_id)
+
+    def _create_revision(self, published_id: int, *, reconciled_parent_ids: list[int] | None = None) -> CoreRevisionOut:
         source = self._release(published_id)
         if source.state != "published":
             raise HTTPException(
@@ -71,6 +77,11 @@ class EnterpriseStructureRevisionService:
             raise HTTPException(status_code=409, detail="The selected release is not the current published release")
         existing = self.repository.latest_draft_release()
         if existing is not None:
+            if reconciled_parent_ids is not None:
+                raise HTTPException(
+                    status_code=409,
+                    detail={"code": "DRAFT_ALREADY_EXISTS", "draft_release_id": existing.id},
+                )
             if existing.previous_release_id == source.id:
                 snapshot = self._normalized_snapshot(existing)
                 self._adopt_live_projects_for_draft(snapshot)
@@ -84,6 +95,8 @@ class EnterpriseStructureRevisionService:
         revision_number = max(source.revision_number + 1, self.repository.release_count() + 1)
         release_code = self._next_release_code(revision_number)
         snapshot = self._normalized_snapshot(source)
+        if reconciled_parent_ids is not None:
+            self._reconcile_parent_identities(snapshot, reconciled_parent_ids)
         self._adopt_live_projects_for_draft(snapshot)
         now = utc_now()
         release_name = f"Workspace Structure Revision {revision_number:03d}"
@@ -124,6 +137,7 @@ class EnterpriseStructureRevisionService:
                 "previous_release": source.release_code,
                 "draft_hash": draft.content_fingerprint,
                 "diff_hash": draft.diff_hash,
+                "reconciled_parent_workspace_ids": sorted(reconciled_parent_ids or []),
                 "result": "created",
             },
         )
@@ -132,7 +146,7 @@ class EnterpriseStructureRevisionService:
         except IntegrityError as exc:
             self.db.rollback()
             concurrent = self.repository.latest_draft_release()
-            if concurrent is not None and concurrent.previous_release_id == source.id:
+            if reconciled_parent_ids is None and concurrent is not None and concurrent.previous_release_id == source.id:
                 return self.revision_out(concurrent)
             raise HTTPException(
                 status_code=409,
@@ -140,6 +154,60 @@ class EnterpriseStructureRevisionService:
             ) from exc
         self.db.refresh(draft)
         return self.revision_out(draft)
+
+    def parent_reconciliation(self, release_id: int) -> RevisionParentReconciliationOut:
+        """Read-only diagnosis; never create a draft or infer new ancestors."""
+        release = self._release(release_id)
+        if release.state not in {"draft", "published"}:
+            raise HTTPException(status_code=409, detail="Reconciliation requires a current CORE or draft")
+        snapshot = self._normalized_snapshot(release)
+        parents, projects = self._missing_live_project_parents(snapshot)
+        return RevisionParentReconciliationOut(
+            release_id=release.id,
+            revision_version=release.revision_version,
+            required_parent_workspaces=[
+                RevisionParentReconciliationItem(
+                    workspace_id=parent.id,
+                    external_key=str(parent.external_key).strip().upper(),
+                    parent_workspace_id=parent.parent_id,
+                    workspace_type_code=_configuration_code(parent.workspace_type_code),
+                    record_code=parent.record_code,
+                )
+                for parent in parents
+            ],
+            project_workspace_ids=projects,
+        )
+
+    def reconcile_live_parents(
+        self,
+        release_id: int,
+        payload: RevisionParentReconciliationRequest,
+        *,
+        expected_version: int,
+    ) -> CoreRevisionOut:
+        """Adopt explicitly confirmed existing parents in DRAFT, never live state.
+
+        When the ordinary clone is blocked, this explicit command preflights the
+        exact parent IDs before creating a draft. Subsequent reconciliations use
+        that draft's ETag and invalidate prior validation/approval on any change.
+        """
+        release = self._release(release_id)
+        self._assert_revision_version(release, expected_version)
+        if release.state == "published":
+            return self._create_revision(release.id, reconciled_parent_ids=payload.parent_workspace_ids)
+        release = self._draft(release_id)
+        snapshot = self._normalized_snapshot(release)
+        self._reconcile_parent_identities(snapshot, payload.parent_workspace_ids)
+        self._adopt_live_projects_for_draft(snapshot)
+        if snapshot != self._normalized_snapshot(release):
+            self._refresh_draft(
+                release,
+                snapshot,
+                operation="existing_live_parents_reconciled",
+                extra={"parent_workspace_ids": sorted(payload.parent_workspace_ids)},
+            )
+            self._commit_revision(release.id, expected_version)
+        return self.revision_out(release)
 
     def get_revision(self, release_id: int) -> CoreRevisionOut:
         return self.revision_out(self._release(release_id))
@@ -897,6 +965,157 @@ class EnterpriseStructureRevisionService:
         snapshot["classifications"] = normalized_classifications
         return snapshot
 
+    def _missing_live_project_parents(self, snapshot: dict[str, Any]) -> tuple[list[EnterpriseWorkspace], list[int]]:
+        if snapshot.get("tenant", {}).get("id") != self.tenant_id:
+            raise HTTPException(status_code=409, detail={"code": "CROSS_TENANT_CORE_SNAPSHOT"})
+        with self.db.no_autoflush:
+            live = self.repository.workspaces()
+        live_by_id = {workspace.id: workspace for workspace in live}
+        draft_by_key = {item["external_key"]: item for item in snapshot["workspaces"]}
+        missing: dict[int, EnterpriseWorkspace] = {}
+        affected_projects: list[int] = []
+        for project in live:
+            if _configuration_code(project.workspace_type_code) != "project":
+                continue
+            parent_id = project.parent_id
+            visited = {project.id}
+            while parent_id is not None:
+                parent = live_by_id.get(parent_id)
+                if parent is None or parent.id in visited:
+                    raise HTTPException(
+                        status_code=409,
+                        detail={"code": "PROJECT_PARENT_RECONCILIATION_REQUIRED", "workspace_id": project.id},
+                    )
+                visited.add(parent.id)
+                key = str(parent.external_key or "").strip().upper()
+                if not key or _configuration_code(parent.workspace_type_code) == "project":
+                    raise HTTPException(
+                        status_code=409,
+                        detail={"code": "PROJECT_PARENT_IDENTITY_REQUIRED", "workspace_id": project.id},
+                    )
+                item = draft_by_key.get(key)
+                if item is not None:
+                    if item.get("id") != parent.id or item["workspace_type_code"] != _configuration_code(
+                        parent.workspace_type_code
+                    ):
+                        raise HTTPException(
+                            status_code=409,
+                            detail={"code": "PARENT_WORKSPACE_IDENTITY_MISMATCH", "workspace_id": parent.id},
+                        )
+                    break
+                missing[parent.id] = parent
+                if project.id not in affected_projects:
+                    affected_projects.append(project.id)
+                parent_id = parent.parent_id
+        return sorted(missing.values(), key=lambda item: (item.record_code, item.id)), affected_projects
+
+    def _reconcile_parent_identities(self, snapshot: dict[str, Any], parent_ids: list[int]) -> None:
+        """Copy only exact requested tenant-scoped parents, never create ancestry."""
+        if len(parent_ids) != len(set(parent_ids)) or any(identity < 1 for identity in parent_ids):
+            raise HTTPException(status_code=422, detail={"code": "UNIQUE_EXISTING_PARENT_IDS_REQUIRED"})
+        required, _ = self._missing_live_project_parents(snapshot)
+        required_ids = {workspace.id for workspace in required}
+        with self.db.no_autoflush:
+            live = self.repository.workspaces()
+            classifications = self.repository.classifications()
+        live_by_id = {workspace.id: workspace for workspace in live}
+        draft_by_key = {item["external_key"]: item for item in snapshot["workspaces"]}
+        selected: list[EnterpriseWorkspace] = []
+        # Validate the entire request before even modifying the in-memory copy.
+        for identity in parent_ids:
+            workspace = live_by_id.get(identity)
+            if workspace is None:
+                raise HTTPException(status_code=404, detail={"code": "PARENT_WORKSPACE_NOT_FOUND"})
+            if _configuration_code(workspace.workspace_type_code) == "project":
+                raise HTTPException(status_code=409, detail={"code": "PROJECT_PARENT_IDENTITY_REQUIRED"})
+            key = str(workspace.external_key or "").strip().upper()
+            item = draft_by_key.get(key)
+            if not key or (item is not None and item.get("id") != identity):
+                raise HTTPException(status_code=409, detail={"code": "PARENT_WORKSPACE_IDENTITY_MISMATCH"})
+            if identity not in required_ids and item is None:
+                raise HTTPException(status_code=409, detail={"code": "PARENT_RECONCILIATION_SCOPE_MISMATCH"})
+            if item is None:
+                selected.append(workspace)
+        if not required_ids.issubset(set(parent_ids)):
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "PROJECT_PARENT_RECONCILIATION_REQUIRED",
+                    "required_parent_workspace_ids": sorted(required_ids),
+                },
+            )
+        for workspace in selected:
+            parent = live_by_id.get(workspace.parent_id)
+            metadata = dict((workspace.defaults_json or {}).get("_enterprise") or {})
+            key = str(workspace.external_key).strip().upper()
+            type_code = _configuration_code(workspace.workspace_type_code)
+            snapshot["workspaces"].append(
+                {
+                    "id": workspace.id,
+                    "technical_id": workspace.id,
+                    "external_key": key,
+                    "parent_id": workspace.parent_id,
+                    "parent_external_key": str(parent.external_key).strip().upper() if parent else None,
+                    "record_code": workspace.record_code,
+                    "code": workspace.code,
+                    "name": workspace.name,
+                    "workspace_type": type_code,
+                    "workspace_type_code": type_code,
+                    "description": str(metadata.get("description") or ""),
+                    "responsible_user_id": metadata.get("responsible_user_id"),
+                    "status": workspace.status.strip().lower(),
+                    "sort_order": workspace.sort_order,
+                }
+            )
+            snapshot["classifications"].extend(
+                {
+                    "workspace_id": workspace.id,
+                    "workspace_external_key": key,
+                    "category_set_code": classification.category_set_code,
+                    "category_item_code": classification.category_item_code,
+                }
+                for classification in classifications
+                if classification.workspace_id == workspace.id
+            )
+        if selected:
+            confirmed = {item["workspace_id"]: item for item in snapshot.get("reconciled_parent_identities", [])}
+            confirmed.update(
+                {
+                    workspace.id: {
+                        "workspace_id": workspace.id,
+                        "external_key": str(workspace.external_key).strip().upper(),
+                        "workspace_type_code": _configuration_code(workspace.workspace_type_code),
+                    }
+                    for workspace in selected
+                }
+            )
+            # Provenance is part of the normal hash-covered snapshot, not a
+            # second identity store. No marker is added to generic CORE drafts.
+            snapshot["reconciled_parent_identities"] = [confirmed[identity] for identity in sorted(confirmed)]
+
+    def _assert_reconciled_parent_identities(self, snapshot: dict[str, Any], live: list[EnterpriseWorkspace]) -> None:
+        """Never recreate a stale adopted parent under its old snapshot key."""
+        live_by_id = {workspace.id: workspace for workspace in live}
+        desired_by_key = {item["external_key"]: item for item in snapshot["workspaces"]}
+        for identity in snapshot.get("reconciled_parent_identities", []):
+            workspace = live_by_id.get(identity["workspace_id"])
+            desired = desired_by_key.get(identity["external_key"])
+            if (
+                workspace is None
+                or str(workspace.external_key or "").strip().upper() != identity["external_key"]
+                or _configuration_code(workspace.workspace_type_code) != identity["workspace_type_code"]
+                or desired is None
+                or desired.get("id") != workspace.id
+                or desired["workspace_type_code"] != identity["workspace_type_code"]
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "code": "PARENT_WORKSPACE_IDENTITY_MISMATCH",
+                        "workspace_id": identity["workspace_id"],
+                    },
+                )
+
     def _adopt_live_projects_for_draft(self, snapshot: dict[str, Any]) -> None:
         """Copy actual USER-owned identities/state into an explicitly requested draft.
 
@@ -981,6 +1200,7 @@ class EnterpriseStructureRevisionService:
             raise HTTPException(status_code=409, detail={"code": "CROSS_TENANT_CORE_SNAPSHOT"})
         with self.db.no_autoflush:
             current = existing if existing is not None else self.repository.workspaces()
+        self._assert_reconciled_parent_identities(snapshot, current)
         by_key = {str(item.external_key or "").strip().upper(): item for item in current}
         desired = {item["external_key"]: item for item in snapshot["workspaces"]}
         for key, item in desired.items():

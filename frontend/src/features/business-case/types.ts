@@ -10,6 +10,12 @@ export type BusinessCaseSourceEvidence = {
   source_readiness?: string | null;
   as_of_date?: string | null;
   source_current?: boolean;
+  /** Captured matrix availability is distinct from freshness of an existing source. */
+  available?: boolean;
+  /** Backend Five Case matrix aliases; canonical fields remain supported. */
+  version?: string | number | null;
+  hash?: string | null;
+  readiness?: string | null;
   blocking?: boolean;
   view?: string | null;
   analysis_type?: "COST_QRA" | "SCHEDULE_QRA";

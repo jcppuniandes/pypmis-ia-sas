@@ -107,7 +107,16 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
     }
     const loadEligibility = async () => {
       try {
-        const types = ["property", "facility", "warehouse"] as const;
+        // Probe only relationships permitted by the published type definition.
+        // The options endpoint still owns location eligibility and permissions.
+        // A Project leaf must not request unrelated physical creation privileges.
+        const definition = data?.workspace_types
+          .filter((item) => item.status === "published" && item.code === detail.node.workspace_type_code)
+          .sort((left, right) => right.revision - left.revision)[0];
+        const allowed = definition?.content_json.allowed_children;
+        const types = (["property", "facility", "warehouse"] as const).filter(
+          (type) => Array.isArray(allowed) && allowed.includes(type)
+        );
         const responses = await Promise.all(
           types.map((type) => enterpriseStructureApi.physicalCreationOptions(token, type, detail.node.id))
         );
@@ -127,7 +136,7 @@ export default function EnterpriseExplorerPage({ token }: { token: string }) {
     return () => {
       active = false;
     };
-  }, [detail, token]);
+  }, [data?.workspace_types, detail, token]);
 
   async function selectNode(nodeId: number) {
     setBusy(true);

@@ -33,6 +33,7 @@ from app.modules.project_creation.governance import (
     source_requirements_status,
 )
 from app.modules.project_creation.models import ProjectCreationRequest
+from app.modules.project_workspace_initialization.governance import post_fid_lifecycle_authorization
 from app.modules.project_workspace_initialization.models import ProjectWorkspaceInitialization
 from app.modules.project_workspace_initialization.schemas import (
     ChecklistItemOut,
@@ -275,7 +276,7 @@ class ProjectWorkspaceInitializationService:
             ):
                 raise HTTPException(status_code=403, detail="ACTIVATION_SEPARATION_OF_DUTIES_VIOLATION")
 
-            checklist, template, modules = self._evaluate(workspace)
+            checklist, template, modules = self._evaluate(workspace, for_activation=True)
             validation_hash = self._validation_hash(workspace, template, modules)
             checklist_hash = _hash([item.model_dump() for item in checklist])
             blockers = [item for item in checklist if item.blocking and item.status == "FAIL"]
@@ -380,6 +381,8 @@ class ProjectWorkspaceInitializationService:
     def _evaluate(
         self,
         workspace: EnterpriseWorkspace,
+        *,
+        for_activation: bool = False,
     ) -> tuple[list[ChecklistItemOut], AdminConfiguration | None, list[ModuleInitializationOut]]:
         metadata = self._metadata(workspace)
         parent = self.db.get(EnterpriseWorkspace, workspace.parent_id) if workspace.parent_id else None
@@ -387,6 +390,12 @@ class ProjectWorkspaceInitializationService:
         governance_model = metadata.get("governance_model")
         governance_policy = dict(metadata.get("governance_policy_snapshot") or {})
         source_snapshot = dict(metadata.get("source_snapshot") or {})
+        governance_authorized = activation_authorization_status(governance_model, source_snapshot)
+        governance_authority: dict[str, Any] = {}
+        if governance_model == "CAPITAL_OWNER" and not governance_authorized:
+            governance_authorized, governance_authority = post_fid_lifecycle_authorization(
+                self.db, self.tenant_id, self.actor_id, workspace, for_activation=for_activation
+            )
         source_blockers, _source_warnings = source_requirements_status(
             governance_model,
             metadata.get("source_context_type"),
@@ -619,12 +628,13 @@ class ProjectWorkspaceInitializationService:
             ),
             self._check(
                 "governance_activation_authorized",
-                activation_authorization_status(governance_model, source_snapshot),
+                governance_authorized,
                 "La autorización de activación corresponde al modelo de gobierno efectivo.",
                 bool(governance_model),
                 {
                     "governance_model": governance_model,
                     "activation_requirements": governance_policy.get("activation_requirements", []),
+                    **governance_authority,
                 },
             ),
             self._check(

@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from app.core.time import utc_now
 from app.domain.models import AdminConfiguration, AdminNumberSequence, SecurityEvent, UserAccount
 from app.modules.investment_decision.models import InvestmentDecision, InvestmentDecisionVote
+from app.modules.investment_decision.post_activation_currentness import consumed_fid_contract
 from app.modules.investment_decision.schemas import (
     ConfigurationPreviewOut,
     DecisionCreateIn,
@@ -775,6 +776,8 @@ class InvestmentDecisionService:
         self,
         preparation: InvestmentGatePreparation,
         service: InvestmentGatePreparationService | None = None,
+        *,
+        decision: InvestmentDecision | None = None,
     ) -> None:
         service = service or InvestmentGatePreparationService(self.db, self.tenant_id, self.actor_id, self.context)
         try:
@@ -783,7 +786,17 @@ class InvestmentDecisionService:
                 service._portfolio(preparation.portfolio_workspace_id), preparation.profile_code
             )
         except HTTPException as error:
-            raise HTTPException(status_code=409, detail={"code": "PREPARATION_STALE"}) from error
+            detail = error.detail if isinstance(error.detail, dict) else {}
+            contract = (
+                consumed_fid_contract(self, preparation, decision)
+                if detail.get("code") == "PORTFOLIO_RECOMMENDATION_NOT_READY"
+                else None
+            )
+            if contract is None:
+                raise HTTPException(status_code=409, detail={"code": "PREPARATION_STALE"}) from error
+            profile = service._effective_profile_for_code(
+                service._portfolio(preparation.portfolio_workspace_id), preparation.profile_code
+            )
         if profile is None or profile.content_hash != preparation.profile_hash:
             raise HTTPException(status_code=409, detail={"code": "POLICY_MISMATCH"})
         current_hash = service._current_preparation_hash(preparation, contract, profile.content_hash)
@@ -800,7 +813,7 @@ class InvestmentDecisionService:
             raise HTTPException(status_code=409, detail={"code": "PACKAGE_HASH_MISMATCH"})
         if preparation.recommended_project_set_hash != record.decision_scope_hash:
             raise HTTPException(status_code=409, detail={"code": "PROJECT_SET_MISMATCH"})
-        self._assert_preparation_current(preparation)
+        self._assert_preparation_current(preparation, decision=record)
         current_config = self._published_configuration()
         if current_config.content_hash != record.configuration_hash:
             raise HTTPException(status_code=409, detail={"code": "POLICY_MISMATCH"})

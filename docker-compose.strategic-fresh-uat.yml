@@ -1,0 +1,54 @@
+name: pypmis-strategic-fresh-uat
+
+# Disposable, isolated database. Never mounts or connects to operational data.
+services:
+  fresh-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: strategic_fresh_uat
+      POSTGRES_USER: strategic_uat
+      POSTGRES_PASSWORD: disposable-strategic-uat
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U strategic_uat -d strategic_fresh_uat]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  fresh-redis:
+    image: redis:7-alpine
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  fresh-api:
+    image: pypmis-qra-engine-qra-validation:latest
+    environment:
+      DATABASE_URL: postgresql+psycopg://strategic_uat:disposable-strategic-uat@fresh-db:5432/strategic_fresh_uat
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://strategic_uat:disposable-strategic-uat@fresh-db:5432/strategic_fresh_uat
+      PYPMIS_STRATEGIC_FRESH_UAT: disposable-only
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: fresh-strategic-disposable-only
+      RATE_LIMIT_ENABLED: "false"
+      REDIS_URL: redis://fresh-redis:6379/0
+      CORS_ORIGINS: http://127.0.0.1:5543,http://localhost:5543
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+    volumes:
+      - ./backend:/app:ro
+      - ./outputs/.qa/strategic-uat-remediation:/artifacts
+    tmpfs: [/tmp]
+    ports: ["127.0.0.1:8840:8000"]
+    command: [/bin/sh, -ec, "python -m tests.provision_strategic_fresh_uat && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2)"]
+      start_period: 60s
+      interval: 5s
+      timeout: 4s
+      retries: 40
+    depends_on:
+      fresh-db: {condition: service_healthy}
+      fresh-redis: {condition: service_healthy}

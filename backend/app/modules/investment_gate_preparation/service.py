@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from copy import deepcopy
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import HTTPException
@@ -436,6 +436,11 @@ class InvestmentGatePreparationService:
             raise HTTPException(status_code=409, detail={"code": "MANUAL_REFERENCE_NOT_ALLOWED"})
         scope_key = self._scope_key(payload.scope_type, payload.scope_id)
         self._validate_evidence_scope(record, requirement, payload.scope_type, payload.scope_id)
+        evidence_date = self._utc_naive(payload.evidence_date)
+        valid_until = self._utc_naive(payload.valid_until) or self._default_valid_until(evidence_date, requirement)
+        validity_issue = self._manual_validity_issue(evidence_date, valid_until, requirement)
+        if validity_issue:
+            raise HTTPException(status_code=422, detail={"code": validity_issue})
         item = self.db.scalar(
             select(InvestmentGateEvidenceItem).where(
                 InvestmentGateEvidenceItem.tenant_id == self.tenant_id,
@@ -452,8 +457,8 @@ class InvestmentGatePreparationService:
         item.evidence_origin = "MANUAL_REFERENCE"
         item.source_module = None
         item.source_record_id = payload.reference_id
-        item.evidence_date = payload.evidence_date
-        item.valid_until = payload.valid_until or self._default_valid_until(payload.evidence_date, requirement)
+        item.evidence_date = evidence_date
+        item.valid_until = valid_until
         item.issuer = payload.issuer
         item.owner = payload.owner
         item.summary = payload.summary
@@ -490,10 +495,17 @@ class InvestmentGatePreparationService:
         self._assert_editable(record)
         if item.evidence_origin != "MANUAL_REFERENCE":
             raise HTTPException(status_code=409, detail={"code": "GOVERNED_SOURCE_EVIDENCE_IS_READ_ONLY"})
+        profile = self._configuration(record.investment_gate_profile_id)
+        requirement = self._requirement(self._profile_content(record, profile), item.requirement_key, item.scope_id)
+        evidence_date = self._utc_naive(payload.evidence_date or item.evidence_date)
+        valid_until = self._utc_naive(payload.valid_until or item.valid_until)
+        validity_issue = self._manual_validity_issue(evidence_date, valid_until, requirement)
+        if validity_issue:
+            raise HTTPException(status_code=422, detail={"code": validity_issue})
         for field in ("evidence_date", "valid_until", "issuer", "owner", "summary", "scope_reference_hash"):
             value = getattr(payload, field)
             if value is not None:
-                setattr(item, field, value)
+                setattr(item, field, self._utc_naive(value) if field in {"evidence_date", "valid_until"} else value)
         if payload.evidence_refs is not None:
             item.evidence_refs_json = deepcopy(payload.evidence_refs)
         item.source_hash = _hash(self._evidence_hash_payload(item))
@@ -564,16 +576,26 @@ class InvestmentGatePreparationService:
         profile_content = self._profile_content(record, profile)
         requirement = self._requirement(profile_content, item.requirement_key, item.scope_id)
         sod = dict(profile_content.get("sod", {}))
-        if (
+        # A captured Class B policy may introduce controlled requirements that
+        # were not present in the older profile's explicit key list.  Its
+        # mandatory independent validation must not silently disappear merely
+        # because that legacy list only names FEL/funding evidence.
+        independent_validation_required = (
+            requirement.get("classification") == "B" and requirement.get("manual_validation_required")
+        ) or (
             sod.get("preparer_must_differ_from_validator")
             and item.requirement_key in set(sod.get("require_distinct_validator_for", []))
-            and item.submitted_by == self.actor_id
-        ):
+        )
+        if independent_validation_required and item.submitted_by == self.actor_id:
             raise HTTPException(status_code=409, detail={"code": "EVIDENCE_VALIDATION_SOD_VIOLATION"})
         if item.status not in {"SUBMITTED", "VALID", "INVALID", "EXPIRED", "STALE"}:
             raise HTTPException(status_code=409, detail={"code": "EVIDENCE_NOT_SUBMITTED"})
         status = payload.decision
         blockers: list[str] = []
+        validity_issue = self._manual_validity_issue(item.evidence_date, item.valid_until, requirement)
+        if status == "VALID" and validity_issue:
+            status = "INVALID"
+            blockers.append(validity_issue)
         if status == "VALID" and item.valid_until and item.valid_until < utc_now():
             status = "EXPIRED"
             blockers.append("EVIDENCE_EXPIRED")
@@ -2575,9 +2597,35 @@ class InvestmentGatePreparationService:
         days = requirement.get("validity_period_days")
         if not days:
             return None
-        from datetime import timedelta
-
         return evidence_date + timedelta(days=int(days))
+
+    @staticmethod
+    def _utc_naive(value: datetime | None) -> datetime | None:
+        if value is not None and value.tzinfo is not None:
+            return value.astimezone(UTC).replace(tzinfo=None)
+        return value
+
+    @classmethod
+    def _manual_validity_issue(
+        cls, evidence_date: datetime | None, valid_until: datetime | None, requirement: dict
+    ) -> str | None:
+        """Enforce the captured Class B rule, without reinterpreting frozen history."""
+        if requirement.get("classification") != "B":
+            return None
+        evidence_date, valid_until = cls._utc_naive(evidence_date), cls._utc_naive(valid_until)
+        if evidence_date is None:
+            return "EVIDENCE_DATE_REQUIRED"
+        if evidence_date > utc_now():
+            return "EVIDENCE_DATE_IN_FUTURE"
+        if valid_until is not None and valid_until < evidence_date:
+            return "EVIDENCE_VALIDITY_INVALID"
+        days = requirement.get("validity_period_days")
+        if days:
+            if valid_until is None:
+                return "EVIDENCE_VALIDITY_REQUIRED"
+            if valid_until > evidence_date + timedelta(days=int(days)):
+                return "EVIDENCE_VALIDITY_EXCEEDS_POLICY"
+        return None
 
     @staticmethod
     def _manual_evidence_payload(payload: ManualEvidenceIn) -> dict:

@@ -1,8 +1,12 @@
-"""Gate 07M-FID full-stack service revalidation on one PYP-FFA Project.
+"""Retained Gate07M-FID regression with a current Five Case command fixture.
 
-The fixture intentionally uses the public domain services end to end.  Direct
-ORM writes are limited to identities and upstream proposal/configuration seed
-records that have no dedicated factory outside HTTP authentication/bootstrap.
+Category A reconciliation preserves the original FID/idempotency, immutable
+history and Funding/FIN recovery assertions. The collected test now builds its
+upstream chain with current real lifecycle helpers and independent RBAC actors.
+The original private payload helpers remain readable for historical context;
+the fixture no longer calls their fixed-policy-ID or terminal-source seeding.
+Public constants, ``_manual_blocking_class_b`` and ``_project_14_hash`` remain
+compatible with the QRA and route regressions that reuse them.
 """
 
 from __future__ import annotations
@@ -20,13 +24,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from tests.test_funds_manager_gate07j_fund import _published_policy as published_funds_policy
-from tests.test_investment_decision_gate07k import _maker
-from tests.test_investment_gate_preparation_gate07j import _profile, _reviewer
-from tests.test_portfolio_analysis_gate07f import _complete, _context, _portfolio, _project
+from tests.test_investment_gate_preparation_gate07j import _reviewer
+from tests.test_portfolio_analysis_gate07f import _complete, _portfolio, _project
 from tests.test_project_definition_gate07j_fel import _complete_current, _framework
-from tests.test_risk_readiness_gate07j_risk import _complete as complete_risk
-from tests.test_risk_readiness_gate07j_risk import _low_risk
-from tests.test_risk_readiness_gate07j_risk import _publish as publish_risk
 
 from app.core.time import utc_now
 from app.database.session import SessionLocal
@@ -86,7 +86,6 @@ from app.modules.post_fid_governance.service import READY_INITIALIZATION, PostFI
 from app.modules.project_definition.schemas import StartFELIn
 from app.modules.project_definition.service import ProjectDefinitionService
 from app.modules.project_proposal.models import ProjectProposal
-from app.modules.risk_readiness.service import RiskReadinessService
 
 POLICY_ID = 787
 POLICY_EFFECTIVE_FROM = "2026-09-03T12:34:44.035309"
@@ -865,6 +864,7 @@ def _manual_blocking_class_b(preparer, reviewer, preparation):
     for item in list(preparation.evidence):
         if item.classification != "B" or not item.blocking or item.status == "VALID":
             continue
+        evidence_date = utc_now()
         preparation = preparer.add_evidence(
             preparation.id,
             preparation.revision_version,
@@ -873,8 +873,8 @@ def _manual_blocking_class_b(preparer, reviewer, preparation):
                 scope_type=item.scope_type,
                 scope_id=item.scope_id,
                 reference_id=f"CONTROLLED-{item.evidence_type}-{item.scope_id or 'PORTFOLIO'}",
-                evidence_date=utc_now(),
-                valid_until=utc_now() + timedelta(days=180),
+                evidence_date=evidence_date,
+                valid_until=evidence_date + timedelta(days=180),
                 issuer="P&P Investment Governance Office",
                 owner="Commercial Project Sponsor",
                 summary=f"Independently controlled {item.evidence_type} reference for PYP-FFA.",
@@ -911,58 +911,47 @@ def _project_14_hash(db) -> str | None:
     )
 
 
-def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
+def test_new_pyp_ffa_fid_path_full_stack_revalidation(tmp_path: Path) -> None:
+    # Category A reconciliation after the separately proven persistent
+    # current-release A27-A31 journey: modernize the fixture, not the guards.
+    # Import locally because payload-only financing helpers retain the public
+    # constants from this module; imports must not create a circular module.
+    from tests.helpers.strategic_fresh_class_b import complete_controlled_references
+    from tests.helpers.strategic_legacy_fid_current_fixture import prepare_current_fid_sources
+    from tests.strategic_capital_owner_full_e2e_current import service
+
     timings: dict[str, float] = {}
     with SessionLocal() as db:
-        actor = db.scalar(select(UserAccount).where(UserAccount.email == "admin@demo.local"))
-        assert actor is not None
-        tenant_id = actor.tenant_id
-        parent = db.scalar(
-            select(EnterpriseWorkspace)
-            .where(
-                EnterpriseWorkspace.tenant_id == tenant_id,
-                EnterpriseWorkspace.workspace_type_code == "enterprise",
-            )
-            .order_by(EnterpriseWorkspace.id)
-        )
-        if parent is None:
-            _tenant, _actor, parent = _context()
-            parent = db.get(EnterpriseWorkspace, parent.id)
-            assert parent is not None
         baseline_project_14 = _project_14_hash(db)
-
-        portfolio, project, budget, resource, convergence = _portfolio_sources(
-            db,
-            tenant_id,
-            actor.id,
-            parent,
-        )
+        current = prepare_current_fid_sources(db)
+        setup, configs = current["setup"], current["configs"]
+        actor, reviewer = current["actor"], current["reviewer"]
+        tenant_id = current["tenant_id"]
+        portfolio, project = current["portfolio"], current["project"]
+        budget, resource, convergence = current["budget"], current["resource"], current["convergence"]
+        funding, case, case_revision = current["funding"], current["case"], current["case_revision"]
+        model, fin_version, instruments = current["model"], current["fin_version"], current["instruments"]
+        fel_hashes, risk_assessment = current["fel_hashes"], current["risk_assessment"]
         assert project.id != 14
-        reviewer, fel_hashes = _advance_to_fel3(db, tenant_id, actor.id, project.id)
-        risk = RiskReadinessService(db, tenant_id, actor.id)
-        publish_risk(risk)
-        _low_risk(risk, project.id, title="Controlled commercial delivery risk")
-        risk_assessment = complete_risk(risk, project.id)
         assert risk_assessment.readiness_status == "READY"
+        assert case_revision.status == "COMPLETED" and case_revision.readiness_status == "READY"
+        assert case_revision.five_case_readiness_json["overall_business_case_readiness"] == "READY"
+        assert case_revision.source_current is True
+        assert _project_14_hash(db) == baseline_project_14
 
-        funding, assignments = _funding(db, tenant_id, actor.id, portfolio.id, project.id)
-        case, case_revision, model, fin_version, instruments = _business_case_and_fin(
+        # Actual independently published current policy/profile, not the old
+        # fixed ID 787 fixture or a policy weakened for a missing source.
+        policy = db.get(AdminConfiguration, configs["evidence_policy"]["id"])
+        assert policy is not None and policy.status == "published"
+        assert policy.revision == configs["evidence_policy"]["revision"]
+        assert policy.content_hash == configs["evidence_policy"]["content_hash"]
+        policy_service = service(
+            InvestmentEvidencePolicyService,
             db,
             tenant_id,
-            actor.id,
-            reviewer.id,
-            parent.id,
-            project,
-            budget.id,
-            funding.snapshot_id,
-            assignments,
+            setup["admin_author_id"],
+            "investment_evidence_policy.read",
         )
-
-        policy = _publish_policy_787(db, tenant_id, actor.id)
-        assert policy.id == POLICY_ID
-        assert policy.revision == 1
-        assert policy.content_json["effective_from"] == POLICY_EFFECTIVE_FROM
-        policy_service = InvestmentEvidencePolicyService(db, tenant_id, actor.id)
         started = perf_counter()
         preview = policy_service.preview(
             portfolio_id=portfolio.id,
@@ -976,8 +965,11 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
         assert preview.source_availability["BUSINESS_CASE_READINESS"] == "AVAILABLE"
         assert preview.source_availability["ECONOMIC_FINANCIAL_READINESS"] == "AVAILABLE"
 
-        profile = _profile(db, tenant_id, actor.id, funding=True)
-        preparer = InvestmentGatePreparationService(db, tenant_id, actor.id)
+        profile = db.get(AdminConfiguration, configs["ffa_profile"]["id"])
+        assert profile is not None and profile.status == "published"
+        preparer = service(
+            InvestmentGatePreparationService, db, tenant_id, actor.id, "investment_gate_preparation.create"
+        )
         preparation = preparer.create(
             __import__(
                 "app.modules.investment_gate_preparation.schemas",
@@ -990,8 +982,23 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
                 idempotency_key=f"fid-preparation-{uuid4()}",
             )
         )
-        validator = InvestmentGatePreparationService(db, tenant_id, reviewer.id)
-        preparation = _manual_blocking_class_b(preparer, validator, preparation)
+        validator = service(
+            InvestmentGatePreparationService, db, tenant_id, reviewer.id, "investment_gate_evidence.validate"
+        )
+        controlled_history = []
+        preparation = complete_controlled_references(
+            service(InvestmentGatePreparationService, db, tenant_id, actor.id, "investment_gate_evidence.add"),
+            validator,
+            preparation,
+            setup,
+            Path(os.getenv("GATE07M_FID_CONTROLLED_EVIDENCE_DIR", str(tmp_path))),
+            {
+                "permit-readiness": current["sources"]["permit"]["provider"],
+                "contracting-strategy-readiness": current["sources"]["commercial"]["provider"],
+            },
+            lambda stage, data: controlled_history.append({"stage": stage, "data": data}),
+        )
+        assert len(controlled_history) == 8
         started = perf_counter()
         readiness = validator.readiness(preparation.id)
         timings["gate07j_readiness_ms"] = round((perf_counter() - started) * 1000, 3)
@@ -1007,7 +1014,9 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             f"fid-preparation-ready-{uuid4()}",
         )
         started = perf_counter()
-        preparation = validator.freeze(
+        preparation = service(
+            InvestmentGatePreparationService, db, tenant_id, reviewer.id, "investment_gate_preparation.freeze"
+        ).freeze(
             preparation.id,
             preparation.revision_version,
             f"fid-preparation-freeze-{uuid4()}",
@@ -1018,7 +1027,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
         assert handoff.final_output == "READY_FOR_INVESTMENT_DECISION"
         assert handoff.preparation_hash == frozen_hash
 
-        decision_service = InvestmentDecisionService(db, tenant_id, actor.id)
+        decision_service = service(InvestmentDecisionService, db, tenant_id, actor.id, "investment_decision.create")
         decision_service.ensure_seed()
         started = perf_counter()
         decision = decision_service.create(
@@ -1030,7 +1039,8 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             )
         )
         timings["gate07k_package_load_ms"] = round((perf_counter() - started) * 1000, 3)
-        maker = _maker(db, tenant_id, "Independent USD 100M FID Authority")
+        maker = db.get(UserAccount, setup["decision_maker_id"])
+        assert maker is not None and maker.id not in {actor.id, reviewer.id}
         decision = decision_service.update(
             decision.id,
             decision.revision_version,
@@ -1044,7 +1054,9 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             decision.revision_version,
             f"fid-decision-submit-{uuid4()}",
         )
-        decision = InvestmentDecisionService(db, tenant_id, reviewer.id).start_review(
+        decision = service(
+            InvestmentDecisionService, db, tenant_id, reviewer.id, "investment_decision.review"
+        ).start_review(
             decision.id,
             decision.revision_version,
             f"fid-decision-review-{uuid4()}",
@@ -1053,7 +1065,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             ChecklistAcknowledgement(code=item["code"], acknowledged=True, note="Validated full-stack")
             for item in decision.checklist
         ]
-        decision = InvestmentDecisionService(db, tenant_id, reviewer.id).ready(
+        decision = service(InvestmentDecisionService, db, tenant_id, reviewer.id, "investment_decision.review").ready(
             decision.id,
             decision.revision_version,
             DecisionReadyIn(idempotency_key=f"fid-decision-ready-{uuid4()}", checklist=checklist),
@@ -1071,7 +1083,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             authorized_currency="USD",
             idempotency_key=decide_key,
         )
-        maker_service = InvestmentDecisionService(db, tenant_id, maker.id)
+        maker_service = service(InvestmentDecisionService, db, tenant_id, maker.id, "investment_decision.decide")
         started = perf_counter()
         decided = maker_service.decide(decision.id, decision.revision_version, decide_payload)
         timings["gate07k_decide_ms"] = round((perf_counter() - started) * 1000, 3)
@@ -1096,7 +1108,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             == decision_count
         )
 
-        post_fid = PostFIDGovernanceService(db, tenant_id, actor.id)
+        post_fid = service(PostFIDGovernanceService, db, tenant_id, actor.id, "post_fid_governance.read")
         started = perf_counter()
         eligibility = post_fid.evaluate(decided.id, f"fid-post-evaluate-{uuid4()}", 1)
         timings["gate07l_evaluate_ms"] = round((perf_counter() - started) * 1000, 3)
@@ -1111,7 +1123,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
         # Negative A and historical compatibility: a governed Funding Source
         # change must make the live FIN provider stale, while the frozen Gate
         # 07J package and DECIDED Gate 07K record remain byte-for-byte stable.
-        funding_service = FundsManagerService(db, tenant_id, actor.id)
+        funding_service = service(FundsManagerService, db, tenant_id, actor.id, "funding_source.edit")
         source = db.scalar(
             select(StrategicFundingSource).where(
                 StrategicFundingSource.tenant_id == tenant_id,
@@ -1125,7 +1137,9 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             "suspend",
             f"fid-negative-suspend-{uuid4()}",
         )
-        stale_fin = EconomicFinancialModelService(db, tenant_id, actor.id).provider_evidence(model.id)
+        stale_fin = service(
+            EconomicFinancialModelService, db, tenant_id, actor.id, "economic_financial_model.read"
+        ).provider_evidence(model.id)
         assert stale_fin.source_current is False
         assert stale_fin.overall_readiness == "STALE"
         negative_preview = policy_service.preview(
@@ -1158,7 +1172,9 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             f"fid-negative-funding-refresh-{uuid4()}",
         )
         assert recovered_funding.source_current is True
-        fin_service = EconomicFinancialModelService(db, tenant_id, actor.id)
+        fin_service = service(
+            EconomicFinancialModelService, db, tenant_id, actor.id, "economic_financial_model.refresh"
+        )
         recovered_fin = fin_service.refresh(model.id, f"fid-negative-fin-refresh-{uuid4()}")
         recovered_fin = fin_service.calculate(
             recovered_fin.id,
@@ -1170,13 +1186,15 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             recovered_fin.revision_version,
             f"fid-negative-fin-submit-{uuid4()}",
         )
-        recovered_fin = fin_service.complete(
+        recovered_fin = service(
+            EconomicFinancialModelService, db, tenant_id, reviewer.id, "economic_financial_model.complete"
+        ).complete(
             recovered_fin.id,
             recovered_fin.revision_version,
             f"fid-negative-fin-complete-{uuid4()}",
             reviewer.id,
         )
-        recovered_case_service = BusinessCaseService(db, tenant_id, actor.id)
+        recovered_case_service = service(BusinessCaseService, db, tenant_id, actor.id, "business_case.refresh")
         current_case = recovered_case_service.get(case.id)
         recovered_case = recovered_case_service.refresh(
             case.id,
@@ -1188,7 +1206,9 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
             recovered_case.revision_version,
             f"fid-negative-case-submit-{uuid4()}",
         )
-        recovered_case = recovered_case_service.complete_revision(
+        recovered_case = service(
+            BusinessCaseService, db, tenant_id, reviewer.id, "business_case.complete"
+        ).complete_revision(
             recovered_case.id,
             recovered_case.revision_version,
             f"fid-negative-case-complete-{uuid4()}",
@@ -1214,7 +1234,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
                 "id": project.id,
                 "code": project.code,
                 "governance_model": "CAPITAL_OWNER",
-                "project_type": "COMMERCIAL",
+                "project_type": setup["project_type"],
                 "profile": "PYP-FFA",
                 "status_after": project.status,
             },
@@ -1280,6 +1300,7 @@ def test_new_pyp_ffa_fid_path_full_stack_revalidation() -> None:
                 "coverage_percent": readiness.coverage_percent,
                 "class_a_count": len(class_a),
                 "class_a_valid": sum(item.status == "VALID" for item in class_a),
+                "controlled_reference_history": controlled_history,
             },
             "gate07k": {
                 "decision_id": decided.id,

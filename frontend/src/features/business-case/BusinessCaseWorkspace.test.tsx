@@ -277,6 +277,93 @@ describe("Gate 07M-BC Business Case Manager", () => {
     expect(api.previewRefresh).toHaveBeenCalledWith("token", 7);
   });
 
+  it("projects the captured backend matrix aliases without claiming an unavailable source is stale", async () => {
+    const captured = {
+      ...revision,
+      status: "COMPLETED",
+      source_evidence_matrix_json: [
+        {
+          case: "financial_case",
+          source_module: "ECONOMIC_FINANCIAL_MODEL",
+          source_id: 18,
+          version: 4,
+          hash: "e".repeat(64),
+          readiness: "READY",
+          available: true,
+          source_current: true,
+          blocking: true,
+        },
+        {
+          case: "financial_case",
+          source_module: "FUNDING",
+          source_id: null,
+          version: null,
+          hash: null,
+          readiness: "NOT_AVAILABLE",
+          available: false,
+          source_current: false,
+          blocking: false,
+        },
+        {
+          case: "management_case",
+          source_module: "RISK",
+          source_id: 19,
+          version: 2,
+          hash: "f".repeat(64),
+          readiness: "STALE",
+          available: true,
+          source_current: false,
+          blocking: true,
+        },
+      ],
+    };
+    api.list.mockResolvedValueOnce([{ ...record, status: "COMPLETED", current_revision: captured }]);
+    api.revisions.mockResolvedValueOnce([captured]);
+    render(<BusinessCaseWorkspace initialView="business-case-sources-evidence" token="token" />);
+    const model = (await screen.findByText("Economic Financial Model")).closest("tr")!;
+    const modelCells = within(model).getAllByRole("cell");
+    expect(modelCells[2]).toHaveTextContent("18 / 4");
+    expect(modelCells[3]).toHaveAttribute("title", "e".repeat(64));
+    expect(modelCells[4]).toHaveTextContent("READY");
+    expect(modelCells[5]).toHaveTextContent("CURRENT");
+    const funding = screen.getByText("Funding").closest("tr")!;
+    expect(within(funding).getAllByRole("cell")[4]).toHaveTextContent("NOT_AVAILABLE");
+    expect(within(funding).getAllByRole("cell")[5]).toHaveTextContent("NOT AVAILABLE");
+    expect(funding).not.toHaveTextContent("STALE");
+    const risk = screen.getByText("Risk").closest("tr")!;
+    expect(within(risk).getAllByRole("cell")[5]).toHaveTextContent("STALE");
+    expect(captured.source_evidence_matrix_json[0]).not.toHaveProperty("source_hash");
+    expect(api.updateRevision).not.toHaveBeenCalled();
+    expect(api.refresh).not.toHaveBeenCalled();
+  });
+
+  it("keeps canonical matrix values authoritative and unknown currentness unevaluated", async () => {
+    const captured = {
+      ...revision,
+      source_evidence_matrix_json: [
+        {
+          source_module: "PROJECT_PROPOSAL",
+          source_id: 3,
+          source_version_id: 5,
+          version: 2,
+          source_hash: "a".repeat(64),
+          hash: "b".repeat(64),
+          source_readiness: "BLOCKED",
+          readiness: "READY",
+        },
+      ],
+    };
+    api.list.mockResolvedValueOnce([{ ...record, current_revision: captured }]);
+    api.revisions.mockResolvedValueOnce([captured]);
+    render(<BusinessCaseWorkspace initialView="business-case-sources-evidence" token="token" />);
+    const row = (await screen.findByText("Project Proposal")).closest("tr")!;
+    const cells = within(row).getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent("3 / 5");
+    expect(cells[3]).toHaveAttribute("title", "a".repeat(64));
+    expect(cells[4]).toHaveTextContent("BLOCKED");
+    expect(cells[5]).toHaveTextContent("NOT EVALUATED");
+  });
+
   it("renders the extended ADMIN sections and executes a dry-run", async () => {
     render(<BusinessCaseAdminView token="token" />);
     const tabs = await screen.findByRole("navigation", { name: "Business Case configuration sections" });

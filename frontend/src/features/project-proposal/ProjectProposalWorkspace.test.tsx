@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ProjectProposalWorkspace from "./ProjectProposalWorkspace";
 
@@ -170,4 +170,36 @@ describe("ProjectProposalWorkspace", () => {
     expect(screen.getByText("PROP-00002")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create DRAFT" })).toBeEnabled();
   });
+
+  it.each(["STRATEGIC_GATE_APPROVED", "STRATEGIC_GATE_REJECTED", "STRATEGIC_GATE_DEFERRED"])(
+    "distinguishes recorded %s from current re-entry eligibility without rewriting either",
+    async (status) => {
+      const fetch = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+        const path = String(input);
+        const body = path.endsWith("/options")
+          ? options
+          : path.includes("/gate-readiness")
+            ? {
+                status: "GATE07B_REWORK_REQUIRED",
+                can_enter_strategic_gate: false,
+                blockers: ["PROPOSAL_NOT_EVALUATED"],
+              }
+            : path.includes("/history") || path.includes("/strategic-gate-decisions")
+              ? []
+              : [{ ...proposal, status, allowed_actions: [] }];
+        return { ok: true, status: 200, json: async () => body } as Response;
+      });
+      vi.stubGlobal("fetch", fetch);
+      render(<ProjectProposalWorkspace token="token" />);
+      const historical = await screen.findByRole("region", { name: "Recorded Strategic Gate outcome" });
+      expect(historical).toHaveTextContent(status);
+      expect(historical).toHaveTextContent("does not reverse or replace that decision");
+      const current = screen.getByRole("region", { name: "Current Strategic Gate entry eligibility" });
+      expect(within(current).getByText("Current Strategic Gate re-entry eligibility")).toBeInTheDocument();
+      expect(await within(current).findByText("GATE07B_REWORK_REQUIRED")).toBeInTheDocument();
+      expect(current).toHaveTextContent("PROPOSAL_NOT_EVALUATED");
+      expect(screen.queryByRole("button", { name: /Mark gate ready/ })).not.toBeInTheDocument();
+      expect(fetch.mock.calls.every((call) => call.length === 1 || !(call[1] as RequestInit)?.method)).toBe(true);
+    }
+  );
 });

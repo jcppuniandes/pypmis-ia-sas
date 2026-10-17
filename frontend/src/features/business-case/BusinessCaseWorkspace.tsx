@@ -154,7 +154,14 @@ function qraSourceSummary(source: BusinessCaseSourceEvidence, revision?: Busines
 
 function normalizedSources(revision: BusinessCaseRevision): BusinessCaseSourceEvidence[] {
   if (Array.isArray(revision.source_evidence_matrix_json) && revision.source_evidence_matrix_json.length) {
-    return revision.source_evidence_matrix_json;
+    // The frozen backend matrix serializes version/hash/readiness, while older
+    // clients used source_* names. Project that exact revision, never live data.
+    return revision.source_evidence_matrix_json.map((source) => ({
+      ...source,
+      source_version_id: source.source_version_id ?? source.version,
+      source_hash: source.source_hash ?? source.hash,
+      source_readiness: source.source_readiness ?? source.readiness,
+    }));
   }
   return Object.entries(revision.source_references_json || {})
     .filter(([name]) => !name.startsWith("_"))
@@ -173,7 +180,7 @@ function normalizedSources(revision: BusinessCaseRevision): BusinessCaseSourceEv
         source_status: asText(source.status, "NOT_AVAILABLE"),
         source_readiness: asText(readiness, "NOT_AVAILABLE"),
         as_of_date: asText(source.as_of_date, ""),
-        source_current: typeof current === "boolean" ? current : !String(readiness || "").includes("STALE"),
+        source_current: typeof current === "boolean" ? current : undefined,
         blocking: Boolean(source.blocking),
         ...(source.analysis_type
           ? { analysis_type: source.analysis_type as "COST_QRA" | "SCHEDULE_QRA", qra_summary: source }
@@ -338,15 +345,20 @@ function EvidenceTable({
                     : source.source_current === true || qra?.source_current === true || qra?.current === true
                       ? true
                       : undefined;
-                const sourceCurrent = qra
-                  ? qraCurrent === false
-                    ? "STALE"
-                    : qraCurrent === true
-                      ? "CURRENT"
-                      : "NOT EVALUATED"
-                  : source.source_current === false
-                    ? "STALE"
-                    : "CURRENT";
+                const sourceCurrent =
+                  source.available === false
+                    ? "NOT AVAILABLE"
+                    : qra
+                      ? qraCurrent === false
+                        ? "STALE"
+                        : qraCurrent === true
+                          ? "CURRENT"
+                          : "NOT EVALUATED"
+                      : source.source_current === false
+                        ? "STALE"
+                        : source.source_current === true
+                          ? "CURRENT"
+                          : "NOT EVALUATED";
                 const sourceAsOf = qra
                   ? asText(source.as_of_date || qra.as_of_date || qra.as_of, "")
                   : source.as_of_date;

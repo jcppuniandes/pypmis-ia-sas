@@ -1,0 +1,16 @@
+{
+  "command": "bundled Node frontend/node_modules/vite/bin/vite.js build",
+  "working_directory": "frontend",
+  "date": "2026-10-16",
+  "exit_code": 0,
+  "result": "PASS",
+  "typescript_no_emit_exit_code": 0,
+  "eslint_src_exit_code": 0,
+  "eslint_errors": 0,
+  "eslint_warnings": 9,
+  "eslint_warning_scope": "Existing BimIfcModelViewer.tsx outside this increment; see private frontend-eslint.json",
+  "transformed_modules": 2490,
+  "reported_build_seconds": 50.88,
+  "warnings": ["PLUGIN_TIMINGS: CSS and resolver plugin durations"],
+  "scope": "Production frontend build only; no backend or browser UAT result is inferred"
+}

@@ -44,6 +44,7 @@ import OrganizationSecurityView, { type OrganizationSecurityViewKey } from "./co
 import AdminConfigurationView, { type AdminConfigurationViewKey } from "./components/AdminConfigurationView";
 import WorkspaceOperationalPage from "./features/workspace-context/WorkspaceOperationalPage";
 import StrategicViewOutlet from "./features/enterprise-strategy/StrategicViewOutlet";
+import StrategicWorkspaceShell from "./features/enterprise-strategy/StrategicWorkspaceShell";
 import {
   strategicNodeForView,
   strategicRouteForView,
@@ -452,6 +453,7 @@ function WorkspaceNavigation({
   applicationMode,
   baselineOnlyEvm,
   onNavigate,
+  operationalAvailable = true,
   readinessScore,
   spiLabel,
   userItems,
@@ -462,6 +464,7 @@ function WorkspaceNavigation({
   applicationMode: ApplicationMode;
   baselineOnlyEvm: boolean;
   onNavigate: (view: ControlFlowView) => void;
+  operationalAvailable?: boolean;
   readinessScore: number;
   spiLabel: string;
   userItems: MacroprocessNavigationItem[];
@@ -486,24 +489,28 @@ function WorkspaceNavigation({
         </>
       ) : (
         <>
-          <button
-            aria-current={activeView === "dashboard" ? "page" : undefined}
-            className={activeView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
-            onClick={() => onNavigate("dashboard")}
-            type="button"
-          >
-            <span>Dashboard</span>
-            <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
-          </button>
-          <button
-            aria-current={activeView === "opc-gap" ? "page" : undefined}
-            className={activeView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
-            onClick={() => onNavigate("opc-gap")}
-            type="button"
-          >
-            <span>Diagnóstico de Control</span>
-            <strong>{readinessScore}%</strong>
-          </button>
+          {operationalAvailable && (
+            <button
+              aria-current={activeView === "dashboard" ? "page" : undefined}
+              className={activeView === "dashboard" ? "navigatorItem active" : "navigatorItem"}
+              onClick={() => onNavigate("dashboard")}
+              type="button"
+            >
+              <span>Dashboard</span>
+              <strong>{baselineOnlyEvm ? "N/A SPI" : `${spiLabel} SPI`}</strong>
+            </button>
+          )}
+          {operationalAvailable && (
+            <button
+              aria-current={activeView === "opc-gap" ? "page" : undefined}
+              className={activeView === "opc-gap" ? "navigatorItem active" : "navigatorItem"}
+              onClick={() => onNavigate("opc-gap")}
+              type="button"
+            >
+              <span>Diagnóstico de Control</span>
+              <strong>{readinessScore}%</strong>
+            </button>
+          )}
           <div className="navigatorDivider">
             <span>Macroprocesos</span>
           </div>
@@ -3126,6 +3133,27 @@ function AppShell() {
   }, [activitySheetRows, baselineOnlyEvm, dashboard, evmDataDate]);
   const colombiaApuStructure = useMemo(() => buildApuCatalogStructure(colombiaApuCatalog), [colombiaApuCatalog]);
   const colombiaApuSourceLabel = sourceLabel(colombiaApuSource);
+
+  // A canonical strategic Workspace does not require a legacy EVM Project.
+  // Keep the existing operational shell and its guards unchanged elsewhere.
+  if (!dashboard && strategicNodeForView(visibleControlView, applicationMode) && applicationMode === "user") {
+    return (
+      <StrategicWorkspaceShell onNavigate={handleControlFlowNavigate} token={token} view={visibleControlView}>
+        <WorkspaceNavigation
+          activeView={visibleControlView}
+          adminItems={ADMIN_MODE_NAVIGATION_BLUEPRINT}
+          applicationMode="user"
+          baselineOnlyEvm={false}
+          onNavigate={handleControlFlowNavigate}
+          operationalAvailable={false}
+          readinessScore={0}
+          spiLabel="N/A"
+          userItems={USER_MODE_NAVIGATION_BLUEPRINT}
+          validationMode={false}
+        />
+      </StrategicWorkspaceShell>
+    );
+  }
 
   if (loading && !dashboard) {
     return <div className="loading">Loading workspace...</div>;

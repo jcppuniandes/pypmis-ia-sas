@@ -8,6 +8,18 @@ $taskAllowedInput = Join-Path $taskRepository 'outputs\strategic-final-uat-20261
 $taskAllowedOutput = Join-Path $taskRepository 'outputs\.qa\strategic-final-uat'
 $taskSource = [IO.Path]::GetFullPath($InputDocx)
 $taskOutput = [IO.Path]::GetFullPath($OutputDirectory)
+if ($taskSource.StartsWith((Join-Path $taskRepository 'outputs\strategic-uat-remediation-20261015') + '\', [StringComparison]::OrdinalIgnoreCase)) {
+    $taskAllowedInput = Join-Path $taskRepository 'outputs\strategic-uat-remediation-20261015'
+    $taskAllowedOutput = Join-Path $taskRepository 'outputs\.qa\strategic-uat-remediation'
+}
+if ($taskSource.StartsWith((Join-Path $taskRepository 'outputs\gate07j-controlled-class-b-20261015') + '\', [StringComparison]::OrdinalIgnoreCase)) {
+    $taskAllowedInput = Join-Path $taskRepository 'outputs\gate07j-controlled-class-b-20261015'
+    $taskAllowedOutput = Join-Path $taskRepository 'outputs\.qa\gate07j-controlled-class-b'
+}
+if ($taskSource.StartsWith((Join-Path $taskRepository 'outputs\gate07j-controlled-class-b-20261016') + '\', [StringComparison]::OrdinalIgnoreCase)) {
+    $taskAllowedInput = Join-Path $taskRepository 'outputs\gate07j-controlled-class-b-20261016'
+    $taskAllowedOutput = Join-Path $taskRepository 'outputs\.qa\gate07j-controlled-class-b-rebuild'
+}
 if (-not $taskSource.StartsWith($taskAllowedInput + '\', [StringComparison]::OrdinalIgnoreCase) -or [IO.Path]::GetExtension($taskSource) -ne '.docx') {
     throw 'Expected strategic UAT DOCX in the explicitly scoped output directory'
 }

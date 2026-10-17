@@ -1073,6 +1073,10 @@ class PortfolioPlanningService:
             "strategic_objectives": values.get("strategic_objectives", []),
             "proposal_score": values.get("proposal_score"),
             "rom_cost": values.get("rom_cost"),
+            # Project the captured Proposal denomination, never a template or
+            # request default. Existing planning/evaluation snapshots stay frozen.
+            "currency_code": values.get("currency_code"),
+            "currency": values.get("currency_code"),
             "target_start": values.get("target_start"),
             "target_finish": values.get("target_finish"),
             "expected_benefits": values.get("expected_benefits", ""),

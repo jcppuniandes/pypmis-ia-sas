@@ -1,0 +1,38 @@
+{
+  "release": "STRATEGIC_MACROPROCESS_NOT_VALIDATED",
+  "decision": "NO_GO",
+  "artifacts": [
+    {
+      "file": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\gate07j-controlled-class-b-20261015\\P&Pmis_Strategic_Macroprocess_Final_Release_Closeout.docx",
+      "sha256": "2354d92ec128ba4d1d440877cfe651c3664717c3241815f0329551fee765919b",
+      "pages": 6,
+      "retained_pages_pixel_identical": 0,
+      "changed_parts": [
+        "docProps/core.xml",
+        "word/document.xml"
+      ],
+      "a11y": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    },
+    {
+      "file": "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\outputs\\gate07j-controlled-class-b-20261015\\P&Pmis_Strategic_Macroprocess_UAT_Plan_and_Results.docx",
+      "sha256": "8324c34a2a73e555d7d9af474b60fdb34a888371fe824388780612f531fc0bd9",
+      "pages": 37,
+      "retained_pages_pixel_identical": 36,
+      "changed_parts": [
+        "docProps/core.xml",
+        "word/document.xml"
+      ],
+      "a11y": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      }
+    }
+  ],
+  "operational_preservation": "READ_ONLY_BEFORE_AFTER_IDENTICAL",
+  "visual_review": "PASS_ROOT_REVIEW_OF_ALL_NEW_PAGES"
+}
