@@ -1,0 +1,1013 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-18T00:20:36.451077-05:00",
+  "result": "MISMATCH_PRESERVED_FOR_REVIEW",
+  "activity": "NEW_20261018_SQL_OBSERVATION_NOT_NEW_END_TO_END_TEST",
+  "prior_initial_stopped_observation": "docs/validation/business-uat-signoff-20261018/baseline.json",
+  "root_startup_boundary": "Root separately started only the exact existing private DB after checking compose-project and named-volume guards. This script did not start services; API and Redis remain stopped.",
+  "container": "pypmis-strategic-persistent-uat-fresh-db-1",
+  "project": "pypmis-strategic-persistent-uat",
+  "named_volume": "pypmis-strategic-persistent-uat_strategic_uat_postgres",
+  "database_state": {
+    "Status": "running",
+    "Running": true,
+    "StartedAt": "2026-10-18T05:18:32.334309339Z"
+  },
+  "companion_states": {
+    "pypmis-strategic-persistent-uat-fresh-api-1": "exited",
+    "pypmis-strategic-persistent-uat-fresh-redis-1": "exited"
+  },
+  "transaction_proof": {
+    "database": "strategic_fresh_uat",
+    "transaction_read_only": "on"
+  },
+  "selected_baseline": {
+    "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/selected-delivery-20261016.json",
+    "sha256": "49d9b676ac8280db5c10f7369f4844252b3c068b1dd62b85df22fc9fb1f0499d",
+    "bytes": 30516
+  },
+  "selected_observation": {
+    "tenant": {
+      "id": 1,
+      "slug": "fresh-copper-1765b06813"
+    },
+    "project": {
+      "id": 4,
+      "code": "PYP-PRJ-00001",
+      "name": "Copper Processing Expansion — UAT",
+      "status": "active",
+      "version": 3,
+      "parent_id": 3,
+      "tenant_id": 1,
+      "created_at": "2026-10-16T05:55:56.011755",
+      "sort_order": 100,
+      "updated_at": "2026-10-16T12:18:11.522643",
+      "record_code": "01.01.01.01",
+      "external_key": "PRJ-8a2f104f-5238-47d8-b894-24d894b3efe1",
+      "defaults_json": {
+        "_project": {
+          "region": null,
+          "country": "CO",
+          "priority": null,
+          "description": "Copper processing capacity requires a governed expansion options decision",
+          "source_hash": "1208b3e99f282f9c81ee3e433094cc8813227828e00c8a20bbc986375aa9fb21",
+          "template_id": 38,
+          "project_type": "capital",
+          "risk_summary": [
+            {
+              "risk": "Adoption",
+              "response": "Phased enablement"
+            }
+          ],
+          "currency_code": "USD",
+          "planned_start": "2027-01-01",
+          "project_phase": null,
+          "template_code": "FRESH-COPPER-1765B06813",
+          "pending_reason": "PORTFOLIO_AND_PROJECT_DEFINITION_REQUIRED",
+          "planned_finish": "2030-12-31",
+          "planning_stage": "PORTFOLIO_AND_FEL_PLANNING",
+          "project_number": "PYP-PRJ-00001",
+          "source_idea_id": 1,
+          "enabled_modules": [
+            "scope-manager"
+          ],
+          "explicit_fields": [
+            "description",
+            "project_manager_user_id",
+            "planned_start",
+            "planned_finish",
+            "currency_code",
+            "estimated_budget",
+            "project_type",
+            "country",
+            "strategic_objective_codes"
+          ],
+          "planning_origin": "STRATEGIC_GATE",
+          "source_snapshot": {
+            "decision": {
+              "id": 1,
+              "state": "DECIDED",
+              "outcome": "APPROVE",
+              "conditions": [],
+              "decided_at": "2026-10-16T05:55:49.869908",
+              "decision_hash": "e13649d1642bd70d2fb954beaddb628982b4960e9b5f385fb15971f2e0ff8f40",
+              "decision_number": "SGD-00001"
+            },
+            "proposal": {
+              "id": 1,
+              "name": "Copper Processing Expansion — UAT",
+              "rom_cost": "100000000.00",
+              "risk_summary": [
+                {
+                  "risk": "Adoption",
+                  "response": "Phased enablement"
+                }
+              ],
+              "business_need": "Copper processing capacity requires a governed expansion options decision",
+              "currency_code": "USD",
+              "proposal_number": "PROP-00001",
+              "sponsor_user_id": 4,
+              "expected_benefits": "Measurable reliability and cost improvement",
+              "preliminary_scope": "Scope for Implement target capability",
+              "target_start_date": "2027-01-01",
+              "target_finish_date": "2030-12-31",
+              "strategic_objective_codes": [
+                "copper-recovery-1765b06813"
+              ]
+            },
+            "source_idea": {
+              "id": 1,
+              "state": "ACCEPTED",
+              "title": "Copper Processing Expansion — UAT",
+              "idea_number": "IDEA-00001",
+              "owning_workspace_id": 3,
+              "accepted_evaluation_id": 1
+            },
+            "mapped_values": {
+              "project_name": "Copper Processing Expansion — UAT",
+              "planned_start": "2027-01-01",
+              "planned_finish": "2030-12-31",
+              "sponsor_user_id": 4,
+              "estimated_budget": "100000000.00",
+              "expected_benefits": "Measurable reliability and cost improvement",
+              "preliminary_scope": "Scope for Implement target capability",
+              "strategic_conditions": [],
+              "strategic_business_need": "Copper processing capacity requires a governed expansion options decision",
+              "strategic_objective_codes": [
+                "copper-recovery-1765b06813"
+              ]
+            },
+            "source_values": {
+              "rom_cost": "100000000.00",
+              "risk_summary": [
+                {
+                  "risk": "Adoption",
+                  "response": "Phased enablement"
+                }
+              ],
+              "target_start": "2027-01-01",
+              "business_need": "Copper processing capacity requires a governed expansion options decision",
+              "currency_code": "USD",
+              "target_finish": "2030-12-31",
+              "proposal_score": "80.0000",
+              "sponsor_user_id": 4,
+              "expected_benefits": "Measurable reliability and cost improvement",
+              "preliminary_scope": "Scope for Implement target capability",
+              "strategic_conditions": [],
+              "strategic_objectives": [
+                {
+                  "code": "copper-recovery-1765b06813"
+                }
+              ]
+            },
+            "mapping_configuration": {
+              "id": 61,
+              "hash": "a7f531b90bf79d6af5a9b252cf5124b15646aa9bc08665d32f710876b0ae5ab3",
+              "revision": 1,
+              "snapshot": {
+                "mapping": {
+                  "name": "proposal.name",
+                  "sponsor": "proposal.sponsor_user_id",
+                  "rom_cost": "proposal.rom_cost",
+                  "target_start": "proposal.target_start_date",
+                  "business_need": "proposal.business_need",
+                  "target_finish": "proposal.target_finish_date",
+                  "expected_benefits": "proposal.expected_benefits",
+                  "preliminary_scope": "proposal.preliminary_scope",
+                  "strategic_conditions": "strategic_gate_decision.conditions",
+                  "strategic_objectives": "proposal.strategic_objective_codes"
+                },
+                "workspace_id": null,
+                "membership_policy": "STRATEGIC_INTAKE_ONLY",
+                "membership_filters": {
+                  "fields": [
+                    "project_type",
+                    "strategic_objective",
+                    "business_unit",
+                    "region",
+                    "status",
+                    "project_phase",
+                    "rom_cost",
+                    "sponsor",
+                    "classification"
+                  ],
+                  "operators": [
+                    "EQ",
+                    "NE",
+                    "IN",
+                    "NOT_IN",
+                    "GT",
+                    "GTE",
+                    "LT",
+                    "LTE"
+                  ]
+                },
+                "membership_sources": [
+                  "STRATEGIC_INTAKE",
+                  "RULE_BASED",
+                  "MANUAL"
+                ],
+                "project_type_mapping": {},
+                "inherit_to_descendants": true,
+                "project_manager_required": true,
+                "template_recommendations": {},
+                "eligible_project_statuses": [
+                  "pending"
+                ],
+                "target_portfolio_required": true,
+                "strategic_objective_required": true,
+                "project_definition_requirements": {
+                  "sponsor": true,
+                  "rom_cost": false,
+                  "template": true,
+                  "project_type": true,
+                  "risk_summary": false,
+                  "target_dates": false,
+                  "business_need": true,
+                  "project_parent": true,
+                  "project_manager": true,
+                  "preliminary_scope": true,
+                  "strategic_context": true
+                },
+                "portfolio_evaluation_requirements": {
+                  "rom_cost": false,
+                  "risk_summary": false,
+                  "target_dates": false,
+                  "proposal_score": true,
+                  "expected_benefits": false,
+                  "strategic_objectives": true
+                },
+                "definition_framework_recommendations": {
+                  "roads": "PDRI_INFRASTRUCTURE_REFERENCE",
+                  "water": "PDRI_INFRASTRUCTURE_REFERENCE",
+                  "mining": "PDRI_INDUSTRIAL_REFERENCE",
+                  "building": "PDRI_BUILDING_REFERENCE",
+                  "industrial": "PDRI_INDUSTRIAL_REFERENCE",
+                  "processing": "PDRI_INDUSTRIAL_REFERENCE",
+                  "infrastructure": "PDRI_INFRASTRUCTURE_REFERENCE",
+                  "small-industrial": "SMALL_INDUSTRIAL_PDRI_REFERENCE"
+                }
+              }
+            },
+            "gate07c_input_contract": {
+              "decision_hash": "e13649d1642bd70d2fb954beaddb628982b4960e9b5f385fb15971f2e0ff8f40",
+              "readiness_hash": "4cbf5939fa8245a5d68d7ad61f8652e376a428b4e2673077aedd6afe6fa62e61",
+              "owning_workspace_id": 3,
+              "proposal_evaluation_id": 1,
+              "accepted_idea_evaluation_id": 1,
+              "target_portfolio_workspace_id": 3
+            }
+          },
+          "sponsor_user_id": 4,
+          "estimated_budget": "100000000.00",
+          "governance_model": "CAPITAL_OWNER",
+          "expected_benefits": "Measurable reliability and cost improvement",
+          "preliminary_scope": "Scope for Implement target capability",
+          "source_context_id": 1,
+          "template_revision": 1,
+          "creation_policy_id": 35,
+          "creation_request_id": 1,
+          "source_context_type": "STRATEGIC_GATE_DECISION",
+          "source_external_key": null,
+          "activation_readiness": "BLOCKED",
+          "creation_policy_hash": "a8c5e102d8a29cfb28009652eaa3a11dd83501e68c296e6c8790fefbd90fe971",
+          "strategic_conditions": [],
+          "template_content_hash": "9033f5da1de0c2b98cd24d5fc644df8fbc6e6742640ec9e410269375c0fc4348",
+          "creation_request_number": "PCR-00001",
+          "project_manager_user_id": 4,
+          "strategic_business_need": "Copper processing capacity requires a governed expansion options decision",
+          "creation_policy_revision": 1,
+          "strategic_objective_codes": [
+            "copper-recovery-1765b06813"
+          ],
+          "governance_policy_snapshot": {
+            "scope": "tenant",
+            "fel_required": true,
+            "pdri_required": false,
+            "pending_reason": "PORTFOLIO_AND_PROJECT_DEFINITION_REQUIRED",
+            "planning_stage": "PORTFOLIO_AND_FEL_PLANNING",
+            "optional_fields": [
+              "planned_start",
+              "planned_finish",
+              "estimated_budget"
+            ],
+            "required_fields": [
+              "project_name",
+              "parent_workspace_id",
+              "project_template_config_id",
+              "project_manager_user_id",
+              "strategic_objective_codes"
+            ],
+            "governance_model": "CAPITAL_OWNER",
+            "template_required": true,
+            "portfolio_required": true,
+            "scope_workspace_id": null,
+            "allowed_parent_types": [
+              "portfolio",
+              "program"
+            ],
+            "configuration_version": "multi-source-v1.0",
+            "required_source_fields": [
+              "strategic_gate_decision_id"
+            ],
+            "activation_requirements": [
+              "investment_execution_authorized"
+            ],
+            "contract_source_required": false,
+            "project_manager_required": true,
+            "fid_required_for_creation": false,
+            "notice_to_proceed_required": false,
+            "initialization_requirements": [
+              "source_valid",
+              "project_manager",
+              "template",
+              "strategic_objective"
+            ],
+            "allowed_source_context_types": [
+              "STRATEGIC_GATE_DECISION"
+            ],
+            "strategic_objective_required": true
+          },
+          "source_project_proposal_id": 1,
+          "strategic_gate_decision_id": 1,
+          "template_defaults_snapshot": {
+            "country": "CO",
+            "currency": "USD"
+          },
+          "target_portfolio_workspace_id": 3
+        },
+        "_portfolio_planning": {
+          "status": "READY_FOR_PORTFOLIO_PLANNING",
+          "snapshot": {
+            "currency": "USD",
+            "rom_cost": "100000000.00",
+            "source_idea": {
+              "id": 1,
+              "state": "ACCEPTED",
+              "title": "Copper Processing Expansion — UAT",
+              "idea_number": "IDEA-00001",
+              "owning_workspace_id": 3,
+              "accepted_evaluation_id": 1
+            },
+            "project_name": "Copper Processing Expansion — UAT",
+            "risk_summary": [
+              {
+                "risk": "Adoption",
+                "response": "Phased enablement"
+              }
+            ],
+            "target_start": "2027-01-01",
+            "currency_code": "USD",
+            "target_finish": "2030-12-31",
+            "planning_stage": "PORTFOLIO_AND_FEL_PLANNING",
+            "project_number": "PYP-PRJ-00001",
+            "proposal_score": "80.0000",
+            "planning_origin": "STRATEGIC_GATE",
+            "sponsor_user_id": 4,
+            "project_proposal": {
+              "id": 1,
+              "name": "Copper Processing Expansion — UAT",
+              "rom_cost": "100000000.00",
+              "risk_summary": [
+                {
+                  "risk": "Adoption",
+                  "response": "Phased enablement"
+                }
+              ],
+              "business_need": "Copper processing capacity requires a governed expansion options decision",
+              "currency_code": "USD",
+              "proposal_number": "PROP-00001",
+              "sponsor_user_id": 4,
+              "expected_benefits": "Measurable reliability and cost improvement",
+              "preliminary_scope": "Scope for Implement target capability",
+              "target_start_date": "2027-01-01",
+              "target_finish_date": "2030-12-31",
+              "strategic_objective_codes": [
+                "copper-recovery-1765b06813"
+              ]
+            },
+            "target_portfolio": {
+              "id": 3,
+              "code": "COPPER-PF-1765B06813",
+              "name": "Copper expansion portfolio UAT",
+              "status": "active",
+              "version": 1,
+              "parent_id": 2,
+              "record_code": "01.01.01",
+              "workspace_type_code": "portfolio"
+            },
+            "workspace_status": "pending",
+            "expected_benefits": "Measurable reliability and cost improvement",
+            "project_workspace_id": 4,
+            "source_decision_hash": "e13649d1642bd70d2fb954beaddb628982b4960e9b5f385fb15971f2e0ff8f40",
+            "strategic_conditions": [],
+            "strategic_objectives": [
+              {
+                "code": "copper-recovery-1765b06813"
+              }
+            ],
+            "source_readiness_hash": "4cbf5939fa8245a5d68d7ad61f8652e376a428b4e2673077aedd6afe6fa62e61",
+            "portfolio_membership_id": 1,
+            "project_manager_user_id": 4,
+            "strategic_gate_decision": {
+              "id": 1,
+              "state": "DECIDED",
+              "outcome": "APPROVE",
+              "conditions": [],
+              "decided_at": "2026-10-16T05:55:49.869908",
+              "decision_hash": "e13649d1642bd70d2fb954beaddb628982b4960e9b5f385fb15971f2e0ff8f40",
+              "decision_number": "SGD-00001"
+            }
+          },
+          "updated_at": "2026-10-16T05:55:56.313594",
+          "blocking_issues": [],
+          "planning_entry_hash": "4096126b8363f2667721c441f42fac98f4a4494ce5022ac161f402b1dcc92689"
+        }
+      },
+      "created_by_user_id": 10,
+      "workspace_type_code": "project"
+    },
+    "database": "strategic_fresh_uat",
+    "post_fid": [
+      {
+        "id": 1,
+        "tenant_id": 1,
+        "evaluated_at": "2026-10-16T06:02:27.761187",
+        "evaluated_by": 4,
+        "blockers_json": [],
+        "operation_key": "fresh-capital-current-post-fid-ed543c6d1bb84acb82b03a057033bbe9",
+        "warnings_json": [],
+        "operation_type": "EVALUATE",
+        "source_current": true,
+        "configuration_id": 84,
+        "eligibility_hash": "9881bc0e92cfc1ff240635ddae582097856cd06dd48f26f326f3a8369fb00d42",
+        "revision_version": 1,
+        "eligibility_round": 1,
+        "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+        "configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2",
+        "eligibility_status": "READY_FOR_PROJECT_WORKSPACE_INITIALIZATION",
+        "project_workspace_id": 4,
+        "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+        "investment_decision_id": 1,
+        "operation_payload_hash": "5ab69b3f039726984d0b4618fa1bc22f3a0f076ff7f1d43fd3a598d92e07ffa5",
+        "project_state_snapshot": {
+          "classified_state": "NOT_INITIALIZED",
+          "workspace_status": "pending",
+          "initialization_state": "NOT_STARTED"
+        },
+        "condition_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "eligible_for_activation": false,
+        "eligible_for_initialization": true
+      },
+      {
+        "id": 2,
+        "tenant_id": 1,
+        "evaluated_at": "2026-10-16T12:18:08.686064",
+        "evaluated_by": 4,
+        "blockers_json": [],
+        "operation_key": "fresh-capital-current-resume-after-initialization-9f078bd2963c42d7a30ffe039e5fbde3",
+        "warnings_json": [],
+        "operation_type": "REFRESH",
+        "source_current": true,
+        "configuration_id": 84,
+        "eligibility_hash": "3f0f5e83a988db9491fd843adfb70836c3a294e2e554acfdfd8593260d8a66c8",
+        "revision_version": 2,
+        "eligibility_round": 2,
+        "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+        "configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2",
+        "eligibility_status": "READY_FOR_PROJECT_WORKSPACE_ACTIVATION",
+        "project_workspace_id": 4,
+        "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+        "investment_decision_id": 1,
+        "operation_payload_hash": "6134667bfb91667e2d8211b9795b4f8be6a0c398baf1d34bf73855eae77f94a6",
+        "project_state_snapshot": {
+          "classified_state": "INITIALIZED_NOT_ACTIVE",
+          "workspace_status": "pending",
+          "initialization_state": "READY_FOR_ACTIVATION"
+        },
+        "condition_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "eligible_for_activation": true,
+        "eligible_for_initialization": false
+      },
+      {
+        "id": 3,
+        "tenant_id": 1,
+        "evaluated_at": "2026-10-16T12:18:12.475492",
+        "evaluated_by": 4,
+        "blockers_json": [
+          "PREPARATION_STALE"
+        ],
+        "operation_key": "fresh-capital-current-resume-post-activation-15acf0ad99f84d21ac8cc019a0ffea4d",
+        "warnings_json": [],
+        "operation_type": "REFRESH",
+        "source_current": false,
+        "configuration_id": 84,
+        "eligibility_hash": "e2e6861f07534f17024ddccafb35fe48bb085dcdfcbba6b87abfa81b979b3caa",
+        "revision_version": 3,
+        "eligibility_round": 3,
+        "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+        "configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2",
+        "eligibility_status": "STALE",
+        "project_workspace_id": 4,
+        "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+        "investment_decision_id": 1,
+        "operation_payload_hash": "6134667bfb91667e2d8211b9795b4f8be6a0c398baf1d34bf73855eae77f94a6",
+        "project_state_snapshot": {
+          "classified_state": "ACTIVE",
+          "workspace_status": "active",
+          "initialization_state": "ACTIVATED"
+        },
+        "condition_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "eligible_for_activation": false,
+        "eligible_for_initialization": false
+      },
+      {
+        "id": 4,
+        "tenant_id": 1,
+        "evaluated_at": "2026-10-16T17:25:58.514505",
+        "evaluated_by": 4,
+        "blockers_json": [],
+        "operation_key": "fresh-capital-current-same-chain-currentness-revalidation-028e7cef5f2343af869127a045b2f344",
+        "warnings_json": [],
+        "operation_type": "REFRESH",
+        "source_current": true,
+        "configuration_id": 84,
+        "eligibility_hash": "8d0cef721ab96c028c2a62e183467315abdd59a187e488a5943805100e194bad",
+        "revision_version": 4,
+        "eligibility_round": 4,
+        "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+        "configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2",
+        "eligibility_status": "NO_REACTIVATION_REQUIRED",
+        "project_workspace_id": 4,
+        "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+        "investment_decision_id": 1,
+        "operation_payload_hash": "6134667bfb91667e2d8211b9795b4f8be6a0c398baf1d34bf73855eae77f94a6",
+        "project_state_snapshot": {
+          "classified_state": "ACTIVE",
+          "workspace_status": "active",
+          "initialization_state": "ACTIVATED"
+        },
+        "condition_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "eligible_for_activation": false,
+        "eligible_for_initialization": false
+      }
+    ],
+    "decisions": [
+      {
+        "id": 1,
+        "is_fid": true,
+        "status": "DECIDED",
+        "outcome": "GO",
+        "profile": "PYP-FFA",
+        "row_md5": "b3ed7a940f523ceaf0ad6de66e2815b5",
+        "decided_at": "2026-10-16T06:02:26.830631",
+        "decided_by": 11,
+        "decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+        "full_funds_authorized": true,
+        "investment_authorized": true
+      }
+    ],
+    "preparations": [
+      {
+        "id": 1,
+        "hash": "a43ef7a9362c102f0eb0d878d53b388379b4410c5b1e55d364b49c35f3999583",
+        "status": "FROZEN",
+        "row_md5": "5938a599c86cbda44a0e879936e1c246",
+        "source_hash": "4423341810454f12ac62b729903dbae02be9d4712db64abdd9a24ea203d28459"
+      }
+    ],
+    "initialization": {
+      "id": 1,
+      "state": "ACTIVATED",
+      "ready_at": "2026-10-16T12:18:07.076227",
+      "tenant_id": 1,
+      "created_at": "2026-10-16T06:02:29.986803",
+      "started_at": "2026-10-16T06:02:29.983334",
+      "updated_at": "2026-10-16T12:18:11.522783",
+      "activated_at": "2026-10-16T12:18:11.522726",
+      "failure_code": null,
+      "validated_at": "2026-10-16T12:18:07.076183",
+      "workspace_id": 4,
+      "template_code": "FRESH-COPPER-1765B06813",
+      "checklist_hash": "bde8673425cae7bc831350bca53544f00c8443715f814e37d83b9a866741184c",
+      "checklist_json": [
+        {
+          "code": "workspace_identity_valid",
+          "status": "PASS",
+          "message": "Identidad única y estable del workspace.",
+          "blocking": true,
+          "evidence": {
+            "code": "PYP-PRJ-00001",
+            "external_key": "PRJ-8a2f104f-5238-47d8-b894-24d894b3efe1"
+          }
+        },
+        {
+          "code": "workspace_type_project",
+          "status": "PASS",
+          "message": "El workspace es de tipo Project.",
+          "blocking": true,
+          "evidence": {
+            "workspace_type": "project"
+          }
+        },
+        {
+          "code": "workspace_status_pending",
+          "status": "PASS",
+          "message": "El workspace permanece PENDING hasta la activación.",
+          "blocking": true,
+          "evidence": {
+            "status": "pending"
+          }
+        },
+        {
+          "code": "parent_valid",
+          "status": "PASS",
+          "message": "El padre pertenece al tenant y admite proyectos.",
+          "blocking": true,
+          "evidence": {
+            "parent_id": 3,
+            "parent_type": "portfolio"
+          }
+        },
+        {
+          "code": "record_code_valid",
+          "status": "PASS",
+          "message": "Record Code jerárquico, único e inmutable.",
+          "blocking": true,
+          "evidence": {
+            "record_code": "01.01.01.01",
+            "parent_record_code": "01.01.01"
+          }
+        },
+        {
+          "code": "project_number_valid",
+          "status": "PASS",
+          "message": "Project Number único y consistente con la identidad.",
+          "blocking": true,
+          "evidence": {
+            "project_number": "PYP-PRJ-00001",
+            "workspace_code": "PYP-PRJ-00001"
+          }
+        },
+        {
+          "code": "template_assigned",
+          "status": "PASS",
+          "message": "Existe la revisión exacta de plantilla asignada.",
+          "blocking": true,
+          "evidence": {
+            "template_code": "FRESH-COPPER-1765B06813",
+            "template_config_id": 38
+          }
+        },
+        {
+          "code": "template_snapshot_valid",
+          "status": "PASS",
+          "message": "La huella y revisión de la plantilla coinciden con la materialización.",
+          "blocking": true,
+          "evidence": {
+            "actual_revision": 1,
+            "expected_revision": 1
+          }
+        },
+        {
+          "code": "project_manager_assigned",
+          "status": "PASS",
+          "message": "Project Manager activo y del mismo tenant.",
+          "blocking": true,
+          "evidence": {
+            "manager_user_id": 4
+          }
+        },
+        {
+          "code": "strategic_objective_present",
+          "status": "PASS",
+          "message": "La alineación estratégica cumple la política efectiva.",
+          "blocking": true,
+          "evidence": {
+            "required": true,
+            "objective_codes": [
+              "copper-recovery-1765b06813"
+            ]
+          }
+        },
+        {
+          "code": "governance_source_valid",
+          "status": "PASS",
+          "message": "La fuente de creación y su snapshot cumplen la política del modelo de gobierno.",
+          "blocking": true,
+          "evidence": {
+            "blockers": [],
+            "governance_label": "Capital Owner",
+            "governance_model": "CAPITAL_OWNER",
+            "source_context_type": "STRATEGIC_GATE_DECISION"
+          }
+        },
+        {
+          "code": "governance_activation_authorized",
+          "status": "PASS",
+          "message": "La autorización de activación corresponde al modelo de gobierno efectivo.",
+          "blocking": true,
+          "evidence": {
+            "authority": "GATE07K_FID_AND_PERSISTED_GATE07L",
+            "governance_model": "CAPITAL_OWNER",
+            "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+            "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+            "investment_decision_id": 1,
+            "activation_requirements": [
+              "investment_execution_authorized"
+            ],
+            "condition_snapshot_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "post_fid_configuration_id": 84,
+            "post_fid_configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2"
+          }
+        },
+        {
+          "code": "required_classifications_valid",
+          "status": "PASS",
+          "message": "Las clasificaciones obligatorias de la plantilla están presentes.",
+          "blocking": true,
+          "evidence": {
+            "required": []
+          }
+        },
+        {
+          "code": "required_attributes_complete",
+          "status": "PASS",
+          "message": "Los atributos obligatorios del proyecto están completos.",
+          "blocking": true,
+          "evidence": {
+            "parent": 3,
+            "status": "pending",
+            "currency": "USD",
+            "project_name": "Copper Processing Expansion — UAT",
+            "project_number": "PYP-PRJ-00001",
+            "project_manager": 4,
+            "strategic_objective": [
+              "copper-recovery-1765b06813"
+            ]
+          }
+        },
+        {
+          "code": "module_settings_valid",
+          "status": "PASS",
+          "message": "Los módulos habilitados están publicados, permitidos y listos.",
+          "blocking": true,
+          "evidence": {
+            "enabled": [
+              "scope-manager"
+            ],
+            "template_modules": [
+              "scope-manager"
+            ]
+          }
+        },
+        {
+          "code": "security_assignments_valid",
+          "status": "PASS",
+          "message": "El Project Manager tiene acceso mínimo y acotado al workspace.",
+          "blocking": true,
+          "evidence": {
+            "assignment_id": 121
+          }
+        },
+        {
+          "code": "tenant_scope_valid",
+          "status": "PASS",
+          "message": "Todas las referencias pertenecen al tenant activo.",
+          "blocking": true,
+          "evidence": {
+            "tenant_id": 1
+          }
+        },
+        {
+          "code": "no_core_revision_required",
+          "status": "PASS",
+          "message": "La inicialización no requiere ni crea una revisión CORE.",
+          "blocking": false,
+          "evidence": {
+            "core_mutation": false
+          }
+        },
+        {
+          "code": "optional_attributes_complete",
+          "status": "WARNING",
+          "message": "Hay atributos opcionales sin definir.",
+          "blocking": false,
+          "evidence": {
+            "missing": [
+              "project_phase",
+              "priority",
+              "region"
+            ]
+          }
+        }
+      ],
+      "failure_reason": null,
+      "validation_hash": "ead61fc48a1f85a437d5965a71152dfe9593a98fe4bf1c143088a083f094e1fd",
+      "assignments_json": [],
+      "revision_version": 3,
+      "template_revision": 1,
+      "module_states_json": {
+        "scope-manager": {
+          "state": "INITIALIZED",
+          "evidence": {
+            "currency": null,
+            "template_allowed": true,
+            "definition_revision": 1,
+            "deep_configuration_created": false
+          },
+          "module_key": "scope-manager",
+          "configuration_container": "ready"
+        }
+      },
+      "started_by_user_id": 12,
+      "template_config_id": 38,
+      "activated_by_user_id": 13,
+      "validated_by_user_id": 12,
+      "defaults_applied_json": {},
+      "initialization_version": 1,
+      "last_modified_by_user_id": 12
+    }
+  },
+  "selected_matches_delivery_20261016": false,
+  "selected_differences": [
+    "/initialization/checklist_json/0/message",
+    "/initialization/checklist_json/2/message",
+    "/initialization/checklist_json/4/message",
+    "/initialization/checklist_json/5/message",
+    "/initialization/checklist_json/6/message",
+    "/initialization/checklist_json/7/message",
+    "/initialization/checklist_json/9/message",
+    "/initialization/checklist_json/10/message",
+    "/initialization/checklist_json/11/message",
+    "/initialization/checklist_json/12/message",
+    "/initialization/checklist_json/13/evidence/project_name",
+    "/initialization/checklist_json/13/message",
+    "/initialization/checklist_json/14/message",
+    "/initialization/checklist_json/15/message",
+    "/initialization/checklist_json/17/message",
+    "/project/defaults_json/_portfolio_planning/snapshot/project_name",
+    "/project/defaults_json/_portfolio_planning/snapshot/project_proposal/name",
+    "/project/defaults_json/_portfolio_planning/snapshot/source_idea/title",
+    "/project/defaults_json/_project/source_snapshot/mapped_values/project_name",
+    "/project/defaults_json/_project/source_snapshot/proposal/name",
+    "/project/defaults_json/_project/source_snapshot/source_idea/title",
+    "/project/name"
+  ],
+  "persistence_baseline": {
+    "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/persistence-after.json",
+    "sha256": "b0a1673ec2dc03ca982b8f559cd390a2ea1ca3180feebed445a8ca74abf3fa45",
+    "bytes": 932
+  },
+  "persistence_observation": {
+    "head": "20261011_0068",
+    "tenants": {
+      "count": 1,
+      "rows_md5": "7ac4a614fa1c05a6186931d9dbe3a052"
+    },
+    "database": "strategic_fresh_uat",
+    "admin_configurations": {
+      "count": 88,
+      "rows_md5": "715ee8b38872dc8bbbfd786057288326"
+    },
+    "investment_decisions": {
+      "count": 1,
+      "rows_md5": "88beb068fa02f02431b0f4c84621ae63"
+    },
+    "enterprise_workspaces": {
+      "count": 4,
+      "rows_md5": "360fd553cddad475b9c7b78c90beab4b"
+    },
+    "investment_gate_preparations": {
+      "count": 1,
+      "rows_md5": "7f9e97d740fd0c17d9d1d02a88cc749a"
+    },
+    "investment_gate_evidence_items": {
+      "count": 20,
+      "rows_md5": "7c03622b0355aa4c7e37697386b511ee"
+    },
+    "post_fid_project_eligibilities": {
+      "count": 4,
+      "rows_md5": "c3a41211fb89f810472d00bcc70089b7"
+    },
+    "project_workspace_initializations": {
+      "count": 1,
+      "rows_md5": "6993088284b5a56a6f25427310409bf6"
+    }
+  },
+  "eight_tables": {
+    "tenants": {
+      "expected": {
+        "count": 1,
+        "rows_md5": "7ac4a614fa1c05a6186931d9dbe3a052"
+      },
+      "current": {
+        "count": 1,
+        "rows_md5": "7ac4a614fa1c05a6186931d9dbe3a052"
+      },
+      "matches": true
+    },
+    "enterprise_workspaces": {
+      "expected": {
+        "count": 4,
+        "rows_md5": "360fd553cddad475b9c7b78c90beab4b"
+      },
+      "current": {
+        "count": 4,
+        "rows_md5": "360fd553cddad475b9c7b78c90beab4b"
+      },
+      "matches": true
+    },
+    "admin_configurations": {
+      "expected": {
+        "count": 88,
+        "rows_md5": "715ee8b38872dc8bbbfd786057288326"
+      },
+      "current": {
+        "count": 88,
+        "rows_md5": "715ee8b38872dc8bbbfd786057288326"
+      },
+      "matches": true
+    },
+    "investment_gate_preparations": {
+      "expected": {
+        "count": 1,
+        "rows_md5": "7f9e97d740fd0c17d9d1d02a88cc749a"
+      },
+      "current": {
+        "count": 1,
+        "rows_md5": "7f9e97d740fd0c17d9d1d02a88cc749a"
+      },
+      "matches": true
+    },
+    "investment_gate_evidence_items": {
+      "expected": {
+        "count": 20,
+        "rows_md5": "7c03622b0355aa4c7e37697386b511ee"
+      },
+      "current": {
+        "count": 20,
+        "rows_md5": "7c03622b0355aa4c7e37697386b511ee"
+      },
+      "matches": true
+    },
+    "investment_decisions": {
+      "expected": {
+        "count": 1,
+        "rows_md5": "88beb068fa02f02431b0f4c84621ae63"
+      },
+      "current": {
+        "count": 1,
+        "rows_md5": "88beb068fa02f02431b0f4c84621ae63"
+      },
+      "matches": true
+    },
+    "post_fid_project_eligibilities": {
+      "expected": {
+        "count": 4,
+        "rows_md5": "c3a41211fb89f810472d00bcc70089b7"
+      },
+      "current": {
+        "count": 4,
+        "rows_md5": "c3a41211fb89f810472d00bcc70089b7"
+      },
+      "matches": true
+    },
+    "project_workspace_initializations": {
+      "expected": {
+        "count": 1,
+        "rows_md5": "6993088284b5a56a6f25427310409bf6"
+      },
+      "current": {
+        "count": 1,
+        "rows_md5": "6993088284b5a56a6f25427310409bf6"
+      },
+      "matches": true
+    }
+  },
+  "all_eight_table_counts_and_row_md5_match": true,
+  "persistence_matches_20261016": true,
+  "persistence_differences": [],
+  "alembic_head": "20261011_0068",
+  "commands_executed": [
+    "BEGIN READ ONLY;\n    SELECT jsonb_build_object(\n      'database', current_database(),\n      'tenant', (SELECT jsonb_build_object('id',id,'slug',slug) FROM tenants WHERE id=1),\n      'project', (SELECT to_jsonb(w) FROM enterprise_workspaces w WHERE tenant_id=1 AND id=4),\n      'initialization', (SELECT to_jsonb(i) FROM project_workspace_initializations i WHERE tenant_id=1 AND workspace_id=4),\n      'preparations', (SELECT jsonb_agg(jsonb_build_object('id',id,'status',status,'hash',preparation_hash,'source_hash',preparation_source_hash,'row_md5',md5(to_jsonb(g)::text)) ORDER BY id) FROM investment_gate_preparations g WHERE tenant_id=1),\n      'decisions', (SELECT jsonb_agg(jsonb_build_object('id',id,'status',status,'profile',profile_code,'outcome',outcome,'decision_hash',decision_hash,'is_fid',is_fid,'investment_authorized',investment_authorized,'full_funds_authorized',full_funds_authorized,'decided_by',decided_by,'decided_at',decided_at,'row_md5',md5(to_jsonb(d)::text)) ORDER BY id) FROM investment_decisions d WHERE tenant_id=1),\n      'post_fid', (SELECT jsonb_agg(to_jsonb(e) ORDER BY eligibility_round) FROM post_fid_project_eligibilities e WHERE tenant_id=1 AND project_workspace_id=4)\n    ); ROLLBACK;",
+    "BEGIN READ ONLY; SELECT jsonb_build_object('database', current_database(), 'head',(SELECT version_num FROM alembic_version),'tenants',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM tenants t),'enterprise_workspaces',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM enterprise_workspaces t),'admin_configurations',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM admin_configurations t),'investment_gate_preparations',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM investment_gate_preparations t),'investment_gate_evidence_items',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM investment_gate_evidence_items t),'investment_decisions',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM investment_decisions t),'post_fid_project_eligibilities',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM post_fid_project_eligibilities t),'project_workspace_initializations',(SELECT jsonb_build_object('count', count(*), 'rows_md5', md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'[]'))) FROM project_workspace_initializations t)); ROLLBACK;",
+    "BEGIN READ ONLY; SELECT transaction_read_only; ROLLBACK"
+  ],
+  "interpretation": "The persisted material selected chain and complete rows of eight critical tables match the retained 16 October observation. This is continuity proof on 18 October, not a new service-level readiness calculation, browser UAT run, business review, approval, or real-world permit/contract attestation. PostgreSQL's normal startup/recovery housekeeping is not represented as application business-state mutation.",
+  "new_application_business_commands": 0,
+  "database_business_writes": 0,
+  "schema_migrations_executed": 0,
+  "api_started": false,
+  "new_end_to_end_tests": 0,
+  "new_human_approvals": 0,
+  "script": {
+    "file": "scripts/strategic-final-uat/capture_business_signoff_runtime.py",
+    "sha256": "e09f9387120f292487ed12472c7e652ef5f39c3609cc9b8bf10ae5489af8722a",
+    "bytes": 8439
+  },
+  "recording_correction": {
+    "classification": "TRANSPORT_DECODE_ATTEMPT_NOT_BUSINESS_DATA_MISMATCH",
+    "reason": "The initial subprocess used text=True with Windows locale decoding of UTF-8 psql bytes. In-memory non-ASCII comparisons reported differences although all eight complete table row hashes matched. Preserve this original attempt and replace acceptance use with the explicit-UTF8 attempt. No database or product state was changed."
+  }
+}

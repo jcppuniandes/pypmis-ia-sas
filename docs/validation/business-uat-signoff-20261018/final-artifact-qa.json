@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-18",
+  "result": "PASS",
+  "activity": "DOCUMENT_AND_WORKBOOK_QA_NOT_BUSINESS_ACCEPTANCE",
+  "data_sha256": "285ac5f55e996f2636b28a991b28b07a3e57dd8264ebc5b497111a0120a23c45",
+  "baseline_sha256": "97e780329bae874296e06e989b8405d865de914fbc3164a3c1356e2760ed91cc",
+  "outputs": {
+    "P&Pmis_Strategic_Macroprocess_Business_UAT_Signoff.docx": {
+      "sha256": "24f2ef15cd373b3bbc51576b2e6bc735ef2ec6348b2afc61e73acb5525f40310",
+      "bytes": 96804,
+      "page_count": 28,
+      "native_word_read_only_pdf": "outputs/.qa/business-uat-signoff-20261018/word-signoff/draft5/P&Pmis_Strategic_Macroprocess_Business_UAT_Signoff.pdf",
+      "pdf_sha256": "654dc75af264d920d24a6a619f6cfae99d0bd4702b2653a0c51500ee95be63ea",
+      "visual_review": "ROOT_INSPECTED_EVERY_FINAL_PAGE",
+      "rendered_pages": [
+        {
+          "page": 1,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-1.png",
+          "sha256": "0a6c4903b270584758acaf64998bf5269e55d3fb7c3bb95f3aa2fcdc176a5d19"
+        },
+        {
+          "page": 2,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-2.png",
+          "sha256": "b4178cc2fae900da0ecdf6af4d7762f9f08ad599842c2285d0fcccb1857df80d"
+        },
+        {
+          "page": 3,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-3.png",
+          "sha256": "cbe6cf673dda0f98770fdade47089bc60119e3191f35c0da9993d16078f1847b"
+        },
+        {
+          "page": 4,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-4.png",
+          "sha256": "3edbabac2577ee2d8dfd7f2619dd75ea88933480403e27f3e2072bd5cc12aa0b"
+        },
+        {
+          "page": 5,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-5.png",
+          "sha256": "f2acfcdbc7564b8a5534a2e3d88ca574d564e9a0bda18d263494c15794eb7c5c"
+        },
+        {
+          "page": 6,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-6.png",
+          "sha256": "134de97300788d56c3d144c7ef96ba937d671d89b79ee71b177bdd7033c2f5ef"
+        },
+        {
+          "page": 7,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-7.png",
+          "sha256": "da347113de5b2f79fe5759a0b926ca794f8089a097ef2297004d2ea9248f121c"
+        },
+        {
+          "page": 8,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-8.png",
+          "sha256": "b86258832f31bb236cc226f8ab099c71c5d930bc6606b3f6dec130a81cd6163d"
+        },
+        {
+          "page": 9,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-9.png",
+          "sha256": "ce71747cc62cd06364aefc73c54e153619158e57be3e05d6cce0790aafe43d13"
+        },
+        {
+          "page": 10,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-10.png",
+          "sha256": "64467c7be62d1f85bae23cf15b267a6361ae1497b1d1b2de60ef0200dbc8f66b"
+        },
+        {
+          "page": 11,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-11.png",
+          "sha256": "551a1bf9c42a9e74ff3d79c6278d3f09464ef7c9d64809ebc52ce102ab5421ed"
+        },
+        {
+          "page": 12,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-12.png",
+          "sha256": "6741c4670746619ab194dc9425c7b3c19d553bf6154ccd859bf4411b52c5b833"
+        },
+        {
+          "page": 13,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-13.png",
+          "sha256": "e6f7d91f2273f613e53ac2c3f992c84e5a0d5166b54b0663fad7b1eb2d625960"
+        },
+        {
+          "page": 14,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-14.png",
+          "sha256": "aec204397eed480cccc75fe44b8f3d7146e8e3fcf481a29c13665a500a27089f"
+        },
+        {
+          "page": 15,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-15.png",
+          "sha256": "c9fc764ba01cd1ccf5a433c71465f392a6eca04bd3a22cdac50ba3c312387bed"
+        },
+        {
+          "page": 16,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-16.png",
+          "sha256": "844ba87d7e6034da803e8652b76dec69faf3c566d6136b6309995d53e0537362"
+        },
+        {
+          "page": 17,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-17.png",
+          "sha256": "e6dce917c400a142c162be7597daf1ad240a97dc01b41457a0b49219c318fc00"
+        },
+        {
+          "page": 18,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-18.png",
+          "sha256": "fb3a2caa97d11bebc1a187ee086fa93938f42dcf272017b3f4af70fe0899d1e4"
+        },
+        {
+          "page": 19,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-19.png",
+          "sha256": "96f4460693dc7548065de84dac8fb3e44b9d3d6685007fd18947fcb66dcb7762"
+        },
+        {
+          "page": 20,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-20.png",
+          "sha256": "d52c8b4c277e603266406ca58ef3fcfdb0b839ff1586d424ad45d17a573e7c9e"
+        },
+        {
+          "page": 21,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-21.png",
+          "sha256": "f4cfab234b69c63cde3c4df98bf8cdd37602c41694e8ff725ba7c6afe732c83e"
+        },
+        {
+          "page": 22,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-22.png",
+          "sha256": "71dc33abec0cc26e1f7989925d7a4afc16e6bf985a73cb1bbb4069a057e54552"
+        },
+        {
+          "page": 23,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-23.png",
+          "sha256": "46489c4b40a907b5b0fc728584ec3f2f18c941e68df17a1982ce1fd771bfeb8c"
+        },
+        {
+          "page": 24,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-24.png",
+          "sha256": "7a50652a37db257a57b42b3c776e720fc5522726592524137fd827a8c6d141d5"
+        },
+        {
+          "page": 25,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-25.png",
+          "sha256": "02a2e4fb2be3a6d8cfa10bf7001e14090a220e9553d47ffd5c02b207d16649d5"
+        },
+        {
+          "page": 26,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-26.png",
+          "sha256": "1403949fff22858f15c9a4f1b7c0dae1bedf7b298d52f8353e24891e29d26ebd"
+        },
+        {
+          "page": 27,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-27.png",
+          "sha256": "75b2624adf917c14dc1e7205cc1179e7fddd2a1828e2fc3dd5b677e0a4c0ed55"
+        },
+        {
+          "page": 28,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-signoff/pages-draft5/page-28.png",
+          "sha256": "53ca2101d3890d9dbd30089a0addcf88f3e8cdc5fd360e423580a6860b85a306"
+        }
+      ],
+      "a11y_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "source_preserved_parts": 17,
+      "source_total_parts": 19
+    },
+    "P&Pmis_Informe_Tecnico_Business_UAT_Signoff_20261018.docx": {
+      "sha256": "475c1674cf398f005e3239df01cf84c3e649951d8a45b3056d9f0fddf6c7f3a7",
+      "bytes": 87645,
+      "page_count": 8,
+      "native_word_read_only_pdf": "outputs/.qa/business-uat-signoff-20261018/word-report/draft5/P&Pmis_Informe_Tecnico_Business_UAT_Signoff_20261018.pdf",
+      "pdf_sha256": "4cda4821404257652372eaba340247080dc157d0dc2da08fd1af53e571298c4c",
+      "visual_review": "ROOT_INSPECTED_EVERY_FINAL_PAGE",
+      "rendered_pages": [
+        {
+          "page": 1,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-1.png",
+          "sha256": "b34d4762e3a7c733455242a638884a926baa17b5ec3cd1cad59eb532152e280a"
+        },
+        {
+          "page": 2,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-2.png",
+          "sha256": "bef42094d5b477baef468fa8c3b1eae63b1969cfa377782c1538e73373ea6b52"
+        },
+        {
+          "page": 3,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-3.png",
+          "sha256": "c6dde3619f8e78ad62e06fadf2ba745bca211b5bae0f344be56683fdafc46bcd"
+        },
+        {
+          "page": 4,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-4.png",
+          "sha256": "7ef94eea9b86533765e453b44fdb7932b881725379ea68fdcdee087ea3cc7db3"
+        },
+        {
+          "page": 5,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-5.png",
+          "sha256": "50e38dc0ecb4fa6af55c20524e871ac914f08cc8e965e74e00c4f5369bbcb1ec"
+        },
+        {
+          "page": 6,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-6.png",
+          "sha256": "e4093047ef146bec3f68fdf5bbeecfedf7c53b95f20e191023d14f7d257fc444"
+        },
+        {
+          "page": 7,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-7.png",
+          "sha256": "c1c5c624ab5f9aeba36fe26e52ea22b9b96d2c1045315116949a48355c77ec1d"
+        },
+        {
+          "page": 8,
+          "path": "outputs/.qa/business-uat-signoff-20261018/word-report/pages-draft5/page-8.png",
+          "sha256": "496ce72da1c299e073988f0f3e9666fd8f20a0af1217326ad55a476c19fa656f"
+        }
+      ],
+      "a11y_findings": {
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "source_preserved_parts": 17,
+      "source_total_parts": 19
+    }
+  },
+  "word_human_forms": "15 forms, 12 human fields each blank; one page per area visually confirmed",
+  "workbook_native_and_visual_checks": {
+    "passed": 21,
+    "total": 21,
+    "source": "outputs/.qa/business-uat-signoff-20261018/workbooks/workbook-verification.json",
+    "sha256": "b3523d6c682f10e5b00d5cd394bf1beb63ddbeb16d96c36152fafe92cf0455e2"
+  },
+  "workbook_formula_scenarios": {
+    "passed": 20,
+    "total": 20,
+    "simulation_only": true,
+    "restored_human_approvals": 0,
+    "engine": "Artifact Tool, not native Microsoft Excel"
+  },
+  "business_approvals": 0,
+  "business_release_authorized": false,
+  "document_qa_is_not_application_uat": true
+}

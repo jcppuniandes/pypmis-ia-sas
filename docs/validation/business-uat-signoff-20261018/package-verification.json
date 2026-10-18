@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "archive": "outputs/business-uat-signoff-20261018/P&Pmis_Strategic_Macroprocess_Business_UAT_Release_Package.zip",
+  "sha256": "1f85718c56cd678a23606f9479bd196bdc6e95866dac348f97a54ebc591920fd",
+  "bytes": 1336064,
+  "member_count": 18,
+  "logical_components": 11,
+  "counts": {
+    "areas": 15,
+    "completed": 0,
+    "completion_percent": 0,
+    "accept": 0,
+    "accept_with_conditions": 0,
+    "reject": 0,
+    "pending": 15,
+    "accepted_conditions": 0,
+    "business_rejections": 0
+  },
+  "source_documents_changed": 0,
+  "business_release_authorized": false
+}

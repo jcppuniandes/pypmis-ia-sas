@@ -69,6 +69,7 @@ outputs/.qa/strategic-final-uat/
 outputs/.qa/strategic-uat-remediation/
 outputs/.qa/gate07j-controlled-class-b/
 outputs/.qa/gate07j-controlled-class-b-rebuild/
+outputs/.qa/business-uat-signoff-20261018/
 
 # Local repository backup exceeds GitHub's regular Git file-size limit.
 outputs/.qa/strategic-hardening/baseline-9cb0969.zip

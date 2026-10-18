@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-18",
+  "scope": "READ_ONLY_PRIVATE_UAT_STARTUP_REVIEW",
+  "containers_started_by_this_audit": 0,
+  "database_writes_by_this_audit": 0,
+  "sources": [
+    "docker-compose.strategic-persistent-uat.yml",
+    "backend/tests/provision_strategic_fresh_uat.py",
+    "backend/app/main.py",
+    "backend/Dockerfile",
+    "docker inspect: pypmis-strategic-persistent-uat-fresh-api-1 Config.Cmd/Entrypoint/Healthcheck",
+    "docker inspect: pypmis-strategic-persistent-uat-fresh-db-1 Config.Cmd/Entrypoint",
+    "docker inspect: pypmis-strategic-persistent-uat-fresh-redis-1 Config.Cmd/Entrypoint",
+    "docker cp (stdout only): stopped private DB PG_VERSION exists and contains 16"
+  ],
+  "api": {
+    "entrypoint": null,
+    "command": [
+      "/bin/sh",
+      "-ec",
+      "python -m tests.provision_strategic_fresh_uat && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ],
+    "auto_create_schema": false,
+    "seed_demo_data": false,
+    "helper_business_fixture_writes": false,
+    "helper_always_calls_alembic_upgrade_head": true,
+    "helper_bootstrap_if_alembic_version_absent": true,
+    "classification": "NOT_PURE_HEALTH_ONLY_STARTUP",
+    "interpretation": "The helper invokes Alembic upgrade head on every API startup. At existing current head this is expected to be a no-op, but it must not be represented as a command path without bootstrap/migration. If version metadata is absent, it creates schema and stamps 0067 before real upgrade0068. This audit did not execute that command."
+  },
+  "db": {
+    "entrypoint": ["docker-entrypoint.sh"],
+    "command": ["postgres"],
+    "existing_pg_version": "16",
+    "named_volume": "pypmis-strategic-persistent-uat_strategic_uat_postgres",
+    "compose_init_scripts": [],
+    "interpretation": "Existing PostgreSQL16 cluster marker is present on the named volume. Starting this exact existing DB should reopen that cluster (including ordinary PostgreSQL recovery/housekeeping), not run initial schema/business seeding. Current business records remain unverified while it is stopped."
+  },
+  "redis": {
+    "entrypoint": ["docker-entrypoint.sh"],
+    "command": ["redis-server", "--save", "", "--appendonly", "no"],
+    "interpretation": "No persistence or business bootstrap configured. Redis is not required for direct read-only PostgreSQL observations."
+  },
+  "smallest_runtime_verification_option": "Root may separately choose controlled startup of only the exact existing private DB, then execute BEGIN READ ONLY selected identity/head/hash queries and ROLLBACK. API/Redis startup is not necessary for that observation. This audit neither authorizes nor performs a new lifecycle, schema repair, restore, or API bootstrap."
+}

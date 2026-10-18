@@ -1,0 +1,636 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-18T00:13:47.036388-05:00",
+  "scope": "READ_ONLY_AUDIT_FOR_AUTHORIZED_BUSINESS_UAT_SIGNOFF",
+  "frozen_commit": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+  "initial_pre_authoring_observation": {
+    "branch": "main",
+    "commit": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+    "working_tree": "CLEAN_OBSERVED_BEFORE_SIGNOFF_ARTIFACT_AUTHORING",
+    "tracked_diff": "EMPTY",
+    "cached_diff": "EMPTY",
+    "note": "Subsequent untracked sign-off documentation does not alter this initial observation. ACL warnings concerned inherited QA directories only."
+  },
+  "commands": {
+    "status": {
+      "command": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exit_code": 0,
+      "stdout": "## main...origin/main\n?? scripts/strategic-final-uat/audit_business_signoff_baseline.py",
+      "stderr": "warning: could not open directory 'backend/outputs/.qa/strategic-hardening/temp-smoke/': Permission denied\nwarning: could not open directory 'outputs/.qa/pytest-gate07a-ba-final-20260910-a/': Permission denied\nwarning: could not open directory 'outputs/.qa/pytest-gate07a-ba-final-20260910-b/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-9cb0969/pytest-temp/runtime/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-temp/pytest/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-temp-clean/pytest/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/current-temp-clean/pytest/': Permission denied"
+    },
+    "diff": {
+      "command": [
+        "git",
+        "diff"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "diff_stat": {
+      "command": [
+        "git",
+        "diff",
+        "--stat"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "log": {
+      "command": [
+        "git",
+        "log",
+        "-n",
+        "10",
+        "--format=%h %s"
+      ],
+      "exit_code": 0,
+      "stdout": "6672fd5 c\n10a2442 c\na9a62de c\n3cadbe0 c\n6a5192e Update provision_qra_engine_browser.py\n911a251 c\nd762d87 c\n67da407 c\n9fb4468 c\n9cb0969 c",
+      "stderr": ""
+    },
+    "branch": {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "main",
+      "stderr": ""
+    },
+    "head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+      "stderr": ""
+    },
+    "origin_main_local_tracking_ref": {
+      "command": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+      "stderr": ""
+    },
+    "product_diff_frozen": {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+        "--",
+        "backend",
+        "frontend"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "untracked_backend_frontend": {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "--",
+        "backend",
+        "frontend"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: could not open directory 'backend/outputs/.qa/strategic-hardening/temp-smoke/': Permission denied"
+    },
+    "local_alembic_heads": {
+      "command": [
+        "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\backend\\.venv\\Scripts\\python.exe",
+        "-m",
+        "alembic",
+        "heads"
+      ],
+      "exit_code": 0,
+      "stdout": "20261011_0068 (head)",
+      "stderr": ""
+    },
+    "operational_api_alembic_heads": {
+      "command": [
+        "docker",
+        "exec",
+        "pypmis-ia-sas-api-1",
+        "alembic",
+        "heads"
+      ],
+      "exit_code": 0,
+      "stdout": "20261011_0068 (head)",
+      "stderr": ""
+    }
+  },
+  "code_baseline_unchanged": true,
+  "captured_hashes": [
+    {
+      "file": "backend/app/modules/investment_gate_preparation/service.py",
+      "class": "product_hashes_at_collection",
+      "expected_sha256": "9173f62cc357d0f5188053c51d11d841931c6d3243ca0653f5eca7b56e2428e5",
+      "current_sha256": "9173f62cc357d0f5188053c51d11d841931c6d3243ca0653f5eca7b56e2428e5",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/project_workspace_initialization/governance.py",
+      "class": "product_hashes_at_collection",
+      "expected_sha256": "a9de16a798a35eb504da32b81f9cbd819120ab0b4a69f9d9a8f871b157ac364f",
+      "current_sha256": "a9de16a798a35eb504da32b81f9cbd819120ab0b4a69f9d9a8f871b157ac364f",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/project_workspace_initialization/service.py",
+      "class": "product_hashes_at_collection",
+      "expected_sha256": "adce5d8f87d7cc900631dd819f81adf15dfec9612bd154f13e00cffe9ca7c3d7",
+      "current_sha256": "adce5d8f87d7cc900631dd819f81adf15dfec9612bd154f13e00cffe9ca7c3d7",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/investment_decision/service.py",
+      "class": "product_hashes_at_collection",
+      "expected_sha256": "09f74ab95509a9a7918e0276c3b0aa08465608d0426c728d45a0303481a82a5d",
+      "current_sha256": "09f74ab95509a9a7918e0276c3b0aa08465608d0426c728d45a0303481a82a5d",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/investment_decision/post_activation_currentness.py",
+      "class": "product_hashes_at_collection",
+      "expected_sha256": "1733068e431100db3c4730ff94601be0f3780f6b3b714e81f2c154560bcdbafc",
+      "current_sha256": "1733068e431100db3c4730ff94601be0f3780f6b3b714e81f2c154560bcdbafc",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/test_gate07m_fid_e2e.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "51e0b86f9cf75564465e9afda6fdceb940b5572aa86853bb7399c4df1a8328fe",
+      "current_sha256": "51e0b86f9cf75564465e9afda6fdceb940b5572aa86853bb7399c4df1a8328fe",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_legacy_fid_current_fixture.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "611e53f683ce6c6c907ebaf3fc1f7c857f382dd4e54543ea069354c4f43609b7",
+      "current_sha256": "611e53f683ce6c6c907ebaf3fc1f7c857f382dd4e54543ea069354c4f43609b7",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_fresh_setup.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "3ed45cf64dc3b379cf98f3fac7314f324c089ac851382b13bb1885ac998e40f9",
+      "current_sha256": "3ed45cf64dc3b379cf98f3fac7314f324c089ac851382b13bb1885ac998e40f9",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_financing.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "23e893922253fed927dad8ed4dcc5b523ac233b06101afd0e233410d3d5ff13f",
+      "current_sha256": "23e893922253fed927dad8ed4dcc5b523ac233b06101afd0e233410d3d5ff13f",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_portfolio.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "1da912dbaadaf2ea60f034f96d1479d9576914c1c5f498f5f775c1eff351b49a",
+      "current_sha256": "1da912dbaadaf2ea60f034f96d1479d9576914c1c5f498f5f775c1eff351b49a",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_sources_current.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "ef403a00c7cdbd67cdc60aac92bbc9a600174e66cf4dd1696e77bc437b655122",
+      "current_sha256": "ef403a00c7cdbd67cdc60aac92bbc9a600174e66cf4dd1696e77bc437b655122",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_fresh_class_b.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "b9c4e442225e1fd73c1bc60337654b14f28ddb8a7fcfa686670e678a196fd3d2",
+      "current_sha256": "b9c4e442225e1fd73c1bc60337654b14f28ddb8a7fcfa686670e678a196fd3d2",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/strategic_capital_owner_full_e2e_current.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "3d264d7c0c305813aa33b76f42826a3a9969789b23fc849c43f3fd912d441019",
+      "current_sha256": "3d264d7c0c305813aa33b76f42826a3a9969789b23fc849c43f3fd912d441019",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/test_investment_decision_post_activation_currentness.py",
+      "class": "fixture_hashes_at_collection",
+      "expected_sha256": "9473690e8f1ec9ab375b0ef65bba6d05bedba9504a0b3a2074a17a7029275b21",
+      "current_sha256": "9473690e8f1ec9ab375b0ef65bba6d05bedba9504a0b3a2074a17a7029275b21",
+      "matches": true
+    }
+  ],
+  "captured_hash_counts": {
+    "product": 5,
+    "fixture": 9,
+    "all_match": true
+  },
+  "technical_results_source": {
+    "file": "docs/validation/gate07j-controlled-class-b/rebuild-results.json",
+    "bytes": 401755,
+    "sha256": "1d04067b1ec4133407d33272f2c31c76486793026d4fa177356eccb6b0cc9e09"
+  },
+  "historical_technical_state": {
+    "status": "STRATEGIC_MACROPROCESS_TECHNICALLY_READY_UAT_SIGNOFF_PENDING",
+    "decision": "UAT_SIGNOFF_PENDING",
+    "ready": true,
+    "business_release_authorized": false,
+    "production_release_authorized": false,
+    "technical_scope": "CONTROLLED_CLASS_B_FID_POSTFID_TARGET_ONLY",
+    "full_ui_metadata_validated": false,
+    "residual_impact_review_pending": false,
+    "open_metadata_defects": [
+      "UAT-S3-006"
+    ],
+    "human_signoff": "PENDING_NOT_ASSUMED",
+    "signoffs": [],
+    "next_recommendation": "AUTHORIZED BUSINESS UAT SIGN-OFF",
+    "conditions": {
+      "same_identity": true,
+      "controlled_references": true,
+      "reconciliation_19_required_plus_optional": true,
+      "frozen_material_hashes_unchanged": true,
+      "backend_chain": true,
+      "activation_command": true,
+      "post_activation_currentness": true,
+      "focused": true,
+      "broad": true,
+      "browser": true,
+      "browser_functional": true,
+      "browser_visual_review": true,
+      "operational_preservation": true,
+      "named_volume_restart_verified": true,
+      "frontend_build_typecheck_lint": true
+    }
+  },
+  "historical_test_counts": {
+    "class_b": {
+      "PASS": 29,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "bridge": {
+      "PASS": 20,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "canonical": {
+      "PASS": 54,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 2
+    },
+    "frontend": {
+      "PASS": 15,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "legacy": {
+      "PASS": 1,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "postactivation": {
+      "PASS": 38,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "ci_contract_guard": {
+      "PASS": 1,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "broad": {
+      "PASS": 898,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 16
+    },
+    "browser": {
+      "PASS": 1,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  "historical_identity": {
+    "tenant_id": 1,
+    "tenant_slug": "fresh-copper-1765b06813",
+    "enterprise_id": 1,
+    "business_unit_id": 2,
+    "portfolio_id": 3,
+    "project_id": 4,
+    "capital_cycle_id": 1,
+    "capital_demand_id": 1,
+    "allocation_plan_id": 1,
+    "idea_id": 1,
+    "analysis_id": 1,
+    "proposal_id": 1,
+    "strategic_gate_id": 1,
+    "project_creation_request_id": 1,
+    "actor_id": 4,
+    "reviewer_id": 5,
+    "admin_author_id": 2,
+    "admin_publisher_id": 3,
+    "decision_maker_id": 11,
+    "initializer_id": 12,
+    "activator_id": 13,
+    "capital_endorser_id": 8
+  },
+  "historical_gate": {
+    "frozen": {
+      "id": 1,
+      "status": "FROZEN",
+      "revision": 1,
+      "preparation_hash": "a43ef7a9362c102f0eb0d878d53b388379b4410c5b1e55d364b49c35f3999583",
+      "investment_gate_profile_id": 80,
+      "profile_code": "PYP-FFA",
+      "profile_revision": 1,
+      "profile_hash": "0e580e374ceb4f17a795bcd6ffddab6a61001a8d11f08b4b54f18c6eccc96acd",
+      "frozen_by": 5,
+      "frozen_at": "2026-10-16T06:02:18.654001"
+    },
+    "published_policy": {
+      "policy_id": 78,
+      "policy_revision": 1,
+      "policy_hash": "9e0e343f1e2d0244b913f0e8f48a2c8e1cb64a1b71122ae093ccf59b3576aa4f"
+    },
+    "prefreeze_readiness": {
+      "readiness_status": "READY",
+      "source_current": true,
+      "required_requirement_count": 19,
+      "valid_requirement_count": 15,
+      "coverage_percent": 100,
+      "blockers": []
+    }
+  },
+  "historical_fid": {
+    "id": 1,
+    "tenant_id": 1,
+    "portfolio_workspace_id": 3,
+    "investment_gate_preparation_id": 1,
+    "investment_gate_profile_id": 80,
+    "status": "DECIDED",
+    "outcome": "GO",
+    "profile_code": "PYP-FFA",
+    "decision_round": 1,
+    "decision_maker_user_id": 11,
+    "decided_by": 11,
+    "decided_at": "2026-10-16T06:02:26.830631",
+    "decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+    "source_preparation_hash": "a43ef7a9362c102f0eb0d878d53b388379b4410c5b1e55d364b49c35f3999583",
+    "source_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+    "source_profile_hash": "0e580e374ceb4f17a795bcd6ffddab6a61001a8d11f08b4b54f18c6eccc96acd",
+    "source_policy_hash": "9e0e343f1e2d0244b913f0e8f48a2c8e1cb64a1b71122ae093ccf59b3576aa4f",
+    "configuration_id": 82,
+    "configuration_revision": 2,
+    "configuration_hash": "7d332376a4eee70988b1420c7dd8b1afb02f2929a40b42f650e90d4d80ae0cfe",
+    "is_fid": true,
+    "investment_authorized": true,
+    "full_funds_authorized": true,
+    "can_activate_project": false
+  },
+  "historical_post_fid": {
+    "id": 4,
+    "eligibility_status": "NO_REACTIVATION_REQUIRED",
+    "source_current": true,
+    "eligibility_round": 4,
+    "investment_decision_id": 1,
+    "project_workspace_id": 4,
+    "fid_decision_hash": "34863f8ba9385b8770f2a016f26d7148e252f554d8ae90989937d367123ca8c8",
+    "decision_package_hash": "90df5695f4760ba6549d61727eb87ee90bd93d1c5badc874ac47181aac8beaec",
+    "configuration_id": 84,
+    "configuration_hash": "a174e5f3363091d1afa2de0b935cbc15d0367c89459f37b72175f4e52230ccf2",
+    "blockers_json": [],
+    "eligible_for_activation": false,
+    "eligible_for_initialization": false
+  },
+  "prior_final_artifacts": [
+    {
+      "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_Final_Release_Closeout.docx",
+      "bytes": 90675,
+      "sha256": "2a0c470c57b833b89c85758863653afa04a03b941481e18ee37aabcdfc76d031"
+    },
+    {
+      "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_UAT_Plan_and_Results.docx",
+      "bytes": 107414,
+      "sha256": "359a0ebb9f84b467c260f01ef8a0b06a120f779c200ba12fa90415136b55023d"
+    },
+    {
+      "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_UAT_Traceability.xlsx",
+      "bytes": 141128,
+      "sha256": "baad276e386ea9550b5bac0eafae8bf6e9910361ea29047da58d952ab5dd757a"
+    }
+  ],
+  "private_uat_runtime": {
+    "db": {
+      "name": "pypmis-strategic-persistent-uat-fresh-db-1",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "ExitCode": 255,
+        "FinishedAt": "2026-10-18T04:57:58.6172707Z",
+        "OOMKilled": false
+      },
+      "project": "pypmis-strategic-persistent-uat",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/backups",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Name": "pypmis-strategic-persistent-uat_strategic_uat_postgres",
+          "Destination": "/var/lib/postgresql/data",
+          "RW": true
+        }
+      ],
+      "tmpfs": null
+    },
+    "api": {
+      "name": "pypmis-strategic-persistent-uat-fresh-api-1",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "ExitCode": 255,
+        "FinishedAt": "2026-10-18T04:57:58.6171936Z",
+        "OOMKilled": false
+      },
+      "project": "pypmis-strategic-persistent-uat",
+      "mounts": [
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/artifacts",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Name": null,
+          "Destination": "/app",
+          "RW": false
+        }
+      ],
+      "tmpfs": {
+        "/tmp": ""
+      }
+    },
+    "volume": {
+      "Name": "pypmis-strategic-persistent-uat_strategic_uat_postgres",
+      "CreatedAt": "2026-10-16T05:45:56Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "363526288859bc10887aba5791a43d417379d5ebe878cbb179f584f7314d2a3e",
+        "com.docker.compose.project": "pypmis-strategic-persistent-uat",
+        "com.docker.compose.version": "5.3.1",
+        "com.docker.compose.volume": "strategic_uat_postgres"
+      }
+    },
+    "named_volume_exists": true,
+    "selected_business_state_currently_verified": false,
+    "classification": "RUNTIME_STOPPED_HISTORICAL_TECHNICAL_EVIDENCE_PRESERVED",
+    "note": "No container started, volume mounted elsewhere, or database changed. Named-volume presence is not proof of current selected records; historical evidence is not represented as a new runtime revalidation."
+  },
+  "operational": {
+    "command": {
+      "command": [
+        "docker",
+        "exec",
+        "pypmis-ia-sas-db-1",
+        "psql",
+        "-U",
+        "pypmis",
+        "-d",
+        "pypmis",
+        "-qAt",
+        "-c",
+        "\nBEGIN READ ONLY;\nSELECT jsonb_build_object(\n 'workspace_count', (SELECT count(*) FROM enterprise_workspaces),\n 'workspace14', (SELECT jsonb_build_object('id', w.id, 'code', w.code,\n   'status', w.status, 'row_md5', md5(to_jsonb(w)::text), 'version', w.version,\n   'external_key', w.external_key) FROM enterprise_workspaces w WHERE w.id=14),\n 'published_count', (SELECT count(*) FROM admin_configurations WHERE status='published'),\n 'evidence_policies', (SELECT jsonb_agg(jsonb_build_object('id', id, 'hash', content_hash) ORDER BY id)\n   FROM admin_configurations WHERE status='published' AND kind='investment_evidence_policy'),\n 'qra_run_count', (SELECT count(*) FROM qra_runs),\n 'head', (SELECT version_num FROM alembic_version)\n);\nROLLBACK;\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"head\": \"20261011_0068\", \"workspace14\": {\"id\": 14, \"code\": \"PRJ-PPMIS\", \"status\": \"active\", \"row_md5\": \"ef67b78a4d4902d2dc6db3efb017b80b\", \"version\": 1, \"external_key\": \"PRJ-PYP-PPMIS\"}, \"qra_run_count\": 0, \"published_count\": 95, \"workspace_count\": 31, \"evidence_policies\": [{\"id\": 787, \"hash\": \"a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392\"}, {\"id\": 829, \"hash\": \"01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016\"}, {\"id\": 836, \"hash\": \"be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30\"}, {\"id\": 845, \"hash\": \"7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4\"}, {\"id\": 854, \"hash\": \"7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6\"}]}",
+      "stderr": ""
+    },
+    "observation": {
+      "head": "20261011_0068",
+      "workspace14": {
+        "id": 14,
+        "code": "PRJ-PPMIS",
+        "status": "active",
+        "row_md5": "ef67b78a4d4902d2dc6db3efb017b80b",
+        "version": 1,
+        "external_key": "PRJ-PYP-PPMIS"
+      },
+      "qra_run_count": 0,
+      "published_count": 95,
+      "workspace_count": 31,
+      "evidence_policies": [
+        {
+          "id": 787,
+          "hash": "a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392"
+        },
+        {
+          "id": 829,
+          "hash": "01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016"
+        },
+        {
+          "id": 836,
+          "hash": "be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30"
+        },
+        {
+          "id": 845,
+          "hash": "7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4"
+        },
+        {
+          "id": 854,
+          "hash": "7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6"
+        }
+      ]
+    },
+    "previous_observation": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/operational-after.json",
+      "bytes": 912,
+      "sha256": "fb653b85cd37b5206c9cd05ed8014b34a3cce1fc8bcebd9caa74ac6b674a06b3"
+    },
+    "matches_previous_observation": true,
+    "transaction": "BEGIN READ ONLY; SELECT; ROLLBACK"
+  },
+  "historical_test_evidence_integrity": {
+    "class_b": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/class-b-focused-final/class-b-all-current.xml",
+      "sha256": "333e048c0b916e0650aa500353ca89546cbe08ab443a1ee84a59cbf20769ed44",
+      "matches_captured_hash": true
+    },
+    "bridge": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/project-initialization-post-fid-bridge.xml",
+      "sha256": "32ffaefabee7d32aec3d47ef3874c5fd4ec8f1190e0823924149bb41ad5c653f",
+      "matches_captured_hash": true
+    },
+    "canonical": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/project-initialization-canonical-guards.xml",
+      "sha256": "222cabd58ac849a55017a7f070de77ec9c5b2afda31abb491e813fae56aec95c",
+      "matches_captured_hash": true
+    },
+    "frontend": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/frontend-presentations-focused.xml",
+      "sha256": "02e49e34db9bb669750d0917b692afddb6a341709ddd28fd766bc65c26e8d496",
+      "matches_captured_hash": true
+    },
+    "legacy": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/legacy-focused-attempt-2/legacy-focused.xml",
+      "sha256": "0fc128a44164954b8b4487fd40afbe83c5b4be71d033c77adb8a58b749df3bb7",
+      "matches_captured_hash": true
+    },
+    "postactivation": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/postactivation-focused-final-3/currentness-focused.xml",
+      "sha256": "a6eb6c546fae5b103de26cd9143bb06bc425f7f9adf4824febe28f1e9068f317",
+      "matches_captured_hash": true
+    },
+    "ci_contract_guard": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/ci-contract-guard-final/ci-contract-guard.xml",
+      "sha256": "bff67c09eb501597fd23b63b0b790c2e92381c7f1237858183fe5fae27308c8b",
+      "matches_captured_hash": true
+    },
+    "broad": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/broad-clean/backend-strategic-regression-clean.xml",
+      "sha256": "a9b96e315be8a8c0e79fe9aba850bb3f58d1970a8eb3f32504209bde6aaa1c74",
+      "matches_captured_hash": true
+    },
+    "browser": {
+      "file": "outputs/.qa/gate07j-controlled-class-b-rebuild/browser-actual-3/strategic-capital-current.xml",
+      "sha256": "480624ef5ca13eeb397d013079781dde98b873015704cbe61e50b3955993d078",
+      "matches_captured_hash": true
+    }
+  },
+  "new_migrations": 0,
+  "database_writes": 0,
+  "containers_started": 0,
+  "new_tests_executed": 0,
+  "new_business_approvals": 0,
+  "smallest_business_gap": "No actual authorized decisions, identities, dates or approval references for the 15 business acceptance areas have been supplied. Completion remains 0/15, UAT_SIGNOFF_PENDING.",
+  "separate_runtime_gap": "Private persistent UAT is stopped; an attended live review would require controlled startup, which this read-only audit did not perform."
+}

@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-18T00:42:25.518319-05:00",
+  "result": "PASS_FINAL_SCOPE_AND_PRESERVATION_READ_ONLY",
+  "scope": "CODE_DOCUMENT_HASH_AND_OPERATIONAL_READ_ONLY_FINAL_AUDIT_NOT_BUSINESS_ACCEPTANCE",
+  "frozen_commit": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+  "commands": {
+    "head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+      "stderr": ""
+    },
+    "branch": {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "main",
+      "stderr": ""
+    },
+    "status": {
+      "command": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exit_code": 0,
+      "stdout": "## main...origin/main\n M .gitignore\n?? docs/validation/business-uat-signoff-20261018/\n?? outputs/business-uat-signoff-20261018/\n?? scripts/business-uat-signoff/\n?? scripts/strategic-final-uat/audit_business_signoff_baseline.py\n?? scripts/strategic-final-uat/capture_business_signoff_final_scope.py\n?? scripts/strategic-final-uat/capture_business_signoff_runtime.py",
+      "stderr": "warning: could not open directory 'backend/outputs/.qa/strategic-hardening/temp-smoke/': Permission denied\nwarning: could not open directory 'outputs/.qa/pytest-gate07a-ba-final-20260910-a/': Permission denied\nwarning: could not open directory 'outputs/.qa/pytest-gate07a-ba-final-20260910-b/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-9cb0969/pytest-temp/runtime/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-temp/pytest/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/baseline-temp-clean/pytest/': Permission denied\nwarning: could not open directory 'outputs/.qa/strategic-hardening/current-temp-clean/pytest/': Permission denied"
+    },
+    "tracked_changed_paths": {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "6672fd5da1f486e6bd571a74bb6d1e8b3337a405"
+      ],
+      "exit_code": 0,
+      "stdout": ".gitignore",
+      "stderr": "warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it"
+    },
+    "tracked_stat": {
+      "command": [
+        "git",
+        "diff",
+        "--stat",
+        "6672fd5da1f486e6bd571a74bb6d1e8b3337a405"
+      ],
+      "exit_code": 0,
+      "stdout": ".gitignore | 1 +\n 1 file changed, 1 insertion(+)",
+      "stderr": "warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it"
+    },
+    "packaging_diff": {
+      "command": [
+        "git",
+        "diff",
+        "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+        "--",
+        ".gitignore"
+      ],
+      "exit_code": 0,
+      "stdout": "diff --git a/.gitignore b/.gitignore\nindex 4ac9bc6..896c51f 100644\n--- a/.gitignore\n+++ b/.gitignore\n@@ -69,6 +69,7 @@ outputs/.qa/strategic-final-uat/\n outputs/.qa/strategic-uat-remediation/\n outputs/.qa/gate07j-controlled-class-b/\n outputs/.qa/gate07j-controlled-class-b-rebuild/\n+outputs/.qa/business-uat-signoff-20261018/\n \n # Local repository backup exceeds GitHub's regular Git file-size limit.\n outputs/.qa/strategic-hardening/baseline-9cb0969.zip",
+      "stderr": "warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it"
+    },
+    "product_diff": {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "6672fd5da1f486e6bd571a74bb6d1e8b3337a405",
+        "--",
+        "backend/app",
+        "frontend/src",
+        "backend/alembic"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "untracked_product_paths": {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "--",
+        "backend/app",
+        "frontend/src",
+        "backend/alembic"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "cached_stat": {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--stat"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "local_alembic_heads": {
+      "command": [
+        "C:\\Users\\Ricardo\\Documents\\GitHub\\pypmis-ia-sas\\backend\\.venv\\Scripts\\python.exe",
+        "-m",
+        "alembic",
+        "heads"
+      ],
+      "exit_code": 0,
+      "stdout": "20261011_0068 (head)",
+      "stderr": ""
+    }
+  },
+  "product_unchanged": true,
+  "fourteen_source_hashes": [
+    {
+      "file": "backend/app/modules/investment_gate_preparation/service.py",
+      "expected_sha256": "9173f62cc357d0f5188053c51d11d841931c6d3243ca0653f5eca7b56e2428e5",
+      "current_sha256": "9173f62cc357d0f5188053c51d11d841931c6d3243ca0653f5eca7b56e2428e5",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/project_workspace_initialization/governance.py",
+      "expected_sha256": "a9de16a798a35eb504da32b81f9cbd819120ab0b4a69f9d9a8f871b157ac364f",
+      "current_sha256": "a9de16a798a35eb504da32b81f9cbd819120ab0b4a69f9d9a8f871b157ac364f",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/project_workspace_initialization/service.py",
+      "expected_sha256": "adce5d8f87d7cc900631dd819f81adf15dfec9612bd154f13e00cffe9ca7c3d7",
+      "current_sha256": "adce5d8f87d7cc900631dd819f81adf15dfec9612bd154f13e00cffe9ca7c3d7",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/investment_decision/service.py",
+      "expected_sha256": "09f74ab95509a9a7918e0276c3b0aa08465608d0426c728d45a0303481a82a5d",
+      "current_sha256": "09f74ab95509a9a7918e0276c3b0aa08465608d0426c728d45a0303481a82a5d",
+      "matches": true
+    },
+    {
+      "file": "backend/app/modules/investment_decision/post_activation_currentness.py",
+      "expected_sha256": "1733068e431100db3c4730ff94601be0f3780f6b3b714e81f2c154560bcdbafc",
+      "current_sha256": "1733068e431100db3c4730ff94601be0f3780f6b3b714e81f2c154560bcdbafc",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/test_gate07m_fid_e2e.py",
+      "expected_sha256": "51e0b86f9cf75564465e9afda6fdceb940b5572aa86853bb7399c4df1a8328fe",
+      "current_sha256": "51e0b86f9cf75564465e9afda6fdceb940b5572aa86853bb7399c4df1a8328fe",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_legacy_fid_current_fixture.py",
+      "expected_sha256": "611e53f683ce6c6c907ebaf3fc1f7c857f382dd4e54543ea069354c4f43609b7",
+      "current_sha256": "611e53f683ce6c6c907ebaf3fc1f7c857f382dd4e54543ea069354c4f43609b7",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_fresh_setup.py",
+      "expected_sha256": "3ed45cf64dc3b379cf98f3fac7314f324c089ac851382b13bb1885ac998e40f9",
+      "current_sha256": "3ed45cf64dc3b379cf98f3fac7314f324c089ac851382b13bb1885ac998e40f9",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_financing.py",
+      "expected_sha256": "23e893922253fed927dad8ed4dcc5b523ac233b06101afd0e233410d3d5ff13f",
+      "current_sha256": "23e893922253fed927dad8ed4dcc5b523ac233b06101afd0e233410d3d5ff13f",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_portfolio.py",
+      "expected_sha256": "1da912dbaadaf2ea60f034f96d1479d9576914c1c5f498f5f775c1eff351b49a",
+      "current_sha256": "1da912dbaadaf2ea60f034f96d1479d9576914c1c5f498f5f775c1eff351b49a",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_capital_sources_current.py",
+      "expected_sha256": "ef403a00c7cdbd67cdc60aac92bbc9a600174e66cf4dd1696e77bc437b655122",
+      "current_sha256": "ef403a00c7cdbd67cdc60aac92bbc9a600174e66cf4dd1696e77bc437b655122",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/helpers/strategic_fresh_class_b.py",
+      "expected_sha256": "b9c4e442225e1fd73c1bc60337654b14f28ddb8a7fcfa686670e678a196fd3d2",
+      "current_sha256": "b9c4e442225e1fd73c1bc60337654b14f28ddb8a7fcfa686670e678a196fd3d2",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/strategic_capital_owner_full_e2e_current.py",
+      "expected_sha256": "3d264d7c0c305813aa33b76f42826a3a9969789b23fc849c43f3fd912d441019",
+      "current_sha256": "3d264d7c0c305813aa33b76f42826a3a9969789b23fc849c43f3fd912d441019",
+      "matches": true
+    },
+    {
+      "file": "backend/tests/test_investment_decision_post_activation_currentness.py",
+      "expected_sha256": "9473690e8f1ec9ab375b0ef65bba6d05bedba9504a0b3a2074a17a7029275b21",
+      "current_sha256": "9473690e8f1ec9ab375b0ef65bba6d05bedba9504a0b3a2074a17a7029275b21",
+      "matches": true
+    }
+  ],
+  "six_source_documents": [
+    {
+      "id": "DOC01",
+      "name": "Strategic Macroprocess Business Process",
+      "expected_sha256": "6215adbe01e76b9ff84152508b66a5e64b17b0f7ded67b120009140e21cd878e",
+      "current": {
+        "file": "outputs/strategic-final-uat-20261014/P&Pmis_Strategic_Macroprocess_Business_Process.docx",
+        "sha256": "6215adbe01e76b9ff84152508b66a5e64b17b0f7ded67b120009140e21cd878e",
+        "bytes": 88270
+      },
+      "matches": true
+    },
+    {
+      "id": "DOC02",
+      "name": "User Guide",
+      "expected_sha256": "5f54a1dbde99e87c9895d5b80e4be72faf2214885e09c9fd0bf7b626706d4c51",
+      "current": {
+        "file": "outputs/strategic-final-uat-20261014/P&Pmis_Strategic_Macroprocess_User_Guide.docx",
+        "sha256": "5f54a1dbde99e87c9895d5b80e4be72faf2214885e09c9fd0bf7b626706d4c51",
+        "bytes": 96946
+      },
+      "matches": true
+    },
+    {
+      "id": "DOC03",
+      "name": "Administration Guide",
+      "expected_sha256": "793a3fc8fe185228610a1e570e77f301315d6b0f8b16498d0b0ef80a2b9b0d0a",
+      "current": {
+        "file": "outputs/strategic-uat-remediation-20261015/P&Pmis_Strategic_Macroprocess_Admin_Guide.docx",
+        "sha256": "793a3fc8fe185228610a1e570e77f301315d6b0f8b16498d0b0ef80a2b9b0d0a",
+        "bytes": 87805
+      },
+      "matches": true
+    },
+    {
+      "id": "DOC04",
+      "name": "UAT Plan and Results",
+      "expected_sha256": "359a0ebb9f84b467c260f01ef8a0b06a120f779c200ba12fa90415136b55023d",
+      "current": {
+        "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_UAT_Plan_and_Results.docx",
+        "sha256": "359a0ebb9f84b467c260f01ef8a0b06a120f779c200ba12fa90415136b55023d",
+        "bytes": 107414
+      },
+      "matches": true
+    },
+    {
+      "id": "DOC05",
+      "name": "UAT Traceability",
+      "expected_sha256": "baad276e386ea9550b5bac0eafae8bf6e9910361ea29047da58d952ab5dd757a",
+      "current": {
+        "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_UAT_Traceability.xlsx",
+        "sha256": "baad276e386ea9550b5bac0eafae8bf6e9910361ea29047da58d952ab5dd757a",
+        "bytes": 141128
+      },
+      "matches": true
+    },
+    {
+      "id": "DOC06",
+      "name": "Final Release Closeout",
+      "expected_sha256": "2a0c470c57b833b89c85758863653afa04a03b941481e18ee37aabcdfc76d031",
+      "current": {
+        "file": "outputs/gate07j-controlled-class-b-20261016/P&Pmis_Strategic_Macroprocess_Final_Release_Closeout.docx",
+        "sha256": "2a0c470c57b833b89c85758863653afa04a03b941481e18ee37aabcdfc76d031",
+        "bytes": 90675
+      },
+      "matches": true
+    }
+  ],
+  "six_source_documents_unchanged": true,
+  "preserved_prior_observations": [
+    {
+      "file": "docs/validation/business-uat-signoff-20261018/baseline.json",
+      "sha256": "97e780329bae874296e06e989b8405d865de914fbc3164a3c1356e2760ed91cc",
+      "bytes": 23652
+    },
+    {
+      "file": "docs/validation/business-uat-signoff-20261018/runtime-readonly-20261018.json",
+      "sha256": "9f86fddce2ec74f90145289d51ab89e4d0d2726259c32b152302e25c0d020ebb",
+      "bytes": 40162
+    },
+    {
+      "file": "docs/validation/business-uat-signoff-20261018/runtime-readonly-20261018-encoding-attempt.json",
+      "sha256": "a5785594674d487ff6539c31b5325bbabef46c30194e06547d36b20eafaa3f3c",
+      "bytes": 41564
+    }
+  ],
+  "operational_readonly_command": {
+    "command": [
+      "docker",
+      "exec",
+      "pypmis-ia-sas-db-1",
+      "psql",
+      "-U",
+      "pypmis",
+      "-d",
+      "pypmis",
+      "-v",
+      "ON_ERROR_STOP=1",
+      "-qAt",
+      "-c",
+      "\nBEGIN READ ONLY;\nSELECT jsonb_build_object(\n 'workspace_count', (SELECT count(*) FROM enterprise_workspaces),\n 'workspace14', (SELECT jsonb_build_object('id', w.id, 'code', w.code,\n   'status', w.status, 'row_md5', md5(to_jsonb(w)::text), 'version', w.version,\n   'external_key', w.external_key) FROM enterprise_workspaces w WHERE w.id=14),\n 'published_count', (SELECT count(*) FROM admin_configurations WHERE status='published'),\n 'evidence_policies', (SELECT jsonb_agg(jsonb_build_object('id', id, 'hash', content_hash) ORDER BY id)\n   FROM admin_configurations WHERE status='published' AND kind='investment_evidence_policy'),\n 'qra_run_count', (SELECT count(*) FROM qra_runs),\n 'head', (SELECT version_num FROM alembic_version)\n);\nROLLBACK;\n"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"head\": \"20261011_0068\", \"workspace14\": {\"id\": 14, \"code\": \"PRJ-PPMIS\", \"status\": \"active\", \"row_md5\": \"ef67b78a4d4902d2dc6db3efb017b80b\", \"version\": 1, \"external_key\": \"PRJ-PYP-PPMIS\"}, \"qra_run_count\": 0, \"published_count\": 95, \"workspace_count\": 31, \"evidence_policies\": [{\"id\": 787, \"hash\": \"a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392\"}, {\"id\": 829, \"hash\": \"01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016\"}, {\"id\": 836, \"hash\": \"be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30\"}, {\"id\": 845, \"hash\": \"7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4\"}, {\"id\": 854, \"hash\": \"7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6\"}]}",
+    "stderr": ""
+  },
+  "operational_final_observation": {
+    "head": "20261011_0068",
+    "workspace14": {
+      "id": 14,
+      "code": "PRJ-PPMIS",
+      "status": "active",
+      "row_md5": "ef67b78a4d4902d2dc6db3efb017b80b",
+      "version": 1,
+      "external_key": "PRJ-PYP-PPMIS"
+    },
+    "qra_run_count": 0,
+    "published_count": 95,
+    "workspace_count": 31,
+    "evidence_policies": [
+      {
+        "id": 787,
+        "hash": "a70075f0b392ab5d17a21353d7434ca73b51d11f57ccbd14774aa1013e795392"
+      },
+      {
+        "id": 829,
+        "hash": "01bb0bb74f1a041fb20da59d8bc81007f2a03e29cba559a95ee39bf6f0d1e016"
+      },
+      {
+        "id": 836,
+        "hash": "be672371f3a001a4ea1c5eaf393c1d24b815d7079440b732e10616cfb4db2f30"
+      },
+      {
+        "id": 845,
+        "hash": "7c4c4ad153f0d157f415a9b9bbb62b43f6fddbc96c4ee86343e5c057217896e4"
+      },
+      {
+        "id": 854,
+        "hash": "7c5193c7662eb7a74e4167daa178c686714e0f695283156b4c0df22014a612c6"
+      }
+    ]
+  },
+  "operational_matches_initial_20261018": true,
+  "operational_transaction": "BEGIN READ ONLY; SELECT; ROLLBACK",
+  "alembic_head": "20261011_0068",
+  "private_api_redis_states": {
+    "pypmis-strategic-persistent-uat-fresh-api-1": {
+      "status": "exited",
+      "running": false
+    },
+    "pypmis-strategic-persistent-uat-fresh-redis-1": {
+      "status": "exited",
+      "running": false
+    }
+  },
+  "packaging_only_tracked_change": {
+    "confirmed": true,
+    "path": ".gitignore",
+    "addition": "outputs/.qa/business-uat-signoff-20261018/",
+    "classification": "QA_ARTIFACT_PACKAGING_EXCLUSION_NOT_FUNCTIONAL_PRODUCT_CHANGE",
+    "effect": "Excludes temporary sign-off QA render/test artifacts only; no code, workflow, policy, authority, database state, or source-document change."
+  },
+  "no_business_acceptance_inferred": true,
+  "signoff_counts": {
+    "areas": 15,
+    "completed": 0,
+    "completion_percent": 0,
+    "accept": 0,
+    "accept_with_conditions": 0,
+    "reject": 0,
+    "pending": 15,
+    "accepted_conditions": 0,
+    "business_rejections": 0
+  },
+  "new_database_business_writes": 0,
+  "new_schema_migrations": 0,
+  "new_tests_executed": 0,
+  "services_started_by_this_audit": 0,
+  "commits_or_pushes": 0,
+  "script": {
+    "file": "scripts/strategic-final-uat/capture_business_signoff_final_scope.py",
+    "sha256": "802c75f0a666ea9feff2b71fa4fc5342dc9d074851c0e9d13780e05a51100d91",
+    "bytes": 6510
+  }
+}
