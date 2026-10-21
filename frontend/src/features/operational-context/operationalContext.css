@@ -1,0 +1,233 @@
+.operationalFoundation {
+  color: #173342;
+  display: grid;
+  font-size: 0.82rem;
+  gap: 12px;
+  min-width: 0;
+}
+.operationalFoundation h3 {
+  font-size: 0.91rem;
+  margin: 0 0 8px;
+}
+.operationalFoundation p {
+  line-height: 1.5;
+  margin: 4px 0;
+}
+.operationalFoundation button,
+.operationalConfigurationTabs button {
+  align-items: center;
+  background: #f3f8fa;
+  border: 1px solid #b6cbd4;
+  border-radius: 6px;
+  color: #173342;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.operationalFoundation button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.operationalFoundation button:focus-visible,
+.operationalConfigurationTabs button:focus-visible {
+  outline: 3px solid #127f91;
+  outline-offset: 2px;
+}
+.operationalFacts {
+  background: white;
+  border: 1px solid #d2dfe5;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 14px;
+}
+.operationalFacts dt {
+  color: #647984;
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.operationalFacts dd {
+  font-weight: 650;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.operationalBoundary {
+  background: #eff7f8;
+  border-left: 3px solid #168c91;
+  padding: 8px 10px;
+}
+.operationalConditionGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.operationalConditions {
+  background: #fff;
+  border: 1px solid #d2dfe5;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  padding: 12px;
+}
+.operationalConditions ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.operationalConditions li + li {
+  margin-top: 6px;
+}
+.operationalSection {
+  background: white;
+  border: 1px solid #d2dfe5;
+  border-radius: 8px;
+  min-width: 0;
+  padding: 14px;
+}
+.operationalSection summary {
+  cursor: pointer;
+  font-weight: 750;
+  min-height: 24px;
+}
+.operationalSection > p {
+  color: #526c79;
+}
+.operationalSectionTitle {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.operationalSectionTitle h3 {
+  margin: 0;
+}
+.operationalForm {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+.operationalFoundation label {
+  display: grid;
+  font-size: 0.75rem;
+  font-weight: 700;
+  gap: 5px;
+  min-width: 0;
+}
+.operationalFoundation input,
+.operationalFoundation textarea {
+  background: #fff;
+  border: 1px solid #b6cbd4;
+  border-radius: 6px;
+  color: #173342;
+  font: inherit;
+  min-height: 35px;
+  padding: 7px 9px;
+  width: 100%;
+}
+.operationalFoundation textarea,
+.operationalSection pre {
+  font-family: Consolas, monospace;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+.operationalSection pre {
+  margin: 12px 0 0;
+  overflow: auto;
+}
+.operationalFullWidth {
+  grid-column: 1 / -1;
+}
+.operationalReason {
+  margin: 12px 0;
+  max-width: 600px;
+}
+.operationalTableScroll {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+.operationalTableScroll table {
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  min-width: 680px;
+  width: 100%;
+}
+.operationalTableScroll th {
+  background: #f3f7f9;
+  color: #536e7c;
+  font-size: 0.68rem;
+  text-align: left;
+}
+.operationalTableScroll th,
+.operationalTableScroll td {
+  border-bottom: 1px solid #dbe5ea;
+  padding: 9px 8px;
+  vertical-align: top;
+}
+.operationalTableScroll td {
+  overflow-wrap: anywhere;
+}
+.operationalTableScroll small {
+  color: #617985;
+  display: block;
+  margin-top: 4px;
+}
+.operationalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.operationalNotice {
+  background: #edf7f2;
+  border-left: 3px solid #338461;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  padding: 10px;
+}
+.operationalNotice.error {
+  background: #fff3ee;
+  border-left-color: #bb593a;
+}
+.operationalProfileCommands {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.operationalProfileCommands label {
+  flex: 1 1 260px;
+}
+.operationalProfileCommands p {
+  flex-basis: 100%;
+}
+.operationalConfigurationTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.operationalConfigurationTabs button[aria-pressed="true"] {
+  background: #173342;
+  color: #fff;
+}
+@media (max-width: 1000px) {
+  .operationalFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .operationalConditionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .operationalFacts,
+  .operationalForm {
+    grid-template-columns: 1fr;
+  }
+}

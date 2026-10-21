@@ -1,0 +1,163 @@
+{
+  "review": "O1A independent source and backend security closeout",
+  "reviewed_at_utc": "2026-10-20T13:08:21Z",
+  "review_status": "SOURCE_AND_BACKEND_EVIDENCE_REVIEW_COMPLETE_BROWSER_PENDING",
+  "scope": [
+    "Canonical operational context, explicit binding and governance-aware authorization",
+    "Profile and common-period permissions, separation of duties, history, concurrency and idempotency",
+    "Legacy material HTTP command adapter and asynchronous execution boundary",
+    "Generic ADMIN policy and canonical Project metadata bypasses",
+    "Legacy dashboard query compatibility without hidden material writes",
+    "Actual PostgreSQL JUnit evidence, preservation proof and CI configuration"
+  ],
+  "open_findings_in_reviewed_scope": {"S1": 0, "S2": 0},
+  "resolved_findings": [
+    {
+      "id": "O1A-SEC-001",
+      "severity": "S2",
+      "finding": "A policy editor other than its original creator could publish the editor's own material changes despite author_cannot_publish",
+      "resolution": "Publication excludes the creator and current-version editor resolved from immutable command receipts. Current version and content hash must match, or publication fails closed. Profile update audit records version and content hash.",
+      "source": "backend/app/modules/operational_context/service.py",
+      "tests": [
+        "test_current_policy_editor_cannot_self_publish_and_independent_actor_can",
+        "test_current_profile_editor_provenance_fails_closed_when_version_has_no_receipt",
+        "test_explicitly_disabled_publication_sod_preserves_configured_policy_behavior"
+      ],
+      "status": "RESOLVED_POSTGRESQL_PASS"
+    },
+    {
+      "id": "O1A-SEC-002",
+      "severity": "S2",
+      "finding": "Generic ADMIN configuration mutation routes could bypass dedicated Operational Profile duties and command rules",
+      "resolution": "The operational_profile kind is routed to its dedicated governed API; generic creation, editing, publication and cloning are rejected without altering the policy.",
+      "source": "backend/app/api/v1/routers/admin_configuration.py",
+      "test_module": "backend/tests/test_operational_context_legacy_configuration_guard.py",
+      "status": "RESOLVED_POSTGRESQL_PASS"
+    },
+    {
+      "id": "O1A-SEC-003",
+      "severity": "S2",
+      "finding": "A legacy tenant configurator could read O1A ADMIN drafts/history through the generic configuration overview without the granular O1A ADMIN permission",
+      "resolution": "Operational Profiles are excluded from the generic overview. The dedicated ADMIN reader controls draft/history access; operators retain their scoped applicable published policy through canonical context.",
+      "source": "backend/app/api/v1/routers/admin_configuration.py",
+      "test": "test_generic_overview_excludes_operational_profiles_without_bypassing_dedicated_read_permission",
+      "status": "RESOLVED_POSTGRESQL_PASS"
+    },
+    {
+      "id": "O1A-SEC-004",
+      "severity": "S2",
+      "finding": "Generic Workspace defaults replacement could rewrite canonical Project governance, authorization source or legacy references and bypass Owner authorization",
+      "resolution": "Reserved _project metadata on PROJECT Workspaces cannot be introduced, changed or nulled by generic defaults commands. Omission carries the exact existing namespace forward while unrelated defaults remain editable. The generic PATCH schema exposes no metadata mutation field.",
+      "source": "backend/app/api/v1/routers/admin_configuration.py",
+      "tests": [
+        "test_generic_defaults_cannot_rewrite_canonical_project_authority[owner_to_direct]",
+        "test_generic_defaults_cannot_rewrite_canonical_project_authority[source_authorization]",
+        "test_generic_defaults_cannot_rewrite_canonical_project_authority[legacy_reference]",
+        "test_generic_defaults_cannot_rewrite_canonical_project_authority[remove_namespace]",
+        "test_generic_unrelated_defaults_preserve_reserved_project_metadata_when_omitted"
+      ],
+      "status": "RESOLVED_POSTGRESQL_PASS"
+    },
+    {
+      "id": "O1A-SEC-005",
+      "severity": "S2",
+      "finding": "Legacy dashboard GET could generate a control plan, KPI, snapshots and forecasts from a legacy Project ID without the material-command binding boundary",
+      "resolution": "Dashboard GET now queries stored values only. An absent cycle returns an explicitly non-persisted NOT_GENERATED compatibility view; no plan or cycle is generated. Genuine calculation remains an explicit authorized command.",
+      "source": "backend/app/api/v1/router.py",
+      "tests": [
+        "test_dashboard_without_cycle_is_read_only_before_binding_and_admin_onboarding",
+        "test_dashboard_with_kpi_but_without_history_reads_existing_value_without_regeneration"
+      ],
+      "verification": "Actual HTTP requests observed at the SQL engine emitted no INSERT, UPDATE or DELETE in both missing-cycle and existing-KPI/missing-history cases.",
+      "status": "RESOLVED_POSTGRESQL_PASS"
+    },
+    {
+      "id": "O1A-SEC-006",
+      "severity": "S2",
+      "finding": "Legacy background control jobs could perform material writes without an explicit actor or canonical binding",
+      "resolution": "Queued execution carries the authenticated actor and re-resolves binding, scoped legacy.execute duty, current authorization and policy before calculation. Anonymous daily execution skips without writes; no automation actor is fabricated.",
+      "source": "backend/app/workers/tasks.py",
+      "tests": [
+        "test_anonymous_background_commands_fail_closed_before_database_write",
+        "test_legacy_material_command_requires_bound_canonical_context"
+      ],
+      "status": "RESOLVED_SOURCE_AND_POSTGRESQL_PASS"
+    }
+  ],
+  "backend_evidence": {
+    "files": [
+      {"path": "outputs/.qa/wave-o1a-20261019/postgresql-foundation-final3.xml", "tests": 98, "failures": 0, "errors": 0, "skipped": 0},
+      {"path": "outputs/.qa/wave-o1a-20261019/postgresql-owner-authority.xml", "tests": 4, "failures": 0, "errors": 0, "skipped": 0},
+      {"path": "outputs/.qa/wave-o1a-20261019/postgresql-migration.xml", "tests": 1, "failures": 0, "errors": 0, "skipped": 0},
+      {"path": "outputs/.qa/wave-o1a-20261019/strategic-regression-isolated.xml", "tests": 126, "failures": 0, "errors": 0, "skipped": 0}
+    ],
+    "total_test_cases": 229,
+    "distinct_classname_and_case_identifiers": 229,
+    "security_subset_already_included_in_98": 9,
+    "double_counted_subset_cases": 0,
+    "classification": "Real isolated PostgreSQL backend evidence; not an entire repository test-suite or business-signoff claim",
+    "owner_evidence": "Current genuine FID and canonical activation, plus a genuine open commitment-only condition. Controlled Class B UAT references are not production acceptance or human signoff.",
+    "migration_boundary": "Actual additive 0068 -> 0069 -> 0068 -> 0069 over the required pre-O1A ORM schema; not an empty historical database migration claim"
+  },
+  "legacy_boundary_review": {
+    "modules": [
+      {"module": "app.api.v1.router", "material_decorator_observations": 54},
+      {"module": "app.api.v1.routers.projects", "material_decorator_observations": 21},
+      {"module": "app.api.v1.routers.documents", "material_decorator_observations": 8},
+      {"module": "app.api.v1.routers.rfq", "material_decorator_observations": 4}
+    ],
+    "coverage_rule": "The application-level dependency covers POST, PUT, PATCH and DELETE endpoints in the four inventoried legacy modules whenever a project_id path parameter is supplied. Existing membership checks precede explicit canonical binding and scoped authorization resolution.",
+    "observations_are_not_individual_runtime_tests": true,
+    "explicit_legacy_creation_exemption": "POST /projects has no operational Project path ID and retains its explicit audited compatibility creation path. It does not activate a canonical Project or create a binding.",
+    "strategic_canonical_routers_are_not_misclassified_by_parameter_name": true,
+    "anonymous_worker_execution": "FAIL_CLOSED_WITHOUT_WRITES",
+    "new_o1a_get_business_writes": 0,
+    "legacy_dashboard_get_business_writes_in_observed_cases": 0
+  },
+  "source_preservation": {
+    "reviewer_production_database_writes": 0,
+    "production_rollout_performed": false,
+    "root_preservation_before": "docs/validation/wave-o1a-20261019/preservation-before.json",
+    "root_preservation_after": "docs/validation/wave-o1a-20261019/preservation-after.json",
+    "root_after_observed_at": "2026-10-20T13:07:47.989355+00:00",
+    "root_observation_read_only": true,
+    "canonical_project14_row_sha256_before_and_after": "6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114",
+    "canonical_project14_unchanged": true,
+    "legacy_project14_exists": false,
+    "legacy_project14_absence_and_reference_hashes_preserved": true,
+    "app_tsx_sha256_before_and_after": "31d42b406755cbc5f90a83da403adfa2bdb18adc8468076b19e79c7f6584c930",
+    "app_tsx_unchanged": true,
+    "only_changed_preexisting_backend_feature_module": "backend/app/modules/workspace_context/navigator.py",
+    "strategic_application_feature_modules_unchanged": true,
+    "canonical_external_key_collision_control": "Existing UNIQUE(tenant_id, external_key) on EnterpriseWorkspace; binding never guesses by external key, numeric ID, name or Record Code."
+  },
+  "source_fingerprints": {
+    "backend/app/modules/operational_context/service.py": "1eca3514434acba56ec7f98fb000a17b4e5ce16ce82b877ee303ffbae353ef4a",
+    "backend/app/api/v1/routers/admin_configuration.py": "4de44141b90d4602b3fbddbb0f3caeee84f416668f89a486e3f7f10d381ef33b",
+    "backend/app/api/v1/router.py": "f56fa028f7f96cbaf352885f7abaf1671cf08964e006bfb5f156871f55819e9c",
+    "backend/app/main.py": "03947387ccc9bf7c79b867e9a923a9456350ff24690e0891a7408b2f30031e8b",
+    "backend/app/workers/tasks.py": "4ea89753807f23e55ebe5edde2aa422054fc693e0aa77f78fb728e80a06df4fd",
+    "backend/app/modules/operational_context/legacy_boundary.py": "86a8866143be6e8e0613c9156e48d2e7144209e534dcec640b7b98b7072aa100",
+    "backend/alembic/versions/20261019_0069_operational_context.py": "8f3806af87fc22771d443ee68650f619ff0f610738fd585bc8c49ea78487a831"
+  },
+  "ci_review": {
+    "path": ".github/workflows/wave-o1a.yml",
+    "source_sha256": "73c6a4f63e4ee936d7f25178299cbee47da6798b3436373126d57fb4c9f540af",
+    "reviewed_only_not_remote_run_claim": true,
+    "foundation_characterization_security_legacy_read_modules_included": true,
+    "owner_authority_module_included": true,
+    "migration_module_included": true,
+    "compose_explicit_disposable_database_guard": "PYPMIS_O1A_FIXTURE=disposable-only, PostgreSQL o1a and dedicated o1a_migration",
+    "observed_required_postgresql_skips": 0,
+    "browser_fixture_path_explicit_in_environment": true,
+    "browser_output_path_explicit_in_environment": true,
+    "browser_uses_real_compiled_frontend_api_and_postgresql": true,
+    "ci_does_not_run_the_separate_126_case_strategic_regression_command": true,
+    "local_regression_evidence_is_separately_recorded": true
+  },
+  "remaining_release_gates": [
+    "Real Chromium O1A ADMIN and USER UAT must pass after the final backend source is loaded",
+    "Root must finish artifact render and traceability verification before final report delivery"
+  ],
+  "release_claim": "No complete O1A release validation or O1B readiness declaration is made by this source/backend review while Chromium remains pending."
+}

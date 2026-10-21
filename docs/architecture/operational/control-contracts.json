@@ -1,0 +1,1901 @@
+{
+  "schema_version": 1,
+  "cutoff_local": "2026-10-19 America/Bogota",
+  "status": "PROPOSED_DESIGN",
+  "scope": "Conceptual architecture only. No endpoint, model, migration, runtime module, seed, approval, signature or business transaction implemented.",
+  "strategic_pause": "STRATEGIC_MACROPROCESS_TECHNICALLY_READY_UAT_SIGNOFF_PENDING",
+  "evidence_catalog": "docs/validation/operational-master-architecture-20261019/procurement-handoff-inventory.json",
+  "terminology": "Workspace / Workspace Type / Workspace Instance / Project Workspace / Enterprise Structure & Workspace Manager / Project Creation Process / Project Workspace Initialization / Project Workspace Activation.",
+  "authority_invariants": [
+    "One canonical Project Workspace identity and one owner per business fact/rule.",
+    "ADMIN publishes reusable policy; USER operates scoped live data; configuration privilege does not imply transaction/approval privilege.",
+    "Pinned approved source versions/hashes preserve historical approval; a separate current-readiness check uses existing authority without rewriting those snapshots.",
+    "Current source/readiness missing, expired, revoked or stale is visible and blocks only according to applicable governed policy; no silent approval inference.",
+    "Canonical activation is not FID and does not clear commitment-only constraints. Legitimate non-Capital-Owner routes use existing route authorization.",
+    "No foreign table writes. Owner command may validate/implement authorized cross-domain request, with independent approval where material.",
+    "Architecture documents are proposals for future implementation, not business approval or strategic UAT signoff."
+  ],
+  "ownership_minimum": [
+    {
+      "id": "DO01",
+      "data_object": "Project identity",
+      "source_domain": "Enterprise Structure & Workspace Manager",
+      "owner": "Canonical Workspace lifecycle",
+      "target_authority_single": true,
+      "current_boundaries": "enterprise_workspaces.workspace_type_code=project; legacy operational projects.id remains separate",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "All operational domains",
+        "Strategic governance"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO02",
+      "data_object": "WBS",
+      "source_domain": "Scope Management",
+      "owner": "Scope/WBS steward",
+      "target_authority_single": true,
+      "current_boundaries": "Existing wbs rows are legacy projects-linked; schedule-import materialization currently derives/updates control structures",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule",
+        "Cost",
+        "Progress",
+        "AWP",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO03",
+      "data_object": "Activity",
+      "source_domain": "Schedule Management",
+      "owner": "Schedule version steward",
+      "target_authority_single": true,
+      "current_boundaries": "Imported Activity/ScheduleImport and maps; P6 is CPM calculation authority",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Progress",
+        "Forecast",
+        "Change",
+        "Claims",
+        "BIM/4D"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO04",
+      "data_object": "Baseline dates",
+      "source_domain": "Schedule Management",
+      "owner": "Independent schedule baseline approver",
+      "target_authority_single": true,
+      "current_boundaries": "Existing baseline_versions/import and activities.baseline_* require explicit approved immutable version distinction",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Progress",
+        "Performance",
+        "Change",
+        "Claims"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO05",
+      "data_object": "Current dates",
+      "source_domain": "Schedule Management",
+      "owner": "Authorized schedule update owner",
+      "target_authority_single": true,
+      "current_boundaries": "Current imported version after review; not interchangeable with baseline or strategic target dates",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Look-Ahead",
+        "Forecast",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO06",
+      "data_object": "Scope Item",
+      "source_domain": "Scope Management",
+      "owner": "Scope baseline owner",
+      "target_authority_single": true,
+      "current_boundaries": "Existing quantities/takeoff rows and scope-items reserved view; baseline item authority must be formalized",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule",
+        "Cost",
+        "Procurement",
+        "Progress",
+        "AWP"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO07",
+      "data_object": "Scope quantity (not installed/approved progress)",
+      "source_domain": "Scope Management",
+      "owner": "Scope owns baseline/design quantity; Field owns installed source facts and Progress separately owns approved method-specific measurement",
+      "target_authority_single": true,
+      "current_boundaries": "BIM/takeoff source quantity differs from approved installed quantity. Both carry method/unit/version",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Progress",
+        "Cost",
+        "Forecast",
+        "BIM/4D"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO08",
+      "data_object": "Budget",
+      "source_domain": "Cost Management",
+      "owner": "Cost baseline owner with independent approval",
+      "target_authority_single": true,
+      "current_boundaries": "Existing budget/control-account/CBS records; strategic target or FID capital is not automatic BAC",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Progress/EVM",
+        "Forecast",
+        "Change",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO09",
+      "data_object": "Commitment",
+      "source_domain": "Contract Administration & Commitments",
+      "owner": "Contractual obligation owner",
+      "target_authority_single": true,
+      "current_boundaries": "Existing Contract/PO are legal-obligation primitives; no duplicate Commitment write master in Cost",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Cost",
+        "Forecast",
+        "Funding exposure",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO10",
+      "data_object": "Actual Cost",
+      "source_domain": "Cost Management",
+      "owner": "Cost Controller / approved cost evidence owner",
+      "target_authority_single": true,
+      "current_boundaries": "Existing certified/received cost evidence versus generic CostRecord must be reconciled by economic origin; future ERP owns posted settlement",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Forecast",
+        "Performance",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO11",
+      "data_object": "Forecast",
+      "source_domain": "Forecast",
+      "owner": "Forecast owner and independent approval",
+      "target_authority_single": true,
+      "current_boundaries": "Versioned scenarios/snapshots; no baseline rewrite or authority over imported CPM",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Reporting",
+        "Executive review",
+        "Strategic material-change review"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO12",
+      "data_object": "Progress",
+      "source_domain": "Progress Management",
+      "owner": "Progress method owner and independent approver",
+      "target_authority_single": true,
+      "current_boundaries": "ProgressRecord and quantity/milestone/imported schedule progress must remain typed, not silently mixed",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Forecast",
+        "Performance",
+        "Schedule update input",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO13",
+      "data_object": "Risk",
+      "source_domain": "Operational Risk",
+      "owner": "Risk owner under applicable risk policy",
+      "target_authority_single": true,
+      "current_boundaries": "Existing strategic ProjectRisk/readiness may be reused via explicit boundary; no second owner of the same risk",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Forecast",
+        "Change",
+        "Workfront readiness",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO14",
+      "data_object": "Issue",
+      "source_domain": "Issue Management",
+      "owner": "Issue owner",
+      "target_authority_single": true,
+      "current_boundaries": "Issues menu reserved; uncertain risk differs from occurring issue and linked actions",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Change",
+        "Workfront readiness",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO15",
+      "data_object": "Change",
+      "source_domain": "Change Management",
+      "owner": "Cross-domain change authority",
+      "target_authority_single": true,
+      "current_boundaries": "Existing ChangeRequest is primitive; one impact/approval/implementation contract needed",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Scope",
+        "Schedule",
+        "Cost",
+        "Resources",
+        "Procurement",
+        "Forecast"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO16",
+      "data_object": "Contract",
+      "source_domain": "Contract Administration & Commitments",
+      "owner": "Contract Administrator",
+      "target_authority_single": true,
+      "current_boundaries": "Existing Contract unique per legacy tenant/project/code; source client contract is not automatically purchasing obligation",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Cost",
+        "Procurement",
+        "Claims",
+        "Documents"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO17",
+      "data_object": "Procurement Package",
+      "source_domain": "Procurement",
+      "owner": "Procurement package owner",
+      "target_authority_single": true,
+      "current_boundaries": "RFQPackage/Bid exists; plan/requisition/approved award workflow remains incomplete",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Contracts",
+        "Schedule",
+        "Engineering",
+        "Cost",
+        "Construction"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO18",
+      "data_object": "Document",
+      "source_domain": "Document & Information Management",
+      "owner": "Document Controller",
+      "target_authority_single": true,
+      "current_boundaries": "Existing document/revision/transmittal primitives; optional external DMS remains source of controlled file",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Engineering",
+        "Procurement",
+        "Quality",
+        "Claims",
+        "Handover"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO19",
+      "data_object": "Interface",
+      "source_domain": "Interface Management",
+      "owner": "Named interface coordinator",
+      "target_authority_single": true,
+      "current_boundaries": "Future explicit interface register; no duplication of owning domain deliverable/status",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule",
+        "Engineering",
+        "Construction",
+        "Risk",
+        "Issues"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO20",
+      "data_object": "Work Package definition / baseline",
+      "source_domain": "Scope Management",
+      "owner": "Scope owns definition/baseline; Construction separately owns release/execution records referencing that definition",
+      "target_authority_single": true,
+      "current_boundaries": "Existing WorkPackage/constraints; optional AWP maps generic scope/schedule references rather than replaces them",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule",
+        "Field",
+        "Progress",
+        "Quality",
+        "Turnover"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO21",
+      "data_object": "Claim",
+      "source_domain": "Claims / Delay / Forensic",
+      "owner": "Claims authority separate from normal control transactions",
+      "target_authority_single": true,
+      "current_boundaries": "Existing claims/notices/impact primitives; entitlement/evidence/quantum do not rewrite standard cost or schedule baseline",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Legal review",
+        "Change reference",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO22",
+      "data_object": "Resource",
+      "source_domain": "Resource & Productivity",
+      "owner": "Resource planning/execution owner",
+      "target_authority_single": true,
+      "current_boundaries": "Existing Resource and hours/quantity primitives, not strategic resource scenario ownership",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule",
+        "Progress",
+        "Forecast",
+        "Productivity"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO23",
+      "data_object": "Calendar",
+      "source_domain": "Schedule Management",
+      "owner": "Calendar custodian; imported P6 calendar remains source",
+      "target_authority_single": true,
+      "current_boundaries": "Preserve source IDs/work patterns/units/time basis; no universal 8-hour day or implicit timezone conversion",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Schedule validation",
+        "Look-Ahead",
+        "Resource planning"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO24",
+      "data_object": "Control Period",
+      "source_domain": "Project Controls coordination",
+      "owner": "Project Controls period authority",
+      "target_authority_single": true,
+      "current_boundaries": "Reuse existing control_periods concept through explicit canonical binding and common cutoff policy",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "All period-controlled domains",
+        "Reporting"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO25",
+      "data_object": "BIM object reference",
+      "source_domain": "BIM / 4D cross-cutting capability",
+      "owner": "BIM model/version owner",
+      "target_authority_single": true,
+      "current_boundaries": "Model version + IFC GUID/Express ID + mapping, not generic Scope or Activity identity",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Scope",
+        "4D",
+        "Progress visualization",
+        "Evidence"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    },
+    {
+      "id": "DO26",
+      "data_object": "Authorization and conditions",
+      "source_domain": "Existing strategic/governed route authority",
+      "owner": "FID/Post-FID or route authorization owner",
+      "target_authority_single": true,
+      "current_boundaries": "Source pinned approval history plus current applicable readiness; activation does not clear commitment-only conditions",
+      "foreign_write_allowed": false,
+      "snapshot_consumers": [
+        "Operational setup",
+        "Contract admissibility",
+        "Execution checkpoints"
+      ],
+      "owner_command_rule": "Other domains may submit a validated command/request to the source owner, never directly mutate its tables. Approved historical versions remain immutable."
+    }
+  ],
+  "integration_matrix": [
+    {
+      "id": "IN01",
+      "source_domain": "Scope",
+      "target_domain": "Schedule",
+      "data_event": "Scope/WBS/deliverable and quantity-to-activity mappings",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + APPROVED SNAPSHOT",
+      "authority": "Scope owns scope; Schedule owns activities",
+      "contract_prerequisites": "Canonical Project binding; approved mapping supports many-to-many and units/version",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN02",
+      "source_domain": "Scope",
+      "target_domain": "Cost",
+      "data_event": "Scope/CBS/control-account/quantity budget mapping",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + APPROVED SNAPSHOT",
+      "authority": "Scope quantity owner; Cost budget owner",
+      "contract_prerequisites": "Baseline mapping/version and allocation totals; no assumed one-to-one",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN03",
+      "source_domain": "Schedule",
+      "target_domain": "Progress",
+      "data_event": "Approved activity/milestone baseline and imported schedule progress",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Schedule owns imported dates; Progress owns typed measurement",
+      "contract_prerequisites": "Schedule source version/data date and progress method; imported schedule percent not physical percent",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN04",
+      "source_domain": "Progress",
+      "target_domain": "Schedule",
+      "data_event": "Approved installed/physical status as next update input",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER + SNAPSHOT",
+      "authority": "Progress approves evidence; Schedule stages update; P6 calculates CPM",
+      "contract_prerequisites": "Period cutoff; progress approval; no silent direct date or critical-path rewrite",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN05",
+      "source_domain": "Progress",
+      "target_domain": "Forecast",
+      "data_event": "Closed period approved progress/remaining work",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "IMMUTABLE SNAPSHOT",
+      "authority": "Progress source owner; Forecast derived forecast owner",
+      "contract_prerequisites": "Method/unit/denominator; period/version/cutoff; no retrospective baseline change",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN06",
+      "source_domain": "Cost",
+      "target_domain": "Forecast",
+      "data_event": "Approved current budget, actual/accrual/net commitment",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "IMMUTABLE SNAPSHOT",
+      "authority": "Cost owns reconciled cost; Forecast owns assumptions/ETC/EAC",
+      "contract_prerequisites": "One economic-origin key, period close and chosen forecast method; double-count controls",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN07",
+      "source_domain": "Schedule",
+      "target_domain": "Forecast",
+      "data_event": "P6-calculated current dates/float/milestones and remaining duration",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "P6 CPM; Schedule accepted imported version",
+      "contract_prerequisites": "Matching data date/calendars/time basis; time forecast scenario is not native CPM output",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN08",
+      "source_domain": "Change",
+      "target_domain": "Cost",
+      "data_event": "Approved cost impact / baseline amendment request",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER",
+      "authority": "Change owns approval; Cost owns budget implementation",
+      "contract_prerequisites": "Authority/scope/amount/ID; independent approval; idempotent implementation reference",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN09",
+      "source_domain": "Change",
+      "target_domain": "Schedule",
+      "data_event": "Approved time/scope impact / schedule revision request",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER",
+      "authority": "Change approves decision; Schedule/P6 owns schedule update",
+      "contract_prerequisites": "Version-bound impact; accepted P6 reimport; no silent recalculation or baseline overwrite",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN10",
+      "source_domain": "Change",
+      "target_domain": "Scope",
+      "data_event": "Approved scope revision instruction",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER",
+      "authority": "Change decision; Scope revised approved baseline",
+      "contract_prerequisites": "Affected source IDs, approval evidence and explicit revised baseline version",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN11",
+      "source_domain": "Procurement",
+      "target_domain": "Contract Administration & Commitments",
+      "data_event": "Approved award recommendation and sourcing evidence",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + COMMAND TO OWNER",
+      "authority": "Procurement recommendation; independent award/Contract authority",
+      "contract_prerequisites": "No contract from recommendation alone; authorization/conditions/current canonical binding checked",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN12",
+      "source_domain": "Contract Administration & Commitments",
+      "target_domain": "Cost",
+      "data_event": "Contract/PO original/current/net obligation and approved variation",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + IMMUTABLE SNAPSHOT",
+      "authority": "One contractual obligation authority; Cost aggregates",
+      "contract_prerequisites": "Included/call-off/additive PO rule; contract direction; economic-origin deduplication",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN13",
+      "source_domain": "Contract Administration & Commitments",
+      "target_domain": "Procurement",
+      "data_event": "Contract/PO award reference and legal obligation status",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE",
+      "authority": "Contract owner legal register",
+      "contract_prerequisites": "No shadow Procurement PO; exact award and package relation",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN14",
+      "source_domain": "Procurement",
+      "target_domain": "Schedule",
+      "data_event": "Long-lead milestones/material readiness and delivery constraints",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Procurement sourcing/delivery status; Contract Administration owns referenced legal commitment; Schedule owns accepted current update",
+      "contract_prerequisites": "Package/PO/revision/date provenance; target vs promised vs actual distinction",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN15",
+      "source_domain": "Engineering",
+      "target_domain": "Procurement",
+      "data_event": "Approved-for-procurement/IFC deliverable references",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Engineering technical approval; Documents revision",
+      "contract_prerequisites": "Release status/type; version/hash; superseded drawing handling",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN16",
+      "source_domain": "Engineering",
+      "target_domain": "Construction",
+      "data_event": "Approved design package/IFC release and open technical constraints",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Engineering approval; Construction workfront decision",
+      "contract_prerequisites": "Exact document revisions; no construction release on draft/obsolete technical information",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN17",
+      "source_domain": "Construction",
+      "target_domain": "Progress",
+      "data_event": "Installed quantities, labor/equipment hours and inspection evidence",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER + SNAPSHOT",
+      "authority": "Field owns capture evidence; Progress approves method results",
+      "contract_prerequisites": "Unit/quantity/scope/work-package reference; approved period; no auto physical-percent substitution",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN18",
+      "source_domain": "Quality",
+      "target_domain": "Construction",
+      "data_event": "Inspection/test/NCR/punch constraints and acceptance evidence",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + COMMAND TO OWNER",
+      "authority": "Quality approves tests/dispositions; Construction owns workfront",
+      "contract_prerequisites": "Failed/open NCR cannot be represented as accepted; independent approvals where applicable",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN19",
+      "source_domain": "Risk",
+      "target_domain": "Forecast",
+      "data_event": "Exposure/response/residual uncertainty and assumptions",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Risk owner accepted risks; Forecast owns scenario assumptions",
+      "contract_prerequisites": "Readiness evidence is not operational risk quantification; no implicit QRA simulation",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN20",
+      "source_domain": "Issue",
+      "target_domain": "Change",
+      "data_event": "Occurring issue with possible impact/request",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND TO OWNER",
+      "authority": "Issue source; Change impact and approval authority",
+      "contract_prerequisites": "Issue closure does not approve change; causal link and separate owners",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN21",
+      "source_domain": "Document & Information Management",
+      "target_domain": "Engineering",
+      "data_event": "Controlled revision/review/distribution reference",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Document Controller/external DMS controlled file; Engineering technical disposition",
+      "contract_prerequisites": "DMS ref/revision/status/hash/access; no duplicate enterprise DMS",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN22",
+      "source_domain": "Commissioning",
+      "target_domain": "Handover",
+      "data_event": "Accepted system test/turnover dossier and punch disposition",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Commissioning test authority; Handover acceptance authority",
+      "contract_prerequisites": "System boundaries, required evidence and residual condition acceptance",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN23",
+      "source_domain": "Handover",
+      "target_domain": "Project Closeout",
+      "data_event": "Accepted handover, training/manuals/spares and residual conditions",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + SNAPSHOT",
+      "authority": "Handover acceptance; Closeout checklist approval",
+      "contract_prerequisites": "No financial/claims closeout inferred; canonical identity never deleted",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN24",
+      "source_domain": "Strategic handoff",
+      "target_domain": "Operational Setup",
+      "data_event": "Canonical Workspace, route authorization and H01-H15 source references",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + PINNED SNAPSHOT",
+      "authority": "Existing upstream authority remains owner",
+      "contract_prerequisites": "Version/hash/source current and route policy; no local FID or strategic approval",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN25",
+      "source_domain": "Operational Reporting",
+      "target_domain": "Strategic material-change review",
+      "data_event": "Material deviation alert plus period/forecast evidence",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "COMMAND REQUEST + REFERENCE",
+      "authority": "Operational report consumes; strategic owner decides review",
+      "contract_prerequisites": "No dashboard mutation of BC/FID/FIN/Funding; explicit threshold/policy review",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    },
+    {
+      "id": "IN26",
+      "source_domain": "BIM / 4D",
+      "target_domain": "Scope / Schedule / Progress",
+      "data_event": "Model version/object and activity/scope/package mapping",
+      "direction": "SOURCE_TO_TARGET",
+      "reference_snapshot_command": "REFERENCE + VISUALIZATION SNAPSHOT",
+      "authority": "Generic owners retain business records; BIM owns model mapping",
+      "contract_prerequisites": "IFC version/GUID/Express ID, tenant/project and validity; not BIM-specific generic core",
+      "foreign_table_write": false,
+      "status": "PROPOSED_DESIGN"
+    }
+  ],
+  "strategic_operational_handoff": {
+    "status": "PROPOSED_DESIGN_REUSES_INSPECTED_SOURCE_CATALOG",
+    "source_catalog_ref": "docs/validation/operational-master-architecture-20261019/procurement-handoff-inventory.json#/handoff_items",
+    "source_truth_rule": "This architectural listing is not a mutable copy of business source data. Consumers pin source record/version/hash and retain currentness references. Source owners retain approval and future update authority.",
+    "items": [
+      {
+        "id": "H01",
+        "artifact": "Project identity",
+        "classification": "REFERENCE ONLY",
+        "source": "Enterprise Structure & Workspace Manager / canonical enterprise_workspaces with workspace_type_code=project",
+        "consumer": "All operational domains",
+        "transfer_method": "Tenant-scoped canonical Workspace id/external key/record code reference; no identity copy/new Project master.",
+        "future_update_owner": "Canonical Workspace lifecycle only",
+        "acceptance_rule": "Resolve canonical identity and scoped active lifecycle explicitly; never equate legacy projects.id.",
+        "evidence": [
+          "backend/app/domain/models.py:486",
+          "backend/tests/test_project_creation_process.py:620",
+          "backend/tests/test_project_creation_process.py:642",
+          "backend/tests/test_project_workspace_initialization.py:651"
+        ]
+      },
+      {
+        "id": "H02",
+        "artifact": "Authorized scope",
+        "classification": "CONTROL BASELINE INPUT",
+        "source": "Decided FID package / approved Business Case scope and completed definition references; CONTRACT_AWARD contractual_scope for contractor",
+        "consumer": "Scope / Change / operational setup",
+        "transfer_method": "Frozen source version/hash plus explicit transformation into proposed operational Scope baseline; approval required before baseline activation.",
+        "future_update_owner": "Operational Scope owns elaboration/current operational baseline through Change; strategic owner retains investment scope/approval history",
+        "acceptance_rule": "BusinessCase scope_json alone is not proof of authorized scope. Require matching decided package/scope and explicit discrepancy review.",
+        "evidence": [
+          "backend/app/modules/business_case/models.py:88",
+          "backend/app/modules/investment_decision/models.py:57",
+          "backend/app/modules/project_creation/governance.py:101",
+          "backend/tests/test_project_initialization_post_fid_bridge.py:154"
+        ]
+      },
+      {
+        "id": "H03",
+        "artifact": "FID decision",
+        "classification": "REFERENCE ONLY",
+        "source": "Investment Decision / Gate07K",
+        "consumer": "Operational setup, approval/checkpoint evidence",
+        "transfer_method": "Immutable decision id/hash/package/profile/source-policy references and currentness check; no local FID recreation.",
+        "future_update_owner": "Investment Decision authority only",
+        "acceptance_rule": "CAPITAL_OWNER applicable route requires valid authorized current decision, separate Post-FID and activation. Non-owner routes keep their own authorization source; do not fabricate FID.",
+        "evidence": [
+          "backend/app/modules/investment_decision/models.py:28",
+          "backend/app/modules/investment_decision/models.py:118",
+          "backend/app/modules/project_workspace_initialization/governance.py:48",
+          "backend/tests/test_project_initialization_post_fid_bridge.py:124"
+        ]
+      },
+      {
+        "id": "H04",
+        "artifact": "Authorized capital amount",
+        "classification": "CONSTRAINT",
+        "source": "InvestmentDecision.authorized_amount / authorized_currency",
+        "consumer": "Cost / Change / Forecast / management reporting",
+        "transfer_method": "Reference authorization ceiling/currency and approval date/hash; explicit controlled allocation creates operational budget, not direct copy of a portfolio scenario.",
+        "future_update_owner": "FID/investment authority updates authorization by governed decision; Cost owns operational allocation only",
+        "acceptance_rule": "Never equate authorized amount, available cash, assignment coverage, control budget and commitment. Missing amount/currency requires governed resolution, no inferred unlimited authority.",
+        "evidence": [
+          "backend/app/modules/investment_decision/models.py:68",
+          "backend/app/modules/portfolio_budget/models.py:40",
+          "backend/app/modules/funds_manager/models.py:150"
+        ]
+      },
+      {
+        "id": "H05",
+        "artifact": "Approved funding context",
+        "classification": "CONSTRAINT",
+        "source": "Funds / confirmed FundingAssignment / FundingReadinessSnapshot",
+        "consumer": "Cost funding mapping, Procurement/Contracts admissibility",
+        "transfer_method": "Reference confirmed source/fund/assignment/hash, coverage, restrictions, period/currency and validity; explicit approved mapping into operational FBS where needed.",
+        "future_update_owner": "Strategic Funding owns authorization/coverage/restrictions; Cost owns project control allocation and derived operational exposure",
+        "acceptance_rule": "No silent join/copy between strategic_funding_sources and legacy funding_sources; do not count parent+child assignments twice or treat funding as actual cost/payment.",
+        "evidence": [
+          "backend/app/modules/funds_manager/models.py:1",
+          "backend/app/modules/funds_manager/models.py:139",
+          "backend/app/modules/funds_manager/models.py:214",
+          "backend/tests/test_funds_manager_gate07j_fund.py:300"
+        ]
+      },
+      {
+        "id": "H06",
+        "artifact": "Business Case reference",
+        "classification": "REFERENCE ONLY",
+        "source": "BusinessCase / approved revision / decision snapshot",
+        "consumer": "Operational setup, reporting, Change material-review context",
+        "transfer_method": "Revision id/hash/decision snapshot reference, not editable operational duplicate.",
+        "future_update_owner": "Business Case governance",
+        "acceptance_rule": "Operational performance may trigger explicit strategic material-change review; never overwrite approved case or FIN from forecast actuals.",
+        "evidence": [
+          "backend/app/modules/business_case/models.py:30",
+          "backend/app/modules/business_case/models.py:71",
+          "backend/app/modules/business_case/router.py:112",
+          "backend/app/modules/business_case/router.py:255"
+        ]
+      },
+      {
+        "id": "H07",
+        "artifact": "Target dates",
+        "classification": "INITIAL INPUT",
+        "source": "Project creation planned_start/planned_finish / approved selected strategic scenario target dates",
+        "consumer": "Schedule planning and owner/contractor planning constraints",
+        "transfer_method": "Referenced/hash-stamped seed of planning targets; proposal only, not automatic schedule baseline/current dates.",
+        "future_update_owner": "Schedule owns approved operational schedule versions; strategic target owner retains strategic target history",
+        "acceptance_rule": "Preserve source dates, calendar assumptions and date basis; operational revisions require schedule/change governance and P6-calculated update where applicable.",
+        "evidence": [
+          "backend/app/modules/project_creation/service.py:1060",
+          "backend/app/modules/project_creation/service.py:1077",
+          "backend/app/modules/portfolio_budget/models.py:218",
+          "backend/app/modules/business_case/service.py:911"
+        ]
+      },
+      {
+        "id": "H08",
+        "artifact": "Strategic milestones",
+        "classification": "INITIAL INPUT",
+        "source": "Approved strategic package/Business Case delivery context if explicitly supplied",
+        "consumer": "Schedule register / key milestone register",
+        "transfer_method": "Explicit strategic milestone identifiers, dates, source version/hash and mapping to operational/P6 activity IDs; no invented milestones from generic dates.",
+        "future_update_owner": "Strategic owner retains decision targets; Schedule owns elaboration and current operational milestone projections",
+        "acceptance_rule": "Dedicated strategic milestone-to-operational contract not demonstrated in inspected source; remains a gap. Absent milestone detail stays absent; no claimed automatic handoff.",
+        "evidence": [
+          "backend/app/modules/business_case/models.py:93",
+          "backend/app/modules/investment_gate_preparation/models.py:48",
+          "backend/app/modules/portfolio_budget/models.py:218"
+        ]
+      },
+      {
+        "id": "H09",
+        "artifact": "Project Definition / FEL output",
+        "classification": "CONTROL BASELINE INPUT",
+        "source": "Completed ProjectDefinitionAssessment / ProjectFELStatus with evidence and actions",
+        "consumer": "Scope/Engineering/control baseline setup",
+        "transfer_method": "Version/hash-linked completed definition output and unresolved actions; explicitly elaborate deliverables/work packages, not a repeated FEL authority.",
+        "future_update_owner": "Strategic Definition owns approved maturity/assessment; Scope/Engineering own detailed operational deliverables via Change",
+        "acceptance_rule": "FEL score is readiness evidence, not fully detailed approved scope or permission to bypass operational baseline approval. Applicable by governance model/type/policy.",
+        "evidence": [
+          "backend/app/modules/project_definition/models.py:24",
+          "backend/app/modules/project_definition/models.py:92",
+          "backend/app/modules/project_definition/models.py:148",
+          "backend/app/modules/project_definition/router.py:345",
+          "backend/tests/test_project_definition_gate07j_fel.py:246"
+        ]
+      },
+      {
+        "id": "H10",
+        "artifact": "Risk context",
+        "classification": "INITIAL INPUT",
+        "source": "Strategic ProjectRisk / completed RiskReadinessAssessment / applicable QRA result references",
+        "consumer": "Operational Risk, Forecast, Change, workfront constraints",
+        "transfer_method": "Reference immutable assessment/result; explicit traceable selection/elaboration of risks for operational follow-up. Reuse ProjectRisk identity where compatible; no silent duplicate risk register owner.",
+        "future_update_owner": "Strategic provider owns assessment and QRA evidence; Operational Risk owner manages live treatment/status through approved boundary, preserving completed evidence history",
+        "acceptance_rule": "Strategic readiness is not operational risk acceptance and QRA strategic result is not operational schedule-risk execution. Separate approval and currentness.",
+        "evidence": [
+          "backend/app/modules/risk_readiness/models.py:26",
+          "backend/app/modules/risk_readiness/models.py:112",
+          "backend/app/modules/risk_readiness/router.py:309",
+          "backend/tests/test_risk_readiness_gate07j_risk.py:118",
+          "backend/tests/test_risk_readiness_gate07j_risk.py:134"
+        ]
+      },
+      {
+        "id": "H11",
+        "artifact": "Permit context",
+        "classification": "CONSTRAINT",
+        "source": "ProjectPermit / PermitCondition / PermitReadinessAssessment",
+        "consumer": "Workfront readiness, Schedule, Construction and contract constraints",
+        "transfer_method": "References to permit IDs, validity, scope, blocking conditions and assessment hash; no copying a Class B representation into a real permit or automatic satisfaction.",
+        "future_update_owner": "Existing Permit authority maintains permits/conditions; operational readiness consumes current permission-to-work constraints",
+        "acceptance_rule": "Preserve expiry/revocation and blocking semantics. Permit-to-work execution is separate from strategic permit-readiness evidence; missing remains missing.",
+        "evidence": [
+          "backend/app/modules/permit_readiness/models.py:40",
+          "backend/app/modules/permit_readiness/models.py:107",
+          "backend/app/modules/permit_readiness/models.py:140",
+          "backend/app/modules/permit_readiness/router.py:368",
+          "backend/tests/test_permit_readiness_gate07j_permit.py:181",
+          "backend/tests/test_permit_readiness_gate07j_permit.py:222"
+        ]
+      },
+      {
+        "id": "H12",
+        "artifact": "Commercial strategy",
+        "classification": "INITIAL INPUT",
+        "source": "Completed CommercialStrategyVersion / readiness provider",
+        "consumer": "Procurement sourcing plan / Contract Administration / Cost exposure",
+        "transfer_method": "Version/hash-linked delivery model, package concepts, contracting approach and risk/payment allocation as governing design input; transform explicitly into operational packages.",
+        "future_update_owner": "Strategic Commercial owns strategy/approved assumptions; Procurement owns sourcing transactions and Contracts own legal obligations",
+        "acceptance_rule": "Conceptual commercial package is not RFQ, awarded contract, vendor or commitment. Deviations need explicit review, not strategy overwrite.",
+        "evidence": [
+          "backend/app/modules/commercial_strategy/models.py:1",
+          "backend/app/modules/commercial_strategy/models.py:71",
+          "backend/app/modules/commercial_strategy/router.py:373",
+          "backend/tests/test_commercial_strategy_gate07m_comm.py:325"
+        ]
+      },
+      {
+        "id": "H13",
+        "artifact": "Benefits context",
+        "classification": "REFERENCE ONLY",
+        "source": "Completed StrategicBenefitsPlanVersion / approved benefit identity and targets",
+        "consumer": "Operational reporting / handover / future benefits-realization measurement",
+        "transfer_method": "Plan/version/benefit IDs, hashes, baselines and targets referenced; future realized measurements link back, not modify strategic expectations.",
+        "future_update_owner": "Strategic Benefits owns approved plan/targets; future Benefits Realization owns measured outcomes and evidence",
+        "acceptance_rule": "Benefits Realization transaction authority NOT TRANSFERRED. Do not report installed quantity or earned value as realized strategic benefit without measurement governance.",
+        "evidence": [
+          "backend/app/modules/strategic_benefits/models.py:32",
+          "backend/app/modules/strategic_benefits/models.py:70",
+          "backend/app/modules/strategic_benefits/router.py:489",
+          "backend/tests/test_strategic_benefits_gate07m_ben.py:449"
+        ]
+      },
+      {
+        "id": "H14",
+        "artifact": "Gate conditions",
+        "classification": "CONDITION",
+        "source": "InvestmentGatePreparation.conditions_json / decided InvestmentDecision.conditions_json and frozen package",
+        "consumer": "Operational setup, contract commitment, execution checkpoints",
+        "transfer_method": "Condition IDs, source decision/package/hash, scope, owner, status, blocking semantics and evidence references; evaluate current authority without creating a local approval.",
+        "future_update_owner": "Strategic Gate/FID condition authority; designated owner supplies resolution evidence only through governed command",
+        "acceptance_rule": "Do not infer satisfied from READY/GO or nonblocking status. No default-policy reclassification or local operational removal of unresolved conditions.",
+        "evidence": [
+          "backend/app/modules/investment_gate_preparation/models.py:50",
+          "backend/app/modules/investment_decision/models.py:50",
+          "backend/app/modules/post_fid_governance/service.py:484",
+          "backend/app/modules/project_workspace_initialization/governance.py:72"
+        ]
+      },
+      {
+        "id": "H15",
+        "artifact": "Post-FID conditions",
+        "classification": "CONDITION",
+        "source": "PostFIDProjectEligibility + existing FID condition authority/current published Post-FID policy",
+        "consumer": "Canonical lifecycle, operational execution and commitment authorization checks",
+        "transfer_method": "Persisted eligibility/handoff id/hash and source-current proof; keep activation-blocking and commitment-only conditions distinct. Read-only bridge, never local FID copy.",
+        "future_update_owner": "Post-FID governance and canonical lifecycle owner; operational domain consumes constraints and requests governed resolution",
+        "acceptance_rule": "No activation from initialization certificate alone; no reactivation for already active project; active does not clear commitment-only conditions. Future legacy commitment adapter must enforce applicable conditions explicitly.",
+        "evidence": [
+          "backend/app/modules/post_fid_governance/service.py:492",
+          "backend/app/modules/post_fid_governance/service.py:348",
+          "backend/app/modules/project_workspace_initialization/governance.py:58",
+          "backend/tests/test_post_fid_governance_gate07l.py:80",
+          "backend/tests/test_project_initialization_post_fid_bridge.py:161"
+        ]
+      }
+    ],
+    "governance_models": [
+      {
+        "governance_model": "CAPITAL_OWNER",
+        "source_context": "STRATEGIC_GATE_DECISION",
+        "current_authority": "ProjectCreationService materializes one pending canonical Workspace. Initialization validates creation metadata/current published policy; current FID plus separately persisted Post-FID activation handoff can authorize lifecycle without rewriting historical creation snapshot. Canonical activation is separate explicit command with If-Match and independent actor.",
+        "operational_entry": "Canonical PROJECT Workspace active, lifecycle activation certificate/reference, current applicable authorization/condition policy and scoped access. Preserve FID/authorization version/hash. A technical UAT signoff-pending system is not production/business authorization.",
+        "evidence": [
+          "backend/app/modules/project_creation/governance.py:53",
+          "backend/app/modules/project_workspace_initialization/governance.py:22",
+          "backend/app/modules/project_workspace_initialization/service.py:395",
+          "backend/app/modules/project_workspace_initialization/service.py:273",
+          "backend/app/modules/project_workspace_initialization/router.py:126",
+          "backend/tests/test_project_initialization_post_fid_bridge.py:65",
+          "backend/tests/test_project_initialization_post_fid_bridge.py:161"
+        ]
+      },
+      {
+        "governance_model": "CONTRACTOR_DELIVERY",
+        "source_context": "CONTRACT_AWARD",
+        "current_authority": "Same canonical project-creation and initialization/activation services. Contract source requires client, contract_number, contractual_scope; mobilization_authorized or notice_to_proceed_date supplies route authorization. Full Capital Owner FEL/FID requirements are false by default, unless configured policy legitimately applies them.",
+        "operational_entry": "Active canonical Project Workspace with source contract authorization and template/access/current policy. Client scope/schedule/revenue contract context are upstream, not automatically spend commitments or Capital Owner investment budget.",
+        "evidence": [
+          "backend/app/modules/project_creation/governance.py:85",
+          "backend/app/modules/project_creation/governance.py:258",
+          "backend/app/modules/project_creation/governance.py:608",
+          "backend/tests/test_project_creation_process.py:858",
+          "backend/tests/test_project_creation_process.py:911",
+          "backend/tests/test_post_fid_governance_gate07l.py:124"
+        ]
+      },
+      {
+        "governance_model": "DIRECT_INTERNAL",
+        "source_context": "DIRECT_AUTHORIZATION",
+        "current_authority": "Same canonical creation/lifecycle services. Source requires authorization_reference and sponsor; authorization_approved drives activation authorization. Full Capital Owner investment sequence is not a default prerequisite.",
+        "operational_entry": "Active canonical Project Workspace with internal approval reference/scope and applicable control template/access. Tailored execution process, not forced external procurement or full FID.",
+        "evidence": [
+          "backend/app/modules/project_creation/governance.py:122",
+          "backend/app/modules/project_creation/governance.py:283",
+          "backend/app/modules/project_creation/governance.py:608",
+          "backend/tests/test_project_creation_process.py:896",
+          "backend/tests/test_project_creation_process.py:939",
+          "backend/tests/test_post_fid_governance_gate07l.py:124"
+        ]
+      }
+    ],
+    "not_transferred_authorities": [
+      "Canonical Project identity ownership",
+      "FID/Gate approval or strategic policy publication authority",
+      "Strategic Funding coverage/envelope ownership",
+      "Business Case and FIN model ownership",
+      "Strategic Benefits target ownership / future Benefits Realization authority",
+      "Strategic QRA execution/result acceptance authority",
+      "P6 CPM calculation authority",
+      "Accounting/Treasury posting or bank settlement authority"
+    ],
+    "required_envelope": {
+      "status": "CONCEPT_ONLY_NO_ENDPOINT_OR_SCHEMA_CREATED",
+      "identity": [
+        "tenant_id",
+        "project_workspace_id",
+        "workspace_external_key",
+        "workspace_record_code",
+        "governance_model",
+        "project_type"
+      ],
+      "authorization": [
+        "source_context_type",
+        "authorization_reference",
+        "applicable_policy_id_revision_hash",
+        "fid_decision_id_hash_if_applicable",
+        "post_fid_handoff_id_hash_if_applicable",
+        "activation_reference"
+      ],
+      "source_contract": [
+        "source_artifact_type",
+        "source_id",
+        "source_revision",
+        "source_hash",
+        "as_of_date",
+        "validity",
+        "classification",
+        "condition_refs",
+        "transform_mapping_ref",
+        "owner_domain"
+      ],
+      "constraints": "Explicit applicability and missing/stale/blocking states; tenant/access/identity/source-current checks; immutable source snapshot; no duplicate source authority.",
+      "legacy_adapter": "Separate explicit mapping to legacy operational record when needed. Never pass canonical Workspace id as legacy project_id by coincidence."
+    },
+    "activation_gate": "Before live operation resolve canonical active Workspace, scoped access, applicable route authorization, current source/condition policy and explicit legacy binding. Do not create a local automatic FID, rerun strategic business signoff or infer release from technical readiness."
+  },
+  "p6_manual_schedule_contract": {
+    "status": "PROPOSED_DESIGN_NOT_A_FULL_FIDELITY_EXPORT_IMPLEMENTATION",
+    "format_asymmetry": "Oracle P6 documents XML as supporting baseline import/export whereas XER does not transport baselines in that manner. Prefer XML when baseline exchange is required; an XER current-update exchange needs separate explicitly linked approved-baseline artifact/provenance. Do not claim XML and XER are lossless identical roundtrips.",
+    "primary_source": {"title": "Oracle P6 Professional: Import/Export File Formats", "url": "https://docs.oracle.com/cd/F51303_01/English/admin/p6_pro_importing_exporting/import_export_file_formats.htm", "consulted_local": "2026-10-19", "status": "Provided by root primary-source review; architectural input, not proof of local exporter implementation"},
+    "current_evidence": [
+      "backend/app/services/schedule_ingestion.py:402",
+      "backend/app/services/schedule_ingestion.py:438",
+      "backend/app/domain/models.py:615",
+      "backend/app/domain/models.py:668",
+      "docs/80-adr-qra-foundation.md:13"
+    ],
+    "current_limitations": [
+      "Manual XML/XER import and raw metadata preservation exist; a complete validated P6 XML/XER roundtrip exporter is not demonstrated by this inspection.",
+      "Legacy derived critical fallback at schedule_ingestion.py:823/:987, /8 conversion at :1731 and baseline field overwrite at :1612 are gaps to isolate/refactor under future approved changes, not target architecture.",
+      "Existing import may materialize directly; staged non-mutating review/promotion is a proposed hardening requirement, not claimed current behavior."
+    ],
+    "source_authority": "P6 owns operational CPM, calculated critical/near-critical indicators, float and CPM-adjusted dates. P&Pmis owns governed schedule data/version/review/mapping and preserves raw imported results.",
+    "no_proposals": [
+      "Native primary operational CPM",
+      "Direct P6 API sync",
+      "OPC integration",
+      "Silent critical-path/float recalculation",
+      "Universal eight-hour workday conversion"
+    ],
+    "roundtrip_steps": [
+      {
+        "step": 1,
+        "action": "Select approved/current controlled P&Pmis schedule version for manual exchange; produce explicit selected source manifest.",
+        "state": "EXPORT_PREPARATION",
+        "control": "A future tested XML/XER exporter must disclose supported subset and unsupported/lossy fields; do not claim generic CSV/JSON export is P6 XML/XER."
+      },
+      {
+        "step": 2,
+        "action": "Authorized planner manually loads XML/XER into P6; resolves valid source calendars and runs CPM/update there.",
+        "state": "EXTERNAL_P6_UPDATE",
+        "control": "Record source file hash, P6 project/version reference, calculation/data date and operator evidence; no direct API."
+      },
+      {
+        "step": 3,
+        "action": "Upload manually exported P6 XML/XER as quarantined staging candidate without replacing accepted current/baseline.",
+        "state": "IMPORT_STAGED",
+        "control": "Tenant/canonical Workspace, file integrity/format, source project identity and supported schema checked."
+      },
+      {
+        "step": 4,
+        "action": "Validate raw data/provenance and reconcile against selected prior version.",
+        "state": "VALIDATED_OR_REJECTED",
+        "control": "Produce immutable findings/diff summary; unresolved critical missing or ambiguous source IDs remain blocked."
+      },
+      {
+        "step": 5,
+        "action": "Independent review/acceptance promotes a new current update or explicitly requests a new baseline approval.",
+        "state": "ACCEPTED_CURRENT_OR_BASELINE_REVIEW",
+        "control": "ETag/version/idempotency and scoped authority; import acceptance is not baseline approval."
+      },
+      {
+        "step": 6,
+        "action": "Retain source and transformed snapshots, mapping/config versions, history and prior current pointer.",
+        "state": "PUBLISHED_VERSION",
+        "control": "Rollback by approved pointer reversal/new revision; never delete approved historical imports or silently replace original files."
+      }
+    ],
+    "validation_dimensions": [
+      "External P6 project identity and canonical Workspace mapping; cross-project/cross-tenant files rejected.",
+      "Unique stable activity/WBS/calendar/resource IDs within external source namespace; renamed labels do not create identities; ID reuse/collision explicit.",
+      "FS/SS/FF/SF relationship type, lag raw units, predecessor/successor IDs, dangling/external links, duplicates, self-links and cycle warnings/errors under policy.",
+      "External project relationships preserved with unresolved dependency marker; do not silently drop or satisfy links outside imported project.",
+      "Raw Data Date versus planned/actual dates; missing Data Date not inferred from MustFinishByDate/current date/file timestamp. Date regression/future actuals require documented exception.",
+      "Timezone/offset/time-of-day preserved; date-only sources explicitly date-only; cross-timezone display never changes source meaning. UTC audit timestamp separate from schedule working-time basis.",
+      "Calendars retain source ID/workweek/shifts/holidays/exceptions/timezone and provenance. No assumed 8-hour day or 5-day week. Unknown calendar/unit blocks conversions needing it.",
+      "Duration/work/lag units preserved in raw metadata; any normalization states method/config/hash/rounding and never claims calendar-expanded P6 equivalence.",
+      "Constraints, actual/start/finish/remaining duration, percent method, activity codes/resources/load references and imported critical/float values retained with source version.",
+      "Cost/resource loads remain imported planning references, not certified actual Cost or native Resource assignment approval.",
+      "Quantitative reconciliation: row/relationship/calendar counts, additions/deletions/ID changes and baseline/current/forecast date deltas; unsupported fields/loss visible.",
+      "Source file hash, parser/schema/version/config, uploader/reviewer, validation results, accepted version and rollback provenance immutable."
+    ],
+    "schedule_states": {
+      "baseline": "Approved immutable version; dates represent approved commitment and are changed only by explicit approved baseline revision.",
+      "current": "Latest reviewed accepted P6 update for a stated Data Date; independent from baseline.",
+      "forecast": "Explicit provisional or approved forecast scenario with inputs/method; not accepted current nor P6 CPM output unless calculated/imported from P6.",
+      "look_ahead": "Configurable horizon, default 4 weeks, derived from accepted current plus governed constraints/workfront/material/design/permit/issue data. Does not recalculate CPM."
+    }
+  },
+  "baseline_and_budget_contract": {
+    "status": "PROPOSED_DESIGN",
+    "control_baseline_set": "One Project Control Baseline set references separately approved Scope, Schedule, Cost and optional Resource baseline versions and mapping configuration. Partial approval is visible, not collapsed to whole-project approval.",
+    "distinctions": {
+      "original_budget": "First independently approved control budget version.",
+      "approved_budget": "A specific immutable approved budget revision.",
+      "current_budget": "Original plus explicitly approved implemented changes/transfers, with lineage; not current forecast.",
+      "BAC": "Approved applicable performance-measurement budget for the control baseline/measurement scope; never automatic equality to FID capital, strategic target, strategic envelope, reserve or cash.",
+      "actual": "Approved certified/accrued economic events for closed/open period under policy; no hidden baseline write.",
+      "forecast": "Versioned future outcome/ETC/EAC derived from explicit source inputs and assumptions."
+    },
+    "capital_constraint": "FID authorized capital/currency and funding restrictions are upstream constraints; explicit mapping/approval allocates operative control budget. Any mismatch, reserve exclusion, currency normalization or scope difference is recorded; no automatic equality.",
+    "cost_policy_requirements": [
+      "CBS/control accounts/CostCodes, baseline version and many-to-many scope/WBS/activity/contract mapping.",
+      "Original/current/forecast/actual monetary basis, currency/FX source/date/hash and rounding; no implicit currency summation.",
+      "Contingency and management reserve separate where applicable; drawdown/release needs configured authority and traceable change, no auto QRA output appropriation.",
+      "Cost phasing/cash flow independent from strategic scenario/funding coverage; period profile reconciles to approved total.",
+      "Approved historical baselines immutable; explicit revision records affected references and decision."
+    ],
+    "commitment_actual_accrual_contract": {
+      "state": "FUTURE_DEFINITION_REQUIRED_BEFORE_LIVE_EXPANSION",
+      "gross_commitment": "Original awarded value plus approved additive amendments; retain legal obligation history and contract direction.",
+      "net_open_commitment": "Remaining contractual exposure after approved cancellation/closure and recognized fulfillment under configured reservation-liquidation policy. Exact formula must prevent deducting certified actual twice.",
+      "call_off_po": "Declare PO semantics INCLUDED_IN_PARENT / CALL_OFF / ADDITIVE or governed equivalent. Included/call-off PO allocation consumes parent exposure without adding that same value again; additive PO contributes only independent incremental obligation.",
+      "actual": "Certified/accepted incurred economic event, linked to contract/PO/receipt/certificate/source invoice reference and unique origin; not bank settlement.",
+      "accrual": "Explicit estimated incurred-but-unposted/certified obligation for a period, with reversal/matching rule when actual arrives; never add accrual and subsequent actual for same economic origin.",
+      "deduplication": "Source economic-event key + source system/document/line + project/currency/period/reversal provenance; certificate and receipt relating to the same recognized cost need explicit matching, not additive duplication.",
+      "funding": "Strategic assignment/envelope, FBS allocation, gross commitment, net commitment, actual and accrued cost are distinct measures. Do not add allocation/funding rows as obligations.",
+      "future_interface": "Accounting/Treasury supplies posting/settlement references through future authorized interface; current certificates do not claim payment execution.",
+      "legacy_risk_evidence": [
+        "backend/app/services/integrated_control.py:143",
+        "backend/app/services/integrated_control.py:417",
+        "backend/app/services/integrated_control.py:419",
+        "backend/app/domain/models.py:1532"
+      ]
+    }
+  },
+  "common_period_contract": {
+    "status": "PROPOSED_DESIGN_REUSE_CONTROL_PERIOD_PRIMITIVE",
+    "period_identity": [
+      "tenant_id",
+      "project_workspace_id",
+      "reporting_calendar_ref_version",
+      "period_id",
+      "start",
+      "cutoff_date_time",
+      "schedule_data_date",
+      "timezone",
+      "revision"
+    ],
+    "states": [
+      "OPEN",
+      "REVIEW",
+      "CLOSED",
+      "PUBLISHED"
+    ],
+    "state_rules": [
+      "OPEN permits authorized captures and proposed corrections within configured cutoff; source facts retain occurred/received dates.",
+      "REVIEW freezes candidate source snapshots for validation/reconciliation; changes return affected owner submission to review with new version.",
+      "CLOSED freezes approved progress, reconciled actual/accrual/net commitment inputs and period baseline references; no direct late edits.",
+      "PUBLISHED issues immutable report/forecast/input bundle for the closed period; business approval and reporting issuance remain distinct.",
+      "Late data uses explicit adjustment/reopen authority; reopening creates auditable new period revision and recalculated report version, preserving published prior version.",
+      "One shared reporting calendar/cutoff policy; source-specific transaction dates and P6 Data Date remain distinct, linked rather than forced equal.",
+      "Forecast cycle references closed/open source status, assumptions and date; mixed cutoffs disclose exceptions instead of blending silently."
+    ],
+    "controls": [
+      "Named period coordinator and source owners",
+      "Entry/review/approval separation for material facts",
+      "Optimistic concurrency and idempotent close/publish",
+      "Reconciliation and completeness before close",
+      "No period or events created by this architecture increment"
+    ],
+    "evidence": [
+      "backend/app/domain/models.py:685",
+      "backend/app/domain/models.py:1234",
+      "backend/app/domain/models.py:1260"
+    ]
+  },
+  "event_model": {
+    "envelope": {
+      "status": "CONCEPT_ONLY_NOT_IMPLEMENTED",
+      "fields": [
+        "event_id",
+        "event_type",
+        "schema_version",
+        "tenant_id",
+        "project_workspace_id",
+        "aggregate_type",
+        "aggregate_id",
+        "aggregate_version",
+        "occurred_at_utc",
+        "source_owner_domain",
+        "actor_id",
+        "action",
+        "idempotency_key",
+        "correlation_id",
+        "causation_id",
+        "source_version_hash_refs",
+        "authorization_policy_ref",
+        "audit_ref"
+      ],
+      "rules": [
+        "Source owner emits only after its authorized successful transaction; no event claims approval that did not occur.",
+        "One semantic event per aggregate version/idempotency key; idempotent consumers record receipt and reject incompatible replay.",
+        "No mutable transaction payload duplication as another source of truth; references and minimum immutable event facts only.",
+        "Check tenant/project scope, permissions, version and applicable conditions at owner command boundary.",
+        "Start with domain/audit records and explicit service calls inside modular monolith; no event bus/microservice migration proposed.",
+        "No events emitted in this architecture increment."
+      ]
+    },
+    "events": [
+      {
+        "id": "EV01",
+        "name": "PROJECT_ACTIVATED",
+        "source_owner": "Canonical Project Workspace lifecycle",
+        "trigger": "Existing explicit activation completed",
+        "consumers": "All operational setup consumers",
+        "authority_limit": "References successful activation; does not create FID, schedule baseline or cost budget",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV02",
+        "name": "BASELINE_APPROVED",
+        "source_owner": "Applicable Scope/Schedule/Cost baseline owner",
+        "trigger": "Independent baseline approval completed",
+        "consumers": "Progress/Forecast/Reporting",
+        "authority_limit": "Identify baseline type/version and aligned control baseline set, not all domains approved implicitly",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV03",
+        "name": "SCHEDULE_IMPORTED",
+        "source_owner": "Schedule Management",
+        "trigger": "Staged file validated/reviewed and accepted as schedule version",
+        "consumers": "Progress/Forecast/BIM/Reporting",
+        "authority_limit": "Includes source/P6 revision/file hash/data date; does not itself approve baseline or calculate CPM",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV04",
+        "name": "PROGRESS_PERIOD_CLOSED",
+        "source_owner": "Progress Management",
+        "trigger": "Approved progress frozen under common control period",
+        "consumers": "Forecast/EVM/Reporting",
+        "authority_limit": "Method/source/denominator/unit/period and revisions; no rewrite on late entry",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV05",
+        "name": "CHANGE_SUBMITTED",
+        "source_owner": "Change Management",
+        "trigger": "Validated change submitted for assessment",
+        "consumers": "Affected domain assessors",
+        "authority_limit": "Not approved; no source baseline mutation",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV06",
+        "name": "CHANGE_APPROVED",
+        "source_owner": "Change Management",
+        "trigger": "Independent authorized approval recorded",
+        "consumers": "Affected source owners",
+        "authority_limit": "Owners implement via guarded idempotent command and publish receipts",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV07",
+        "name": "FORECAST_APPROVED",
+        "source_owner": "Forecast",
+        "trigger": "Authorized approval of version and assumptions",
+        "consumers": "Reporting/executives",
+        "authority_limit": "No investment authorization or approved source-baseline rewrite",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV08",
+        "name": "CONTRACT_AWARDED",
+        "source_owner": "Contract Administration & Commitments",
+        "trigger": "Authorized award/contract commitment accepted",
+        "consumers": "Procurement/Cost/Schedule",
+        "authority_limit": "Not emitted by RFQ highest-score summary; current commitment conditions checked",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV09",
+        "name": "RISK_ESCALATED",
+        "source_owner": "Operational Risk",
+        "trigger": "Risk threshold/escalation authorized",
+        "consumers": "Issue/Change/Forecast/management",
+        "authority_limit": "Uncertain event remains Risk; issue conversion is explicit linked action",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV10",
+        "name": "ISSUE_ESCALATED",
+        "source_owner": "Issue Management",
+        "trigger": "Occurring issue escalated",
+        "consumers": "Change/workfront/management",
+        "authority_limit": "Does not approve change or close associated risk automatically",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV11",
+        "name": "WORK_PACKAGE_RELEASED",
+        "source_owner": "Package owner / Construction",
+        "trigger": "Applicable readiness constraints and independent release satisfied",
+        "consumers": "Field/Progress/Quality",
+        "authority_limit": "Optional AWP context; no universal package hierarchy assumed",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV12",
+        "name": "MECHANICAL_COMPLETION",
+        "source_owner": "Commissioning / Construction system owner",
+        "trigger": "System-specific accepted mechanical completion evidence",
+        "consumers": "Commissioning/Handover",
+        "authority_limit": "Does not imply commissioning accepted, permit satisfied or handover complete",
+        "status": "PROPOSED_DESIGN"
+      },
+      {
+        "id": "EV13",
+        "name": "HANDOVER_ACCEPTED",
+        "source_owner": "Handover authority",
+        "trigger": "Formal asset/system handover with residual conditions accepted",
+        "consumers": "Asset transition/Closeout",
+        "authority_limit": "Canonical Project retained; financial/claims closeout remain separate",
+        "status": "PROPOSED_DESIGN"
+      }
+    ]
+  },
+  "security_and_sod": {
+    "status": "PROPOSED_DESIGN_EXTEND_EXISTING_SCOPED_SECURITY",
+    "rbac": "Reuse existing tenant/Workspace-scoped permission catalog, role assignments and module/operation checks. Candidate domain roles are scoped duties, not new global super-roles. ADMIN configuration publication and USER transaction authority remain independent.",
+    "read_boundary": "Every read/export/report validates tenant, canonical Workspace scope, optional module enablement and sensitive document access; reports do not bypass source access.",
+    "command_boundary": "Owner validates canonical active lifecycle, applicable route authorization, condition blockers, exact source revision/ETag, current configuration, role/action and idempotency. Long-running/staged actions revalidate before promotion.",
+    "sod": [
+      {
+        "case": "Baseline",
+        "prepare": "Planner/Scope/Cost preparer",
+        "approve": "Independent applicable baseline approver",
+        "rule": "Preparer cannot approve own material baseline; source owners implement only approved versions."
+      },
+      {
+        "case": "Progress",
+        "prepare": "Field/Progress Engineer capture",
+        "approve": "Independent progress approval where configured",
+        "rule": "Simple draft entry does not need four-eyes; approved earned/physical reporting does."
+      },
+      {
+        "case": "Change",
+        "prepare": "Change originator/impact assessor",
+        "approve": "Independent delegated change authority",
+        "rule": "Authority thresholds/scope and affected owner receipts; submission not implementation."
+      },
+      {
+        "case": "Forecast",
+        "prepare": "Forecast preparer",
+        "approve": "Independent delegated forecast approver",
+        "rule": "Approved assumptions/inputs frozen; no authorization to rewrite baseline."
+      },
+      {
+        "case": "Contract award",
+        "prepare": "Procurement evaluator/recommender",
+        "approve": "Independent delegated award/contract authority",
+        "rule": "Highest score is not approval; applicable Post-FID commitment conditions enforced."
+      },
+      {
+        "case": "Claim",
+        "prepare": "Claims analyst/contract submitter",
+        "approve": "Independent authorized claim submission/settlement authority",
+        "rule": "Entitlement/quantum/release decision separate from ordinary cost reporting."
+      },
+      {
+        "case": "Closeout",
+        "prepare": "Domain closeout coordinators",
+        "approve": "Independent Project closeout authority",
+        "rule": "Outstanding contractual/claims/financial/handover conditions explicit; canonical identity retained."
+      }
+    ],
+    "existing_controls_evidence": [
+      "backend/app/modules/project_workspace_initialization/router.py:23",
+      "backend/app/modules/project_workspace_initialization/service.py:273",
+      "backend/tests/test_project_workspace_initialization.py:872",
+      "backend/tests/test_commercial_strategy_gate07m_comm.py:632",
+      "backend/tests/test_funds_manager_gate07j_fund.py:247"
+    ]
+  },
+  "awp_optional_contract": {
+    "status": "PROPOSED_DESIGN",
+    "primary_source": {"title": "Construction Industry Institute: AWP Overview", "url": "https://www.construction-institute.org/awp-overview", "consulted_local": "2026-10-19", "status": "CII overview recognizes CWP, EWP, PWP, SWP and IWP; TWP in this design is project-configured terminology, not asserted universal standard."},
+    "activation": "Enable by Project Type/execution strategy and published package/readiness configuration; optional for every governance model, never mandatory for all projects.",
+    "not_universal_linear_chain": true,
+    "typed_relationships": [
+      {
+        "from": "CWA",
+        "to": "CWP",
+        "relation": "CONTAINS_OR_GROUPS",
+        "rule": "Area decomposition and construction package containment, configurable granularity."
+      },
+      {
+        "from": "CWP",
+        "to": "EWP",
+        "relation": "REQUIRES_ENGINEERING_DELIVERABLES",
+        "rule": "Engineering package is supporting prerequisite/many-to-many dependency, not compulsory child in a sequential ladder."
+      },
+      {
+        "from": "CWP",
+        "to": "PWP",
+        "relation": "REQUIRES_PROCUREMENT_OR_MATERIALS",
+        "rule": "Procurement/material package readiness supports construction; engineering/procurement dependencies may proceed in parallel."
+      },
+      {
+        "from": "CWP",
+        "to": "IWP",
+        "relation": "DECOMPOSES_EXECUTABLE_WORK",
+        "rule": "Installation package groups executable scope/activities/quantities, crew/workfront, constraints and release evidence."
+      },
+      {
+        "from": "IWP",
+        "to": "EWP / PWP",
+        "relation": "READINESS_DEPENDENCY",
+        "rule": "Only applicable engineering/material constraints block release; partial/conditional release requires configured authority."
+      },
+      {
+        "from": "TWP",
+        "to": "CWP / IWP / system",
+        "relation": "CONFIGURED_TURNOVER_OR_TEST_SCOPE_LINK",
+        "rule": "TWP meaning and acceptance evidence must be published by project configuration; may span several packages/systems and is not a universal child of IWP."
+      }
+    ],
+    "release": "Readiness combines approved scope, current schedule/look-ahead, available materials, accepted technical revisions, permits/HSE/quality constraints and issues. Package release consumes source evidence and does not resolve source constraints locally.",
+    "evidence": [
+      "backend/app/domain/models.py:822",
+      "backend/app/domain/models.py:852",
+      "backend/tests/test_unifier_priority_flow.py:397"
+    ]
+  },
+  "roadmap": {
+    "status": "PROPOSED_DESIGN_NOT_AUTHORIZATION_TO_IMPLEMENT",
+    "relative_scale": [
+      "LOW",
+      "MEDIUM",
+      "HIGH",
+      "VERY_HIGH"
+    ],
+    "no_calendar_estimate": "Complexity is relative architectural judgement; no committed dates, cost or staffing estimates.",
+    "global_entry": "Architecture/domain boundaries and next implementation scope approved. Design/preparation may proceed while strategic business signoff remains paused, but no live deployment/business release without required authorized signoff/release and applicable project authorization.",
+    "waves": [
+      {
+        "id": "O1",
+        "name": "PROJECT CONTROLS FOUNDATION",
+        "relative_complexity": "VERY_HIGH",
+        "scope": [
+          "O1A canonical identity binding and common period/policy first",
+          "O1A/O1B minimal document/evidence version references reused before any baseline approval; richer review/distribution/DMS integration remains O2",
+          "O1B approved Scope/Schedule/Cost baselines, adapters, typed Progress and Change/Risk/Issue foundation",
+          "O1C governed Forecast and source-consuming reporting"
+        ],
+        "dependencies": [
+          "Existing canonical creation/initialization/activation and scoped security",
+          "Upstream handoff/conditions contract",
+          "Explicit decision resolving projects.id versus canonical Workspace references",
+          "Approved P6/source-authority boundaries"
+        ],
+        "entry_criteria": [
+          "Architecture and O1 design approved",
+          "Three route applicability and identity collision/access tests specified",
+          "Existing product/strategic baseline protected",
+          "No business signoff or release inferred from design approval"
+        ],
+        "exit_criteria": [
+          "Tested canonical binding with no duplicate Project",
+          "Published reusable period/mapping/progress/change configuration",
+          "Immutable approved baseline set and accepted schedule import provenance",
+          "Reconciled no-double-count Cost inputs and typed approved Progress",
+          "Versioned Forecast/report inputs with independent approvals and scoped access",
+          "Authorized business acceptance/release before live use"
+        ],
+        "risks": [
+          "Identity-space mismatch",
+          "Legacy baseline overwrite and duration assumptions",
+          "Mixed progress/cost methods",
+          "Cross-domain currentness and scope leakage"
+        ],
+        "reuse": [
+          "Enterprise Workspace lifecycle/RBAC",
+          "ScheduleImport/raw metadata/maps",
+          "Scope/BIM quantities",
+          "CBS/control accounts/FBS",
+          "Existing minimal Document/evidence reference authority",
+          "Existing progress/change/forecast/snapshots"
+        ],
+        "subwaves": [
+          {
+            "id": "O1A",
+            "complexity": "HIGH",
+            "purpose": "Resolve canonical identity adapter, owner boundaries, route authorization/current conditions and common control period/config policy before wider live reuse.",
+            "exit": "Executable approved design/tests for collision/missing mapping/access/status/conditions and period lifecycle; future schema changes explicitly authorized."
+          },
+          {
+            "id": "O1B",
+            "complexity": "VERY_HIGH",
+            "purpose": "Implement narrowly approved source adapters/control baselines and typed scope/schedule/cost/progress/change/risk/issue foundation without native CPM or duplicate source authority.",
+            "exit": "Baseline/version/data-date/unit/mapping approvals; cost economic-origin rules and typed progress invariants verified."
+          },
+          {
+            "id": "O1C",
+            "complexity": "HIGH",
+            "purpose": "Add versioned forecast and governed Project Controls reporting/look-ahead consuming approved source snapshots.",
+            "exit": "Reproducible ETC/EAC/time forecast assumptions and source references; no dashboard writes or baseline mutation."
+          }
+        ],
+        "stop_now": "No O1 production module implemented in this increment."
+      },
+      {
+        "id": "O2",
+        "name": "PROCUREMENT / CONTRACTS / ENGINEERING",
+        "relative_complexity": "VERY_HIGH",
+        "scope": [
+          "Reuse RFQ/bid primitives with configurable sourcing/award",
+          "Single Contract/PO/Commitment register",
+          "Engineering design packages/reviews",
+          "Lightweight Documents/external DMS references",
+          "Interfaces and long-lead readiness"
+        ],
+        "dependencies": [
+          "O1 canonical binding/period/baseline and Change foundation",
+          "Single-party/master-data decision",
+          "Approved obligation/call-off/netting/deduplication policy"
+        ],
+        "entry_criteria": [
+          "O1 source-owner contracts proven",
+          "Procurement versus Contract Administration authority approved",
+          "Shared parties and source document references designed",
+          "Current strategic commercial/funding references remain upstream"
+        ],
+        "exit_criteria": [
+          "Award recommendation versus approval separated",
+          "One PO/Contract authority with legal variation history",
+          "No duplicated gross/net obligation or actual/accrual economic event",
+          "Engineering/document revisions and interface constraints traceable",
+          "Scoped SoD and audit/currentness verified"
+        ],
+        "risks": [
+          "Duplicate menu/table authority",
+          "Award bypass or commitment condition bypass",
+          "Contract-client revenue mistaken for purchase cost",
+          "Full enterprise DMS scope creep"
+        ],
+        "reuse": [
+          "RFQPackage/RFQBid",
+          "Contract/PurchaseOrder/SOV",
+          "Notices/communications/certificates/receipts",
+          "Documents/transmittal primitives",
+          "Strategic Commercial and Funding references"
+        ]
+      },
+      {
+        "id": "O3",
+        "name": "CONSTRUCTION EXECUTION",
+        "relative_complexity": "HIGH",
+        "scope": [
+          "Field/workfront/daily capture",
+          "Optional AWP work-package release",
+          "Installed quantities/productivity/labor/equipment",
+          "Quality inspections/NCR/punch",
+          "HSE scoped internal capability or external system boundary"
+        ],
+        "dependencies": [
+          "O1 approved typed Progress/period/Change",
+          "O2 applicable engineering/material/document readiness",
+          "Package policy and source-owner integration contracts"
+        ],
+        "entry_criteria": [
+          "Applicable source constraints and release criteria approved",
+          "Field evidence/measurement units and method configured",
+          "Quality/HSE internal versus external boundary decided"
+        ],
+        "exit_criteria": [
+          "Approved field progress/evidence feeds Progress once",
+          "Workfront/package readiness consumes current source constraints",
+          "Inspection/NCR/HSE status does not silently imply another owner approval",
+          "Audit/late-period adjustment and independent release tests pass"
+        ],
+        "risks": [
+          "Physical/schedule/earned percent mixing",
+          "Unsafe release on stale technical/permit evidence",
+          "Universal AWP forced on unsuitable project types",
+          "Duplicate field/quality event capture"
+        ],
+        "reuse": [
+          "Existing quantity/BIM/work-package/constraint primitives",
+          "Progress and period contracts",
+          "Document/permit references",
+          "Risk/Issue/Change integration"
+        ]
+      },
+      {
+        "id": "O4",
+        "name": "CLAIMS / COMMISSIONING / HANDOVER / CLOSEOUT",
+        "relative_complexity": "VERY_HIGH",
+        "scope": [
+          "Claims/delay/forensic governed evidence",
+          "Mechanical completion/pre-commissioning/commissioning",
+          "Turnover/handover and operational readiness",
+          "Asset data transition",
+          "Project closeout without deleting canonical identity"
+        ],
+        "dependencies": [
+          "O1 retained baseline/current/update/period history",
+          "O2 contract/notice/document history",
+          "O3 applicable installed/quality/punch evidence",
+          "External accounting/asset boundary approved where needed"
+        ],
+        "entry_criteria": [
+          "Complete source provenance and controlled historical snapshots",
+          "Distinct claim versus ordinary control transaction authority",
+          "System/package handover and residual condition acceptance policy approved"
+        ],
+        "exit_criteria": [
+          "Claim evidence/entitlement/quantum separated from controls source writes",
+          "Accepted commissioning/handover with unresolved conditions explicit",
+          "Financial/contract/schedule/document/claims closeout independently reconciled",
+          "Project operational closure approved while canonical Workspace/history retained"
+        ],
+        "risks": [
+          "Forensic simulation contaminates live schedule",
+          "Handover mistaken for financial/legal closeout",
+          "External ERP/asset assumptions",
+          "Premature deletion/archive of identity or evidence"
+        ],
+        "reuse": [
+          "Existing claims/notices/impact primitives",
+          "Schedule import/version history",
+          "Documents/evidence register",
+          "Field/quality/work-package references"
+        ]
+      }
+    ],
+    "exactly_one_next_implementation_increment": "WAVE O1 — PROJECT CONTROLS FOUNDATION, starting with O1A canonical binding and common period/policy.",
+    "stop_boundary": "Stop after architecture, inventory, roadmap and artifacts. Wait for explicit authorization; do not automatically implement O1."
+  },
+  "adr_convention": {
+    "observed": "Repository documents use global numbered docs/NN-*.md, including ADR titles such as ADR 44/65 and later named Wave titles. Existing maximum numeric prefix is 85 (85-qra-evidence-integration-release.md); 86..97 were free at inspection.",
+    "proposal_namespace": "Use ADR 86..97 for new proposed documents and preserve aliases ADR-O-001..012 required by the prompt. Status PROPOSED_DESIGN. Do not edit or renumber accepted historical ADRs.",
+    "evidence": [
+      "docs/44-adr-project-governance-multi-source-creation.md:1",
+      "docs/65-adr-gate07m-comm-commercial-strategy-readiness.md:1",
+      "docs/82-adr-qra-calculation-engine.md:1"
+    ]
+  },
+  "adrs": [
+    {
+      "id": "ADR 86",
+      "requirement_alias": "ADR-O-001",
+      "status": "PROPOSED_DESIGN",
+      "title": "Project identity",
+      "decision": "Keep enterprise_workspaces of type project as sole canonical Project identity. Bind existing legacy operational records through an explicit tenant-scoped canonical reference/projection adapter; no second Project master and no ID equality shortcut.",
+      "rationale": "Canonical project creation already intentionally creates no legacy Project; operational Contract/PO/Schedule still use projects.id.",
+      "implications": "O1A must resolve mapping, collision, missing reference, status, scope and authorization before live reuse. No migration in this increment.",
+      "evidence": [
+        "docs/44-adr-project-governance-multi-source-creation.md:21",
+        "backend/app/domain/models.py:486",
+        "backend/tests/test_project_creation_process.py:642"
+      ]
+    },
+    {
+      "id": "ADR 87",
+      "requirement_alias": "ADR-O-002",
+      "status": "PROPOSED_DESIGN",
+      "title": "Project Controls integration core",
+      "decision": "Project Controls coordinates common period/baseline/mapping and integrates governed source snapshots; it does not own every source transaction.",
+      "rationale": "High coupling exists in legacy aggregate router/App; a monolithic controls master would duplicate source ownership.",
+      "implications": "Domain-owner command boundaries and typed read models; reporting never writes source facts.",
+      "evidence": [
+        "backend/app/domain/models.py:685",
+        "backend/app/services/integrated_control.py:176",
+        "frontend/src/views/DashboardView.tsx:379"
+      ]
+    },
+    {
+      "id": "ADR 88",
+      "requirement_alias": "ADR-O-003",
+      "status": "PROPOSED_DESIGN",
+      "title": "P6 external CPM authority",
+      "decision": "Primavera P6 remains primary operational CPM calculator. Design manual XML/XER roundtrip only; no native operational CPM, direct P6/OPC API or silent critical-path recalculation.",
+      "rationale": "Existing P6 imports/raw metadata are reusable; QRA elapsed-time simulation is explicitly not P6 operational CPM.",
+      "implications": "Full fidelity export is a future validated adapter, not claimed as present. Preserve imported critical/float values and raw calendars/units.",
+      "evidence": [
+        "backend/app/services/schedule_ingestion.py:402",
+        "backend/app/services/schedule_ingestion.py:438",
+        "docs/80-adr-qra-foundation.md:13",
+        "docs/82-adr-qra-calculation-engine.md:43"
+      ]
+    },
+    {
+      "id": "ADR 89",
+      "requirement_alias": "ADR-O-004",
+      "status": "PROPOSED_DESIGN",
+      "title": "Schedule versioning",
+      "decision": "Separate immutable approved baseline versions, reviewed accepted current update, provisional forecast scenario and staged import. Promote by explicit approval/version check; no import-driven baseline rewrite.",
+      "rationale": "Existing import/baseline/version primitives coexist with activity baseline field overwrites and date-only conversions.",
+      "implications": "Future adapter requires version manifest, provenance/hash, data-date rules, source IDs, semantic reconciliation, rollback by pointer/reversal and retained history.",
+      "evidence": [
+        "backend/app/domain/models.py:615",
+        "backend/app/domain/models.py:668",
+        "backend/app/services/schedule_ingestion.py:1462",
+        "backend/app/services/schedule_ingestion.py:1612"
+      ]
+    },
+    {
+      "id": "ADR 90",
+      "requirement_alias": "ADR-O-005",
+      "status": "PROPOSED_DESIGN",
+      "title": "Scope/WBS/CBS alignment",
+      "decision": "Use explicit versioned many-to-many mappings among Scope Item, WBS, activity, CBS/CostCode, budget, contract and package. WBS is a structural source, not the sole identity of all cost or scope.",
+      "rationale": "Existing control-account/SOV/mapping primitives link multiple structures; one-to-one assumptions lose valid allocation relationships.",
+      "implications": "Map cardinality/units/coverage, allocation denominator and historical mapping revisions; no silent auto-join by label.",
+      "evidence": [
+        "backend/app/domain/models.py:698",
+        "backend/app/domain/models.py:714",
+        "backend/app/domain/models.py:767",
+        "backend/app/domain/models.py:1418",
+        "backend/tests/test_unifier_priority_flow.py:11"
+      ]
+    },
+    {
+      "id": "ADR 91",
+      "requirement_alias": "ADR-O-006",
+      "status": "PROPOSED_DESIGN",
+      "title": "Progress architecture",
+      "decision": "Keep physical, quantity, milestone, schedule, cost and earned progress as typed methods with source owner, unit, denominator, weight, period, evidence and independent approval where material.",
+      "rationale": "Existing record primitives and import percent fields are not interchangeable semantic measures.",
+      "implications": "Freeze closed approved progress snapshots; EVM consumes approved baseline/progress and reconciled cost, never mixes percentages silently.",
+      "evidence": [
+        "backend/app/domain/models.py:1195",
+        "backend/app/domain/models.py:283",
+        "backend/app/domain/models.py:748"
+      ]
+    },
+    {
+      "id": "ADR 92",
+      "requirement_alias": "ADR-O-007",
+      "status": "PROPOSED_DESIGN",
+      "title": "Change cross-domain model",
+      "decision": "One Change Event/Request coordinates impact assessment and decision across scope/schedule/cost/resources/contracts/risk/forecast. Owners implement approved changes through idempotent commands; no disconnected approval ledgers.",
+      "rationale": "Existing ChangeRequest and reserved per-module change menus risk parallel authority if expanded independently.",
+      "implications": "Single approved decision reference, affected source versions, implementation receipts and explicit rejection/pending state; no baseline rewrite on submission.",
+      "evidence": [
+        "backend/app/domain/models.py:1295",
+        "frontend/src/navigation/applicationNavigation.ts:445",
+        "frontend/src/navigation/applicationNavigation.ts:650"
+      ]
+    },
+    {
+      "id": "ADR 93",
+      "requirement_alias": "ADR-O-008",
+      "status": "PROPOSED_DESIGN",
+      "title": "Forecast architecture",
+      "decision": "Forecast is an independently approved versioned derivation of governed snapshots plus explicit assumptions; preserves source baseline/current/actual and P6 CPM authority.",
+      "rationale": "Existing forecast_scenarios/control_snapshots can be reused, but a scenario is neither strategic investment approval nor source transaction.",
+      "implications": "ETC/EAC and finish/milestone predictions disclose method/currency/period/input hashes and approval. Reforecast creates a new version, never edits approved history.",
+      "evidence": [
+        "backend/app/domain/models.py:1234",
+        "backend/app/domain/models.py:1260",
+        "backend/app/services/integrated_control.py:253"
+      ]
+    },
+    {
+      "id": "ADR 94",
+      "requirement_alias": "ADR-O-009",
+      "status": "PROPOSED_DESIGN",
+      "title": "Procurement vs Commitments boundary",
+      "decision": "Procurement owns sourcing and recommendation; Contract Administration/Commitments owns one legal obligation register for Contract/PO/subcontract and approved contractual variations. Cost consumes net obligations once.",
+      "rationale": "Two menu concepts currently reserve PO access but one table/API exists; strategy/funding are explicitly separate strategic bounded contexts.",
+      "implications": "Do not create new Procurement Manager until duplicate concepts and canonical binding are resolved. Define call-off/included/additive PO, client-contract direction and economic-origin dedupe before rollout.",
+      "evidence": [
+        "backend/app/domain/models.py:1400",
+        "backend/app/domain/models.py:1524",
+        "backend/app/services/integrated_control.py:417",
+        "backend/app/modules/commercial_strategy/models.py:1",
+        "frontend/src/navigation/applicationNavigation.ts:370",
+        "frontend/src/navigation/applicationNavigation.ts:447"
+      ]
+    },
+    {
+      "id": "ADR 95",
+      "requirement_alias": "ADR-O-010",
+      "status": "PROPOSED_DESIGN",
+      "title": "Owner vs Contractor applicability",
+      "decision": "Governance Model is independent of Project Type. Reuse canonical creation/initialization/activation and route policies for CAPITAL_OWNER, CONTRACTOR_DELIVERY and DIRECT_INTERNAL; do not impose Capital Owner sequence by default on other legitimate routes.",
+      "rationale": "Existing route adapters and policy requirements already distinguish strategic decision, contract award and direct authorization.",
+      "implications": "Operational domain applicability is tailored mandatory/optional/conditional/not-applicable; authorization/conditions remain upstream, no copied local FID.",
+      "evidence": [
+        "backend/app/modules/project_creation/governance.py:25",
+        "backend/app/modules/project_creation/governance.py:53",
+        "backend/app/modules/project_creation/governance.py:85",
+        "backend/app/modules/project_creation/governance.py:122",
+        "backend/tests/test_post_fid_governance_gate07l.py:124"
+      ]
+    },
+    {
+      "id": "ADR 96",
+      "requirement_alias": "ADR-O-011",
+      "status": "PROPOSED_DESIGN",
+      "title": "AWP optional architecture",
+      "decision": "AWP is configurable by Project Type/execution strategy, not a universal hierarchy. CWA/CWP containment, EWP/PWP support dependencies, IWP executable scope and TWP configured turnover/test relation are explicit typed links.",
+      "rationale": "Existing WorkPackage/constraint primitives can be reused but do not establish a mandatory linear package chain.",
+      "implications": "No forced CWA→CWP→EWP→PWP→IWP→TWP sequence. Enforce package readiness and optional engineering/material dependencies by published policy.",
+      "evidence": [
+        "backend/app/domain/models.py:822",
+        "backend/app/domain/models.py:852",
+        "backend/tests/test_unifier_priority_flow.py:397"
+      ]
+    },
+    {
+      "id": "ADR 97",
+      "requirement_alias": "ADR-O-012",
+      "status": "PROPOSED_DESIGN",
+      "title": "Operational checkpoints vs Strategic Gates",
+      "decision": "Baseline Approved, Ready to Execute, Workfront Ready, Ready for Commissioning/Handover and Closeout Ready are operational readiness checkpoints; they never substitute for Investment Gate/FID or reactivate a Workspace automatically.",
+      "rationale": "Existing Post-FID/canonical lifecycle is distinct and has separate scope/currentness/condition/SoD controls.",
+      "implications": "Operational checkpoint approval references source evidence and constraints; applicable authorization checked without new strategic approval authority.",
+      "evidence": [
+        "backend/app/modules/post_fid_governance/service.py:492",
+        "backend/app/modules/project_workspace_initialization/governance.py:58",
+        "backend/app/modules/project_workspace_initialization/router.py:126",
+        "backend/tests/test_project_initialization_post_fid_bridge.py:161"
+      ]
+    }
+  ]
+}

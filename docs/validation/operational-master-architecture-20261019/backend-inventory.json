@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-10-19",
+  "scope": "Read-only source inspection of current operational backend, schema, service consumers and test assertions; no tests, APIs, seeds, migration or business commands executed.",
+  "evidence_semantics": {
+    "implemented": "Source contains an actual model plus service behavior and, where listed, an API consumer; route or navigation presence alone is not capability proof.",
+    "test_coverage": "Listed tests and assertions were inspected in source. They were NOT executed in this audit; their presence must not be reported as a fresh PASS.",
+    "runtime": "No operational HTTP or database request performed. In particular GET dashboard is not assumed read-only.",
+    "absence": "No implementation located in the inspected paths/searches is a scoped finding, not an assertion about all external integrations or production installations.",
+    "instructions": "No AGENTS.md was returned by repository rg --files discovery with dependency and output directories excluded."
+  },
+  "identity_boundary": {
+    "classification": "EXTEND",
+    "maturity": "Two real identity aggregates coexist; explicit read-only binding adapter exists but no universal canonical-to-operational materialization was located.",
+    "canonical": {
+      "aggregate": "enterprise_workspaces with workspace_type_code PROJECT",
+      "primary_key": "enterprise_workspaces.id",
+      "evidence": [
+        "backend/app/domain/models.py:486",
+        "backend/app/modules/project_creation/models.py:73",
+        "backend/app/modules/project_workspace_initialization/models.py:19"
+      ]
+    },
+    "operational": {
+      "aggregate": "projects legacy operational Project",
+      "primary_key": "projects.id",
+      "evidence": [
+        "backend/app/domain/models.py:79",
+        "backend/app/domain/models.py:215",
+        "backend/app/domain/models.py:287",
+        "backend/app/domain/models.py:631",
+        "backend/app/domain/models.py:1053",
+        "backend/app/domain/models.py:1067",
+        "backend/app/domain/models.py:1200"
+      ]
+    },
+    "existing_bridge": {
+      "read_path": "SourceAdapters.operational_project first checks workspace.defaults_json._project.operational_project_id, tenant scope and optional reverse link; otherwise accepts exactly one Project with configuration.enterprise_workspace_id equal to the workspace ID. It explicitly rejects equal-ID, name or code guessing.",
+      "evidence": ["backend/app/modules/qra_foundation/adapters.py:31"],
+      "consumer": [
+        "backend/app/modules/qra_foundation/adapters.py:51",
+        "backend/app/modules/investment_evidence_policy/service.py:1662"
+      ],
+      "important_test_assertion": "test_32_no_legacy_project_row_is_created asserts that canonical project materialization does not create a Project row.",
+      "test_evidence": ["backend/tests/test_project_creation_process.py:642"]
+    },
+    "architecture_constraint": "Never treat selected enterprise workspace ID as operational project_id. Future operational onboarding must reuse the existing canonical identity and define an explicit governed binding, tenant validation, uniqueness, role/membership mapping and source-currentness contract without rewriting canonical activation or FID history.",
+    "not_done": "No new bridge table, backfill, copy, migration, project, membership or activation created by this audit."
+  },
+  "components": [
+    {
+      "id": "BE-01",
+      "domain": "Operational project setup and project membership",
+      "classification": "REUSE",
+      "maturity": "Implemented legacy operational setup; separate from governed canonical project creation and activation.",
+      "models": ["backend/app/domain/models.py:79", "backend/app/domain/models.py:100", "backend/app/domain/models.py:123", "backend/app/domain/models.py:597"],
+      "api": ["backend/app/api/v1/routers/projects.py:146", "backend/app/api/v1/routers/projects.py:498", "backend/app/api/v1/routers/projects.py:550"],
+      "behavior": "Legacy create_project creates Project, WBS and control plan plus creator membership. Activity-sheet get-data checks separate operational setup readiness.",
+      "service_evidence": ["backend/app/api/v1/routers/projects.py:161", "backend/app/api/v1/routers/projects.py:176", "backend/app/api/v1/routers/projects.py:2166"],
+      "test_coverage": ["backend/tests/test_project_operational_setup_activity_sheet.py:8", "backend/tests/test_integrated_control.py:8"],
+      "limits": ["Does not establish canonical PROJECT creation authority.", "Operational setup ready flags do not substitute for FID, canonical activation, permissions or fully tested domain readiness."],
+      "ownership_recommendation": "Enterprise foundation owns canonical workspace; operational onboarding consumes that identity through an explicit binding. Keep existing operational records and memberships."
+    },
+    {
+      "id": "BE-02",
+      "domain": "Scope quantities and IFC/Excel source import",
+      "classification": "EXTEND",
+      "maturity": "Substantive implemented quantity takeoff and traceable mappings; not a complete governed Scope Item lifecycle.",
+      "models": ["backend/app/domain/models.py:183", "backend/app/domain/models.py:282"],
+      "api": ["backend/app/api/v1/routers/projects.py:931", "backend/app/api/v1/routers/projects.py:1239", "backend/app/api/v1/routers/projects.py:1856"],
+      "service_evidence": ["backend/app/services/quantity_takeoff.py:206", "backend/app/services/quantity_takeoff.py:295", "backend/app/services/quantity_takeoff.py:710", "backend/app/services/quantity_takeoff.py:818"],
+      "behavior": "IFC, CSV and OOXML quantities are parsed, source SHA and model links retained, IFC GUID/Express ID and spatial metadata captured; WBS/CBS/FBS/package references have both code and relational links, with mapped versus needs_mapping status and quantity-rule notes.",
+      "test_coverage": ["backend/tests/test_quantity_takeoff.py:13", "backend/tests/test_quantity_takeoff.py:188", "backend/tests/test_quantity_takeoff.py:288", "backend/tests/test_quantity_takeoff.py:441", "backend/tests/test_quantity_takeoff.py:539", "backend/tests/test_quantity_takeoff.py:580"],
+      "limits": ["The source-type detector accepts .xls but spreadsheet parsing routes non-CSV content to a ZIP/XML reader; legacy binary XLS capability is not established.", "No separate governed scope-item revision/approval/change-baseline lifecycle was located in these services.", "Codes and IDs require coherent catalog ownership; do not introduce parallel WBS/CBS/FBS catalogs."],
+      "limit_evidence": ["backend/app/services/quantity_takeoff.py:551", "backend/app/services/quantity_takeoff.py:591", "backend/app/services/quantity_takeoff.py:605"]
+    },
+    {
+      "id": "BE-03",
+      "domain": "BIM model registry, properties and geometry cache",
+      "classification": "REUSE",
+      "maturity": "Implemented model/source registry, properties lookup and optional backend cache boundary; converter availability and real-model completeness remain environment-specific.",
+      "models": ["backend/app/domain/models.py:210"],
+      "api": ["backend/app/api/v1/routers/projects.py:1659", "backend/app/api/v1/routers/projects.py:1751", "backend/app/api/v1/routers/projects.py:1766", "backend/app/api/v1/routers/projects.py:1780"],
+      "service_evidence": ["backend/app/services/bim_models.py:53", "backend/app/services/bim_models.py:107", "backend/app/services/bim_models.py:126", "backend/app/services/bim_models.py:140", "backend/app/services/ifc_geometry_converter.py:11"],
+      "behavior": "Registry validates IFC source and persists source identity/revision, properties, units and georeference. Cache conversion is configured through BIM_GEOMETRY_CONVERTER_COMMAND; missing command returns 409. Optional converter uses IfcOpenShell geometry with product/triangle bounds.",
+      "test_coverage": ["backend/tests/test_bim_model_registry.py:10", "backend/tests/test_bim_model_registry.py:74", "backend/tests/test_bim_model_registry.py:118", "backend/tests/test_bim_model_registry.py:188", "backend/tests/test_bim_model_registry.py:239", "backend/tests/test_bim_model_registry.py:275"],
+      "limits": ["The cache integration test uses a fake converter; it is not evidence of actual IfcOpenShell availability or full production-model rendering.", "No automatic claim of full IFC schema coverage, clash coordination, 4D binding or complete geometry extraction is justified by these endpoints."],
+      "test_limit_evidence": ["backend/tests/test_bim_model_registry.py:119", "backend/tests/test_bim_model_registry.py:135"]
+    },
+    {
+      "id": "BE-04",
+      "domain": "Quantity rule catalog and controlled measurements",
+      "classification": "REUSE",
+      "maturity": "Implemented dimensional validation, configurable project rules, controlled measurement versioning and geometry preview/apply.",
+      "models": ["backend/app/domain/models.py:234"],
+      "api": ["backend/app/api/v1/routers/projects.py:858", "backend/app/api/v1/routers/projects.py:872", "backend/app/api/v1/routers/projects.py:1202", "backend/app/api/v1/routers/projects.py:1274", "backend/app/api/v1/routers/projects.py:1413"],
+      "service_evidence": ["backend/app/services/bim_quantity_rules.py:1", "backend/app/services/bim_quantity_rule_catalog.py:1", "backend/app/services/bim_geometry_quantities.py:40", "backend/app/services/quantity_takeoff.py:436"],
+      "test_coverage": ["backend/tests/test_bim_quantity_rules.py:55", "backend/tests/test_bim_quantity_rules.py:74", "backend/tests/test_bim_quantity_rules.py:99", "backend/tests/test_bim_quantity_rule_catalog.py:83", "backend/tests/test_bim_geometry_quantities.py:14", "backend/tests/test_bim_geometry_quantities.py:118"],
+      "limits": ["Inventory count is not authoritative dimensional quantity; preserve current blocking and controlled-geometry gates.", "Preview/apply capabilities do not prove external professional measurement acceptance."]
+    },
+    {
+      "id": "BE-05",
+      "domain": "APU source catalog, suggestions, approval and BIM budget read model",
+      "classification": "EXTEND",
+      "maturity": "Implemented catalog/suggestion/controlled assignment and frontend rollup; not a published financial baseline writer.",
+      "models": ["backend/app/domain/models.py:255", "backend/app/domain/models.py:282"],
+      "api": ["backend/app/api/v1/routers/projects.py:956", "backend/app/api/v1/routers/projects.py:1011", "backend/app/api/v1/routers/projects.py:1084", "backend/app/api/v1/routers/projects.py:1462"],
+      "service_evidence": ["backend/app/services/colombia_apu_catalog.py:185", "backend/app/services/colombia_apu_catalog.py:306", "backend/app/api/v1/routers/projects.py:1149", "backend/app/api/v1/routers/projects.py:1165", "backend/app/api/v1/routers/projects.py:1558"],
+      "frontend_evidence": ["frontend/src/lib/bimBudget.ts:106", "frontend/src/lib/bimBudget.ts:231", "frontend/src/components/BimBudgetPanel.tsx:52"],
+      "behavior": "Suggestions and approvals enforce valid quantity rules and compatible units. Approved quantity/rate/source/license/APU structure are stored under QuantityTakeoffLine.raw_data.budget_item_assignment and displayed/grouped/exported by the frontend.",
+      "test_coverage": ["backend/tests/test_colombia_apu_catalog.py:9", "backend/tests/test_colombia_apu_catalog.py:177", "backend/tests/test_colombia_apu_catalog.py:268"],
+      "limits": ["No Budget or CostCode row materialization occurs in the inspected APU-approval/control-code-assignment handlers.", "Source tests monkeypatch catalog downloads; they do not establish current external source reachability, licensed completeness or market rates.", "A future governed cost-baseline handoff must reference these assignments rather than duplicate quantity/APU storage."],
+      "authority_boundary": "Scope/BIM owns source quantities and controlled assignments; future Cost Manager owns any governed accepted financial baseline. Current assignment status assigned is not that baseline approval."
+    },
+    {
+      "id": "BE-06",
+      "domain": "P6/MS Project schedule ingestion, source metadata and quality findings",
+      "classification": "REUSE",
+      "maturity": "Substantive implemented XER/P6 XML/MS Project XML ingestion with retained declared metadata and basic quality checks; not a full scheduling engine.",
+      "models": ["backend/app/domain/models.py:614", "backend/app/domain/models.py:653", "backend/app/domain/models.py:767", "backend/app/domain/models.py:808"],
+      "api": ["backend/app/api/v1/router.py:4004", "backend/app/api/v1/router.py:4021", "backend/app/api/v1/router.py:4043", "backend/app/api/v1/router.py:4067", "backend/app/api/v1/router.py:4125"],
+      "service_evidence": ["backend/app/services/schedule_ingestion.py:155", "backend/app/services/schedule_ingestion.py:398", "backend/app/services/schedule_ingestion.py:435", "backend/app/services/schedule_ingestion.py:674", "backend/app/services/schedule_ingestion.py:853", "backend/app/services/schedule_ingestion.py:1016"],
+      "test_coverage": ["backend/tests/test_schedule_ingestion.py:9", "backend/tests/test_schedule_ingestion.py:40", "backend/tests/test_schedule_ingestion.py:69", "backend/tests/test_schedule_ingestion.py:97", "backend/tests/test_schedule_ingestion.py:134", "backend/tests/test_qra_schedule_import_metadata.py:24", "backend/tests/test_qra_schedule_import_metadata.py:50", "backend/tests/test_qra_schedule_import_metadata.py:99", "backend/tests/test_qra_schedule_import_metadata.py:131"],
+      "behavior": "Imports preserve activities, relationships, WBS, data date, declared calendar/constraint/status/raw duration metadata, source hash, currency detection and cost-loading summary. Quality findings cover duplicate/missing/invalid dates, open logic, leads/lags, float and mapping.",
+      "limits": ["detect_source recognizes .mpp but parse does not decode binary MPP: it yields no activities and rejection findings; no native MPP import capability is established.", "Declared calendars and raw durations are preserved without calendar expansion or CPM calculation.", "Quality score is a local weighted gate, not proof of complete DCMA 14-point/AACE compliance.", "Resource assignment costs may be imported, but this is not operational resource loading, leveling or capacity management."],
+      "limit_evidence": ["backend/app/services/schedule_ingestion.py:401", "backend/app/services/schedule_ingestion.py:435", "backend/app/services/schedule_ingestion.py:566", "backend/app/services/schedule_ingestion.py:1638"]
+    },
+    {
+      "id": "BE-07",
+      "domain": "WBS, CBS, control accounts, schedule mappings and baseline records",
+      "classification": "EXTEND",
+      "maturity": "Implemented shared operational control structures and baseline approval checks; multiple budget writers and incomplete baseline authority separation require design.",
+      "models": ["backend/app/domain/models.py:667", "backend/app/domain/models.py:698", "backend/app/domain/models.py:714", "backend/app/domain/models.py:748", "backend/app/domain/models.py:784", "backend/app/domain/models.py:1132"],
+      "api": ["backend/app/api/v1/router.py:472", "backend/app/api/v1/router.py:580", "backend/app/api/v1/router.py:693", "backend/app/api/v1/router.py:717", "backend/app/api/v1/router.py:4091"],
+      "service_evidence": ["backend/app/services/schedule_ingestion.py:1105", "backend/app/services/schedule_ingestion.py:1176", "backend/app/services/schedule_ingestion.py:1205", "backend/app/services/schedule_ingestion.py:1462"],
+      "test_coverage": ["backend/tests/test_project_operational_setup_activity_sheet.py:87", "backend/tests/test_project_operational_setup_activity_sheet.py:111", "backend/tests/test_integrated_control.py:40"],
+      "behavior": "Schedule import maps activities into WBS/control accounts/CBS and may create or overwrite Budget BAC/PV. It creates a BaselineVersion in_review/rejected; approval requires 100% mapping and at least 80% cost-loading coverage.",
+      "limits": ["A baseline version record does not freeze every mutable Activity/Budget/ControlAccount object.", "Progress/cost capture checks the latest validated import quality >=70, not an approved BaselineVersion.", "Future baseline ownership must reconcile imported estimate, accepted quantity/APU estimate, approved cost budget and changes; do not add another ungoverned financial truth."],
+      "limit_evidence": ["backend/app/api/v1/router.py:748", "backend/app/api/v1/router.py:7088", "backend/app/services/schedule_ingestion.py:1186"]
+    },
+    {
+      "id": "BE-08",
+      "domain": "Cost sheet, cost codes, commitments, FBS and cash flow",
+      "classification": "EXTEND",
+      "maturity": "Implemented operational records, funding controls, reconciliation and read summaries; not a complete immutable budget/forecast/change ledger.",
+      "models": ["backend/app/domain/models.py:1048", "backend/app/domain/models.py:1062", "backend/app/domain/models.py:1077", "backend/app/domain/models.py:1111", "backend/app/domain/models.py:1151", "backend/app/domain/models.py:1176", "backend/app/domain/models.py:1400", "backend/app/domain/models.py:1524", "backend/app/domain/models.py:1546", "backend/app/domain/models.py:1568"],
+      "api": ["backend/app/api/v1/router.py:899", "backend/app/api/v1/router.py:1072", "backend/app/api/v1/router.py:1179", "backend/app/api/v1/router.py:1270", "backend/app/api/v1/router.py:1361", "backend/app/api/v1/router.py:1486", "backend/app/api/v1/router.py:1922", "backend/app/api/v1/router.py:1948", "backend/app/api/v1/router.py:1960"],
+      "service_evidence": ["backend/app/services/integrated_control.py:60", "backend/app/services/integrated_control.py:102", "backend/app/services/integrated_control.py:125", "backend/app/services/integrated_control.py:176", "backend/app/api/v1/router.py:5758", "backend/app/api/v1/router.py:1558"],
+      "test_coverage": ["backend/tests/test_api_smoke.py:193", "backend/tests/test_integrated_control.py:40", "backend/tests/test_integrated_control.py:208", "backend/tests/test_integrated_control.py:266"],
+      "behavior": "Contracts/POs are commitments; certificates/warehouse receipts contribute incurred costs. FBS availability gates commitments and integrated matrices expose WBS/CBS/FBS/control-account lineage. Cost sheet derives account BAC/PV/EV/AC and commitments; cash-flow records retain planned/actual/forecast fields.",
+      "limits": ["Budget, ControlAccount.budget and CostCode.budget/forecast coexist; future authority/reconciliation must be explicit.", "BP-CBS-WBS currently increments financial values when starting a review process, not solely after final workflow approval.", "Actual source certificate+warehouse total takes precedence over legacy CostRecord when nonzero; mixed-source reconciliation must be explicit to prevent exclusion or double counting."],
+      "limit_evidence": ["backend/app/api/v1/router.py:1531", "backend/app/api/v1/router.py:1558", "backend/app/api/v1/router.py:1584", "backend/app/api/v1/router.py:1605", "backend/app/api/v1/router.py:5859", "backend/app/services/control_core.py:147"]
+    },
+    {
+      "id": "BE-09",
+      "domain": "Progress capture and actual cost entry",
+      "classification": "EXTEND",
+      "maturity": "Implemented permission-scoped capture and audit with immediate control-cycle recalculation; approval/current-period/quantity-baseline controls are partial.",
+      "models": ["backend/app/domain/models.py:1062", "backend/app/domain/models.py:1195"],
+      "api": ["backend/app/api/v1/router.py:771", "backend/app/api/v1/router.py:788", "backend/app/api/v1/router.py:831", "backend/app/api/v1/router.py:848"],
+      "service_evidence": ["backend/app/api/v1/router.py:798", "backend/app/api/v1/router.py:826", "backend/app/api/v1/router.py:859", "backend/app/api/v1/router.py:864", "backend/app/api/v1/router.py:894", "backend/app/services/control_core.py:145"],
+      "test_coverage": ["backend/tests/test_api_smoke.py:892"],
+      "behavior": "Membership flags gate physical progress/cost capture. Physical percent is bounded 0..100, account identity and source schedule gate validated, commitments cannot be entered as actual costs, positive amount enforced, evidence reference and audit retained.",
+      "limits": ["No inspected ProgressRecord approval/rejection status, immutable measured-quantity baseline link or per-period close authority.", "Current EVM uses the latest progress record by reported_on/id across the account and summed costs without a period cutoff in the inspected calculation.", "No dedicated progress/actual numerical regression test was located by inspected source searches; this is not a claim that every possible external suite lacks one."],
+      "limit_evidence": ["backend/app/domain/models.py:1195", "backend/app/services/control_core.py:106", "backend/app/services/control_core.py:146"]
+    },
+    {
+      "id": "BE-10",
+      "domain": "EVM engine, KPI snapshots, early warning and forecast scenarios",
+      "classification": "REFACTOR",
+      "maturity": "Implemented deterministic basic EVM and three heuristic scenarios; governed forecasting, period closure and replayable immutable snapshots are not established.",
+      "models": ["backend/app/domain/models.py:1211", "backend/app/domain/models.py:1233", "backend/app/domain/models.py:1259"],
+      "api": ["backend/app/api/v1/router.py:4145", "backend/app/api/v1/router.py:4156", "backend/app/api/v1/router.py:4168", "backend/app/api/v1/router.py:4189"],
+      "service_evidence": ["backend/app/services/evm.py:27", "backend/app/services/control_core.py:27", "backend/app/services/control_core.py:106", "backend/app/services/control_core.py:221", "backend/app/services/early_warning.py:1"],
+      "test_coverage": ["backend/tests/test_api_smoke.py:128", "backend/tests/test_api_smoke.py:1072", "backend/tests/test_ai_insights.py:21"],
+      "behavior": "EV=BAC*physical_percent, SPI=EV/PV, CPI=EV/AC, EAC=BAC/CPI (BAC fallback), ETC=max(EAC-AC,0), VAC=BAC-EAC. Forecast scenarios Current Performance/Recovery Plan/Pessimistic Drift vary CPI/SPI factors.",
+      "limits": ["Zero denominators yield numeric 0 in EVM; consumers must distinguish unavailable from real zero before business interpretation.", "run_project_cycle deletes and recreates KPI/snapshot/forecast rows for the same period and deletes all project alerts; these are recalculated read models, not frozen approved period records.", "ForecastScenario is not the same domain as strategic PortfolioBudgetScenario, PortfolioResourceScenario or QRA probabilistic outcomes.", "No dedicated EVM numerical test was found in inspected backend test source; smoke/AI tests must not be presented as a complete mathematical assurance suite."],
+      "limit_evidence": ["backend/app/services/evm.py:28", "backend/app/services/control_core.py:29", "backend/app/services/control_core.py:38", "backend/app/services/control_core.py:45", "backend/app/services/control_core.py:225"]
+    },
+    {
+      "id": "BE-11",
+      "domain": "Operational resource catalog and resource planning",
+      "classification": "EXTEND",
+      "maturity": "Minimal resource table and seeded rows exist; operational resource manager assignments, timephasing, capacity, leveling and timesheet lifecycle were not located.",
+      "models": ["backend/app/domain/models.py:1036"],
+      "service_evidence": ["backend/app/database/seed.py:3264", "backend/app/services/schedule_ingestion.py:1638"],
+      "frontend_evidence": ["frontend/src/navigation/applicationNavigation.ts:461"],
+      "test_coverage": [],
+      "limits": ["Resource contains code/name/type/unit only; no inspected operational assignment/capacity schema or CRUD surface.", "Importing resource-assignment costs from P6 is not resource scheduling.", "Strategic portfolio_resource models are real separate capacity/scenario authority and must not be renamed or duplicated as operational labor/equipment records."],
+      "strategic_boundary_evidence": ["backend/app/modules/portfolio_resource/models.py:1", "backend/tests/test_portfolio_resource_gate07h.py:1", "backend/tests/postgres/test_portfolio_resource_postgres.py:1"]
+    },
+    {
+      "id": "BE-12",
+      "domain": "Dashboard, reconciliation and integration reporting",
+      "classification": "REFACTOR",
+      "maturity": "Implemented summaries and exports; reporting is not uniformly side-effect-free or a governed cross-domain analytics platform.",
+      "api": ["backend/app/api/v1/router.py:2259", "backend/app/api/v1/router.py:2271", "backend/app/api/v1/router.py:4272", "backend/app/api/v1/router.py:4837", "backend/app/api/v1/router.py:4866", "backend/app/api/v1/router.py:5000"],
+      "service_evidence": ["backend/app/api/v1/router.py:6753", "backend/app/api/v1/router.py:4273", "backend/app/api/v1/router.py:4289", "backend/app/api/v1/router.py:4312"],
+      "test_coverage": ["backend/tests/test_api_smoke.py:128", "backend/tests/test_api_smoke.py:684"],
+      "behavior": "Reconciliation emits cost-code read rows and XLSX/PDF, integration endpoints expose datasets with token/access/export metadata controls, dashboard composes operational domains.",
+      "limits": ["GET dashboard can call run_project_cycle and commit when KPI or control history is missing, and ensures a control plan; do not call it during a strictly read-only architecture audit.", "Export audit metadata writes are distinct from business-data mutations; distinguish both in future read-only contracts.", "Current router still combines cost/control/dashboard/import and business workflow logic."],
+      "router_split_evidence": ["backend/app/api/v1/routers/projects.py:1"]
+    },
+    {
+      "id": "BE-13",
+      "domain": "4D BIM-to-schedule simulation",
+      "classification": "RESERVED",
+      "maturity": "Navigation reservation only in inspected implementation; no IFC element-to-schedule activity binding or persisted 4D simulation service located.",
+      "frontend_evidence": ["frontend/src/navigation/applicationNavigation.ts:226", "frontend/src/navigation/applicationNavigation.ts:412", "frontend/src/navigation/applicationNavigation.ts:640"],
+      "search_scope": "Searched backend/app and frontend/src for 4D/4d, IfcTask, TaskTime, BIM-schedule linkage; reviewed quantity, schedule and model relationship fields.",
+      "limits": ["Do not claim that a 4D Model navigation item implements 4D playback, synchronization or sequencing.", "Future association must preserve IFC model revision+element identity, schedule import/activity identity and operational/canonical project binding without copying either source aggregate."]
+    },
+    {
+      "id": "BE-14",
+      "domain": "Standalone schedule_parser versus canonical schedule ingestion",
+      "classification": "REFACTOR",
+      "maturity": "A smaller independently tested parser exists, but production consumers inspected use ScheduleIngestionService, not this standalone module.",
+      "service_evidence": ["backend/app/services/schedule_parser.py:1", "backend/app/services/schedule_parser.py:72", "backend/app/services/schedule_parser.py:120", "backend/app/api/v1/router.py:4142", "backend/app/api/v1/routers/projects.py:639", "backend/app/services/forensic_window_analysis.py:8"],
+      "test_coverage": ["backend/tests/test_schedule_parser.py:24", "backend/tests/test_schedule_parser.py:41", "backend/tests/test_schedule_parser.py:62", "backend/tests/test_schedule_ingestion.py:9"],
+      "limits": ["Tests of standalone parser do not prove the richer canonical ingestion path or vice versa.", "Do not introduce a third parser; future consolidation needs compatibility fixtures for supported XER variants, P6 namespaces, MS Project XML, raw metadata and cost-loading semantics."],
+      "orphan_review": "REQUIRES_DEPRECATION"
+    },
+    {
+      "id": "BE-15",
+      "domain": "Strategic portfolio budget/resource scenarios, financial model, readiness and QRA",
+      "classification": "NOT_RELEVANT",
+      "maturity": "Existing strategic authorities are relevant only as governed upstream references and read-only source adapters, not operational replacement targets.",
+      "evidence": ["backend/app/modules/portfolio_budget/models.py:192", "backend/app/modules/portfolio_resource/models.py:251", "backend/app/modules/economic_financial_model/models.py:1", "backend/app/modules/qra_foundation/adapters.py:1"],
+      "limits": ["Keep names, gates, lifecycle and snapshots unchanged.", "Operational cost budget, actuals, forecasts and resource assignments require their own bounded contexts and explicit references; never change strategic assumptions or FID based merely on operational navigation."],
+      "classification_note": "NOT_RELEVANT means not a candidate for operational migration/duplication in this inventory, not that the strategic capability is absent or useless."
+    }
+  ],
+  "orphan_review": [
+    {
+      "candidate": "backend/app/services/schedule_parser.py",
+      "decision": "REQUIRES_DEPRECATION",
+      "evidence": ["backend/app/services/schedule_parser.py:1", "backend/tests/test_schedule_parser.py:3", "backend/app/api/v1/router.py:302", "backend/app/api/v1/routers/projects.py:121"],
+      "reason": "No app consumer was found beyond its own definitions; tests import it and its public contract differs from canonical ingestion. Retain until compatibility, external consumer and deprecation review completes. No deletion authorized."
+    },
+    {
+      "candidate": "projects legacy aggregate and /projects creation API",
+      "decision": "KEEP",
+      "evidence": ["backend/app/domain/models.py:79", "backend/app/api/v1/routers/projects.py:146", "backend/tests/test_project_creation_process.py:642"],
+      "reason": "Actively anchors operational foreign keys and records. Canonical workspace materialization deliberately does not create it; neither duplicate nor delete based on the word legacy."
+    },
+    {
+      "candidate": "resources minimal operational table",
+      "decision": "KEEP",
+      "evidence": ["backend/app/domain/models.py:1036", "backend/app/database/seed.py:3264"],
+      "reason": "Existing schema and seeded data are a foundation for a future bounded context. Lack of rich APIs is not proof that safe removal is possible."
+    },
+    {
+      "candidate": "Budget, CostCode and ControlAccount monetary fields",
+      "decision": "KEEP",
+      "evidence": ["backend/app/domain/models.py:714", "backend/app/domain/models.py:1048", "backend/app/domain/models.py:1151", "backend/app/api/v1/router.py:5758"],
+      "reason": "Multiple current writers and readers exist. Reconcile authority with an incremental plan; deletion would risk cost sheet, EVM, integrated control and historical records."
+    },
+    {
+      "candidate": "APU/BIM budget assignment JSON and relational control links",
+      "decision": "KEEP",
+      "evidence": ["backend/app/domain/models.py:312", "backend/app/api/v1/routers/projects.py:1165", "backend/app/api/v1/routers/projects.py:1558", "frontend/src/lib/bimBudget.ts:115"],
+      "reason": "These are actively consumed source/controlled assignment records. Future governed financial publication should reference them and preserve evidence."
+    },
+    {
+      "candidate": "External consumers of operational APIs and standalone parser",
+      "decision": "UNKNOWN",
+      "evidence": ["backend/app/api/v1/router.py:4837", "backend/app/services/schedule_parser.py:1"],
+      "reason": "Repository-local search cannot establish contracts used by deployed integrations, downloaded scripts or external clients. No safe-to-remove assertion."
+    }
+  ],
+  "safe_to_remove_count": 0,
+  "architecture_risks": [
+    {
+      "id": "BE-R01",
+      "risk": "Canonical PROJECT workspace and operational Project use different identities.",
+      "consequence": "Passing a workspace ID to legacy /projects APIs can address unrelated records or fail; never use accidental equality.",
+      "proposed_owner": "Enterprise foundation plus operational onboarding",
+      "evidence": ["backend/app/modules/qra_foundation/adapters.py:31", "backend/tests/test_project_creation_process.py:642"]
+    },
+    {
+      "id": "BE-R02",
+      "risk": "Cost baseline authority overlaps schedule imports, BP-CBS-WBS, CostCode and ControlAccount while BIM estimate is only an assignment/read model.",
+      "consequence": "A new implementation could double-count or overwrite budgets if it equates each numeric representation with an approved baseline.",
+      "proposed_owner": "Cost Management bounded context, consuming Scope and Schedule source evidence",
+      "evidence": ["backend/app/services/schedule_ingestion.py:1176", "backend/app/api/v1/router.py:1558", "backend/app/api/v1/routers/projects.py:1165"]
+    },
+    {
+      "id": "BE-R03",
+      "risk": "Control snapshots and forecasts are recalculated mutable read models and GET dashboard can persist them.",
+      "consequence": "A future approved-period/reporting design must not present present snapshots as frozen historical decisions or assume all GET routes are read-only.",
+      "proposed_owner": "Progress/Performance and Reporting",
+      "evidence": ["backend/app/services/control_core.py:27", "backend/app/api/v1/router.py:4289", "backend/app/api/v1/router.py:4312"]
+    },
+    {
+      "id": "BE-R04",
+      "risk": "Feature labels can overstate binary format, scheduling, resource, converter or 4D capability.",
+      "consequence": "Roadmap acceptance must use behavior, real dependencies, fixtures and lifecycle evidence rather than menu names or permissive file extensions.",
+      "proposed_owner": "Architecture and domain release governance",
+      "evidence": ["backend/app/services/schedule_ingestion.py:566", "backend/app/services/quantity_takeoff.py:591", "backend/tests/test_bim_model_registry.py:119", "frontend/src/navigation/applicationNavigation.ts:412"]
+    }
+  ],
+  "changes_performed": ["Created only this new validation inventory JSON through apply_patch."],
+  "changes_not_performed": ["No product implementation", "No runtime API requests", "No database queries or writes", "No schema/migration execution", "No test execution", "No seeds or services started", "No file deletion", "No commit or push"]
+}

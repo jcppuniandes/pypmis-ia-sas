@@ -2,7 +2,7 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -12,6 +12,7 @@ from app.core.config import get_settings
 from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
+from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ app.add_middleware(
 )
 app.middleware("http")(request_context_middleware)
 
-app.include_router(router)
+app.include_router(router, dependencies=[Depends(require_bound_legacy_command)])
 
 
 @app.exception_handler(Exception)

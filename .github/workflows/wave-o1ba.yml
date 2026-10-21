@@ -1,0 +1,83 @@
+name: Wave O1B A Scope foundation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - backend/app/modules/scope_foundation/**
+      - backend/app/modules/operational_context/**
+      - backend/app/modules/workspace_context/**
+      - backend/app/api/v1/routers/admin_configuration.py
+      - backend/tests/*scope*
+      - backend/tests/provision_o1ba_*
+      - backend/alembic/versions/20261020_0070_scope_foundation.py
+      - frontend/src/features/scope-foundation/**
+      - frontend/src/features/workspace-context/**
+      - frontend/src/components/BimIfcModelViewer.tsx
+      - frontend/e2e/scope-foundation.spec.ts
+      - docker-compose.wave-o1ba.yml
+      - .github/workflows/wave-o1ba.yml
+
+jobs:
+  scope-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx tsc --noEmit
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Build and initialize isolated databases with additive migrations
+        run: |
+          mkdir -p outputs/.qa/wave-o1ba-20261020
+          chmod 0777 outputs/.qa/wave-o1ba-20261020
+          docker compose -f docker-compose.wave-o1ba.yml build api frontend
+          docker compose -f docker-compose.wave-o1ba.yml run --rm api python -m tests.provision_o1ba_schema
+      - name: Scope source parsers lifecycles security and migration PostgreSQL
+        run: |
+          docker compose -f docker-compose.wave-o1ba.yml run --rm api \
+            python -m pytest -q -rA --no-cov -o addopts= -o cache_dir=/tmp/o1ba-cache \
+            tests/test_scope_foundation_imports.py tests/test_scope_foundation_release.py \
+            tests/test_scope_foundation_migration.py --junitxml=/artifacts/postgresql-ci.xml
+      - name: Existing O1A foundation and canonical strategic regression
+        run: |
+          docker compose -f docker-compose.wave-o1ba.yml run --rm \
+            -e DATABASE_URL=postgresql+psycopg://o1ba:disposable-o1ba@regression-db:5432/o1ba_regression api \
+            python -m tests.provision_o1ba_schema --database o1ba_regression
+          docker compose -f docker-compose.wave-o1ba.yml run --rm \
+            -e PYPMIS_TEST_DATABASE_URL=postgresql+psycopg://o1ba:disposable-o1ba@regression-db:5432/o1ba_regression api \
+            python -m pytest -q --no-cov -o addopts= -o cache_dir=/tmp/o1ba-regression-cache \
+            tests/test_operational_context_characterization.py tests/test_operational_context_foundation.py \
+            tests/test_operational_context_security_hardening.py tests/test_project_creation_process.py \
+            tests/test_project_workspace_initialization.py tests/test_project_initialization_post_fid_bridge.py \
+            tests/test_operational_context_legacy_configuration_guard.py tests/test_operational_context_legacy_reads.py \
+            --junitxml=/artifacts/regression-ci.xml
+      - name: Provision browser actors and launch real stack
+        run: |
+          docker compose -f docker-compose.wave-o1ba.yml run --rm api python -m tests.provision_o1ba_browser
+          docker compose -f docker-compose.wave-o1ba.yml up -d api frontend
+          timeout 300 bash -c 'until curl --max-time 5 -sf http://127.0.0.1:8852/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 600 bash -c 'until curl --max-time 5 -sf http://127.0.0.1:5512 >/dev/null; do sleep 2; done'
+      - name: Chromium Scope foundation full real source journey
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5512
+          E2E_API_URL: http://127.0.0.1:8852
+          E2E_O1BA_FIXTURE: ${{ github.workspace }}/outputs/.qa/wave-o1ba-20261020/browser-fixture.json
+          E2E_O1BA_OUTPUT: ${{ github.workspace }}/outputs/.qa/wave-o1ba-20261020/chromium
+        run: cd frontend && npx playwright test scope-foundation.spec.ts --project=chromium --workers=1
+      - name: Preserve actual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave-o1ba-scope-real-stack
+          path: |
+            outputs/.qa/wave-o1ba-20261020/
+            frontend/test-results/
+      - name: Stop services without deleting validation evidence or persistent volumes
+        if: always()
+        run: docker compose -f docker-compose.wave-o1ba.yml down --remove-orphans

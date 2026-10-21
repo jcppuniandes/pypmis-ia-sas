@@ -6,6 +6,16 @@ import {
 } from "./applicationNavigation";
 
 describe("application navigation composition", () => {
+  it("reuses canonical Workspace navigation for Operational Setup and the existing ADMIN process configuration", () => {
+    const project = USER_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "project-control-manager");
+    expect(project?.modules.find((item) => item.key === "project-manager")?.submodules).toEqual(
+      expect.arrayContaining([expect.objectContaining({ key: "workspace-context", label: "Operational Setup" })])
+    );
+    const platform = ADMIN_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "platform-administration");
+    expect(platform?.modules.find((item) => item.key === "process-configuration")?.submodules).toEqual([
+      { key: "process-definitions", label: "Process & Operational Configuration" },
+    ]);
+  });
   it("uses one strategic source and preserves the alternate project/commercial modules", () => {
     expect(USER_MODE_NAVIGATION_BLUEPRINT.filter((item) => item.key === "enterprise-strategy-manager")).toHaveLength(1);
     expect(

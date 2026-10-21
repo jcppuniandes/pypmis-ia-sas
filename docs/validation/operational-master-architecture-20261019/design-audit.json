@@ -1,0 +1,559 @@
+{
+  "schema_version": 1,
+  "cutoff_local": "2026-10-19 America/Bogota",
+  "audit_kind": "READ_ONLY_DESIGN_CONSISTENCY_AND_REPOSITORY_REFERENCE_AUDIT",
+  "status": "PASS_DESIGN_REVIEW_NO_OPEN_OBSERVATIONS",
+  "scope": "Architecture-data, control contracts, domain design and three inventories; ADR86-97 document structure; product baseline hash equality. New output is this audit JSON only.",
+  "not_performed": [
+    "Application tests",
+    "Browser/E2E tests",
+    "Database/API/service commands",
+    "Migrations/seeds",
+    "Business signoff/acceptance",
+    "Word/Excel authoring or visual QA",
+    "Commit/push"
+  ],
+  "head": "c75a7da3db3bdcf326b6bed7834182ee126da921",
+  "input_snapshots": [
+    {
+      "path": "docs/architecture/operational/architecture-data.json",
+      "matches": 1156,
+      "sha256": "9b7a05aaf4ab633b85b896904cdb08017c67ee1e1caaca9e31dde78f54502d23"
+    },
+    {
+      "path": "docs/architecture/operational/control-contracts.json",
+      "matches": 151,
+      "sha256": "b5ac69fc381fff93e30ac287960a989dbf4d4bbf0f4a7f378486d34114ad5a69"
+    },
+    {
+      "path": "docs/architecture/operational/domain-design.json",
+      "matches": 70,
+      "sha256": "5dcf32e82caa046204e85c123af77898c6bd9f5430bea3869fe86d514485853b"
+    },
+    {
+      "path": "docs/validation/operational-master-architecture-20261019/backend-inventory.json",
+      "matches": 283,
+      "sha256": "0886aca36aebb79e80a7f218477da538955cb3c518531b196504e3ec270c3331"
+    },
+    {
+      "path": "docs/validation/operational-master-architecture-20261019/frontend-inventory.json",
+      "matches": 226,
+      "sha256": "f33a5ae0f1bb104a00c238e896ae1b449c5e97a36c69864356d0cf21ada415d9"
+    },
+    {
+      "path": "docs/validation/operational-master-architecture-20261019/procurement-handoff-inventory.json",
+      "matches": 189,
+      "sha256": "9b76cc2ca67bb6697ddf4cce83794679385aa8dfb2c36631ae55b4fb9d631ddc"
+    }
+  ],
+  "path_line_validation": {
+    "method": "Regex extraction of full backend/frontend/docs/scripts path:line references; existence and 1-based line-range check against local files, line cache reused.",
+    "unique_references": 594,
+    "unique_referenced_files": 134,
+    "missing_or_out_of_range": [],
+    "blank_line_observations": [],
+    "result": "PASS_EXISTS_AND_IN_RANGE",
+    "limit": "Existence/range is not a claim that each referenced line alone proves the complete business capability. Generic nearby anchor lines and historical test definitions are not new runtime PASS evidence."
+  },
+  "product_preservation": {
+    "baseline_file": "docs/validation/operational-master-architecture-20261019/baseline.json",
+    "baseline_count": 860,
+    "hashes_checked": 860,
+    "mismatches": [],
+    "scoped_git_diff": [],
+    "scoped_untracked_product_files": [],
+    "result": "PASS_UNCHANGED_AT_AUDIT",
+    "limit": "Docs/scripts/.gitignore packaging changes outside product set are not functionality. No application/runtime correctness inference from hash equality."
+  },
+  "structure": {
+    "domain_count": 25,
+    "missing_domain_fields": [],
+    "three_model_applicability_errors": [],
+    "ownership_count": 26,
+    "ownership_no_foreign_writes": 26,
+    "integration_count": 26,
+    "integration_no_foreign_writes": 26,
+    "handoff_count": 15,
+    "event_count": 13,
+    "period_states": [
+      "OPEN",
+      "REVIEW",
+      "CLOSED",
+      "PUBLISHED"
+    ],
+    "waves": [
+      "O1",
+      "O2",
+      "O3",
+      "O4"
+    ],
+    "legacy_count": 28,
+    "safe_to_remove_count": 0
+  },
+  "dependency_audit": {
+    "method": "Independent Kahn topological traversal over declared prerequisite edges; declared topological order checked separately.",
+    "nodes": 25,
+    "edges": 96,
+    "unresolved_references": [],
+    "topological_nodes_processed": 25,
+    "cycle_detected": false,
+    "declared_order_violations": [],
+    "result": "PASS_ACYCLIC_VALID_ORDER"
+  },
+  "adr_documents": [
+    {
+      "id": "ADR 86",
+      "alias": "ADR-O-001",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/86-adr-operational-project-identity.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "c6d72c1182223f697322932db40e4f686b91ec0291cd957c107b8fe9d877ade8"
+        }
+      ]
+    },
+    {
+      "id": "ADR 87",
+      "alias": "ADR-O-002",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/87-adr-operational-project-controls-integration-core.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "cd45c2d79913a4e261eb4c29fed7389e375d85a8339fcd062ab0f438e414e3d3"
+        }
+      ]
+    },
+    {
+      "id": "ADR 88",
+      "alias": "ADR-O-003",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/88-adr-operational-p6-external-cpm-authority.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "1838bc7c6f3794a7f4e0596e26029f97b635936766cb282e1a31907981d72b06"
+        }
+      ]
+    },
+    {
+      "id": "ADR 89",
+      "alias": "ADR-O-004",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/89-adr-operational-schedule-versioning.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "e64a0675d87d624a2f342300a434c76897c7e8b7232c69339cb2c0f9388a6852"
+        }
+      ]
+    },
+    {
+      "id": "ADR 90",
+      "alias": "ADR-O-005",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/90-adr-operational-scope-wbs-cbs-alignment.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "4330421c38b42ef5e80bb4361c38bf86472b6319c352c7420c1e216f24d99061"
+        }
+      ]
+    },
+    {
+      "id": "ADR 91",
+      "alias": "ADR-O-006",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/91-adr-operational-progress-architecture.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "890ccafef587fee8aaad0133d01e74f015c4850d1d3c6da1cd2c17a574ea58f9"
+        }
+      ]
+    },
+    {
+      "id": "ADR 92",
+      "alias": "ADR-O-007",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/92-adr-operational-change-cross-domain-model.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "644173ff095cbdf1d506793128801b7571a67ca3de564e73c8db29b51a9123dd"
+        }
+      ]
+    },
+    {
+      "id": "ADR 93",
+      "alias": "ADR-O-008",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/93-adr-operational-forecast-architecture.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "6a2fb1e1580b99e19af252391eaa3af666bc61f117c421f353497d23d8b118a9"
+        }
+      ]
+    },
+    {
+      "id": "ADR 94",
+      "alias": "ADR-O-009",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/94-adr-operational-procurement-vs-commitments-boundary.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "3329ff69f836065a6fdff4c5f114fb20068cd1ef050988b5c40f9ee44327aa6e"
+        }
+      ]
+    },
+    {
+      "id": "ADR 95",
+      "alias": "ADR-O-010",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/95-adr-operational-owner-vs-contractor-applicability.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "a7ca2a8fa52e728b96a75de22b299689c7d9d155033b0f808458a93c5baab66a"
+        }
+      ]
+    },
+    {
+      "id": "ADR 96",
+      "alias": "ADR-O-011",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/96-adr-operational-awp-optional-architecture.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "32a116dc680107fcd8f5cff4ce6b14769e384d0c98a9984944c6dbec3d8b658d"
+        }
+      ]
+    },
+    {
+      "id": "ADR 97",
+      "alias": "ADR-O-012",
+      "files_count": 1,
+      "checks": [
+        {
+          "path": "docs/97-adr-operational-operational-checkpoints-vs-strategic-gates.md",
+          "status_proposed": true,
+          "alias": true,
+          "context": true,
+          "decision": true,
+          "consequences": true,
+          "sha256": "c2bd3e3a7138006414cfe6c6d4605d27d9abd4d6b56c87112e6128f89b7b905f"
+        }
+      ]
+    }
+  ],
+  "criteria_summary": {
+    "required": 32,
+    "reviewed": 32,
+    "design_pass": 32,
+    "runtime_tests_executed": 0,
+    "business_approvals_recorded": 0,
+    "result": "ARCHITECTURE_CRITERIA_ONLY",
+    "limit": "Final Word/Excel completeness, rendered layout, delivery links and artifact hashes require separate root verification."
+  },
+  "criteria_review": [
+    {
+      "id": "AC-01",
+      "criterion": "Strategic → Operational boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "15 H01-H15 entries preserve source owners, classify transfers and keep current readiness separate from pinned historical approval."
+    },
+    {
+      "id": "AC-02",
+      "criterion": "Canonical Project identity",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Single canonical Project Workspace; explicit legacy adapter prerequisite; no identity equality shortcut or new master."
+    },
+    {
+      "id": "AC-03",
+      "criterion": "Owner vs Contractor applicability",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "All 25 domains specify valid three-model applicability; route policies differ without forced Capital Owner sequence."
+    },
+    {
+      "id": "AC-04",
+      "criterion": "Project Controls integration core",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D19 coordinates governed source views/periods without owning every source transaction; DO/IN contracts enforce no foreign writes."
+    },
+    {
+      "id": "AC-05",
+      "criterion": "Scope domain",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D02 defined with scope items/quantities/mappings, baseline and controlled revision."
+    },
+    {
+      "id": "AC-06",
+      "criterion": "Schedule domain",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D03 defined with schedule data/version/data date distinction and external CPM boundary."
+    },
+    {
+      "id": "AC-07",
+      "criterion": "P6 boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Manual XML/XER design, XML baseline/XER asymmetry, exporter not claimed, no native CPM/API/OPC; raw source provenance and legacy gaps visible."
+    },
+    {
+      "id": "AC-08",
+      "criterion": "Cost domain",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D04 and baseline contract distinguish budget/BAC/capital/funding/commitment/actual/accrual/forecast."
+    },
+    {
+      "id": "AC-09",
+      "criterion": "Progress architecture",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D06 plus DO07 distinguishes baseline quantity, installed source fact and approved method-specific progress."
+    },
+    {
+      "id": "AC-10",
+      "criterion": "Forecast architecture",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D07/ADR93 reference approved input snapshots and assumptions without source baseline mutation."
+    },
+    {
+      "id": "AC-11",
+      "criterion": "Change architecture",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D08/ADR92 one cross-domain decision and owner-implemented commands, not parallel per-module approvals."
+    },
+    {
+      "id": "AC-12",
+      "criterion": "Risk/Issue distinction",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D09 uncertain future risks and D10 current occurring conditions/actions are explicit; source authority retained."
+    },
+    {
+      "id": "AC-13",
+      "criterion": "Procurement/Commitment conceptual duplication",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D11 sourcing/recommendation vs D12 legal Contract/PO owner; Cost consumes; netting/call-off/deduplication unresolved implementation prerequisites documented."
+    },
+    {
+      "id": "AC-14",
+      "criterion": "Engineering boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D13 technical release/revision and Document/Procurement/Construction references defined."
+    },
+    {
+      "id": "AC-15",
+      "criterion": "Construction boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D16 executable workfront/capture/release references; DO20 Scope definition distinct from Construction execution."
+    },
+    {
+      "id": "AC-16",
+      "criterion": "Quality/HSE boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D17/D18 quality/safety source decisions and optional external boundary defined; workfront consumes constraints."
+    },
+    {
+      "id": "AC-17",
+      "criterion": "Claims boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D20 retains separate entitlement/forensic evidence and rejects contamination of normal control transactions."
+    },
+    {
+      "id": "AC-18",
+      "criterion": "Commissioning/Handover boundary",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "D21-D25 distinguish completion, commissioning, readiness, handover, asset transition and closure."
+    },
+    {
+      "id": "AC-19",
+      "criterion": "ADMIN/USER matrix",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Every D01-D25 contains reusable ADMIN configuration, USER operation and shared read-only descriptions."
+    },
+    {
+      "id": "AC-20",
+      "criterion": "Ownership matrix",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "26 object rows, all target_authority_single=true and foreign_write_allowed=false; required scope/progress/package boundary corrections present."
+    },
+    {
+      "id": "AC-21",
+      "criterion": "Integration matrix",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "26 edges retain owner authority with reference/snapshot/owner-command semantics and prerequisites; all foreign_table_write=false."
+    },
+    {
+      "id": "AC-22",
+      "criterion": "Current capability inventory",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "15 BE + 25 FE + 16 PH evidence units with inspected implementation limits; not falsely equated to 56 complete independent functions."
+    },
+    {
+      "id": "AC-23",
+      "criterion": "Gap analysis",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "18 GAP-* items with severity/current/target/wave/evidence/guard; proposed remediation not claimed as implementation."
+    },
+    {
+      "id": "AC-24",
+      "criterion": "Legacy inventory",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "28 legacy evidence units; SAFE_TO_REMOVE=0, no deletion authority inferred."
+    },
+    {
+      "id": "AC-25",
+      "criterion": "Implementation waves",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "O1-O4 have dependencies, entry/exit, risks, reuse and relative complexity; O1 subwaves preserve prerequisite order."
+    },
+    {
+      "id": "AC-26",
+      "criterion": "Dependency graph",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Independently re-evaluated 25-node prerequisite graph is acyclic and declared order satisfies every edge; D12 minimal read contract versus O2 hardening distinction explicit."
+    },
+    {
+      "id": "AC-27",
+      "criterion": "Wave O1 recommendation",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Single next increment O1 beginning O1A binding/period/policy, then O1B baselines/adapters and O1C forecast/reporting; minimal D14 evidence source included early."
+    },
+    {
+      "id": "AC-28",
+      "criterion": "No duplicate authority introduced",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "No product files changed; design forbids direct foreign writes and duplicate legal obligation/Project masters."
+    },
+    {
+      "id": "AC-29",
+      "criterion": "No operational CPM proposed",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "P6 authority remains external. Legacy fallback and QRA elapsed-time engine are not promoted as native operational CPM."
+    },
+    {
+      "id": "AC-30",
+      "criterion": "No P6 API/direct sync proposed",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Forbidden list expressly excludes direct P6 API/OPC; manual exchange remains boundary."
+    },
+    {
+      "id": "AC-31",
+      "criterion": "No strategic business rule changed",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "860/860 product file SHA-256 values equal recorded baseline; strategic signoff state remains pending and no new business commands run."
+    },
+    {
+      "id": "AC-32",
+      "criterion": "No broad migration",
+      "audit_result": "PASS_DESIGN_REVIEW_NOT_RUNTIME_TEST",
+      "basis": "Product migration/source hashes unchanged; product git diff and untracked scoped paths empty; this audit executes no migration."
+    }
+  ],
+  "anomalies": [],
+  "semantic_focus_findings": [
+    "DO07 is Scope baseline/design quantity only; Field owns installed capture and Progress separately owns approved method-specific measurement.",
+    "DO20 is Scope work-package definition/baseline; Construction owns referenced release/execution, not duplicate definition.",
+    "IN14 leaves legal commitment authority in Contract Administration, not Procurement; Procurement sourcing/delivery status is a separate source fact.",
+    "Current readiness and Post-FID commitment conditions remain owned upstream; pinned historic approvals are not overwritten. Active Workspace does not confer unrestricted commitment permission.",
+    "P6 manual XML/XER exchange remains proposed, asymmetric by baseline support; current full-fidelity P&Pmis P6 export is not asserted.",
+    "Scope/Cost/Schedule mappings and no-double-count controls remain future approved contracts; no implementation completeness or production release is implied."
+  ],
+  "final_boundary": "Strategic signoff remains STRATEGIC_MACROPROCESS_TECHNICALLY_READY_UAT_SIGNOFF_PENDING. This is design evidence, not business acceptance. Stop before O1 implementation.",
+  "frozen_dataset_verified_sha256": "9b7a05aaf4ab633b85b896904cdb08017c67ee1e1caaca9e31dde78f54502d23",
+  "resolved_observations": [
+    {
+      "id": "DA-OBS-01",
+      "status": "RESOLVED_RECHECKED",
+      "prior_references": [
+        "frontend/src/navigation/applicationNavigation.ts:376",
+        "frontend/src/navigation/applicationNavigation.ts:625"
+      ],
+      "current_references": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "frontend/src/navigation/applicationNavigation.ts:626"
+      ],
+      "resolution": "Final editor moved anchors to meaningful declarations. Full reference scan repeated: 594 unique references across 134 files, zero missing/out-of-range/blank-line references.",
+      "blocking": false
+    },
+    {
+      "id": "DA-OBS-02",
+      "status": "RESOLVED_RECHECKED",
+      "prior_notation": [
+        "GAP01",
+        "GAP01–GAP18"
+      ],
+      "current_evidence": [
+        "ADR86; D01; GAP-01",
+        "GAP-01–GAP-18"
+      ],
+      "resolution": "Acceptance references now match canonical GAP-01..GAP-18 identifiers. Frozen architecture dataset SHA independently verified.",
+      "blocking": false
+    }
+  ],
+  "word_writer_static_review": {
+    "path": "scripts/operational-master-architecture/generate_architecture_documents.py",
+    "sha256": "64b40aa48c0e106eed117fad08228f7da227ae2598de2a93d0986ee32469b3f1",
+    "result": "PASS_STATIC_SEMANTIC_CLARITY_NOT_RENDER_QA",
+    "checks": [
+      "Top-level PROPOSED_DESIGN and no product implementation/business release claims.",
+      "Master covers 24 required sections, includes 25 domain descriptions and accurately separates source authority, baseline quantity, installed facts and approved progress.",
+      "Roadmap includes four waves plus O1A/B/C; D14 minimal evidence early, O1 canonical binding/period first; no automatic implementation.",
+      "Hardcoded summary counts agree with frozen dataset: classifications 12 DOMAIN/4 SUBDOMAIN/3 CROSS-CUTTING/4 WORKFLOW/1 CONFIGURATION/1 FUTURE; actions 12 EXTEND/9 BUILD_LATER/3 CROSS_CUTTING/1 MERGE; backend 4 REUSE/6 EXTEND/3 REFACTOR/1 RESERVED/1 NOT_RELEVANT.",
+      "15 handoffs, 26 ownership facets, 26 integrations, 13 conceptual events, 12 proposed ADRs, 18 gaps and 32 design criteria are sourced/displayed without treating them as runtime PASS.",
+      "P6 external CPM/manual XML/XER asymmetry/exporter future; legacy source risks visible; no automatic FID or commitment clearance from ACTIVE.",
+      "Procurement recommendation versus legal Contract/PO owner, net/call-off/deduplication/accrual future contract and no payment execution.",
+      "AWP optional and non-linear; TWP project-configured, not universal CII hierarchy.",
+      "Claims/forensic analysis isolated from standard source writes; existing capability retained while future hardening placed in O4.",
+      "No source data changed by audit; file rendering, pagination and artifact hashes remain root verification."
+    ],
+    "not_executed": true
+  }
+}

@@ -1,0 +1,242 @@
+.scopeFoundation {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  color: #152c3a;
+}
+.scopeFoundation button {
+  border: 1px solid #b8cbd5;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #fff;
+  color: #153242;
+  font: inherit;
+  cursor: pointer;
+}
+.scopeFoundation button:hover:not(:disabled) {
+  background: #e8f3f5;
+  border-color: #138b93;
+}
+.scopeFoundation button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.scopeFoundation button:focus-visible,
+.scopeFoundation input:focus-visible,
+.scopeFoundation select:focus-visible,
+.scopeFoundation textarea:focus-visible {
+  outline: 2px solid #07888f;
+  outline-offset: 2px;
+}
+.scopeTabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #cbd9e2;
+  padding-bottom: 8px;
+}
+.scopeTabs button[aria-pressed="true"] {
+  background: #123443;
+  color: white;
+  border-color: #123443;
+}
+.scopePanel {
+  padding: 16px;
+  background: white;
+  border: 1px solid #d3e0e6;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.scopePanel section {
+  display: grid;
+  gap: 10px;
+}
+.scopePanel h3,
+.scopePanel h4,
+.scopePanel p {
+  margin: 0;
+}
+.scopePanel p,
+.scopeBoundary {
+  color: #56707f;
+  line-height: 1.5;
+}
+.scopeNotice,
+.scopeError,
+.scopeBoundary {
+  margin: 0;
+  padding: 10px 12px;
+  background: #eff7f7;
+  border-radius: 6px;
+}
+.scopeError {
+  background: #fff0ed;
+  color: #a62919;
+  overflow-wrap: anywhere;
+}
+.scopeForm,
+.scopeFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.scopeFoundation label {
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+  color: #354e5d;
+}
+.scopeFoundation input:not([type="checkbox"]),
+.scopeFoundation select,
+.scopeFoundation textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  background: #fff;
+  color: #173342;
+  border: 1px solid #c4d4df;
+  border-radius: 5px;
+  font: inherit;
+  min-height: 36px;
+}
+.scopeFoundation textarea {
+  resize: vertical;
+  font-family: ui-monospace, Consolas, monospace;
+  line-height: 1.5;
+}
+.scopeFoundation input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+.scopeWide {
+  grid-column: 1 / -1;
+}
+.scopeFoundation fieldset {
+  padding: 12px;
+  border: 1px solid #cadbe2;
+  border-radius: 6px;
+  min-width: 0;
+}
+.scopeFoundation legend {
+  font-weight: 600;
+  padding: 0 6px;
+}
+.scopeTable {
+  overflow-x: auto;
+  max-height: 520px;
+  overflow-y: auto;
+  border: 1px solid #d5e1e8;
+  border-radius: 6px;
+}
+.scopeTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.scopeTable th {
+  background: #eaf2f5;
+  color: #294351;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+}
+.scopeTable td,
+.scopeTable th {
+  padding: 9px 10px;
+  border-bottom: 1px solid #e1e9ee;
+  vertical-align: top;
+}
+.scopeTable tbody tr:nth-child(even) {
+  background: #f8fbfc;
+}
+.scopeTable td {
+  overflow-wrap: anywhere;
+}
+.scopeTable td strong,
+.scopeTable td small {
+  display: block;
+  margin-top: 3px;
+}
+.scopeTable td small {
+  color: #667e8b;
+}
+.scopeTable td button {
+  margin: 2px;
+  font-size: 12px;
+}
+.scopeFoundation pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 360px;
+  overflow: auto;
+  background: #f4f7f9;
+  color: #23404f;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 6px;
+}
+.scopeFoundation details {
+  min-width: 0;
+}
+.scopeFoundation summary {
+  cursor: pointer;
+  color: #17616f;
+}
+.scopeFacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.scopeFacts div {
+  border: 1px solid #d6e3e9;
+  padding: 10px;
+  border-radius: 6px;
+  min-width: 0;
+}
+.scopeFacts dt {
+  color: #647d8b;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.scopeFacts dd {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.scopeHash {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.scopeActions,
+.scopeSectionTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+}
+.scopeSectionTitle {
+  justify-content: space-between;
+  align-items: center;
+}
+.scopeFuture {
+  border-top: 1px solid #d8e3e9;
+  padding-top: 12px;
+}
+@media (max-width: 700px) {
+  .scopePanel {
+    padding: 10px;
+  }
+  .scopeForm,
+  .scopeFilters {
+    grid-template-columns: 1fr;
+  }
+  .scopeFacts {
+    grid-template-columns: 1fr 1fr;
+  }
+}

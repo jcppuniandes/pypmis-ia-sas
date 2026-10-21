@@ -1,0 +1,194 @@
+[
+  {
+    "id": "AC-01",
+    "criterion": "Strategic → Operational boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "H01–H15; master §2"
+  },
+  {
+    "id": "AC-02",
+    "criterion": "Canonical Project identity preserved",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "ADR86; D01; GAP-01"
+  },
+  {
+    "id": "AC-03",
+    "criterion": "Owner vs Contractor applicability defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D01–D25 applicability; master §8"
+  },
+  {
+    "id": "AC-04",
+    "criterion": "Project Controls integration core defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "ADR87; D19; master §6"
+  },
+  {
+    "id": "AC-05",
+    "criterion": "Scope domain defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D02; ADR90"
+  },
+  {
+    "id": "AC-06",
+    "criterion": "Schedule domain defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D03; ADR89"
+  },
+  {
+    "id": "AC-07",
+    "criterion": "P6 boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "ADR88; p6_manual_schedule_contract"
+  },
+  {
+    "id": "AC-08",
+    "criterion": "Cost domain defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D04; baseline_and_budget_contract"
+  },
+  {
+    "id": "AC-09",
+    "criterion": "Progress architecture defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D06; ADR91"
+  },
+  {
+    "id": "AC-10",
+    "criterion": "Forecast architecture defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D07; ADR93"
+  },
+  {
+    "id": "AC-11",
+    "criterion": "Change architecture defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D08; ADR92"
+  },
+  {
+    "id": "AC-12",
+    "criterion": "Risk/Issue distinction defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D09/D10; master §7"
+  },
+  {
+    "id": "AC-13",
+    "criterion": "Procurement/Commitment duplication resolved conceptually",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D11/D12; ADR94"
+  },
+  {
+    "id": "AC-14",
+    "criterion": "Engineering boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D13"
+  },
+  {
+    "id": "AC-15",
+    "criterion": "Construction boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D16; optional AWP"
+  },
+  {
+    "id": "AC-16",
+    "criterion": "Quality/HSE boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D17/D18"
+  },
+  {
+    "id": "AC-17",
+    "criterion": "Claims boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D20"
+  },
+  {
+    "id": "AC-18",
+    "criterion": "Commissioning/Handover boundary defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "D21–D25"
+  },
+  {
+    "id": "AC-19",
+    "criterion": "ADMIN/USER matrix complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "25-domain ADMIN/USER matrix"
+  },
+  {
+    "id": "AC-20",
+    "criterion": "Data ownership matrix complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "DO01–DO26"
+  },
+  {
+    "id": "AC-21",
+    "criterion": "Integration matrix complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "IN01–IN26"
+  },
+  {
+    "id": "AC-22",
+    "criterion": "Current capability inventory complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "BE15/FE25/PH16 evidence units"
+  },
+  {
+    "id": "AC-23",
+    "criterion": "Gap analysis complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "GAP-01–GAP-18"
+  },
+  {
+    "id": "AC-24",
+    "criterion": "Legacy candidate inventory complete",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "28 legacy evidence units; SAFE_TO_REMOVE0"
+  },
+  {
+    "id": "AC-25",
+    "criterion": "Implementation waves defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "O1–O4"
+  },
+  {
+    "id": "AC-26",
+    "criterion": "Wave dependency graph defined",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "25-node acyclic DAG + O1A/B/C"
+  },
+  {
+    "id": "AC-27",
+    "criterion": "Wave O1 scope recommended",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "O1A prerequisite then O1B/C"
+  },
+  {
+    "id": "AC-28",
+    "criterion": "No new duplicate authority introduced",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "Single owner matrices; no product edits"
+  },
+  {
+    "id": "AC-29",
+    "criterion": "No operational CPM engine proposed",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "ADR88"
+  },
+  {
+    "id": "AC-30",
+    "criterion": "No P6 API/direct sync proposed",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "ADR88"
+  },
+  {
+    "id": "AC-31",
+    "criterion": "No strategic business rule silently changed",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "Product SHA baseline/final audit"
+  },
+  {
+    "id": "AC-32",
+    "criterion": "No broad migration created",
+    "status": "PASS_ARCHITECTURE_DEFINED_NOT_RUNTIME_TEST",
+    "evidence": "Product SHA baseline/final audit"
+  }
+]

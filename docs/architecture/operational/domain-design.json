@@ -1,0 +1,3848 @@
+{
+  "schema_version": 1,
+  "cutoff_local": "2026-10-19 America/Bogota",
+  "status": "PROPOSED_ARCHITECTURE_NOT_PRODUCT_IMPLEMENTATION",
+  "authority_note": "Este JSON documenta diseño para revisión. No crea configuración publicada, permisos vigentes, autoridades humanas, módulos, Project identities, aprobaciones, checkpoints ejecutados ni datos de negocio.",
+  "strategic_state_preserved": "STRATEGIC_MACROPROCESS_TECHNICALLY_READY_UAT_SIGNOFF_PENDING",
+  "constraints": [
+    "Modular monolith/domain-oriented; no microservices, framework rewrite or new parallel registry.",
+    "Canonical Project = enterprise_workspaces type PROJECT. Existing projects.id legacy is not that identity and needs governed explicit binding before reuse.",
+    "P6 retains external operational CPM. No native CPM, API sync or OPC integration introduced.",
+    "Reuse before create; each source owns its facts; integration/read models never become universal source authority.",
+    "ADMIN configures published reusable behavior; USER operates live Project transactions; READ_ONLY_SHARED never hides business commands.",
+    "No BUILD_NOW; all waves are future authorized implementation increments; current architecture only.",
+    "Applicability is proposed default architecture, subject to published Project Type/governance policy. MANDATORY does not mean current implementation is complete.",
+    "Business feedback cycles in domain upstream/downstream relations are not implementation dependencies."
+  ],
+  "inventory_sources": {
+    "frontend": "docs/validation/operational-master-architecture-20261019/frontend-inventory.json",
+    "backend": "docs/validation/operational-master-architecture-20261019/backend-inventory.json",
+    "procurement_handoff": "docs/validation/operational-master-architecture-20261019/procurement-handoff-inventory.json"
+  },
+  "candidate_count": 25,
+  "build_now_count": 0,
+  "domains": [
+    {
+      "id": "D01",
+      "name": "Project Governance & Operational Setup",
+      "classification": "CONFIGURATION AREA",
+      "purpose": "Preparar un Project Workspace activado para control operacional sin crear otra identidad maestra.",
+      "objects": [
+        "Canonical Project Workspace reference",
+        "Operational context binding",
+        "Governance applicability profile",
+        "Published setup version",
+        "Project Controls reporting period"
+      ],
+      "source_authority": "Enterprise Structure & Workspace conserva identidad; Project Creation/Initialization/Activation conserva elegibilidad. La configuración operacional solo posee su perfil y vinculación explícita a registros legacy.",
+      "inputs": [
+        "Canonical Workspace ACTIVE y contexto tenant/membresía",
+        "CAPITAL_OWNER: autorización/FID y condiciones actuales cuando apliquen",
+        "CONTRACTOR_DELIVERY / DIRECT_INTERNAL: autorización legítima por su ruta",
+        "Catálogos y configuración publicada"
+      ],
+      "outputs": [
+        "Contexto operacional validado y trazable",
+        "Perfil de controles y calendario de períodos",
+        "Referencia explícita, única y tenant-scoped a registros legacy cuando exista"
+      ],
+      "upstream_ids": [],
+      "admin_config": [
+        "Publicar plantillas por Project Type y governance model",
+        "Configurar roles/SoD, períodos, estados y prerequisitos de onboarding"
+      ],
+      "user_operations": [
+        "Solicitar/aplicar setup al Project Workspace autorizado",
+        "Completar validaciones y resolver faltantes sin alterar FID ni identidad"
+      ],
+      "shared_read_only": [
+        "Identidad, autorización y condiciones aguas arriba",
+        "Estado de setup y trazabilidad de binding"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Obligatorio como contexto mínimo de cualquier proyecto operacional; intensidad y autorización dependen del modelo.",
+      "handoff": "Referencia a identidad y snapshot de autorización/currentness. No copiar FID ni asumir igualdad enterprise_workspaces.id = projects.id; binding universal aún no demostrado.",
+      "p6_relationship": "Define adaptador/import profile y responsable; no configura ni ejecuta CPM P6.",
+      "current_status": "Setup legacy y canonical activation existen separados. Adaptador explícito de lectura localizado; falta contrato universal de onboarding/binding y no se implementa aquí.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "VERY_HIGH",
+      "rationale": "Resolver identidad, membresía y límites de autorización antes de exponer fuentes operacionales; protege reutilización sin nuevo Project master.",
+      "source_refs": [
+        "backend/app/modules/qra_foundation/adapters.py:31",
+        "backend/tests/test_project_creation_process.py:642",
+        "frontend/src/App.tsx:4505"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP01"
+        ],
+        "backend": [
+          "BE-01"
+        ],
+        "procurement": [
+          "PH-GAP-01",
+          "PH-GAP-04"
+        ]
+      },
+      "downstream_ids": [
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D08",
+        "D09",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D16",
+        "D17",
+        "D18",
+        "D19",
+        "D23",
+        "D25"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Preparar un Project Workspace activado para control operacional sin crear otra identidad maestra. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 0 fuentes y 18 consumidores declarados (18 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: Setup legacy y canonical activation existen separados. Adaptador explícito de lectura localizado; falta contrato universal de onboarding/binding y no se implementa aquí. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Resolver identidad, membresía y límites de autorización antes de exponer fuentes operacionales; protege reutilización sin nuevo Project master. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Enterprise Structure & Workspace conserva identidad; Project Creation/Initialization/Activation conserva elegibilidad. La configuración operacional solo posee su perfil y vinculación explícita a registros legacy. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 0 fuentes y 18 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Referencia a identidad y snapshot de autorización/currentness. No copiar FID ni asumir igualdad enterprise_workspaces.id = projects.id; binding universal aún no demostrado."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Obligatorio como contexto mínimo de cualquier proyecto operacional; intensidad y autorización dependen del modelo. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Obligatorio como contexto mínimo de cualquier proyecto operacional; intensidad y autorización dependen del modelo. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Contexto operacional validado y trazable; Perfil de controles y calendario de períodos; Referencia explícita, única y tenant-scoped a registros legacy cuando exista. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D02",
+      "name": "Scope Management",
+      "classification": "DOMAIN",
+      "purpose": "Controlar alcance, entregables, cantidades y paquetes con baseline/revisiones autorizadas y trazabilidad BIM opcional.",
+      "objects": [
+        "Scope Item",
+        "Scope hierarchy / deliverable",
+        "Quantity and measurement source",
+        "Scope baseline/revision",
+        "Work Package definition",
+        "BIM object/model version reference"
+      ],
+      "source_authority": "Scope posee alcance/cantidad controlada y definición de paquetes; BIM conserva geometría/modelo fuente; WBS/PBS son referencias coherentes, no copias competidoras.",
+      "inputs": [
+        "Authorized scope handoff",
+        "IFC/CSV/OOXML y mediciones verificadas",
+        "WBS y códigos de control",
+        "Cambios aprobados"
+      ],
+      "outputs": [
+        "Baseline de alcance y revisión",
+        "Cantidades con método/unidad/source hash",
+        "Relaciones many-to-many Scope–WBS–Activity–CBS–Package"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D08"
+      ],
+      "admin_config": [
+        "Publicar reglas de medición/unidades y clasificación",
+        "Definir aprobación de baseline/revisión y tipología de paquetes AWP opcional"
+      ],
+      "user_operations": [
+        "Importar/revisar cantidades y asignar códigos/APU",
+        "Proponer baseline y revisiones",
+        "Mantener referencias de entregables/paquetes"
+      ],
+      "shared_read_only": [
+        "Baseline aprobada",
+        "Historial de mediciones/modelos y mappings"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Alcance mínimo siempre; BIM y AWP son opcionales por tipo de proyecto.",
+      "handoff": "Transforma alcance autorizado en baseline operacional manteniendo referencia a origen; no reescribe Business Case aprobado.",
+      "p6_relationship": "Mapea Scope/WBS/Package a activities mediante IDs de versión y relaciones many-to-many; BIM 4D es consumidor opcional, no CPM.",
+      "current_status": "Cantidades IFC/Excel, viewer, reglas, geometría/APU y paquetes son reales parciales. Scope Items/Plan Items y gobernanza completa de baseline siguen pendientes; 4D es placeholder.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "HIGH",
+      "rationale": "Reutilizar BIM/cantidades/APU sin construir otro motor; completar identidad de Scope Item y sus revisiones en un incremento posterior.",
+      "source_refs": [
+        "frontend/src/App.tsx:5654",
+        "frontend/src/navigation/applicationNavigation.ts:637",
+        "backend/app/services/quantity_takeoff.py:206"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP02"
+        ],
+        "backend": [
+          "BE-02",
+          "BE-03",
+          "BE-04",
+          "BE-05",
+          "BE-13"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D08",
+        "D09",
+        "D11",
+        "D12",
+        "D13",
+        "D15",
+        "D16",
+        "D17",
+        "D19",
+        "D21"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Controlar alcance, entregables, cantidades y paquetes con baseline/revisiones autorizadas y trazabilidad BIM opcional. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 2 fuentes y 14 consumidores declarados (16 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Cantidades IFC/Excel, viewer, reglas, geometría/APU y paquetes son reales parciales. Scope Items/Plan Items y gobernanza completa de baseline siguen pendientes; 4D es placeholder. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Reutilizar BIM/cantidades/APU sin construir otro motor; completar identidad de Scope Item y sus revisiones en un incremento posterior. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Scope posee alcance/cantidad controlada y definición de paquetes; BIM conserva geometría/modelo fuente; WBS/PBS son referencias coherentes, no copias competidoras. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 4,
+          "rationale": "Exposición de contratos con 2 fuentes y 14 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Transforma alcance autorizado en baseline operacional manteniendo referencia a origen; no reescribe Business Case aprobado."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Alcance mínimo siempre; BIM y AWP son opcionales por tipo de proyecto. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Alcance mínimo siempre; BIM y AWP son opcionales por tipo de proyecto. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Baseline de alcance y revisión; Cantidades con método/unidad/source hash; Relaciones many-to-many Scope–WBS–Activity–CBS–Package. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D03",
+      "name": "Schedule Management",
+      "classification": "DOMAIN",
+      "purpose": "Gestionar datos, versiones, baseline/current/update, data date y calidad del cronograma manteniendo Primavera P6 como autoridad CPM externa.",
+      "objects": [
+        "Schedule Register/Version",
+        "WBS",
+        "Activity/Milestone",
+        "Calendar/Relationship/Constraint",
+        "Baseline/current dates",
+        "Imported criticality/float",
+        "Schedule import reconciliation"
+      ],
+      "source_authority": "P6 posee cálculo CPM, fechas recalculadas y critical/float importados. P&Pmis posee registro de versión, source hash, validación, mappings y aceptación del corte, sin recalcular silenciosamente la ruta crítica.",
+      "inputs": [
+        "XML/XER manual y metadatos declarados",
+        "Baseline aprobada y current update",
+        "Progress aprobado como input a próximo intercambio",
+        "Scope/WBS y cambios autorizados"
+      ],
+      "outputs": [
+        "Versión aceptada con data date y source lineage",
+        "Hallazgos/reconciliación entre versiones",
+        "Look-ahead de horizonte configurable basado en cronograma aceptado"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D06",
+        "D08"
+      ],
+      "admin_config": [
+        "Configurar perfiles de importación, calendarios/códigos y gates",
+        "Definir autoridad de baseline/update, cutoff y horizonte look-ahead (objetivo inicial 4 semanas)"
+      ],
+      "user_operations": [
+        "Importar/revisar/aceptar versión",
+        "Preparar paquete de intercambio manual",
+        "Analizar variaciones y restricciones sin editar CPM de origen"
+      ],
+      "shared_read_only": [
+        "Versiones y baseline históricas",
+        "Criticality/float importados con su corte",
+        "Informe de calidad y reconciliación"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "El cronograma controlado es esencial para owner/contractor; profundidad de P6 en DIRECT_INTERNAL depende de complejidad y política publicada.",
+      "handoff": "Referencia a hitos/fechas autorizadas; baseline operacional no es una aprobación de inversión ni una modificación del plazo contractual.",
+      "p6_relationship": "Manual export/import XML/XER como contrato objetivo; importación actual demostrada, exportación operacional P6 completa no demostrada. P6 API sync y CPM nativo fuera de alcance.",
+      "current_status": "Importación P6/WBS y metadatos son reales. Handbook calcula CPM básico y persiste controles locales, riesgo a aislar/no promover a fuente P6. Falta ciclo completo de versiones/exportación y 4D.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "VERY_HIGH",
+      "rationale": "Separar gestión de datos de cálculo externo; preservar semántica de calendarios/constraints y trazabilidad sin equivalencia funcional falsa.",
+      "source_refs": [
+        "frontend/src/App.tsx:4290",
+        "frontend/src/components/ProjectControlsHandbook.tsx:407",
+        "frontend/src/components/ProjectControlsHandbook.tsx:625",
+        "backend/tests/test_qra_schedule_import_metadata.py:24"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP03"
+        ],
+        "backend": [
+          "BE-06",
+          "BE-07",
+          "BE-14"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D11",
+        "D13",
+        "D15",
+        "D16",
+        "D19",
+        "D20",
+        "D24"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Gestionar datos, versiones, baseline/current/update, data date y calidad del cronograma manteniendo Primavera P6 como autoridad CPM externa. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 4 fuentes y 13 consumidores declarados (17 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Importación P6/WBS y metadatos son reales. Handbook calcula CPM básico y persiste controles locales, riesgo a aislar/no promover a fuente P6. Falta ciclo completo de versiones/exportación y 4D. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Separar gestión de datos de cálculo externo; preservar semántica de calendarios/constraints y trazabilidad sin equivalencia funcional falsa. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: P6 posee cálculo CPM, fechas recalculadas y critical/float importados. P&Pmis posee registro de versión, source hash, validación, mappings y aceptación del corte, sin recalcular silenciosamente la ruta crítica. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 4 fuentes y 13 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Referencia a hitos/fechas autorizadas; baseline operacional no es una aprobación de inversión ni una modificación del plazo contractual."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: El cronograma controlado es esencial para owner/contractor; profundidad de P6 en DIRECT_INTERNAL depende de complejidad y política publicada. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: El cronograma controlado es esencial para owner/contractor; profundidad de P6 en DIRECT_INTERNAL depende de complejidad y política publicada. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Versión aceptada con data date y source lineage; Hallazgos/reconciliación entre versiones; Look-ahead de horizonte configurable basado en cronograma aceptado. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D04",
+      "name": "Cost Management",
+      "classification": "DOMAIN",
+      "purpose": "Controlar presupuesto operacional, costos reales/accruals, codificación y cierre de períodos sin duplicar Funding estratégico ni obligación contractual.",
+      "objects": [
+        "CBS/Cost Code/Control Account",
+        "Original/approved/current budget",
+        "Actual Cost/Accrual",
+        "Cost period",
+        "Cash-flow phasing",
+        "Commitment reference",
+        "Contingency/reserve classification"
+      ],
+      "source_authority": "Cost posee presupuesto de control, clasificación y costo operacional validado. D12 posee obligación legal/commitment; Strategic Funds posee cobertura y FIN modelo económico. Contabilidad/tesorería futura posee posting/pago.",
+      "inputs": [
+        "Presupuesto/capital autorizado con versión",
+        "Scope/WBS y cronograma aceptado",
+        "Obligaciones contractuales no duplicadas",
+        "Costos certificados/horas/recepciones y cambios aprobados"
+      ],
+      "outputs": [
+        "Presupuesto/control cost period snapshot",
+        "Variaciones y fuente para Forecast/EVM",
+        "Conciliación presupuesto–compromiso–actual–funding"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D08",
+        "D12"
+      ],
+      "admin_config": [
+        "Publicar CBS/cost-code mappings y política de accrual/cutoff",
+        "Configurar autoridad de presupuesto, reserve/contingency y deduplicación económica"
+      ],
+      "user_operations": [
+        "Preparar/revisar presupuesto/costos y conciliar período",
+        "Referenciar compromisos/certificación",
+        "Cerrar corte con aprobación y sin pagar/contabilizar"
+      ],
+      "shared_read_only": [
+        "Baseline y revisiones de presupuesto",
+        "Compromisos/costos y conciliación con lineage"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "El alcance mínimo es control de costo; accrual, reserva, cash flow y ERP dependen de política y datos disponibles.",
+      "handoff": "Referencia/snapshot del monto autorizado y restricciones; operacionalizar presupuesto no muta capital envelope, Funding ni FIN.",
+      "p6_relationship": "Consume cost/resource-load references por Activity/WBS cuando existan; P6 no se convierte automáticamente en contabilidad ni actual-cost master.",
+      "current_status": "Cost sheet, CBS/FBS, recost/reconciliation y BIM budget parciales. Riesgo de sumatoria Contract+PO y committed+executed no neteados requiere diseño; no se afirma doble conteo real en producción.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "VERY_HIGH",
+      "rationale": "Reutilizar core y resolver origen económico/semántica de costo antes de ampliar controles; evitar Funding/Commitment paralelo.",
+      "source_refs": [
+        "frontend/src/App.tsx:7178",
+        "backend/app/services/integrated_control.py:392",
+        "backend/tests/test_integrated_control.py:40"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP04"
+        ],
+        "backend": [
+          "BE-08"
+        ],
+        "procurement": [
+          "PH-GAP-03",
+          "PH-C09",
+          "PH-C15",
+          "PH-C16"
+        ]
+      },
+      "downstream_ids": [
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D11",
+        "D12",
+        "D19",
+        "D20",
+        "D24"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Controlar presupuesto operacional, costos reales/accruals, codificación y cierre de períodos sin duplicar Funding estratégico ni obligación contractual. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 5 fuentes y 9 consumidores declarados (14 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Cost sheet, CBS/FBS, recost/reconciliation y BIM budget parciales. Riesgo de sumatoria Contract+PO y committed+executed no neteados requiere diseño; no se afirma doble conteo real en producción. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Reutilizar core y resolver origen económico/semántica de costo antes de ampliar controles; evitar Funding/Commitment paralelo. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Cost posee presupuesto de control, clasificación y costo operacional validado. D12 posee obligación legal/commitment; Strategic Funds posee cobertura y FIN modelo económico. Contabilidad/tesorería futura posee posting/pago. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 5 fuentes y 9 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Referencia/snapshot del monto autorizado y restricciones; operacionalizar presupuesto no muta capital envelope, Funding ni FIN."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: El alcance mínimo es control de costo; accrual, reserva, cash flow y ERP dependen de política y datos disponibles. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: El alcance mínimo es control de costo; accrual, reserva, cash flow y ERP dependen de política y datos disponibles. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Presupuesto/control cost period snapshot; Variaciones y fuente para Forecast/EVM; Conciliación presupuesto–compromiso–actual–funding. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D05",
+      "name": "Resource & Productivity Management",
+      "classification": "SUBDOMAIN",
+      "purpose": "Controlar recursos operacionales, crews/horas y productividad mediante cantidades aprobadas, separado de escenarios estratégicos de capacidad.",
+      "objects": [
+        "Resource category/crew/labor/equipment",
+        "Planned/actual/remaining hours",
+        "Production rate",
+        "Productivity observation",
+        "Resource forecast/histogram"
+      ],
+      "source_authority": "Subdominio operacional de ejecución/costos posee asignaciones y horas verificadas; D06 posee cantidad aprobada por método; APU/rate sheet conserva su catálogo. Portfolio Resource Planning no posee asignación operacional.",
+      "inputs": [
+        "Quantities/Scope/Work Packages",
+        "Recursos y tarifas publicadas",
+        "Horas de campo verificadas",
+        "Schedule load references"
+      ],
+      "outputs": [
+        "Productividad con unidad/método y corte",
+        "Demanda/horas restantes",
+        "Variancias e histogramas"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D06",
+        "D16"
+      ],
+      "admin_config": [
+        "Publicar categorías, tarifas, unidades y reglas de productividad",
+        "Definir aprobación y fuentes de horas/equipo"
+      ],
+      "user_operations": [
+        "Asignar recursos y revisar horas",
+        "Conciliar cantidades/horas sin confundir producción con porcentaje EVM"
+      ],
+      "shared_read_only": [
+        "Catálogo/tarifa vigente e historial",
+        "Curvas y observaciones verificadas"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Owner puede supervisar sin gestionar crews; Contractor necesita productividad de su alcance ejecutado; otros modelos según ejecución propia.",
+      "handoff": "Referencia a capacidad/estrategia de recursos autorizada, no copia editable del escenario de Portfolio.",
+      "p6_relationship": "Importa assignment/load references cuando sean explícitas; no ejecuta resource leveling ni cálculo de calendario P6.",
+      "current_status": "APU/tarifas y catálogo/resource primitives backend, horas/progress/productivity summary parciales; no asignación multiusuario completa demostrada.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O3",
+      "wave_note": "Reutilización mínima de horas/tarifas en O1; crews/productividad de campo completos en O3.",
+      "complexity": "HIGH",
+      "rationale": "No convertir Master Rate Sheet en sistema completo de recursos ni duplicar escenario estratégico; extender desde hechos de campo y costo.",
+      "source_refs": [
+        "frontend/src/App.tsx:4982",
+        "frontend/src/App.tsx:7151",
+        "backend/app/api/v1/router.py:788"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP05"
+        ],
+        "backend": [
+          "BE-05",
+          "BE-09",
+          "BE-11"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D07",
+        "D16",
+        "D19"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Controlar recursos operacionales, crews/horas y productividad mediante cantidades aprobadas, separado de escenarios estratégicos de capacidad. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 5 fuentes y 3 consumidores declarados (8 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: APU/tarifas y catálogo/resource primitives backend, horas/progress/productivity summary parciales; no asignación multiusuario completa demostrada. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: No convertir Master Rate Sheet en sistema completo de recursos ni duplicar escenario estratégico; extender desde hechos de campo y costo. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Subdominio operacional de ejecución/costos posee asignaciones y horas verificadas; D06 posee cantidad aprobada por método; APU/rate sheet conserva su catálogo. Portfolio Resource Planning no posee asignación operacional. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 4,
+          "rationale": "Exposición de contratos con 5 fuentes y 3 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Referencia a capacidad/estrategia de recursos autorizada, no copia editable del escenario de Portfolio."
+        },
+        "owner_applicability": {
+          "score": 3,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Owner puede supervisar sin gestionar crews; Contractor necesita productividad de su alcance ejecutado; otros modelos según ejecución propia. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Owner puede supervisar sin gestionar crews; Contractor necesita productividad de su alcance ejecutado; otros modelos según ejecución propia. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Productividad con unidad/método y corte; Demanda/horas restantes; Variancias e histogramas. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D06",
+      "name": "Progress Management",
+      "classification": "DOMAIN",
+      "purpose": "Mantener medición operacional por método, período y aprobación sin mezclar physical, schedule, cost y earned percentages.",
+      "objects": [
+        "Progress record/measurement",
+        "Measurement method/version",
+        "Period/cumulative quantity",
+        "Approved progress cutoff",
+        "Milestone/weighted progress",
+        "Progress correction/supersession"
+      ],
+      "source_authority": "Progress posee aprobación y consolidación por método; fuente original permanece Quantity/Field/P6/Cost según método. Earned progress se deriva del presupuesto y regla aprobada, no de un porcentaje intercambiable.",
+      "inputs": [
+        "Scope quantities/baseline",
+        "Schedule/Cost baseline references",
+        "Field measurements y evidencia QA",
+        "Métodos/pesos publicados"
+      ],
+      "outputs": [
+        "Progreso aprobado por método/unidad/corte",
+        "EV input con método explícito",
+        "Historial de correcciones y mediciones rechazadas"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D16",
+        "D17"
+      ],
+      "admin_config": [
+        "Publicar métodos/pesos y reglas de validación",
+        "Definir capture-review-approve y cierre/reapertura de período"
+      ],
+      "user_operations": [
+        "Capturar/revisar/aprobar medición",
+        "Conciliar período/acumulado y corregir mediante sucesor"
+      ],
+      "shared_read_only": [
+        "Medición fuente y aprobación",
+        "Progreso por método y corte, no porcentaje ambiguo"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Método mínimo por proyecto; no exige earned-value avanzado ni medición BIM en todos.",
+      "handoff": "Consume entregables y baseline autorizada; no modifica decisión de inversión por registrar ejecución.",
+      "p6_relationship": "Schedule percent complete conserva método P6; actual quantities/physical progress aprobado puede ser input al próximo intercambio manual, nunca recalcula CPM internamente.",
+      "current_status": "Capture endpoint y records reales; pantalla activa principalmente de lectura. Falta ciclo integral de método/aprobación/cutoff/supersession y UI de captura gobernada.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "HIGH",
+      "rationale": "Conservar registros y añadir semántica antes de alimentar Forecast/EVM; separar medición de aprobación y performance derivada.",
+      "source_refs": [
+        "frontend/src/App.tsx:7151",
+        "backend/app/api/v1/router.py:788",
+        "frontend/tests/evm-dashboard.test.ts:128"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP06"
+        ],
+        "backend": [
+          "BE-09",
+          "BE-10"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D03",
+        "D05",
+        "D07",
+        "D19",
+        "D20"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Mantener medición operacional por método, período y aprobación sin mezclar physical, schedule, cost y earned percentages. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 6 fuentes y 5 consumidores declarados (11 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: Capture endpoint y records reales; pantalla activa principalmente de lectura. Falta ciclo integral de método/aprobación/cutoff/supersession y UI de captura gobernada. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Conservar registros y añadir semántica antes de alimentar Forecast/EVM; separar medición de aprobación y performance derivada. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Progress posee aprobación y consolidación por método; fuente original permanece Quantity/Field/P6/Cost según método. Earned progress se deriva del presupuesto y regla aprobada, no de un porcentaje intercambiable. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 6 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Consume entregables y baseline autorizada; no modifica decisión de inversión por registrar ejecución."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Método mínimo por proyecto; no exige earned-value avanzado ni medición BIM en todos. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Método mínimo por proyecto; no exige earned-value avanzado ni medición BIM en todos. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Progreso aprobado por método/unidad/corte; EV input con método explícito; Historial de correcciones y mediciones rechazadas. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D07",
+      "name": "Forecast / ETC / EAC",
+      "classification": "SUBDOMAIN",
+      "purpose": "Consolidar pronósticos temporales/de costo/cantidad/recursos con supuestos, versión y aprobación sin reescribir baseline.",
+      "objects": [
+        "Forecast version",
+        "ETC/EAC/VAC",
+        "Forecast finish/milestone",
+        "Quantity/resource forecast",
+        "Assumption set",
+        "Forecast approval snapshot"
+      ],
+      "source_authority": "Subdominio Forecast de Project Controls posee supuestos/revisión aprobada y reglas de consolidación. Cost/Schedule/Progress/Risk/Change conservan datos fuente.",
+      "inputs": [
+        "Actuals y progress aprobados al corte",
+        "Presupuesto/cronograma vigente",
+        "Cambios/riesgos/issues y supuestos",
+        "Contratos/commitments abiertos neteados"
+      ],
+      "outputs": [
+        "Forecast aprobado con lineage y corte",
+        "ETC/EAC y finish forecast por método",
+        "Escenarios operacionales no confundidos con escenarios estratégicos"
+      ],
+      "upstream_ids": [
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D08",
+        "D09",
+        "D10",
+        "D12"
+      ],
+      "admin_config": [
+        "Publicar métodos ETC/EAC y autoridad de aprobación",
+        "Configurar períodos, tratamiento de riesgos y supuestos obligatorios"
+      ],
+      "user_operations": [
+        "Preparar/explicar/desafiar/aprobar forecast",
+        "Registrar diferencias respecto a corte previo"
+      ],
+      "shared_read_only": [
+        "Forecast actual e historia",
+        "Método, supuestos y contribuciones de fuentes"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "DIRECT_INTERNAL puede usar forecast simplificado; alcance depende de costo/plazo material y política.",
+      "handoff": "Contrasta ejecución con caso autorizado; no altera FIN, Business Case ni Funding upstream.",
+      "p6_relationship": "Forecast dates se referencian a versión P6/supuesto explícito; forecast finish no es nueva ruta crítica nativa.",
+      "current_status": "EVM/EAC/VAC y forecast-vs-funding existen como reportes; no lifecycle completo de forecast aprobado/local revision UI.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "HIGH",
+      "rationale": "Consolidación bajo Project Controls sin otro dueño de actuals, contratos o baseline.",
+      "source_refs": [
+        "frontend/src/App.tsx:3510",
+        "frontend/src/App.tsx:6202",
+        "backend/app/api/v1/router.py:4189"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP07"
+        ],
+        "backend": [
+          "BE-10",
+          "BE-12"
+        ],
+        "procurement": [
+          "PH-C15"
+        ]
+      },
+      "downstream_ids": [
+        "D19"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Consolidar pronósticos temporales/de costo/cantidad/recursos con supuestos, versión y aprobación sin reescribir baseline. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 8 fuentes y 1 consumidores declarados (9 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: EVM/EAC/VAC y forecast-vs-funding existen como reportes; no lifecycle completo de forecast aprobado/local revision UI. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Consolidación bajo Project Controls sin otro dueño de actuals, contratos o baseline. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Subdominio Forecast de Project Controls posee supuestos/revisión aprobada y reglas de consolidación. Cost/Schedule/Progress/Risk/Change conservan datos fuente. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 8 fuentes y 1 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Contrasta ejecución con caso autorizado; no altera FIN, Business Case ni Funding upstream."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: DIRECT_INTERNAL puede usar forecast simplificado; alcance depende de costo/plazo material y política. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: DIRECT_INTERNAL puede usar forecast simplificado; alcance depende de costo/plazo material y política. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Forecast aprobado con lineage y corte; ETC/EAC y finish forecast por método; Escenarios operacionales no confundidos con escenarios estratégicos. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D08",
+      "name": "Change Management",
+      "classification": "DOMAIN",
+      "purpose": "Gobernar un Change Event/Request transversal con evaluación de impactos y aplicación explícita por dueños de fuentes.",
+      "objects": [
+        "Change Event/Request/Potential Change",
+        "Impact assessment",
+        "Approved/rejected change",
+        "Change Order reference",
+        "Implementation record/change log"
+      ],
+      "source_authority": "Change posee estado, aprobación y assessment consolidado; Scope/Schedule/Cost/D12 poseen modificación de sus propios registros. Una Change Order legal solo la autoriza Contract Administration.",
+      "inputs": [
+        "Scope/Schedule/Cost deviations",
+        "Risk/Issue escalation",
+        "Contract notices y proposals",
+        "Matrices de autoridad publicadas"
+      ],
+      "outputs": [
+        "Decisión de cambio y límites aprobados",
+        "Órdenes/comandos explícitos a source owners",
+        "Trazabilidad implementación/no-implementación"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D09",
+        "D10",
+        "D12"
+      ],
+      "admin_config": [
+        "Publicar tipos, thresholds, authority/SoD y estados",
+        "Definir revisión de impacto y aprobación por ámbito"
+      ],
+      "user_operations": [
+        "Registrar cambio, evaluar impacto y someter decisión",
+        "Aprobar/rechazar según autoridad",
+        "Verificar implementación en fuentes"
+      ],
+      "shared_read_only": [
+        "Change log y assessment",
+        "Autorización y evidencia de implementación"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Control proporcional; evitar registros desconectados por cada módulo.",
+      "handoff": "Cambio que excede autorización se escala al upstream gobernado; no reabre/reescribe FID automáticamente.",
+      "p6_relationship": "Cambio de plazo aprobado solicita próxima versión P6; no modifica fechas/criticality silenciosamente en P&Pmis.",
+      "current_status": "ChangeRequest/create y vista Scope Changes de lectura parciales; schedule/budget/contract changes reservados, integración de impacto/aprobación incompleta.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O1",
+      "complexity": "HIGH",
+      "rationale": "Unificar orquestación del cambio sin convertirla en dueño de todos los datos ni duplicar variaciones legales.",
+      "source_refs": [
+        "frontend/src/App.tsx:7255",
+        "backend/app/api/v1/router.py:3401",
+        "frontend/src/navigation/applicationNavigation.ts:640"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP08"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C12"
+        ]
+      },
+      "downstream_ids": [
+        "D02",
+        "D03",
+        "D04",
+        "D07",
+        "D12",
+        "D13",
+        "D19",
+        "D20"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Gobernar un Change Event/Request transversal con evaluación de impactos y aplicación explícita por dueños de fuentes. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 7 fuentes y 8 consumidores declarados (15 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 3,
+          "rationale": "Base observada: ChangeRequest/create y vista Scope Changes de lectura parciales; schedule/budget/contract changes reservados, integración de impacto/aprobación incompleta. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Unificar orquestación del cambio sin convertirla en dueño de todos los datos ni duplicar variaciones legales. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Change posee estado, aprobación y assessment consolidado; Scope/Schedule/Cost/D12 poseen modificación de sus propios registros. Una Change Order legal solo la autoriza Contract Administration. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 7 fuentes y 8 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Cambio que excede autorización se escala al upstream gobernado; no reabre/reescribe FID automáticamente."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Control proporcional; evitar registros desconectados por cada módulo. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Control proporcional; evitar registros desconectados por cada módulo. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Decisión de cambio y límites aprobados; Órdenes/comandos explícitos a source owners; Trazabilidad implementación/no-implementación. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D09",
+      "name": "Risk Management",
+      "classification": "DOMAIN",
+      "purpose": "Gestionar incertidumbre futura operacional, respuestas, riesgo residual y escalación con referencia a evidencia estratégica sin reutilizarla como registro operacional.",
+      "objects": [
+        "Operational Risk",
+        "Risk assessment/response/residual",
+        "Risk owner/due date",
+        "Risk exposure/contingency reference",
+        "Operational SRA source reference"
+      ],
+      "source_authority": "Operational Risk posee registro y evaluaciones de ejecución. Strategic Risk Readiness/QRA conserva su evidencia/método/decisión; no se copia una aprobación como mitigación realizada.",
+      "inputs": [
+        "Authorized strategic risk snapshot",
+        "Scope/Schedule/Cost context",
+        "Field/contract/interface uncertainties",
+        "Issue realization feedback"
+      ],
+      "outputs": [
+        "Registro y respuestas/escalaciones",
+        "Impact inputs para Forecast/Change",
+        "Riesgo realizado convertido en Issue por acción trazable"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D10",
+        "D15",
+        "D18"
+      ],
+      "admin_config": [
+        "Publicar taxonomía/escalas/apetito operacional y autoridad",
+        "Definir respuesta/residual/fecha de revisión"
+      ],
+      "user_operations": [
+        "Registrar/evaluar/tratar/escalar riesgo",
+        "Revisar exposición y registrar realización como Issue"
+      ],
+      "shared_read_only": [
+        "Registro/revisión vigente e historial",
+        "Evidencia upstream solo referenciada"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Evaluación proporcional a materialidad; no obligación automática de simulación QRA ni de P6 SRA.",
+      "handoff": "Referenciar risks/QRA aceptados de definición; desarrollar registro de ejecución manteniendo owner y vigencia separados.",
+      "p6_relationship": "Puede consumir schedule version/uncertainty para futura evaluación autorizada; no ejecutar SRA operacional ni recalcular P6 en esta fase.",
+      "current_status": "Operational risk menu placeholder. Strategic risk/QRA real aguas arriba, no registro de ejecución demostrado.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O1",
+      "complexity": "HIGH",
+      "rationale": "Nuevo comportamiento operacional cohesivo, pero solo diseño actual; evita contaminar políticas estratégicas ya gobernadas.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:645",
+        "frontend/e2e/risk-readiness.spec.ts:1"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP09"
+        ],
+        "backend": [
+          "BE-15"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D07",
+        "D08",
+        "D10",
+        "D18",
+        "D19"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Gestionar incertidumbre futura operacional, respuestas, riesgo residual y escalación con referencia a evidencia estratégica sin reutilizarla como registro operacional. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 7 fuentes y 5 consumidores declarados (12 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: Operational risk menu placeholder. Strategic risk/QRA real aguas arriba, no registro de ejecución demostrado. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Nuevo comportamiento operacional cohesivo, pero solo diseño actual; evita contaminar políticas estratégicas ya gobernadas. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Operational Risk posee registro y evaluaciones de ejecución. Strategic Risk Readiness/QRA conserva su evidencia/método/decisión; no se copia una aprobación como mitigación realizada. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 4,
+          "rationale": "Exposición de contratos con 7 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Referenciar risks/QRA aceptados de definición; desarrollar registro de ejecución manteniendo owner y vigencia separados."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Evaluación proporcional a materialidad; no obligación automática de simulación QRA ni de P6 SRA. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Evaluación proporcional a materialidad; no obligación automática de simulación QRA ni de P6 SRA. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Registro y respuestas/escalaciones; Impact inputs para Forecast/Change; Riesgo realizado convertido en Issue por acción trazable. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D10",
+      "name": "Issue Management",
+      "classification": "SUBDOMAIN",
+      "purpose": "Gestionar eventos/condiciones ya ocurridos con acciones, owner, vencimiento, escalación y referencias de impacto.",
+      "objects": [
+        "Issue",
+        "Action",
+        "Escalation",
+        "Owner/due date",
+        "Closure evidence",
+        "Origin domain reference"
+      ],
+      "source_authority": "Issue posee resolución/escalación de condición actual; fuente técnica/legal permanece en dominio originador. No reemplaza AWP constraint, NCR, claim ni risk.",
+      "inputs": [
+        "Field/interface/contract findings",
+        "Risk realization",
+        "Schedule/cost deviation",
+        "Evidence references"
+      ],
+      "outputs": [
+        "Acción y escalación trazable",
+        "Change request/risk feedback por referencia",
+        "Cierre de Issue con evidencia"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D09",
+        "D15",
+        "D16",
+        "D17",
+        "D18"
+      ],
+      "admin_config": [
+        "Publicar categorías, prioridades, SLA y escalación",
+        "Definir cierre/SoD y vínculos obligatorios"
+      ],
+      "user_operations": [
+        "Registrar/asignar/actualizar/escalar/cerrar Issue",
+        "Vincular fuente sin duplicar su aprobación"
+      ],
+      "shared_read_only": [
+        "Issue/action log",
+        "Estado/responsable/fecha y evidencia"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Registro mínimo transversal; dominio originador conserva autoridad.",
+      "handoff": "Condiciones upstream abiertas se referencian, no se resuelven cerrando Issue local.",
+      "p6_relationship": "Referencia Activity/ScheduleVersion cuando aplique; resolución de Issue no actualiza fechas P6 automáticamente.",
+      "current_status": "Issues placeholder; restricciones AWP reales no constituyen registro general de Issues.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O1",
+      "complexity": "MEDIUM",
+      "rationale": "Subdominio pequeño reutilizable; coordina acciones sin inventar otro registro de riesgos o restricciones.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:658",
+        "frontend/src/api/integratedControl.ts:303"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP10"
+        ],
+        "backend": [],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D07",
+        "D08",
+        "D09",
+        "D15",
+        "D19"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Gestionar eventos/condiciones ya ocurridos con acciones, owner, vencimiento, escalación y referencias de impacto. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 6 fuentes y 5 consumidores declarados (11 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: Issues placeholder; restricciones AWP reales no constituyen registro general de Issues. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 3,
+          "rationale": "Complejidad relativa MEDIUM: Subdominio pequeño reutilizable; coordina acciones sin inventar otro registro de riesgos o restricciones. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 3,
+          "rationale": "Riesgo de autoridad/versionado: Issue posee resolución/escalación de condición actual; fuente técnica/legal permanece en dominio originador. No reemplaza AWP constraint, NCR, claim ni risk. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 4,
+          "rationale": "Exposición de contratos con 6 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Condiciones upstream abiertas se referencian, no se resuelven cerrando Issue local."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Registro mínimo transversal; dominio originador conserva autoridad. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Registro mínimo transversal; dominio originador conserva autoridad. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Acción y escalación trazable; Change request/risk feedback por referencia; Cierre de Issue con evidencia. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D11",
+      "name": "Procurement Management",
+      "classification": "DOMAIN",
+      "purpose": "Gestionar sourcing: plan/paquete/requisición/RFQ-RFP/bids/evaluación y recomendación de adjudicación, sin poseer otra obligación legal.",
+      "objects": [
+        "Procurement Plan/Package",
+        "Requisition",
+        "RFQ/RFP",
+        "Bid/Evaluation",
+        "Award Recommendation",
+        "Vendor party reference"
+      ],
+      "source_authority": "Procurement posee sourcing y recomendación; D12 posee Contract/PO y obligación después de aprobación autorizada; Party master futuro es compartido, no vendor string duplicado.",
+      "inputs": [
+        "Scope/technical requisition y long-lead dates",
+        "Budget/coding references",
+        "Commercial strategy snapshot",
+        "Published evaluation/authority policy"
+      ],
+      "outputs": [
+        "Evaluación trazable y recomendación",
+        "Paquete de award aprobado para D12",
+        "Entrega/material status por referencia"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "admin_config": [
+        "Publicar métodos/pesos/scoring y SoD de evaluación/adjudicación",
+        "Configurar vendor qualification y thresholds"
+      ],
+      "user_operations": [
+        "Preparar paquete/RFQ y registrar bids",
+        "Evaluar/justificar selección y someter recomendación",
+        "No crear compromiso por score automático"
+      ],
+      "shared_read_only": [
+        "Estado sourcing y documentos",
+        "Evaluación/aprobación y contrato vinculado"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Aplica si hay compras/subcontratos. No todo proyecto requiere sourcing propio; Owner/Contractor pueden consumir contrato ya existente.",
+      "handoff": "Consume estrategia comercial conceptual; no duplica Commercial Strategy, Funds ni FIN. No nuevo Procurement Manager hasta resolver duplicación de menús/autoridad.",
+      "p6_relationship": "Consume required-by/long-lead activities y publica status material como input; no calcula CPM.",
+      "current_status": "RFQ backend real con pesos hardcoded/summary; UI actual reservada y sin award gobernado completo. Vendors/Partners son placeholders.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O2",
+      "complexity": "HIGH",
+      "rationale": "Reutilizar RFQ y configurar evaluación/autoridad antes de cualquier nueva pantalla; sourcing distinto de compromiso.",
+      "source_refs": [
+        "backend/app/api/v1/routers/rfq.py:63",
+        "backend/app/api/v1/routers/rfq.py:190",
+        "frontend/src/navigation/applicationNavigation.ts:649"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP11"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C01",
+          "PH-C02",
+          "PH-C05",
+          "PH-C06",
+          "PH-C13"
+        ]
+      },
+      "downstream_ids": [
+        "D12",
+        "D15",
+        "D16",
+        "D19"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Gestionar sourcing: plan/paquete/requisición/RFQ-RFP/bids/evaluación y recomendación de adjudicación, sin poseer otra obligación legal. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 7 fuentes y 4 consumidores declarados (11 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: RFQ backend real con pesos hardcoded/summary; UI actual reservada y sin award gobernado completo. Vendors/Partners son placeholders. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Reutilizar RFQ y configurar evaluación/autoridad antes de cualquier nueva pantalla; sourcing distinto de compromiso. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Procurement posee sourcing y recomendación; D12 posee Contract/PO y obligación después de aprobación autorizada; Party master futuro es compartido, no vendor string duplicado. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 7 fuentes y 4 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Consume estrategia comercial conceptual; no duplica Commercial Strategy, Funds ni FIN. No nuevo Procurement Manager hasta resolver duplicación de menús/autoridad."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Aplica si hay compras/subcontratos. No todo proyecto requiere sourcing propio; Owner/Contractor pueden consumir contrato ya existente. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Aplica si hay compras/subcontratos. No todo proyecto requiere sourcing propio; Owner/Contractor pueden consumir contrato ya existente. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Evaluación trazable y recomendación; Paquete de award aprobado para D12; Entrega/material status por referencia. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D12",
+      "name": "Commitments / Contract Administration",
+      "classification": "DOMAIN",
+      "purpose": "Administrar registro legal Contract/PO/subcontract, SOV, notices, variaciones, certificación y cierre con una sola autoridad de obligaciones.",
+      "objects": [
+        "Contract/PurchaseOrder/Subcontract",
+        "Original/current legal value",
+        "SOV",
+        "Contract notice/instruction",
+        "Change Order",
+        "Certificate/retention",
+        "Commitment source/economic event"
+      ],
+      "source_authority": "Reutilizar Contract y PurchaseOrder existentes como única autoridad contractual/commitment. Cost consume refs neteadas. Certificado/recepción no es pago bancario; invoice/payment posting queda en ERP/Treasury futuro.",
+      "inputs": [
+        "Award/legal authorization o contrato cliente legítimo",
+        "Scope/SOV/budget codes",
+        "Post-FID commitment-only conditions current where applicable",
+        "Notices/approved changes/certified measurements"
+      ],
+      "outputs": [
+        "Obligación aprobada con dirección revenue/spend y versión",
+        "Open commitment neto/no doble conteo",
+        "Certificación/retention y closeout documental"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D04",
+        "D08",
+        "D11",
+        "D14"
+      ],
+      "admin_config": [
+        "Publicar tipos/dirección contractual y autoridad SoD",
+        "Configurar call-off/included-versus-additive PO, economic-origin netting y retención"
+      ],
+      "user_operations": [
+        "Registrar/revisar contrato/PO y SOV",
+        "Emitir notices/variaciones y certificar según autoridad",
+        "Cerrar obligación sin ejecutar pagos"
+      ],
+      "shared_read_only": [
+        "Valor/historia/obligación contractual",
+        "Cadenas Contract–PO–certificate–receipt con deduplicación"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Contractor requiere contrato de entrega; owner/direct solo si hay contratos o compromisos. Direction no se infiere del nombre del menú.",
+      "handoff": "Verificar autorización scope y condiciones de compromiso upstream por autoridad existente; activación no habilita compromiso automáticamente.",
+      "p6_relationship": "Relaciona hitos/contract dates al schedule version; obligación legal y extensión de plazo requieren autoridad contractual, no importación P6.",
+      "current_status": "Contract/PO/SOV/notices/certificates/receipts reales parciales; menús reservados, doble conteo y gate commitment-only requieren hardening futuro. Sin inferir vendor master ni pagos.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O2",
+      "complexity": "VERY_HIGH",
+      "rationale": "Separación cohesiva de sourcing por obligación legal; conservar APIs/datos y sustituir conceptos duplicados solo con deprecación aprobada.",
+      "source_refs": [
+        "backend/app/domain/models.py:1400",
+        "backend/app/domain/models.py:1524",
+        "backend/app/api/v1/router.py:2379",
+        "backend/app/modules/post_fid_governance/service.py:492"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP12"
+        ],
+        "backend": [
+          "BE-08"
+        ],
+        "procurement": [
+          "PH-GAP-03",
+          "PH-GAP-04",
+          "PH-C03",
+          "PH-C04",
+          "PH-C07",
+          "PH-C08",
+          "PH-C09",
+          "PH-C10",
+          "PH-C11",
+          "PH-C12",
+          "PH-C16"
+        ]
+      },
+      "downstream_ids": [
+        "D04",
+        "D07",
+        "D08",
+        "D15",
+        "D16",
+        "D19",
+        "D20",
+        "D22",
+        "D24"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Administrar registro legal Contract/PO/subcontract, SOV, notices, variaciones, certificación y cierre con una sola autoridad de obligaciones. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 6 fuentes y 9 consumidores declarados (15 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Contract/PO/SOV/notices/certificates/receipts reales parciales; menús reservados, doble conteo y gate commitment-only requieren hardening futuro. Sin inferir vendor master ni pagos. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Separación cohesiva de sourcing por obligación legal; conservar APIs/datos y sustituir conceptos duplicados solo con deprecación aprobada. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Reutilizar Contract y PurchaseOrder existentes como única autoridad contractual/commitment. Cost consume refs neteadas. Certificado/recepción no es pago bancario; invoice/payment posting queda en ERP/Treasury futuro. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 6 fuentes y 9 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Verificar autorización scope y condiciones de compromiso upstream por autoridad existente; activación no habilita compromiso automáticamente."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Contractor requiere contrato de entrega; owner/direct solo si hay contratos o compromisos. Direction no se infiere del nombre del menú. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Contractor requiere contrato de entrega; owner/direct solo si hay contratos o compromisos. Direction no se infiere del nombre del menú. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Obligación aprobada con dirección revenue/spend y versión; Open commitment neto/no doble conteo; Certificación/retention y closeout documental. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D13",
+      "name": "Engineering & Design Management",
+      "classification": "DOMAIN",
+      "purpose": "Gestionar paquetes/deliverables técnicos, disciplina, estado IFA/IFC equivalente, revisión, comentarios y cambios de diseño.",
+      "objects": [
+        "Design Package/Deliverable",
+        "Discipline/revision/status",
+        "Review/comment cycle",
+        "Technical query/RFI",
+        "Technical release reference"
+      ],
+      "source_authority": "Engineering posee madurez/liberación técnica del entregable; D14 posee documento/revisión/transmittal; Scope/Change/Contract mantienen sus autoridades.",
+      "inputs": [
+        "Scope/requirements",
+        "Schedule need dates y package interfaces",
+        "Design documents/reviews",
+        "Technical/contract constraints"
+      ],
+      "outputs": [
+        "Entregable técnicamente liberado con revisión",
+        "Respuestas RFI/comentarios",
+        "Readiness inputs para sourcing/workfront"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D08",
+        "D14",
+        "D15"
+      ],
+      "admin_config": [
+        "Publicar disciplinas, status y revisión/approval matrices",
+        "Definir IFA/IFC equivalentes y authority de liberación"
+      ],
+      "user_operations": [
+        "Planificar/revisar/liberar entregables",
+        "Responder queries y proponer cambios técnicos"
+      ],
+      "shared_read_only": [
+        "Estado/madurez y revisión liberada",
+        "Comentarios/queries vinculados"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Según alcance de diseño/ingeniería; no forzar sobre proyecto sin ingeniería.",
+      "handoff": "Consume bases de definición autorizadas sin apropiarse de FEL/Business Case; detalle técnico de ejecución gobernado separadamente.",
+      "p6_relationship": "Deliverable/package dates y dependencias se vinculan al cronograma; P6 conserva CPM.",
+      "current_status": "No workspace operacional dedicado identificado; BIM/docs aportan primitivas, no lifecycle de diseño.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O2",
+      "complexity": "HIGH",
+      "rationale": "Separar estado técnico de archivo documental; diseñar antes de implementar sin otro DMS.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "backend/app/api/v1/router.py:355"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP13"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C06"
+        ]
+      },
+      "downstream_ids": [
+        "D11",
+        "D15",
+        "D16",
+        "D17",
+        "D21"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Gestionar paquetes/deliverables técnicos, disciplina, estado IFA/IFC equivalente, revisión, comentarios y cambios de diseño. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 6 fuentes y 5 consumidores declarados (11 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: No workspace operacional dedicado identificado; BIM/docs aportan primitivas, no lifecycle de diseño. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Separar estado técnico de archivo documental; diseñar antes de implementar sin otro DMS. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Engineering posee madurez/liberación técnica del entregable; D14 posee documento/revisión/transmittal; Scope/Change/Contract mantienen sus autoridades. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 4,
+          "rationale": "Exposición de contratos con 6 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Consume bases de definición autorizadas sin apropiarse de FEL/Business Case; detalle técnico de ejecución gobernado separadamente."
+        },
+        "owner_applicability": {
+          "score": 4,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Según alcance de diseño/ingeniería; no forzar sobre proyecto sin ingeniería. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 4,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Según alcance de diseño/ingeniería; no forzar sobre proyecto sin ingeniería. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Entregable técnicamente liberado con revisión; Respuestas RFI/comentarios; Readiness inputs para sourcing/workfront. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D14",
+      "name": "Document & Information Management",
+      "classification": "CROSS-CUTTING CAPABILITY",
+      "purpose": "Proveer registro/revisión/distribución/evidencia reutilizable a dominios sin construir un enterprise DMS innecesario.",
+      "objects": [
+        "Document/Revision",
+        "Attachment/source hash",
+        "Transmittal/distribution",
+        "Review/approval record",
+        "External DMS reference",
+        "Access classification"
+      ],
+      "source_authority": "Reutilizar Document/revision/attachment/transmittal backend como autoridad documental. Dominio de negocio conserva decisión técnica/legal; DMS externo futuro conserva original cuando se use reference-only.",
+      "inputs": [
+        "Evidence/deliverable files de cualquier dominio",
+        "Metadata/clasificación y revisión",
+        "External DMS identifiers",
+        "Approval/distribution requirements"
+      ],
+      "outputs": [
+        "Revisión/documento controlado y acceso scoped",
+        "Evidence reference inmutable por versión",
+        "Review/distribution audit"
+      ],
+      "upstream_ids": [
+        "D01"
+      ],
+      "admin_config": [
+        "Publicar tipos, estados, retención, clasificación/acceso y review rules",
+        "Configurar reference-vs-import policy y límites de archivo/antivirus"
+      ],
+      "user_operations": [
+        "Registrar/revisar/emitir documentos y transmittals",
+        "Vincular versión exacta en transacción autorizada"
+      ],
+      "shared_read_only": [
+        "Registro/documentos accesibles y audit",
+        "Revisiones/distribución histórica"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Evidencia mínima siempre; funciones avanzadas/DMS externo son opcionales y contextualizadas.",
+      "handoff": "Referencias a evidencias upstream congeladas, sin reemisión ni aceptación tácita.",
+      "p6_relationship": "Almacena archivo XML/XER fuente con hash y evidencia de aceptación; no modifica su contenido/semántica.",
+      "current_status": "Backend documents/transmittals/reviews/attachment security real; dedicated Document Approval/Submittals placeholder y Evidence live reachability por validar.",
+      "planned_action": "CROSS_CUTTING",
+      "wave": "O1",
+      "wave_note": "Contrato mínimo de evidence reference en O1; review/distribution refinado en O2. No reconstrucción completa DMS.",
+      "complexity": "HIGH",
+      "rationale": "Mover evidencia mínima antes de baselines evita bloqueos; conservar autoridad documental y no confundir review documental con decisión del dominio.",
+      "source_refs": [
+        "backend/app/api/v1/router.py:355",
+        "backend/tests/test_api_smoke.py:352",
+        "backend/tests/test_api_smoke.py:584",
+        "frontend/src/navigation/applicationNavigation.ts:662"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP14"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C10"
+        ]
+      },
+      "downstream_ids": [
+        "D11",
+        "D12",
+        "D13",
+        "D15",
+        "D17",
+        "D18",
+        "D20",
+        "D21",
+        "D22",
+        "D23",
+        "D24",
+        "D25"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Proveer registro/revisión/distribución/evidencia reutilizable a dominios sin construir un enterprise DMS innecesario. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 1 fuentes y 12 consumidores declarados (13 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Backend documents/transmittals/reviews/attachment security real; dedicated Document Approval/Submittals placeholder y Evidence live reachability por validar. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Mover evidencia mínima antes de baselines evita bloqueos; conservar autoridad documental y no confundir review documental con decisión del dominio. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Reutilizar Document/revision/attachment/transmittal backend como autoridad documental. Dominio de negocio conserva decisión técnica/legal; DMS externo futuro conserva original cuando se use reference-only. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 1 fuentes y 12 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Referencias a evidencias upstream congeladas, sin reemisión ni aceptación tácita."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Evidencia mínima siempre; funciones avanzadas/DMS externo son opcionales y contextualizadas. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Evidencia mínima siempre; funciones avanzadas/DMS externo son opcionales y contextualizadas. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Revisión/documento controlado y acceso scoped; Evidence reference inmutable por versión; Review/distribution audit. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D15",
+      "name": "Interface Management",
+      "classification": "CROSS-CUTTING CAPABILITY",
+      "purpose": "Coordinar interfaces internas/externas técnicas, comerciales y temporales con owner, due date, dependencia y cierre.",
+      "objects": [
+        "Interface Register/Agreement",
+        "Internal/external interface",
+        "Dependency/required-by",
+        "Owner/due date",
+        "Closure evidence"
+      ],
+      "source_authority": "Interface posee coordinación/acuerdo y closure; fuente técnica/legal/schedule permanece en su dominio. Issues/risk conservan sus casos si una interfaz falla.",
+      "inputs": [
+        "Scope boundaries y paquetes",
+        "Design/procurement dependencies",
+        "Workfront requirements",
+        "Risk/Issue references"
+      ],
+      "outputs": [
+        "Interface agreement y acciones",
+        "Readiness dependencies/escalations",
+        "Cierre con evidencia de contrapartes"
+      ],
+      "upstream_ids": [
+        "D02",
+        "D03",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "D14"
+      ],
+      "admin_config": [
+        "Publicar tipos/responsibility matrices y closure criteria",
+        "Configurar escalación y evidencia mínima por interfaz"
+      ],
+      "user_operations": [
+        "Acordar/seguir/escalar/cerrar interfaz",
+        "Mantener cross-reference a paquetes y fuentes"
+      ],
+      "shared_read_only": [
+        "Interface map y estado",
+        "Acuerdos/evidencia y responsables"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Activa cuando múltiples paquetes/partes requieren coordinación formal; no nuevo módulo obligatorio universal.",
+      "handoff": "Consume interfaces/assumptions heredadas y mantiene su origen; no modifica acuerdos estratégicos sin autorización.",
+      "p6_relationship": "Dependencia de interfaz referencia activities; no agrega lógica P6 silenciosamente.",
+      "current_status": "Sin registro operacional dedicado identificado; communications/issues placeholders no prueban lifecycle.",
+      "planned_action": "CROSS_CUTTING",
+      "wave": "O2",
+      "complexity": "MEDIUM",
+      "rationale": "Capacidad transversal ligera; coordina sin duplicar issue, riesgo, contrato o entregable técnico.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "frontend/src/navigation/applicationNavigation.ts:387"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP15"
+        ],
+        "backend": [],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D09",
+        "D10",
+        "D11",
+        "D13",
+        "D16"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Coordinar interfaces internas/externas técnicas, comerciales y temporales con owner, due date, dependencia y cierre. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 7 fuentes y 5 consumidores declarados (12 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 1,
+          "rationale": "Base observada: Sin registro operacional dedicado identificado; communications/issues placeholders no prueban lifecycle. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 3,
+          "rationale": "Complejidad relativa MEDIUM: Capacidad transversal ligera; coordina sin duplicar issue, riesgo, contrato o entregable técnico. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 3,
+          "rationale": "Riesgo de autoridad/versionado: Interface posee coordinación/acuerdo y closure; fuente técnica/legal/schedule permanece en su dominio. Issues/risk conservan sus casos si una interfaz falla. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 7 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Consume interfaces/assumptions heredadas y mantiene su origen; no modifica acuerdos estratégicos sin autorización."
+        },
+        "owner_applicability": {
+          "score": 4,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Activa cuando múltiples paquetes/partes requieren coordinación formal; no nuevo módulo obligatorio universal. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Activa cuando múltiples paquetes/partes requieren coordinación formal; no nuevo módulo obligatorio universal. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Interface agreement y acciones; Readiness dependencies/escalations; Cierre con evidencia de contrapartes. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D16",
+      "name": "Construction / Field Management",
+      "classification": "DOMAIN",
+      "purpose": "Coordinar workfronts, ejecución, diario de campo, recursos y cantidades fuente con release/constraints y referencias a controles aprobados.",
+      "objects": [
+        "Work Area/Workfront",
+        "Daily Report",
+        "Installed Quantity source",
+        "Labor/equipment/weather observation",
+        "AWP execution package/constraint",
+        "Inspection request/field issue"
+      ],
+      "source_authority": "Field posee hechos de ejecución y release operacional del workfront; D02 posee alcance/definición de Work Package, D06 aprobación de medición, D17 calidad y D18 seguridad.",
+      "inputs": [
+        "Released Scope/Engineering packages",
+        "Schedule look-ahead",
+        "Materials/procurement status",
+        "QA/HSE/permit readiness y constraints"
+      ],
+      "outputs": [
+        "Daily facts/installed quantities para Progress",
+        "Workfront/package release con checklist",
+        "Field issues/inspection requests"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D05",
+        "D11",
+        "D12",
+        "D13",
+        "D15",
+        "D17",
+        "D18"
+      ],
+      "admin_config": [
+        "Publicar plantillas diario/áreas y workfront readiness",
+        "Configurar AWP por Project Type y reglas de release/SoD"
+      ],
+      "user_operations": [
+        "Preparar/liberar workfront y seguir constraints",
+        "Capturar diario/hechos verificables",
+        "Solicitar inspección y escalar bloqueos"
+      ],
+      "shared_read_only": [
+        "Workfront/package status y readiness",
+        "Hechos de campo y referencias fuente"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Owner supervisor puede consumir reportes sin controlar crews; Contractor con construcción requiere ejecución; AWP siempre opcional por política.",
+      "handoff": "Ejecuta solo alcance y autoridad vigente. No usa inversión aprobada como permiso irrestricto de trabajo/compromiso.",
+      "p6_relationship": "Consume accepted schedule/look-ahead y reporta actuals a ciclo manual; sin CPM local ni 4D obligatoria.",
+      "current_status": "AWP paquetes/constraints/drafts reales parciales; no diario/field suite completa. CWP/IWP/TWP/TOP actuales no prueban toda jerarquía CWA/EWP/PWP deseada.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O3",
+      "complexity": "VERY_HIGH",
+      "rationale": "Extender AWP y field facts con QA/HSE prerequisitos; no construir módulo aislado que posea alcance, schedule y costo.",
+      "source_refs": [
+        "frontend/src/App.tsx:7332",
+        "frontend/src/api/integratedControl.ts:272",
+        "backend/tests/test_api_smoke.py:927"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP16"
+        ],
+        "backend": [
+          "BE-09"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D05",
+        "D06",
+        "D10",
+        "D17",
+        "D18",
+        "D19",
+        "D20",
+        "D21"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Coordinar workfronts, ejecución, diario de campo, recursos y cantidades fuente con release/constraints y referencias a controles aprobados. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 10 fuentes y 8 consumidores declarados (18 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 4,
+          "rationale": "Base observada: AWP paquetes/constraints/drafts reales parciales; no diario/field suite completa. CWP/IWP/TWP/TOP actuales no prueban toda jerarquía CWA/EWP/PWP deseada. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Extender AWP y field facts con QA/HSE prerequisitos; no construir módulo aislado que posea alcance, schedule y costo. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Field posee hechos de ejecución y release operacional del workfront; D02 posee alcance/definición de Work Package, D06 aprobación de medición, D17 calidad y D18 seguridad. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 10 fuentes y 8 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Ejecuta solo alcance y autoridad vigente. No usa inversión aprobada como permiso irrestricto de trabajo/compromiso."
+        },
+        "owner_applicability": {
+          "score": 4,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Owner supervisor puede consumir reportes sin controlar crews; Contractor con construcción requiere ejecución; AWP siempre opcional por política. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Owner supervisor puede consumir reportes sin controlar crews; Contractor con construcción requiere ejecución; AWP siempre opcional por política. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Daily facts/installed quantities para Progress; Workfront/package release con checklist; Field issues/inspection requests. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D17",
+      "name": "Quality Management",
+      "classification": "DOMAIN",
+      "purpose": "Controlar ITP, inspecciones, tests, NCR/corrective actions y punch/quality dossiers para release y entrega.",
+      "objects": [
+        "ITP",
+        "Inspection/Test",
+        "NCR/Corrective Action",
+        "Punch Item",
+        "Quality dossier/turnover reference"
+      ],
+      "source_authority": "Quality posee aceptación técnica QA/QC y cierre de NCR/punch; documentos/evidencias en D14 y commissioning tests específicos en D21 por referencia.",
+      "inputs": [
+        "Specifications/design revision",
+        "Field inspection requests",
+        "Test evidence y criteria",
+        "Scope/Work Package/System references"
+      ],
+      "outputs": [
+        "Inspection acceptance/rejection",
+        "NCR/punch y acciones",
+        "Quality readiness/dossier para turnover"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D13",
+        "D14",
+        "D16"
+      ],
+      "admin_config": [
+        "Publicar ITP/acceptance criteria y authority/SoD",
+        "Configurar categorías NCR/punch y evidencia de cierre"
+      ],
+      "user_operations": [
+        "Inspeccionar/testear/rechazar o aceptar",
+        "Abrir/corregir/cerrar NCR y punch"
+      ],
+      "shared_read_only": [
+        "QA/QC status y dossiers",
+        "Inspección/test/punch history"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Aplica al alcance técnico y contractual; puede integrarse sistema QA externo. Gate de calidad de datos no sustituye QA/QC.",
+      "handoff": "Consume estándares/requisitos autorizados; no determina readiness estratégica ni aceptación de inversión.",
+      "p6_relationship": "Referencia hitos/hold points sin alterar fechas P6; release técnico contribuye al workfront.",
+      "current_status": "Punch List title-only; schedule/IFC quality checks no son dominio QA/QC de construcción.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O3",
+      "complexity": "HIGH",
+      "rationale": "Dominio propio por autoridad de aceptación técnica; usar contratos de calidad mínimos antes de field release.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:660",
+        "frontend/src/App.tsx:4320"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP17"
+        ],
+        "backend": [],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D06",
+        "D10",
+        "D16",
+        "D21",
+        "D22",
+        "D23"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Controlar ITP, inspecciones, tests, NCR/corrective actions y punch/quality dossiers para release y entrega. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 5 fuentes y 6 consumidores declarados (11 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 1,
+          "rationale": "Base observada: Punch List title-only; schedule/IFC quality checks no son dominio QA/QC de construcción. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Dominio propio por autoridad de aceptación técnica; usar contratos de calidad mínimos antes de field release. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Quality posee aceptación técnica QA/QC y cierre de NCR/punch; documentos/evidencias en D14 y commissioning tests específicos en D21 por referencia. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 5 fuentes y 6 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Consume estándares/requisitos autorizados; no determina readiness estratégica ni aceptación de inversión."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Aplica al alcance técnico y contractual; puede integrarse sistema QA externo. Gate de calidad de datos no sustituye QA/QC. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Aplica al alcance técnico y contractual; puede integrarse sistema QA externo. Gate de calidad de datos no sustituye QA/QC. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Inspection acceptance/rejection; NCR/punch y acciones; Quality readiness/dossier para turnover. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D18",
+      "name": "HSE Management",
+      "classification": "FUTURE DOMAIN",
+      "purpose": "Definir integración/control de observaciones, incidentes, permits-to-work y acciones HSE sin afirmar cumplimiento ni sustituir sistema especializado.",
+      "objects": [
+        "HSE observation/incident reference",
+        "Permit-to-work reference",
+        "HSE action",
+        "Leading/lagging indicator",
+        "HSE clearance evidence"
+      ],
+      "source_authority": "Sistema HSE autorizado —externo si existe— posee incidentes/work permits y decisión safety; P&Pmis solo referencias/readiness bajo contrato explícito hasta implementación autorizada.",
+      "inputs": [
+        "Field hazard/workfront context",
+        "Risk references y safety requirements",
+        "External HSE permit/incident status"
+      ],
+      "outputs": [
+        "Clearance/blocker reference para Field",
+        "Acciones/escalaciones",
+        "Indicadores con fuente/corte"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D09",
+        "D14",
+        "D16"
+      ],
+      "admin_config": [
+        "Publicar source/integration profile y roles autorizados",
+        "Definir criterios de workfront safety clearance sin hardcodear cumplimiento"
+      ],
+      "user_operations": [
+        "Referenciar observaciones/permits y escalar",
+        "Consultar bloqueos; no declarar permiso aprobado sin autoridad"
+      ],
+      "shared_read_only": [
+        "Status HSE fuente y acciones",
+        "Indicadores con límites explícitos"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Requisitos según actividad/jurisdicción/sistema corporativo; no decisión de cumplimiento normativo nueva en este diseño.",
+      "handoff": "Strategic permit/risk readiness no es permiso de trabajo ni HSE clearance vigente.",
+      "p6_relationship": "Permits/hold points se vinculan a activities/workfront sin modificar CPM.",
+      "current_status": "No dominio HSE operacional dedicado identificado; no inferirlo de permit-readiness estratégico.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O3",
+      "complexity": "HIGH",
+      "rationale": "Frontera especializada/externa primero; contract mínimo de blocker/readiness antes de autorizar Field release.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "frontend/e2e/permit-readiness.spec.ts:1"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP18"
+        ],
+        "backend": [],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D09",
+        "D10",
+        "D16",
+        "D21",
+        "D23"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Definir integración/control de observaciones, incidentes, permits-to-work y acciones HSE sin afirmar cumplimiento ni sustituir sistema especializado. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 4 fuentes y 5 consumidores declarados (9 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 1,
+          "rationale": "Base observada: No dominio HSE operacional dedicado identificado; no inferirlo de permit-readiness estratégico. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Frontera especializada/externa primero; contract mínimo de blocker/readiness antes de autorizar Field release. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Sistema HSE autorizado —externo si existe— posee incidentes/work permits y decisión safety; P&Pmis solo referencias/readiness bajo contrato explícito hasta implementación autorizada. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 4 fuentes y 5 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Strategic permit/risk readiness no es permiso de trabajo ni HSE clearance vigente."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Requisitos según actividad/jurisdicción/sistema corporativo; no decisión de cumplimiento normativo nueva en este diseño. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Requisitos según actividad/jurisdicción/sistema corporativo; no decisión de cumplimiento normativo nueva en este diseño. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Clearance/blocker reference para Field; Acciones/escalaciones; Indicadores con fuente/corte. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D19",
+      "name": "Project Controls & Reporting",
+      "classification": "CROSS-CUTTING CAPABILITY",
+      "purpose": "Integrar fuentes operacionales mediante período/corte, baseline bundle, reconciliación, forecast/performance y reporting sin poseer todos los datos.",
+      "objects": [
+        "Project Control Baseline bundle",
+        "Control period/cutoff",
+        "Read model/report snapshot",
+        "KPI/EVM result",
+        "Reconciliation finding",
+        "Source lineage/refresh status"
+      ],
+      "source_authority": "Integración posee contratos de período, lineage y snapshots/reportes emitidos. Scope/Schedule/Cost/Progress/Change/Risk/Issue/Contract conservan sus datos y aprobaciones. Dashboards no ejecutan reglas transaccionales ocultas.",
+      "inputs": [
+        "Baselines/revisiones aprobadas de fuentes",
+        "Period progress/actuals/commitments/forecast",
+        "Quality/currentness/security context"
+      ],
+      "outputs": [
+        "Performance/reporting al corte con fuentes explícitas",
+        "Reconciliación y alertas",
+        "Executive/controls/domain dashboards y export para analytics"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D10",
+        "D11",
+        "D12",
+        "D16"
+      ],
+      "admin_config": [
+        "Publicar reporting calendar/cutoff/KPI definitions y distribution",
+        "Definir refresh/currentness y baseline bundle acceptance"
+      ],
+      "user_operations": [
+        "Conciliar/explicar variancias y emitir reportes autorizados",
+        "Consultar dashboard y drill-down al source owner"
+      ],
+      "shared_read_only": [
+        "Dashboards, snapshots y lineage",
+        "Reconciliación y estado de corte"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Core de integración mínimo; profundidad EVM/Power BI/AWP según tipo de proyecto.",
+      "handoff": "Refleja baseline autorizada vs ejecución; upstream Portfolio/benefits consume reportes, nunca recibe reescritura tácita de su decisión.",
+      "p6_relationship": "Lee versión/calendario/data date/criticality P6 importados; no calcula ni sobrescribe CPM. Power BI es consumidor futuro, no API implementada asumida.",
+      "current_status": "EVM/reconciliation/dashboard/audit/exports reales parciales; GET dashboard puede escribir KPI/cache y no debe asumirse query inocua. Falta common period y reporting history plenamente gobernado.",
+      "planned_action": "CROSS_CUTTING",
+      "wave": "O1",
+      "complexity": "VERY_HIGH",
+      "rationale": "Project Controls es núcleo de integración pero no megadominio dueño de fuentes; separar read models de efectos laterales.",
+      "source_refs": [
+        "frontend/src/App.tsx:5755",
+        "frontend/src/App.tsx:5924",
+        "frontend/src/api/integratedControl.ts:257",
+        "backend/app/api/v1/router.py:4620"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP19"
+        ],
+        "backend": [
+          "BE-10",
+          "BE-12"
+        ],
+        "procurement": [
+          "PH-GAP-03"
+        ]
+      },
+      "downstream_ids": [],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Integrar fuentes operacionales mediante período/corte, baseline bundle, reconciliación, forecast/performance y reporting sin poseer todos los datos. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 5,
+          "rationale": "Juicio de centralidad: 13 fuentes y 0 consumidores declarados (13 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: EVM/reconciliation/dashboard/audit/exports reales parciales; GET dashboard puede escribir KPI/cache y no debe asumirse query inocua. Falta common period y reporting history plenamente gobernado. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Project Controls es núcleo de integración pero no megadominio dueño de fuentes; separar read models de efectos laterales. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Integración posee contratos de período, lineage y snapshots/reportes emitidos. Scope/Schedule/Cost/Progress/Change/Risk/Issue/Contract conservan sus datos y aprobaciones. Dashboards no ejecutan reglas transaccionales ocultas. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 13 fuentes y 0 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 5,
+          "rationale": "Frontera upstream: Refleja baseline autorizada vs ejecución; upstream Portfolio/benefits consume reportes, nunca recibe reescritura tácita de su decisión."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Core de integración mínimo; profundidad EVM/Power BI/AWP según tipo de proyecto. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Core de integración mínimo; profundidad EVM/Power BI/AWP según tipo de proyecto. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Performance/reporting al corte con fuentes explícitas; Reconciliación y alertas; Executive/controls/domain dashboards y export para analytics. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D20",
+      "name": "Claims / Delay / Forensic Analysis",
+      "classification": "SUBDOMAIN",
+      "purpose": "Especializar análisis de entitlement/causa/efecto/delay/daño y expediente contractual sin contaminar transacciones normales de control.",
+      "objects": [
+        "Claim/Event/Notice",
+        "Entitlement item",
+        "Impact/cause-effect analysis",
+        "Forensic window/TIA reference",
+        "Concurrency/mitigation",
+        "Evidence dossier/source schedules"
+      ],
+      "source_authority": "Subdominio de D12 posee expediente/posición/revisión del claim; experto/autoridad contractual decide aceptación. P6/source schedules y hechos de Cost/Progress permanecen inmutables por referencia.",
+      "inputs": [
+        "Contract/notices/changes",
+        "Versiones schedule originales y hechos de período",
+        "Cost/Field records y mitigación",
+        "Documentos del expediente"
+      ],
+      "outputs": [
+        "Análisis trazable y limitaciones",
+        "Claim submission/status por autoridad",
+        "Referencias a mitigación/negociación/settlement future"
+      ],
+      "upstream_ids": [
+        "D03",
+        "D04",
+        "D06",
+        "D08",
+        "D12",
+        "D14",
+        "D16"
+      ],
+      "admin_config": [
+        "Publicar métodos/umbrales y autoridad de revisión",
+        "Configurar tipos de expediente, retención y privacidad"
+      ],
+      "user_operations": [
+        "Compilar expediente/correr análisis autorizado",
+        "Revisar entitlement/concurrency y preparar submission",
+        "No convertir output del motor en dictamen legal"
+      ],
+      "shared_read_only": [
+        "Dossier/versiones y resultados",
+        "Evidencia fuente y método/limitaciones"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "OPTIONAL"
+      },
+      "applicability_note": "Aplica ante reclamación/obligación contractual; DIRECT_INTERNAL solo si exposición externa lo justifica.",
+      "handoff": "Preserva límites comerciales/autorización upstream; no altera Funding/FID para cubrir claim.",
+      "p6_relationship": "Forensic consume copias inmutables de XER/XML; no recalcula/substituye el CPM operacional vigente ni afirma arbitraje/entitlement automático.",
+      "current_status": "Dossier y ventanas MIP3.7 implementados parciales; no todos métodos TIA/but-for/settlement ni aceptación legal demostrados.",
+      "planned_action": "MERGE_WITH_ANOTHER_DOMAIN",
+      "wave": "O4",
+      "complexity": "VERY_HIGH",
+      "rationale": "Conservar motores y fuente bajo Contract Administration; especialización navegable no equivale a otra autoridad de cambios/contratos.",
+      "source_refs": [
+        "frontend/src/App.tsx:5192",
+        "frontend/src/App.tsx:5374",
+        "backend/tests/test_forensic_window_analysis_api.py:11"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP20"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C10",
+          "PH-C12"
+        ]
+      },
+      "downstream_ids": [
+        "D24"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Especializar análisis de entitlement/causa/efecto/delay/daño y expediente contractual sin contaminar transacciones normales de control. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 3,
+          "rationale": "Juicio de centralidad: 7 fuentes y 1 consumidores declarados (8 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 5,
+          "rationale": "Base observada: Dossier y ventanas MIP3.7 implementados parciales; no todos métodos TIA/but-for/settlement ni aceptación legal demostrados. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Conservar motores y fuente bajo Contract Administration; especialización navegable no equivale a otra autoridad de cambios/contratos. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Subdominio de D12 posee expediente/posición/revisión del claim; experto/autoridad contractual decide aceptación. P6/source schedules y hechos de Cost/Progress permanecen inmutables por referencia. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 7 fuentes y 1 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 3,
+          "rationale": "Frontera upstream: Preserva límites comerciales/autorización upstream; no altera Funding/FID para cubrir claim."
+        },
+        "owner_applicability": {
+          "score": 4,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Aplica ante reclamación/obligación contractual; DIRECT_INTERNAL solo si exposición externa lo justifica. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Aplica ante reclamación/obligación contractual; DIRECT_INTERNAL solo si exposición externa lo justifica. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Análisis trazable y limitaciones; Claim submission/status por autoridad; Referencias a mitigación/negociación/settlement future. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D21",
+      "name": "Commissioning",
+      "classification": "DOMAIN",
+      "purpose": "Controlar systemization, mechanical completion, pre-commissioning, pruebas y readiness técnica de entrega de sistemas.",
+      "objects": [
+        "System/Subsystem",
+        "Mechanical completion",
+        "Test pack/procedure/result",
+        "TWP/Turnover package reference",
+        "Punch classification",
+        "Commissioning acceptance"
+      ],
+      "source_authority": "Commissioning posee secuencia/prueba y aceptación de sistema; Quality mantiene NCR/inspección y documento D14 contiene evidencia; no es asset master.",
+      "inputs": [
+        "Field completion y QA dossiers",
+        "Design/system boundaries",
+        "HSE/permit clearance",
+        "Test procedures y punch status"
+      ],
+      "outputs": [
+        "Sistema probado/aceptado o bloqueado",
+        "Mechanical completion/commissioning records",
+        "Turnover evidence para Handover"
+      ],
+      "upstream_ids": [
+        "D02",
+        "D13",
+        "D14",
+        "D16",
+        "D17",
+        "D18"
+      ],
+      "admin_config": [
+        "Publicar systemization, estados y criterios de test/acceptance",
+        "Configurar test authority/SoD y punch blocking"
+      ],
+      "user_operations": [
+        "Preparar/ejecutar/revisar tests y confirmar completion",
+        "Resolver fallas y emitir turnover autorizado"
+      ],
+      "shared_read_only": [
+        "System/test readiness y dossiers",
+        "Punch/completion history"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Solo activos/sistemas que exijan pruebas/puesta en servicio; no forzar proyecto administrativo.",
+      "handoff": "Consume requisitos de activo autorizados; cierre técnico no decide nueva inversión.",
+      "p6_relationship": "Commissioning milestones y secuencia se referencian a P6; tests no recalculan critical path.",
+      "current_status": "TWP/TOP en taxonomía AWP, sin lifecycle dedicado de sistemas/tests probado.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O4",
+      "complexity": "VERY_HIGH",
+      "rationale": "Separar prueba de sistema de Field completion y Handover; reutilizar dossiers y packages.",
+      "source_refs": [
+        "frontend/src/App.tsx:7339",
+        "backend/tests/test_api_smoke.py:927"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP21"
+        ],
+        "backend": [],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D22",
+        "D23"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Controlar systemization, mechanical completion, pre-commissioning, pruebas y readiness técnica de entrega de sistemas. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 6 fuentes y 2 consumidores declarados (8 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: TWP/TOP en taxonomía AWP, sin lifecycle dedicado de sistemas/tests probado. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 5,
+          "rationale": "Complejidad relativa VERY_HIGH: Separar prueba de sistema de Field completion y Handover; reutilizar dossiers y packages. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Commissioning posee secuencia/prueba y aceptación de sistema; Quality mantiene NCR/inspección y documento D14 contiene evidencia; no es asset master. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 6 fuentes y 2 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Consume requisitos de activo autorizados; cierre técnico no decide nueva inversión."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Solo activos/sistemas que exijan pruebas/puesta en servicio; no forzar proyecto administrativo. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 4,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Solo activos/sistemas que exijan pruebas/puesta en servicio; no forzar proyecto administrativo. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Sistema probado/aceptado o bloqueado; Mechanical completion/commissioning records; Turnover evidence para Handover. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D22",
+      "name": "Handover",
+      "classification": "WORKFLOW",
+      "purpose": "Orquestar aceptación de entrega/custodia de alcance completado con dossier, punch y condiciones explícitas entre emisor/receptor.",
+      "objects": [
+        "Handover package/dossier",
+        "Acceptance/rejection/conditions",
+        "Custody/recipient reference",
+        "Outstanding punch/action",
+        "Turnover milestone"
+      ],
+      "source_authority": "Workflow posee acta/decisión de entrega y condiciones; D21 posee prueba técnica, D23 readiness operativa, D25 transición de datos/activos y fuentes conservan sus evidencias.",
+      "inputs": [
+        "Commissioning/quality completion",
+        "Manuals/as-built/training/spares evidence",
+        "Readiness y destinatario autorizado",
+        "Punch residual aceptado explícitamente"
+      ],
+      "outputs": [
+        "Handover acceptance/conditions/rejection",
+        "Transfer reference para Asset Transition",
+        "Open obligation register para closeout"
+      ],
+      "upstream_ids": [
+        "D12",
+        "D14",
+        "D17",
+        "D21",
+        "D23"
+      ],
+      "admin_config": [
+        "Publicar checklist y autoridad de entrega/recepción",
+        "Definir acceptance-with-conditions y punch tolerado"
+      ],
+      "user_operations": [
+        "Armar/someter/revisar/aceptar o rechazar dossier",
+        "Registrar condiciones y transferencia autorizada"
+      ],
+      "shared_read_only": [
+        "Acta/dossier y condiciones",
+        "Readiness y evidencia versionada"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Contractor necesita entrega de su alcance; Owner/direct según producto/activo. No toda entrega exige Commissioning.",
+      "handoff": "Es entrega operacional, no firma UAT estratégica ni FID; no presume aceptación humana por estado técnico.",
+      "p6_relationship": "Handover milestone referencia schedule/contract; decisión de recepción no se infiere de activity complete.",
+      "current_status": "Referencias TOP/evidence parciales; no workflow de aceptación/custodia completo demostrado.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O4",
+      "complexity": "HIGH",
+      "rationale": "Workflow de varios dominios, no módulo fuente dueño de todo; gate configurable y sin firma ficticia.",
+      "source_refs": [
+        "frontend/src/App.tsx:7339",
+        "frontend/src/App.tsx:7282"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP22"
+        ],
+        "backend": [],
+        "procurement": [
+          "PH-C12"
+        ]
+      },
+      "downstream_ids": [
+        "D24",
+        "D25"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Orquestar aceptación de entrega/custodia de alcance completado con dossier, punch y condiciones explícitas entre emisor/receptor. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 5 fuentes y 2 consumidores declarados (7 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: Referencias TOP/evidence parciales; no workflow de aceptación/custodia completo demostrado. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Workflow de varios dominios, no módulo fuente dueño de todo; gate configurable y sin firma ficticia. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Workflow posee acta/decisión de entrega y condiciones; D21 posee prueba técnica, D23 readiness operativa, D25 transición de datos/activos y fuentes conservan sus evidencias. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 5 fuentes y 2 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Es entrega operacional, no firma UAT estratégica ni FID; no presume aceptación humana por estado técnico."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Contractor necesita entrega de su alcance; Owner/direct según producto/activo. No toda entrega exige Commissioning. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Contractor necesita entrega de su alcance; Owner/direct según producto/activo. No toda entrega exige Commissioning. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Handover acceptance/conditions/rejection; Transfer reference para Asset Transition; Open obligation register para closeout. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D23",
+      "name": "Operational Readiness",
+      "classification": "WORKFLOW",
+      "purpose": "Verificar preparación real para operar el resultado/activo, distinta del setup inicial del Project Workspace.",
+      "objects": [
+        "Operations readiness checklist/version",
+        "Training/competence evidence",
+        "O&M manual/spares requirement",
+        "Operating permit/source reference",
+        "Readiness exception/acceptance"
+      ],
+      "source_authority": "Workflow agrega readiness pero cada área fuente conserva aprobación (operación, HSE, QA, commissioning, asset owner). Setup flags legacy no son autorización de operación.",
+      "inputs": [
+        "Commissioning/quality results según tipo",
+        "Training/manuals/spares y operating organization",
+        "Permits/HSE y operating constraints",
+        "Asset/handover requirements"
+      ],
+      "outputs": [
+        "Readiness decision/conditions con fuente",
+        "Blockers/acciones y cierre verificable",
+        "Input a Handover/Asset Transition"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D14",
+        "D17",
+        "D18",
+        "D21"
+      ],
+      "admin_config": [
+        "Publicar checklist por tipo de activo/proyecto",
+        "Definir responsables, waivers y autoridad readiness"
+      ],
+      "user_operations": [
+        "Completar evidencias/verificar gaps",
+        "Solicitar/revisar/confirmar readiness o condiciones"
+      ],
+      "shared_read_only": [
+        "Checklist/deficiencias y fuente",
+        "Decisión/condiciones e historia"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Solo cuando hay operación posterior; Contractor aporta alcance contratado y receptor confirma operación.",
+      "handoff": "No confundir canonical Workspace ACTIVE, FID ni strategic permit readiness con operational go-live.",
+      "p6_relationship": "Consume readiness milestone target y aporta blockers; no cambia current dates P6 por checklist.",
+      "current_status": "Legacy operational setup gate existe, pero readiness de operaciones/activos no implementada como workflow.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O4",
+      "complexity": "HIGH",
+      "rationale": "Prevenir falsa equivalencia ready flags = operación segura; evidencia y dueño de aceptación explícitos.",
+      "source_refs": [
+        "frontend/src/App.tsx:3410",
+        "frontend/src/App.tsx:4505"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP23"
+        ],
+        "backend": [
+          "BE-01"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D22",
+        "D25"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Verificar preparación real para operar el resultado/activo, distinta del setup inicial del Project Workspace. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 4,
+          "rationale": "Juicio de centralidad: 5 fuentes y 2 consumidores declarados (7 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 1,
+          "rationale": "Base observada: Legacy operational setup gate existe, pero readiness de operaciones/activos no implementada como workflow. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Prevenir falsa equivalencia ready flags = operación segura; evidencia y dueño de aceptación explícitos. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Workflow agrega readiness pero cada área fuente conserva aprobación (operación, HSE, QA, commissioning, asset owner). Setup flags legacy no son autorización de operación. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 5 fuentes y 2 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: No confundir canonical Workspace ACTIVE, FID ni strategic permit readiness con operational go-live."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Solo cuando hay operación posterior; Contractor aporta alcance contratado y receptor confirma operación. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 4,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Solo cuando hay operación posterior; Contractor aporta alcance contratado y receptor confirma operación. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Readiness decision/conditions con fuente; Blockers/acciones y cierre verificable; Input a Handover/Asset Transition. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D24",
+      "name": "Project Closeout",
+      "classification": "WORKFLOW",
+      "purpose": "Cerrar obligaciones comerciales/financieras/técnicas/documentales y operación del Project Workspace manteniendo identidad e historia.",
+      "objects": [
+        "Closeout checklist/package",
+        "Contract/financial/schedule/document closure references",
+        "Lessons learned",
+        "Residual obligations",
+        "Operational closure decision"
+      ],
+      "source_authority": "Closeout posee agregación/checklist y decisión de cierre operacional. D12/Cost/Schedule/Docs/Claims conservan cierre de fuente; Enterprise conserva identidad y lifecycle canónico.",
+      "inputs": [
+        "Handover/asset transition completeness",
+        "Contract/financial closure y claims status",
+        "Approved final reports/source archives",
+        "Residual conditions/legal retention"
+      ],
+      "outputs": [
+        "Cierre operacional autorizado con pendientes explícitos",
+        "Read-only final control/report package",
+        "Solicitud gobernada al lifecycle canónico, nunca delete automático"
+      ],
+      "upstream_ids": [
+        "D03",
+        "D04",
+        "D12",
+        "D14",
+        "D20",
+        "D22",
+        "D25"
+      ],
+      "admin_config": [
+        "Publicar checklist, retention y authority/SoD",
+        "Definir pendientes permitidos/reapertura y preservación histórica"
+      ],
+      "user_operations": [
+        "Conciliar/cerrar fuentes por dueños",
+        "Preparar/aceptar cierre y lessons learned",
+        "No borrar ni archivar canónico implícitamente"
+      ],
+      "shared_read_only": [
+        "Final reports y evidencias congeladas",
+        "Residual obligations y closeout decision"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "MANDATORY",
+        "CONTRACTOR_DELIVERY": "MANDATORY",
+        "DIRECT_INTERNAL": "MANDATORY"
+      },
+      "applicability_note": "Cierre proporcional a alcance; inexistencia de commissioning/claims se marca no aplicable con razón, no fuerza workflow.",
+      "handoff": "Devuelve reporte/evidencia a Portfolio/benefits por referencia, no reescribe BC/FID/financiación.",
+      "p6_relationship": "Conserva final accepted schedule/version y source; no borra actividades ni recalcula baseline histórica.",
+      "current_status": "Closeout report/financial-closeout existentes parciales no equivalen a cierre integral del proyecto.",
+      "planned_action": "EXTEND_EXISTING",
+      "wave": "O4",
+      "complexity": "HIGH",
+      "rationale": "Extender reporte/cierre financiero como componentes de workflow integral, sin otro dueño de saldos ni delete del Project.",
+      "source_refs": [
+        "frontend/src/App.tsx:6197",
+        "backend/app/api/v1/router.py:1990",
+        "backend/tests/test_integrated_control.py:208"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP24"
+        ],
+        "backend": [
+          "BE-08",
+          "BE-12"
+        ],
+        "procurement": [
+          "PH-C12",
+          "PH-C16"
+        ]
+      },
+      "downstream_ids": [],
+      "scores": {
+        "business_value": {
+          "score": 5,
+          "rationale": "Juicio arquitectónico: Cerrar obligaciones comerciales/financieras/técnicas/documentales y operación del Project Workspace manteniendo identidad e historia. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 3,
+          "rationale": "Juicio de centralidad: 7 fuentes y 0 consumidores declarados (7 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 3,
+          "rationale": "Base observada: Closeout report/financial-closeout existentes parciales no equivalen a cierre integral del proyecto. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Extender reporte/cierre financiero como componentes de workflow integral, sin otro dueño de saldos ni delete del Project. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 4,
+          "rationale": "Riesgo de autoridad/versionado: Closeout posee agregación/checklist y decisión de cierre operacional. D12/Cost/Schedule/Docs/Claims conservan cierre de fuente; Enterprise conserva identidad y lifecycle canónico. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 7 fuentes y 0 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Devuelve reporte/evidencia a Portfolio/benefits por referencia, no reescribe BC/FID/financiación."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER MANDATORY: Cierre proporcional a alcance; inexistencia de commissioning/claims se marca no aplicable con razón, no fuerza workflow. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 5,
+          "rationale": "CONTRACTOR_DELIVERY MANDATORY: Cierre proporcional a alcance; inexistencia de commissioning/claims se marca no aplicable con razón, no fuerza workflow. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 5,
+          "rationale": "Salidas propuestas: Cierre operacional autorizado con pendientes explícitos; Read-only final control/report package; Solicitud gobernada al lifecycle canónico, nunca delete automático. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    },
+    {
+      "id": "D25",
+      "name": "Asset Handover / Transition",
+      "classification": "WORKFLOW",
+      "purpose": "Transferir datos/deliverables y responsabilidad hacia Facility/Property/asset operations por referencias canónicas y aceptación explícita.",
+      "objects": [
+        "Asset transition package",
+        "Canonical Facility/Property/Workspace reference",
+        "Asset data/O&M record reference",
+        "Recipient acceptance",
+        "Data quality/relationship mapping",
+        "Warranty/spares record reference"
+      ],
+      "source_authority": "Workflow posee transferencia y mapping aceptado; Facility/Property/asset owner posee destino/master de operación, no se crea otro Project ni se usa setup label como asset receipt.",
+      "inputs": [
+        "Accepted Handover",
+        "Operational readiness y asset data requirements",
+        "As-built/model/manual/warranty references",
+        "Canonical physical Workspace context"
+      ],
+      "outputs": [
+        "Transfer mapping/receipt con aceptación",
+        "Open warranty/spares obligations",
+        "Links persistentes Project–Facility/Property sin duplicación"
+      ],
+      "upstream_ids": [
+        "D01",
+        "D14",
+        "D22",
+        "D23"
+      ],
+      "admin_config": [
+        "Publicar asset data requirements y destination mapping",
+        "Definir aceptación/rechazo y authority del receptor"
+      ],
+      "user_operations": [
+        "Preparar/validar/transferir paquete y obtener receipt",
+        "Resolver errores de datos conservando source revisions"
+      ],
+      "shared_read_only": [
+        "Transition status y referencias destino",
+        "Receipt, mappings y residual obligations"
+      ],
+      "applicability": {
+        "CAPITAL_OWNER": "CONDITIONAL",
+        "CONTRACTOR_DELIVERY": "CONDITIONAL",
+        "DIRECT_INTERNAL": "CONDITIONAL"
+      },
+      "applicability_note": "Aplica si se entrega activo/infraestructura; Contractor entrega datos contratados, no crea master operativo del Owner unilateralmente.",
+      "handoff": "Identidad física reutiliza Enterprise/physical Workspaces y receptor autorizado; no nuevo asset master por conveniencia operacional.",
+      "p6_relationship": "Vincula asset transition milestone/model refs si aplica; 4D/BIM no es asset receipt.",
+      "current_status": "Physical Workspace infrastructure real; Asset inventory/warranty/meter placeholders y Asset Creator/Receipt es label de setup legacy, no transición implementada.",
+      "planned_action": "BUILD_LATER",
+      "wave": "O4",
+      "complexity": "HIGH",
+      "rationale": "Workflow fronterizo a Facility/Property, no convertir macroproceso operacional en mantenimiento ni duplicar identidad física.",
+      "source_refs": [
+        "frontend/src/navigation/applicationNavigation.ts:354",
+        "frontend/src/navigation/applicationNavigation.ts:491",
+        "backend/tests/test_physical_workspace_creation.py:628"
+      ],
+      "actualinventoryids": {
+        "frontend": [
+          "OP25"
+        ],
+        "backend": [
+          "BE-01"
+        ],
+        "procurement": []
+      },
+      "downstream_ids": [
+        "D24"
+      ],
+      "scores": {
+        "business_value": {
+          "score": 4,
+          "rationale": "Juicio arquitectónico: Transferir datos/deliverables y responsabilidad hacia Facility/Property/asset operations por referencias canónicas y aceptación explícita. No representa valor económico cuantificado ni aprobación de negocio."
+        },
+        "dependency_centrality": {
+          "score": 3,
+          "rationale": "Juicio de centralidad: 4 fuentes y 1 consumidores declarados (5 conexiones); no mide popularidad ni prioridad aprobada."
+        },
+        "existing_capability_reuse": {
+          "score": 2,
+          "rationale": "Base observada: Physical Workspace infrastructure real; Asset inventory/warranty/meter placeholders y Asset Creator/Receipt es label de setup legacy, no transición implementada. La puntuación estima reutilización, no cobertura completa."
+        },
+        "implementation_complexity": {
+          "score": 4,
+          "rationale": "Complejidad relativa HIGH: Workflow fronterizo a Facility/Property, no convertir macroproceso operacional en mantenimiento ni duplicar identidad física. Sin estimación de horas ni compromiso de entrega."
+        },
+        "data_model_risk": {
+          "score": 5,
+          "rationale": "Riesgo de autoridad/versionado: Workflow posee transferencia y mapping aceptado; Facility/Property/asset owner posee destino/master de operación, no se crea otro Project ni se usa setup label como asset receipt. Se valora exposición, no defecto de producción probado."
+        },
+        "cross_domain_coupling": {
+          "score": 5,
+          "rationale": "Exposición de contratos con 4 fuentes y 1 consumidores; no se interpreta como acoplamiento de tablas autorizado."
+        },
+        "strategic_integration_importance": {
+          "score": 4,
+          "rationale": "Frontera upstream: Identidad física reutiliza Enterprise/physical Workspaces y receptor autorizado; no nuevo asset master por conveniencia operacional."
+        },
+        "owner_applicability": {
+          "score": 5,
+          "rationale": "CAPITAL_OWNER CONDITIONAL: Aplica si se entrega activo/infraestructura; Contractor entrega datos contratados, no crea master operativo del Owner unilateralmente. No significa política vigente."
+        },
+        "contractor_applicability": {
+          "score": 4,
+          "rationale": "CONTRACTOR_DELIVERY CONDITIONAL: Aplica si se entrega activo/infraestructura; Contractor entrega datos contratados, no crea master operativo del Owner unilateralmente. No exige ruta FID completa."
+        },
+        "reporting_value": {
+          "score": 4,
+          "rationale": "Salidas propuestas: Transfer mapping/receipt con aceptación; Open warranty/spares obligations; Links persistentes Project–Facility/Property sin duplicación. Valor de visibilidad, no reporte ya implementado."
+        },
+        "user_urgency": {
+          "score": 3,
+          "rationale": "Neutral 3 para todos: el usuario no priorizó dominios específicos ni comunicó fechas. No se inventa urgencia ni preferencia."
+        }
+      }
+    }
+  ],
+  "process_map": [
+    {
+      "id": "P01",
+      "name": "Project Activated / Authorized Handoff",
+      "domain_ids": [
+        "D01"
+      ],
+      "description": "Validar canonical Workspace, tenant, memberships, governance route y currentness; CAPITAL_OWNER cumple FID/Post-FID cuando corresponde. Rutas Contractor/Direct legítimas no fuerzan owner-only.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P02",
+      "name": "Operational Setup",
+      "domain_ids": [
+        "D01",
+        "D14"
+      ],
+      "description": "Aplicar perfil publicado, evidence contracts, período y binding explícito legacy cuando exista; no inferir igualdad de IDs.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P03",
+      "name": "Control Baselines",
+      "domain_ids": [
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D19"
+      ],
+      "description": "Aprobar alcance/schedule/costo y recursos si aplica; baseline bundle referencia versiones fuente congeladas.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P04",
+      "name": "Execution Planning / Look-Ahead",
+      "domain_ids": [
+        "D02",
+        "D03",
+        "D09",
+        "D10",
+        "D15",
+        "D16"
+      ],
+      "description": "Preparar horizonte configurable (objetivo inicial 4 semanas), paquetes/workfronts y readiness de recursos/materiales/ingeniería/permisos.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P05",
+      "name": "Engineering / Procurement / Contract Administration",
+      "domain_ids": [
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "description": "Ramas paralelas solo donde apliquen; award recommendation no genera obligación ni habilita pagos.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P06",
+      "name": "Construction / Field Execution",
+      "domain_ids": [
+        "D16",
+        "D17",
+        "D18"
+      ],
+      "description": "Release de workfront con constraints, QA/HSE fuente y autoridad vigente; diario/hechos de campo verificables.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P07",
+      "name": "Progress Capture & Approval",
+      "domain_ids": [
+        "D05",
+        "D06",
+        "D14",
+        "D17"
+      ],
+      "description": "Capturar cantidades/horas/milestones con método; revisión/aprobación y freeze de período sin mezclar porcentajes.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P08",
+      "name": "Cost / Schedule / Resource Update",
+      "domain_ids": [
+        "D03",
+        "D04",
+        "D05"
+      ],
+      "description": "Actualizar fuentes por sus dueños; P6 calcula CPM en intercambio manual externo; deduplicar commitment/actual y preservar corte.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P09",
+      "name": "Change / Risk / Issue Review",
+      "domain_ids": [
+        "D08",
+        "D09",
+        "D10",
+        "D15"
+      ],
+      "description": "Evaluar y escalar; cambios aprobados generan solicitudes explícitas a source owners, no rewrite de baseline histórico.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P10",
+      "name": "Forecast / ETC / EAC",
+      "domain_ids": [
+        "D07"
+      ],
+      "description": "Preparar y aprobar pronóstico con supuestos/método/corte y riesgos; no modifica FIN/Funding estratégico.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P11",
+      "name": "Performance / Reporting",
+      "domain_ids": [
+        "D19"
+      ],
+      "description": "Conciliar período, emitir snapshot con lineage/currentness y controlar distribución; dashboards no son command authority.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P12",
+      "name": "Commissioning / Operational Readiness",
+      "domain_ids": [
+        "D17",
+        "D18",
+        "D21",
+        "D23"
+      ],
+      "description": "Solo si el producto requiere sistemas/operación: mechanical completion, tests, formación/manuales/spares/permits y excepciones explícitas.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P13",
+      "name": "Handover / Asset Transition",
+      "domain_ids": [
+        "D22",
+        "D25"
+      ],
+      "description": "Aceptación explícita del receptor, punch/condiciones y transferencia de datos a identidad física existente según alcance.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    },
+    {
+      "id": "P14",
+      "name": "Project Closeout",
+      "domain_ids": [
+        "D12",
+        "D20",
+        "D24"
+      ],
+      "description": "Cerrar fuentes comerciales/financieras/schedule/documentos y claims; preservar Project Workspace e historia, no delete automático.",
+      "sequence_note": "Orden conceptual condicionado; ramas/iteraciones no son prerequisitos universales de todos los Project Types."
+    }
+  ],
+  "process_feedback_edges": [
+    {
+      "from": "P08",
+      "to": "P04",
+      "reason": "Nuevo schedule/costo requiere ajustar próximo look-ahead."
+    },
+    {
+      "from": "P09",
+      "to": "P03",
+      "reason": "Cambio aprobado pide revisión explícita; conserva baseline histórica."
+    },
+    {
+      "from": "P11",
+      "to": "P04",
+      "reason": "Performance y decisiones alimentan siguiente período."
+    },
+    {
+      "from": "P12",
+      "to": "P06",
+      "reason": "Test fallido genera corrective work autorizado, no completion automática."
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "G-O1",
+      "name": "Baseline Approved",
+      "domain_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D19"
+      ],
+      "entry": [
+        "Contexto/autoridad/binding y fuentes verificadas",
+        "Scope/Schedule/Cost candidates con data date/cutoff"
+      ],
+      "exit": [
+        "Aprobación independiente por cada dueño de baseline",
+        "Bundle con hashes/versiones/códigos mapeados y pendientes no ocultos"
+      ],
+      "decision_owner": "Autoridades propuestas Scope/Schedule/Cost y Project Control Manager según matriz publicada; no firma inventada.",
+      "blocked_when": [
+        "Falta identidad/membresía/autorización válida",
+        "Fuente baseline inválida/no aprobada o mappings incoherentes"
+      ],
+      "not_investment_gate": true
+    },
+    {
+      "id": "G-O2",
+      "name": "Ready to Execute",
+      "domain_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D08",
+        "D12",
+        "D14",
+        "D19"
+      ],
+      "entry": [
+        "Baseline aprobada y plan de ejecución contextual",
+        "Contratos/autoridades requeridos y conditions actuales consultados"
+      ],
+      "exit": [
+        "Plan y recursos/evidencias mínimos aprobados",
+        "Alcance de ejecución autorizado y excepciones explícitas"
+      ],
+      "decision_owner": "Responsable autorizado de ejecución y dueños de restricciones; commitment authority separada.",
+      "blocked_when": [
+        "Activación usada como permiso irrestricto de contratar",
+        "Condición upstream de ejecución/compromiso no resuelta por su dueño"
+      ],
+      "not_investment_gate": true
+    },
+    {
+      "id": "G-O3",
+      "name": "Workfront Ready",
+      "domain_ids": [
+        "D02",
+        "D03",
+        "D11",
+        "D13",
+        "D15",
+        "D16",
+        "D17",
+        "D18"
+      ],
+      "entry": [
+        "Paquete/área y activities referenciados",
+        "Información/materiales/recursos/QA/HSE identificados"
+      ],
+      "exit": [
+        "Liberación explícita de workfront y constraints bloqueantes cerradas",
+        "Plan look-ahead y permisos fuente vigentes"
+      ],
+      "decision_owner": "Autoridad Field/Construction con clearance independiente QA/HSE/Engineering según fuente.",
+      "blocked_when": [
+        "Permiso de trabajo/QA/material/diseño pendiente bloqueante",
+        "Constraint cerrado sin evidencia o aprobación fuente"
+      ],
+      "not_investment_gate": true
+    },
+    {
+      "id": "G-O4",
+      "name": "Ready for Commissioning",
+      "domain_ids": [
+        "D14",
+        "D16",
+        "D17",
+        "D18",
+        "D21"
+      ],
+      "entry": [
+        "Systemization y mechanical-completion scope definidos",
+        "QA dossier/punch y procedimiento de test"
+      ],
+      "exit": [
+        "Completion/readiness técnica y safety clearance aprobados",
+        "Personal/procedimientos/evidencia de pruebas preparados"
+      ],
+      "decision_owner": "Autoridad Commissioning y responsables QA/HSE del sistema; solo donde aplique.",
+      "blocked_when": [
+        "Punch bloqueante, test procedure no aprobado o clearance safety ausente"
+      ],
+      "not_investment_gate": true
+    },
+    {
+      "id": "G-O5",
+      "name": "Ready for Handover",
+      "domain_ids": [
+        "D14",
+        "D17",
+        "D21",
+        "D22",
+        "D23",
+        "D25"
+      ],
+      "entry": [
+        "Dossier/test/readiness y receptor definidos",
+        "Manuals/as-built/training/spares según contrato"
+      ],
+      "exit": [
+        "Receptor acepta o enumera condiciones autorizadas",
+        "Punch residual y custodia/datos transferidos con referencia"
+      ],
+      "decision_owner": "Receptor/owner y entregante autorizados; evidencia humana necesaria.",
+      "blocked_when": [
+        "Aceptación inferida de completion técnica",
+        "Readiness requerida o datos contratados faltantes sin condición autorizada"
+      ],
+      "not_investment_gate": true
+    },
+    {
+      "id": "G-O6",
+      "name": "Project Closeout Ready",
+      "domain_ids": [
+        "D03",
+        "D04",
+        "D12",
+        "D14",
+        "D20",
+        "D22",
+        "D24",
+        "D25"
+      ],
+      "entry": [
+        "Cierres fuente y residual obligations conciliados",
+        "Entrega aceptada donde aplique y registros finales"
+      ],
+      "exit": [
+        "Cierre operacional aprobado y fuentes preservadas",
+        "Pendientes/claims/retention tratados explícitamente sin borrar identidad"
+      ],
+      "decision_owner": "Project closure authority publicada con aprobaciones fuente independientes.",
+      "blocked_when": [
+        "Obligación legal/financiera/claim abierta no permitida",
+        "Evidencia retenida inaccesible o cierre pretendido por delete/archive"
+      ],
+      "not_investment_gate": true
+    }
+  ],
+  "implementation_dependency_graph": {
+    "kind": "DAG",
+    "semantics": "Prerequisitos de implementación de contratos mínimos, no secuencia transaccional rígida ni afirmación de módulos independientes. La obligación inicial de D04 consume el contrato existente D12 read-only; hardening completo D12 es O2 y no crea ciclo D04↔D12.",
+    "prerequisites": {
+      "D01": [],
+      "D14": [
+        "D01"
+      ],
+      "D02": [
+        "D01",
+        "D14"
+      ],
+      "D03": [
+        "D01",
+        "D02"
+      ],
+      "D04": [
+        "D01",
+        "D02"
+      ],
+      "D05": [
+        "D02",
+        "D03",
+        "D04",
+        "D06"
+      ],
+      "D06": [
+        "D02",
+        "D03",
+        "D04",
+        "D14"
+      ],
+      "D08": [
+        "D02",
+        "D03",
+        "D04",
+        "D14"
+      ],
+      "D09": [
+        "D01",
+        "D02",
+        "D14"
+      ],
+      "D10": [
+        "D01",
+        "D14"
+      ],
+      "D07": [
+        "D03",
+        "D04",
+        "D06",
+        "D08",
+        "D09",
+        "D10"
+      ],
+      "D19": [
+        "D02",
+        "D03",
+        "D04",
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D10"
+      ],
+      "D11": [
+        "D02",
+        "D03",
+        "D04",
+        "D14"
+      ],
+      "D12": [
+        "D01",
+        "D04",
+        "D11",
+        "D14"
+      ],
+      "D13": [
+        "D02",
+        "D03",
+        "D14"
+      ],
+      "D15": [
+        "D10",
+        "D12",
+        "D13",
+        "D14"
+      ],
+      "D17": [
+        "D02",
+        "D13",
+        "D14"
+      ],
+      "D18": [
+        "D01",
+        "D09",
+        "D14"
+      ],
+      "D16": [
+        "D02",
+        "D03",
+        "D05",
+        "D06",
+        "D12",
+        "D13",
+        "D15",
+        "D17",
+        "D18"
+      ],
+      "D20": [
+        "D03",
+        "D04",
+        "D08",
+        "D12",
+        "D14"
+      ],
+      "D21": [
+        "D14",
+        "D16",
+        "D17",
+        "D18"
+      ],
+      "D23": [
+        "D01",
+        "D14",
+        "D17",
+        "D18",
+        "D21"
+      ],
+      "D22": [
+        "D14",
+        "D21",
+        "D23"
+      ],
+      "D25": [
+        "D01",
+        "D14",
+        "D22",
+        "D23"
+      ],
+      "D24": [
+        "D03",
+        "D04",
+        "D12",
+        "D14",
+        "D20",
+        "D22",
+        "D25"
+      ]
+    },
+    "topological_order": [
+      "D01",
+      "D14",
+      "D02",
+      "D03",
+      "D04",
+      "D06",
+      "D05",
+      "D08",
+      "D09",
+      "D10",
+      "D07",
+      "D11",
+      "D12",
+      "D13",
+      "D15",
+      "D17",
+      "D18",
+      "D16",
+      "D19",
+      "D20",
+      "D21",
+      "D23",
+      "D22",
+      "D25",
+      "D24"
+    ],
+    "acyclic_validated_in_memory": true,
+    "optional_domain_rule": "Para Project Types donde un dominio no aplica, usar referencia/estado NOT_APPLICABLE con razón aprobada; no fabricar objetos ni exigir commissioning/HSE/claim innecesarios.",
+    "phasing_note": "D14 evidence minimum moves to O1. D05 minimal rates/hours reused O1, full productivity O3. D17/D18 source/readiness contracts precede D16 field release although all full execution is O3. D20 historical engines retained throughout; integration hardening O4."
+  },
+  "scoring_method": {
+    "sheet": "09_Wave_Prioritization",
+    "status": "PROPOSED_ARCHITECTURAL_JUDGMENT_NOT_BUSINESS_APPROVAL",
+    "explanation": "Pesos propuestos para discusión, no aprobados por negocio. Los prerrequisitos de seguridad/identidad y el DAG prevalecen sobre el ranking. 1–5; mayor complejidad/riesgo/acoplamiento penaliza. La urgencia se mantiene neutral en 3.",
+    "criteria": [
+      {
+        "key": "business_value",
+        "label": "Valor de negocio",
+        "weight": 0.15,
+        "direction": "benefit",
+        "rationale": "Impacto transversal estimado, no ROI."
+      },
+      {
+        "key": "dependency_centrality",
+        "label": "Centralidad",
+        "weight": 0.15,
+        "direction": "benefit",
+        "rationale": "Prerrequisitos/consumidores del grafo."
+      },
+      {
+        "key": "existing_capability_reuse",
+        "label": "Reutilización",
+        "weight": 0.1,
+        "direction": "benefit",
+        "rationale": "Evidencia reutilizable localizada."
+      },
+      {
+        "key": "implementation_complexity",
+        "label": "Complejidad",
+        "weight": 0.1,
+        "direction": "penalty",
+        "rationale": "Penaliza esfuerzo relativo."
+      },
+      {
+        "key": "data_model_risk",
+        "label": "Riesgo del modelo",
+        "weight": 0.1,
+        "direction": "penalty",
+        "rationale": "Penaliza exposición de identidad/autoridad."
+      },
+      {
+        "key": "cross_domain_coupling",
+        "label": "Acoplamiento",
+        "weight": 0.1,
+        "direction": "penalty",
+        "rationale": "Penaliza contratos interdependientes."
+      },
+      {
+        "key": "strategic_integration_importance",
+        "label": "Integración estratégica",
+        "weight": 0.1,
+        "direction": "benefit",
+        "rationale": "Relevancia de la frontera estratégica."
+      },
+      {
+        "key": "owner_applicability",
+        "label": "Aplicabilidad Owner",
+        "weight": 0.05,
+        "direction": "benefit",
+        "rationale": "Cobertura del modelo Owner."
+      },
+      {
+        "key": "contractor_applicability",
+        "label": "Aplicabilidad Contractor",
+        "weight": 0.05,
+        "direction": "benefit",
+        "rationale": "Cobertura del modelo Contractor."
+      },
+      {
+        "key": "reporting_value",
+        "label": "Valor de reporting",
+        "weight": 0.05,
+        "direction": "benefit",
+        "rationale": "Transparencia y decisiones de control."
+      },
+      {
+        "key": "user_urgency",
+        "label": "Urgencia declarada",
+        "weight": 0.05,
+        "direction": "benefit",
+        "rationale": "3 neutral para todos: no se declaró urgencia relativa."
+      }
+    ]
+  },
+  "minimum_viable_operational_core": {
+    "domain_ids": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D06",
+      "D07",
+      "D08",
+      "D09",
+      "D10",
+      "D14",
+      "D19"
+    ],
+    "additional_foundations": [
+      "Explicit canonical-to-legacy context binding contract with tenant, uniqueness, membership and currentness guards",
+      "Minimal D14 evidence/source version references before baseline approval",
+      "Single reporting-period/cutoff contract and method-specific progress",
+      "Read-only commitment authority contract/netting and Post-FID commitment-condition guard before any contractual write"
+    ],
+    "not_included": [
+      "Full Engineering/Procurement/Contracts UI lifecycle",
+      "Full Field/QA/HSE, Commissioning/Handover or Asset Maintenance",
+      "Native CPM, API synchronization, ERP payment/accounting or full enterprise DMS"
+    ],
+    "validation_note": "Future exit tests must exercise a live governed Project and alternate non-owner routes without fabricated data; this architecture does not claim that operational E2E exists now."
+  }
+}

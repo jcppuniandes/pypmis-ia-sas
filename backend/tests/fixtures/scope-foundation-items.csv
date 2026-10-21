@@ -1,0 +1,5 @@
+Scope Code,Parent Scope Code,Scope Name,Description,Scope Type,Scope Nature,Discipline,Area,Zone,System,Location,Quantity,Unit,Source Reference
+XL-INSTALL-01,,Pump assembly,New delivery,DELIVERABLE,INSTALL,MECHANICAL,North,A,Water,Plant room,2,ea,EXCEL-PUMP-01
+XL-REMOVE-01,,Remove old valve,Existing asset removal,WORK,REMOVE,MECHANICAL,North,B,Water,Plant room,1,ea,EXCEL-REMOVE-01
+XL-TEMP-01,,Temporary access,Temporary works,WORK,TEMPORARY,CIVIL,South,A,Access,Yard,3,ea,EXCEL-TEMP-01
+XL-MAINT-01,,Maintain existing pumps,Existing asset intervention,SERVICE,MAINTENANCE,MECHANICAL,South,B,Water,Plant room,4,ea,EXCEL-MAINT-01

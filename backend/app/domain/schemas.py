@@ -2994,6 +2994,7 @@ class DashboardOut(BaseModel):
     cash_flow: list[CashFlowPeriodOut]
     cost_manager_summary: CostManagerSummaryOut
     project_kpi: KPIOut
+    project_kpi_is_persisted: bool = True
     account_kpis: list[KPIOut]
     control_snapshots: list[ControlSnapshotOut]
     forecast_scenarios: list[ForecastScenarioOut]

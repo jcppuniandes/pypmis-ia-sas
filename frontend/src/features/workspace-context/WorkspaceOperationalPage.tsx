@@ -8,6 +8,8 @@ import ProjectProposalWorkspace from "../project-proposal/ProjectProposalWorkspa
 import StrategicGateWorkspace from "../strategic-gate/StrategicGateWorkspace";
 import PortfolioProjectsWorkspace from "../portfolio-planning/PortfolioProjectsWorkspace";
 import ProjectStrategicContext from "../portfolio-planning/ProjectStrategicContext";
+import OperationalSetupWorkspace from "../operational-context/OperationalSetupWorkspace";
+import ScopeManagerWorkspace from "../scope-foundation/ScopeManagerWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -153,28 +155,34 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
         </aside>
 
         <section className="workspaceOperationalContent">
-          <CompactModuleHeader
-            description={
-              current?.code === "home"
-                ? "Landing común del contexto operacional activo."
-                : "Contenido Workspace-scoped validado por backend."
-            }
-            eyebrow="USER MODE · ACTIVE WORKSPACE CONTEXT"
-            metrics={[
-              { label: "Type", value: context.identity.workspace_type },
-              { label: "Status", value: context.identity.workspace_status },
-              {
-                label: "Modules",
-                value: navigatorItems.filter(
-                  (item) => item.state === "READY" && !["home", "overview"].includes(item.code)
-                ).length,
-              },
-            ]}
-            title={current?.label ?? "Workspace Home"}
-            tone="user"
-          />
+          {!["operational-setup", "scope-manager"].includes(current?.code ?? "") ? (
+            <CompactModuleHeader
+              description={
+                current?.code === "home"
+                  ? "Landing común del contexto operacional activo."
+                  : "Contenido Workspace-scoped validado por backend."
+              }
+              eyebrow="USER MODE · ACTIVE WORKSPACE CONTEXT"
+              metrics={[
+                { label: "Type", value: context.identity.workspace_type },
+                { label: "Status", value: context.identity.workspace_status },
+                {
+                  label: "Modules",
+                  value: navigatorItems.filter(
+                    (item) => item.state === "READY" && !["home", "overview"].includes(item.code)
+                  ).length,
+                },
+              ]}
+              title={current?.label ?? "Workspace Home"}
+              tone="user"
+            />
+          ) : null}
 
-          {current?.code === "ideas" ? (
+          {current?.code === "scope-manager" && context.identity.workspace_type === "PROJECT" ? (
+            <ScopeManagerWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
+          ) : current?.code === "operational-setup" && context.identity.workspace_type === "PROJECT" ? (
+            <OperationalSetupWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
+          ) : current?.code === "ideas" ? (
             <IdeaLifecycleWorkspace token={token} workspaceId={workspaceId} />
           ) : current?.code === "business-analyses" ? (
             <BusinessAnalysisWorkspace token={token} workspaceId={workspaceId} />

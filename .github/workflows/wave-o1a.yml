@@ -1,0 +1,74 @@
+name: Wave O1A operational foundation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - backend/app/modules/operational_context/**
+      - backend/tests/*o1a*
+      - backend/tests/*operational_context*
+      - backend/alembic/versions/20261019_0069_operational_context.py
+      - frontend/src/features/operational-context/**
+      - frontend/e2e/operational-context.spec.ts
+      - docker-compose.wave-o1a.yml
+      - .github/workflows/wave-o1a.yml
+
+jobs:
+  operational-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npx tsc --noEmit
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Build isolated images and pre O1A baseline then upgrade
+        run: |
+          mkdir -p outputs/.qa/wave-o1a-20261019
+          chmod 0777 outputs/.qa/wave-o1a-20261019
+          docker compose -f docker-compose.wave-o1a.yml build api frontend
+          docker compose -f docker-compose.wave-o1a.yml run --rm api python -m tests.provision_o1a_schema
+      - name: PostgreSQL binding authorization periods policies and additive migration
+        run: |
+          docker compose -f docker-compose.wave-o1a.yml run --rm api \
+            python -m pytest -q -rA --no-cov -o addopts= -o cache_dir=/tmp/o1a-cache \
+            tests/test_operational_context_characterization.py tests/test_operational_context_foundation.py \
+            tests/test_operational_context_migration.py tests/test_operational_context_owner_authority.py \
+            tests/test_operational_context_legacy_configuration_guard.py \
+            tests/test_operational_context_security_hardening.py tests/test_operational_context_legacy_reads.py \
+            --junitxml=/artifacts/postgresql-ci.xml
+      - name: Existing canonical lifecycle and Post FID regression
+        run: |
+          docker compose -f docker-compose.wave-o1a.yml run --rm api \
+            python -m pytest -q --no-cov -o addopts= -o cache_dir=/tmp/o1a-regression-cache \
+            tests/test_project_creation_process.py tests/test_project_workspace_initialization.py \
+            tests/test_project_initialization_post_fid_bridge.py --junitxml=/artifacts/strategic-regression-ci.xml
+      - name: Provision isolated browser actors and launch the application
+        run: |
+          docker compose -f docker-compose.wave-o1a.yml run --rm api python -m tests.provision_o1a_browser
+          docker compose -f docker-compose.wave-o1a.yml up -d api frontend
+          timeout 300 bash -c 'until curl --max-time 5 -sf http://127.0.0.1:8851/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 600 bash -c 'until curl --max-time 5 -sf http://127.0.0.1:5511 >/dev/null; do sleep 2; done'
+      - name: Chromium ADMIN USER and direct route security
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5511
+          E2E_API_URL: http://127.0.0.1:8851
+          E2E_O1A_FIXTURE: ${{ github.workspace }}/outputs/.qa/wave-o1a-20261019/browser-fixture.json
+          E2E_O1A_OUTPUT: ${{ github.workspace }}/outputs/.qa/wave-o1a-20261019/chromium
+        run: cd frontend && npx playwright test operational-context.spec.ts --project=chromium --workers=1
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave-o1a-real-stack
+          path: |
+            outputs/.qa/wave-o1a-20261019/
+            frontend/test-results/
+      - name: Stop isolated services without deleting persistent validation data
+        if: always()
+        run: docker compose -f docker-compose.wave-o1a.yml down --remove-orphans

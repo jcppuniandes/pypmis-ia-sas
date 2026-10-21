@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
@@ -66,6 +67,8 @@ CONFIGURATION_KINDS = {
 # These aggregates have dedicated RBAC/scope/SoD/ETag/idempotency authority.
 # A legacy tenant-configurator grant must never bypass their command boundary.
 GOVERNED_CONFIGURATION_APIS = {
+    "operational_profile": "/api/v1/operational/admin/profiles",
+    "scope_profile": "/api/v1/scope/admin/profiles",
     "risk_governance_policy": "/api/v1/risk-governance/admin/configurations",
     "basic_data_readiness_configuration": "/api/v1/basic-data/admin/configurations",
     "owner_capability_readiness_configuration": "/api/v1/owner-capability/admin/configurations",
@@ -390,7 +393,23 @@ def update_workspace_defaults(
     actor = require_tenant_configurator(db, tenant_id, user_id)
     workspace = _workspace(db, tenant_id, workspace_id)
     require_current_version(workspace, payload.expected_version)
-    workspace.defaults_json = payload.values
+    values = dict(payload.values)
+    if workspace.workspace_type_code.strip().lower().replace("_", "-").replace(" ", "-") == "project":
+        current = workspace.defaults_json or {}
+        if "_project" in values and ("_project" not in current or values["_project"] != current["_project"]):
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": "PROJECT_WORKSPACE_METADATA_RESERVED",
+                    "dedicated_api": "/api/v1/project-creation-requests",
+                    "message": "Project governance and source metadata belong to governed Project creation and lifecycle services.",
+                },
+            )
+        if "_project" in current:
+            # Generic defaults remain editable, but omission is not authority to
+            # remove live canonical governance/authorization/binding metadata.
+            values["_project"] = deepcopy(current["_project"])
+    workspace.defaults_json = values
     touch_collaborative_record(workspace)
     _event(db, tenant_id, actor.id, "workspace_defaults.updated", workspace)
     db.commit()
@@ -577,7 +596,13 @@ def _configurations(db: Session, tenant_id: int) -> list[AdminConfiguration]:
     return list(
         db.scalars(
             select(AdminConfiguration)
-            .where(AdminConfiguration.tenant_id == tenant_id)
+            # Operational Profile drafts/history have a dedicated granular
+            # ADMIN reader. The legacy tenant-configurator overview must not
+            # bypass it; USER reads the applicable published policy in context.
+            .where(
+                AdminConfiguration.tenant_id == tenant_id,
+                AdminConfiguration.kind.notin_(["operational_profile", "scope_profile"]),
+            )
             .order_by(AdminConfiguration.kind, AdminConfiguration.code, AdminConfiguration.revision.desc())
         ).all()
     )

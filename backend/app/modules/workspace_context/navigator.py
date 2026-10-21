@@ -158,7 +158,8 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("authorization-source", "Authorization Source"),
         NavigationDefinition("initialization-readiness", "Initialization Readiness"),
         NavigationDefinition("activation-readiness", "Activation Readiness"),
-        NavigationDefinition("scope", "Scope", definition_code="scope-manager"),
+        NavigationDefinition("operational-setup", "Operational Setup", permission_key="operational_context.read"),
+        NavigationDefinition("scope-manager", "Scope Manager", permission_key="scope_foundation.read"),
         NavigationDefinition("schedule", "Schedule", definition_code="schedule-manager"),
         NavigationDefinition("cost", "Cost", definition_code="cost-manager"),
         NavigationDefinition("documents", "Documents"),
@@ -248,6 +249,12 @@ class WorkspaceNavigatorService:
             state = item.default_state
             permission_key = item.permission_key
             reason = ""
+            if item.code == "scope-manager" and (
+                settings.get("scope-manager") is False
+                or (metadata.get("enabled_modules") and "scope-manager" not in enabled)
+            ):
+                state = "DISABLED"
+                reason = "Scope Manager is explicitly disabled for this Workspace"
             if item.definition_code:
                 if item.definition_code not in enabled or definition is None:
                     state = "DISABLED"

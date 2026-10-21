@@ -183,6 +183,14 @@ export default function MyWorkspacesPanel({ onBack, token }: { onBack?: () => vo
                 <button onClick={() => navigate(route)} type="button">
                   <ExternalLink size={14} /> {workspace.status === "PENDING" ? "Open Overview" : "Open Workspace"}
                 </button>
+                {workspace.workspace_type === "PROJECT" && workspace.status === "ACTIVE" ? (
+                  <button
+                    onClick={() => navigate(`/workspaces/${workspace.workspace_id}/operational-setup`)}
+                    type="button"
+                  >
+                    <ExternalLink size={14} /> Operational Setup
+                  </button>
+                ) : null}
               </article>
             );
           })}

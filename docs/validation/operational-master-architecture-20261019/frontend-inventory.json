@@ -1,0 +1,766 @@
+{
+  "audit_date": "2026-10-19",
+  "scope": "Read-only frontend and directly linked test/API source inspection; no tests executed and no browser claims in this inventory.",
+  "implementation_authority": "Architecture input only. No navigation registry, operational module, backend, migration, seed, service or business record was changed.",
+  "agents_instructions": {
+    "root_AGENTS_md_found": false,
+    "search": "Get-ChildItem root -Filter AGENTS.md; rg --files frontend/docs -g AGENTS.md",
+    "caveat": "No instruction file was found in the inspected repository root or frontend/docs search."
+  },
+  "method": [
+    "Inspected current App entry point, route resolver, navigation blueprint, explicit empty-view set and active JSX.",
+    "Compared operational surface with API clients and linked backend tests; test definitions are evidence of intended coverage, not fresh passing results.",
+    "Searched frontend imports and consumers before classifying legacy files; no deletion was attempted."
+  ],
+  "navigation": {
+    "user_macroprocesses": [
+      "enterprise-strategy-manager",
+      "project-workspace-governance",
+      "project-control-manager",
+      "facility-manager",
+      "property-manager"
+    ],
+    "operational_current_macroprocess_key": "project-control-manager",
+    "operational_current_modules": [
+      "project-manager",
+      "scope-manager",
+      "schedule-manager",
+      "cost-manager",
+      "risk-manager",
+      "procurement-manager",
+      "progress-performance-manager",
+      "resource-manager",
+      "claim-manager",
+      "document-manager"
+    ],
+    "admin_macroprocesses": [
+      "enterprise-strategy-manager",
+      "platform-administration"
+    ],
+    "dedicated_operational_admin_configuration": "Not currently declared in ADMIN_MODE_NAVIGATION_BLUEPRINT; do not mistake strategic configuration for operational policy.",
+    "route_model": "App.tsx uses authenticated /app/* for current operational view state; strategic paths are derived separately. /workspaces/:workspaceId/* consumes backend-derived Workspace Context. An operational architecture must reuse these current authorities, not add a parallel project selector/identity or standalone route registry.",
+    "evidence": [
+      "frontend/src/navigation/applicationNavigation.ts:377",
+      "frontend/src/navigation/applicationNavigation.ts:559",
+      "frontend/src/navigation/applicationNavigation.ts:600",
+      "frontend/src/App.tsx:3058",
+      "frontend/src/App.tsx:3075",
+      "frontend/src/App.tsx:8180",
+      "frontend/src/features/workspace-context/WorkspaceOperationalPage.tsx:57"
+    ],
+    "empty_view_evidence": [
+      "frontend/src/navigation/applicationNavigation.ts:626",
+      "frontend/src/App.tsx:3716",
+      "frontend/src/App.tsx:4284"
+    ],
+    "guard_notes": [
+      "Mode switching checks canConfigure; backend authorization remains decisive.",
+      "Operational USER shell currently mixes configuration controls such as setup flags, WBS creation and BP policy editing. Future ADMIN/USER separation is a planned gap, not implemented by this architecture increment.",
+      "FRONTEND_VALIDATION_MODE defaults on, but current validation-view list includes both complete blueprint sets; its old 'Dashboard + BIM' comment must not be treated as the actual menu capability."
+    ],
+    "guard_evidence": [
+      "frontend/src/App.tsx:199",
+      "frontend/src/App.tsx:215",
+      "frontend/src/App.tsx:3075",
+      "frontend/src/App.tsx:3207",
+      "frontend/src/App.tsx:4622",
+      "frontend/src/App.tsx:6628"
+    ],
+    "test_definitions": [
+      "frontend/src/navigation/applicationNavigation.test.ts:9",
+      "frontend/src/navigation/applicationNavigation.test.ts:28",
+      "frontend/tests/AppFlow.test.tsx:1864",
+      "frontend/src/features/workspace-context/WorkspaceOperationalPage.test.tsx:9"
+    ]
+  },
+  "candidates": [
+    {
+      "id": "OP01",
+      "candidate": "Project Governance & Operational Setup",
+      "frontend_status": "IMPLEMENTED_PARTIAL",
+      "current_views": [
+        "project-creator",
+        "setup",
+        "workspace-context"
+      ],
+      "observation": "Active project creation drawer, setup readiness flags and WBS catalog exist. Workspace context identity is backend-derived. Legacy operational setup readiness is not proof of canonical Workspace activation or full operational readiness.",
+      "evidence": [
+        "frontend/src/App.tsx:4248",
+        "frontend/src/App.tsx:4505",
+        "frontend/src/components/ProjectCreateDrawer.tsx:1",
+        "frontend/src/api/projects.ts:86",
+        "frontend/src/features/workspace-context/WorkspaceOperationalPage.tsx:105"
+      ],
+      "test_definitions": [
+        "frontend/tests/AppFlow.test.tsx:1562",
+        "frontend/tests/AppFlow.test.tsx:2407",
+        "frontend/tests/AppFlow.test.tsx:2458",
+        "backend/tests/test_project_operational_setup_activity_sheet.py:1"
+      ],
+      "proposed_action": "REUSE canonical Project Workspace creation/activation and separate configuration from transaction controls in a future increment."
+    },
+    {
+      "id": "OP02",
+      "candidate": "Scope Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_WITH_PLACEHOLDERS",
+      "current_views": [
+        "quantity-takeoff",
+        "work-packages",
+        "decisions",
+        "scope-items",
+        "plan-items"
+      ],
+      "observation": "BIM Manager is a real IFC/Three.js/web-ifc viewer with quantity extraction/geometry measurement, Object Explorer hierarchy and Properties toggles, WBS/CBS/FBS/APU mapping, budget and AWP linkage. Scope Items and Plan Items remain title-only. BIM viewing is not 4D scheduling.",
+      "evidence": [
+        "frontend/src/App.tsx:5654",
+        "frontend/src/App.tsx:5731",
+        "frontend/src/components/BimIfcModelViewer.tsx:28",
+        "frontend/src/components/BimIfcModelViewer.tsx:1349",
+        "frontend/src/api/projects.ts:117",
+        "frontend/src/api/projects.ts:165",
+        "frontend/src/api/projects.ts:204",
+        "frontend/src/navigation/applicationNavigation.ts:398",
+        "frontend/src/navigation/applicationNavigation.ts:637"
+      ],
+      "test_definitions": [
+        "frontend/tests/BimIfcModelViewer.test.tsx:184",
+        "frontend/tests/BimIfcModelViewer.test.tsx:533",
+        "frontend/tests/BimIfcModelViewer.test.tsx:619",
+        "frontend/tests/AppFlow.test.tsx:2234",
+        "frontend/e2e/bim-viewer.spec.ts:8",
+        "backend/tests/test_bim_model_registry.py:74"
+      ],
+      "proposed_action": "KEEP viewer/quantity/APU authority; define controlled scope baseline/revision/work-package links without recreating IFC engine."
+    },
+    {
+      "id": "OP03",
+      "candidate": "Schedule Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_WITH_LOCAL_CONTROLS_AND_PLACEHOLDERS",
+      "current_views": [
+        "schedule-intake",
+        "schedule-control",
+        "schedule-4d",
+        "schedule-changes",
+        "baseline"
+      ],
+      "observation": "P6 XML/XER intake and Activity Sheet/WBS roll-up exist. Schedule control renders imported schedule through ProjectControlsHandbook, basic CPM/delay/lookahead/recovery calculations and localStorage project-local persistence. This is not a Primavera-equivalent scheduling engine or governed multiuser schedule-control database. 4D Model and Schedule Changes are explicitly empty.",
+      "evidence": [
+        "frontend/src/App.tsx:4290",
+        "frontend/src/App.tsx:4432",
+        "frontend/src/App.tsx:7009",
+        "frontend/src/components/ProjectControlsHandbook.tsx:316",
+        "frontend/src/components/ProjectControlsHandbook.tsx:407",
+        "frontend/src/components/ProjectControlsHandbook.tsx:511",
+        "frontend/src/components/ProjectControlsHandbook.tsx:625",
+        "frontend/src/api/projects.ts:57",
+        "frontend/src/navigation/applicationNavigation.ts:639"
+      ],
+      "test_definitions": [
+        "frontend/tests/ProjectControlsHandbook.test.tsx:13",
+        "frontend/tests/ProjectControlsHandbook.test.tsx:69",
+        "frontend/tests/ProjectControlsHandbook.test.tsx:150",
+        "frontend/tests/AppFlow.test.tsx:1725",
+        "frontend/tests/AppFlow.test.tsx:1944",
+        "backend/tests/test_schedule_ingestion.py:97",
+        "backend/tests/test_qra_schedule_import_metadata.py:24"
+      ],
+      "proposed_action": "REUSE P6 intake/source metadata and distinguish source-P6 calculations from supplemental P&Pmis diagnostics; plan controlled revisions/calendar semantics before promoting local controls."
+    },
+    {
+      "id": "OP04",
+      "candidate": "Cost Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_WITH_PLACEHOLDERS",
+      "current_views": [
+        "costs",
+        "bim-budget",
+        "integrated-control",
+        "estimates",
+        "cash-flow",
+        "budget-changes",
+        "budget-transfer"
+      ],
+      "observation": "Real cost/funding traceability, CBS/FBS/control accounts, BIM budget consolidation, recost, SOV/commitment funding and reconciliation exist. Estimates, Cash Flow, Budget Changes and Budget Transfer menu screens are explicit placeholders; do not infer UI lifecycle completion from backend models.",
+      "evidence": [
+        "frontend/src/App.tsx:5745",
+        "frontend/src/App.tsx:5924",
+        "frontend/src/App.tsx:7178",
+        "frontend/src/lib/bimBudget.ts:1",
+        "frontend/src/api/integratedControl.ts:154",
+        "frontend/src/api/integratedControl.ts:221",
+        "frontend/src/api/integratedControl.ts:245",
+        "frontend/src/navigation/applicationNavigation.ts:641"
+      ],
+      "test_definitions": [
+        "frontend/tests/bim-budget.test.ts:51",
+        "frontend/tests/bim-budget.test.ts:103",
+        "frontend/tests/AppFlow.test.tsx:1904",
+        "frontend/tests/AppFlow.test.tsx:1994",
+        "backend/tests/test_integrated_control.py:40",
+        "backend/tests/test_integrated_control.py:266"
+      ],
+      "proposed_action": "REUSE operational cost-control core; distinguish operational approved control budget from strategic scenario/funding authority."
+    },
+    {
+      "id": "OP05",
+      "candidate": "Resource & Productivity Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_NO_FULL_RESOURCE_ASSIGNMENT_UI",
+      "current_views": [
+        "apu-catalog",
+        "progress"
+      ],
+      "observation": "Master Rate Sheet uses Colombia APU catalog, sources, sync/search and quantity APU approvals. Progress records include installed quantities/labor hours; dashboard type exposes productivity summary. This does not establish workforce/equipment assignment, timesheets or resource calendars.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:460",
+        "frontend/src/App.tsx:4982",
+        "frontend/src/App.tsx:7151",
+        "frontend/src/api/projects.ts:187",
+        "frontend/src/api/projects.ts:211",
+        "frontend/src/types/index.ts:2042"
+      ],
+      "test_definitions": [
+        "frontend/tests/bim-apu-review.test.ts:1",
+        "frontend/tests/BimApuReviewPanel.test.tsx:1",
+        "backend/tests/test_colombia_apu_catalog.py:9"
+      ],
+      "proposed_action": "KEEP rate/APU authority; operational assignment/productivity controls are a distinct future capability, not the strategic portfolio resource scenario."
+    },
+    {
+      "id": "OP06",
+      "candidate": "Progress Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_READ_UI_WITH_BACKEND_CAPTURE",
+      "current_views": [
+        "progress"
+      ],
+      "observation": "Active Measuring Progress view lists recent dashboard records by control account with physical %, installed quantity and labor hours. Current live view contains no capture form. Backend capture endpoint exists with can_capture_progress; absence of live UI form must not be described as complete field capture.",
+      "evidence": [
+        "frontend/src/App.tsx:7151",
+        "backend/app/api/v1/router.py:771",
+        "backend/app/api/v1/router.py:788",
+        "backend/app/api/v1/router.py:797"
+      ],
+      "test_definitions": [
+        "frontend/tests/evm-dashboard.test.ts:88",
+        "frontend/tests/evm-dashboard.test.ts:128",
+        "backend/tests/test_api_smoke.py:1"
+      ],
+      "proposed_action": "REUSE persisted progress records; design measurement approval/cutoff/supersession and field capture later."
+    },
+    {
+      "id": "OP07",
+      "candidate": "Forecast / ETC / EAC",
+      "frontend_status": "IMPLEMENTED_PARTIAL_REPORTING_NOT_STANDALONE_LIFECYCLE",
+      "current_views": [
+        "dashboard",
+        "integrated-control"
+      ],
+      "observation": "Dashboard EVM derives EAC/VAC; integrated-control displays forecast-versus-funding and reconciliation rows. No dedicated ETC/EAC forecast revision/approval screen is registered. Calculated display is not an approved forecast snapshot.",
+      "evidence": [
+        "frontend/src/App.tsx:3510",
+        "frontend/src/App.tsx:5825",
+        "frontend/src/App.tsx:6202",
+        "frontend/src/App.tsx:6915",
+        "frontend/src/api/integratedControl.ts:154",
+        "backend/app/api/v1/router.py:4189"
+      ],
+      "test_definitions": [
+        "frontend/tests/evm-dashboard.test.ts:88",
+        "frontend/tests/evm-dashboard.test.ts:104",
+        "backend/tests/test_integrated_control.py:40"
+      ],
+      "proposed_action": "REUSE EVM and forecast query; define explicit source periods, ETC assumptions, governance and approved history rather than a second cost authority."
+    },
+    {
+      "id": "OP08",
+      "candidate": "Change Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_READ_UI_WITH_BACKEND_CREATE",
+      "current_views": [
+        "decisions"
+      ],
+      "observation": "Scope Changes view lists dashboard changes including impacts/status. Backend change creation exists; Schedule/Budget/Contract/PO Changes screens are placeholders. No evidence here of a fully connected end-to-end multi-domain change approval/baseline update lifecycle.",
+      "evidence": [
+        "frontend/src/App.tsx:7255",
+        "backend/app/api/v1/router.py:3401",
+        "frontend/src/navigation/applicationNavigation.ts:640",
+        "frontend/src/navigation/applicationNavigation.ts:643",
+        "frontend/src/navigation/applicationNavigation.ts:652"
+      ],
+      "test_definitions": [
+        "backend/tests/test_api_smoke.py:1"
+      ],
+      "proposed_action": "REUSE ChangeRequest; govern source-domain impact assessments and explicit approval/update orchestration."
+    },
+    {
+      "id": "OP09",
+      "candidate": "Risk Management",
+      "frontend_status": "OPERATIONAL_PLACEHOLDER_STRATEGIC_PROVIDER_EXISTS",
+      "current_views": [
+        "risk-register",
+        "risk-evaluation-matrix",
+        "risk-quantification-analysis",
+        "contingency-quantification"
+      ],
+      "observation": "All four operational Risk Manager screens are in the empty-view set. Strategic risk-readiness and QRA components are real but belong upstream; neither proves an operational risk register lifecycle or operational SRA execution.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:430",
+        "frontend/src/navigation/applicationNavigation.ts:645",
+        "frontend/src/features/enterprise-strategy/navigation/strategicNavigationBlueprint.ts:1"
+      ],
+      "test_definitions": [
+        "frontend/e2e/risk-readiness.spec.ts:1",
+        "frontend/e2e/qra-engine.spec.ts:1"
+      ],
+      "proposed_action": "EXTEND future operational risk register using references to governed strategic inputs; do not duplicate accepted strategic evidence."
+    },
+    {
+      "id": "OP10",
+      "candidate": "Issue Management",
+      "frontend_status": "PLACEHOLDER",
+      "current_views": [
+        "issues"
+      ],
+      "observation": "Issues menu is explicitly empty; AWP constraints are implemented but are not a general project issue register.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:388",
+        "frontend/src/navigation/applicationNavigation.ts:658",
+        "frontend/src/App.tsx:4284",
+        "frontend/src/api/integratedControl.ts:303"
+      ],
+      "test_definitions": [
+        "frontend/tests/AppFlow.test.tsx:2844"
+      ],
+      "proposed_action": "FUTURE issue lifecycle with explicit links to source domain and escalation, preserving AWP constraint authority."
+    },
+    {
+      "id": "OP11",
+      "candidate": "Procurement Management",
+      "frontend_status": "REGISTERED_PLACEHOLDER_WITH_REUSABLE_BACKEND",
+      "current_views": [
+        "request-for-bid"
+      ],
+      "observation": "Request for Bid is empty in current live registry. Legacy RfqView is unimported; backend rfq router is included and dashboard has RFQ summary. Backend availability does not establish current live procurement UI completeness.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:443",
+        "frontend/src/navigation/applicationNavigation.ts:649",
+        "frontend/src/views/RfqView.tsx:4",
+        "backend/app/api/v1/router.py:356",
+        "backend/app/api/v1/router.py:4647"
+      ],
+      "test_definitions": [
+        "backend/tests/test_api_smoke.py:1"
+      ],
+      "proposed_action": "REUSE RFQ backend and explicitly evaluate legacy forms before a future procurement workflow, with current strategic commercial strategy as upstream reference only."
+    },
+    {
+      "id": "OP12",
+      "candidate": "Commitments / Contract Administration",
+      "frontend_status": "PLACEHOLDER_MENU_WITH_PARTIAL_INTEGRATED_CONTROL",
+      "current_views": [
+        "contracts",
+        "contracts-changes",
+        "contract-payments",
+        "purchase-order",
+        "po-changes",
+        "po-payments",
+        "sales-contracts",
+        "commitment-purchase-order"
+      ],
+      "observation": "Dedicated contract/PO/payment and alternate Commitments screens are empty. Integrated control has active SOV and commitment-funding wiring; backend contracts/commitments exist. User labels 'Purchase Order' occur in distinct sales/commitment vs procurement branches: do not merge business meaning based on label alone.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:364",
+        "frontend/src/navigation/applicationNavigation.ts:444",
+        "frontend/src/navigation/applicationNavigation.ts:650",
+        "frontend/src/api/integratedControl.ts:221",
+        "frontend/src/api/integratedControl.ts:228",
+        "backend/app/api/v1/router.py:2353",
+        "backend/app/api/v1/router.py:2370"
+      ],
+      "test_definitions": [
+        "backend/tests/test_integrated_control.py:40"
+      ],
+      "proposed_action": "KEEP contracts/commitment authority and alternate creation routes; define seller/buyer applicability and lifecycle ownership before UI consolidation."
+    },
+    {
+      "id": "OP13",
+      "candidate": "Engineering & Design Management",
+      "frontend_status": "NO_DEDICATED_OPERATIONAL_SCREEN_IDENTIFIED",
+      "current_views": [],
+      "observation": "No engineering/design domain is declared in current operational blueprint. BIM geometry and controlled documents can be reused but do not prove design package/check/review/issue/approval lifecycle.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "frontend/src/navigation/applicationNavigation.ts:475"
+      ],
+      "test_definitions": [],
+      "proposed_action": "FUTURE engineering workflow linked to document revisions and interfaces; do not implement in this architecture increment."
+    },
+    {
+      "id": "OP14",
+      "candidate": "Document & Information Management",
+      "frontend_status": "PARTIAL_BACKEND_AND_EVIDENCE_READ_VIEW_WITH_PLACEHOLDER_DEDICATED_UI",
+      "current_views": [
+        "evidence",
+        "document-approval",
+        "submittals"
+      ],
+      "observation": "Dedicated Document Approval/Submittals menu screens are empty. Evidence read view exists in App, but is not a direct current navigation submodule; current focus guard can redirect views absent from the blueprint. Backend controlled documents/transmittals/mail/reviews and attachment security exist. Legacy DocumentsView is not mounted.",
+      "evidence": [
+        "frontend/src/App.tsx:227",
+        "frontend/src/App.tsx:3757",
+        "frontend/src/App.tsx:7282",
+        "frontend/src/navigation/applicationNavigation.ts:475",
+        "frontend/src/navigation/applicationNavigation.ts:662",
+        "frontend/src/views/DocumentsView.tsx:4",
+        "backend/app/api/v1/router.py:355"
+      ],
+      "test_definitions": [
+        "backend/tests/test_api_smoke.py:352",
+        "backend/tests/test_api_smoke.py:455",
+        "backend/tests/test_api_smoke.py:530",
+        "backend/tests/test_api_smoke.py:584"
+      ],
+      "proposed_action": "REUSE controlled document/revision/security backend; plan restoring scoped UI, approval routing and submission semantics without independent document master."
+    },
+    {
+      "id": "OP15",
+      "candidate": "Interface Management",
+      "frontend_status": "NO_DEDICATED_OPERATIONAL_SCREEN_IDENTIFIED",
+      "current_views": [],
+      "observation": "No interface register, interface agreement or resolution screen identified in operational blueprint. Communications and issues titles are not evidence.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:377",
+        "frontend/src/navigation/applicationNavigation.ts:387"
+      ],
+      "test_definitions": [],
+      "proposed_action": "FUTURE cross-domain workflow referencing real scope/packages/contracts and responsible parties."
+    },
+    {
+      "id": "OP16",
+      "candidate": "Construction / Field Management",
+      "frontend_status": "IMPLEMENTED_PARTIAL_AWP_NOT_FULL_FIELD_SUITE",
+      "current_views": [
+        "work-packages",
+        "progress"
+      ],
+      "observation": "Work Packages has active CWP/IWP/TWP/TOP summary, hierarchy, path of construction, package draft creation and constraints. Measuring Progress reads field records. No complete daily diary, workforce/time capture, permits-to-work or field inspection suite follows from AWP alone.",
+      "evidence": [
+        "frontend/src/App.tsx:7332",
+        "frontend/src/App.tsx:7591",
+        "frontend/src/api/integratedControl.ts:272",
+        "frontend/src/api/integratedControl.ts:303"
+      ],
+      "test_definitions": [
+        "frontend/tests/AppFlow.test.tsx:2844",
+        "frontend/e2e/production-readiness.spec.ts:3",
+        "backend/tests/test_api_smoke.py:927"
+      ],
+      "proposed_action": "REUSE AWP work packages and constraints; future field workflow consumes approved scope/schedule/method/evidence rather than owning those sources."
+    },
+    {
+      "id": "OP17",
+      "candidate": "Quality Management",
+      "frontend_status": "NO_FULL_QUALITY_DOMAIN_UI_IDENTIFIED",
+      "current_views": [
+        "punch-list-items"
+      ],
+      "observation": "Punch List Items is empty. Schedule Data Quality Gate and IFC quantity-quality rules are source validation, not construction QA/QC, ITP, inspection/NCR lifecycle.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:390",
+        "frontend/src/navigation/applicationNavigation.ts:660",
+        "frontend/src/App.tsx:4320",
+        "frontend/src/components/BimScopeValidationPanel.tsx:1"
+      ],
+      "test_definitions": [
+        "frontend/tests/BimScopeValidationPanel.test.tsx:1",
+        "backend/tests/test_guided_flow.py:102"
+      ],
+      "proposed_action": "FUTURE quality domain reusing evidence and work-package references; keep ingestion quality checks separate."
+    },
+    {
+      "id": "OP18",
+      "candidate": "HSE Management",
+      "frontend_status": "NO_DEDICATED_OPERATIONAL_SCREEN_IDENTIFIED",
+      "current_views": [],
+      "observation": "No HSE operational screen or lifecycle is declared. AWP constraints, risk readiness and permits readiness are not a demonstrated HSE incident/inspection/work-permit system.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:377"
+      ],
+      "test_definitions": [],
+      "proposed_action": "FUTURE bounded HSE capability with explicit field/permit/risk links; no invented safety compliance claim."
+    },
+    {
+      "id": "OP19",
+      "candidate": "Project Controls & Reporting",
+      "frontend_status": "IMPLEMENTED_PARTIAL_INTEGRATION_REPORTING",
+      "current_views": [
+        "dashboard",
+        "opc-gap",
+        "integrated-control",
+        "process-flow"
+      ],
+      "observation": "Active EVM dashboard/S-curve, maturity gaps, control matrix, reconciliation export, cost/funding audit agent, recost history and process-flow board exist. Reports derive domain values; they should not become a new source-data owner or substitute for actual approval.",
+      "evidence": [
+        "frontend/src/App.tsx:5755",
+        "frontend/src/App.tsx:5924",
+        "frontend/src/App.tsx:6935",
+        "frontend/src/App.tsx:4444",
+        "frontend/src/lib/evm.ts:1",
+        "frontend/src/lib/opcGap.ts:1",
+        "frontend/src/api/integratedControl.ts:257"
+      ],
+      "test_definitions": [
+        "frontend/tests/evm-dashboard.test.ts:88",
+        "frontend/tests/opc-gap.test.ts:37",
+        "frontend/tests/AppFlow.test.tsx:1970",
+        "frontend/tests/AppFlow.test.tsx:1994",
+        "frontend/e2e/production-readiness.spec.ts:3"
+      ],
+      "proposed_action": "KEEP integration/read-model layer with explicit source/cutoff lineage and future consolidated snapshots; no universal monolithic Project Controls data owner."
+    },
+    {
+      "id": "OP20",
+      "candidate": "Claims / Delay / Forensic Analysis",
+      "frontend_status": "IMPLEMENTED_PARTIAL",
+      "current_views": [
+        "claims-audit",
+        "window-analysis-37"
+      ],
+      "observation": "Active dossier upload/analysis, claims/entitlement/impact read results and chronological XER/XML MIP 3.7 window-analysis UI/API clients exist. Intended professional support is not legal entitlement determination or proof of full accepted contractual workflow.",
+      "evidence": [
+        "frontend/src/App.tsx:5192",
+        "frontend/src/App.tsx:5374",
+        "frontend/src/api/integratedControl.ts:278",
+        "frontend/src/api/integratedControl.ts:292",
+        "backend/app/api/v1/router.py:3278"
+      ],
+      "test_definitions": [
+        "backend/tests/test_claims_forensic_dossier.py:11",
+        "backend/tests/test_forensic_window_analysis_api.py:11",
+        "backend/tests/test_forensic_window_analysis.py:1"
+      ],
+      "proposed_action": "REUSE immutable source schedule/dossier lineage, constraints and contract refs; governed reviewer remains decision authority."
+    },
+    {
+      "id": "OP21",
+      "candidate": "Commissioning",
+      "frontend_status": "NO_DEDICATED_LIFECYCLE_SCREEN_IDENTIFIED",
+      "current_views": [
+        "work-packages"
+      ],
+      "observation": "TWP/TOP counts appear in AWP package taxonomy, not proof of system/subsystem completion, test packs, energization or commissioning acceptance lifecycle.",
+      "evidence": [
+        "frontend/src/App.tsx:7339",
+        "backend/tests/test_api_smoke.py:927"
+      ],
+      "test_definitions": [
+        "backend/tests/test_api_smoke.py:927"
+      ],
+      "proposed_action": "FUTURE commissioning workflow with systemization and signed test evidence; reuse package/document links."
+    },
+    {
+      "id": "OP22",
+      "candidate": "Handover",
+      "frontend_status": "NO_DEDICATED_HANDOVER_LIFECYCLE_UI_IDENTIFIED",
+      "current_views": [
+        "work-packages",
+        "evidence"
+      ],
+      "observation": "TOP and evidence/closeout language are existing primitives only; no demonstrated handover dossier acceptance, custody transfer, punch close or owner acknowledgment workflow.",
+      "evidence": [
+        "frontend/src/App.tsx:7339",
+        "frontend/src/App.tsx:3630",
+        "frontend/src/App.tsx:7282"
+      ],
+      "test_definitions": [],
+      "proposed_action": "FUTURE governed handover dossier/workflow; no invented completion or transfer."
+    },
+    {
+      "id": "OP23",
+      "candidate": "Operational Readiness",
+      "frontend_status": "PARTIAL_PROJECT_SETUP_GATE_NOT_ASSET_OPERATIONS_READINESS",
+      "current_views": [
+        "setup"
+      ],
+      "observation": "Existing setup readiness gate validates configuration for Activity Sheet loading. It is not commissioning-to-operation readiness, staffing/training/spares/O&M permit acceptance.",
+      "evidence": [
+        "frontend/src/App.tsx:3410",
+        "frontend/src/App.tsx:4505",
+        "frontend/src/api/projects.ts:86"
+      ],
+      "test_definitions": [
+        "frontend/tests/AppFlow.test.tsx:2407",
+        "backend/tests/test_project_operational_setup_activity_sheet.py:1"
+      ],
+      "proposed_action": "KEEP source setup readiness distinct; future operations-readiness checklist consumes approved commissioning/handover evidence."
+    },
+    {
+      "id": "OP24",
+      "candidate": "Project Closeout",
+      "frontend_status": "PARTIAL_FINANCIAL_REPORT_NOT_TOTAL_PROJECT_CLOSEOUT",
+      "current_views": [
+        "integrated-control"
+      ],
+      "observation": "Integrated-control displays unused balance/open commitments; backend closeout report and financial-closeout action exist. Current UI evidence does not establish full commercial/technical/records closeout lifecycle.",
+      "evidence": [
+        "frontend/src/App.tsx:6197",
+        "frontend/src/api/integratedControl.ts:157",
+        "backend/app/api/v1/router.py:1977",
+        "backend/app/api/v1/router.py:1990"
+      ],
+      "test_definitions": [
+        "backend/tests/test_integrated_control.py:208"
+      ],
+      "proposed_action": "REUSE financial closeout report, keep technical/contractual/records approvals explicit and separate."
+    },
+    {
+      "id": "OP25",
+      "candidate": "Asset Handover / Transition",
+      "frontend_status": "PLACEHOLDER_ASSET_MENU_AND_REUSABLE_CANONICAL_PHYSICAL_WORKSPACE",
+      "current_views": [
+        "setup",
+        "asset-inventory",
+        "asset-warranty",
+        "asset-meter"
+      ],
+      "observation": "Asset Creator/Receipt is the label of existing operational setup, not an implemented asset receipt workflow. Facility Asset Manager entries are empty. Physical Workspace infrastructure exists upstream but does not prove asset commissioning/receipt or maintenance master transfer.",
+      "evidence": [
+        "frontend/src/navigation/applicationNavigation.ts:354",
+        "frontend/src/navigation/applicationNavigation.ts:491",
+        "frontend/src/navigation/applicationNavigation.ts:664",
+        "frontend/src/App.tsx:4505"
+      ],
+      "test_definitions": [
+        "backend/tests/test_physical_workspace_creation.py:628",
+        "backend/tests/test_physical_workspace_initialization.py:1"
+      ],
+      "proposed_action": "FUTURE explicit canonical Facility/Property/asset reference and acceptance contract; no parallel Project/asset registry."
+    }
+  ],
+  "cleanup_candidates": [
+    {
+      "id": "CLEAN-FE-01",
+      "classification": "REQUIRES_DEPRECATION",
+      "paths": [
+        "frontend/src/views/ScheduleView.tsx:4",
+        "frontend/src/views/CostView.tsx:4",
+        "frontend/src/views/ChangesView.tsx:4",
+        "frontend/src/views/ClaimsView.tsx:4",
+        "frontend/src/views/ContractsView.tsx:4",
+        "frontend/src/views/RfqView.tsx:4",
+        "frontend/src/views/DocumentsView.tsx:4",
+        "frontend/src/views/AwpView.tsx:4",
+        "frontend/src/views/BusinessProcessesView.tsx:6",
+        "frontend/src/views/DashboardView.tsx:9",
+        "frontend/src/views/RoadmapView.tsx:5",
+        "frontend/src/views/AdminView.tsx:4"
+      ],
+      "evidence": "Static import-name/path search across frontend src/tests/e2e excluding node_modules and dist found declarations only; App imports only LoginView from views and renders operational JSX inline. These files consume legacy WorkspaceView/AppShellCtx and contain older forms and labels.",
+      "reason": "Not live mounted today, but historical functionality/forms differ from current inline views and may support recovery/reference or external consumers. Removing requires import/build coverage, route compatibility review, business parity approval and prior deprecation, not architecture-only deletion.",
+      "deleted": false
+    },
+    {
+      "id": "CLEAN-FE-02",
+      "classification": "REQUIRES_DEPRECATION",
+      "paths": [
+        "frontend/src/components/Sidebar.tsx:3",
+        "frontend/src/components/AppShellCtx.ts:16",
+        "frontend/src/types/index.ts:1"
+      ],
+      "evidence": "Sidebar references the legacy context; legacy view files also consume AppShellCtx. Current App uses ModuleNavigationItems/Groups and ControlFlowView instead.",
+      "reason": "Unused from current App entry, but coupled legacy cluster must be deprecated coherently after reference/build verification; old WorkspaceView cannot be removed in isolation.",
+      "deleted": false
+    },
+    {
+      "id": "CLEAN-FE-03",
+      "classification": "KEEP",
+      "paths": [
+        "frontend/src/navigation/applicationNavigation.ts:364",
+        "frontend/src/navigation/applicationNavigation.ts:440"
+      ],
+      "evidence": "Separate Commitments and Procurement branches both have Purchase Order labels.",
+      "reason": "Label duplication is not proven business authority duplication. Contractor sales commitments and buyer procurement must retain applicability until explicitly mapped.",
+      "deleted": false
+    },
+    {
+      "id": "CLEAN-FE-04",
+      "classification": "KEEP",
+      "paths": [
+        "frontend/src/components/BimIfcModelViewer.tsx:1",
+        "frontend/src/components/ProjectControlsHandbook.tsx:554"
+      ],
+      "evidence": "Both are imported/rendered by current App; test suites target actual helpers and controls.",
+      "reason": "Large files are active capabilities. Future extraction into domain helpers is not permission to rewrite or delete.",
+      "deleted": false
+    },
+    {
+      "id": "CLEAN-FE-05",
+      "classification": "UNKNOWN",
+      "paths": [
+        "frontend/src/App.tsx:7009",
+        "frontend/src/App.tsx:7282",
+        "frontend/src/App.tsx:3757"
+      ],
+      "evidence": "baseline and evidence render branches and internal information-flow targets exist, but keys are absent from current navigation flattening used by focusedControlView.",
+      "reason": "Potentially unreachable/redirected live branches require controlled browser deep-link/flow validation and usage audit. Do not delete or claim complete exposed functionality from source JSX.",
+      "deleted": false
+    },
+    {
+      "id": "CLEAN-FE-06",
+      "classification": "KEEP",
+      "paths": [
+        "frontend/src/navigation/applicationNavigation.ts:626",
+        "frontend/src/App.tsx:4284"
+      ],
+      "evidence": "Explicit empty-view set renders configured module names only.",
+      "reason": "Intentional placeholders preserve user-approved module catalog. Reclassify as planned, not dead routes or implemented capability.",
+      "deleted": false
+    }
+  ],
+  "cleanup_result": {
+    "removed_files": 0,
+    "safe_to_remove_proven": [],
+    "justification": "No file met the complete operational/business/deep-link proof threshold for SAFE_TO_REMOVE in this read-only architecture audit."
+  },
+  "conceptual_navigation_recommendation": {
+    "status": "PROPOSED_NOT_IMPLEMENTED",
+    "source_of_truth": "Extend and compose existing applicationNavigation.ts and existing strategicNavigationBlueprint.ts; reuse existing backend Workspace Context navigator for workspace-scoped readiness and current identity. New documentation must not become a competing runtime registry.",
+    "preserve": [
+      "Current stable view keys and canonical Project Workspace identity",
+      "Strategic route/access classification and historical UAT signoff pending state",
+      "CAPITAL_OWNER versus CONTRACTOR_DELIVERY versus DIRECT_INTERNAL applicability",
+      "Existing Facility Manager and Property Manager catalog placeholders without silently building them"
+    ],
+    "user_operational_grouping": [
+      "Operational Setup & Governance",
+      "Project Controls: Scope/BIM, Schedule, Cost, Resources/Productivity, Progress, Change, Risk, Issues, Forecast/Performance/Reports",
+      "Delivery: Procurement/Contracts, Engineering/Information/Interfaces, Construction/Quality/HSE",
+      "Completion: Commissioning, Handover, Operational Readiness, Closeout, Asset Transition"
+    ],
+    "admin_grouping": [
+      "Published operational templates, classification/catalogs, approval/authority rules, measurement/cutoff/baseline policies, source-adapter/calendar profiles and retention/export rules",
+      "Read-only preview/validation of published configurations, separate from live USER transactions"
+    ],
+    "warning": "Grouping is a proposal of capabilities, not a declaration that each candidate needs a new module or a new screen. Existing active views must be reused and placeholders visibly remain planned until an implementation increment is authorized.",
+    "required_future_tests": [
+      "All operational registry keys resolve to either an explicit placeholder or one authoritative view.",
+      "ADMIN views reject unauthorized direct routes and never run live USER transitions.",
+      "USER views cannot publish or mutate configuration.",
+      "Workspace identity/membership/governance remain backend-derived; stale or unactivated context cannot be bypassed via a menu.",
+      "P6 import lineage/calendar metadata and read-only source authority remain explicit.",
+      "Forecast/report views show source cutoffs and do not silently update approved source baselines.",
+      "Legacy route behavior is preserved or documented by deprecation tests before any removal."
+    ]
+  },
+  "adr_convention": {
+    "examples": [
+      "docs/64-adr-strategic-admin-user-code-hardening.md:1",
+      "docs/82-adr-qra-calculation-engine.md:1"
+    ],
+    "observed": "Markdown under docs with numeric prefix in many but not all titles; Spanish Contexto/Decisiones/Invariantes/Evidencia sections, status/date/scope and explicit out-of-scope constraints. QRA ADR uses contextual headings and not a universal ADR template.",
+    "proposed": "Create a documentation-only operational master ADR with Proposed/Architecture baseline status unless a real authorized acceptance exists. Record source authority, candidate classification, ADMIN/USER boundary, P6 ownership, canonical Workspace identity, non-goals, alternatives, consequences, evidence, and future validation. Do not mark implemented or accepted operational modules merely because architecture is approved."
+  },
+  "limitations": [
+    "No live browser or newly executed test pass is claimed.",
+    "No endpoint write, seed, migration, process restart or operational data mutation occurred.",
+    "Backend completeness outside explicitly cited linked routes/tests is for the separate backend inventory.",
+    "A route title, dashboard summary, type definition or old unmounted form is not lifecycle-completeness evidence."
+  ]
+}

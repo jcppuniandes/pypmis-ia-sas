@@ -9,6 +9,7 @@ import * as THREE from "three";
 import webIfcWasmUrl from "web-ifc/web-ifc.wasm?url";
 import { bimModels as bimModelsApi } from "../api/bimModels";
 import { projects as projectsApi } from "../api/projects";
+import type { BimViewerSourceProvider } from "../lib/bimViewerSource";
 import type {
   BimElementProperties,
   BimGeometryCacheArtifact,
@@ -62,6 +63,8 @@ type ViewerCameraCommands = {
 };
 
 type Props = {
+  sourceProvider?: BimViewerSourceProvider;
+  isolatedRefs?: string[];
   approvalDisabled?: boolean;
   clearModelDisabled?: boolean;
   informationContent?: ReactNode;
@@ -1299,6 +1302,8 @@ function IfcObjectTreeBranch({
 }
 
 export default function BimIfcModelViewer({
+  sourceProvider,
+  isolatedRefs,
   approvalDisabled = false,
   clearModelDisabled = false,
   informationContent,
@@ -1386,8 +1391,10 @@ export default function BimIfcModelViewer({
     setElementPropertiesLoadStatus("");
     if (!projectId || !model || !selectedPropertyKey) return undefined;
     setElementPropertiesLoadStatus("Consultando propiedades IFC publicadas...");
-    bimModelsApi
-      .elementProperties(token, projectId, model.id, selectedPropertyKey)
+    (sourceProvider
+      ? sourceProvider.elementProperties(selectedPropertyKey)
+      : bimModelsApi.elementProperties(token, projectId, model.id, selectedPropertyKey)
+    )
       .then((properties) => {
         if (!active) return;
         setElementProperties(properties);
@@ -1400,7 +1407,14 @@ export default function BimIfcModelViewer({
     return () => {
       active = false;
     };
-  }, [model?.id, projectId, selectedPropertyKey, token]);
+  }, [model?.id, projectId, selectedPropertyKey, sourceProvider, token]);
+
+  useEffect(() => {
+    if (isolatedRefs) {
+      if (isolatedRefs.length) viewerCommandsRef.current?.isolateRefs(isolatedRefs);
+      else viewerCommandsRef.current?.resetVisibility();
+    }
+  }, [isolatedRefs, renderStats]);
 
   useEffect(() => {
     navigationModeRef.current = navigationMode;
@@ -1433,8 +1447,7 @@ export default function BimIfcModelViewer({
     setViewerManifest(null);
     setManifestStatus(model ? "Cargando manifiesto de visor..." : "Sin modelo IFC registrado.");
     if (!projectId || !model) return undefined;
-    bimModelsApi
-      .manifest(token, projectId, model.id)
+    (sourceProvider ? sourceProvider.manifest() : bimModelsApi.manifest(token, projectId, model.id))
       .then((manifest) => {
         if (!active) return;
         setViewerManifest(manifest);
@@ -1447,7 +1460,7 @@ export default function BimIfcModelViewer({
     return () => {
       active = false;
     };
-  }, [manifestRefreshKey, model?.id, projectId, token]);
+  }, [manifestRefreshKey, model?.id, projectId, sourceProvider, token]);
 
   useEffect(() => {
     setIsolatedGroupId("");
@@ -1572,9 +1585,11 @@ export default function BimIfcModelViewer({
             root.add(mesh);
           });
         } else {
-          const blob = model
-            ? await bimModelsApi.source(token, projectId, model.id)
-            : await projectsApi.quantityTakeoffIfcModel(token, projectId, run!.id);
+          const blob = sourceProvider
+            ? await sourceProvider.source()
+            : model
+              ? await bimModelsApi.source(token, projectId, model.id)
+              : await projectsApi.quantityTakeoffIfcModel(token, projectId, run!.id);
           if (disposed) return;
           const bytes = new Uint8Array(await blob.arrayBuffer());
           diagnostics.fileSizeBytes = bytes.length;
@@ -2174,6 +2189,7 @@ export default function BimIfcModelViewer({
     run,
     sourceName,
     sourceType,
+    sourceProvider,
     token,
     viewerManifest?.geometry_strategy,
     viewerManifest?.revision_id,
@@ -2271,7 +2287,11 @@ export default function BimIfcModelViewer({
   const viewerEngineLabel =
     viewerManifest?.geometry_strategy === "backend_cache" ? "IfcOpenShell cache / Three.js" : "web-ifc / Three.js";
   const canPrepareGeometryCache = Boolean(
-    projectId && model && viewerManifest?.geometry_strategy !== "backend_cache" && !isPreparingGeometryCache
+    !sourceProvider &&
+    projectId &&
+    model &&
+    viewerManifest?.geometry_strategy !== "backend_cache" &&
+    !isPreparingGeometryCache
   );
   const handlePrepareGeometryCache = async () => {
     if (!projectId || !model || isPreparingGeometryCache) return;

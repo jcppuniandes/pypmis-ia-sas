@@ -270,6 +270,7 @@ from app.modules.idea_demand import router as idea_demand_router
 from app.modules.investment_decision import router as investment_decision_router
 from app.modules.investment_evidence_policy import router as investment_evidence_policy_router
 from app.modules.investment_gate_preparation import router as investment_gate_preparation_router
+from app.modules.operational_context import router as operational_context_router
 from app.modules.owner_capability import router as owner_capability_router
 from app.modules.permit_readiness import router as permit_readiness_router
 from app.modules.physical_workspace_creation import router as physical_workspace_creation_router
@@ -290,6 +291,7 @@ from app.modules.qra_engine import router as qra_engine_router
 from app.modules.qra_foundation import router as qra_foundation_router
 from app.modules.risk_governance import router as risk_governance_router
 from app.modules.risk_readiness import router as risk_readiness_router
+from app.modules.scope_foundation import router as scope_foundation_router
 from app.modules.strategic_benefits import router as strategic_benefits_router
 from app.modules.strategic_gate import router as strategic_gate_router
 from app.modules.workspace_context import router as workspace_context_router
@@ -327,6 +329,8 @@ router.include_router(risk_readiness_router.router, tags=["risk-readiness"])
 router.include_router(risk_governance_router.router, tags=["risk-governance"])
 router.include_router(basic_data_router.router, prefix="/basic-data", tags=["basic-data"])
 router.include_router(owner_capability_router.router, prefix="/owner-capability", tags=["owner-capability"])
+router.include_router(operational_context_router.router, prefix="/operational", tags=["operational-context"])
+router.include_router(scope_foundation_router.router, prefix="/scope", tags=["scope-foundation"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
 router.include_router(qra_engine_router.router, prefix="/qra-engine", tags=["qra-engine"])
 router.include_router(permit_readiness_router.router, tags=["permit-readiness"])
@@ -4161,7 +4165,7 @@ def enqueue_control_cycle(
     user_id: int = Depends(get_user_id),
 ) -> dict[str, str]:
     _require_membership(db, tenant_id, project_id, user_id)
-    task = run_control_cycle_task.apply_async(args=[tenant_id, project_id])
+    task = run_control_cycle_task.apply_async(args=[tenant_id, project_id, user_id])
     return {"task_id": task.id, "status": "queued", "queue": "control-core"}
 
 
@@ -4279,15 +4283,24 @@ def get_dashboard(
     project = _require_project(db, tenant_id, project_id)
     current_user = _require_user(db, tenant_id, user_id)
     current_membership = _require_membership(db, tenant_id, project_id, user_id)
-    control_plan = _ensure_project_control_plan(db, tenant_id, project_id)
+    # Queries must not create a plan or execute a material control cycle. This
+    # also lets ADMIN onboarding open before any canonical/legacy binding.
+    control_plan = db.scalar(
+        select(ProjectControlPlan).where(
+            ProjectControlPlan.tenant_id == tenant_id, ProjectControlPlan.project_id == project_id
+        )
+    )
 
     project_kpi = db.scalars(
         select(KPI)
         .where(KPI.project_id == project_id, KPI.tenant_id == tenant_id, KPI.control_account_id.is_(None))
         .order_by(KPI.created_at.desc())
     ).first()
+    project_kpi_is_persisted = project_kpi is not None
     if not project_kpi:
-        project_kpi = ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+        from app.modules.operational_context.legacy_reads import no_legacy_control_cycle
+
+        project_kpi = no_legacy_control_cycle()
     active_period = project_kpi.period
 
     account_kpis = list(
@@ -4302,28 +4315,6 @@ def get_dashboard(
             .order_by(KPI.control_account_id)
         ).all()
     )
-    has_control_history = db.scalar(
-        select(ControlSnapshot.id).where(
-            ControlSnapshot.tenant_id == tenant_id,
-            ControlSnapshot.project_id == project_id,
-            ControlSnapshot.control_account_id.is_(None),
-        )
-    )
-    if not has_control_history:
-        project_kpi = ControlCoreService(db).run_project_cycle(tenant_id, project_id)
-        active_period = project_kpi.period
-        account_kpis = list(
-            db.scalars(
-                select(KPI)
-                .where(
-                    KPI.project_id == project_id,
-                    KPI.tenant_id == tenant_id,
-                    KPI.control_account_id.is_not(None),
-                    KPI.period == active_period,
-                )
-                .order_by(KPI.control_account_id)
-            ).all()
-        )
     alerts = list(
         db.scalars(
             select(Alert)
@@ -4587,7 +4578,7 @@ def get_dashboard(
 
     return DashboardOut(
         project=ProjectOut.model_validate(project),
-        control_plan=ProjectControlPlanOut.model_validate(control_plan),
+        control_plan=ProjectControlPlanOut.model_validate(control_plan) if control_plan is not None else None,
         current_user=UserOut.model_validate(current_user),
         current_membership=ProjectMembershipOut.model_validate(current_membership),
         project_team=_project_team(db, tenant_id, project_id),
@@ -4624,6 +4615,7 @@ def get_dashboard(
         cash_flow=[CashFlowPeriodOut.model_validate(period) for period in cash_flow],
         cost_manager_summary=_cost_manager_summary_from(cost_sheet, funding_sources, cash_flow),
         project_kpi=KPIOut.model_validate(project_kpi),
+        project_kpi_is_persisted=project_kpi_is_persisted,
         account_kpis=[KPIOut.model_validate(kpi) for kpi in account_kpis],
         control_snapshots=[ControlSnapshotOut.model_validate(snapshot) for snapshot in control_snapshots[-12:]],
         forecast_scenarios=[ForecastScenarioOut.model_validate(scenario) for scenario in forecast_scenarios],

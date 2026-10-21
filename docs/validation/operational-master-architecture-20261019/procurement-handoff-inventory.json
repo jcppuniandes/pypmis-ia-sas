@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "cutoff_local": "2026-10-19 America/Bogota",
+  "scope": "Read-only repository audit and conceptual architecture. No API commands, database writes, migrations, seeds, module development, commit or push.",
+  "instructions": {
+    "prompt_read_in_full": true,
+    "ancestor_and_scoped_agents_files_found": [],
+    "tests_execution": "NOT_RUN; test code inspected only, no current PASS assertion",
+    "strategic_state_preserved": "STRATEGIC_MACROPROCESS_TECHNICALLY_READY_UAT_SIGNOFF_PENDING",
+    "classification_namespaces": {
+      "procurement_boundary": ["KEEP STRATEGIC", "MOVE / REUSE OPERATIONAL", "SHARED MASTER DATA", "DEPRECATE", "FUTURE"],
+      "capability_inventory": ["REUSE", "EXTEND", "REFACTOR", "DEPRECATE", "RESERVED", "NOT_RELEVANT"],
+      "legacy_disposition": ["SAFE_TO_REMOVE", "REQUIRES_DEPRECATION", "KEEP", "UNKNOWN"]
+    }
+  },
+  "key_findings": [
+    {
+      "id": "PH-GAP-01",
+      "finding": "Canonical Project Workspace and legacy operational Project are different identity spaces. Existing Contract, PO, RFQ and FBS tables still reference projects.id; canonical creation intentionally creates no legacy Project. No automatic Workspace-id to projects.id equivalence is demonstrated.",
+      "severity": "CRITICAL_ARCHITECTURE_PREREQUISITE",
+      "future_action": "Wave O1 must specify and validate a tenant-scoped explicit canonical Workspace reference/projection adapter for reusable legacy operational records, including collision, missing mapping, access and status tests. Do not create another Project master or silently equate IDs. Schema changes require future approved increment.",
+      "evidence": ["backend/app/domain/models.py:79", "backend/app/domain/models.py:486", "backend/app/domain/models.py:1405", "backend/app/domain/models.py:1529", "backend/tests/test_project_creation_process.py:642", "frontend/src/App.tsx:3137"]
+    },
+    {
+      "id": "PH-GAP-02",
+      "finding": "Partners, Vendors, Commitments and Procurement menus contain reserved views. ContractsView and dashboard display existing operational data, but contracts is included in EMPTY_SUBMODULE_VIEWS. Route/menu names are not evidence of a completed business lifecycle.",
+      "severity": "HIGH_SCOPE_AND_UX_RISK",
+      "future_action": "Keep production navigation unchanged now. Future navigation must route sourcing and contract administration to single reused authorities; remove redundant menu access only through managed deprecation and usage checks.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:354", "frontend/src/navigation/applicationNavigation.ts:441", "frontend/src/navigation/applicationNavigation.ts:626", "frontend/src/App.tsx:4284", "frontend/src/views/ContractsView.tsx:11", "frontend/src/views/DashboardView.tsx:379"]
+    },
+    {
+      "id": "PH-GAP-03",
+      "finding": "Current commitment aggregation sums Contract.value and all PO.committed_amount, including linked contract POs. Executed aggregation sums certificates and warehouse receipts. Available funding subtracts both committed and executed. There is no demonstrated call-off/included-value exclusion, reservation liquidation or common economic-origin deduplication in the inspected paths. This is a design risk, not a claim of duplicated production amounts.",
+      "severity": "HIGH_DOUBLE_COUNTING_RISK",
+      "future_action": "Before operational rollout define additive versus included/call-off PO semantics, open-commitment netting, certificate/receipt economic-event keys and reversal rules. One contractual commitment owner publishes immutable references to Cost; Cost must not add allocation lines or funding coverage as new obligations.",
+      "evidence": ["backend/app/domain/models.py:1532", "backend/app/services/integrated_control.py:143", "backend/app/services/integrated_control.py:392", "backend/app/services/integrated_control.py:417", "backend/app/services/integrated_control.py:419", "backend/app/api/v1/router.py:5835"]
+    },
+    {
+      "id": "PH-GAP-04",
+      "finding": "Post-FID distinguishes activation blockers from commitment-only conditions; existing legacy Contract/PO write paths enforce legacy membership, contract permission and FBS availability but do not invoke the canonical Post-FID condition authority. Activation alone must not be interpreted as permission to commit.",
+      "severity": "HIGH_GOVERNED_HANDOFF_GAP",
+      "future_action": "Future operational commitment command preconditions must evaluate canonical workspace, current authorization scope and unresolved commitment conditions through the existing authority. Do not copy or resolve strategic conditions locally.",
+      "evidence": ["backend/app/modules/post_fid_governance/service.py:492", "backend/app/modules/post_fid_governance/service.py:499", "backend/tests/test_post_fid_governance_gate07l.py:80", "backend/app/api/v1/router.py:2379", "backend/app/api/v1/router.py:2648"]
+    }
+  ],
+  "recommended_boundaries": {
+    "procurement": "Domain for procurement plans/packages, requisitions, RFQ/RFP, bids, evaluation and award recommendation. A recommendation is not an award/contract and never creates a commitment by itself.",
+    "contract_administration_commitments": "Separate cohesive operational domain, closely integrated with Procurement. Own legal Contract, PO, future subcontract, original/current obligation, SOV, contractual notices, approved contractual variations and closure. Expose one commitment authority, not a parallel Commitment ledger owner in Cost.",
+    "cost": "Consume contract/PO commitment references and certified operational cost evidence; own cost coding, approved control budget, accrual/forecast/period-control policy and reporting without mutating legal contracts, strategic funding, FID or historical snapshots.",
+    "shared_parties": "Future tenant/enterprise-scoped party master with role classifications for vendor, client, joint-venture partner and counterparty. A bidder/vendor label in an operational record is not yet a normalized master. Strategic legal-entity references remain upstream and are linked, not duplicated.",
+    "strategic": "Commercial strategy packages are concepts; Funding owns capital coverage, FIN owns economic/financial modeling, FID owns investment authorization and Post-FID owns execution eligibility/conditions. None is sourcing or payment execution.",
+    "accounting_treasury": "Future external invoice/payment/posting interface, not implemented here. Existing certificates are operational certification evidence, not proof of bank payment/accounting settlement.",
+    "authority_rule": "One owner per legal obligation and economic event; cross-domain references/snapshots only. No new Procurement Manager or duplicate PO/commitment tables/services are introduced in this increment."
+  },
+  "capabilities": [
+    {
+      "id": "PH-C01", "name": "Partners / Join Venture", "procurement_boundary": "SHARED MASTER DATA", "inventory_classification": "RESERVED", "legacy_disposition": "KEEP",
+      "current_state": "Navigation placeholder; no implemented normalized partner master established by inspected operational schema/API/test paths.",
+      "future_owner": "Shared party/reference-data capability under Enterprise configuration; Procurement and Contracts consume scoped references.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:354", "frontend/src/navigation/applicationNavigation.ts:630", "frontend/src/App.tsx:4284"]
+    },
+    {
+      "id": "PH-C02", "name": "Vendors / Vendors List", "procurement_boundary": "SHARED MASTER DATA", "inventory_classification": "RESERVED", "legacy_disposition": "KEEP",
+      "current_state": "Reserved menu. PO.vendor, Contract.counterparty and RFQBid.bidder_name are strings, not shared Party foreign keys.",
+      "future_owner": "Single scoped party master; transactional owner retains approved historical counterparty details and role references.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:359", "frontend/src/navigation/applicationNavigation.ts:631", "backend/app/domain/models.py:1410", "backend/app/domain/models.py:1535", "backend/app/domain/models.py:1620"]
+    },
+    {
+      "id": "PH-C03", "name": "Commitments / Sales Contracts / SC Changes / SC Payments menu", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "RESERVED", "legacy_disposition": "REQUIRES_DEPRECATION",
+      "current_state": "Labels reserved; do not infer a distinct sales-contract, AR or change/payment lifecycle. Contract register lacks explicit revenue-versus-spend direction in inspected schema.",
+      "future_owner": "Contract Administration single register with explicit contract direction and commitment semantics; sales/client contract references must not be counted as purchase cost obligations.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:364", "frontend/src/navigation/applicationNavigation.ts:632", "backend/app/domain/models.py:1400"]
+    },
+    {
+      "id": "PH-C04", "name": "Purchase Order menus in Commitments and Procurement", "procurement_boundary": "DEPRECATE", "inventory_classification": "REFACTOR", "legacy_disposition": "REQUIRES_DEPRECATION",
+      "current_state": "Two reserved menu concepts, one existing PurchaseOrder table/API authority. Deprecation applies to duplicate authority/navigation concept, not removal of the existing API/table.",
+      "future_owner": "Contract Administration owns existing PO obligation. Procurement shows an access/reference into that same register.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:370", "frontend/src/navigation/applicationNavigation.ts:447", "frontend/src/navigation/applicationNavigation.ts:635", "frontend/src/navigation/applicationNavigation.ts:654", "backend/app/domain/models.py:1524", "backend/app/api/v1/router.py:2640"]
+    },
+    {
+      "id": "PH-C05", "name": "RFQ packages / bids / weighted evaluation", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "EXTEND", "legacy_disposition": "KEEP",
+      "current_state": "Real versioned backend package/bid CRUD, membership checks, optimistic version and audit; hardcoded 35/35/15/15 weights and highest-score summary are not governed award approval. Reserved request-for-bid navigation is not a complete sourcing workspace.",
+      "future_owner": "Procurement sourcing; ADMIN publishes configurable scoring/approval policy, USER manages packages and submits recommendations; independent award authority before contractual materialization.",
+      "evidence": ["backend/app/domain/models.py:1591", "backend/app/domain/models.py:1613", "backend/app/api/v1/routers/rfq.py:63", "backend/app/api/v1/routers/rfq.py:108", "backend/app/api/v1/routers/rfq.py:133", "backend/app/api/v1/routers/rfq.py:190", "backend/tests/test_api_smoke.py:293", "frontend/src/navigation/applicationNavigation.ts:650"]
+    },
+    {
+      "id": "PH-C06", "name": "Procurement Plan / Requisition / RFP / approved award workflow", "procurement_boundary": "FUTURE", "inventory_classification": "RESERVED", "legacy_disposition": "UNKNOWN",
+      "current_state": "RFQPackage procurement_method and bid summary are reusable primitives; a complete governed requisition, package plan, award SoD and award-to-contract link is not demonstrated.",
+      "future_owner": "Procurement, Wave O2 after O1 identity/control foundation. No new module now.",
+      "evidence": ["backend/app/domain/models.py:1601", "backend/app/api/v1/routers/rfq.py:63", "backend/app/domain/process_catalog.py:285", "backend/app/domain/process_catalog.py:331"]
+    },
+    {
+      "id": "PH-C07", "name": "Contracts / original value / Contract Administration display", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "REFACTOR", "legacy_disposition": "KEEP",
+      "current_state": "Existing Contract has unique tenant/project/code, FBS/control account, type/value/status and real create API. Display exists; approved value-history, formal amendment/award authorization and canonical Workspace binding need future design.",
+      "future_owner": "Contract Administration; publish one contractual commitment source for Cost. Preserve existing records and API compatibility under explicit adapter.",
+      "evidence": ["backend/app/domain/models.py:1400", "backend/app/api/v1/router.py:2370", "frontend/src/views/ContractsView.tsx:11", "backend/tests/test_integrated_control.py:40", "backend/tests/test_api_smoke.py:243"]
+    },
+    {
+      "id": "PH-C08", "name": "PurchaseOrder register", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "REFACTOR", "legacy_disposition": "KEEP",
+      "current_state": "Real unique PO number, linked Contract optional, positive committed_amount, FBS availability validation, versioned update and audit. No second PO owner should be created.",
+      "future_owner": "Contract Administration/Commitments owns PO, Procurement consumes award linkage, Cost consumes net obligation by economic-event identity.",
+      "evidence": ["backend/app/domain/models.py:1524", "backend/app/api/v1/router.py:2640", "backend/app/api/v1/router.py:2706", "backend/tests/test_api_smoke.py:258", "backend/tests/test_integrated_control.py:146"]
+    },
+    {
+      "id": "PH-C09", "name": "Contract SOV and CommitmentFundingLine", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "EXTEND", "legacy_disposition": "KEEP",
+      "current_state": "Actual SOV contract/CBS/WBS/control-account allocation and funding lines with allocation limits. Funding allocation is not another commitment amount or independent award authority.",
+      "future_owner": "Contract Administration owns SOV, Cost consumes coding/distribution, operational FBS owns funding allocation; domain writes through owner commands only.",
+      "evidence": ["backend/app/domain/models.py:1418", "backend/app/domain/models.py:1439", "backend/app/api/v1/router.py:2452", "backend/app/api/v1/router.py:2524", "backend/tests/test_unifier_priority_flow.py:11", "frontend/src/App.tsx:6446"]
+    },
+    {
+      "id": "PH-C10", "name": "Contract notices / communications", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "EXTEND", "legacy_disposition": "KEEP",
+      "current_state": "Existing notice/communication primitives. Reuse contractual references/evidence, not a standalone enterprise DMS or complete RFI/submittal lifecycle.",
+      "future_owner": "Contract Administration legal notices; Document capability owns document revision/distribution; Claims references immutable notices.",
+      "evidence": ["backend/app/domain/models.py:1344", "backend/app/domain/models.py:1637", "backend/app/api/v1/router.py:3079", "backend/app/api/v1/router.py:3142", "frontend/src/views/ContractsView.tsx:87"]
+    },
+    {
+      "id": "PH-C11", "name": "Payment certificates / retention / warehouse receipts", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "REFACTOR", "legacy_disposition": "KEEP",
+      "current_state": "Real operational certified/received cost records with contract/PO/control-account references. They are not proof of bank settlement, invoice accounting or tax postings. Reservation liquidation and duplicate economic-origin handling need definition.",
+      "future_owner": "Contract Administration certifies contract milestones/retention; material receipt owner certifies delivery; Cost consumes certified/accrual evidence once. Accounting/Treasury payment execution remains external future boundary.",
+      "evidence": ["backend/app/domain/models.py:1546", "backend/app/domain/models.py:1568", "backend/app/services/integrated_control.py:419", "frontend/src/views/ContractsView.tsx:56", "backend/tests/test_integrated_control.py:266"]
+    },
+    {
+      "id": "PH-C12", "name": "Subcontract / Change Order / contract closeout lifecycle", "procurement_boundary": "FUTURE", "inventory_classification": "RESERVED", "legacy_disposition": "UNKNOWN",
+      "current_state": "contract_type free text and existing status/closeout controls are primitives only. Reserved changes/payments screens do not establish a separately governed subcontract or contractual change order workflow.",
+      "future_owner": "Contract Administration specializes shared contract aggregate; Change domain owns common impact/decision event; no disconnected per-module approval records.",
+      "evidence": ["backend/app/domain/models.py:1411", "frontend/src/navigation/applicationNavigation.ts:445", "backend/tests/test_integrated_control.py:208"]
+    },
+    {
+      "id": "PH-C13", "name": "Strategic Commercial & Contracting Strategy", "procurement_boundary": "KEEP STRATEGIC", "inventory_classification": "REUSE", "legacy_disposition": "KEEP",
+      "current_state": "Canonical Workspace-linked immutable completed strategy versions/readiness, configured ADMIN/USER permissions and governed provider. Packages are explicitly commercial concepts, not procurement transactions.",
+      "future_owner": "Strategic commercial authority; Procurement references completed strategy version/hash and elaborates operational sourcing plan. Any strategic deviation requires explicit governed review, not local overwrite.",
+      "evidence": ["backend/app/modules/commercial_strategy/models.py:1", "backend/app/modules/commercial_strategy/models.py:30", "backend/app/modules/commercial_strategy/models.py:88", "backend/app/modules/commercial_strategy/router.py:373", "frontend/src/features/commercial-strategy/CommercialStrategyWorkspace.tsx:316", "backend/tests/test_commercial_strategy_gate07m_comm.py:325", "backend/tests/test_commercial_strategy_gate07m_comm.py:632"]
+    },
+    {
+      "id": "PH-C14", "name": "Funds Manager / StrategicFundingSource / Fund / FundingAssignment", "procurement_boundary": "KEEP STRATEGIC", "inventory_classification": "REUSE", "legacy_disposition": "KEEP",
+      "current_state": "Governed capital sources/envelopes/assignments/readiness use enterprise_workspaces references; Decimal monetary fields, revision/hash/idempotency/SoD and history. Not a procurement or operational actual-cost authority.",
+      "future_owner": "Strategic Funding; downstream consumes assignment restrictions/coverage and frozen authorization references. No automatic copying to operational budget, available FBS, PO or cash actuals.",
+      "evidence": ["backend/app/modules/funds_manager/models.py:1", "backend/app/modules/funds_manager/models.py:33", "backend/app/modules/funds_manager/models.py:80", "backend/app/modules/funds_manager/models.py:139", "backend/app/modules/funds_manager/router.py:522", "frontend/e2e/funds-manager.spec.ts:1", "backend/tests/test_funds_manager_gate07j_fund.py:179", "backend/tests/test_funds_manager_gate07j_fund.py:247", "backend/tests/test_funds_manager_gate07j_fund.py:300"]
+    },
+    {
+      "id": "PH-C15", "name": "Operational funding_sources / FBS and Integrated Control balances", "procurement_boundary": "MOVE / REUSE OPERATIONAL", "inventory_classification": "REFACTOR", "legacy_disposition": "KEEP",
+      "current_state": "Distinct existing projects-linked FBS allocation/balance and commitment availability service, separate by explicit design from strategic_funding_sources. Uses Float, mutable balances and additive aggregates; not a strategic envelope.",
+      "future_owner": "Operational Cost owns approved control funding mapping and derived balance; strategic funding remains referenced source/constraint. Reconcile original/current commitment, outstanding reservation and cost actuals before wider rollout.",
+      "evidence": ["backend/app/domain/models.py:1077", "backend/app/api/v1/router.py:911", "backend/app/services/integrated_control.py:102", "backend/app/services/integrated_control.py:125", "backend/app/modules/funds_manager/models.py:1", "backend/tests/test_integrated_control.py:40"]
+    },
+    {
+      "id": "PH-C16", "name": "Invoice / payment / Accounting and Treasury execution", "procurement_boundary": "FUTURE", "inventory_classification": "NOT_RELEVANT", "legacy_disposition": "UNKNOWN",
+      "current_state": "Out of this increment; PO/SC payment labels are reserved and certificates are not payments. No new payment/accounting function authorized.",
+      "future_owner": "External Accounting/Treasury integration with explicit references, reconciliation and posting/settlement statuses. Retain operational certificates as evidence only.",
+      "evidence": ["frontend/src/navigation/applicationNavigation.ts:369", "frontend/src/navigation/applicationNavigation.ts:372", "frontend/src/navigation/applicationNavigation.ts:449", "backend/app/domain/models.py:1546"]
+    }
+  ],
+  "governance_model_handoff": [
+    {
+      "governance_model": "CAPITAL_OWNER", "source_context": "STRATEGIC_GATE_DECISION",
+      "current_authority": "ProjectCreationService materializes one pending canonical Workspace. Initialization validates creation metadata/current published policy; current FID plus separately persisted Post-FID activation handoff can authorize lifecycle without rewriting historical creation snapshot. Canonical activation is separate explicit command with If-Match and independent actor.",
+      "operational_entry": "Canonical PROJECT Workspace active, lifecycle activation certificate/reference, current applicable authorization/condition policy and scoped access. Preserve FID/authorization version/hash. A technical UAT signoff-pending system is not production/business authorization.",
+      "evidence": ["backend/app/modules/project_creation/governance.py:53", "backend/app/modules/project_workspace_initialization/governance.py:22", "backend/app/modules/project_workspace_initialization/service.py:395", "backend/app/modules/project_workspace_initialization/service.py:273", "backend/app/modules/project_workspace_initialization/router.py:126", "backend/tests/test_project_initialization_post_fid_bridge.py:65", "backend/tests/test_project_initialization_post_fid_bridge.py:161"]
+    },
+    {
+      "governance_model": "CONTRACTOR_DELIVERY", "source_context": "CONTRACT_AWARD",
+      "current_authority": "Same canonical project-creation and initialization/activation services. Contract source requires client, contract_number, contractual_scope; mobilization_authorized or notice_to_proceed_date supplies route authorization. Full Capital Owner FEL/FID requirements are false by default, unless configured policy legitimately applies them.",
+      "operational_entry": "Active canonical Project Workspace with source contract authorization and template/access/current policy. Client scope/schedule/revenue contract context are upstream, not automatically spend commitments or Capital Owner investment budget.",
+      "evidence": ["backend/app/modules/project_creation/governance.py:85", "backend/app/modules/project_creation/governance.py:258", "backend/app/modules/project_creation/governance.py:608", "backend/tests/test_project_creation_process.py:858", "backend/tests/test_project_creation_process.py:911", "backend/tests/test_post_fid_governance_gate07l.py:124"]
+    },
+    {
+      "governance_model": "DIRECT_INTERNAL", "source_context": "DIRECT_AUTHORIZATION",
+      "current_authority": "Same canonical creation/lifecycle services. Source requires authorization_reference and sponsor; authorization_approved drives activation authorization. Full Capital Owner investment sequence is not a default prerequisite.",
+      "operational_entry": "Active canonical Project Workspace with internal approval reference/scope and applicable control template/access. Tailored execution process, not forced external procurement or full FID.",
+      "evidence": ["backend/app/modules/project_creation/governance.py:122", "backend/app/modules/project_creation/governance.py:283", "backend/app/modules/project_creation/governance.py:608", "backend/tests/test_project_creation_process.py:896", "backend/tests/test_project_creation_process.py:939", "backend/tests/test_post_fid_governance_gate07l.py:124"]
+    }
+  ],
+  "handoff_contract_status": "PROPOSED ARCHITECTURAL CONTRACT ONLY. Existing source models/providers are evidence of reusable inputs, not an already implemented consolidated operational handoff endpoint. Missing approved inputs remain missing; do not infer approval from FID GO, route names or snapshot availability.",
+  "handoff_items": [
+    {
+      "id": "H01", "artifact": "Project identity", "classification": "REFERENCE ONLY", "source": "Enterprise Structure & Workspace Manager / canonical enterprise_workspaces with workspace_type_code=project", "consumer": "All operational domains", "transfer_method": "Tenant-scoped canonical Workspace id/external key/record code reference; no identity copy/new Project master.", "future_update_owner": "Canonical Workspace lifecycle only", "acceptance_rule": "Resolve canonical identity and scoped active lifecycle explicitly; never equate legacy projects.id.", "evidence": ["backend/app/domain/models.py:486", "backend/tests/test_project_creation_process.py:620", "backend/tests/test_project_creation_process.py:642", "backend/tests/test_project_workspace_initialization.py:651"]
+    },
+    {
+      "id": "H02", "artifact": "Authorized scope", "classification": "CONTROL BASELINE INPUT", "source": "Decided FID package / approved Business Case scope and completed definition references; CONTRACT_AWARD contractual_scope for contractor", "consumer": "Scope / Change / operational setup", "transfer_method": "Frozen source version/hash plus explicit transformation into proposed operational Scope baseline; approval required before baseline activation.", "future_update_owner": "Operational Scope owns elaboration/current operational baseline through Change; strategic owner retains investment scope/approval history", "acceptance_rule": "BusinessCase scope_json alone is not proof of authorized scope. Require matching decided package/scope and explicit discrepancy review.", "evidence": ["backend/app/modules/business_case/models.py:88", "backend/app/modules/investment_decision/models.py:57", "backend/app/modules/project_creation/governance.py:101", "backend/tests/test_project_initialization_post_fid_bridge.py:154"]
+    },
+    {
+      "id": "H03", "artifact": "FID decision", "classification": "REFERENCE ONLY", "source": "Investment Decision / Gate07K", "consumer": "Operational setup, approval/checkpoint evidence", "transfer_method": "Immutable decision id/hash/package/profile/source-policy references and currentness check; no local FID recreation.", "future_update_owner": "Investment Decision authority only", "acceptance_rule": "CAPITAL_OWNER applicable route requires valid authorized current decision, separate Post-FID and activation. Non-owner routes keep their own authorization source; do not fabricate FID.", "evidence": ["backend/app/modules/investment_decision/models.py:28", "backend/app/modules/investment_decision/models.py:118", "backend/app/modules/project_workspace_initialization/governance.py:48", "backend/tests/test_project_initialization_post_fid_bridge.py:124"]
+    },
+    {
+      "id": "H04", "artifact": "Authorized capital amount", "classification": "CONSTRAINT", "source": "InvestmentDecision.authorized_amount / authorized_currency", "consumer": "Cost / Change / Forecast / management reporting", "transfer_method": "Reference authorization ceiling/currency and approval date/hash; explicit controlled allocation creates operational budget, not direct copy of a portfolio scenario.", "future_update_owner": "FID/investment authority updates authorization by governed decision; Cost owns operational allocation only", "acceptance_rule": "Never equate authorized amount, available cash, assignment coverage, control budget and commitment. Missing amount/currency requires governed resolution, no inferred unlimited authority.", "evidence": ["backend/app/modules/investment_decision/models.py:68", "backend/app/modules/portfolio_budget/models.py:40", "backend/app/modules/funds_manager/models.py:150"]
+    },
+    {
+      "id": "H05", "artifact": "Approved funding context", "classification": "CONSTRAINT", "source": "Funds / confirmed FundingAssignment / FundingReadinessSnapshot", "consumer": "Cost funding mapping, Procurement/Contracts admissibility", "transfer_method": "Reference confirmed source/fund/assignment/hash, coverage, restrictions, period/currency and validity; explicit approved mapping into operational FBS where needed.", "future_update_owner": "Strategic Funding owns authorization/coverage/restrictions; Cost owns project control allocation and derived operational exposure", "acceptance_rule": "No silent join/copy between strategic_funding_sources and legacy funding_sources; do not count parent+child assignments twice or treat funding as actual cost/payment.", "evidence": ["backend/app/modules/funds_manager/models.py:1", "backend/app/modules/funds_manager/models.py:139", "backend/app/modules/funds_manager/models.py:214", "backend/tests/test_funds_manager_gate07j_fund.py:300"]
+    },
+    {
+      "id": "H06", "artifact": "Business Case reference", "classification": "REFERENCE ONLY", "source": "BusinessCase / approved revision / decision snapshot", "consumer": "Operational setup, reporting, Change material-review context", "transfer_method": "Revision id/hash/decision snapshot reference, not editable operational duplicate.", "future_update_owner": "Business Case governance", "acceptance_rule": "Operational performance may trigger explicit strategic material-change review; never overwrite approved case or FIN from forecast actuals.", "evidence": ["backend/app/modules/business_case/models.py:30", "backend/app/modules/business_case/models.py:71", "backend/app/modules/business_case/router.py:112", "backend/app/modules/business_case/router.py:255"]
+    },
+    {
+      "id": "H07", "artifact": "Target dates", "classification": "INITIAL INPUT", "source": "Project creation planned_start/planned_finish / approved selected strategic scenario target dates", "consumer": "Schedule planning and owner/contractor planning constraints", "transfer_method": "Referenced/hash-stamped seed of planning targets; proposal only, not automatic schedule baseline/current dates.", "future_update_owner": "Schedule owns approved operational schedule versions; strategic target owner retains strategic target history", "acceptance_rule": "Preserve source dates, calendar assumptions and date basis; operational revisions require schedule/change governance and P6-calculated update where applicable.", "evidence": ["backend/app/modules/project_creation/service.py:1060", "backend/app/modules/project_creation/service.py:1077", "backend/app/modules/portfolio_budget/models.py:218", "backend/app/modules/business_case/service.py:911"]
+    },
+    {
+      "id": "H08", "artifact": "Strategic milestones", "classification": "INITIAL INPUT", "source": "Approved strategic package/Business Case delivery context if explicitly supplied", "consumer": "Schedule register / key milestone register", "transfer_method": "Explicit strategic milestone identifiers, dates, source version/hash and mapping to operational/P6 activity IDs; no invented milestones from generic dates.", "future_update_owner": "Strategic owner retains decision targets; Schedule owns elaboration and current operational milestone projections", "acceptance_rule": "Dedicated strategic milestone-to-operational contract not demonstrated in inspected source; remains a gap. Absent milestone detail stays absent; no claimed automatic handoff.", "evidence": ["backend/app/modules/business_case/models.py:93", "backend/app/modules/investment_gate_preparation/models.py:48", "backend/app/modules/portfolio_budget/models.py:218"]
+    },
+    {
+      "id": "H09", "artifact": "Project Definition / FEL output", "classification": "CONTROL BASELINE INPUT", "source": "Completed ProjectDefinitionAssessment / ProjectFELStatus with evidence and actions", "consumer": "Scope/Engineering/control baseline setup", "transfer_method": "Version/hash-linked completed definition output and unresolved actions; explicitly elaborate deliverables/work packages, not a repeated FEL authority.", "future_update_owner": "Strategic Definition owns approved maturity/assessment; Scope/Engineering own detailed operational deliverables via Change", "acceptance_rule": "FEL score is readiness evidence, not fully detailed approved scope or permission to bypass operational baseline approval. Applicable by governance model/type/policy.", "evidence": ["backend/app/modules/project_definition/models.py:24", "backend/app/modules/project_definition/models.py:92", "backend/app/modules/project_definition/models.py:148", "backend/app/modules/project_definition/router.py:345", "backend/tests/test_project_definition_gate07j_fel.py:246"]
+    },
+    {
+      "id": "H10", "artifact": "Risk context", "classification": "INITIAL INPUT", "source": "Strategic ProjectRisk / completed RiskReadinessAssessment / applicable QRA result references", "consumer": "Operational Risk, Forecast, Change, workfront constraints", "transfer_method": "Reference immutable assessment/result; explicit traceable selection/elaboration of risks for operational follow-up. Reuse ProjectRisk identity where compatible; no silent duplicate risk register owner.", "future_update_owner": "Strategic provider owns assessment and QRA evidence; Operational Risk owner manages live treatment/status through approved boundary, preserving completed evidence history", "acceptance_rule": "Strategic readiness is not operational risk acceptance and QRA strategic result is not operational schedule-risk execution. Separate approval and currentness.", "evidence": ["backend/app/modules/risk_readiness/models.py:26", "backend/app/modules/risk_readiness/models.py:112", "backend/app/modules/risk_readiness/router.py:309", "backend/tests/test_risk_readiness_gate07j_risk.py:118", "backend/tests/test_risk_readiness_gate07j_risk.py:134"]
+    },
+    {
+      "id": "H11", "artifact": "Permit context", "classification": "CONSTRAINT", "source": "ProjectPermit / PermitCondition / PermitReadinessAssessment", "consumer": "Workfront readiness, Schedule, Construction and contract constraints", "transfer_method": "References to permit IDs, validity, scope, blocking conditions and assessment hash; no copying a Class B representation into a real permit or automatic satisfaction.", "future_update_owner": "Existing Permit authority maintains permits/conditions; operational readiness consumes current permission-to-work constraints", "acceptance_rule": "Preserve expiry/revocation and blocking semantics. Permit-to-work execution is separate from strategic permit-readiness evidence; missing remains missing.", "evidence": ["backend/app/modules/permit_readiness/models.py:40", "backend/app/modules/permit_readiness/models.py:107", "backend/app/modules/permit_readiness/models.py:140", "backend/app/modules/permit_readiness/router.py:368", "backend/tests/test_permit_readiness_gate07j_permit.py:181", "backend/tests/test_permit_readiness_gate07j_permit.py:222"]
+    },
+    {
+      "id": "H12", "artifact": "Commercial strategy", "classification": "INITIAL INPUT", "source": "Completed CommercialStrategyVersion / readiness provider", "consumer": "Procurement sourcing plan / Contract Administration / Cost exposure", "transfer_method": "Version/hash-linked delivery model, package concepts, contracting approach and risk/payment allocation as governing design input; transform explicitly into operational packages.", "future_update_owner": "Strategic Commercial owns strategy/approved assumptions; Procurement owns sourcing transactions and Contracts own legal obligations", "acceptance_rule": "Conceptual commercial package is not RFQ, awarded contract, vendor or commitment. Deviations need explicit review, not strategy overwrite.", "evidence": ["backend/app/modules/commercial_strategy/models.py:1", "backend/app/modules/commercial_strategy/models.py:71", "backend/app/modules/commercial_strategy/router.py:373", "backend/tests/test_commercial_strategy_gate07m_comm.py:325"]
+    },
+    {
+      "id": "H13", "artifact": "Benefits context", "classification": "REFERENCE ONLY", "source": "Completed StrategicBenefitsPlanVersion / approved benefit identity and targets", "consumer": "Operational reporting / handover / future benefits-realization measurement", "transfer_method": "Plan/version/benefit IDs, hashes, baselines and targets referenced; future realized measurements link back, not modify strategic expectations.", "future_update_owner": "Strategic Benefits owns approved plan/targets; future Benefits Realization owns measured outcomes and evidence", "acceptance_rule": "Benefits Realization transaction authority NOT TRANSFERRED. Do not report installed quantity or earned value as realized strategic benefit without measurement governance.", "evidence": ["backend/app/modules/strategic_benefits/models.py:32", "backend/app/modules/strategic_benefits/models.py:70", "backend/app/modules/strategic_benefits/router.py:489", "backend/tests/test_strategic_benefits_gate07m_ben.py:449"]
+    },
+    {
+      "id": "H14", "artifact": "Gate conditions", "classification": "CONDITION", "source": "InvestmentGatePreparation.conditions_json / decided InvestmentDecision.conditions_json and frozen package", "consumer": "Operational setup, contract commitment, execution checkpoints", "transfer_method": "Condition IDs, source decision/package/hash, scope, owner, status, blocking semantics and evidence references; evaluate current authority without creating a local approval.", "future_update_owner": "Strategic Gate/FID condition authority; designated owner supplies resolution evidence only through governed command", "acceptance_rule": "Do not infer satisfied from READY/GO or nonblocking status. No default-policy reclassification or local operational removal of unresolved conditions.", "evidence": ["backend/app/modules/investment_gate_preparation/models.py:50", "backend/app/modules/investment_decision/models.py:50", "backend/app/modules/post_fid_governance/service.py:484", "backend/app/modules/project_workspace_initialization/governance.py:72"]
+    },
+    {
+      "id": "H15", "artifact": "Post-FID conditions", "classification": "CONDITION", "source": "PostFIDProjectEligibility + existing FID condition authority/current published Post-FID policy", "consumer": "Canonical lifecycle, operational execution and commitment authorization checks", "transfer_method": "Persisted eligibility/handoff id/hash and source-current proof; keep activation-blocking and commitment-only conditions distinct. Read-only bridge, never local FID copy.", "future_update_owner": "Post-FID governance and canonical lifecycle owner; operational domain consumes constraints and requests governed resolution", "acceptance_rule": "No activation from initialization certificate alone; no reactivation for already active project; active does not clear commitment-only conditions. Future legacy commitment adapter must enforce applicable conditions explicitly.", "evidence": ["backend/app/modules/post_fid_governance/service.py:492", "backend/app/modules/post_fid_governance/service.py:348", "backend/app/modules/project_workspace_initialization/governance.py:58", "backend/tests/test_post_fid_governance_gate07l.py:80", "backend/tests/test_project_initialization_post_fid_bridge.py:161"]
+    }
+  ],
+  "not_transferred_authorities": [
+    "Canonical Project identity ownership",
+    "FID/Gate approval or strategic policy publication authority",
+    "Strategic Funding coverage/envelope ownership",
+    "Business Case and FIN model ownership",
+    "Strategic Benefits target ownership / future Benefits Realization authority",
+    "Strategic QRA execution/result acceptance authority",
+    "P6 CPM calculation authority",
+    "Accounting/Treasury posting or bank settlement authority"
+  ],
+  "future_minimum_handoff_envelope": {
+    "status": "CONCEPT_ONLY_NO_ENDPOINT_OR_SCHEMA_CREATED",
+    "identity": ["tenant_id", "project_workspace_id", "workspace_external_key", "workspace_record_code", "governance_model", "project_type"],
+    "authorization": ["source_context_type", "authorization_reference", "applicable_policy_id_revision_hash", "fid_decision_id_hash_if_applicable", "post_fid_handoff_id_hash_if_applicable", "activation_reference"],
+    "source_contract": ["source_artifact_type", "source_id", "source_revision", "source_hash", "as_of_date", "validity", "classification", "condition_refs", "transform_mapping_ref", "owner_domain"],
+    "constraints": "Explicit applicability and missing/stale/blocking states; tenant/access/identity/source-current checks; immutable source snapshot; no duplicate source authority.",
+    "legacy_adapter": "Separate explicit mapping to legacy operational record when needed. Never pass canonical Workspace id as legacy project_id by coincidence."
+  },
+  "recommended_wave_dependencies": [
+    {"before": "O1 live reuse", "prerequisite": "Explicit canonical Workspace binding, authorization/read access and condition checks for legacy controls; control baseline/coding and common period design."},
+    {"before": "O2 Procurement/Contracts expansion", "prerequisite": "One contractual obligation authority; shared party references; configurable sourcing/award policy; approved included/call-off/additive PO and net commitment/economic-origin rules."},
+    {"before": "Future payments/accounting", "prerequisite": "Approved Accounting/Treasury interface, invoice/certification/payment distinction and reconciliation; not automatically included in O2."}
+  ]
+}

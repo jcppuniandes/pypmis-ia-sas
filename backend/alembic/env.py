@@ -16,6 +16,7 @@ from app.modules.enterprise_structure import models as enterprise_structure_mode
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401
 from app.modules.idea_demand import models as idea_demand_models  # noqa: F401
 from app.modules.investment_decision import models as investment_decision_models  # noqa: F401
+from app.modules.operational_context import models as operational_context_models  # noqa: F401
 from app.modules.owner_capability import models as owner_capability_models  # noqa: F401
 from app.modules.permit_readiness import models as permit_readiness_models  # noqa: F401
 from app.modules.physical_workspace_creation import models as physical_workspace_creation_models  # noqa: F401
@@ -31,6 +32,7 @@ from app.modules.project_proposal import models as project_proposal_models  # no
 from app.modules.project_workspace_initialization import models as project_workspace_initialization_models  # noqa: F401
 from app.modules.qra_foundation import models as qra_foundation_models  # noqa: F401
 from app.modules.risk_readiness import models as risk_readiness_models  # noqa: F401
+from app.modules.scope_foundation import models as scope_foundation_models  # noqa: F401
 from app.modules.strategic_benefits import models as strategic_benefits_models  # noqa: F401
 from app.modules.strategic_gate import models as strategic_gate_models  # noqa: F401
 from app.modules.workspace_context import models as workspace_context_models  # noqa: F401

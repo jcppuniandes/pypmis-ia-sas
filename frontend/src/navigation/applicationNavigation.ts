@@ -383,6 +383,11 @@ const NON_STRATEGIC_USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[]
         key: "project-manager",
         label: "Project Manager",
         submodules: [
+          {
+            key: "workspace-context",
+            label: "Operational Setup",
+            description: "Abrir el Workspace canónico del Proyecto; nunca se infiere desde un ID legado.",
+          },
           { key: "meeting-minutes", label: "Meeting Minutes" },
           { key: "communications", label: "Communications" },
           { key: "issues", label: "Issues" },
@@ -599,7 +604,7 @@ const PLATFORM_ADMINISTRATION_MODULES: ModuleNavigationItem[] = [
   {
     key: "process-configuration",
     label: "Process Configuration",
-    submodules: [{ key: "process-definitions", label: "Process Definitions" }],
+    submodules: [{ key: "process-definitions", label: "Process & Operational Configuration" }],
   },
 ];
 

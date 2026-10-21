@@ -6,9 +6,9 @@ real command helpers as the separately proven current-release journey. It is
 not activated by importing this module and never writes terminal business state
 or an already-published policy through the ORM.
 
-The fixture is intentionally restricted to pytest's invocation-owned SQLite
-database. The persistent PostgreSQL release journey is a separate proof and must
-not be reused or reset by a broad regression run.
+The default fixture is restricted to pytest's invocation-owned SQLite database.
+O1A may explicitly opt into its separately named disposable PostgreSQL validation
+database; no runtime or pre-existing strategic release chain is accepted.
 """
 
 from __future__ import annotations
@@ -65,7 +65,18 @@ def _assert_owned_sqlite() -> None:
     owned_database_path(Path(engine.url.database), Path(runtime))
 
 
-def prepare_current_fid_sources(db) -> dict:
+def _assert_owned_o1a_postgres() -> None:
+    if (
+        not os.environ.get("PYTEST_CURRENT_TEST")
+        or os.environ.get("PYPMIS_O1A_FIXTURE") != "disposable-only"
+        or not os.environ.get("PYPMIS_TEST_DATABASE_URL", "").strip()
+        or engine.dialect.name != "postgresql"
+        or engine.url.database != "o1a"
+    ):
+        raise RuntimeError("Only explicitly disposable O1A pytest PostgreSQL is permitted")
+
+
+def prepare_current_fid_sources(db, *, isolated_o1a_postgres: bool = False) -> dict:
     """Build actual upstream lifecycles, without freezing or deciding Gate07J/K.
 
     The initial Business Case completes at FEL-1, where its policy requires the
@@ -73,7 +84,10 @@ def prepare_current_fid_sources(db) -> dict:
     exist. Final FEL-3 includes the independent stage review; a later normal
     refresh captures all five cases and their real, completed source versions.
     """
-    _assert_owned_sqlite()
+    if isolated_o1a_postgres:
+        _assert_owned_o1a_postgres()
+    else:
+        _assert_owned_sqlite()
     setup = setup_fresh_capital_owner(db)
     tenant, author, reviewer = setup["tenant_id"], setup["actor_id"], setup["reviewer_id"]
     admin, publisher = setup["admin_author_id"], setup["admin_publisher_id"]

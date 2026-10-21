@@ -354,7 +354,9 @@ def run():
         ARTIFACT.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
 
 
-def finish_investment_lifecycle(db, setup, configs, project, portfolio, identity_before, checkpoint, set_stage):
+def finish_investment_lifecycle(
+    db, setup, configs, project, portfolio, identity_before, checkpoint, set_stage, *, operational_conditions=None
+):
     """The shared original A27-A31 command tail; no parallel implementation."""
     tenant, author, reviewer = setup["tenant_id"], setup["actor_id"], setup["reviewer_id"]
     stage = "A27_A29_GATE_PREPARATION_FREEZE"
@@ -534,6 +536,7 @@ def finish_investment_lifecycle(db, setup, configs, project, portfolio, identity
             DecisionDecideIn(
                 outcome="GO",
                 rationale="Formal FID, not operational activation",
+                conditions=operational_conditions or [],
                 authorized_amount="100000000",
                 authorized_currency="USD",
                 idempotency_key=key("decide"),

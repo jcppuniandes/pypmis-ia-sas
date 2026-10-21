@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Boxes, Braces, Building2, CopyPlus, GitBranch, Hash, Layers3, RefreshCw, Send, Settings2 } from "lucide-react";
 import { adminConfiguration } from "../api/adminConfiguration";
+import OperationalProfilesAdminView from "../features/operational-context/OperationalProfilesAdminView";
+import ScopeProfilesAdminView from "../features/scope-foundation/ScopeProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -102,7 +104,34 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
   },
 };
 
-export default function AdminConfigurationView({ canConfigure, token, view }: Props) {
+export default function AdminConfigurationView(props: Props) {
+  const [section, setSection] = useState<"processes" | "operational" | "scope">("processes");
+  if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
+  return (
+    <>
+      <nav className="operationalConfigurationTabs" aria-label="Process and operational configuration">
+        <button aria-pressed={section === "processes"} onClick={() => setSection("processes")} type="button">
+          Process Definitions
+        </button>
+        <button aria-pressed={section === "operational"} onClick={() => setSection("operational")} type="button">
+          Operational Profiles
+        </button>
+        <button aria-pressed={section === "scope"} onClick={() => setSection("scope")} type="button">
+          Scope Profiles
+        </button>
+      </nav>
+      {section === "scope" ? (
+        <ScopeProfilesAdminView token={props.token} />
+      ) : section === "operational" ? (
+        <OperationalProfilesAdminView token={props.token} />
+      ) : (
+        <AdminConfigurationContent {...props} />
+      )}
+    </>
+  );
+}
+
+function AdminConfigurationContent({ canConfigure, token, view }: Props) {
   const page = pages[view];
   const PageIcon = page.icon;
   const [overview, setOverview] = useState<AdminConfigurationOverview | null>(null);
