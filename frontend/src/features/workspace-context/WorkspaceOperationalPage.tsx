@@ -10,6 +10,8 @@ import PortfolioProjectsWorkspace from "../portfolio-planning/PortfolioProjectsW
 import ProjectStrategicContext from "../portfolio-planning/ProjectStrategicContext";
 import OperationalSetupWorkspace from "../operational-context/OperationalSetupWorkspace";
 import ScopeManagerWorkspace from "../scope-foundation/ScopeManagerWorkspace";
+import ScheduleManagerWorkspace from "../schedule-foundation/ScheduleManagerWorkspace";
+import AwpWorkspace from "../awp/AwpWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -155,7 +157,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
         </aside>
 
         <section className="workspaceOperationalContent">
-          {!["operational-setup", "scope-manager"].includes(current?.code ?? "") ? (
+          {!["operational-setup", "scope-manager", "schedule-manager", "awp"].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
                 current?.code === "home"
@@ -178,7 +180,11 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "scope-manager" && context.identity.workspace_type === "PROJECT" ? (
+          {current?.code === "awp" && context.identity.workspace_type === "PROJECT" ? (
+            <AwpWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
+          ) : current?.code === "schedule-manager" && context.identity.workspace_type === "PROJECT" ? (
+            <ScheduleManagerWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
+          ) : current?.code === "scope-manager" && context.identity.workspace_type === "PROJECT" ? (
             <ScopeManagerWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
           ) : current?.code === "operational-setup" && context.identity.workspace_type === "PROJECT" ? (
             <OperationalSetupWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />

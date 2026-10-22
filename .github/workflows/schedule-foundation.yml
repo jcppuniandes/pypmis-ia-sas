@@ -1,0 +1,66 @@
+name: Schedule Foundation O1B-B
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'codex/**']
+
+concurrency:
+  group: schedule-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schedule-postgres-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Prepare disposable isolated Schedule infrastructure
+        run: |
+          mkdir -p outputs/.qa/wave-o1bb-20261020
+          chmod 0777 outputs/.qa/wave-o1bb-20261020
+          docker compose -f docker-compose.wave-o1bb.yml build api frontend
+          docker compose -f docker-compose.wave-o1bb.yml up -d db migration-db regression-db redis
+          docker compose -f docker-compose.wave-o1bb.yml run --rm api python -m tests.provision_o1bb_schema
+      - name: Validate real PostgreSQL lifecycle and migration
+        run: |
+          docker compose -f docker-compose.wave-o1bb.yml run --rm api python -m pytest -o addopts= -q \
+            tests/test_schedule_foundation_exchange.py tests/test_schedule_foundation_release.py tests/test_schedule_foundation_policy.py \
+            tests/test_schedule_foundation_migration.py --junitxml=/artifacts/backend-postgres.xml
+          docker compose -f docker-compose.wave-o1bb.yml run --rm api python -m tests.observe_schedule_exchange
+          docker compose -f docker-compose.wave-o1bb.yml run --rm api python -m tests.provision_o1bb_browser
+      - name: Start actual API and production frontend
+        run: |
+          docker compose -f docker-compose.wave-o1bb.yml up -d api frontend
+          timeout 180 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8853/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5513 >/dev/null; do sleep 2; done'
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Run real browser Schedule acceptance
+        working-directory: frontend
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5513
+          E2E_API_URL: http://127.0.0.1:8853
+          E2E_O1BB_FIXTURE: ../outputs/.qa/wave-o1bb-20261020/browser-fixture.json
+        run: npx playwright test schedule-foundation.spec.ts --project=chromium --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: schedule-foundation-validation
+          path: |
+            outputs/.qa/wave-o1bb-20261020/backend-postgres.xml
+            outputs/.qa/wave-o1bb-20261020/migration-roundtrip.json
+            outputs/.qa/wave-o1bb-20261020/exchange-performance.json
+            outputs/.qa/wave-o1bb-20261020/chromium/
+            frontend/test-results/
+          if-no-files-found: warn
+      - name: Stop disposable services
+        if: always()
+        run: docker compose -f docker-compose.wave-o1bb.yml down --remove-orphans

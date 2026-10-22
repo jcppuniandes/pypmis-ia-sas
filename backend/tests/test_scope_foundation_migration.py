@@ -31,11 +31,19 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
         if mapper.class_.__module__.startswith("app.modules.scope_foundation")
     }
     assert scope_tables, "Scope model registration required"
+    later_tables = {
+        mapper.local_table.name
+        for mapper in Base.registry.mappers
+        if mapper.class_.__module__.startswith(("app.modules.schedule_foundation", "app.modules.awp"))
+    }
     config = Config("alembic.ini")
     script = ScriptDirectory.from_config(config)
     heads = script.get_heads()
     assert len(heads) == 1 and heads[0] != "20261019_0069"
-    assert script.get_revision(heads[0]).down_revision == "20261019_0069"
+    scope_revision = script.get_revision("20261020_0070")
+    assert scope_revision.down_revision == "20261019_0069"
+    assert "20261020_0070" in {revision.revision for revision in script.walk_revisions(head=heads[0], base="base")}
+    target_revision = scope_revision.revision
     initial = set(inspect(migration_engine).get_table_names())
     if initial:
         with migration_engine.connect() as connection:
@@ -44,7 +52,11 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
     else:
         Base.metadata.create_all(
             migration_engine,
-            tables=[table for table in Base.metadata.sorted_tables if table.name not in scope_tables | O1A_TABLES],
+            tables=[
+                table
+                for table in Base.metadata.sorted_tables
+                if table.name not in scope_tables | O1A_TABLES | later_tables
+            ],
         )
     monkeypatch.setenv("DATABASE_URL", url)
     get_settings.cache_clear()
@@ -52,14 +64,16 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
         if not initial:
             command.stamp(config, "20261011_0068")
             command.upgrade(config, "20261019_0069")
-        command.upgrade(config, heads[0])
+        command.upgrade(config, target_revision)
         assert scope_tables <= set(inspect(migration_engine).get_table_names())
         with migration_engine.connect() as connection:
-            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == heads[0]
-            assert connection.scalar(text(
-                "SELECT count(*) FROM pg_trigger t JOIN pg_proc p ON p.oid=t.tgfoid "
-                "WHERE p.proname='scope_o1ba_guard' AND NOT t.tgisinternal"
-            )) == len(scope_tables)
+            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == target_revision
+            assert connection.scalar(
+                text(
+                    "SELECT count(*) FROM pg_trigger t JOIN pg_proc p ON p.oid=t.tgfoid "
+                    "WHERE p.proname='scope_o1ba_guard' AND NOT t.tgisinternal"
+                )
+            ) == len(scope_tables)
         command.downgrade(config, "20261019_0069")
         assert not scope_tables & set(inspect(migration_engine).get_table_names())
         assert O1A_TABLES <= set(inspect(migration_engine).get_table_names())
@@ -72,7 +86,7 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
                 )
                 == 6
             )
-        command.upgrade(config, heads[0])
+        command.upgrade(config, target_revision)
         assert scope_tables <= set(inspect(migration_engine).get_table_names())
         evidence = {
             "engine": "PostgreSQL",

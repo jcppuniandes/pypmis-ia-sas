@@ -3,6 +3,8 @@ import { Boxes, Braces, Building2, CopyPlus, GitBranch, Hash, Layers3, RefreshCw
 import { adminConfiguration } from "../api/adminConfiguration";
 import OperationalProfilesAdminView from "../features/operational-context/OperationalProfilesAdminView";
 import ScopeProfilesAdminView from "../features/scope-foundation/ScopeProfilesAdminView";
+import ScheduleProfilesAdminView from "../features/schedule-foundation/ScheduleProfilesAdminView";
+import GovernedProfilesAdminView from "../features/awp/GovernedProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -105,7 +107,9 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
 };
 
 export default function AdminConfigurationView(props: Props) {
-  const [section, setSection] = useState<"processes" | "operational" | "scope">("processes");
+  const [section, setSection] = useState<"processes" | "operational" | "scope" | "schedule" | "awp" | "4d">(
+    "processes"
+  );
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
     <>
@@ -119,8 +123,21 @@ export default function AdminConfigurationView(props: Props) {
         <button aria-pressed={section === "scope"} onClick={() => setSection("scope")} type="button">
           Scope Profiles
         </button>
+        <button aria-pressed={section === "schedule"} onClick={() => setSection("schedule")} type="button">
+          Schedule Profiles
+        </button>
+        <button aria-pressed={section === "awp"} onClick={() => setSection("awp")} type="button">
+          AWP Profiles
+        </button>
+        <button aria-pressed={section === "4d"} onClick={() => setSection("4d")} type="button">
+          4D State Profiles
+        </button>
       </nav>
-      {section === "scope" ? (
+      {section === "awp" || section === "4d" ? (
+        <GovernedProfilesAdminView key={section} token={props.token} kind={section} />
+      ) : section === "schedule" ? (
+        <ScheduleProfilesAdminView token={props.token} />
+      ) : section === "scope" ? (
         <ScopeProfilesAdminView token={props.token} />
       ) : section === "operational" ? (
         <OperationalProfilesAdminView token={props.token} />

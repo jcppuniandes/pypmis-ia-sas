@@ -1,0 +1,458 @@
+{
+  "count": 41,
+  "source": "FastAPI app.routes import without startup or database requests",
+  "routes": [
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/overview",
+      "operation": "overview",
+      "operation_id": "overview_api_v1_schedule_projects__workspace_id__overview_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}",
+      "operation": "register_detail",
+      "operation_id": "register_detail_api_v1_schedule_projects__workspace_id__registers__register_id__get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}",
+      "operation": "version_detail",
+      "operation_id": "version_detail_api_v1_schedule_projects__workspace_id__versions__version_id__get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}",
+      "operation": "baseline_detail",
+      "operation_id": "baseline_detail_api_v1_schedule_projects__workspace_id__baselines__baseline_id__get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/registers",
+      "operation": "list_schedule_registers",
+      "operation_id": "list_schedule_registers_api_v1_schedule_projects__workspace_id__registers_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions",
+      "operation": "list_schedule_versions",
+      "operation_id": "list_schedule_versions_api_v1_schedule_projects__workspace_id__versions_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/baselines",
+      "operation": "list_schedule_baselines",
+      "operation_id": "list_schedule_baselines_api_v1_schedule_projects__workspace_id__baselines_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/mappings",
+      "operation": "list_schedule_mappings",
+      "operation_id": "list_schedule_mappings_api_v1_schedule_projects__workspace_id__mappings_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/exports",
+      "operation": "list_schedule_exports",
+      "operation_id": "list_schedule_exports_api_v1_schedule_projects__workspace_id__exports_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/period-associations",
+      "operation": "list_schedule_period_associations",
+      "operation_id": "list_schedule_period_associations_api_v1_schedule_projects__workspace_id__period_associations_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/registers",
+      "operation": "create_register",
+      "operation_id": "create_register_api_v1_schedule_projects__workspace_id__registers_post",
+      "permissions": [
+        "schedule_foundation.register.edit"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}/imports",
+      "operation": "import_version",
+      "operation_id": "import_version_api_v1_schedule_projects__workspace_id__registers__register_id__imports_post",
+      "permissions": [
+        "schedule_foundation.import"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}/versions",
+      "operation": "create_version",
+      "operation_id": "create_version_api_v1_schedule_projects__workspace_id__registers__register_id__versions_post",
+      "permissions": [
+        "schedule_foundation.version.edit"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/validate",
+      "operation": "schedule_version_validate",
+      "operation_id": "schedule_version_validate_api_v1_schedule_projects__workspace_id__versions__version_id__validate_post",
+      "permissions": [
+        "schedule_foundation.validate"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/review",
+      "operation": "schedule_version_review",
+      "operation_id": "schedule_version_review_api_v1_schedule_projects__workspace_id__versions__version_id__review_post",
+      "permissions": [
+        "schedule_foundation.review"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/accept",
+      "operation": "schedule_version_accept",
+      "operation_id": "schedule_version_accept_api_v1_schedule_projects__workspace_id__versions__version_id__accept_post",
+      "permissions": [
+        "schedule_foundation.accept"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/reject",
+      "operation": "schedule_version_reject",
+      "operation_id": "schedule_version_reject_api_v1_schedule_projects__workspace_id__versions__version_id__reject_post",
+      "permissions": [
+        "schedule_foundation.review"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/mappings",
+      "operation": "set_mapping",
+      "operation_id": "set_mapping_api_v1_schedule_projects__workspace_id__versions__version_id__mappings_post",
+      "permissions": [
+        "schedule_foundation.mapping.edit"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/baselines",
+      "operation": "prepare_baseline",
+      "operation_id": "prepare_baseline_api_v1_schedule_projects__workspace_id__versions__version_id__baselines_post",
+      "permissions": [
+        "schedule_foundation.baseline.prepare"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/submit",
+      "operation": "schedule_baseline_submit",
+      "operation_id": "schedule_baseline_submit_api_v1_schedule_projects__workspace_id__baselines__baseline_id__submit_post",
+      "permissions": [
+        "schedule_foundation.baseline.submit"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/review",
+      "operation": "schedule_baseline_review",
+      "operation_id": "schedule_baseline_review_api_v1_schedule_projects__workspace_id__baselines__baseline_id__review_post",
+      "permissions": [
+        "schedule_foundation.baseline.review"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/approve",
+      "operation": "schedule_baseline_approve",
+      "operation_id": "schedule_baseline_approve_api_v1_schedule_projects__workspace_id__baselines__baseline_id__approve_post",
+      "permissions": [
+        "schedule_foundation.baseline.approve"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/exports",
+      "operation": "export_version",
+      "operation_id": "export_version_api_v1_schedule_projects__workspace_id__versions__version_id__exports_post",
+      "permissions": [
+        "schedule_foundation.export"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/exports/{export_id}/download",
+      "operation": "export_download",
+      "operation_id": "export_download_api_v1_schedule_projects__workspace_id__exports__export_id__download_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/period-associations",
+      "operation": "associate_period",
+      "operation_id": "associate_period_api_v1_schedule_projects__workspace_id__versions__version_id__period_associations_post",
+      "permissions": [
+        "schedule_foundation.period.associate"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/wbs",
+      "operation": "schedule_version_wbs",
+      "operation_id": "schedule_version_wbs_api_v1_schedule_projects__workspace_id__versions__version_id__wbs_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/activities",
+      "operation": "schedule_version_activities",
+      "operation_id": "schedule_version_activities_api_v1_schedule_projects__workspace_id__versions__version_id__activities_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/calendars",
+      "operation": "schedule_version_calendars",
+      "operation_id": "schedule_version_calendars_api_v1_schedule_projects__workspace_id__versions__version_id__calendars_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/relationships",
+      "operation": "schedule_version_relationships",
+      "operation_id": "schedule_version_relationships_api_v1_schedule_projects__workspace_id__versions__version_id__relationships_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/constraints",
+      "operation": "schedule_version_constraints",
+      "operation_id": "schedule_version_constraints_api_v1_schedule_projects__workspace_id__versions__version_id__constraints_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/codes",
+      "operation": "schedule_version_codes",
+      "operation_id": "schedule_version_codes_api_v1_schedule_projects__workspace_id__versions__version_id__codes_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/code-assignments",
+      "operation": "schedule_version_code_assignments",
+      "operation_id": "schedule_version_code_assignments_api_v1_schedule_projects__workspace_id__versions__version_id__code_assignments_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/external-links",
+      "operation": "schedule_version_external_links",
+      "operation_id": "schedule_version_external_links_api_v1_schedule_projects__workspace_id__versions__version_id__external_links_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/mappings",
+      "operation": "schedule_version_mappings",
+      "operation_id": "schedule_version_mappings_api_v1_schedule_projects__workspace_id__versions__version_id__mappings_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/health",
+      "operation": "schedule_version_health",
+      "operation_id": "schedule_version_health_api_v1_schedule_projects__workspace_id__versions__version_id__health_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/look-ahead",
+      "operation": "look_ahead",
+      "operation_id": "look_ahead_api_v1_schedule_projects__workspace_id__versions__version_id__look_ahead_get",
+      "permissions": [
+        "schedule_foundation.read"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "path": "/api/v1/schedule/admin/profiles",
+      "operation": "profiles",
+      "operation_id": "profiles_api_v1_schedule_admin_profiles_get",
+      "permissions": [
+        "schedule_foundation.admin.configure"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/admin/profiles",
+      "operation": "create_profile",
+      "operation_id": "create_profile_api_v1_schedule_admin_profiles_post",
+      "permissions": [
+        "schedule_foundation.admin.configure"
+      ]
+    },
+    {
+      "methods": [
+        "PUT"
+      ],
+      "path": "/api/v1/schedule/admin/profiles/{identity}",
+      "operation": "update_profile",
+      "operation_id": "update_profile_api_v1_schedule_admin_profiles__identity__put",
+      "permissions": [
+        "schedule_foundation.admin.configure"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/admin/profiles/{identity}/publish",
+      "operation": "schedule_profile_publish",
+      "operation_id": "schedule_profile_publish_api_v1_schedule_admin_profiles__identity__publish_post",
+      "permissions": [
+        "schedule_foundation.admin.publish"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/api/v1/schedule/admin/profiles/{identity}/successor",
+      "operation": "schedule_profile_successor",
+      "operation_id": "schedule_profile_successor_api_v1_schedule_admin_profiles__identity__successor_post",
+      "permissions": [
+        "schedule_foundation.admin.configure"
+      ]
+    }
+  ],
+  "permission_verification": "GET queries verified against router.py _authorized('read'); ADMIN profiles use admin.configure; POST/PUT retain dependency action"
+}

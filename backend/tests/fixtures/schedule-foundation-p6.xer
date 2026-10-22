@@ -1,0 +1,35 @@
+ERMHDR	19.12	2026-10-20	Project	fixture	Isolated Schedule	USD
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date	clndr_id
+%R	1	O1BB-XER	Isolated Native XER	2026-10-20 08:00	10
+%T	CALENDAR
+%F	clndr_id	clndr_name	clndr_type	day_hr_cnt	clndr_data
+%R	10	Ten hour calendar	CA_Project	10	(0||CalendarDataPreserved())
+%R	11	Six hour calendar	CA_Project	6	(0||CalendarDataPreserved())
+%T	PROJWBS
+%F	wbs_id	proj_id	parent_wbs_id	wbs_short_name	wbs_name	seq_num
+%R	100	1		ROOT	Contract schedule	1
+%R	101	1	100	FIELD	Field work	2
+%T	TASK
+%F	task_id	proj_id	wbs_id	clndr_id	task_code	task_name	task_type	status_code	target_drtn_hr_cnt	remain_drtn_hr_cnt	target_start_date	target_end_date	act_start_date	act_end_date	total_float_hr_cnt	free_float_hr_cnt	complete_pct_type	phys_complete_pct	cstr_type	cstr_date
+%R	1001	1	101	10	A100	Formwork	TT_Task	TK_NotStart	20	20	2026-10-21 07:00	2026-10-22 17:00			10	5	CP_Phys	0	CS_SOA	2026-10-21 07:00
+%R	1002	1	101	11	A200	Rebar	TT_Task	TK_Active	12	6	2026-10-19 08:00	2026-10-21 14:00	2026-10-19 08:00		-2		CP_Phys	50	CS_MEO	2026-10-21 14:00
+%R	1003	1	100	10	M300	Mechanical completion	TT_FinMile	TK_NotStart	0	0		2026-10-23 17:00					CP_Phys	0		
+%R	1004	1	100	10	M400	Access released	TT_Mile	TK_NotStart	0	0	2026-10-20 07:00						CP_Phys	0		
+%T	TASKPRED
+%F	task_pred_id	proj_id	pred_proj_id	task_id	pred_task_id	pred_type	lag_hr_cnt
+%R	2001	1	1	1002	1001	PR_FS	2
+%R	2002	1	1	1003	1001	PR_SS	-1
+%R	2003	1	1	1003	1002	PR_FF	0
+%R	2004	1	1	1001	1004	PR_SF	0
+%R	2005	1	2	1001	9001	PR_FS	0
+%T	ACTVTYPE
+%F	actv_code_type_id	actv_code_type
+%R	3001	Discipline
+%T	ACTVCODE
+%F	actv_code_id	actv_code_type_id	actv_code_name	short_name
+%R	3002	3001	Civil works	CIVIL
+%T	TASKACTV
+%F	task_id	actv_code_type_id	actv_code_id
+%R	1001	3001	3002
+%E

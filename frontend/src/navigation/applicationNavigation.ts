@@ -404,13 +404,20 @@ const NON_STRATEGIC_USER_MODE_NAVIGATION_BLUEPRINT: MacroprocessNavigationItem[]
           { key: "scope-items", label: "Scope Items" },
           { key: "process-flow", label: "Strategy&Path of Execution" },
           { key: "plan-items", label: "Plan Items" },
-          { key: "work-packages", label: "Work Packages" },
+          {
+            key: "work-packages",
+            label: "Work Packages",
+            description:
+              "Vista heredada de compatibilidad. La autoridad AWP y sus CWA, constraints y readiness se operan en el Project Workspace canónico, ruta awp.",
+          },
           { key: "decisions", label: "Scope Changes" },
         ],
       },
       {
         key: "schedule-manager",
         label: "Schedule Manager",
+        description:
+          "Schedule Foundation canónico se abre desde el Project Workspace; las vistas heredadas se conservan como adaptadores.",
         submodules: [
           { key: "schedule-intake", label: "Activity Sheet" },
           { key: "schedule-control", label: "Schedule" },

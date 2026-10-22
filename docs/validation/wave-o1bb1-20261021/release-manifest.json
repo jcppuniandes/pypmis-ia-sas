@@ -1,0 +1,72 @@
+{
+  "observed_at_utc": "2026-10-22T02:46:33.913168+00:00",
+  "git_head": "eb3fa4d82a07906b63644abd245dfffcd90c2fae",
+  "release_state": "WAVE_O1B_B1_AWP_READINESS_4D_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1B_C_COST_FOUNDATION",
+  "next_increment": "WAVE O1B-C \u2014 COST FOUNDATION",
+  "suite_summary": [
+    [
+      "B1 PostgreSQL y pol\u00edticas",
+      157,
+      "PASS"
+    ],
+    [
+      "Regresi\u00f3n Scope Schedule P6",
+      227,
+      "PASS"
+    ],
+    [
+      "Frontend y navegaci\u00f3n",
+      53,
+      "PASS"
+    ],
+    [
+      "Comprobaciones Chromium reales",
+      17,
+      "PASS"
+    ]
+  ],
+  "criteria_count": 57,
+  "open_s1": 0,
+  "open_s2": 0,
+  "normal_database_migrated": false,
+  "business_signatures_recorded": false,
+  "commit_created": false,
+  "push_performed": false,
+  "github_workflow_executed": false,
+  "source_manifest_sha256": "7fc45102d0ec522e17a639b56fa43b65c8d79e4cd8eb1dc5b65032348e4c0be3",
+  "evidence_hashes": {
+    "outputs/.qa/wave-o1bb1-20261021/postgres-junit.xml": "d4c2b89fd0304ffd11054d0ebb9ebf0310eb5fb275ecb6b015546600c5a6518d",
+    "outputs/.qa/wave-o1bb1-20261021/regression-junit.xml": "52500543f313a8b5ca98517af6970df6f6ab78f5fb5684b00349ba20a481d303",
+    "outputs/.qa/wave-o1bb1-20261021/frontend-components.json": "2fb0419fc8fdaf6de90184b6fc04e27d9e05f52d4894141ab8afe4f18a5bae80",
+    "outputs/.qa/wave-o1bb1-20261021/chromium/browser-uat.json": "ddb5cc99a6aafa382bbb0268923bfa0ac86f552f8e43631fe94d1b57d17a047a",
+    "outputs/.qa/wave-o1bb1-20261021/native-artifact-verification.json": "41b952bf4648801343e52dc163e955725b655efa286c79674038b73d0f98001c",
+    "outputs/.qa/wave-o1bb1-20261021/a11y.json": "1effa44c04b5990d3a8c39dc7798e7e06cbe31efd7ee1e35a3c495a08d1f4b73",
+    "outputs/.qa/wave-o1bb1-20261021/word-pages-v3/render-provenance.json": "2bfd042e584cdb92bee69930db2219b2366efdc165417a57b584472a03081f85",
+    "docs/validation/wave-o1bb1-20261021/api-observations.json": "126b76131b3206358ba9aeb94b0fe326366cc1b7deb991eeba47e5e1c7870d2a",
+    "docs/validation/wave-o1bb1-20261021/preservation-before.json": "9bf8bd0f4a1f32f8298a3b580eeb8c730f6c0b1723ee74acf8997171d84d1520",
+    "docs/validation/wave-o1bb1-20261021/preservation-after.json": "ed3593abe81a41dfa6a7e2ec8718544cfbf39cf14ab2aa836ad2e454ffdc0a19"
+  },
+  "artifacts": [
+    {
+      "path": "outputs/wave-o1bb1-20261021/P&Pmis_Wave_O1B_B1_AWP_Readiness_4D_Technical_Report.docx",
+      "bytes": 86463,
+      "sha256": "e794fdacd693fa8cc3e765d2b8a73b91522f4af9e0ac431c80d8fb46d7e0b971"
+    },
+    {
+      "path": "outputs/wave-o1bb1-20261021/P&Pmis_Wave_O1B_B1_AWP_Readiness_4D_Traceability.xlsx",
+      "bytes": 71702,
+      "sha256": "8a5449bcc4577cdbe070dca70ad12d54e0ff93ddf7d04d366773a751d1b7a12e"
+    }
+  ],
+  "visual_review": {
+    "result": "PASS",
+    "word_pages": 6,
+    "word_latest_render": "word-pages-v3",
+    "all_word_pages_reviewed": true,
+    "workbook_sheets": 15,
+    "workbook_preview_ranges": 54,
+    "native_compared_cells": 4053,
+    "discrepancies": 0
+  }
+}

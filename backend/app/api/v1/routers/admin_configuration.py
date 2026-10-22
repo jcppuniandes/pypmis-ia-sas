@@ -69,6 +69,9 @@ CONFIGURATION_KINDS = {
 GOVERNED_CONFIGURATION_APIS = {
     "operational_profile": "/api/v1/operational/admin/profiles",
     "scope_profile": "/api/v1/scope/admin/profiles",
+    "schedule_profile": "/api/v1/schedule/admin/profiles",
+    "awp_profile": "/api/v1/awp/admin/profiles",
+    "four_d_profile": "/api/v1/schedule/4d/admin/profiles",
     "risk_governance_policy": "/api/v1/risk-governance/admin/configurations",
     "basic_data_readiness_configuration": "/api/v1/basic-data/admin/configurations",
     "owner_capability_readiness_configuration": "/api/v1/owner-capability/admin/configurations",
@@ -601,7 +604,9 @@ def _configurations(db: Session, tenant_id: int) -> list[AdminConfiguration]:
             # bypass it; USER reads the applicable published policy in context.
             .where(
                 AdminConfiguration.tenant_id == tenant_id,
-                AdminConfiguration.kind.notin_(["operational_profile", "scope_profile"]),
+                AdminConfiguration.kind.notin_(
+                    ["operational_profile", "scope_profile", "schedule_profile", "awp_profile", "four_d_profile"]
+                ),
             )
             .order_by(AdminConfiguration.kind, AdminConfiguration.code, AdminConfiguration.revision.desc())
         ).all()

@@ -36,9 +36,25 @@ def main() -> None:
 
     # Legacy schema setup is test-only. New Wave4 tables/triggers must be
     # installed by the actual additive migration, never create_all/stamphead.
+    later_tables = {
+        mapper.local_table.name
+        for mapper in Base.registry.mappers
+        if mapper.class_.__module__.startswith(
+            (
+                "app.modules.operational_context",
+                "app.modules.scope_foundation",
+                "app.modules.schedule_foundation",
+                "app.modules.awp",
+            )
+        )
+    }
     Base.metadata.create_all(
         engine,
-        tables=[table for table in Base.metadata.sorted_tables if table.name not in {"qra_runs", "qra_run_reviews"}],
+        tables=[
+            table
+            for table in Base.metadata.sorted_tables
+            if table.name not in {"qra_runs", "qra_run_reviews"} | later_tables
+        ],
     )
     with engine.connect() as connection:
         current = (

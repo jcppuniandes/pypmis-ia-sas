@@ -1,0 +1,66 @@
+name: AWP Readiness and 4D O1B-B1
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'codex/**']
+
+concurrency:
+  group: awp-readiness-four-d-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  awp-postgres-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Prepare isolated additive PostgreSQL schemas
+        run: |
+          mkdir -p outputs/.qa/wave-o1bb1-20261021
+          chmod 0777 outputs/.qa/wave-o1bb1-20261021
+          docker compose -f docker-compose.wave-o1bb1.yml build api frontend
+          docker compose -f docker-compose.wave-o1bb1.yml up -d db browser-db migration-db redis
+          docker compose -f docker-compose.wave-o1bb1.yml run --rm --entrypoint python api -m tests.provision_o1bb1_schema
+          docker compose -f docker-compose.wave-o1bb1.yml run --rm -e DATABASE_URL=postgresql+psycopg://o1bb1:disposable-o1bb1@db:5432/o1bb1 --entrypoint python api -m tests.provision_o1bb1_schema
+          docker compose -f docker-compose.wave-o1bb1.yml run --rm -e DATABASE_URL=postgresql+psycopg://o1bb1:disposable-o1bb1@migration-db:5432/o1bb1_migration --entrypoint python api -m tests.provision_o1bb1_schema --baseline-only
+      - name: Validate policy PostgreSQL isolation and migration
+        run: |
+          docker compose -f docker-compose.wave-o1bb1.yml run --rm --entrypoint python api -m pytest -o addopts= -q \
+            tests/test_awp_policy.py tests/test_awp_release.py tests/test_schedule_four_d_state.py \
+            tests/test_schedule_four_d_release.py tests/test_awp_migration.py \
+            --junitxml=/artifacts/postgres-junit.xml
+          docker compose -f docker-compose.wave-o1bb1.yml run --rm --entrypoint python api -m tests.provision_o1bb1_browser
+      - name: Start actual API and frontend
+        run: |
+          docker compose -f docker-compose.wave-o1bb1.yml up -d api frontend
+          timeout 240 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8854/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5514 >/dev/null; do sleep 2; done'
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Validate real AWP readiness and IFC 4D browser flows
+        working-directory: frontend
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5514
+          E2E_API_URL: http://127.0.0.1:8854
+          E2E_O1BB1_FIXTURE: ../outputs/.qa/wave-o1bb1-20261021/browser-fixture.json
+        run: npx playwright test awp-readiness-four-d.spec.ts --project=chromium --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: awp-readiness-four-d-validation
+          path: |
+            outputs/.qa/wave-o1bb1-20261021/postgres-junit.xml
+            outputs/.qa/wave-o1bb1-20261021/chromium/
+            frontend/test-results/
+          if-no-files-found: warn
+      - name: Stop disposable services retaining volumes
+        if: always()
+        run: docker compose -f docker-compose.wave-o1bb1.yml down --remove-orphans

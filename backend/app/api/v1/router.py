@@ -257,6 +257,7 @@ from app.domain.schemas import (
     WorkPackageOut,
     WorkPackageReadinessUpdate,
 )
+from app.modules.awp import router as awp_router
 from app.modules.basic_data import router as basic_data_router
 from app.modules.business_analysis import router as business_analysis_router
 from app.modules.business_case import router as business_case_router
@@ -291,6 +292,8 @@ from app.modules.qra_engine import router as qra_engine_router
 from app.modules.qra_foundation import router as qra_foundation_router
 from app.modules.risk_governance import router as risk_governance_router
 from app.modules.risk_readiness import router as risk_readiness_router
+from app.modules.schedule_foundation import router as schedule_foundation_router
+from app.modules.schedule_four_d import router as schedule_four_d_router
 from app.modules.scope_foundation import router as scope_foundation_router
 from app.modules.strategic_benefits import router as strategic_benefits_router
 from app.modules.strategic_gate import router as strategic_gate_router
@@ -331,6 +334,10 @@ router.include_router(basic_data_router.router, prefix="/basic-data", tags=["bas
 router.include_router(owner_capability_router.router, prefix="/owner-capability", tags=["owner-capability"])
 router.include_router(operational_context_router.router, prefix="/operational", tags=["operational-context"])
 router.include_router(scope_foundation_router.router, prefix="/scope", tags=["scope-foundation"])
+router.include_router(schedule_foundation_router.router, prefix="/schedule", tags=["schedule-foundation"])
+router.include_router(awp_router.router, prefix="/awp", tags=["awp"])
+router.include_router(awp_router.readiness_router, prefix="/readiness", tags=["execution-readiness"])
+router.include_router(schedule_four_d_router.router, prefix="/schedule", tags=["schedule-4d"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
 router.include_router(qra_engine_router.router, prefix="/qra-engine", tags=["qra-engine"])
 router.include_router(permit_readiness_router.router, tags=["permit-readiness"])

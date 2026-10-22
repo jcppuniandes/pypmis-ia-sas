@@ -1,0 +1,38 @@
+{
+  "observed_at_utc": "2026-10-21T17:33:59.038790+00:00",
+  "issue_date": "2026-10-21",
+  "baseline_head": "eb3fa4d82a07906b63644abd245dfffcd90c2fae",
+  "release_state": "WAVE_O1B_B_SCHEDULE_FOUNDATION_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1B_C_COST_FOUNDATION",
+  "next_increment": "WAVE O1B-C — COST FOUNDATION",
+  "next_increment_started": false,
+  "backend_cases": 139,
+  "regression_cases": 306,
+  "frontend_cases": 36,
+  "browser_checks": 11,
+  "project14_preserved": true,
+  "normal_database_migrated": false,
+  "business_signoff": "PENDING_NO_SIGNATURES",
+  "commit_or_push_performed": false,
+  "open_S1": 0,
+  "open_S2": 0,
+  "limitations": [
+    "No XER export",
+    "No native BaselineProject transport",
+    "No P6 application or installed XSD certification",
+    "No production scale SLA",
+    "Remote GitHub CI not run by this task"
+  ],
+  "artifacts": {
+    "outputs/wave-o1bb-20261020/P&Pmis_Wave_O1B_B_Schedule_Foundation_Technical_Report.docx": {
+      "bytes": 85927,
+      "sha256": "d416d007c65b052b42c172a31ce13f4b5d1736f0f1c8872bdaf2df50d7ba6417"
+    },
+    "outputs/wave-o1bb-20261020/P&Pmis_Wave_O1B_B_Schedule_Foundation_Traceability.xlsx": {
+      "bytes": 58365,
+      "sha256": "157e6bbad2245df1a7243b2ab171f1b72c98f5b36f436c4b0cea83eed16d814f"
+    }
+  },
+  "source_manifest_sha256": "b3df7ec8e4444685b3de7feb16be784a80e470ba7045638f16b5c31b4e60ca7e",
+  "native_verification_sha256": "53e24bf87754671279aa3072bc6f18723e00364205487981a91a0a38e6e0c66d"
+}

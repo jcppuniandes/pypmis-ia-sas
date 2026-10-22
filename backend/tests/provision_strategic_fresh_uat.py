@@ -35,15 +35,31 @@ def main():
         )
     cfg = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
     cfg.set_main_option("script_location", str(Path(__file__).resolve().parents[1] / "alembic"))
+    later_tables = {
+        mapper.local_table.name
+        for mapper in Base.registry.mappers
+        if mapper.class_.__module__.startswith(
+            (
+                "app.modules.operational_context",
+                "app.modules.scope_foundation",
+                "app.modules.schedule_foundation",
+                "app.modules.awp",
+            )
+        )
+    }
     if current is None:
         Base.metadata.create_all(
             engine,
             tables=[
-                table for table in Base.metadata.sorted_tables if table.name not in {"qra_runs", "qra_run_reviews"}
+                table
+                for table in Base.metadata.sorted_tables
+                if table.name not in {"qra_runs", "qra_run_reviews"} | later_tables
             ],
         )
         command.stamp(cfg, "20261009_0067")
-    command.upgrade(cfg, "head")
+    # This historic strategic fixture explicitly proves the 0068 boundary,
+    # not whichever operational successor happens to be the current head.
+    command.upgrade(cfg, "20261011_0068")
     with engine.connect() as connection:
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20261011_0068"
     print("Disposable schema ready at 20261011_0068; no strategic business fixture seeded", flush=True)

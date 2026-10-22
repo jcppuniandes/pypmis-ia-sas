@@ -76,3 +76,7 @@ outputs/.qa/wave-o1ba-20261020/
 
 # Local repository backup exceeds GitHub's regular Git file-size limit.
 outputs/.qa/strategic-hardening/baseline-9cb0969.zip
+# Private Schedule validation credentials, traces and artifact previews.
+outputs/.qa/wave-o1bb-20261020/
+outputs/.qa/wave-o1bb-20261021/
+outputs/.qa/wave-o1bb1-20261021/

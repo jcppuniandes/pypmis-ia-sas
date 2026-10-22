@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import get_settings
 from app.database.session import Base
 from app.domain import models  # noqa: F401
+from app.modules.awp import models as awp_models  # noqa: F401
 from app.modules.basic_data import models as basic_data_models  # noqa: F401
 from app.modules.business_analysis import models as business_analysis_models  # noqa: F401
 from app.modules.business_case import models as business_case_models  # noqa: F401
@@ -32,6 +33,7 @@ from app.modules.project_proposal import models as project_proposal_models  # no
 from app.modules.project_workspace_initialization import models as project_workspace_initialization_models  # noqa: F401
 from app.modules.qra_foundation import models as qra_foundation_models  # noqa: F401
 from app.modules.risk_readiness import models as risk_readiness_models  # noqa: F401
+from app.modules.schedule_foundation import models as schedule_foundation_models  # noqa: F401
 from app.modules.scope_foundation import models as scope_foundation_models  # noqa: F401
 from app.modules.strategic_benefits import models as strategic_benefits_models  # noqa: F401
 from app.modules.strategic_gate import models as strategic_gate_models  # noqa: F401

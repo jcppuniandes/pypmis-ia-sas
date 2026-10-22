@@ -24,7 +24,9 @@ def main():
     scope_tables = {
         mapper.local_table.name
         for mapper in Base.registry.mappers
-        if mapper.class_.__module__.startswith("app.modules.scope_foundation")
+        if mapper.class_.__module__.startswith(
+            ("app.modules.scope_foundation", "app.modules.schedule_foundation", "app.modules.awp")
+        )
     }
     Base.metadata.create_all(
         engine, tables=[table for table in Base.metadata.sorted_tables if table.name not in O1A_TABLES | scope_tables]

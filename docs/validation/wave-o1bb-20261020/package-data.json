@@ -1,0 +1,4515 @@
+{
+  "issue_date": "21 octubre 2026",
+  "baseline_head": "eb3fa4d82a07906b63644abd245dfffcd90c2fae",
+  "release_validated": true,
+  "release_state": "WAVE_O1B_B_SCHEDULE_FOUNDATION_RELEASE_VALIDATED",
+  "release_explanation": "Los controles técnicos requeridos pasan en el entorno aislado. No incluye despliegue de la base habitual ni aceptación de negocio.",
+  "final_output": "READY_FOR_WAVE_O1B_C_COST_FOUNDATION",
+  "backend_result": "PASS",
+  "backend_count": 139,
+  "regression_result": "PASS",
+  "regression_count": 306,
+  "preservation_result": "PASS",
+  "cases": [
+    {
+      "name": "test_register_idempotency_and_policy_type",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 88.759,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.259,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.117,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.081,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.095,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.057,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[unassigned]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.062,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[foreign]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.085,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 5.09,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[second_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 6.237,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[planner]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.695,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.616,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.224,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.01,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.279,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.885,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_version_create_requires_register_etag_and_preserves_explicit_data_date",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 7.497,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_unmapped_schedule_cannot_accept_or_approve_baseline",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 6.117,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_wbs_plan_and_activity_plan_many_to_many_and_baseline_current_separation",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 121.396,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_acceptance_rejects_last_material_mapping_editor_and_importer",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 10.986,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_mapping_wrong_tenant_project_and_unknown_external_identity_denied",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 3.964,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_accepted_schedule_mapping_and_source_snapshot_immutable",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 13.846,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_xml_export_manifest_and_actual_source_roundtrip_with_no_cpm_claim",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 19.25,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_get_schedule_overview_and_profiles_have_no_sql_writes",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.657,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xml]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 7.72,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xer]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 6.243,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_manual_creation_cannot_forge_cpm_results_and_updates_create_new_version",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 6.6,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_broken_identity_mapping_retained_and_blocks_successor",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 13.423,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_explicit_period_association_preserves_data_date_distinct_from_cutoff",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 10.025,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_baseline_sod_and_database_immutability",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 16.908,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_lookahead_and_unknown_criticality_are_non_cpm_queries",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.824,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_default_unresolved_external_links_are_fail_closed",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 36.172,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[negative_lag-SCHEDULE_NEGATIVE_LAG-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.12,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[hard_constraint-SCHEDULE_HARD_CONSTRAINT-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.852,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[open_ends-SCHEDULE_OPEN_ENDS-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 4.329,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[missing_calendar-SCHEDULE_CALENDAR_REFERENCE_MISSING-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 4.999,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[long_duration-SCHEDULE_LONG_DURATION-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 7.398,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[excessive_lag-SCHEDULE_EXCESSIVE_LAG-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 9.431,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[None-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 7.44,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[10-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 4.823,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_mandatory_wbs_mappings_are_distinct_from_activity_mappings",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.574,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[calendar_handling-ASSUME_8_HOURS]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.132,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[lookahead_default_days-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.108,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[inherit_to_descendants-yes]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.111,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value3]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.167,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value4]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.133,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[open_end_policy-value5]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.133,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[mapping_policy-value6]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.137,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[allowed_constraints-value7]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.152,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[supported_exchange-value8]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.511,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[scope-value9]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.344,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_profile_publication_rejects_author_and_last_material_editor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.046,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[create]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.262,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[patch]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.131,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[publish]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.096,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[clone]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.073,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_two_successor_baselines_same_source_cannot_approve_stale_predecessor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 12.986,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_commands_do_not_create_scope_plan_or_derived_authorities",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 9.381,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_schedule_postgresql_single_successor_roundtrip_preserves_scope_and_o1a",
+      "class": "tests.test_schedule_foundation_migration",
+      "seconds": 143.821,
+      "result": "PASS",
+      "evidence": "backend-postgres.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.169,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.073,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.16,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.059,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_source_float_criticality_and_percent_complete_unknown_are_not_inferred",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.096,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_float_does_not_invent_criticality_or_map_longest_path_to_critical",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.056,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_xml_calendar_workweek_shifts_and_exception_structure_retained",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.142,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_xml_constraints_primary_and_secondary_preserve_types_and_dates",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.088,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_xml_export_is_actual_xml_parser_loop_with_core_semantics_and_no_native_baseline_claim",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.092,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_opaque_calendar_blocks_claimed_lossless_xml_export",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.094,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[NaN-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.059,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[Infinity-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.063,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[PT2H-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.069,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[-1-DURATION_NEGATIVE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.117,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[duplicate-<lambda>-ACTIVITIES_DUPLICATE_ID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.094,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[missing_date-<lambda>-DATA_DATE_REQUIRED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.162,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_date-<lambda>-DATA_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.207,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[wbs_cycle-<lambda>-WBS_HIERARCHY_CYCLE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.097,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_wbs-<lambda>-ACTIVITY_WBS_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.111,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[unknown_relation-<lambda>-RELATIONSHIP_TYPE_UNSUPPORTED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.042,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_activity_date-<lambda>-ACTIVITY_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.058,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_percent-<lambda>-IMPORTED_PERCENT_COMPLETE_OUT_OF_RANGE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.042,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_code-<lambda>-ACTIVITY_CODE_ASSIGNMENT_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.048,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[garbage]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<Project/>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.074,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<!DOCTYPE x [<!ENTITY y 'bad'>]><APIBusinessObjects>&y;</APIBusinessObjects>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_utf16_dtd_cannot_bypass_utf8_entity_guard",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\ta\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\t2\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n%T\\tTASK]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_native_xer_parser_characterization_distinguishes_legacy_marker_subset",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 2.065,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_legacy_xer_adapter_reuses_existing_tokenizer_without_implicit_acceptance",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.049,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_unsupported_fields_and_objects_reported_while_original_hash_preserved",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.152,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_identity_based_diff_preserves_mapping_impacts_and_source_immutability",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.358,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.06,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.048,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-code-value0]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.272,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-external_id-value1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.066,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[wbs-parent_external_id-value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.086,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-external_id-value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.117,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-type-value4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.094,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[relationships-relationship_type-value5]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.093,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[constraints-activity_external_id-value6]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.134,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-kind-value7]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.103,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-external_id-value8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.12,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[code_assignments-value_external_id-value9]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.05,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.141,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-value11]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.099,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-source_fields-not a dictionary]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.12,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.068,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.034,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.142,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.13,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.208,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_null_activity_type_is_invalid_before_health_milestone_classification",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.219,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.196,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[False]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.142,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.088,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.511,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.112,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.047,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.097,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.123,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.133,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.109,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.104,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.205,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_input_record_and_size_limits",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.182,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_export_non_native_object_ids_and_day_conversion_are_explicitly_blocked",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.074,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_xml_duplicate_scalar_and_empty_business_object_rejected",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.228,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_deep_hierarchy_is_bounded_for_import_and_manual_snapshots",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.182,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_xer_table_and_field_counts_are_bounded",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.263,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    },
+    {
+      "name": "test_export_generation_is_deterministic_and_does_not_mutate_snapshot",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.375,
+      "result": "PASS",
+      "evidence": "exchange-docker.xml"
+    }
+  ],
+  "regression": [
+    {
+      "name": "test_legacy_lookup_is_tenant_scoped_without_id_equality",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 5.762,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_legacy_reads_preserve_scope_schedule_cost_progress",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.331,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_operational_reads_require_project_membership[list_wbs]",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.131,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_operational_reads_require_project_membership[list_activities]",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.103,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_operational_reads_require_project_membership[list_cost_records]",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.128,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_operational_reads_require_project_membership[list_progress_records]",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.145,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_membership_does_not_grant_material_permissions",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.317,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_existing_explicit_source_adapter_never_guesses_name_code_or_numeric_id",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.254,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_canonical_workspace_query_keeps_workspace_namespace",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.105,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_governance_does_not_require_owner_fid",
+      "class": "tests.test_operational_context_characterization",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_context_uses_canonical_identity_with_explicit_missing_binding",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 28.368,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_explicit_binding_create_idempotent_retry_and_unequal_ids",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.858,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_zero_legacy_is_a_deliberate_state_not_auto_creation",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.601,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_duplicate_canonical_binding_and_duplicate_legacy_binding_rejected",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.453,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_cross_tenant_legacy_binding_is_non_leaking[foreign-404]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.766,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_cross_tenant_legacy_binding_is_non_leaking[superseded-409]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.909,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_reconciliation_ambiguous_explicit_candidates_fail_closed",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.9,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_reconciliation_missing_trustworthy_candidate_fails_closed",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.678,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_reconciliation_preserves_history_and_enforces_sod_etag",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.903,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_command_requires_duty_not_just_project_membership[executive]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.137,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_command_requires_duty_not_just_project_membership[planner]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.967,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_command_requires_duty_not_just_project_membership[manager]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.683,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_binding_command_requires_duty_not_just_project_membership[unassigned]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.844,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_authorization_routes_do_not_fabricate_owner_authority[direct-True]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.146,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_authorization_routes_do_not_fabricate_owner_authority[contractor-True]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.843,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_authorization_routes_do_not_fabricate_owner_authority[owner-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.238,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_authorization_routes_do_not_fabricate_owner_authority[inactive-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.832,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_missing_source_authorization_blocks_operational_entry[direct]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.715,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_missing_source_authorization_blocks_operational_entry[contractor]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.731,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_common_period_full_lifecycle_explicit_timezone_and_independent_data_date",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 3.078,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_period_review_close_publish_permissions_and_sod",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 4.142,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_period_transition_and_stale_etag_rejected",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 3.138,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_open_period_and_close_publish_retries_are_idempotent",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.316,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_duplicate_active_period_and_reused_key_different_payload_rejected",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.576,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes0]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.275,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes1]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.733,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes2]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.582,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes3]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.646,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes4]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.544,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes5]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.791,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_calendar_timezone_cutoff_and_cadence_rejected[changes6]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.55,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_supported_configurable_cadences[biweekly-2026-10-05-2026-10-18]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.796,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_supported_configurable_cadences[monthly-2026-10-01-2026-10-31]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.638,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_supported_configurable_cadences[custom-2026-10-03-2026-10-21]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.604,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_published_header_immutable_and_reopen_creates_new_revision",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 3.128,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_profile_draft_editable_stale_etag_rejected_and_publish_sod",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.126,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_published_policy_immutable_successor_draft_and_effective_dating",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.137,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_policy_governance_and_project_type_applicability[applicability0]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.859,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_policy_governance_and_project_type_applicability[applicability1]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.933,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_historical_period_retains_resolved_policy_revision",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.289,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[manager]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.419,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[planner]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.493,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[cost_controller]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.397,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[progress_engineer]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.435,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[executive]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.477,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[project_admin]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.769,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_user_cannot_access_or_edit_admin_profile_configuration[unassigned]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.93,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_wrong_tenant_wrong_project_and_unauthorized_actor_denied",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.276,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_all_new_get_routes_have_no_business_state_or_security_event_writes",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.391,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_audit_events_cover_binding_policy_and_period_commands",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.806,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_postgresql_indexes_and_immutable_triggers_exist_when_postgresql",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.058,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_explicit_binding_revocation_keeps_immutable_history",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.39,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_legacy_material_command_requires_bound_canonical_context",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.308,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_anonymous_background_commands_fail_closed_before_database_write",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.224,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_postgresql_raw_sql_cannot_mutate_published_headers_or_profiles",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.764,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_postgresql_raw_constraint_rejects_duplicate_active_bindings",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.979,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_effective_date-2099-01-01-OPERATIONAL_AUTHORIZATION_NOT_YET_EFFECTIVE-direct]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.199,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_effective_date-2099-01-01-OPERATIONAL_AUTHORIZATION_NOT_YET_EFFECTIVE-contractor]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.351,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_valid_until-2000-01-01-OPERATIONAL_AUTHORIZATION_EXPIRED-direct]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.853,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_valid_until-2000-01-01-OPERATIONAL_AUTHORIZATION_EXPIRED-contractor]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.102,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_effective_date-invalid-date-OPERATIONAL_AUTHORIZATION_DATE_INVALID-direct]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.98,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_non_owner_authorization_date_boundaries_fail_closed[authorization_effective_date-invalid-date-OPERATIONAL_AUTHORIZATION_DATE_INVALID-contractor]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.533,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_published_policy_required_setup_and_binding_are_command_preconditions",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 2.039,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_policy_workspace_specificity_and_tenant_scope_are_enforced",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.4,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_read_only_executive_cannot_use_legacy_configurator_flag_to_bypass_context",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.98,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[project_admin-True-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.767,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[manager-True-True]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.704,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[second_manager-True-True]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 0.835,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[planner-True-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.352,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[cost_controller-True-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.576,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[progress_engineer-False-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.115,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_operational_duty_permissions_visible_without_overbroad_roles[executive-False-False]",
+      "class": "tests.test_operational_context_foundation",
+      "seconds": 1.563,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_current_policy_editor_cannot_self_publish_and_independent_actor_can",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 7.376,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_current_profile_editor_provenance_fails_closed_when_version_has_no_receipt",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.972,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_explicitly_disabled_publication_sod_preserves_configured_policy_behavior",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.705,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_overview_excludes_operational_profiles_without_bypassing_dedicated_read_permission",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 1.609,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_defaults_cannot_rewrite_canonical_project_authority[owner_to_direct]",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.815,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_defaults_cannot_rewrite_canonical_project_authority[source_authorization]",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.578,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_defaults_cannot_rewrite_canonical_project_authority[legacy_reference]",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.703,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_defaults_cannot_rewrite_canonical_project_authority[remove_namespace]",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.506,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_unrelated_defaults_preserve_reserved_project_metadata_when_omitted",
+      "class": "tests.test_operational_context_security_hardening",
+      "seconds": 0.579,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_01_options_show_only_published_templates",
+      "class": "tests.test_project_creation_process",
+      "seconds": 22.918,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_02_location_picker_uses_eligible_enterprise_nodes",
+      "class": "tests.test_project_creation_process",
+      "seconds": 1.586,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_03_parent_scoped_template_options",
+      "class": "tests.test_project_creation_process",
+      "seconds": 1.221,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_04_create_starts_in_draft_with_separate_request_number",
+      "class": "tests.test_project_creation_process",
+      "seconds": 3.932,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_05_draft_template_cannot_be_selected",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.202,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_06_strategic_objective_is_required",
+      "class": "tests.test_project_creation_process",
+      "seconds": 1.542,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_07_active_project_manager_is_required",
+      "class": "tests.test_project_creation_process",
+      "seconds": 1.119,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_08_invalid_parent_type_is_blocked",
+      "class": "tests.test_project_creation_process",
+      "seconds": 1.313,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_09_preview_is_non_persistent_and_does_not_consume_project_number",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.856,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_10_preview_uses_hierarchical_code_and_numbering_rule",
+      "class": "tests.test_project_creation_process",
+      "seconds": 5.486,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_11_my_requests_is_requestor_scoped",
+      "class": "tests.test_project_creation_process",
+      "seconds": 3.321,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_12_actor_without_request_read_permission_is_denied",
+      "class": "tests.test_project_creation_process",
+      "seconds": 0.669,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_13_non_owner_cannot_update_request",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.907,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_14_owner_update_increments_revision",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.079,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_15_stale_update_returns_409",
+      "class": "tests.test_project_creation_process",
+      "seconds": 3.508,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_16_missing_if_match_is_rejected",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.292,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_17_submit_creates_immutable_snapshot",
+      "class": "tests.test_project_creation_process",
+      "seconds": 3.754,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_18_duplicate_submit_is_invalid",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.277,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_19_draft_can_be_cancelled",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.443,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_20_submitted_request_can_be_cancelled",
+      "class": "tests.test_project_creation_process",
+      "seconds": 18.902,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_21_reviewer_starts_review",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.733,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_22_review_cannot_start_from_draft",
+      "class": "tests.test_project_creation_process",
+      "seconds": 3.141,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_23_reviewer_can_return_with_reason",
+      "class": "tests.test_project_creation_process",
+      "seconds": 6.718,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_24_returned_request_becomes_draft_after_edit",
+      "class": "tests.test_project_creation_process",
+      "seconds": 9.765,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_25_reviewer_can_reject_under_review",
+      "class": "tests.test_project_creation_process",
+      "seconds": 10.869,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_26_requestor_cannot_approve",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.359,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_27_approver_completes_four_eyes_approval",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.928,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_28_approval_captures_governance_hash",
+      "class": "tests.test_project_creation_process",
+      "seconds": 5.125,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_29_review_queue_is_privileged_and_state_filtered",
+      "class": "tests.test_project_creation_process",
+      "seconds": 6.366,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_30_materialization_creates_one_pending_project_workspace",
+      "class": "tests.test_project_creation_process",
+      "seconds": 9.333,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_31_materialization_is_idempotent",
+      "class": "tests.test_project_creation_process",
+      "seconds": 14.932,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_32_no_legacy_project_row_is_created",
+      "class": "tests.test_project_creation_process",
+      "seconds": 13.354,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_33_materialization_persists_classification_module_and_manager_scope",
+      "class": "tests.test_project_creation_process",
+      "seconds": 13.223,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_34_project_overview_reads_canonical_workspace",
+      "class": "tests.test_project_creation_process",
+      "seconds": 21.405,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_35_created_workspace_is_visible_in_enterprise_explorer",
+      "class": "tests.test_project_creation_process",
+      "seconds": 19.49,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_36_process_events_are_auditable",
+      "class": "tests.test_project_creation_process",
+      "seconds": 14.761,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_37_failure_rolls_back_all_materialization_mutations",
+      "class": "tests.test_project_creation_process",
+      "seconds": 14.735,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_38_retry_after_transient_failure_succeeds",
+      "class": "tests.test_project_creation_process",
+      "seconds": 29.362,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_39_concurrent_materialization_creates_exactly_one_workspace",
+      "class": "tests.test_project_creation_process",
+      "seconds": 25.336,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_40_materialization_does_not_create_core_revision",
+      "class": "tests.test_project_creation_process",
+      "seconds": 30.851,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_41_options_expose_three_governance_models_independent_from_project_type",
+      "class": "tests.test_project_creation_process",
+      "seconds": 5.306,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_42_contract_source_preview_is_non_persistent_and_policy_resolved",
+      "class": "tests.test_project_creation_process",
+      "seconds": 122.399,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_43_contract_source_creation_is_idempotent_and_traceable",
+      "class": "tests.test_project_creation_process",
+      "seconds": 6.748,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_44_direct_internal_and_project_type_are_separate_dimensions",
+      "class": "tests.test_project_creation_process",
+      "seconds": 6.48,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_45_shared_four_eyes_materialization_creates_one_pending_project_for_contract",
+      "class": "tests.test_project_creation_process",
+      "seconds": 30.086,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_46_direct_project_remains_pending_when_authorization_is_not_approved",
+      "class": "tests.test_project_creation_process",
+      "seconds": 26.013,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_47_source_adapter_rejects_cross_model_context_and_incomplete_sources",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.849,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_48_admin_previews_effective_policy_without_mutation",
+      "class": "tests.test_project_creation_process",
+      "seconds": 4.296,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_49_unprivileged_actor_cannot_use_multi_source_creation",
+      "class": "tests.test_project_creation_process",
+      "seconds": 2.429,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_50_draft_source_correction_rehashes_lineage_without_changing_identity",
+      "class": "tests.test_project_creation_process",
+      "seconds": 7.571,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_real_fid_bridge_is_read_only_and_frozen_history_is_preserved",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 192.651,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_initialization_own_state_transition_does_not_revoke_valid_handoff[INITIALIZING]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 4.749,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_initialization_own_state_transition_does_not_revoke_valid_handoff[BLOCKED]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 3.126,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[is_fid-False]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 0.174,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[full_funds_authorized-False]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 0.105,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[investment_authorized-False]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 0.106,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[outcome-HOLD]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 0.127,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[source_package_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 7.322,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[decision_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 4.62,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_invalid_or_expired_fid_never_authorizes[authorization_valid_until-invalid_value6]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 3.672,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[source_current-False]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 2.664,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[blockers_json-invalid_value1]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 2.719,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[condition_snapshot_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 1.521,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[configuration_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 1.612,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[fid_decision_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 1.528,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[decision_package_hash-0000000000000000000000000000000000000000000000000000000000000000]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 2.111,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[eligibility_status-STALE]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 1.976,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_stale_or_ineligible_post_fid_snapshot_never_authorizes[eligible_for_initialization-False]",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 2.532,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_wrong_tenant_wrong_project_and_missing_persisted_handoff_fail_closed",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 0.087,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_activation_needs_separate_current_persisted_post_fid_activation_handoff",
+      "class": "tests.test_project_initialization_post_fid_bridge",
+      "seconds": 25.434,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_01_get_returns_nonpersistent_not_started",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 24.345,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_02_preview_is_nonpersistent",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.327,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_03_preview_does_not_change_workspace",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.129,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_04_start_reaches_ready",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.355,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_05_start_keeps_workspace_pending",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.951,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_06_activation_changes_workspace_to_active",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.619,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_07_direct_activation_is_rejected",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.642,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_08_stale_start_is_rejected",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.685,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_09_stale_activation_is_rejected",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 3.139,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_10_repeat_start_is_idempotent",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 3.768,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_11_repeat_activation_is_idempotent",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 3.493,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_12_legacy_active_workspace_is_not_backfilled",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.323,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_13_outsider_cannot_read",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.719,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_14_activator_cannot_start",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.767,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_15_initializer_cannot_activate",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.657,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_16_manager_can_read_own_workspace",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.239,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_17_missing_manager_blocks_preview",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.216,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_18_missing_objective_blocks_start",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.643,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_19_invalid_parent_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.322,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_20_invalid_record_code_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.213,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_21_project_number_mismatch_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.916,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_22_missing_template_blocks_start_without_creating_identity",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.937,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_23_template_revision_mismatch_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.923,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_24_template_hash_mismatch_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.755,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_25_missing_required_module_setting_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.868,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_26_unrecognized_module_blocks",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.242,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_27_missing_manager_access_is_completed_idempotently",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.685,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_28_existing_manager_access_is_not_duplicated",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.915,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_29_optional_attributes_warn_without_blocking",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.199,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_30_template_default_is_applied_when_missing",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.149,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_31_explicit_value_is_never_overwritten",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.14,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_32_scope_container_is_initialized_only_minimally",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.941,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_33_validation_hash_is_persisted",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.024,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_34_checklist_hash_is_persisted",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.074,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_35_checklist_contains_all_mandatory_codes",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.851,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_36_audit_records_started_validated_and_ready",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.521,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_37_activation_audit_is_unique_under_retry",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 5.556,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_38_identity_is_immutable_across_full_cycle",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.388,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_39_no_core_release_is_created",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.354,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_40_list_filters_pending",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.082,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_41_list_exposes_initializer_capability",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.082,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_42_validate_can_recover_a_blocked_workspace",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.658,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_43_start_technical_failure_is_recorded",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.28,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_44_activation_failure_rolls_back_to_pending",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.084,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_45_concurrent_activation_has_single_functional_event_on_postgresql",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 14.775,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_46_preview_after_start_remains_nonmutating",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 3.539,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_47_exact_template_revision_survives_newer_revision",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.881,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_48_initialization_does_not_create_creation_request",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.256,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_49_revision_version_advances_on_revalidation",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.613,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_50_full_cycle_returns_only_governed_states",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 2.159,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_51_disabled_optional_module_does_not_block",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.548,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_52_same_actor_cannot_initialize_and_activate",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 1.604,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_53_cross_tenant_workspace_is_not_visible",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 0.091,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_54_gate05b_materialization_to_gate05c_activation",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 18.572,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_55_scope_schedule_and_cost_minimal_initialization",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 4.16,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_56_concurrent_initialization_is_singleton_on_postgresql",
+      "class": "tests.test_project_workspace_initialization",
+      "seconds": 9.333,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_real_geometry_quantities_psets_materials_and_source_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 69.223,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument0-DUPLICATE_GUID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.213,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument1-MISSING_OBJECT_IDENTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.148,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument2-QUANTITY_EXTRACTION_ERROR]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.449,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument3-INVALID_MODEL_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.208,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_unsupported_product_is_retained_and_explicitly_reported",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.195,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_stable_guid_and_mapping_loss",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.59,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_modified_classification_and_growth",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.346,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_express_id_is_version_local_not_cross_version_diff_identity",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_placement_change_is_a_geometry_diff_without_quantity_change",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.217,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_diff_database_object_projection_ignores_db_metadata_and_preserves_geometry_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.201,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.ifc-IFC_CONTAINER_INVALID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[-empty.ifc-EMPTY_SOURCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.txt-UNSUPPORTED_SOURCE_FORMAT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_valid_template_literal_quantities_and_physical_row_lineage",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.197,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[INSTALL]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[REMOVE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.024,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[TEMPORARY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Nature-BUILD_WHATEVER-INVALID_SCOPE_NATURE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Unit-unknown-INVALID_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.02,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-NaN-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-Infinity-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.033,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity--3-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-1,000-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Parent Scope Code-absent-MISSING_PARENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Type-COST_BASELINE-INVALID_SCOPE_TYPE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.025,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_headers_mapping_and_duplicate_header",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_duplicate_scope_code_source_row_and_cycle_detection",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_field_mapping_existing_parent_future_apu_mapping_stays_inactive",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option0-FORMULA_SOURCE_NOT_SUPPORTED]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option1-ACTIVE_WORKBOOK_CONTENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.033,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_repeat_parser_is_deterministic_no_approval_or_scope_side_effects",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_csv_fixture_valid_without_any_ifc_source",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.083,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[bad.xlsx-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[old.xls-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[empty.xlsx-]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.028,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[INSTALL]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 10.855,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[REMOVE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.553,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[TEMPORARY]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.068,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.086,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes0]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.225,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes1]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.516,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes2]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.68,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes3]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.111,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes4]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.069,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes5]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.262,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes6]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 8.527,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.447,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[cost_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.223,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[progress_engineer]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.024,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[planner]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.931,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[unassigned]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.185,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[foreign]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.394,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[scope_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.165,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.423,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_coordinator]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.202,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[construction_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.176,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[document_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.227,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.586,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.56,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_hierarchy_draft_etag_and_immutable_baseline_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.232,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_revision_sod_and_candidate_edit_after_preparation",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.163,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_real_ifc_version_acceptance_source_bytes_and_mn_scope_mapping",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 6.217,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_plan_many_to_many_group_split_recompose_and_derived_lineage",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 8.447,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_get_scope_queries_write_no_business_rows_or_security_receipts",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.439,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_postgresql_baseline_raw_update_rejected",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.628,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[create]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.015,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[edit]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.252,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[publish]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.567,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[clone]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.726,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_scope_profile_latest_material_editor_cannot_self_publish",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.328,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_native_staging_idempotent_candidate_and_preserved_source_quantity",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.679,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_excel_direct_item_creation_rejects_silent_source_unit_conversion",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.153,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_plan_publication_revalidates_current_scope_after_approved_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 6.338,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[AREA]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.83,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[ZONE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.99,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[SYSTEM]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.739,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[QUANTITY_RANGE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.577,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_model_successor_diff_reject_and_prior_source_immutable",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 7.205,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_source_model_cross_project_and_tenant_queries_denied",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.521,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_approved_change_source_contract_consumes_bound_existing_authority_only",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.458,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_project_meta",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_parse_xer_missing_task_table_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_dcma_flags_missing_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_dcma_passes_with_full_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_invalid_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-final.xml"
+    }
+  ],
+  "frontend": [
+    {
+      "name": "application navigation composition > keeps the Schedule canonical workspace boundary explicit without deleting legacy schedule adapters",
+      "class": "src/navigation/applicationNavigation.test.ts",
+      "seconds": 0.0068102,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "application navigation composition > reuses canonical Workspace navigation for Operational Setup and the existing ADMIN process configuration",
+      "class": "src/navigation/applicationNavigation.test.ts",
+      "seconds": 0.0034801,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "application navigation composition > uses one strategic source and preserves the alternate project/commercial modules",
+      "class": "src/navigation/applicationNavigation.test.ts",
+      "seconds": 0.0048937,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "application navigation composition > does not duplicate strategic configuration under platform administration",
+      "class": "src/navigation/applicationNavigation.test.ts",
+      "seconds": 0.0030705,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "application navigation composition > projects Wave 2A USER transactions and ADMIN Bucket configuration from the canonical strategic blueprint",
+      "class": "src/navigation/applicationNavigation.test.ts",
+      "seconds": 0.0050497,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > uses canonical Schedule Workspace routes without legacy Project fallback",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.025681,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > uses If-Match and idempotency on material commands",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0065135,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > uploads a genuine file to register staging with expected register version",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0099709,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > shows coherent read-only submodules and no writer controls",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.8732048,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > creates a Schedule Register without guessing hours per day",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.1393012,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > creates a successor snapshot instead of editing existing WBS or approved data in place",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.1222226,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > keeps WBS hierarchy separate from Scope hierarchy and handles orphan source parents",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0352221,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > maps multiple Plan Items to an Activity with explicit reason and version",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0780309,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > maps WBS to approved Scope without silently creating Scope",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0719379,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > does not offer editing mappings of an accepted immutable version",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0201377,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > does not offer Draft Plan Items or Scope outside the approved current baseline",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0240572,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > respects a profile disabling direct Scope mappings",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0423678,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > loads existing mappings for explicit re-review and retains removal as an audit command",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0753358,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > preserves missing float as UNKNOWN and actual zero or false as source values",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0426562,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > preserves ten-hour calendar exceptions without an eight-hour conversion",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0409207,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > shows SF and negative lag with external unresolved references",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0351415,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > keeps Activity Codes and constraints as distinct source collections",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0727281,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > stages native P6 file without auto-accepting Current or Baseline",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.1099444,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > accepts Current only through the explicit reviewed-version command",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0716869,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > generates only the supported XML export manifest rather than fake CSV roundtrip",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0864266,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > uses governed baseline lifecycle independent from accepted Current",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0518316,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > does not expose mutation controls on an approved Baseline",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0246423,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > associates period explicitly without forcing Data Date to cutoff",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.068952,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > renders safely before a Schedule Profile has been bound",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.4275624,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > gets float classification from a read-only server query without local CPM calculation",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0760772,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > refreshes health through a read-only query rather than mutating validation evidence",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0222593,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > requires an explicit approved previous baseline when preparing a rebaseline",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.1479224,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > uses native manifest fields and downloads the actual source file name",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0819779,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > does not allow revalidation after independent review has begun",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.0606885,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > queries canonical activity classification and health without command headers",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.004948,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence > ADMIN creates Schedule Profile through its dedicated guarded API",
+      "class": "src/features/schedule-foundation/scheduleFoundation.test.tsx",
+      "seconds": 0.1448765,
+      "result": "PASS",
+      "evidence": "frontend-final.xml"
+    }
+  ],
+  "browser": {
+    "result": "PASS",
+    "checks": [
+      {
+        "code": "ADMIN_PROFILE_REUSED",
+        "result": "PASS"
+      },
+      {
+        "code": "USER_CANONICAL_SCHEDULE_REGISTER_CREATED",
+        "result": "PASS"
+      },
+      {
+        "code": "XML_REAL_UPLOAD_STAGING_VALIDATION_DIFF_DATA_DATE_SOURCE_HASH",
+        "result": "PASS"
+      },
+      {
+        "code": "WBS_TREE_AND_ACTIVITY_PLAN_MANY_TO_MANY_SCOPE_TRACEABILITY",
+        "result": "PASS"
+      },
+      {
+        "code": "CALENDARS_SIGNED_LAGS_FOUR_RELATIONS_CONSTRAINTS_CODES_HEALTH_VISIBLE",
+        "result": "PASS"
+      },
+      {
+        "code": "CURRENT_ACCEPTED_BY_INDEPENDENT_REVIEWER",
+        "result": "PASS"
+      },
+      {
+        "code": "BASELINE_SUBMITTED_REVIEWED_AND_INDEPENDENTLY_APPROVED",
+        "result": "PASS"
+      },
+      {
+        "code": "ACTUAL_XML_DOWNLOAD_MANIFEST_NO_FULL_P6_PARITY_CLAIM",
+        "result": "PASS"
+      },
+      {
+        "code": "NATIVE_XER_REAL_UPLOAD_RECONCILIATION_AND_CONTROLLED_REJECTION",
+        "result": "PASS"
+      },
+      {
+        "code": "XML_REIMPORT_UPDATED_CURRENT_PRESERVES_IMMUTABLE_BASELINE_AND_HISTORY",
+        "result": "PASS"
+      },
+      {
+        "code": "EXECUTIVE_READONLY_ROLE_SEES_SCHEDULE_WITHOUT_WRITER_CONTROLS",
+        "result": "PASS"
+      }
+    ],
+    "observations": [
+      {
+        "label": "schedule_register_load",
+        "elapsed_ms": 1068.41,
+        "status": 200
+      },
+      {
+        "label": "wbs_tree_load",
+        "elapsed_ms": 132.63,
+        "status": 200
+      },
+      {
+        "label": "activity_list",
+        "elapsed_ms": 100.79,
+        "status": 200
+      },
+      {
+        "label": "mapping_query",
+        "elapsed_ms": 192.98,
+        "status": 200
+      },
+      {
+        "label": "schedule_health_query",
+        "elapsed_ms": 285.9,
+        "status": 200
+      }
+    ],
+    "browser_errors": [],
+    "completed_at": "2026-10-21T13:23:16.728Z",
+    "project_workspace_id": 135858343,
+    "tenant_id": 1,
+    "register_id": 56,
+    "initial_version_id": 60,
+    "updated_version_id": 62,
+    "baseline_id": 11,
+    "baseline_hash": "ae1094cc1354ab69cbd2a80ec87d44355e4981633f4556089bcd9b950f71743a",
+    "authentication": "Actual login, API and PostgreSQL; no response mocks",
+    "p6_application_roundtrip_verified": false
+  },
+  "api": [
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/overview",
+      "overview",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}",
+      "register_detail",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}",
+      "version_detail",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}",
+      "baseline_detail",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/registers",
+      "list_schedule_registers",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions",
+      "list_schedule_versions",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/baselines",
+      "list_schedule_baselines",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/mappings",
+      "list_schedule_mappings",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/exports",
+      "list_schedule_exports",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/period-associations",
+      "list_schedule_period_associations",
+      "schedule_foundation.read"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/registers",
+      "create_register",
+      "schedule_foundation.register.edit"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}/imports",
+      "import_version",
+      "schedule_foundation.import"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/registers/{register_id}/versions",
+      "create_version",
+      "schedule_foundation.version.edit"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/validate",
+      "schedule_version_validate",
+      "schedule_foundation.validate"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/review",
+      "schedule_version_review",
+      "schedule_foundation.review"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/accept",
+      "schedule_version_accept",
+      "schedule_foundation.accept"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/reject",
+      "schedule_version_reject",
+      "schedule_foundation.review"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/mappings",
+      "set_mapping",
+      "schedule_foundation.mapping.edit"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/baselines",
+      "prepare_baseline",
+      "schedule_foundation.baseline.prepare"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/submit",
+      "schedule_baseline_submit",
+      "schedule_foundation.baseline.submit"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/review",
+      "schedule_baseline_review",
+      "schedule_foundation.baseline.review"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/baselines/{baseline_id}/approve",
+      "schedule_baseline_approve",
+      "schedule_foundation.baseline.approve"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/exports",
+      "export_version",
+      "schedule_foundation.export"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/exports/{export_id}/download",
+      "export_download",
+      "schedule_foundation.read"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/period-associations",
+      "associate_period",
+      "schedule_foundation.period.associate"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/wbs",
+      "schedule_version_wbs",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/activities",
+      "schedule_version_activities",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/calendars",
+      "schedule_version_calendars",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/relationships",
+      "schedule_version_relationships",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/constraints",
+      "schedule_version_constraints",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/codes",
+      "schedule_version_codes",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/code-assignments",
+      "schedule_version_code_assignments",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/external-links",
+      "schedule_version_external_links",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/mappings",
+      "schedule_version_mappings",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/health",
+      "schedule_version_health",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/versions/{version_id}/look-ahead",
+      "look_ahead",
+      "schedule_foundation.read"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/admin/profiles",
+      "profiles",
+      "schedule_foundation.admin.configure"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/admin/profiles",
+      "create_profile",
+      "schedule_foundation.admin.configure"
+    ],
+    [
+      "PUT",
+      "/api/v1/schedule/admin/profiles/{identity}",
+      "update_profile",
+      "schedule_foundation.admin.configure"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/admin/profiles/{identity}/publish",
+      "schedule_profile_publish",
+      "schedule_foundation.admin.publish"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/admin/profiles/{identity}/successor",
+      "schedule_profile_successor",
+      "schedule_foundation.admin.configure"
+    ]
+  ],
+  "requirements": [
+    [
+      0,
+      "Purpose",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      1,
+      "Baseline",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      2,
+      "Non-Negotiable Scope-First Rule",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      3,
+      "Primavera P6 Boundary — Non-Negotiable",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      4,
+      "Schedule Domain Authority",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      5,
+      "Schedule Register",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      6,
+      "Schedule Version",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      7,
+      "Wbs",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      8,
+      "Plan Item ↔ Wbs",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      9,
+      "Activities",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      10,
+      "Milestones",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      11,
+      "Plan Item ↔ Activity",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      12,
+      "Scope ↔ Activity Traceability",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      13,
+      "Calendars",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      14,
+      "Relationships",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      15,
+      "External Relationships",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      16,
+      "Constraints",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      17,
+      "Activity Codes / Classification",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      18,
+      "Data Date",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      19,
+      "Baseline Governance",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      20,
+      "Baseline Types",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      21,
+      "Current Schedule",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      22,
+      "Xml / Xer Import",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      23,
+      "Xml / Xer Export",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      24,
+      "Baseline Format Rule",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      25,
+      "Import Reconciliation",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      26,
+      "Mapping Impacts",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      27,
+      "Critical / Near-Critical / Float",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      28,
+      "Schedule Health / Quality",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      29,
+      "Look-Ahead Preparation",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      30,
+      "Schedule Change Boundary",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      31,
+      "Schedule ↔ Project Controls Period",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      32,
+      "Schedule ↔ Derived 3D / Future 4D",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      33,
+      "Source Authority Matrix",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      34,
+      "Admin Configuration",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      35,
+      "User Capabilities",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      36,
+      "Roles / Sod",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      37,
+      "Audit Events",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      38,
+      "Repository Reuse",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      39,
+      "Legacy Schedule Paths",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      40,
+      "Database Policy",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      41,
+      "Required Postgresql Tests",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      42,
+      "Browser Uat",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      43,
+      "Frontend Structure",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      44,
+      "Hard Stop — No Downstream Authority",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      45,
+      "Project 14 Preservation",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      46,
+      "Performance Observations",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      47,
+      "Required Technical Report",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      48,
+      "Traceability Workbook",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      49,
+      "Release Criteria",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      50,
+      "Release State",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      51,
+      "Next Increment",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      52,
+      "Stop Boundary",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ],
+    [
+      53,
+      "Required Final Response",
+      "PASS",
+      "Pruebas ejecutadas y criterios de liberación en hojas temáticas"
+    ]
+  ],
+  "release_criteria": [
+    [
+      "RC-01",
+      "Scope-first dependency preserved",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-02",
+      "Plan Items reused as schedule bridge",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-03",
+      "No competing Scope authority",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-04",
+      "Schedule Register",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-05",
+      "Schedule Version lifecycle",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-06",
+      "WBS",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-07",
+      "Activities",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-08",
+      "Milestones",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-09",
+      "Calendars",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-10",
+      "Relationships FS/SS/FF/SF",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-11",
+      "Lags preserved",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-12",
+      "Constraints preserved",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-13",
+      "Activity Codes supported where in subset",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-14",
+      "Data Date explicit",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-15",
+      "Plan Item ↔ WBS M:N",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-16",
+      "Plan Item ↔ Activity M:N",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-17",
+      "Scope traceability",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-18",
+      "Broken mappings detected",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-19",
+      "XML import governed",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-20",
+      "XER import governed for supported subset",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-21",
+      "Import staging",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-22",
+      "Validation",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-23",
+      "Diff",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-24",
+      "Reconciliation",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-25",
+      "Accept/Reject",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-26",
+      "XML/XER export manifest",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-27",
+      "No false claim of full P6 parity",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-28",
+      "Approved Baseline distinct from Current",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-29",
+      "Baseline immutable",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-30",
+      "Current update preserves Baseline",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-31",
+      "Imported float stored",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-32",
+      "Imported criticality stored",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-33",
+      "Near-critical threshold configurable",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-34",
+      "No local CPM authority",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-35",
+      "Schedule Health",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-36",
+      "No 8h/day assumption",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-37",
+      "External relations handled",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-38",
+      "ADMIN/USER separation",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-39",
+      "RBAC",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-40",
+      "SoD",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-41",
+      "ETag",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-42",
+      "Idempotency",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-43",
+      "Audit",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-44",
+      "PostgreSQL tests",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-45",
+      "Chromium UAT",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-46",
+      "Project 14 unchanged",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-47",
+      "No Cost authority implemented",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-48",
+      "No Progress authority implemented",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-49",
+      "No full 4D timeline implemented",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-50",
+      "0 open S1",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ],
+    [
+      "RC-51",
+      "0 open S2",
+      "PASS",
+      "PostgreSQL suites; Chromium UAT; preservation; release-manifest.json"
+    ]
+  ],
+  "performance": [
+    [
+      "Parseo XML",
+      7,
+      5.425923,
+      6.699789,
+      8.833446
+    ],
+    [
+      "Parseo XER",
+      7,
+      3.154574,
+      4.539493,
+      13.392166
+    ],
+    [
+      "Diff",
+      7,
+      0.976254,
+      1.229004,
+      6.621279
+    ],
+    [
+      "schedule_register_load",
+      1,
+      1068.41,
+      1068.41,
+      1068.41
+    ],
+    [
+      "wbs_tree_load",
+      1,
+      132.63,
+      132.63,
+      132.63
+    ],
+    [
+      "activity_list",
+      1,
+      100.79,
+      100.79,
+      100.79
+    ],
+    [
+      "mapping_query",
+      1,
+      192.98,
+      192.98,
+      192.98
+    ],
+    [
+      "schedule_health_query",
+      1,
+      285.9,
+      285.9,
+      285.9
+    ]
+  ],
+  "migration": {
+    "engine": "PostgreSQL",
+    "database": "o1bb_migration",
+    "single_head": "20261021_0071",
+    "parent": "20261020_0070",
+    "initial_orm_bootstrap": true,
+    "empty_to_head_claimed": false,
+    "steps": [
+      "UPGRADE_0070_TO_0071_PASS",
+      "SAFE_EMPTY_SCHEDULE_DOWNGRADE_0070_PASS",
+      "REUPGRADE_PASS"
+    ],
+    "new_tables": [
+      "schedule_baselines",
+      "schedule_export_manifests",
+      "schedule_period_associations",
+      "schedule_registers",
+      "schedule_scope_plan_mappings",
+      "schedule_versions"
+    ],
+    "scope_tables_preserved": [
+      "scope_baselines",
+      "scope_bim_objects",
+      "scope_derived_model_versions",
+      "scope_excel_imports",
+      "scope_execution_strategies",
+      "scope_items",
+      "scope_model_mappings",
+      "scope_model_versions",
+      "scope_plan_item_links",
+      "scope_plan_items",
+      "scope_plan_model_links",
+      "scope_revisions"
+    ],
+    "o1a_preserved": true,
+    "production_database_touched": false
+  },
+  "defects": [
+    [
+      "D-01",
+      "S2",
+      "Dos candidatos rebaseline sobre la misma ScheduleVersion podían usar un predecesor obsoleto",
+      "RESOLVED",
+      "Comprobar identidad del último baseline aprobado bajo bloqueo del registro; prueba de carrera lógica"
+    ],
+    [
+      "D-02",
+      "S2",
+      "Snapshots manuales malformados podían causar error no controlado",
+      "RESOLVED",
+      "Validación estructural y numérica antes de acceder a campos; pruebas de tipos y límites"
+    ],
+    [
+      "D-03",
+      "S2",
+      "Mapeos heredados de un objeto cambiado requerían revisión explícita",
+      "RESOLVED",
+      "REQUIRES_REVIEW o BROKEN conserva el historial y bloquea promoción"
+    ],
+    [
+      "D-04",
+      "TEST",
+      "Arranque inicial de pytest simultáneo al provisionamiento produjo colisión DDL",
+      "RESOLVED",
+      "Secuencia provisionar y luego probar; ejecución interrumpida no contada como validación"
+    ],
+    [
+      "D-05",
+      "S2",
+      "Tipo de actividad nulo y lag booleano podían causar error en Health",
+      "RESOLVED",
+      "Validación explícita del tipo de actividad y rechazo global de booleanos numéricos; pruebas de regresión"
+    ],
+    [
+      "L-01",
+      "LIMIT",
+      "Sin export XER ni transporte nativo BaselineProject",
+      "DECLARED",
+      "XML y manifiesto del subconjunto permitido; no prometer paridad P6"
+    ],
+    [
+      "L-02",
+      "LIMIT",
+      "Sin ejecución del archivo exportado dentro de Primavera ni XSD de instalación",
+      "DECLARED",
+      "Parser loop real separado de certificación de compatibilidad Primavera"
+    ],
+    [
+      "L-03",
+      "LIMIT",
+      "Escala productiva y despliegue sobre base habitual no ejecutados",
+      "PENDING_SCOPE",
+      "Observaciones pequeñas locales no representan SLA"
+    ],
+    [
+      "L-04",
+      "BUSINESS",
+      "Aceptación de representantes de negocio sin firmas",
+      "PENDING",
+      "No se inventa aceptación humana"
+    ]
+  ]
+}

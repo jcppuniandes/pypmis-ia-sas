@@ -1,0 +1,173 @@
+.fourDWorkspace {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  border: 1px solid #cedee5;
+  border-radius: 8px;
+  padding: 16px;
+  background: white;
+}
+.fourDWorkspace h3,
+.fourDWorkspace h4,
+.fourDWorkspace p {
+  margin: 0;
+}
+.fourDBoundary {
+  background: #edf6fa;
+  border-left: 3px solid #2a7a98;
+  padding: 12px;
+}
+.fourDError {
+  background: #fff0ee;
+  color: #a23a30;
+  padding: 12px;
+}
+.fourDControls,
+.fourDFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.fourDWorkspace label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.fourDWorkspace input,
+.fourDWorkspace select {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid #b4cbd5;
+  border-radius: 4px;
+  padding: 8px;
+  background: white;
+  color: #143346;
+}
+.fourDWorkspace input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+.fourDButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+.fourDWorkspace button {
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #adc7d4;
+  color: #19455b;
+  background: #f3f9fc;
+  cursor: pointer;
+}
+.fourDWorkspace button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.fourDWorkspace button[aria-pressed="true"] {
+  color: white;
+  background: #1c6b88;
+}
+.fourDFacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.fourDFacts div {
+  padding: 12px;
+  background: #f3f7f9;
+  border: 1px solid #d3e0e6;
+  border-radius: 5px;
+}
+.fourDFacts dt {
+  font-weight: 700;
+  font-size: 11px;
+  color: #5b7482;
+}
+.fourDFacts dd {
+  margin: 4px 0 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.fourDLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 10px;
+}
+.fourDLegend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fourDLegend i,
+.fourDStateDot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+.fourDCanvas {
+  width: 100%;
+  min-height: 160px;
+  max-height: 420px;
+  overflow: hidden;
+}
+.fourDCanvas canvas {
+  width: 100%;
+  display: block;
+}
+.fourDGeometry {
+  border: 1px solid #c6dbe4;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.fourDGeometry p {
+  padding: 9px;
+  background: #eff5f8;
+  font-size: 12px;
+}
+.fourDTable {
+  max-width: 100%;
+  overflow: auto;
+  max-height: 450px;
+}
+.fourDTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.fourDTable th,
+.fourDTable td {
+  padding: 8px;
+  border-bottom: 1px solid #d9e6eb;
+  text-align: left;
+  vertical-align: top;
+}
+.fourDTable th {
+  position: sticky;
+  top: 0;
+  background: #edf4f7;
+}
+.fourDTable small {
+  display: block;
+  color: #637c89;
+  padding-top: 3px;
+}
+.fourDTraceability {
+  border: 1px solid #99c3d2;
+  background: #f0f8fb;
+  border-radius: 5px;
+  padding: 14px;
+}
+.fourDWorkspace pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 400px;
+  overflow: auto;
+  font-size: 11px;
+}

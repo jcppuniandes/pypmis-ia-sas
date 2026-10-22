@@ -1,0 +1,201 @@
+.scheduleFoundation {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.scheduleTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  border-bottom: 1px solid #cfdae1;
+  padding-bottom: 8px;
+}
+.scheduleTabs button {
+  border: 1px solid #bdced8;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: #234052;
+}
+.scheduleTabs button[aria-pressed="true"] {
+  background: #173746;
+  color: white;
+}
+.schedulePanel {
+  background: white;
+  border: 1px solid #cfdae1;
+  border-radius: 7px;
+  padding: 16px;
+  min-width: 0;
+}
+.schedulePanel h3 {
+  margin: 0 0 12px;
+}
+.scheduleForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+  align-items: end;
+}
+.scheduleForm label,
+.scheduleControl {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 13px;
+}
+.scheduleForm input,
+.scheduleForm select,
+.scheduleForm textarea,
+.scheduleControl input,
+.scheduleControl select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #bbceda;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background: white;
+}
+.scheduleForm textarea {
+  font-family: Consolas, monospace;
+  font-size: 12px;
+}
+.scheduleWide {
+  grid-column: 1 / -1;
+}
+.scheduleBoundary {
+  background: #f0f7f8;
+  padding: 12px;
+  color: #526f7e;
+  border-radius: 5px;
+}
+.scheduleError {
+  padding: 12px;
+  color: #912f2f;
+  background: #fff0ed;
+  border: 1px solid #eabfb7;
+}
+.scheduleNotice {
+  padding: 10px;
+  color: #276653;
+  background: #eff9f3;
+}
+.scheduleTable {
+  overflow: auto;
+  max-height: 580px;
+  margin: 12px 0;
+}
+.scheduleTable table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 12px;
+}
+.scheduleTable th {
+  background: #eaf1f5;
+  color: #294654;
+  position: sticky;
+  top: 0;
+  text-align: left;
+  padding: 10px;
+  white-space: nowrap;
+}
+.scheduleTable td {
+  border-bottom: 1px solid #e1e9ee;
+  padding: 10px;
+  vertical-align: top;
+  min-width: 80px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+.scheduleTable tbody tr:nth-child(even) {
+  background: #f7fafb;
+}
+.scheduleTable small {
+  display: block;
+  color: #6d7e8b;
+}
+.scheduleActions {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 12px 0;
+}
+.scheduleActions button,
+.scheduleForm button,
+.schedulePanel > button {
+  padding: 9px 12px;
+  border: 1px solid #adc3d0;
+  border-radius: 5px;
+  color: #214657;
+  background: #fff;
+}
+.scheduleActions button:disabled,
+.scheduleForm button:disabled {
+  opacity: 0.5;
+}
+.scheduleDetails {
+  background: #f6f8fa;
+  padding: 10px;
+  margin: 8px 0;
+}
+.scheduleDetails pre {
+  max-height: 380px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.scheduleCheckGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+.scheduleCheckGrid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  padding: 8px;
+  border: 1px solid #dae4e9;
+}
+.scheduleCheckGrid input {
+  margin-top: 3px;
+}
+.scheduleWbsTree {
+  font-size: 13px;
+  padding: 8px;
+  list-style: none;
+}
+.scheduleWbsTree ul {
+  border-left: 1px dotted #9bb4c5;
+  margin-left: 8px;
+  padding-left: 16px;
+  list-style: none;
+}
+.scheduleWbsTree li {
+  padding: 5px;
+}
+.scheduleWbsTree button {
+  background: none;
+  border: 1px solid #cbdbe6;
+  border-radius: 3px;
+  padding: 5px 9px;
+  text-align: left;
+}
+.scheduleVersionFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.scheduleVersionFacts span {
+  border: 1px solid #d6e2e9;
+  border-radius: 4px;
+  padding: 8px;
+  overflow-wrap: anywhere;
+}

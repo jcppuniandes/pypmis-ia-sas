@@ -1,0 +1,102 @@
+name: pypmis-wave-o1bb
+
+# Dedicated validation data; does not share normal or previous-wave databases.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: o1bb
+      POSTGRES_USER: o1bb
+      POSTGRES_PASSWORD: disposable-o1bb
+    volumes: [o1bb_postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U o1bb -d o1bb]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  migration-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: o1bb_migration
+      POSTGRES_USER: o1bb
+      POSTGRES_PASSWORD: disposable-o1bb
+    volumes: [o1bb_migration_postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U o1bb -d o1bb_migration]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  regression-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: o1bb_regression
+      POSTGRES_USER: o1bb
+      POSTGRES_PASSWORD: disposable-o1bb
+    volumes: [o1bb_regression_postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U o1bb -d o1bb_regression]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    image: pypmis-ia-sas-api:latest
+    build: {context: ./backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://o1bb:disposable-o1bb@db:5432/o1bb
+      PYPMIS_TEST_DATABASE_URL: postgresql+psycopg://o1bb:disposable-o1bb@db:5432/o1bb
+      PYPMIS_O1BB_MIGRATION_DATABASE_URL: postgresql+psycopg://o1bb:disposable-o1bb@migration-db:5432/o1bb_migration
+      PYPMIS_O1BB_FIXTURE: disposable-only
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYPMIS_PYTEST_RUNTIME_DIR: /tmp/o1bb-pytest
+      PYPMIS_PYTEST_BASETEMP: /tmp/o1bb-tests
+      AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: "false"
+      AUTH_SECRET_KEY: isolated-o1bb-validation-only
+      RATE_LIMIT_ENABLED: "false"
+      CORS_ORIGINS: http://127.0.0.1:5513,http://localhost:5513
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      REDIS_URL: redis://redis:6379/0
+      DOCUMENT_STORAGE_PATH: /var/lib/o1bb-documents
+    volumes:
+      - ./backend:/app:ro
+      - ./outputs/.qa/wave-o1bb-20261020:/artifacts
+      - o1bb_documents:/var/lib/o1bb-documents
+    ports: ["127.0.0.1:8853:8000"]
+    command: [python, -m, uvicorn, app.main:app, --host, 0.0.0.0, --port, "8000"]
+    depends_on:
+      db: {condition: service_healthy}
+      migration-db: {condition: service_healthy}
+      regression-db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  frontend:
+    image: pypmis-ia-sas-frontend:latest
+    build: {context: ./frontend}
+    environment:
+      VITE_API_URL: http://127.0.0.1:8853
+      VITE_DEV_PROXY_TARGET: http://api:8000
+      VITE_FRONTEND_VALIDATION_MODE: "false"
+    volumes:
+      - ./frontend:/app:ro
+      - /app/node_modules
+    ports: ["127.0.0.1:5513:5173"]
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        node node_modules/vite/bin/vite.js build --outDir /tmp/o1bb-dist
+        npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/o1bb-dist
+    depends_on: [api]
+
+volumes:
+  o1bb_postgres:
+  o1bb_migration_postgres:
+  o1bb_regression_postgres:
+  o1bb_documents:

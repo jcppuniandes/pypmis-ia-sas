@@ -6,6 +6,20 @@ import {
 } from "./applicationNavigation";
 
 describe("application navigation composition", () => {
+  it("keeps the Schedule canonical workspace boundary explicit without deleting legacy schedule adapters", () => {
+    const project = USER_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "project-control-manager");
+    const schedule = project?.modules.find((item) => item.key === "schedule-manager");
+    expect(schedule?.description).toContain("Project Workspace");
+    expect(schedule?.submodules.map((item) => item.key)).toEqual([
+      "schedule-intake",
+      "schedule-control",
+      "schedule-4d",
+      "schedule-changes",
+    ]);
+    const scope = project?.modules.find((item) => item.key === "scope-manager");
+    expect(scope?.submodules.find((item) => item.key === "work-packages")?.description).toContain("Project Workspace");
+    expect(scope?.submodules.find((item) => item.key === "work-packages")?.description).toContain("awp");
+  });
   it("reuses canonical Workspace navigation for Operational Setup and the existing ADMIN process configuration", () => {
     const project = USER_MODE_NAVIGATION_BLUEPRINT.find((item) => item.key === "project-control-manager");
     expect(project?.modules.find((item) => item.key === "project-manager")?.submodules).toEqual(

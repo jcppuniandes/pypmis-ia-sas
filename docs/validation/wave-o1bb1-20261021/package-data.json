@@ -1,0 +1,4506 @@
+{
+  "baseline_head": "eb3fa4d82a07906b63644abd245dfffcd90c2fae",
+  "cases": [
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[EWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[PWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[CWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[IWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[TWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[SUPPORT]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[LOGISTICS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_due_date_never_clears_blocker[OPEN]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_due_date_never_clears_blocker[IN_PROGRESS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[CLEARED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[WAIVED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[CANCELLED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_nonblocking_is_visible_without_false_block",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_mandatory_evidence_is_not_ready",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_dependency_is_execution_not_cpm",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_no_scope_mapping_blocks_and_profile_can_require_activity",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges0-False]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges1-True]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges2-True]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges3-False]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_large_dependency_graph_has_no_recursive_stack_limit",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.032,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[PackageIn-body0]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[ConstraintIn-body1]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[MappingIn-body2]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_cwa_container_hierarchy_and_cycle_etag",
+      "class": "tests.test_awp_release",
+      "seconds": 36.132,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[EWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.883,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[PWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.81,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[CWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.767,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[IWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.428,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[TWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.461,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[SUPPORT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.306,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[LOGISTICS]",
+      "class": "tests.test_awp_release",
+      "seconds": 1.147,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.554,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[ENGINEERING]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.292,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PROCUREMENT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.255,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[MATERIAL]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.289,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[LOGISTICS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.222,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[ACCESS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.267,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[WORKFRONT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.331,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PREDECESSOR]",
+      "class": "tests.test_awp_release",
+      "seconds": 1.099,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PERMIT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.955,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[QUALITY]",
+      "class": "tests.test_awp_release",
+      "seconds": 1.028,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[HSE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.318,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[RESOURCE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.294,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[EQUIPMENT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.261,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.261,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[INTERFACE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.344,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[CLIENT_DECISION]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.262,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[CONTRACTUAL]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.282,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[OTHER]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.284,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_package_idempotency_rbac_tenant_project_and_missing_ifmatch",
+      "class": "tests.test_awp_release",
+      "seconds": 0.978,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_package_scope_plan_activity_many_to_many_without_source_mutation",
+      "class": "tests.test_awp_release",
+      "seconds": 12.132,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_dependency_graph_no_false_type_chain_cycle_and_history",
+      "class": "tests.test_awp_release",
+      "seconds": 3.482,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_blocking_clear_evidence_readiness_independent_release_and_history",
+      "class": "tests.test_awp_release",
+      "seconds": 14.631,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_nonblocking_waiver_and_constraint_all_level_mappings",
+      "class": "tests.test_awp_release",
+      "seconds": 7.202,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_get_zero_business_writes",
+      "class": "tests.test_awp_release",
+      "seconds": 2.733,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_package_mappings]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_constraint_mappings]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.035,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_readiness_assessments]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_history]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_sod_and_published_immutable",
+      "class": "tests.test_awp_release",
+      "seconds": 0.756,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[create]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.106,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[patch]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.148,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[publish]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.111,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[clone]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.097,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_last_material_profile_editor_cannot_publish_even_if_not_creator",
+      "class": "tests.test_awp_release",
+      "seconds": 1.225,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_package_manager_authority_cannot_bypass_release_sod[preparer]",
+      "class": "tests.test_awp_release",
+      "seconds": 8.775,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_package_manager_authority_cannot_bypass_release_sod[assessor]",
+      "class": "tests.test_awp_release",
+      "seconds": 5.501,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_complete_closed_package_does_not_clear_execution_condition",
+      "class": "tests.test_awp_release",
+      "seconds": 8.387,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_postgres_mapping_rejects_cross_tenant_and_project_references",
+      "class": "tests.test_awp_release",
+      "seconds": 0.444,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-20-NOT_STARTED-FUTURE_NOT_INSTALLED-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.063,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-22-IN_PROGRESS-INSTALLATION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-24-COMPLETED-INSTALLED-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-20-NOT_STARTED-EXISTING-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-22-IN_PROGRESS-REMOVAL-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-24-REMOVED-REMOVED-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-20-NOT_STARTED-EXISTING_IN_SERVICE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-22-MAINTENANCE-MAINTENANCE_INTERVENTION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-24-COMPLETED-RESTORED_IN_SERVICE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-09-30-NOT_STARTED-ABSENT_BEFORE_INSTALL-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-01-IN_PROGRESS-TEMPORARY_INSTALLATION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-03-TEMPORARY-TEMPORARY_IN_USE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-09-TEMPORARY-TEMPORARY_IN_USE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-10-IN_PROGRESS-TEMPORARY_REMOVAL-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-12-REMOVED-ABSENT_AFTER_REMOVAL-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities0-TEMPORARY_INSTALL_REMOVE_PHASES_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities1-TEMPORARY_EXPLICIT_PHASE_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities2-TEMPORARY_PHASE_ORDER_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities0-ACTIVITY_MAPPING_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities1-ACTIVITY_DATES_INCOMPLETE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities2-ACTIVITY_DATES_INCOMPLETE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities3-ACTIVITY_DATE_ORDER_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities4-ACTIVITY_PHASE_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_many_activities_resolve_membership_envelope_without_creating_dates",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_actual_dates_current_and_planned_baseline_are_distinct_sources",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_imported_critical_float_remain_unknown_when_not_supplied",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_scheduled_readiness_overlay_does_not_modify_schedule_state_or_logic",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_registered_timezone_not_machine_today_or_implicit_utc",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[Not Started]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[NOT_STARTED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[In Progress]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[IN_PROGRESS]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_unknown_completed_status_or_actual_finish_never_invents_late_flag",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_milestone_one_declared_date_is_valid_without_duration_calculation",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-20-2026-10-20-ALIGNED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-24-2026-10-20-BEHIND_BASELINE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-20-2026-10-24-AHEAD_OF_BASELINE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_comparison_unresolved_or_missing_source_explicit",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_permits_presentation_but_not_rewriting_scope_semantics",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[mapping_completeness_policy-IGNORE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[temporary_phase_policy-GUESS_NAME]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[separation_of_duties-value2]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[allow_direct_scope_mapping-yes]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_filter_contract_supports_every_required_dimension_without_mutation",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_wbs_filter_membership_includes_source_ancestors_without_tree_rewrite",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_current_source_explicit_data_date_and_governed_sources_only",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 56.328,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_explicit_control_period_association_does_not_substitute_cutoff_for_data_date",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 3.432,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_approved_baseline_reuses_frozen_snapshot_even_version_superseded",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.457,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-22T08:00:00-NOT_STARTED-FUTURE_NOT_INSTALLED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.008,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-23T12:00:00-IN_PROGRESS-INSTALLATION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.827,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-25T08:00:00-COMPLETED-INSTALLED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.948,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-22T08:00:00-NOT_STARTED-EXISTING]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.729,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-23T12:00:00-IN_PROGRESS-REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.946,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-25T08:00:00-REMOVED-REMOVED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.883,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-20T08:00:00-NOT_STARTED-ABSENT_BEFORE_INSTALL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.675,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-21T12:00:00-IN_PROGRESS-TEMPORARY_INSTALLATION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.627,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-22T12:00:00-TEMPORARY-TEMPORARY_IN_USE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.871,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-25T12:00:00-IN_PROGRESS-TEMPORARY_REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.978,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-26T08:00:00-REMOVED-ABSENT_AFTER_REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.992,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-22T08:00:00-NOT_STARTED-EXISTING_IN_SERVICE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.797,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-23T12:00:00-MAINTENANCE-MAINTENANCE_INTERVENTION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.666,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-25T08:00:00-COMPLETED-RESTORED_IN_SERVICE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.768,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_baseline_current_same_date_comparison_exposes_variance_no_cpm",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 2.778,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[wbs]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.781,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[activity]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.765,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[scope_item_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.718,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[scope_nature]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.957,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[plan_item_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.932,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[cwa_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.215,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[package_type]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.827,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[work_package_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.697,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[area]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.746,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[zone]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.803,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[system]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.019,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[activity_status]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.973,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[critical]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.67,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[near_critical]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.608,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[execution_readiness]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.724,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[blocked]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.971,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_readiness_blocker_is_separate_from_imported_scheduled_state",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.061,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_selected_traceability_reuses_original_ifc_source_and_derived_membership",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.962,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_read_queries_are_zero_business_writes_and_preserve_all_source_authorities",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 3.887,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_scope_tenant_and_read_only_rbac_isolation",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.486,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_partial_current_package_membership_fails_closed_without_rewriting_schedule",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.915,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_configuration_sod_etag_idempotency_and_immutable_publication",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.194,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_awp_additive_upgrade_downgrade_reupgrade_preserves_schedule_structure",
+      "class": "tests.test_awp_migration",
+      "seconds": 13.382,
+      "result": "PASS",
+      "evidence": "postgres-junit.xml"
+    },
+    {
+      "name": "test_register_idempotency_and_policy_type",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 17.281,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.079,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.09,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.049,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.05,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.046,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[unassigned]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.059,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[foreign]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.059,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.8,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[second_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.776,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[planner]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.764,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.689,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.79,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.866,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.747,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.666,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_version_create_requires_register_etag_and_preserves_explicit_data_date",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.928,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_unmapped_schedule_cannot_accept_or_approve_baseline",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.024,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_wbs_plan_and_activity_plan_many_to_many_and_baseline_current_separation",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 11.104,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_acceptance_rejects_last_material_mapping_editor_and_importer",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.106,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_mapping_wrong_tenant_project_and_unknown_external_identity_denied",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.681,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_accepted_schedule_mapping_and_source_snapshot_immutable",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.483,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_export_manifest_and_actual_source_roundtrip_with_no_cpm_claim",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 5.886,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_get_schedule_overview_and_profiles_have_no_sql_writes",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.79,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xml]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.599,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xer]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.694,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_creation_cannot_forge_cpm_results_and_updates_create_new_version",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.247,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_broken_identity_mapping_retained_and_blocks_successor",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.583,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_explicit_period_association_preserves_data_date_distinct_from_cutoff",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.664,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_baseline_sod_and_database_immutability",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 6.833,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_lookahead_and_unknown_criticality_are_non_cpm_queries",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.218,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_default_unresolved_external_links_are_fail_closed",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 15.73,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[negative_lag-SCHEDULE_NEGATIVE_LAG-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 4.063,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[hard_constraint-SCHEDULE_HARD_CONSTRAINT-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 4.78,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[open_ends-SCHEDULE_OPEN_ENDS-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 6.23,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[missing_calendar-SCHEDULE_CALENDAR_REFERENCE_MISSING-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.058,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[long_duration-SCHEDULE_LONG_DURATION-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.331,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[excessive_lag-SCHEDULE_EXCESSIVE_LAG-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.423,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[None-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.47,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[10-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 5.471,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_mandatory_wbs_mappings_are_distinct_from_activity_mappings",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.316,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[calendar_handling-ASSUME_8_HOURS]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.176,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[lookahead_default_days-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.157,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[inherit_to_descendants-yes]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.158,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value3]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.154,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value4]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.171,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[open_end_policy-value5]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.163,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[mapping_policy-value6]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.159,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[allowed_constraints-value7]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.143,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[supported_exchange-value8]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.17,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[scope-value9]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.161,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_publication_rejects_author_and_last_material_editor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.046,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[create]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.07,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[patch]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.053,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[publish]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.044,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[clone]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.044,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_two_successor_baselines_same_source_cannot_approve_stale_predecessor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 13.312,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_commands_do_not_create_scope_plan_or_derived_authorities",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 7.241,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_source_float_criticality_and_percent_complete_unknown_are_not_inferred",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.032,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_float_does_not_invent_criticality_or_map_longest_path_to_critical",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_calendar_workweek_shifts_and_exception_structure_retained",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_constraints_primary_and_secondary_preserve_types_and_dates",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_export_is_actual_xml_parser_loop_with_core_semantics_and_no_native_baseline_claim",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_opaque_calendar_blocks_claimed_lossless_xml_export",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[NaN-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[Infinity-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[PT2H-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[-1-DURATION_NEGATIVE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[duplicate-<lambda>-ACTIVITIES_DUPLICATE_ID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[missing_date-<lambda>-DATA_DATE_REQUIRED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_date-<lambda>-DATA_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[wbs_cycle-<lambda>-WBS_HIERARCHY_CYCLE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_wbs-<lambda>-ACTIVITY_WBS_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[unknown_relation-<lambda>-RELATIONSHIP_TYPE_UNSUPPORTED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_activity_date-<lambda>-ACTIVITY_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_percent-<lambda>-IMPORTED_PERCENT_COMPLETE_OUT_OF_RANGE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_code-<lambda>-ACTIVITY_CODE_ASSIGNMENT_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[garbage]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<Project/>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<!DOCTYPE x [<!ENTITY y 'bad'>]><APIBusinessObjects>&y;</APIBusinessObjects>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_utf16_dtd_cannot_bypass_utf8_entity_guard",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\ta\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\t2\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n%T\\tTASK]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_parser_characterization_distinguishes_legacy_marker_subset",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_xer_adapter_reuses_existing_tokenizer_without_implicit_acceptance",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_unsupported_fields_and_objects_reported_while_original_hash_preserved",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_identity_based_diff_preserves_mapping_impacts_and_source_immutability",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-code-value0]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-external_id-value1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[wbs-parent_external_id-value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-external_id-value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-type-value4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[relationships-relationship_type-value5]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[constraints-activity_external_id-value6]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-kind-value7]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-external_id-value8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[code_assignments-value_external_id-value9]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-value11]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-source_fields-not a dictionary]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_null_activity_type_is_invalid_before_health_milestone_classification",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[False]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_input_record_and_size_limits",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_export_non_native_object_ids_and_day_conversion_are_explicitly_blocked",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.02,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_duplicate_scalar_and_empty_business_object_rejected",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_deep_hierarchy_is_bounded_for_import_and_manual_snapshots",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xer_table_and_field_counts_are_bounded",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_export_generation_is_deterministic_and_does_not_mutate_snapshot",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.023,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_real_geometry_quantities_psets_materials_and_source_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 10.207,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument0-DUPLICATE_GUID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.083,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument1-MISSING_OBJECT_IDENTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.093,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument2-QUANTITY_EXTRACTION_ERROR]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.079,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument3-INVALID_MODEL_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.054,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_unsupported_product_is_retained_and_explicitly_reported",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.068,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_stable_guid_and_mapping_loss",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.215,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_modified_classification_and_growth",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.189,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_express_id_is_version_local_not_cross_version_diff_identity",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_placement_change_is_a_geometry_diff_without_quantity_change",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.121,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_diff_database_object_projection_ignores_db_metadata_and_preserves_geometry_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.104,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.ifc-IFC_CONTAINER_INVALID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[-empty.ifc-EMPTY_SOURCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.txt-UNSUPPORTED_SOURCE_FORMAT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_valid_template_literal_quantities_and_physical_row_lineage",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[INSTALL]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[REMOVE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[TEMPORARY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Nature-BUILD_WHATEVER-INVALID_SCOPE_NATURE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Unit-unknown-INVALID_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-NaN-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-Infinity-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity--3-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-1,000-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Parent Scope Code-absent-MISSING_PARENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Type-COST_BASELINE-INVALID_SCOPE_TYPE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_headers_mapping_and_duplicate_header",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_duplicate_scope_code_source_row_and_cycle_detection",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_field_mapping_existing_parent_future_apu_mapping_stays_inactive",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option0-FORMULA_SOURCE_NOT_SUPPORTED]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option1-ACTIVE_WORKBOOK_CONTENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_repeat_parser_is_deterministic_no_approval_or_scope_side_effects",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_csv_fixture_valid_without_any_ifc_source",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.035,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[bad.xlsx-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[old.xls-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[empty.xlsx-]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[INSTALL]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 16.427,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[REMOVE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.332,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[TEMPORARY]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.133,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.58,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes0]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.292,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes1]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.322,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes2]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.463,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes3]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.989,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes4]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.105,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes5]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.368,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes6]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 7.162,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.12,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[cost_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.677,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[progress_engineer]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.54,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[planner]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.158,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[unassigned]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 6.413,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[foreign]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.708,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[scope_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.872,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.206,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_coordinator]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.056,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[construction_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.167,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[document_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.363,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.123,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.185,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_hierarchy_draft_etag_and_immutable_baseline_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 7.304,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_revision_sod_and_candidate_edit_after_preparation",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.047,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_ifc_version_acceptance_source_bytes_and_mn_scope_mapping",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.661,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_plan_many_to_many_group_split_recompose_and_derived_lineage",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 8.065,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_get_scope_queries_write_no_business_rows_or_security_receipts",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.539,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgresql_baseline_raw_update_rejected",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.27,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[create]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.02,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[edit]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.829,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[publish]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.293,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[clone]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.687,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_profile_latest_material_editor_cannot_self_publish",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.772,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_native_staging_idempotent_candidate_and_preserved_source_quantity",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.791,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_direct_item_creation_rejects_silent_source_unit_conversion",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.314,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_plan_publication_revalidates_current_scope_after_approved_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.367,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[AREA]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 6.068,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[ZONE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 5.197,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[SYSTEM]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 9.632,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[QUANTITY_RANGE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 8.317,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_model_successor_diff_reject_and_prior_source_immutable",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 7.943,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_source_model_cross_project_and_tenant_queries_denied",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.127,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_approved_change_source_contract_consumes_bound_existing_authority_only",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 4.049,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_project_meta",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_missing_task_table_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dcma_flags_missing_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dcma_passes_with_full_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_invalid_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "application navigation composition keeps the Schedule canonical workspace boundary explicit without deleting legacy schedule adapters",
+      "class": "frontend",
+      "seconds": 0.01779290000000037,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "application navigation composition reuses canonical Workspace navigation for Operational Setup and the existing ADMIN process configuration",
+      "class": "frontend",
+      "seconds": 0.009660100000000966,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "application navigation composition uses one strategic source and preserves the alternate project/commercial modules",
+      "class": "frontend",
+      "seconds": 0.008677899999998772,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "application navigation composition does not duplicate strategic configuration under platform administration",
+      "class": "frontend",
+      "seconds": 0.002521499999998923,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "application navigation composition projects Wave 2A USER transactions and ADMIN Bucket configuration from the canonical strategic blueprint",
+      "class": "frontend",
+      "seconds": 0.005042499999999564,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation has separate CWA/packages/execution constraint/readiness navigation and no CPM authority",
+      "class": "frontend",
+      "seconds": 1.4335391000000017,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation shows configured package extensions rather than a second hardcoded catalog",
+      "class": "frontend",
+      "seconds": 0.27933420000000114,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation maps published Plan to existing Package with its own ETag and explicit phase",
+      "class": "frontend",
+      "seconds": 0.6352249999999986,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation renders mandatory dimensions from published policy and excludes unsupported evidence keys",
+      "class": "frontend",
+      "seconds": 0.2429930000000022,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation submits explicit as-of and evidence separately from independent release",
+      "class": "frontend",
+      "seconds": 0.29459240000000136,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation does not permit release when readiness source hashes are stale",
+      "class": "frontend",
+      "seconds": 0.12216730000000098,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation clears only by explicit command containing evidence and version",
+      "class": "frontend",
+      "seconds": 0.34110350000000106,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "AWP canonical project presentation publishes configuration through governed feature API without user project writes",
+      "class": "frontend",
+      "seconds": 0.38809259999999995,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence uses canonical Schedule Workspace routes without legacy Project fallback",
+      "class": "frontend",
+      "seconds": 0.1073752999999997,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence uses If-Match and idempotency on material commands",
+      "class": "frontend",
+      "seconds": 0.009855100000000675,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence uploads a genuine file to register staging with expected register version",
+      "class": "frontend",
+      "seconds": 0.011691999999999097,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence shows coherent read-only submodules and no writer controls",
+      "class": "frontend",
+      "seconds": 1.5184601000000002,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence creates a Schedule Register without guessing hours per day",
+      "class": "frontend",
+      "seconds": 0.45901300000000267,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence creates a successor snapshot instead of editing existing WBS or approved data in place",
+      "class": "frontend",
+      "seconds": 0.35224679999999714,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence keeps WBS hierarchy separate from Scope hierarchy and handles orphan source parents",
+      "class": "frontend",
+      "seconds": 0.06892680000000109,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence maps multiple Plan Items to an Activity with explicit reason and version",
+      "class": "frontend",
+      "seconds": 0.15876719999999842,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence maps WBS to approved Scope without silently creating Scope",
+      "class": "frontend",
+      "seconds": 0.17422710000000005,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence does not offer editing mappings of an accepted immutable version",
+      "class": "frontend",
+      "seconds": 0.0526297999999988,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence does not offer Draft Plan Items or Scope outside the approved current baseline",
+      "class": "frontend",
+      "seconds": 0.054421800000000076,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence respects a profile disabling direct Scope mappings",
+      "class": "frontend",
+      "seconds": 0.09190199999999822,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence loads existing mappings for explicit re-review and retains removal as an audit command",
+      "class": "frontend",
+      "seconds": 0.14467139999999926,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence preserves missing float as UNKNOWN and actual zero or false as source values",
+      "class": "frontend",
+      "seconds": 0.3076532000000006,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence preserves ten-hour calendar exceptions without an eight-hour conversion",
+      "class": "frontend",
+      "seconds": 0.1271232999999993,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence shows SF and negative lag with external unresolved references",
+      "class": "frontend",
+      "seconds": 0.11355219999999827,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence keeps Activity Codes and constraints as distinct source collections",
+      "class": "frontend",
+      "seconds": 0.145831299999998,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence stages native P6 file without auto-accepting Current or Baseline",
+      "class": "frontend",
+      "seconds": 0.10632510000000184,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence accepts Current only through the explicit reviewed-version command",
+      "class": "frontend",
+      "seconds": 0.03788220000000001,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence generates only the supported XML export manifest rather than fake CSV roundtrip",
+      "class": "frontend",
+      "seconds": 0.043688300000001616,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence uses governed baseline lifecycle independent from accepted Current",
+      "class": "frontend",
+      "seconds": 0.05378710000000137,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence does not expose mutation controls on an approved Baseline",
+      "class": "frontend",
+      "seconds": 0.052139900000001946,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence associates period explicitly without forcing Data Date to cutoff",
+      "class": "frontend",
+      "seconds": 0.09710230000000593,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence renders safely before a Schedule Profile has been bound",
+      "class": "frontend",
+      "seconds": 0.20872379999999977,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence gets float classification from a read-only server query without local CPM calculation",
+      "class": "frontend",
+      "seconds": 0.06021929999999702,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence refreshes health through a read-only query rather than mutating validation evidence",
+      "class": "frontend",
+      "seconds": 0.024327799999999115,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence requires an explicit approved previous baseline when preparing a rebaseline",
+      "class": "frontend",
+      "seconds": 0.09603080000000046,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence uses native manifest fields and downloads the actual source file name",
+      "class": "frontend",
+      "seconds": 0.04618390000000363,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence does not allow revalidation after independent review has begun",
+      "class": "frontend",
+      "seconds": 0.03649079999999958,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence queries canonical activity classification and health without command headers",
+      "class": "frontend",
+      "seconds": 0.004328500000003259,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "O1B-B frontend contracts — component tests are not real-browser release evidence ADMIN creates Schedule Profile through its dedicated guarded API",
+      "class": "frontend",
+      "seconds": 0.15452620000000025,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display uses explicit scalar query filters without sending empty values",
+      "class": "frontend",
+      "seconds": 0.013378000000000612,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display preserves hidden REMOVE/TEMPORARY even when blocked and styled",
+      "class": "frontend",
+      "seconds": 0.006525099999998929,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display does not let invalid color or opacity configure domain visibility",
+      "class": "frontend",
+      "seconds": 0.008130499999999301,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display steps explicit date across month/year boundaries, never substitutes today",
+      "class": "frontend",
+      "seconds": 0.5170664999999972,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display lists only accepted current and approved baselines, using actual Data Date",
+      "class": "frontend",
+      "seconds": 2.1851385999999984,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display uses server filters for Package, WBS, Scope and Plan and exposes 16 filters",
+      "class": "frontend",
+      "seconds": 0.7589882999999973,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display requests traceability through the authorized source-aware GET port",
+      "class": "frontend",
+      "seconds": 0.9030382000000027,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display compares baseline/current on the same selected date without a write command",
+      "class": "frontend",
+      "seconds": 0.5023817999999992,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    },
+    {
+      "name": "4D source fidelity and display blocks missing accepted sources instead of silently previewing staging",
+      "class": "frontend",
+      "seconds": 0.10549270000000252,
+      "result": "PASS",
+      "evidence": "frontend-components.json"
+    }
+  ],
+  "suite_summary": [
+    [
+      "B1 PostgreSQL y políticas",
+      157,
+      "PASS"
+    ],
+    [
+      "Regresión Scope Schedule P6",
+      227,
+      "PASS"
+    ],
+    [
+      "Frontend y navegación",
+      53,
+      "PASS"
+    ],
+    [
+      "Comprobaciones Chromium reales",
+      17,
+      "PASS"
+    ]
+  ],
+  "browser": {
+    "result": "PASS",
+    "checks": [
+      {
+        "code": "AWP Profiles_ADMIN_INDEPENDENT_PUBLICATION",
+        "result": "PASS"
+      },
+      {
+        "code": "4D State Profiles_ADMIN_INDEPENDENT_PUBLICATION",
+        "result": "PASS"
+      },
+      {
+        "code": "CWA_CONTAINER_CREATED",
+        "result": "PASS"
+      },
+      {
+        "code": "ALL_FIVE_BASE_TYPES_SUPPORT_LOGISTICS_AND_PHASED_MN_MAPPINGS",
+        "result": "PASS"
+      },
+      {
+        "code": "SCHEDULED_NOT_READY_BLOCKER",
+        "result": "PASS"
+      },
+      {
+        "code": "CLEARED_READY_NOT_AUTORELEASED",
+        "result": "PASS"
+      },
+      {
+        "code": "INDEPENDENT_EXPLICIT_PACKAGE_RELEASE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_ORIGINAL_IFC_REAL_GEOMETRY_ALL_NATURES_READINESS_OVERLAY",
+        "result": "PASS"
+      },
+      {
+        "code": "BASELINE_CURRENT_COMPARISON_EXPLICIT_DATA_DATE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_FILTER_AND_IFC_SCOPE_PLAN_PACKAGE_ACTIVITY_TRACEABILITY",
+        "result": "PASS"
+      },
+      {
+        "code": "NO_BROWSER_RUNTIME_ERRORS",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_WBS",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_SCOPE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_PLAN",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_PACKAGE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_ACTUAL_GEOMETRY_PICK_TRACEABILITY",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_PLAY_PAUSE_SPEED_STEPS_AND_DATA_DATE",
+        "result": "PASS"
+      }
+    ],
+    "observations": [
+      {
+        "label": "CWA creation",
+        "elapsed_ms": 688.8876999999993,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 528.8337000000029,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 404.3055000000022,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 340.3113999999987,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 434.59449999999924,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 532.0414999999994,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 310.78919999999925,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 489.73859999999695,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 426.8723000000027,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 311.1504999999961,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 306.4273999999932,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 394.1944000000003,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 337.5686999999889,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 456.5326000000059,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 389.51929999999993,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 296.4744000000064,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 453.55489999998827,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 395.0758999999962,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 522.8788999999961,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 329.75790000001143,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 313.2920999999915,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 400.4850000000006,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 366.7658000000083,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 494.17050000000745,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 404.10629999999946,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 309.30250000000524,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 482.05220000000554,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 638.1159000000043,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 581.3503000000055,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 485.10770000000775,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 421.3377999999939,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 424.433400000009,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 528.2995999999985,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 352.45380000000296,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 894.9395999999979,
+        "status": 201
+      },
+      {
+        "label": "Package creation",
+        "elapsed_ms": 742.5276000000013,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 628.494399999996,
+        "status": 201
+      },
+      {
+        "label": "Package mapping",
+        "elapsed_ms": 311.2606999999989,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 340.75999999999476,
+        "status": 201
+      },
+      {
+        "label": "Package Activity mapping",
+        "elapsed_ms": 301.545100000003,
+        "status": 201
+      },
+      {
+        "label": "Constraint creation",
+        "elapsed_ms": 394.1831000000093,
+        "status": 201
+      },
+      {
+        "label": "/constraints/1/mappings",
+        "elapsed_ms": 671.127999999997,
+        "status": 201
+      },
+      {
+        "label": "Readiness assessment",
+        "elapsed_ms": 1142.291600000026,
+        "status": 201
+      },
+      {
+        "label": "/constraints/1/transition",
+        "elapsed_ms": 399.9585000000079,
+        "status": 200
+      },
+      {
+        "label": "/packages/1/assess",
+        "elapsed_ms": 1405.9646000000066,
+        "status": 201
+      },
+      {
+        "label": "/packages/1/transition",
+        "elapsed_ms": 371.5458000000217,
+        "status": 200
+      },
+      {
+        "label": "/packages/1/transition",
+        "elapsed_ms": 650.0740000000224,
+        "status": 200
+      },
+      {
+        "label": "/packages/1/transition",
+        "elapsed_ms": 813.4357000000018,
+        "status": 200
+      },
+      {
+        "label": "/packages/1/release",
+        "elapsed_ms": 1465.7390000000014,
+        "status": 200
+      }
+    ],
+    "browser_errors": [],
+    "project_workspace_id": 125042746,
+    "completed_at": "2026-10-22T02:07:19.352Z",
+    "additional_checks": [
+      {
+        "code": "FOUR_D_BROWSER_FILTER_WBS",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_SCOPE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_PLAN",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_FILTER_PACKAGE",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_ACTUAL_GEOMETRY_PICK_TRACEABILITY",
+        "result": "PASS"
+      },
+      {
+        "code": "FOUR_D_BROWSER_PLAY_PAUSE_SPEED_STEPS_AND_DATA_DATE",
+        "result": "PASS"
+      }
+    ]
+  },
+  "api": [
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/overview",
+      "overview_api_v1_awp_projects__workspace_id__overview_get",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/cwas",
+      "awp_list_cwas_api_v1_awp_projects__workspace_id__cwas_get",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/cwas",
+      "create_cwa_api_v1_awp_projects__workspace_id__cwas_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/packages",
+      "awp_list_packages_api_v1_awp_projects__workspace_id__packages_get",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/packages",
+      "create_package_api_v1_awp_projects__workspace_id__packages_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/mappings",
+      "awp_list_mappings_api_v1_awp_projects__workspace_id__mappings_get",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/dependencies",
+      "awp_list_dependencies_api_v1_awp_projects__workspace_id__dependencies_get",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/dependencies",
+      "create_dependency_api_v1_awp_projects__workspace_id__dependencies_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/constraints",
+      "awp_list_constraints_api_v1_awp_projects__workspace_id__constraints_get",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/constraints",
+      "create_constraint_api_v1_awp_projects__workspace_id__constraints_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/constraint-mappings",
+      "awp_list_constraint_mappings_api_v1_awp_projects__workspace_id__constraint_mappings_get",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/assessments",
+      "awp_list_assessments_api_v1_awp_projects__workspace_id__assessments_get",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/history/{entity_type}/{identity}",
+      "history_api_v1_awp_projects__workspace_id__history__entity_type___identity__get",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}",
+      "package_detail_api_v1_awp_projects__workspace_id__packages__identity__get",
+      "AWP"
+    ],
+    [
+      "PUT",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}",
+      "update_package_api_v1_awp_projects__workspace_id__packages__identity__put",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/cwas/{identity}",
+      "cwa_detail_api_v1_awp_projects__workspace_id__cwas__identity__get",
+      "AWP"
+    ],
+    [
+      "PUT",
+      "/api/v1/awp/projects/{workspace_id}/cwas/{identity}",
+      "update_cwa_api_v1_awp_projects__workspace_id__cwas__identity__put",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/projects/{workspace_id}/constraints/{identity}",
+      "constraint_detail_api_v1_awp_projects__workspace_id__constraints__identity__get",
+      "AWP"
+    ],
+    [
+      "PUT",
+      "/api/v1/awp/projects/{workspace_id}/constraints/{identity}",
+      "update_constraint_api_v1_awp_projects__workspace_id__constraints__identity__put",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}/transition",
+      "package_transition_api_v1_awp_projects__workspace_id__packages__identity__transition_post",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}/mappings",
+      "package_mapping_api_v1_awp_projects__workspace_id__packages__identity__mappings_post",
+      "AWP"
+    ],
+    [
+      "PUT",
+      "/api/v1/awp/projects/{workspace_id}/dependencies/{identity}",
+      "update_dependency_api_v1_awp_projects__workspace_id__dependencies__identity__put",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/constraints/{identity}/transition",
+      "constraint_transition_api_v1_awp_projects__workspace_id__constraints__identity__transition_post",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/constraints/{identity}/mappings",
+      "constraint_mapping_api_v1_awp_projects__workspace_id__constraints__identity__mappings_post",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}/assess",
+      "assess_api_v1_awp_projects__workspace_id__packages__identity__assess_post",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/projects/{workspace_id}/packages/{identity}/release",
+      "release_api_v1_awp_projects__workspace_id__packages__identity__release_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/awp/admin/profiles",
+      "profiles_api_v1_awp_admin_profiles_get",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/admin/profiles",
+      "create_profile_api_v1_awp_admin_profiles_post",
+      "AWP"
+    ],
+    [
+      "PUT",
+      "/api/v1/awp/admin/profiles/{identity}",
+      "update_profile_api_v1_awp_admin_profiles__identity__put",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/admin/profiles/{identity}/publish",
+      "publish_profile_api_v1_awp_admin_profiles__identity__publish_post",
+      "AWP"
+    ],
+    [
+      "POST",
+      "/api/v1/awp/admin/profiles/{identity}/successor",
+      "successor_profile_api_v1_awp_admin_profiles__identity__successor_post",
+      "AWP"
+    ],
+    [
+      "GET",
+      "/api/v1/readiness/projects/{workspace_id}/workfront",
+      "workfront_api_v1_readiness_projects__workspace_id__workfront_get",
+      "Readiness"
+    ],
+    [
+      "POST",
+      "/api/v1/readiness/projects/{workspace_id}/packages/{identity}/assess",
+      "assess_api_v1_readiness_projects__workspace_id__packages__identity__assess_post",
+      "Readiness"
+    ],
+    [
+      "POST",
+      "/api/v1/readiness/projects/{workspace_id}/packages/{identity}/release",
+      "release_api_v1_readiness_projects__workspace_id__packages__identity__release_post",
+      "Readiness"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/4d",
+      "model_api_v1_schedule_projects__workspace_id__4d_get",
+      "4D"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/4d/traceability/{identity}",
+      "traceability_api_v1_schedule_projects__workspace_id__4d_traceability__identity__get",
+      "4D"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/projects/{workspace_id}/4d/compare",
+      "compare_api_v1_schedule_projects__workspace_id__4d_compare_get",
+      "4D"
+    ],
+    [
+      "GET",
+      "/api/v1/schedule/4d/admin/profiles",
+      "profiles_api_v1_schedule_4d_admin_profiles_get",
+      "4D"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/4d/admin/profiles",
+      "create_profile_api_v1_schedule_4d_admin_profiles_post",
+      "4D"
+    ],
+    [
+      "PUT",
+      "/api/v1/schedule/4d/admin/profiles/{identity}",
+      "update_profile_api_v1_schedule_4d_admin_profiles__identity__put",
+      "4D"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/4d/admin/profiles/{identity}/publish",
+      "four_d_profile_publish_api_v1_schedule_4d_admin_profiles__identity__publish_post",
+      "4D"
+    ],
+    [
+      "POST",
+      "/api/v1/schedule/4d/admin/profiles/{identity}/successor",
+      "four_d_profile_successor_api_v1_schedule_4d_admin_profiles__identity__successor_post",
+      "4D"
+    ]
+  ],
+  "performance": [
+    [
+      "CWA list",
+      3,
+      118.21929999860004,
+      130.62619999982417,
+      140.6859999988228
+    ],
+    [
+      "Package list",
+      3,
+      146.6008999850601,
+      148.15429999725893,
+      160.20869999192655
+    ],
+    [
+      "Dependency list",
+      3,
+      92.64210000401363,
+      93.37919997051358,
+      95.58259998448193
+    ],
+    [
+      "Execution Constraint list",
+      3,
+      104.62259995983914,
+      140.445799974259,
+      147.9420000105165
+    ],
+    [
+      "Readiness assessment",
+      1,
+      746.3414000230841,
+      746.3414000230841,
+      746.3414000230841
+    ],
+    [
+      "Package Scope mapping",
+      1,
+      446.11850002547726,
+      446.11850002547726,
+      446.11850002547726
+    ],
+    [
+      "4D initial API view",
+      3,
+      1004.636199970264,
+      1296.41619999893,
+      1454.631500004325
+    ],
+    [
+      "4D date step API",
+      3,
+      773.3021999592893,
+      889.769500005059,
+      1097.4250999861397
+    ],
+    [
+      "4D traceability",
+      3,
+      771.147999970708,
+      945.5575000029057,
+      1113.1893999991007
+    ],
+    [
+      "4D Baseline Current comparison",
+      3,
+      2190.2449000044726,
+      2355.411999975331,
+      2559.910099953413
+    ]
+  ],
+  "data_volume": {
+    "packages": 39,
+    "scope_items": 4,
+    "activities_per_version": 6,
+    "ifc_objects": 4
+  },
+  "requirements": [
+    [
+      "B1-01",
+      "Existing O1B-B Schedule behavior preserved",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-02",
+      "No Schedule rebuild",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-03",
+      "CWA as area/container",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-04",
+      "EWP",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-05",
+      "PWP",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-06",
+      "CWP",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-07",
+      "IWP",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-08",
+      "TWP",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-09",
+      "SUPPORT configurable",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-10",
+      "LOGISTICS configurable",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-11",
+      "Scope ↔ Package M:N",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-12",
+      "Plan ↔ Package M:N",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-13",
+      "Package ↔ Activity M:N",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-14",
+      "Package dependencies",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-15",
+      "No rigid false AWP hierarchy",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-16",
+      "ExecutionConstraint separate from P6 ScheduleConstraint",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-17",
+      "Constraint types governed",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-18",
+      "Blocking/nonblocking",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-19",
+      "Constraint evidence/history",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-20",
+      "Readiness assessment",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-21",
+      "Workfront Readiness",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-22",
+      "READY ≠ RELEASED",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-23",
+      "Scheduled ≠ Ready",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-24",
+      "Constraint does not silently change CPM logic",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-25",
+      "Package mapping does not rewrite Schedule Version",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-26",
+      "4D Model",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-27",
+      "Accepted Current source",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-28",
+      "Approved Baseline source",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-29",
+      "Baseline vs Current",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-30",
+      "Data Date view",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-31",
+      "INSTALL 4D semantics",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-32",
+      "REMOVE 4D semantics",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-33",
+      "TEMPORARY 4D semantics",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-34",
+      "MAINTENANCE 4D semantics",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-35",
+      "Plan/Package/Activity M:N works in 4D",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-36",
+      "Derived 3D reused",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-37",
+      "Original IFC unchanged",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-38",
+      "Scope Baseline unchanged",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-39",
+      "Schedule Baseline unchanged",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-40",
+      "4D filters",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-41",
+      "4D traceability",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-42",
+      "Readiness/blocker overlay",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-43",
+      "No native CPM engine",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-44",
+      "No P6 API sync",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-45",
+      "No duplicate Scope authority",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-46",
+      "No duplicate Schedule authority",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-47",
+      "ADMIN/USER separation",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-48",
+      "RBAC",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-49",
+      "SoD",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-50",
+      "ETag",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-51",
+      "Idempotency",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-52",
+      "Audit",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-53",
+      "PostgreSQL tests",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-54",
+      "Chromium UAT",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-55",
+      "Project 14 unchanged",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-56",
+      "0 open S1",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ],
+    [
+      "B1-57",
+      "0 open S2",
+      "PASS",
+      "Pruebas PG y políticas, regresión, Chromium, preservación y hashes"
+    ]
+  ],
+  "release_criteria": [
+    [
+      "RC-01",
+      "Existing O1B-B Schedule behavior preserved",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-02",
+      "No Schedule rebuild",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-03",
+      "CWA as area/container",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-04",
+      "EWP",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-05",
+      "PWP",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-06",
+      "CWP",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-07",
+      "IWP",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-08",
+      "TWP",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-09",
+      "SUPPORT configurable",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-10",
+      "LOGISTICS configurable",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-11",
+      "Scope ↔ Package M:N",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-12",
+      "Plan ↔ Package M:N",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-13",
+      "Package ↔ Activity M:N",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-14",
+      "Package dependencies",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-15",
+      "No rigid false AWP hierarchy",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-16",
+      "ExecutionConstraint separate from P6 ScheduleConstraint",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-17",
+      "Constraint types governed",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-18",
+      "Blocking/nonblocking",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-19",
+      "Constraint evidence/history",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-20",
+      "Readiness assessment",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-21",
+      "Workfront Readiness",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-22",
+      "READY ≠ RELEASED",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-23",
+      "Scheduled ≠ Ready",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-24",
+      "Constraint does not silently change CPM logic",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-25",
+      "Package mapping does not rewrite Schedule Version",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-26",
+      "4D Model",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-27",
+      "Accepted Current source",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-28",
+      "Approved Baseline source",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-29",
+      "Baseline vs Current",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-30",
+      "Data Date view",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-31",
+      "INSTALL 4D semantics",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-32",
+      "REMOVE 4D semantics",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-33",
+      "TEMPORARY 4D semantics",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-34",
+      "MAINTENANCE 4D semantics",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-35",
+      "Plan/Package/Activity M:N works in 4D",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-36",
+      "Derived 3D reused",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-37",
+      "Original IFC unchanged",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-38",
+      "Scope Baseline unchanged",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-39",
+      "Schedule Baseline unchanged",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-40",
+      "4D filters",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-41",
+      "4D traceability",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-42",
+      "Readiness/blocker overlay",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-43",
+      "No native CPM engine",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-44",
+      "No P6 API sync",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-45",
+      "No duplicate Scope authority",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-46",
+      "No duplicate Schedule authority",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-47",
+      "ADMIN/USER separation",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-48",
+      "RBAC",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-49",
+      "SoD",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-50",
+      "ETag",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-51",
+      "Idempotency",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-52",
+      "Audit",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-53",
+      "PostgreSQL tests",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-54",
+      "Chromium UAT",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-55",
+      "Project 14 unchanged",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-56",
+      "0 open S1",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ],
+    [
+      "RC-57",
+      "0 open S2",
+      "PASS",
+      "postgres-junit.xml; regression-junit.xml; browser-uat.json; api-observations.json"
+    ]
+  ],
+  "defects": [
+    [
+      "B1-01",
+      "S2",
+      "Colisión de parámetros Path y Query impedía montar la ruta de trazabilidad",
+      "RESOLVED",
+      "Ruta corregida, importación y HTTP reales PASS"
+    ],
+    [
+      "B1-02",
+      "S1",
+      "Guard PG leía un campo CWA inexistente en el historial de otros agregados",
+      "RESOLVED",
+      "IF por tipo de tabla; upgrade downgrade reupgrade y escrituras reales PASS"
+    ],
+    [
+      "B1-03",
+      "INFRA",
+      "Fallo de memoria al importar la suite en un contenedor adicional",
+      "RESOLVED",
+      "Runtime local contra PostgreSQL Docker aislado, sin cambiar resultados de negocio"
+    ],
+    [
+      "LIM-01",
+      "LIMIT",
+      "Sin XER export, native BaselineProject, XSD instalado, roundtrip Primavera ni P6 API",
+      "DECLARED_LIMIT",
+      "Límites anteriores conservados, sin prometer compatibilidad completa"
+    ],
+    [
+      "LIM-02",
+      "LIMIT",
+      "Sin ensayo de escala industrial, migración normal ni firmas de negocio",
+      "DECLARED_LIMIT",
+      "Mediciones locales y liberación técnica aislada"
+    ]
+  ],
+  "postgres_summary": "La ejecución final cerró 157 casos B1 sin fallos: 87 pruebas PostgreSQL HTTP o migración y 70 comprobaciones puras de política y estados. La regresión adicional cerró 227 casos de Scope, Schedule e intercambio P6. El guard corregido se verificó con escrituras reales y con upgrade downgrade reupgrade sobre una base separada. Los avisos de caché pytest no afectaron los resultados.",
+  "chromium_summary": "Chromium ejecutó dos escenarios reales, sin respuestas de negocio simuladas. Las 17 comprobaciones registradas incluyen publicación independiente ADMIN, tipos de paquete, mapeos, blocker, clearance, READY sin auto release y release independiente. El visor cargó mallas y triángulos IFC reales, comparó fuentes, aplicó filtros y ejecutó controles temporales y selección geométrica. Las pruebas de componentes cerraron 53 casos y la comprobación TypeScript y ESLint terminó sin errores.",
+  "preservation_summary": "La observación de solo lectura anterior y posterior conserva el hash canónico del Proyecto 14 6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114. No se usó ese proyecto como fixture ni se migró la base habitual. Los ensayos de datos ocurrieron en tenants y Project Workspaces aislados.",
+  "gaps_summary": "No quedan defectos S1 o S2 conocidos en el alcance ensayado. Se mantienen los límites P6 ya documentados y la ausencia de prueba de escala productiva. La representación 4D aplica estados lógicos a la geometría fuente; no fabrica cortes geométricos donde el IFC no los ofrece. La aceptación humana sigue sin firmas y el despliegue en la base habitual queda separado del cierre técnico.",
+  "release_conclusion": "La liberación técnica del incremento quedó validada en el entorno aislado con las evidencias indicadas. Esto no equivale a despliegue productivo ni a aceptación humana de negocio.",
+  "release_state": "WAVE_O1B_B1_AWP_READINESS_4D_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1B_C_COST_FOUNDATION",
+  "next_increment": "WAVE O1B-C — COST FOUNDATION",
+  "protected_files": {
+    "frontend/src/App.tsx": "31d42b406755cbc5f90a83da403adfa2bdb18adc8468076b19e79c7f6584c930",
+    "frontend/src/components/BimIfcModelViewer.tsx": "3194bb1e3735fbbbd4e39f317542130a80222a649640506c95194d860f266a88",
+    "backend/app/domain/models.py": "561d8cf420f0fed264a934d12862e5eba42fcecc65d415542077d223cb9a3f76",
+    "backend/app/domain/schemas.py": "7e61def403b6032db23569894b070240d36716b485d8e94a6e32a64bc11f153c"
+  }
+}

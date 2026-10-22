@@ -34,6 +34,13 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
     heads = script.get_heads()
     assert len(heads) == 1
     assert "20261019_0069" in {revision.revision for revision in script.walk_revisions(head=heads[0], base="base")}
+    later_tables = {
+        mapper.local_table.name
+        for mapper in Base.registry.mappers
+        if mapper.class_.__module__.startswith(
+            ("app.modules.scope_foundation", "app.modules.schedule_foundation", "app.modules.awp")
+        )
+    }
     initial = set(inspect(migration_engine).get_table_names())
     if initial:
         # Re-runs are allowed only for this explicitly named disposable DB and
@@ -44,7 +51,7 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
     else:
         Base.metadata.create_all(
             migration_engine,
-            tables=[table for table in Base.metadata.sorted_tables if table.name not in TABLES],
+            tables=[table for table in Base.metadata.sorted_tables if table.name not in TABLES | later_tables],
         )
     monkeypatch.setenv("DATABASE_URL", url)
     get_settings.cache_clear()
@@ -54,6 +61,7 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
             command.stamp(configuration, "20261011_0068")
         command.upgrade(configuration, "20261019_0069")
         assert TABLES <= set(inspect(migration_engine).get_table_names())
+        assert not later_tables & set(inspect(migration_engine).get_table_names())
         with migration_engine.connect() as connection:
             assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20261019_0069"
             guard_count = connection.scalar(
@@ -77,7 +85,9 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
             "engine": "PostgreSQL",
             "initial_orm_bootstrap": True,
             "historical_empty_database_upgrade_claimed": False,
-            "single_head": "20261019_0069",
+            "single_head": heads[0],
+            "target_revision": "20261019_0069",
+            "later_tables_excluded": sorted(later_tables),
             "steps": steps,
             "new_tables": sorted(TABLES),
             "postgresql_guard_trigger_count": guard_count,
