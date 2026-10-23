@@ -1,5 +1,6 @@
 """Real isolated PostgreSQL/HTTP 4D source, lineage and zero-write proofs."""
 
+import os
 from copy import deepcopy
 from hashlib import sha256
 from uuid import uuid4
@@ -41,7 +42,10 @@ def get(f, suffix="", **params):
 
 @pytest.fixture(scope="module")
 def four_d_fixture():
-    assert engine.dialect.name == "postgresql" and engine.url.database == "o1bb1"
+    assert engine.dialect.name == "postgresql" and (
+        engine.url.database == "o1bb1"
+        or (engine.url.database == "o1bc" and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
+    )
     with TestClient(app) as client, SessionLocal() as db:
         f = create_awp_browser_fixture(db, client)
         # The foreign actor has actual feature grants. A cross-tenant request

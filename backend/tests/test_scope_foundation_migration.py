@@ -34,7 +34,9 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
     later_tables = {
         mapper.local_table.name
         for mapper in Base.registry.mappers
-        if mapper.class_.__module__.startswith(("app.modules.schedule_foundation", "app.modules.awp"))
+        if mapper.class_.__module__.startswith(
+            ("app.modules.schedule_foundation", "app.modules.awp", "app.modules.cost_foundation")
+        )
     }
     config = Config("alembic.ini")
     script = ScriptDirectory.from_config(config)

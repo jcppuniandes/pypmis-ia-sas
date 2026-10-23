@@ -23,10 +23,23 @@ def main():
     command.upgrade(configuration, "20261019_0069")
     with engine.connect() as connection:
         after = {table: connection.scalar(text(f"SELECT count(*) FROM {table}")) for table in tables}
-        triggers = list(connection.scalars(text("SELECT trigger_name FROM information_schema.triggers WHERE trigger_name LIKE 'o1a_%' ORDER BY event_object_table,trigger_name")))
-    manifest = {"database": "o1a", "isolated_fixture_only": True, "discarded_test_rows": before,
-                "new_table_counts": after, "triggers": triggers,
-                "migration_sha256": hashlib.sha256(Path("alembic/versions/20261019_0069_operational_context.py").read_bytes()).hexdigest()}
+        triggers = list(
+            connection.scalars(
+                text(
+                    "SELECT trigger_name FROM information_schema.triggers WHERE trigger_name LIKE 'o1a_%' ORDER BY event_object_table,trigger_name"
+                )
+            )
+        )
+    manifest = {
+        "database": "o1a",
+        "isolated_fixture_only": True,
+        "discarded_test_rows": before,
+        "new_table_counts": after,
+        "triggers": triggers,
+        "migration_sha256": hashlib.sha256(
+            Path("alembic/versions/20261019_0069_operational_context.py").read_bytes()
+        ).hexdigest(),
+    }
     Path("/artifacts/final-ddl-refresh.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest))
 

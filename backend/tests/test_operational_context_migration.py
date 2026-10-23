@@ -38,7 +38,12 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
         mapper.local_table.name
         for mapper in Base.registry.mappers
         if mapper.class_.__module__.startswith(
-            ("app.modules.scope_foundation", "app.modules.schedule_foundation", "app.modules.awp")
+            (
+                "app.modules.scope_foundation",
+                "app.modules.schedule_foundation",
+                "app.modules.awp",
+                "app.modules.cost_foundation",
+            )
         )
     }
     initial = set(inspect(migration_engine).get_table_names())

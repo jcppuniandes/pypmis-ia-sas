@@ -34,3 +34,6 @@ def require_bound_legacy_command(request: Request, db: Session = Depends(get_db)
     request.state.operational_project_context = guard_legacy_operational_write(
         db, principal.tenant_id, principal.user_id, legacy_id
     )
+    from app.modules.cost_foundation.legacy_boundary import guard_legacy_cost_write
+
+    guard_legacy_cost_write(db, principal.tenant_id, legacy_id, getattr(endpoint, "__name__", ""))

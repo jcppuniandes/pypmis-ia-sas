@@ -12,6 +12,7 @@ import OperationalSetupWorkspace from "../operational-context/OperationalSetupWo
 import ScopeManagerWorkspace from "../scope-foundation/ScopeManagerWorkspace";
 import ScheduleManagerWorkspace from "../schedule-foundation/ScheduleManagerWorkspace";
 import AwpWorkspace from "../awp/AwpWorkspace";
+import CostManagerWorkspace from "../cost-foundation/CostManagerWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -157,7 +158,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
         </aside>
 
         <section className="workspaceOperationalContent">
-          {!["operational-setup", "scope-manager", "schedule-manager", "awp"].includes(current?.code ?? "") ? (
+          {!["operational-setup", "scope-manager", "schedule-manager", "awp", "cost"].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
                 current?.code === "home"
@@ -180,7 +181,14 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "awp" && context.identity.workspace_type === "PROJECT" ? (
+          {current?.code === "cost" && context.identity.workspace_type === "PROJECT" ? (
+            <CostManagerWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "awp" && context.identity.workspace_type === "PROJECT" ? (
             <AwpWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
           ) : current?.code === "schedule-manager" && context.identity.workspace_type === "PROJECT" ? (
             <ScheduleManagerWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />

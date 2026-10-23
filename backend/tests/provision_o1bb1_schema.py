@@ -22,7 +22,12 @@ def main():
         mapper.local_table.name
         for mapper in Base.registry.mappers
         if mapper.class_.__module__.startswith(
-            ("app.modules.scope_foundation", "app.modules.schedule_foundation", "app.modules.awp")
+            (
+                "app.modules.scope_foundation",
+                "app.modules.schedule_foundation",
+                "app.modules.awp",
+                "app.modules.cost_foundation",
+            )
         )
     }
     o1a = {"operational_project_bindings", "project_controls_periods", "operational_context_commands"}

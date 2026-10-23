@@ -263,6 +263,9 @@ from app.modules.business_analysis import router as business_analysis_router
 from app.modules.business_case import router as business_case_router
 from app.modules.capital_planning import router as capital_planning_router
 from app.modules.commercial_strategy import router as commercial_strategy_router
+from app.modules.cost_foundation import financial_router as cost_financial_router
+from app.modules.cost_foundation import legacy_sources as cost_legacy_sources
+from app.modules.cost_foundation import router as cost_foundation_router
 from app.modules.economic_financial_model import router as economic_financial_model_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
@@ -336,6 +339,9 @@ router.include_router(operational_context_router.router, prefix="/operational", 
 router.include_router(scope_foundation_router.router, prefix="/scope", tags=["scope-foundation"])
 router.include_router(schedule_foundation_router.router, prefix="/schedule", tags=["schedule-foundation"])
 router.include_router(awp_router.router, prefix="/awp", tags=["awp"])
+router.include_router(cost_foundation_router.router, prefix="/cost", tags=["cost-foundation"])
+router.include_router(cost_financial_router.router, prefix="/cost", tags=["cost-financials"])
+router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-legacy-candidates"])
 router.include_router(awp_router.readiness_router, prefix="/readiness", tags=["execution-readiness"])
 router.include_router(schedule_four_d_router.router, prefix="/schedule", tags=["schedule-4d"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])

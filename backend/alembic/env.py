@@ -12,6 +12,8 @@ from app.modules.business_analysis import models as business_analysis_models  # 
 from app.modules.business_case import models as business_case_models  # noqa: F401
 from app.modules.capital_planning import models as capital_planning_models  # noqa: F401
 from app.modules.commercial_strategy import models as commercial_strategy_models  # noqa: F401
+from app.modules.cost_foundation import financial_models as cost_financial_models  # noqa: F401
+from app.modules.cost_foundation import models as cost_foundation_models  # noqa: F401
 from app.modules.economic_financial_model import models as economic_financial_model_models  # noqa: F401
 from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401

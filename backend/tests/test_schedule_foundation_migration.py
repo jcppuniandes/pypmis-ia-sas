@@ -35,7 +35,7 @@ def test_schedule_postgresql_single_successor_roundtrip_preserves_scope_and_o1a(
     future = {
         mapper.local_table.name
         for mapper in Base.registry.mappers
-        if mapper.class_.__module__.startswith("app.modules.awp")
+        if mapper.class_.__module__.startswith(("app.modules.awp", "app.modules.cost_foundation"))
     }
     assert schedule and scope
     config = Config("alembic.ini")

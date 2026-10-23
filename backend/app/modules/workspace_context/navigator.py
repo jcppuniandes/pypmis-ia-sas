@@ -162,7 +162,7 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("scope-manager", "Scope Manager", permission_key="scope_foundation.read"),
         NavigationDefinition("schedule-manager", "Schedule Manager", permission_key="schedule_foundation.read"),
         NavigationDefinition("awp", "AWP Execution", permission_key="awp.read"),
-        NavigationDefinition("cost", "Cost", definition_code="cost-manager"),
+        NavigationDefinition("cost", "Cost Manager", permission_key="cost.read"),
         NavigationDefinition("documents", "Documents"),
         NavigationDefinition("reports", "Reports"),
     ),
@@ -250,6 +250,13 @@ class WorkspaceNavigatorService:
             state = item.default_state
             permission_key = item.permission_key
             reason = ""
+            if item.code == "cost" and (
+                settings.get("cost") is False
+                or settings.get("cost-manager") is False
+                or (metadata.get("enabled_modules") and not {"cost", "cost-manager"} & enabled)
+            ):
+                state = "DISABLED"
+                reason = "Cost Manager is explicitly disabled for this Workspace"
             if item.code in {"scope-manager", "schedule-manager", "awp"} and (
                 settings.get(item.code) is False or (metadata.get("enabled_modules") and item.code not in enabled)
             ):

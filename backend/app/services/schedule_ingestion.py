@@ -1110,6 +1110,17 @@ class ScheduleIngestionService:
         schedule_rows: list[tuple[ScheduleActivityMap, ParsedActivity]],
         parsed_wbs_nodes: list[ParsedWbsNode],
     ) -> None:
+        from app.modules.cost_foundation.legacy_boundary import canonical_cost_project
+
+        if canonical_cost_project(self.db, tenant_id, project_id) is not None:
+            # Imported cost loading is source evidence only once Cost is adopted.
+            # Canonical Schedule and Cost commands own mappings and approval.
+            schedule_import.validation_summary = (
+                (schedule_import.validation_summary or "")
+                + " Canonical Cost adopted: imported cost loading is candidate evidence only; "
+                "legacy CBS, Control Accounts and Budget are not materialized."
+            )
+            return
         wbs_cache = self._materialize_wbs_nodes(tenant_id, project_id, parsed_wbs_nodes)
         project = self.db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
         project_key = self._project_cbs_key(project)

@@ -1,0 +1,5330 @@
+{
+  "release_state": "WAVE_O1B_C_COST_FOUNDATION_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION",
+  "next_increment": "WAVE O1B-D — PROGRESS & BASELINE INTEGRATION",
+  "cases": [
+    {
+      "name": "test_spread_exact_sum[0-LINEAR]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[0-FRONT_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[0-BACK_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[0-MILESTONE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[0-ACTIVITY_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[0-CURVE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-LINEAR]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-FRONT_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-BACK_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-MILESTONE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-ACTIVITY_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100-CURVE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-LINEAR]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-FRONT_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-BACK_LOADED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-MILESTONE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-ACTIVITY_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_spread_exact_sum[100.12345678-CURVE_BASED]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_front_back_order_is_explicit",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_tiny_spread_rounding_cannot_create_negative_residual",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_manual_spread_exact_reconciliation",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_manual_spread_rejects_wrong_sum_dates_duplicates_negative[spread0]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.02,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_manual_spread_rejects_wrong_sum_dates_duplicates_negative[spread1]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_manual_spread_rejects_wrong_sum_dates_duplicates_negative[spread2]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_manual_spread_rejects_wrong_sum_dates_duplicates_negative[spread3]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_curve_requires_nonnegative_exact_days[weights0]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_curve_requires_nonnegative_exact_days[weights1]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_curve_requires_nonnegative_exact_days[weights2]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_curve_requires_nonnegative_exact_days[weights3]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_single_currency_aggregation_and_mixed_without_fx",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_immutable_fx_basis",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_apu_noncompounding_factors_and_decimal_components",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_default_policy_reserve_boundary_and_no_full_forecast",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_invalid_money_and_allocation_rejected[RateIn-body0]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_invalid_money_and_allocation_rejected[MappingIn-body1]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_invalid_money_and_allocation_rejected[BudgetLineIn-body2]",
+      "class": "tests.test_cost_foundation_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_hierarchy_cycle_and_etag",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 27.585,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_idempotency_conflict",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.805,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_denies_non_cost_duties[executive]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.066,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_denies_non_cost_duties[planner]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.084,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_denies_non_cost_duties[unassigned]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.082,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cbs_denies_non_cost_duties[foreign]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.09,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cost_code_and_control_account_independent_from_wbs_funding",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.972,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_m_to_n_sources_and_history[SCOPE]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.421,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_m_to_n_sources_and_history[PLAN]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.504,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_m_to_n_sources_and_history[PACKAGE]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.351,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_m_to_n_sources_and_history[WBS]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.663,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_explicit_m_to_n_sources_and_history[ACTIVITY]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.472,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_mapping_project_isolation",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.477,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_effective_rates_and_apu_component_categories[LABOR]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.556,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_effective_rates_and_apu_component_categories[MATERIAL]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.796,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_effective_rates_and_apu_component_categories[EQUIPMENT]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.893,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_effective_rates_and_apu_component_categories[SUBCONTRACT]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.876,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_effective_rates_and_apu_component_categories[OTHER]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 0.947,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_rate_apu_publication_independent_actor_and_history",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.717,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_apu_rejects_unit_and_currency_incompatibility",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.235,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_scope_times_apu_candidate_only_preserves_quantity",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 3.923,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_apu_effective_date_on_candidate",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.882,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_budget_lifecycle_sod_original_current_and_immutable",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 5.203,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_baseline_candidate_schedule_phasing_and_independent_approval",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 4.145,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contingency_inside_and_management_reserve_outside",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.167,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_budget_no_silent_mixed_currency",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_gets_do_not_write_business_facts",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.72,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_database_guards_no_approved_budget_rewrite",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.832,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_apu_revision_keeps_published_inputs_and_hash",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.907,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_draft_budget_line_edit_and_approved_line_rejection",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.952,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[LINEAR]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 3.02,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[FRONT_LOADED]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.636,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[BACK_LOADED]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.131,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[MILESTONE_BASED]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 1.839,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[ACTIVITY_BASED]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.61,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[MANUAL]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 3.032,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_all_governed_phasing_methods_on_postgresql[CURVE_BASED]",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.533,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_privileged_material_preparer_cannot_approve_budget_or_baseline",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 3.842,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_rates_and_apus_use_half_open_effective_windows",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 4.402,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_scope_apu_candidate_idempotency_uses_original_command",
+      "class": "tests.test_cost_foundation_release",
+      "seconds": 2.539,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_independent_obligation_once[CONTRACT]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_independent_obligation_once[PO]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_independent_obligation_once[SUBCONTRACT]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_independent_obligation_once[CONTRACT_CHANGE_ORDER]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_with_non_additive_po_does_not_double_count[INCLUDED]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_with_non_additive_po_does_not_double_count[CALL_OFF]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_with_non_additive_po_does_not_double_count[REFERENCE_ONLY]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_plus_explicit_additive_po",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_approved_change_delta_not_whole_contract_again",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_same_economic_origin_twice_fails_closed",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_refresh_effective_only_after_independent_verification[PROPOSED-100.00000000]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_refresh_effective_only_after_independent_verification[REJECTED-100.00000000]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_refresh_effective_only_after_independent_verification[VERIFIED-120.00000000]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_chain_refresh_does_not_reintroduce_historical_parent",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_missing_economic_parent_is_not_zero_with_success[INCLUDED]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_missing_economic_parent_is_not_zero_with_success[CALL_OFF]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_calloff_total_cannot_exceed_contract_ceiling",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_included_child_currency_not_assumed_convertible",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_included_po_cannot_exceed_parent_obligation",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_unverified_reference_never_contributes[PROPOSED]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_unverified_reference_never_contributes[REJECTED]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_unverified_reference_never_contributes[SOURCE_STALE]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_two_currencies_no_silent_net",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_adjustment_is_delta_not_replacement_double_add",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_multi_currency_no_aggregate",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_decimal_exactness",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.01,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_effective_interval_matches_core_half_open[day0-True]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_effective_interval_matches_core_half_open[day1-True]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_effective_interval_matches_core_half_open[day2-False]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_effective_interval_matches_core_half_open[day3-False]",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_adjustment_cannot_make_historical_actual_negative_despite_positive_current_total",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_same_day_adjustments_evaluated_as_one_recognition_day",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_eac_reference_requires_explicit_commitment_inclusion_and_acceptance",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_commitment_contract_cannot_silently_invent_new_legal_kind",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_adjustment_contract_accepts_negative_without_allowing_zero_original",
+      "class": "tests.test_cost_financial_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_independent_publication_etag_history",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 28.543,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_forbidden_default_and_date_basis",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.016,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_import_idempotency_duplicate_source_and_approval_sod",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.854,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_fx_expiry_and_inverse_are_never_inferred",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.632,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_currency_period_and_source_fail_closed[change0]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.284,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_currency_period_and_source_fail_closed[change1]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.315,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_currency_period_and_source_fail_closed[change2]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.555,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_adjustment_history_without_double_count",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 2.283,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_adjustment_cannot_over_reverse_original",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.085,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_adjustments_cannot_backdate_negative_historical_actual",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.753,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_recognition_revalidates_active_mapping",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.703,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_foreign_project_fx_reference_cannot_be_consumed",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.282,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_actual_two_currencies_no_conversion_never_zero",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.676,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_external_verified_legal_reference_projection_not_second_authority[CONTRACT]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.535,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_external_verified_legal_reference_projection_not_second_authority[PO]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.643,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_external_verified_legal_reference_projection_not_second_authority[SUBCONTRACT]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.948,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_external_verified_legal_reference_projection_not_second_authority[CONTRACT_CHANGE_ORDER]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.837,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_po_inclusion_semantics[INCLUDED]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.583,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_po_inclusion_semantics[CALL_OFF]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.377,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_po_inclusion_semantics[ADDITIVE]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.341,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_contract_po_inclusion_semantics[REFERENCE_ONLY]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.205,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_duplicate_obligation_source_and_economic_origin_are_rejected",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.676,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_included_po_without_parent_and_draft_external_source_rejected",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.364,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_contract_and_included_po_consume_existing_authority_only",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 5.683,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_recognition_and_projection_tenant_rbac_etag",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.057,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_financial_gets_emit_no_business_writes",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.964,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_deferred_accrual_and_eac_interface_never_add_commitments",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.277,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_postgresql_published_financial_inputs_immutable[cost_fx_rates-rate-99]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.462,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_postgresql_published_financial_inputs_immutable[cost_actual_entries-amount-999]",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 0.485,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_z_period_close_prevents_actual_import_and_recognition",
+      "class": "tests.test_cost_financial_release",
+      "seconds": 1.933,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cost_adoption_is_explicit_and_read_does_not_adopt",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 20.151,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[create_cbs]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.03,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[create_cbs_wbs_business_process]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.026,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[create_control_account]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.027,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[create_cost_code]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.023,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[create_cost_record]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.026,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[recost_activity_sheet]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.024,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[update_business_process_line_item]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.04,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_legacy_direct_cost_writer_requires_canonical_adapter[update_control_account]",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.035,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_existing_legacy_business_process_line_cannot_mutate_cost_after_adoption",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.972,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_existing_apu_catalog_reused_as_source_only_and_get_has_no_business_writes",
+      "class": "tests.test_cost_legacy_boundary",
+      "seconds": 0.441,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_cost_single_successor_and_real_postgres_roundtrip",
+      "class": "tests.test_cost_foundation_migration",
+      "seconds": 38.035,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_migration_only_inventory_matches_all_cost_models",
+      "class": "tests.test_cost_startup",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_sqlite_local_bootstrap_preserves_legacy_without_cost",
+      "class": "tests.test_cost_startup",
+      "seconds": 0.074,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_postgres_local_bootstrap_excludes_cost_and_retains_advisory_lock",
+      "class": "tests.test_cost_startup",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "cost-junit.xml"
+    },
+    {
+      "name": "test_ifc_real_geometry_quantities_psets_materials_and_source_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 9.112,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument0-DUPLICATE_GUID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.055,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument1-MISSING_OBJECT_IDENTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.044,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument2-QUANTITY_EXTRACTION_ERROR]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.044,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_identity_units_and_quantities_are_reviewable_but_not_acceptable[argument3-INVALID_MODEL_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.042,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_unsupported_product_is_retained_and_explicitly_reported",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.051,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_stable_guid_and_mapping_loss",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.146,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_version_diff_modified_classification_and_growth",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.149,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_express_id_is_version_local_not_cross_version_diff_identity",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_placement_change_is_a_geometry_diff_without_quantity_change",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.088,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_diff_database_object_projection_ignores_db_metadata_and_preserves_geometry_hash",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.068,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.ifc-IFC_CONTAINER_INVALID]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[-empty.ifc-EMPTY_SOURCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_ifc_invalid_sources_fail_closed[bad-bad.txt-UNSUPPORTED_SOURCE_FORMAT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_valid_template_literal_quantities_and_physical_row_lineage",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.027,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[INSTALL]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[REMOVE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[TEMPORARY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_each_scope_nature_has_independent_semantics[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Nature-BUILD_WHATEVER-INVALID_SCOPE_NATURE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Unit-unknown-INVALID_UNIT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-NaN-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-Infinity-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity--3-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Quantity-1,000-INVALID_QUANTITY]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Parent Scope Code-absent-MISSING_PARENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_governed_values_block_candidate[Scope Type-COST_BASELINE-INVALID_SCOPE_TYPE]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_headers_mapping_and_duplicate_header",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.008,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_duplicate_scope_code_source_row_and_cycle_detection",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_field_mapping_existing_parent_future_apu_mapping_stays_inactive",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option0-FORMULA_SOURCE_NOT_SUPPORTED]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_formulas_and_external_links_not_imported_as_literal_scope[option1-ACTIVE_WORKBOOK_CONTENT]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_repeat_parser_is_deterministic_no_approval_or_scope_side_effects",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_csv_fixture_valid_without_any_ifc_source",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[bad.xlsx-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[old.xls-bad]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_invalid_formats_and_empty_sources_are_reviewable_failure[empty.xlsx-]",
+      "class": "tests.test_scope_foundation_imports",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[INSTALL]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 9.707,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[REMOVE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.727,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[TEMPORARY]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.562,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_scope_natures_and_quantities[MAINTENANCE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.313,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes0]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.743,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes1]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.129,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes2]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.277,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes3]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.062,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes4]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.616,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes5]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.508,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_invalid_input_and_untrusted_references_fail_closed[changes6]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.147,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.497,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[cost_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.125,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[progress_engineer]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.797,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[planner]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.822,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[unassigned]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.056,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_write_requires_scope_duty_and_workspace_assignment[foreign]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.228,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[scope_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.969,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.528,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[bim_coordinator]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.568,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[construction_manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.086,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[document_controller]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.513,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[manager]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.064,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_granular_roles_can_read_canonical_scope_without_broad_admin[executive]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.529,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_hierarchy_draft_etag_and_immutable_baseline_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.69,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_revision_sod_and_candidate_edit_after_preparation",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.177,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_ifc_version_acceptance_source_bytes_and_mn_scope_mapping",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.146,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_plan_many_to_many_group_split_recompose_and_derived_lineage",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.762,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_get_scope_queries_write_no_business_rows_or_security_receipts",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.832,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgresql_baseline_raw_update_rejected",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.423,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[create]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.035,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[edit]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.189,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[publish]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.527,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_governed_scope_profile[clone]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.088,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_profile_latest_material_editor_cannot_self_publish",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.282,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_native_staging_idempotent_candidate_and_preserved_source_quantity",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.128,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_excel_direct_item_creation_rejects_silent_source_unit_conversion",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.749,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_plan_publication_revalidates_current_scope_after_approved_successor",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 3.235,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[AREA]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.344,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[ZONE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.411,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[SYSTEM]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.491,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_strategy_ordered_parallel_publication_successor_and_candidate_segmentation[QUANTITY_RANGE]",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 2.603,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_model_successor_diff_reject_and_prior_source_immutable",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.917,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_source_model_cross_project_and_tenant_queries_denied",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.904,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_approved_change_source_contract_consumes_bound_existing_authority_only",
+      "class": "tests.test_scope_foundation_release",
+      "seconds": 1.94,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_returns_project_meta",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_xer_missing_task_table_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dcma_flags_missing_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dcma_passes_with_full_logic",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_returns_activities",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_parse_p6_xml_invalid_raises",
+      "class": "tests.test_schedule_parser",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_real_schedule_source_data_date_wbs_activities_calendars_and_hash[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.033,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xml]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_relationship_types_signed_lags_and_external_identity_preserved[xer]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_source_float_criticality_and_percent_complete_unknown_are_not_inferred",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_float_does_not_invent_criticality_or_map_longest_path_to_critical",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_calendar_workweek_shifts_and_exception_structure_retained",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.027,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_constraints_primary_and_secondary_preserve_types_and_dates",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_export_is_actual_xml_parser_loop_with_core_semantics_and_no_native_baseline_claim",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.022,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_opaque_calendar_blocks_claimed_lossless_xml_export",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[NaN-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[Infinity-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[PT2H-SOURCE_NUMBER_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_source_numbers_or_units_are_not_coerced_into_valid_quantity[-1-DURATION_NEGATIVE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[duplicate-<lambda>-ACTIVITIES_DUPLICATE_ID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[missing_date-<lambda>-DATA_DATE_REQUIRED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_date-<lambda>-DATA_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[wbs_cycle-<lambda>-WBS_HIERARCHY_CYCLE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_wbs-<lambda>-ACTIVITY_WBS_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[unknown_relation-<lambda>-RELATIONSHIP_TYPE_UNSUPPORTED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_activity_date-<lambda>-ACTIVITY_DATE_INVALID]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[invalid_percent-<lambda>-IMPORTED_PERCENT_COMPLETE_OUT_OF_RANGE]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.02,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_structural_and_source_validation_failure_cases[dangling_code-<lambda>-ACTIVITY_CODE_ASSIGNMENT_UNRESOLVED]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[garbage]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<Project/>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_xml_container_and_entity_source_rejected[<!DOCTYPE x [<!ENTITY y 'bad'>]><APIBusinessObjects>&y;</APIBusinessObjects>]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_utf16_dtd_cannot_bypass_utf8_entity_guard",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\ta\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\t2\\n%E]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%T\\tTASK\\n%F\\ta\\n%R\\t1\\n]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_structural_errors_rejected[ERMHDR\\t19\\n%E\\n%T\\tTASK]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_native_xer_parser_characterization_distinguishes_legacy_marker_subset",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_xer_adapter_reuses_existing_tokenizer_without_implicit_acceptance",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_unsupported_fields_and_objects_reported_while_original_hash_preserved",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.022,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_identity_based_diff_preserves_mapping_impacts_and_source_immutability",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.026,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_malformed_manual_snapshot_reports_errors_instead_of_crashing[payload4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-code-value0]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-external_id-value1]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[wbs-parent_external_id-value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-external_id-value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-type-value4]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[relationships-relationship_type-value5]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.022,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[constraints-activity_external_id-value6]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-kind-value7]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[codes-external_id-value8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[code_assignments-value_external_id-value9]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-None]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[activities-source_fields-value11]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.014,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_draft_identity_labels_and_metadata_return_validation_not_500[calendars-source_fields-not a dictionary]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[8]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[bad]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value2]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[value3]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_untrusted_calendar_hours_cannot_raise_type_error[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_null_activity_type_is_invalid_before_health_milestone_classification",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[True]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_relationship_lag_is_not_a_numeric_source_duration[False]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[True-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.02,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-original_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.015,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-remaining_duration]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-total_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-free_float]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_boolean_activity_numbers_are_rejected_without_coercion[False-percent_complete]",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_input_record_and_size_limits",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_export_non_native_object_ids_and_day_conversion_are_explicitly_blocked",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.025,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_duplicate_scalar_and_empty_business_object_rejected",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_deep_hierarchy_is_bounded_for_import_and_manual_snapshots",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.013,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xer_table_and_field_counts_are_bounded",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.011,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_export_generation_is_deterministic_and_does_not_mutate_snapshot",
+      "class": "tests.test_schedule_foundation_exchange",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_default_unresolved_external_links_are_fail_closed",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 9.958,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[negative_lag-SCHEDULE_NEGATIVE_LAG-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.545,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[hard_constraint-SCHEDULE_HARD_CONSTRAINT-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.867,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[open_ends-SCHEDULE_OPEN_ENDS-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.132,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[missing_calendar-SCHEDULE_CALENDAR_REFERENCE_MISSING-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.794,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[long_duration-SCHEDULE_LONG_DURATION-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 1.97,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_published_health_policy_checks_without_cpm[excessive_lag-SCHEDULE_EXCESSIVE_LAG-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.232,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[None-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.049,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_day_duration_requires_declared_calendar_never_eight_hour_default[10-False]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.311,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_mandatory_wbs_mappings_are_distinct_from_activity_mappings",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.876,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[calendar_handling-ASSUME_8_HOURS]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.051,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[lookahead_default_days-True]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.058,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[inherit_to_descendants-yes]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.057,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value3]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.058,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[near_critical_threshold-value4]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.063,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[open_end_policy-value5]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.062,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[mapping_policy-value6]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.072,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[allowed_constraints-value7]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.076,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[supported_exchange-value8]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.087,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_invalid_authority_or_policy_is_rejected_before_persistence[scope-value9]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.075,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_publication_rejects_author_and_last_material_editor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.373,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[create]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[patch]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.024,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[publish]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.024,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_legacy_admin_cannot_bypass_governed_schedule_profile[clone]",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 0.022,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_two_successor_baselines_same_source_cannot_approve_stale_predecessor",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 6.483,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_commands_do_not_create_scope_plan_or_derived_authorities",
+      "class": "tests.test_schedule_foundation_policy",
+      "seconds": 2.666,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_register_idempotency_and_policy_type",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 7.266,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.03,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.031,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.028,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[unassigned]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.025,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_register_write_duties_and_project_assignment[foreign]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.032,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.861,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[second_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.787,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[planner]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.596,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[scope_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.466,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[bim_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.341,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[construction_manager]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.369,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[cost_controller]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.424,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_schedule_granular_read_roles_reuse_current_operational_context[executive]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.345,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_version_create_requires_register_etag_and_preserves_explicit_data_date",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.867,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_unmapped_schedule_cannot_accept_or_approve_baseline",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.782,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_wbs_plan_and_activity_plan_many_to_many_and_baseline_current_separation",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 7.017,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_acceptance_rejects_last_material_mapping_editor_and_importer",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 3.629,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_mapping_wrong_tenant_project_and_unknown_external_identity_denied",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 0.929,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_accepted_schedule_mapping_and_source_snapshot_immutable",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 5.236,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_xml_export_manifest_and_actual_source_roundtrip_with_no_cpm_claim",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.267,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_get_schedule_overview_and_profiles_have_no_sql_writes",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.32,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xml]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.787,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_actual_file_upload_staging_hash_and_rejection_history[xer]",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 2.573,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_manual_creation_cannot_forge_cpm_results_and_updates_create_new_version",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.155,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_broken_identity_mapping_retained_and_blocks_successor",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 4.993,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_explicit_period_association_preserves_data_date_distinct_from_cutoff",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 5.149,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_baseline_sod_and_database_immutability",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 10.366,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_lookahead_and_unknown_criticality_are_non_cpm_queries",
+      "class": "tests.test_schedule_foundation_release",
+      "seconds": 1.627,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[EWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[PWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.012,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[CWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[IWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[TWP]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[SUPPORT]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[LOGISTICS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_tailored_types_are_ready_without_auto_release[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_due_date_never_clears_blocker[OPEN]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_due_date_never_clears_blocker[IN_PROGRESS]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[CLEARED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[WAIVED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_resolved_constraint_no_longer_blocks[CANCELLED]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_nonblocking_is_visible_without_false_block",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_mandatory_evidence_is_not_ready",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dependency_is_execution_not_cpm",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_no_scope_mapping_blocks_and_profile_can_require_activity",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges0-False]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges1-True]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges2-True]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_cycle_detection_not_a_false_package_type_hierarchy[edges3-False]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_large_dependency_graph_has_no_recursive_stack_limit",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.021,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[PackageIn-body0]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[ConstraintIn-body1]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_commands_cannot_smuggle_cpm_mutations[MappingIn-body2]",
+      "class": "tests.test_awp_policy",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_cwa_container_hierarchy_and_cycle_etag",
+      "class": "tests.test_awp_release",
+      "seconds": 26.157,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[EWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.218,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[PWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.229,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[CWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.206,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[IWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.179,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[TWP]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.16,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[SUPPORT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.166,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[LOGISTICS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.175,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_package_types_without_dates[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.201,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[ENGINEERING]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.182,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PROCUREMENT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.281,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[MATERIAL]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.283,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[LOGISTICS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.323,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[ACCESS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.266,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[WORKFRONT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.2,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PREDECESSOR]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.228,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[PERMIT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.316,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[QUALITY]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.196,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[HSE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.31,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[RESOURCE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.25,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[EQUIPMENT]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.337,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[TEMPORARY_WORKS]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.132,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[INTERFACE]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.116,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[CLIENT_DECISION]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.122,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[CONTRACTUAL]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.108,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_governed_constraint_types_preserve_due_date_no_auto_clear[OTHER]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.112,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_package_idempotency_rbac_tenant_project_and_missing_ifmatch",
+      "class": "tests.test_awp_release",
+      "seconds": 0.517,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_package_scope_plan_activity_many_to_many_without_source_mutation",
+      "class": "tests.test_awp_release",
+      "seconds": 2.57,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_dependency_graph_no_false_type_chain_cycle_and_history",
+      "class": "tests.test_awp_release",
+      "seconds": 0.869,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_blocking_clear_evidence_readiness_independent_release_and_history",
+      "class": "tests.test_awp_release",
+      "seconds": 3.585,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_nonblocking_waiver_and_constraint_all_level_mappings",
+      "class": "tests.test_awp_release",
+      "seconds": 2.991,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_get_zero_business_writes",
+      "class": "tests.test_awp_release",
+      "seconds": 1.042,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_package_mappings]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_constraint_mappings]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.018,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_readiness_assessments]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.016,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgres_history_immutable[awp_history]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.019,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_sod_and_published_immutable",
+      "class": "tests.test_awp_release",
+      "seconds": 0.325,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[create]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.029,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[patch]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.03,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[publish]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.025,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_generic_admin_cannot_bypass_awp_governance[clone]",
+      "class": "tests.test_awp_release",
+      "seconds": 0.024,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_last_material_profile_editor_cannot_publish_even_if_not_creator",
+      "class": "tests.test_awp_release",
+      "seconds": 0.223,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_package_manager_authority_cannot_bypass_release_sod[preparer]",
+      "class": "tests.test_awp_release",
+      "seconds": 1.715,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_package_manager_authority_cannot_bypass_release_sod[assessor]",
+      "class": "tests.test_awp_release",
+      "seconds": 1.516,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_complete_closed_package_does_not_clear_execution_condition",
+      "class": "tests.test_awp_release",
+      "seconds": 2.828,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_postgres_mapping_rejects_cross_tenant_and_project_references",
+      "class": "tests.test_awp_release",
+      "seconds": 0.372,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-20-NOT_STARTED-FUTURE_NOT_INSTALLED-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.009,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-22-IN_PROGRESS-INSTALLATION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[INSTALL-2026-10-24-COMPLETED-INSTALLED-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-20-NOT_STARTED-EXISTING-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-22-IN_PROGRESS-REMOVAL-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[REMOVE-2026-10-24-REMOVED-REMOVED-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-20-NOT_STARTED-EXISTING_IN_SERVICE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-22-MAINTENANCE-MAINTENANCE_INTERVENTION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.001,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_non_temporary_nature_states[MAINTENANCE-2026-10-24-COMPLETED-RESTORED_IN_SERVICE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-09-30-NOT_STARTED-ABSENT_BEFORE_INSTALL-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-01-IN_PROGRESS-TEMPORARY_INSTALLATION-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-03-TEMPORARY-TEMPORARY_IN_USE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-09-TEMPORARY-TEMPORARY_IN_USE-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-10-IN_PROGRESS-TEMPORARY_REMOVAL-True]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.006,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_explicit_multi_activity_boundaries[2026-10-12-REMOVED-ABSENT_AFTER_REMOVAL-False]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities0-TEMPORARY_INSTALL_REMOVE_PHASES_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities1-TEMPORARY_EXPLICIT_PHASE_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_temporary_never_guesses_names_or_missing_phases[activities2-TEMPORARY_PHASE_ORDER_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities0-ACTIVITY_MAPPING_REQUIRED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.001,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities1-ACTIVITY_DATES_INCOMPLETE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities2-ACTIVITY_DATES_INCOMPLETE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities3-ACTIVITY_DATE_ORDER_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_missing_broken_date_or_phase_is_not_healthy_completion[activities4-ACTIVITY_PHASE_INVALID]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_many_activities_resolve_membership_envelope_without_creating_dates",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_actual_dates_current_and_planned_baseline_are_distinct_sources",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.001,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_imported_critical_float_remain_unknown_when_not_supplied",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scheduled_readiness_overlay_does_not_modify_schedule_state_or_logic",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_registered_timezone_not_machine_today_or_implicit_utc",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[Not Started]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[NOT_STARTED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.007,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[In Progress]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_delayed_overlay_only_explicit_data_date_and_known_imported_status[IN_PROGRESS]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_unknown_completed_status_or_actual_finish_never_invents_late_flag",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_milestone_one_declared_date_is_valid_without_duration_calculation",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-20-2026-10-20-ALIGNED]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-24-2026-10-20-BEHIND_BASELINE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.003,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_semantic_comparison_no_forecast_cpm[2026-10-20-2026-10-24-AHEAD_OF_BASELINE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_comparison_unresolved_or_missing_source_explicit",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_permits_presentation_but_not_rewriting_scope_semantics",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[mapping_completeness_policy-IGNORE]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.005,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[temporary_phase_policy-GUESS_NAME]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[separation_of_duties-value2]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_profile_invalid_authority_flags_rejected[allow_direct_scope_mapping-yes]",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_filter_contract_supports_every_required_dimension_without_mutation",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.002,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_wbs_filter_membership_includes_source_ancestors_without_tree_rewrite",
+      "class": "tests.test_schedule_four_d_state",
+      "seconds": 0.004,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_current_source_explicit_data_date_and_governed_sources_only",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 22.654,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_explicit_control_period_association_does_not_substitute_cutoff_for_data_date",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.726,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_approved_baseline_reuses_frozen_snapshot_even_version_superseded",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.442,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-22T08:00:00-NOT_STARTED-FUTURE_NOT_INSTALLED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.515,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-23T12:00:00-IN_PROGRESS-INSTALLATION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.43,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[INSTALL-2026-10-25T08:00:00-COMPLETED-INSTALLED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.419,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-22T08:00:00-NOT_STARTED-EXISTING]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.312,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-23T12:00:00-IN_PROGRESS-REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.321,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[REMOVE-2026-10-25T08:00:00-REMOVED-REMOVED]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.513,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-20T08:00:00-NOT_STARTED-ABSENT_BEFORE_INSTALL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.599,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-21T12:00:00-IN_PROGRESS-TEMPORARY_INSTALLATION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.789,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-22T12:00:00-TEMPORARY-TEMPORARY_IN_USE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.545,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-25T12:00:00-IN_PROGRESS-TEMPORARY_REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.539,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[TEMPORARY-2026-10-26T08:00:00-REMOVED-ABSENT_AFTER_REMOVAL]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.287,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-22T08:00:00-NOT_STARTED-EXISTING_IN_SERVICE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.405,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-23T12:00:00-MAINTENANCE-MAINTENANCE_INTERVENTION]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.383,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_four_nature_semantics_real_ifc_plan_awp_activity_chain[MAINTENANCE-2026-10-25T08:00:00-COMPLETED-RESTORED_IN_SERVICE]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.338,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_baseline_current_same_date_comparison_exposes_variance_no_cpm",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 1.242,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[wbs]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.374,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[activity]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.34,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[scope_item_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.341,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[scope_nature]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.3,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[plan_item_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.296,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[cwa_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.286,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[package_type]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.335,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[work_package_id]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.331,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[area]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.311,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[zone]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.317,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[system]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.29,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[activity_status]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.394,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[critical]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.586,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[near_critical]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.736,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[execution_readiness]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.724,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_all_required_filter_dimensions_real_source[blocked]",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.668,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_readiness_blocker_is_separate_from_imported_scheduled_state",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.665,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_selected_traceability_reuses_original_ifc_source_and_derived_membership",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.329,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_read_queries_are_zero_business_writes_and_preserve_all_source_authorities",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 2.318,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_scope_tenant_and_read_only_rbac_isolation",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.708,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_partial_current_package_membership_fails_closed_without_rewriting_schedule",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.963,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    },
+    {
+      "name": "test_configuration_sod_etag_idempotency_and_immutable_publication",
+      "class": "tests.test_schedule_four_d_release",
+      "seconds": 0.395,
+      "result": "PASS",
+      "evidence": "regression-junit.xml"
+    }
+  ],
+  "suite_summary": [
+    [
+      "Cost PostgreSQL y políticas",
+      156,
+      "PASS"
+    ],
+    [
+      "Regresión Scope Schedule AWP 4D",
+      383,
+      "PASS"
+    ],
+    [
+      "Componentes frontend y navegación",
+      76,
+      "PASS"
+    ],
+    [
+      "Comprobaciones Chromium reales",
+      15,
+      "PASS"
+    ]
+  ],
+  "browser": {
+    "result": "PASS",
+    "checks": [
+      {
+        "code": "ADMIN_AUTHOR_SELF_PUBLICATION_DENIED",
+        "result": "PASS"
+      },
+      {
+        "code": "ADMIN_COST_RATE_CURRENCY_POLICY_INDEPENDENT_PUBLICATION",
+        "result": "PASS"
+      },
+      {
+        "code": "CANONICAL_PROJECT_UPSTREAM_SCOPE_PLAN_PACKAGE_SCHEDULE_PERIOD_REUSED",
+        "result": "PASS"
+      },
+      {
+        "code": "CBS_COST_CODE_CONTROL_ACCOUNT_CREATED",
+        "result": "PASS"
+      },
+      {
+        "code": "EXPLICIT_SCOPE_PLAN_PACKAGE_MN_COST_MAPPINGS",
+        "result": "PASS"
+      },
+      {
+        "code": "VERSIONED_EFFECTIVE_DATED_RATE_APU_INDEPENDENT_PUBLICATION",
+        "result": "PASS"
+      },
+      {
+        "code": "APPROVED_SCOPE_QUANTITY_X_PUBLISHED_APU_CANDIDATE_ONLY",
+        "result": "PASS"
+      },
+      {
+        "code": "BUDGET_SUBMIT_REVIEW_INDEPENDENT_APPROVE_IMMUTABLE_HISTORY",
+        "result": "PASS"
+      },
+      {
+        "code": "SCHEDULE_AUTHORITY_PHASING_COST_BASELINE_INDEPENDENT_APPROVAL",
+        "result": "PASS"
+      },
+      {
+        "code": "SOURCE_UNIQUE_ACTUAL_IMPORT_AND_INDEPENDENT_RECOGNITION",
+        "result": "PASS"
+      },
+      {
+        "code": "COMMITMENT_RECONCILIATION_PROJECTION_NOT_LEGAL_AUTHORITY",
+        "result": "PASS"
+      },
+      {
+        "code": "ACCRUAL_CONTRACT_EXPLICIT_NO_FAKE_MUTATIONS",
+        "result": "PASS"
+      },
+      {
+        "code": "COST_OVERVIEW_CASH_FLOW_ETC_EAC_BOUNDARIES",
+        "result": "PASS"
+      },
+      {
+        "code": "BUDGET_BASELINE_APPROVAL_HISTORY_VISIBLE",
+        "result": "PASS"
+      },
+      {
+        "code": "ZERO_BROWSER_RUNTIME_ERRORS",
+        "result": "PASS"
+      }
+    ],
+    "observations": [
+      {
+        "label": "/api/v1/cost/admin/profiles",
+        "elapsed_ms": 380.4142000000029,
+        "status": 201
+      },
+      {
+        "label": "/15/publish",
+        "elapsed_ms": 290.9506000000001,
+        "status": 403
+      },
+      {
+        "label": "/15/publish",
+        "elapsed_ms": 413.01320000000123,
+        "status": 200
+      },
+      {
+        "label": "CBS creation",
+        "elapsed_ms": 480.90200000000186,
+        "status": 201
+      },
+      {
+        "label": "/cost-codes",
+        "elapsed_ms": 465.9910999999993,
+        "status": 201
+      },
+      {
+        "label": "/control-accounts",
+        "elapsed_ms": 323.2162000000026,
+        "status": 201
+      },
+      {
+        "label": "/mappings",
+        "elapsed_ms": 461.09859999999753,
+        "status": 201
+      },
+      {
+        "label": "/mappings",
+        "elapsed_ms": 447.5656000000017,
+        "status": 201
+      },
+      {
+        "label": "/mappings",
+        "elapsed_ms": 307.94280000000435,
+        "status": 201
+      },
+      {
+        "label": "/rates",
+        "elapsed_ms": 461.40260000000126,
+        "status": 201
+      },
+      {
+        "label": "/rates/1/publish",
+        "elapsed_ms": 520.3933000000106,
+        "status": 200
+      },
+      {
+        "label": "APU build-up",
+        "elapsed_ms": 470.482600000003,
+        "status": 201
+      },
+      {
+        "label": "/apus/1/publish",
+        "elapsed_ms": 502.31699999999546,
+        "status": 200
+      },
+      {
+        "label": "/budgets",
+        "elapsed_ms": 521.4052999999985,
+        "status": 201
+      },
+      {
+        "label": "/budgets/1/candidate-from-scope",
+        "elapsed_ms": 963.9182000000001,
+        "status": 201
+      },
+      {
+        "label": "/budgets/1/transition",
+        "elapsed_ms": 504.89070000000356,
+        "status": 200
+      },
+      {
+        "label": "/budgets/1/transition",
+        "elapsed_ms": 341.0949999999866,
+        "status": 200
+      },
+      {
+        "label": "/budgets/1/transition",
+        "elapsed_ms": 484.51480000000447,
+        "status": 200
+      },
+      {
+        "label": "/baselines",
+        "elapsed_ms": 358.07549999999173,
+        "status": 201
+      },
+      {
+        "label": "/baselines/1/phase",
+        "elapsed_ms": 570.751099999994,
+        "status": 201
+      },
+      {
+        "label": "/baselines/1/approve",
+        "elapsed_ms": 477.8365000000049,
+        "status": 200
+      },
+      {
+        "label": "/actuals",
+        "elapsed_ms": 358.18520000000717,
+        "status": 201
+      },
+      {
+        "label": "/actuals/1/decision",
+        "elapsed_ms": 430.6929999999993,
+        "status": 200
+      }
+    ],
+    "browser_errors": [],
+    "project_workspace_id": 141188936,
+    "created": {
+      "profile": 15,
+      "cbs": 1,
+      "cost_code": 1,
+      "account": 1,
+      "rate": 1,
+      "apu": 1,
+      "budget": 1,
+      "line": 1,
+      "baseline": 1,
+      "actual": 1
+    },
+    "completed_at": "2026-10-23T01:24:57.392Z"
+  },
+  "api": [
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/overview",
+      "overview_api_v1_cost_projects__workspace_id__overview_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cbs",
+      "cost_list_cbs_api_v1_cost_projects__workspace_id__cbs_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/cbs",
+      "create_cbs_api_v1_cost_projects__workspace_id__cbs_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cbs/{identity}",
+      "cost_detail_cbs_api_v1_cost_projects__workspace_id__cbs__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/cbs/{identity}",
+      "update_cbs_api_v1_cost_projects__workspace_id__cbs__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes",
+      "cost_list_cost_codes_api_v1_cost_projects__workspace_id__cost_codes_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes",
+      "create_code_api_v1_cost_projects__workspace_id__cost_codes_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes/{identity}",
+      "cost_detail_cost_codes_api_v1_cost_projects__workspace_id__cost_codes__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes/{identity}",
+      "update_code_api_v1_cost_projects__workspace_id__cost_codes__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts",
+      "cost_list_control_accounts_api_v1_cost_projects__workspace_id__control_accounts_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts",
+      "create_account_api_v1_cost_projects__workspace_id__control_accounts_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts/{identity}",
+      "cost_detail_control_accounts_api_v1_cost_projects__workspace_id__control_accounts__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts/{identity}",
+      "update_account_api_v1_cost_projects__workspace_id__control_accounts__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/mappings",
+      "cost_list_mappings_api_v1_cost_projects__workspace_id__mappings_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/mappings",
+      "create_mapping_api_v1_cost_projects__workspace_id__mappings_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/mappings/{identity}",
+      "cost_detail_mappings_api_v1_cost_projects__workspace_id__mappings__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/rates",
+      "cost_list_rates_api_v1_cost_projects__workspace_id__rates_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/rates",
+      "create_rate_api_v1_cost_projects__workspace_id__rates_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/rates/{identity}",
+      "cost_detail_rates_api_v1_cost_projects__workspace_id__rates__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus",
+      "cost_list_apus_api_v1_cost_projects__workspace_id__apus_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/apus",
+      "create_apu_api_v1_cost_projects__workspace_id__apus_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}",
+      "cost_detail_apus_api_v1_cost_projects__workspace_id__apus__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets",
+      "cost_list_budgets_api_v1_cost_projects__workspace_id__budgets_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets",
+      "create_budget_api_v1_cost_projects__workspace_id__budgets_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}",
+      "cost_detail_budgets_api_v1_cost_projects__workspace_id__budgets__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budget-lines",
+      "cost_list_budget_lines_api_v1_cost_projects__workspace_id__budget_lines_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budget-lines/{identity}",
+      "cost_detail_budget_lines_api_v1_cost_projects__workspace_id__budget_lines__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/baselines",
+      "cost_list_baselines_api_v1_cost_projects__workspace_id__baselines_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines",
+      "create_baseline_api_v1_cost_projects__workspace_id__baselines_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}",
+      "cost_detail_baselines_api_v1_cost_projects__workspace_id__baselines__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/phasing",
+      "cost_list_phasing_api_v1_cost_projects__workspace_id__phasing_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/phasing/{identity}",
+      "cost_detail_phasing_api_v1_cost_projects__workspace_id__phasing__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/history",
+      "cost_list_history_api_v1_cost_projects__workspace_id__history_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/history/{entity_type}/{identity}",
+      "history_api_v1_cost_projects__workspace_id__history__entity_type___identity__get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/mappings/{identity}/successor",
+      "successor_mapping_api_v1_cost_projects__workspace_id__mappings__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/rates/{identity}/publish",
+      "publish_rate_api_v1_cost_projects__workspace_id__rates__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}/publish",
+      "publish_apu_api_v1_cost_projects__workspace_id__apus__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}/calculation",
+      "apu_calculation_api_v1_cost_projects__workspace_id__apus__identity__calculation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/lines",
+      "add_budget_line_api_v1_cost_projects__workspace_id__budgets__identity__lines_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/candidate-from-scope",
+      "candidate_from_scope_api_v1_cost_projects__workspace_id__budgets__identity__candidate_from_scope_post",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/lines/{line_identity}",
+      "update_budget_line_api_v1_cost_projects__workspace_id__budgets__identity__lines__line_identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/calculation",
+      "calculate_budget_api_v1_cost_projects__workspace_id__budgets__identity__calculation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/transition",
+      "transition_budget_api_v1_cost_projects__workspace_id__budgets__identity__transition_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/successor",
+      "successor_budget_api_v1_cost_projects__workspace_id__budgets__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}/phase",
+      "phase_baseline_api_v1_cost_projects__workspace_id__baselines__identity__phase_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}/approve",
+      "approve_baseline_api_v1_cost_projects__workspace_id__baselines__identity__approve_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/admin/profiles",
+      "profiles_api_v1_cost_admin_profiles_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles",
+      "create_profile_api_v1_cost_admin_profiles_post",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/admin/profiles/{identity}",
+      "update_profile_api_v1_cost_admin_profiles__identity__put",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles/{identity}/publish",
+      "publish_profile_api_v1_cost_admin_profiles__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles/{identity}/successor",
+      "successor_profile_api_v1_cost_admin_profiles__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates",
+      "fx_rates_api_v1_cost_projects__workspace_id__fx_rates_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates",
+      "create_fx_api_v1_cost_projects__workspace_id__fx_rates_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates/{identity}/publish",
+      "publish_fx_api_v1_cost_projects__workspace_id__fx_rates__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/actuals",
+      "actuals_api_v1_cost_projects__workspace_id__actuals_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals",
+      "import_actual_api_v1_cost_projects__workspace_id__actuals_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals/{identity}/adjustments",
+      "adjust_actual_api_v1_cost_projects__workspace_id__actuals__identity__adjustments_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals/{identity}/decision",
+      "decide_actual_api_v1_cost_projects__workspace_id__actuals__identity__decision_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/commitments/sources",
+      "legacy_sources_api_v1_cost_projects__workspace_id__commitments_sources_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/commitments/reconciliation",
+      "commitments_api_v1_cost_projects__workspace_id__commitments_reconciliation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/commitments",
+      "propose_commitment_api_v1_cost_projects__workspace_id__commitments_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/commitments/{identity}/verify",
+      "verify_commitment_api_v1_cost_projects__workspace_id__commitments__identity__verify_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/financial-overview",
+      "overview_api_v1_cost_projects__workspace_id__financial_overview_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cash-flow",
+      "cash_flow_api_v1_cost_projects__workspace_id__cash_flow_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/accruals",
+      "accrual_contract_api_v1_cost_projects__workspace_id__accruals_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/eac-reference-preview",
+      "eac_preview_api_v1_cost_projects__workspace_id__eac_reference_preview_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/legacy-candidates",
+      "read_legacy_candidates_api_v1_cost_projects__workspace_id__legacy_candidates_get",
+      "Cost"
+    ]
+  ],
+  "performance": [
+    [
+      "Árbol CBS",
+      3,
+      61.87299999874085,
+      66.32129999343306,
+      78.06989992968738
+    ],
+    [
+      "Mapeos Cost",
+      3,
+      73.48319992888719,
+      78.52009998168796,
+      87.6189999980852
+    ],
+    [
+      "Lista Budget",
+      3,
+      68.33140004891902,
+      71.04680000338703,
+      85.13379993382841
+    ],
+    [
+      "Cálculo Budget",
+      3,
+      70.8099000621587,
+      72.17729999683797,
+      93.35270000156015
+    ],
+    [
+      "Cálculo APU",
+      3,
+      66.78559991996735,
+      73.19740008097142,
+      78.2494000159204
+    ],
+    [
+      "Carga Cost Baseline",
+      3,
+      88.57890008948743,
+      88.92290003132075,
+      121.5749999973923
+    ],
+    [
+      "Consulta phasing",
+      3,
+      67.36749992705882,
+      92.36550005152822,
+      128.01879993639886
+    ],
+    [
+      "Conciliación compromisos",
+      3,
+      54.62839989922941,
+      56.56569998245686,
+      82.44690007995814
+    ],
+    [
+      "Lista Actuals",
+      3,
+      53.94030001480132,
+      61.83070002589375,
+      66.7580000590533
+    ],
+    [
+      "Cost overview",
+      3,
+      107.06180008128285,
+      109.30010001175106,
+      158.56849995907396
+    ]
+  ],
+  "data_volume": {
+    "cbs": 1,
+    "cost_codes": 1,
+    "control_accounts": 1,
+    "mappings": 3,
+    "rates": 1,
+    "apus": 1,
+    "budgets": 1,
+    "budget_lines": 1,
+    "baselines": 1,
+    "phasing": 1,
+    "scope_items": 2,
+    "plan_items": 2,
+    "packages": 1,
+    "schedule_versions": 1,
+    "periods": 1
+  },
+  "requirements": [
+    [
+      "REQ-01",
+      "COST AUTHORITY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-02",
+      "SOURCE-FIRST COST FLOW",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-03",
+      "CBS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-04",
+      "COST CODES",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-05",
+      "CONTROL ACCOUNTS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-06",
+      "SCOPE / PLAN / PACKAGE / SCHEDULE ↔ COST MAPPINGS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-07",
+      "APU / UNIT COST FOUNDATION",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-08",
+      "RATES",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-09",
+      "MULTI-CURRENCY",
+      "IMPLEMENTED",
+      "Budget monomoneda; FX explícito en Actual y Commitment; sin agregación silenciosa"
+    ],
+    [
+      "REQ-10",
+      "BUDGET VERSIONS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-11",
+      "BUDGET LINE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-12",
+      "STRATEGIC BUDGET / FUNDING / FIN BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-13",
+      "COST BASELINE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-14",
+      "COST PHASING",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-15",
+      "PROJECT CONTROLS PERIOD",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-16",
+      "ACTUAL COST",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-17",
+      "ACCRUAL",
+      "DEFERRED_WITH_CONTRACT",
+      "Contrato explícito en 12_Accruals sin ciclo de mutación o reversión"
+    ],
+    [
+      "REQ-18",
+      "COMMITMENTS — CRITICAL BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-19",
+      "CONTRACT / PO DOUBLE-COUNTING",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-20",
+      "NET COMMITMENT",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-21",
+      "CHANGE BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-22",
+      "CONTINGENCY / MANAGEMENT RESERVE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-23",
+      "ETC / EAC READINESS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-24",
+      "CASH FLOW FOUNDATION",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-25",
+      "COST / PROGRESS BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-26",
+      "COST / AWP / 4D BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-27",
+      "ADMIN CONFIGURATION",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-28",
+      "SECURITY / SoD",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-29",
+      "AUDIT",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-30",
+      "REPOSITORY REUSE FIRST",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-31",
+      "SINGLE COST WRITE AUTHORITY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-32",
+      "DATABASE / MIGRATION POLICY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-33",
+      "API / FRONTEND",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-34",
+      "POSTGRESQL TESTS — CBS / MAPPINGS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-35",
+      "POSTGRESQL TESTS — APU / RATES / CURRENCY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-36",
+      "POSTGRESQL TESTS — BUDGET / BASELINE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-37",
+      "POSTGRESQL TESTS — COMMITMENTS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-38",
+      "POSTGRESQL TESTS — ACTUAL / ACCRUAL",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-39",
+      "BROWSER UAT",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-40",
+      "PERFORMANCE OBSERVATIONS",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-41",
+      "PROJECT 14 PRESERVATION",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-42",
+      "REQUIRED TECHNICAL REPORT",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-43",
+      "TRACEABILITY WORKBOOK",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-44",
+      "RELEASE CRITERIA",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-45",
+      "RELEASE STATE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-46",
+      "NEXT INCREMENT",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-47",
+      "STOP BOUNDARY",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ],
+    [
+      "REQ-48",
+      "REQUIRED FINAL RESPONSE",
+      "IMPLEMENTED",
+      "Pruebas y contratos inventariados en las hojas de dominio"
+    ]
+  ],
+  "release_criteria": [
+    [
+      "RC-01",
+      "Scope-first dependency preserved",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-02",
+      "No competing Scope authority",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-03",
+      "No competing Schedule authority",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-04",
+      "No competing Contract/Commitment authority",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-05",
+      "CBS",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-06",
+      "Cost Codes",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-07",
+      "Control Accounts",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-08",
+      "Scope ↔ Cost M:N",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-09",
+      "Plan ↔ Cost M:N",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-10",
+      "Package ↔ Cost M:N",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-11",
+      "WBS/Activity ↔ Cost mapping",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-12",
+      "APU",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-13",
+      "Rate versioning",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-14",
+      "Unit governance",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-15",
+      "Currency governance",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-16",
+      "No silent multi-currency aggregation",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-17",
+      "Budget lifecycle",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-18",
+      "Original Budget",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-19",
+      "Approved Budget",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-20",
+      "Current Budget",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-21",
+      "Approved Budget immutable",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-22",
+      "Cost Baseline",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-23",
+      "Cost phasing",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-24",
+      "Schedule-based phasing",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-25",
+      "Approved Cost Baseline immutable",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-26",
+      "Strategic Funding/FIN boundary preserved",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-27",
+      "Commitment projection",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-28",
+      "No duplicate Commitment authority",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-29",
+      "Contract/PO double-counting prevented",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-30",
+      "Net Commitment semantics",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-31",
+      "Actual Cost",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-32",
+      "Actual source lineage",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-33",
+      "Accrual lifecycle",
+      "DEFERRED_WITH_CONTRACT",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-34",
+      "No Accrual/Actual double count",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-35",
+      "ETC-ready structure",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-36",
+      "EAC boundary",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-37",
+      "No commitment double-add",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-38",
+      "Contingency rules",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-39",
+      "Management Reserve rules",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-40",
+      "No reserve double count",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-41",
+      "ADMIN/USER separation",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-42",
+      "RBAC",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-43",
+      "SoD",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-44",
+      "ETag",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-45",
+      "Idempotency",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-46",
+      "Audit",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-47",
+      "PostgreSQL tests",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-48",
+      "Chromium UAT",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-49",
+      "Project 14 unchanged",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-50",
+      "No full Progress authority implemented",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-51",
+      "No full Forecast governance implemented",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-52",
+      "No Treasury/Payments authority implemented",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-53",
+      "0 open S1",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ],
+    [
+      "RC-54",
+      "0 open S2",
+      "PASS",
+      "cost-junit.xml; regression-junit.xml; browser-uat.json; preservation-after.json"
+    ]
+  ],
+  "defects": [
+    [
+      "DF-01",
+      "S2",
+      "FX en dirección inversa aceptado por conversión identidad",
+      "CLOSED",
+      "Validación explícita y pruebas negativas PostgreSQL"
+    ],
+    [
+      "DF-02",
+      "S2",
+      "Ajuste Actual con saldo histórico negativo",
+      "CLOSED",
+      "Balance acumulado por fecha y prohibición de anteceder al original"
+    ],
+    [
+      "DF-03",
+      "S2",
+      "Contrato y Subcontract podían representar la misma fuente",
+      "CLOSED",
+      "Tipo legal canónico y origen económico verificados"
+    ],
+    [
+      "DF-04",
+      "S2",
+      "Reserva ligada al permiso ordinario de aprobar Budget",
+      "CLOSED",
+      "Permiso separado reserve.manage y pruebas de reclasificación"
+    ],
+    [
+      "DF-05",
+      "S3",
+      "Fronteras de vigencia FX inconsistentes",
+      "CLOSED",
+      "Intervalo de vigencia con final excluido y SQL CHECK"
+    ],
+    [
+      "DF-06",
+      "S2",
+      "El arranque local podía crear tablas Cost sin las protecciones de Alembic",
+      "CLOSED",
+      "Exclusión explícita de las catorce tablas y pruebas de ambas ramas del arranque"
+    ],
+    [
+      "DF-07",
+      "S2",
+      "Actualización de línea de proceso mantenía un escritor económico legado tras adopción",
+      "CLOSED",
+      "Frontera de autoridad ampliada y prueba negativa PostgreSQL"
+    ],
+    [
+      "GP-01",
+      "CONTRACT",
+      "Accrual lifecycle",
+      "DEFERRED_WITH_CONTRACT",
+      "Contrato explícito sin autoridad ficticia"
+    ],
+    [
+      "GP-02",
+      "LIMIT",
+      "Aceptación humana y despliegue habitual",
+      "NOT_PERFORMED",
+      "Fuera de la liberación técnica aislada"
+    ]
+  ],
+  "chapters": [
+    [
+      "Resumen ejecutivo",
+      "Se implementó y verificó Cost Foundation como autoridad operativa de costos, aguas abajo del alcance aprobado. Incluye estructura de control, APU, tarifas, presupuestos, baseline, phasing, reconocimiento de costos y conciliación de compromisos. La decisión es una liberación técnica en entorno aislado; no acredita aceptación de negocio, despliegue productivo ni firmas. Se aprobaron 615 pruebas automatizadas y las 15 comprobaciones de Chromium."
+    ],
+    [
+      "Base validada reutilizada",
+      "El incremento parte del commit 2ba53f14d61f de main. Se reutilizaron O1A para identidad, autorización y períodos; O1B A para Scope y Plan; O1B B para Schedule y P6; y O1B B1 para AWP, readiness y 4D. Las cantidades proceden del snapshot de Scope aprobado. Los Plan Items publicados, paquetes existentes y versiones aceptadas de Schedule se consumen por identidad y hash, sin reconstruir sus autoridades."
+    ],
+    [
+      "Hallazgos del repositorio",
+      "Los presupuestos, códigos y cuentas legados utilizan el Project histórico, importes Float y acoplamientos obligatorios con WBS o FBS. No contienen el ciclo de aprobación, la moneda o los snapshots necesarios para la nueva autoridad. Se conservaron detrás de adaptadores. El catálogo APU Colombia se reutiliza como evidencia de origen. La suma legada de contrato y PO no se adoptó como compromiso neto. La clasificación REUSE, EXTEND, KEEP BEHIND ADAPTER, REFACTOR y DEPRECATION CANDIDATE quedó documentada."
+    ],
+    [
+      "Modelo de autoridad Cost",
+      "El módulo cost_foundation es el único escritor de Cost canónico. El primer comando Cost explícito marca la adopción del Project; una lectura no la activa. A partir de ella, las escrituras económicas legadas inventariadas se rechazan y la carga económica P6 se conserva como evidencia candidata, sin materializar otro presupuesto. No se migran automáticamente los datos históricos. El adaptador de fuentes exige el binding O1A; no equipara los IDs histórico y canónico."
+    ],
+    [
+      "Mapeos entre Scope Plan paquetes y Cost",
+      "Los vínculos son M:N entre Scope, Plan, Work Package, WBS o Activity y CBS, Cost Code o Control Account. Conservan base de asignación y cantidad, unidad, porcentaje o importe con moneda, revisión efectiva, origen y snapshot. Las correcciones crean sucesores; las filas anteriores permanecen inmutables. Una Activity o WBS conserva además la versión aceptada y el identificador externo del cronograma."
+    ],
+    [
+      "CBS",
+      "CBS mantiene código, nombre, padre, ruta, nivel, orden, estado y revisión. Su árbol es independiente de WBS. Se impiden ciclos y padres inactivos. Los cambios de jerarquía que afectarían descendientes exigen una operación sucesora controlada. La pantalla presenta un árbol desplegable y los comandos guardan historia con control de versión."
+    ],
+    [
+      "Códigos de costo",
+      "El diccionario distingue categorías como mano de obra, material, equipo, subcontrato, ingeniería, compras, construcción, obras temporales, logística, indirectos, overheads y contingencia. ADMIN gobierna el catálogo permitido y USER crea códigos del Project autorizado. Un código no es un nodo CBS, una cuenta de control, un recurso ni un APU."
+    ],
+    [
+      "Cuentas de control",
+      "Cada cuenta representa una responsabilidad de control, con propietario y rol responsable del mismo tenant. Puede relacionarse con varias dimensiones de ejecución y costo mediante mapeos explícitos. No se crea una cuenta por cada nodo WBS o CBS, ni se modifica financiación para crearla. Los cambios y vínculos conservan su historial."
+    ],
+    [
+      "APU",
+      "El análisis de precios unitarios conserva componentes de mano de obra, materiales, equipos, subcontratos y otros costos directos. Cada componente congela una tarifa publicada, cantidad por unidad y unidad de recurso. Los factores indirectos configurados se aplican una sola vez sobre el costo directo. Scope por APU genera únicamente una línea candidata en Budget DRAFT, con cantidad aprobada y fecha de precios explícita."
+    ],
+    [
+      "Tarifas",
+      "Las tarifas son versionadas, efectivas por fecha, conscientes de unidad y moneda y trazables a su fuente. La publicación exige un actor independiente. Las revisiones publicadas no se sobrescriben; un sucesor conserva la referencia al antecedente. Rate, APU y FX usan intervalos con inicio incluido y final excluido. Un intervalo vacío o una fecha de precios en el límite final se rechaza."
+    ],
+    [
+      "Moneda y conversión",
+      "Los importes canónicos utilizan Decimal y Numeric de 24 dígitos y 8 decimales. Cada versión Budget declara una moneda; las líneas en otra se rechazan. No se declara aprobación de presupuestos multidivisa. En proyecciones Actual y Commitment, la conversión requiere FX publicado, dirección, vigencia, fuente y fecha explícitas. Sin una conversión gobernada, el resultado conserva importes por moneda y devuelve NO_AGGREGATION, sin fabricar un total."
+    ],
+    [
+      "Versiones de Budget",
+      "El ciclo distingue DRAFT, SUBMITTED, UNDER_REVIEW, APPROVED y REJECTED. Las líneas solo se editan mientras el padre está DRAFT y requieren If-Match del agregado. La aprobación independiente congela importes, fuentes y configuración. Los tipos Original, Current y Approved Change se gobiernan por catálogo. Las versiones aprobadas no pueden modificarse en ORM ni mediante SQL directo."
+    ],
+    [
+      "Original Approved y Current Budget",
+      "Original Budget es el primer presupuesto aprobado sin predecesor. Approved Budget identifica cada versión aprobada e inmutable. Current Budget es la única hoja aprobada de la cadena explícita de sucesores. Un borrador sucesor no se convierte en Current. La supersesión se calcula como estado efectivo sin editar el contenido o estado aprobado del antecedente; se rechazan ramas aprobadas competidoras."
+    ],
+    [
+      "Cost Baseline",
+      "La baseline candidata parte de un Budget aprobado y congela sus líneas de control, estructuras CBS, códigos y cuentas, mapeos de origen y phasing. La aprobación exige reconciliar la distribución completa de cada línea y un actor independiente del preparador. El snapshot y su hash quedan inmutables. Una revisión Current posterior no reescribe la baseline original; la reserva de gerencia queda fuera de la baseline de control."
+    ],
+    [
+      "Distribución temporal de costos",
+      "Se implementaron LINEAR, FRONT LOADED, BACK LOADED, MILESTONE BASED, ACTIVITY BASED, MANUAL y CURVE BASED. Las distribuciones conservan suma exacta, fechas y base utilizada. Manual y curvas deben reconciliar importes y períodos; incluso montos mínimos distribuidos entre muchos días conservan residuos no negativos. Los cambios crean filas sucesoras, sin alterar distribuciones ya aprobadas."
+    ],
+    [
+      "Integración con Schedule",
+      "El phasing basado en Activity consume las fechas de una versión aceptada e inmutable y registra su hash. Cost no calcula CPM, fechas forecast ni otro float. Una petición que intenta sustituir fechas provenientes del cronograma se rechaza. WBS y Activities se relacionan mediante referencias de versión, no mediante una jerarquía CBS forzada."
+    ],
+    [
+      "Límite con financiación estratégica",
+      "Budget operativo y escenario estratégico son dominios diferentes. Cost conserva referencias a capital autorizado, financiación o condiciones FID cuando correspondan al contexto; no modifica Funding, FIN, Business Case ni FID. La autorización y operabilidad del Project siguen la base O1A. No se crea otra identidad Project ni una nueva aprobación de inversión."
+    ],
+    [
+      "Límite de compromisos",
+      "Contract Administration conserva contrato, PO, subcontrato y obligación legal. Cost almacena referencias de conciliación y snapshots de fuente, no adjudica ni modifica esas obligaciones. El adaptador legado verifica binding, tenant, Project, tipo canónico, importe, estado y hash vigente. Las fuentes externas requieren documento y hash atestados por actores independientes; no se presenta esto como integración ERP autenticada."
+    ],
+    [
+      "Prevención de doble conteo contractual",
+      "INCLUDED y CALL OFF no vuelven a sumar una obligación representada por su padre; ADDITIVE requiere un origen económico incremental y REFERENCE ONLY aporta cero. Se detectan fuentes duplicadas, orígenes repetidos, monedas incompatibles y consumos que superan el padre. Un cambio de hash bloquea el total hasta una propuesta sucesora verificada. El historial anterior queda intacto y un sucesor todavía no verificado no lo sustituye. Net Commitment significa conciliación de duplicados, no saldo contractual pendiente de pago."
+    ],
+    [
+      "Costo real reconocido",
+      "Actual significa costo incurrido reconocido, no pago ni progreso ganado. La importación conserva sistema, referencia única, fechas de posting y reconocimiento, período, moneda, evidencia y dimensiones Cost. El estado inicial IMPORTED requiere reconocimiento independiente. Los ajustes son deltas separados, no sobrescrituras; no pueden preceder al original ni producir saldos históricos negativos. Se revalidan las dimensiones y políticas al reconocer."
+    ],
+    [
+      "Devengos",
+      "Accrual permanece DEFERRED_WITH_CONTRACT porque no existía una autoridad de devengo y reversión preparada para su reutilización. Se expone un contrato explícito de integración, sin botones ni endpoints que finjan un ciclo funcional. Las vistas actuales no agregan un devengo estimado al costo ya reconocido. La implementación completa de creación, reversión y sustitución por Actual queda para una autorización posterior."
+    ],
+    [
+      "Preparación ETC y EAC",
+      "Se definió una interfaz no persistida de ETC con método, moneda, fecha as of, referencia de aceptación y declaración de inclusión de compromisos. El cálculo EAC usa Actual reconocido hasta esa fecha más ETC aceptado. No vuelve a sumar Commitment. Esto prepara la integración futura sin introducir gobierno completo de Forecast, métodos estadísticos certificados o progreso ganado."
+    ],
+    [
+      "Contingencia y reserva de gerencia",
+      "Contingency está explícitamente dentro de la baseline de control, a nivel de Project o paquete. Management Reserve es de Project, queda fuera de esa baseline y requiere la autorización granular cost.reserve.manage. La delegación organizacional no se obtiene por tener permiso ordinario de aprobación Budget. Crear, editar o reclasificar una línea de reserva exige esa autorización. Los totales diferencian ambas categorías para evitar su doble inclusión."
+    ],
+    [
+      "Períodos comunes de control",
+      "Cost utiliza Project Controls Period de O1A. Actual requiere un período OPEN del mismo Project y una fecha de reconocimiento comprendida en él. CLOSED y PUBLISHED bloquean nuevas escrituras y no se reabren ni reescriben desde Cost. La vista de flujo muestra importes planificados, actuales y referencias de compromisos por período o fecha de origen, con su moneda. No constituye Tesorería ni un calendario de pagos."
+    ],
+    [
+      "Separación de ADMIN y USER",
+      "ADMIN gobierna plantillas y catálogos CBS, códigos, reglas de cuentas, categorías APU y recursos, monedas, política FX, tipos Budget y Baseline, métodos de phasing, reserva, contingencia, fuentes Actual, inclusión de compromisos, métodos ETC y separación de funciones. La configuración se edita en borrador y se publica por otro actor. USER opera registros vivos dentro del Project Workspace y de sus permisos efectivos."
+    ],
+    [
+      "Seguridad y separación de funciones",
+      "Se aplican permisos cost granulares, ámbito tenant y Project, precondiciones If Match, idempotencia ligada al actor, motivo e historia inmutable. Se separan editor y publicador de configuración y tarifas, preparador y aprobador Budget o Baseline, importador y reconocedor Actual y proponente y verificador contractual. Los GET no provisionan permisos ni escriben datos de negocio. El aprovisionamiento del catálogo es un comando administrativo explícito y auditado."
+    ],
+    [
+      "API",
+      "La aplicación montada expone 67 contratos Cost inventariados bajo api v1 cost. Incluyen colecciones, detalle, historia, mapeos y sucesores, cálculo APU y Budget, publicación, transición, baseline, phasing, FX, Actual, compromisos, fuentes legadas, overview y flujo. Los contratos de escritura rechazan campos ajenos a su autoridad. Los errores de ámbito, versión, aprobación o moneda no se transforman en éxitos."
+    ],
+    [
+      "Frontend",
+      "Cost Manager utiliza CompactModuleHeader y once pantallas: CBS, Cost Codes, Control Accounts, APU Rates, Budget, Cost Baseline, Cost Phasing, Commitments, Actuals, Accruals y Cost Overview. Se incorporó ADMIN Cost Profiles reutilizando el componente gobernado. La navegación existente conserva la ruta cost, respeta desactivaciones y requiere cost.read, sin editar App.tsx. Pasaron 76 pruebas de componentes, TypeScript, ESLint y formato."
+    ],
+    [
+      "Migración",
+      "La revisión aditiva 0073 tiene un único padre 0072 y añade catorce tablas Cost, sin reescribir migraciones históricas ni aplicar backfill. PostgreSQL protege ámbitos, fuentes, independencia, estados publicados e historia. Se verificó upgrade, downgrade y reupgrade en una base separada vacía de negocio; el downgrade rechaza tablas Cost pobladas. El arranque local excluye explícitamente esas catorce tablas de create_all para que solo Alembic pueda crearlas con sus protecciones. El bootstrap histórico parte de un esquema ORM previo y no se declara prueba de base vacía hasta head. El navegador utilizó un clon de esquema PostgreSQL aislado, sin copiar datos de negocio."
+    ],
+    [
+      "Validación PostgreSQL",
+      "La suite Cost cerró 156 casos: 82 de PostgreSQL HTTP, límites o migración y 74 casos de cálculo, políticas y aislamiento del arranque local. La regresión adicional aprobó 383 casos de Scope, Schedule, intercambio P6, AWP y 4D. Se ejecutaron suites focalizadas sin cobertura global del repositorio; sus resultados no sustituyen un pase remoto de todo el CI."
+    ],
+    [
+      "Validación Chromium",
+      "Chromium ejecutó un escenario real con 15 comprobaciones y 23 observaciones HTTP, sin respuestas de negocio simuladas ni errores de ejecución del navegador. Se probaron publicación ADMIN independiente, CBS, códigos, cuenta, mapeos, Rate y APU, Budget, aprobación independiente, phasing Schedule, Cost Baseline, Actual reconocido, conciliación y consulta de historia."
+    ],
+    [
+      "Preservación del Proyecto 14",
+      "La base habitual se observó solo en modo lectura. El Workspace canónico 14 conserva exactamente el hash 6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114. También se conservaron la identidad histórica observada y sus referencias. No se usó como fixture, ni se migró o reinicializó la base habitual. App.tsx, el visor BIM, los modelos y esquemas globales y las migraciones anteriores conservan sus hashes."
+    ],
+    [
+      "Observaciones de desempeño",
+      "Se midieron diez operaciones reales de lectura y cálculo, con tres muestras por operación. Los resultados pertenecen al entorno local compartido y al volumen acotado descrito a continuación. No representan SLA productivo, capacidad industrial ni validación de un portafolio completo. Las observaciones UI incluyen espera de respuesta y navegación y no se mezclan con los tiempos de API de la tabla."
+    ],
+    [
+      "Brechas y límites restantes",
+      "El devengo conserva su contrato diferido; Budget aprobado es monomoneda; las fuentes contractuales externas se atestan y no se sincronizan con ERP. Los sistemas legados siguen disponibles detrás de sus adaptadores y la adopción canónica no migra datos automáticamente. No se implementaron Progress completo, EVM, Forecast gobernado, adjudicación contractual, pagos, Tesorería o ledger contable. La base habitual no se migró y no se registraron firmas, commit, push ni ejecución remota de CI. No quedan defectos S1 o S2 abiertos en el alcance validado."
+    ],
+    [
+      "Decisión de liberación",
+      "La evidencia focalizada de PostgreSQL, regresión y Chromium permite validar técnicamente O1B C en aislamiento, con el devengo diferido admitido por el contrato del incremento. Estado exacto: WAVE_O1B_C_COST_FOUNDATION_RELEASE_VALIDATED. Resultado: READY_FOR_WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION. Esta decisión no autoriza despliegue productivo ni acredita aceptación de negocio."
+    ],
+    [
+      "Siguiente incremento recomendado",
+      "WAVE O1B-D — PROGRESS & BASELINE INTEGRATION. Se recomienda únicamente ese siguiente incremento. No se implementó automáticamente."
+    ]
+  ],
+  "opening": "Se validó técnicamente Cost Foundation en un entorno aislado. El módulo organiza el presupuesto operativo y sus fuentes de costo sin modificar el alcance, el cronograma ni la autoridad contractual. La entrega no incluye despliegue en la base habitual.",
+  "volume_summary": "Volumen de navegador observado: 1 nodos CBS, 3 mapeos, 1 versiones Budget, 1 líneas, 1 baseline, 1 APU y 1 tarifa. Fuentes reutilizadas: 2 Scope Items, 2 Plan Items y 1 paquete AWP. Los casos contractuales y monetarios adicionales se verificaron en la base PostgreSQL de pruebas separada.",
+  "postgres_count": 82,
+  "pure_count": 74,
+  "open_s1": 0,
+  "open_s2": 0,
+  "normal_database_migrated": false,
+  "business_signatures_recorded": false,
+  "commit_created": false,
+  "push_performed": false,
+  "github_workflow_executed": false
+}

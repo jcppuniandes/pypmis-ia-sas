@@ -1,5 +1,6 @@
 """Actual canonical PostgreSQL/HTTP AWP execution governance contracts."""
 
+import os
 from copy import deepcopy
 from uuid import uuid4
 
@@ -23,7 +24,10 @@ REASON = {"reason": "Isolated governed O1B-B1 execution validation"}
 
 @pytest.fixture(scope="module")
 def fixture():
-    assert engine.dialect.name == "postgresql" and engine.url.database == "o1bb1"
+    assert engine.dialect.name == "postgresql" and (
+        engine.url.database == "o1bb1"
+        or (engine.url.database == "o1bc" and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
+    )
     with TestClient(app) as client, SessionLocal() as db:
         f = create_schedule_fixture(db, client)
         ensure_awp_permissions(db, f.tenant_id, f.users["admin"].id)

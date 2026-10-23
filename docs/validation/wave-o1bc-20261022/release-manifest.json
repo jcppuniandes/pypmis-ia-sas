@@ -1,0 +1,81 @@
+{
+  "closed_at_utc": "2026-10-23T20:36:13.852511+00:00",
+  "git_head": "2ba53f14d61f09422c74b2c989fa7ad3c2129458",
+  "release_state": "WAVE_O1B_C_COST_FOUNDATION_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION",
+  "next_increment": "WAVE O1B-D \u2014 PROGRESS & BASELINE INTEGRATION",
+  "suite_summary": [
+    [
+      "Cost PostgreSQL y pol\u00edticas",
+      156,
+      "PASS"
+    ],
+    [
+      "Regresi\u00f3n Scope Schedule AWP 4D",
+      383,
+      "PASS"
+    ],
+    [
+      "Componentes frontend y navegaci\u00f3n",
+      76,
+      "PASS"
+    ],
+    [
+      "Comprobaciones Chromium reales",
+      15,
+      "PASS"
+    ]
+  ],
+  "postgres_count": 82,
+  "policy_bootstrap_count": 74,
+  "criteria_count": 54,
+  "open_s1": 0,
+  "open_s2": 0,
+  "normal_database_migrated": false,
+  "business_signatures_recorded": false,
+  "commit_created": false,
+  "push_performed": false,
+  "github_workflow_executed": false,
+  "source_manifest_sha256": "ac460debca7f240ce4cbddfc8f0e5f9c2f0fea959a4dde6204f85221dbbeeb15",
+  "evidence_hashes": {
+    "outputs/.qa/wave-o1bc-20261022/cost-junit.xml": "fce29fc492d0867e79b0989ba8dcb818f1bebc5d5c60e8cb18b029849b92afd5",
+    "outputs/.qa/wave-o1bc-20261022/regression-junit.xml": "dac3d602b3990f69831036ab8024dd3bda2a75c20b03054fd52d0d5412e934ae",
+    "outputs/.qa/wave-o1bc-20261022/frontend-components.json": "61c4135c4af0b92d0c540ce1bd291dd24728985b06e7f627160021357c600529",
+    "outputs/.qa/wave-o1bc-20261022/chromium/browser-uat.json": "de93aaac572dda813e29d5870040b366444483c0bf0beb55b0df38dc9182435c",
+    "outputs/.qa/wave-o1bc-20261022/chromium/visual-check.json": "f492011516e079dc0f0b29a8de141e15bae7991cc876ff0818aa0d02c280e543",
+    "outputs/.qa/wave-o1bc-20261022/native-artifact-verification.json": "aba923647f504f6233bfe4b7ed277f1a3a6586cb5b8f6133393d765ebfcbdc64",
+    "outputs/.qa/wave-o1bc-20261022/a11y.json": "a0c56b503b551b2bf86c5fe48028824194b5f748a3313354fd6f79b958af0e75",
+    "outputs/.qa/wave-o1bc-20261022/visual-review.json": "ec93507bce3e01929ce5332df90bd6402d79b418c0a0b4569381f5abcfd5a6d5",
+    "outputs/.qa/wave-o1bc-20261022/word-pages-v1/render-provenance.json": "0addfd01876c99a26247050c687b9bd1b535c6f4d9711bbeb71f34f4b63f2244",
+    "docs/validation/wave-o1bc-20261022/api-observations.json": "143f092bd48170b08925852ead3d76ea5fb00ef4bdb20676a5551584fecddf5c",
+    "docs/validation/wave-o1bc-20261022/preservation-before.json": "ac3c7f4ab1b12e99a5d1523338cc297ad7138ee851efe2dc1bc3217daf88a2ae",
+    "docs/validation/wave-o1bc-20261022/preservation-after.json": "6b0f4960a4428ba9f0e6a6b7c625b5e1afec1c2736afd51448f4b8dbe07e2d73"
+  },
+  "artifacts": [
+    {
+      "path": "outputs/wave-o1bc-20261022/P&Pmis_Wave_O1B_C_Cost_Foundation_Technical_Report.docx",
+      "bytes": 87392,
+      "sha256": "76f508eb7073c15a52c1f648abe1e89b284ace20858c634d443792f9e169da77"
+    },
+    {
+      "path": "outputs/wave-o1bc-20261022/P&Pmis_Wave_O1B_C_Cost_Foundation_Traceability.xlsx",
+      "bytes": 70227,
+      "sha256": "b4870e301f16b1fd3bfd5a93e77b908b8f5ca3e815175485ee9e8cd049fbec09"
+    }
+  ],
+  "visual_review": {
+    "result": "PASS",
+    "word_pages": 7,
+    "word_latest_render": "word-pages-v1",
+    "all_word_pages_reviewed": true,
+    "word_review": "Root inspected pages 1 through 7 at original resolution. Native page numbers 1 through 7 and issue date 23 October 2026 are correct. Repeated table header, margins, logo, paragraph flow and text are clean.",
+    "workbook_sheets": 18,
+    "workbook_preview_ranges": 52,
+    "all_workbook_ranges_reviewed": true,
+    "workbook_review": "Two independent visual reviewers inspected ranges 0 through 25 and 26 through 51 at original resolution. Root reviewed all five contact sheets and the four latest Requirements ranges after the explicit Accrual and currency wording correction. Other seventeen sheets retain unchanged content and formatting.",
+    "word_issues": 0,
+    "workbook_visual_issues": 0,
+    "review_scope": "Readability and native artifact fidelity, not business acceptance signatures",
+    "native_compared_cells": 3554
+  }
+}

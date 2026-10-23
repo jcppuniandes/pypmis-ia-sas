@@ -1,0 +1,640 @@
+{
+  "scope": "ISOLATED_LOCAL_OBSERVATION_NOT_PRODUCTION_SLA",
+  "project_workspace_id": 141188936,
+  "performance": [
+    [
+      "Árbol CBS",
+      3,
+      61.87299999874085,
+      66.32129999343306,
+      78.06989992968738
+    ],
+    [
+      "Mapeos Cost",
+      3,
+      73.48319992888719,
+      78.52009998168796,
+      87.6189999980852
+    ],
+    [
+      "Lista Budget",
+      3,
+      68.33140004891902,
+      71.04680000338703,
+      85.13379993382841
+    ],
+    [
+      "Cálculo Budget",
+      3,
+      70.8099000621587,
+      72.17729999683797,
+      93.35270000156015
+    ],
+    [
+      "Cálculo APU",
+      3,
+      66.78559991996735,
+      73.19740008097142,
+      78.2494000159204
+    ],
+    [
+      "Carga Cost Baseline",
+      3,
+      88.57890008948743,
+      88.92290003132075,
+      121.5749999973923
+    ],
+    [
+      "Consulta phasing",
+      3,
+      67.36749992705882,
+      92.36550005152822,
+      128.01879993639886
+    ],
+    [
+      "Conciliación compromisos",
+      3,
+      54.62839989922941,
+      56.56569998245686,
+      82.44690007995814
+    ],
+    [
+      "Lista Actuals",
+      3,
+      53.94030001480132,
+      61.83070002589375,
+      66.7580000590533
+    ],
+    [
+      "Cost overview",
+      3,
+      107.06180008128285,
+      109.30010001175106,
+      158.56849995907396
+    ]
+  ],
+  "data_volume": {
+    "cbs": 1,
+    "cost_codes": 1,
+    "control_accounts": 1,
+    "mappings": 3,
+    "rates": 1,
+    "apus": 1,
+    "budgets": 1,
+    "budget_lines": 1,
+    "baselines": 1,
+    "phasing": 1,
+    "scope_items": 2,
+    "plan_items": 2,
+    "packages": 1,
+    "schedule_versions": 1,
+    "periods": 1
+  },
+  "api": [
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/overview",
+      "overview_api_v1_cost_projects__workspace_id__overview_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cbs",
+      "cost_list_cbs_api_v1_cost_projects__workspace_id__cbs_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/cbs",
+      "create_cbs_api_v1_cost_projects__workspace_id__cbs_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cbs/{identity}",
+      "cost_detail_cbs_api_v1_cost_projects__workspace_id__cbs__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/cbs/{identity}",
+      "update_cbs_api_v1_cost_projects__workspace_id__cbs__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes",
+      "cost_list_cost_codes_api_v1_cost_projects__workspace_id__cost_codes_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes",
+      "create_code_api_v1_cost_projects__workspace_id__cost_codes_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes/{identity}",
+      "cost_detail_cost_codes_api_v1_cost_projects__workspace_id__cost_codes__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/cost-codes/{identity}",
+      "update_code_api_v1_cost_projects__workspace_id__cost_codes__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts",
+      "cost_list_control_accounts_api_v1_cost_projects__workspace_id__control_accounts_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts",
+      "create_account_api_v1_cost_projects__workspace_id__control_accounts_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts/{identity}",
+      "cost_detail_control_accounts_api_v1_cost_projects__workspace_id__control_accounts__identity__get",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/control-accounts/{identity}",
+      "update_account_api_v1_cost_projects__workspace_id__control_accounts__identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/mappings",
+      "cost_list_mappings_api_v1_cost_projects__workspace_id__mappings_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/mappings",
+      "create_mapping_api_v1_cost_projects__workspace_id__mappings_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/mappings/{identity}",
+      "cost_detail_mappings_api_v1_cost_projects__workspace_id__mappings__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/rates",
+      "cost_list_rates_api_v1_cost_projects__workspace_id__rates_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/rates",
+      "create_rate_api_v1_cost_projects__workspace_id__rates_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/rates/{identity}",
+      "cost_detail_rates_api_v1_cost_projects__workspace_id__rates__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus",
+      "cost_list_apus_api_v1_cost_projects__workspace_id__apus_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/apus",
+      "create_apu_api_v1_cost_projects__workspace_id__apus_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}",
+      "cost_detail_apus_api_v1_cost_projects__workspace_id__apus__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets",
+      "cost_list_budgets_api_v1_cost_projects__workspace_id__budgets_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets",
+      "create_budget_api_v1_cost_projects__workspace_id__budgets_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}",
+      "cost_detail_budgets_api_v1_cost_projects__workspace_id__budgets__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budget-lines",
+      "cost_list_budget_lines_api_v1_cost_projects__workspace_id__budget_lines_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budget-lines/{identity}",
+      "cost_detail_budget_lines_api_v1_cost_projects__workspace_id__budget_lines__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/baselines",
+      "cost_list_baselines_api_v1_cost_projects__workspace_id__baselines_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines",
+      "create_baseline_api_v1_cost_projects__workspace_id__baselines_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}",
+      "cost_detail_baselines_api_v1_cost_projects__workspace_id__baselines__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/phasing",
+      "cost_list_phasing_api_v1_cost_projects__workspace_id__phasing_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/phasing/{identity}",
+      "cost_detail_phasing_api_v1_cost_projects__workspace_id__phasing__identity__get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/history",
+      "cost_list_history_api_v1_cost_projects__workspace_id__history_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/history/{entity_type}/{identity}",
+      "history_api_v1_cost_projects__workspace_id__history__entity_type___identity__get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/mappings/{identity}/successor",
+      "successor_mapping_api_v1_cost_projects__workspace_id__mappings__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/rates/{identity}/publish",
+      "publish_rate_api_v1_cost_projects__workspace_id__rates__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}/publish",
+      "publish_apu_api_v1_cost_projects__workspace_id__apus__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/apus/{identity}/calculation",
+      "apu_calculation_api_v1_cost_projects__workspace_id__apus__identity__calculation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/lines",
+      "add_budget_line_api_v1_cost_projects__workspace_id__budgets__identity__lines_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/candidate-from-scope",
+      "candidate_from_scope_api_v1_cost_projects__workspace_id__budgets__identity__candidate_from_scope_post",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/lines/{line_identity}",
+      "update_budget_line_api_v1_cost_projects__workspace_id__budgets__identity__lines__line_identity__put",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/calculation",
+      "calculate_budget_api_v1_cost_projects__workspace_id__budgets__identity__calculation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/transition",
+      "transition_budget_api_v1_cost_projects__workspace_id__budgets__identity__transition_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/budgets/{identity}/successor",
+      "successor_budget_api_v1_cost_projects__workspace_id__budgets__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}/phase",
+      "phase_baseline_api_v1_cost_projects__workspace_id__baselines__identity__phase_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/baselines/{identity}/approve",
+      "approve_baseline_api_v1_cost_projects__workspace_id__baselines__identity__approve_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/admin/profiles",
+      "profiles_api_v1_cost_admin_profiles_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles",
+      "create_profile_api_v1_cost_admin_profiles_post",
+      "Cost"
+    ],
+    [
+      "PUT",
+      "/api/v1/cost/admin/profiles/{identity}",
+      "update_profile_api_v1_cost_admin_profiles__identity__put",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles/{identity}/publish",
+      "publish_profile_api_v1_cost_admin_profiles__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/admin/profiles/{identity}/successor",
+      "successor_profile_api_v1_cost_admin_profiles__identity__successor_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates",
+      "fx_rates_api_v1_cost_projects__workspace_id__fx_rates_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates",
+      "create_fx_api_v1_cost_projects__workspace_id__fx_rates_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/fx-rates/{identity}/publish",
+      "publish_fx_api_v1_cost_projects__workspace_id__fx_rates__identity__publish_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/actuals",
+      "actuals_api_v1_cost_projects__workspace_id__actuals_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals",
+      "import_actual_api_v1_cost_projects__workspace_id__actuals_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals/{identity}/adjustments",
+      "adjust_actual_api_v1_cost_projects__workspace_id__actuals__identity__adjustments_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/actuals/{identity}/decision",
+      "decide_actual_api_v1_cost_projects__workspace_id__actuals__identity__decision_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/commitments/sources",
+      "legacy_sources_api_v1_cost_projects__workspace_id__commitments_sources_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/commitments/reconciliation",
+      "commitments_api_v1_cost_projects__workspace_id__commitments_reconciliation_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/commitments",
+      "propose_commitment_api_v1_cost_projects__workspace_id__commitments_post",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/commitments/{identity}/verify",
+      "verify_commitment_api_v1_cost_projects__workspace_id__commitments__identity__verify_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/financial-overview",
+      "overview_api_v1_cost_projects__workspace_id__financial_overview_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/cash-flow",
+      "cash_flow_api_v1_cost_projects__workspace_id__cash_flow_get",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/accruals",
+      "accrual_contract_api_v1_cost_projects__workspace_id__accruals_get",
+      "Cost"
+    ],
+    [
+      "POST",
+      "/api/v1/cost/projects/{workspace_id}/eac-reference-preview",
+      "eac_preview_api_v1_cost_projects__workspace_id__eac_reference_preview_post",
+      "Cost"
+    ],
+    [
+      "GET",
+      "/api/v1/cost/projects/{workspace_id}/legacy-candidates",
+      "read_legacy_candidates_api_v1_cost_projects__workspace_id__legacy_candidates_get",
+      "Cost"
+    ]
+  ],
+  "financial_overview": {
+    "original_budget": {
+      "status": "AGGREGATED",
+      "amount": "300.00000000",
+      "currency": "USD",
+      "by_currency": {
+        "USD": "300.00000000"
+      }
+    },
+    "current_budget": {
+      "status": "AGGREGATED",
+      "amount": "300.00000000",
+      "currency": "USD",
+      "by_currency": {
+        "USD": "300.00000000"
+      }
+    },
+    "current_budget_id": 1,
+    "current_budget_selection": "UNAMBIGUOUS_APPROVED_SUCCESSOR",
+    "management_reserve": {
+      "inside_control_baseline": false,
+      "not_added_to_baseline": true,
+      "amounts": {
+        "status": "EMPTY",
+        "amount": "0.00000000",
+        "currency": null,
+        "by_currency": {}
+      }
+    },
+    "actual": {
+      "status": "AGGREGATED",
+      "amount": "25.00000000",
+      "currency": "USD",
+      "by_currency": {
+        "USD": "25.00000000"
+      }
+    },
+    "commitments": {
+      "status": "RECONCILED",
+      "items": [],
+      "issues": [],
+      "by_currency": {},
+      "net_commitment": null,
+      "currency": null,
+      "authority": "READ_MODEL_NOT_CONTRACTUAL_AUTHORITY",
+      "gross_not_outstanding": true
+    },
+    "etc": {
+      "status": "INTERFACE_READY_NOT_FORECAST_AUTHORITY",
+      "accepted_reference_required": true,
+      "methods": [
+        "BOTTOM_UP",
+        "QUANTITY_RATE",
+        "COMMITMENT_BASED",
+        "PRODUCTIVITY_BASED",
+        "STATISTICAL",
+        "MANUAL"
+      ]
+    },
+    "eac": {
+      "status": "AWAITING_ACCEPTED_ETC_REFERENCE",
+      "formula": "RECOGNIZED_ACTUAL + ACCEPTED_ETC",
+      "commitments_additional_term": false
+    },
+    "accrual": {
+      "status": "DEFERRED_WITH_CONTRACT",
+      "functional": false,
+      "authority": "ESTIMATED_INCURRED_NOT_RECOGNIZED",
+      "interface": {
+        "source_system": "required",
+        "source_reference": "required_unique",
+        "project_workspace_id": 141188936,
+        "period_id": "required",
+        "amount": "decimal",
+        "currency": "required",
+        "cost_mapping": "required",
+        "reversal_reference": "required_on_reversal",
+        "replacement_actual_id": "required_on_replacement"
+      },
+      "double_counting_policy": "ACCRUALS_EXCLUDED_FROM_RECOGNIZED_ACTUAL_AND_EAC; future replacement must atomically reverse accrual and recognize Actual",
+      "mutations_available": []
+    },
+    "earned_value": "DEFERRED_O1B_D",
+    "model_dimension": "4D_NOT_5D",
+    "treasury": false
+  },
+  "cash_flow": {
+    "items": [
+      {
+        "period_id": 1,
+        "period_code": "COST-OCT",
+        "period_revision": 1,
+        "period_status": "OPEN",
+        "planned": {
+          "status": "AGGREGATED",
+          "amount": "300.00000000",
+          "currency": "USD",
+          "by_currency": {
+            "USD": "300.00000000"
+          }
+        },
+        "current": {
+          "status": "AGGREGATED",
+          "amount": "300.00000000",
+          "currency": "USD",
+          "by_currency": {
+            "USD": "300.00000000"
+          }
+        },
+        "actual": {
+          "status": "AGGREGATED",
+          "amount": "25.00000000",
+          "currency": "USD",
+          "by_currency": {
+            "USD": "25.00000000"
+          }
+        },
+        "commitment": {
+          "status": "EMPTY",
+          "amount": "0.00000000",
+          "currency": null,
+          "by_currency": {},
+          "basis": "OBLIGATION_EFFECTIVE_DATE_NOT_PAYMENT",
+          "not_added_to_actual": true,
+          "reconciliation_status": "RECONCILED"
+        },
+        "forecast_reference": null
+      }
+    ],
+    "authority": "COST_PHASING_NOT_TREASURY",
+    "payment_forecast": false,
+    "commitment_reconciliation": {
+      "status": "RECONCILED",
+      "items": [],
+      "issues": [],
+      "by_currency": {},
+      "net_commitment": null,
+      "currency": null,
+      "authority": "READ_MODEL_NOT_CONTRACTUAL_AUTHORITY",
+      "gross_not_outstanding": true
+    }
+  },
+  "legacy_candidate_boundary": "CANDIDATE_ONLY_NOT_APPROVED_COST"
+}

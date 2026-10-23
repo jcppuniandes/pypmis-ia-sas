@@ -1,0 +1,67 @@
+name: Cost Foundation O1B-C
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'codex/**']
+
+concurrency:
+  group: cost-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cost-postgres-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Prepare disposable PostgreSQL schemas through actual additive migrations
+        run: |
+          mkdir -p outputs/.qa/wave-o1bc-20261022
+          chmod 0777 outputs/.qa/wave-o1bc-20261022
+          docker compose -f docker-compose.wave-o1bc.yml build api frontend
+          docker compose -f docker-compose.wave-o1bc.yml up -d db browser-db migration-db redis
+          docker compose -f docker-compose.wave-o1bc.yml run --rm --no-deps api python -m tests.provision_o1bc_schema
+          docker compose -f docker-compose.wave-o1bc.yml run --rm --no-deps -e DATABASE_URL=postgresql+psycopg://o1bc:disposable-o1bc@db:5432/o1bc api python -m tests.provision_o1bc_schema
+          docker compose -f docker-compose.wave-o1bc.yml run --rm --no-deps -e DATABASE_URL=postgresql+psycopg://o1bc:disposable-o1bc@migration-db:5432/o1bc_migration api python -m tests.provision_o1bc_schema --baseline-only
+      - name: Validate real Cost PostgreSQL boundaries and migration
+        run: |
+          docker compose -f docker-compose.wave-o1bc.yml run --rm --no-deps api python -m pytest -o addopts= -p no:cacheprovider -q \
+            tests/test_cost_foundation_policy.py tests/test_cost_foundation_release.py \
+            tests/test_cost_financial_policy.py tests/test_cost_financial_release.py \
+            tests/test_cost_legacy_boundary.py tests/test_cost_foundation_migration.py tests/test_cost_startup.py \
+            --junitxml=/artifacts/cost-junit.xml
+          docker compose -f docker-compose.wave-o1bc.yml run --rm --no-deps api python -m tests.provision_o1bc_browser
+      - name: Start actual API and production frontend
+        run: |
+          docker compose -f docker-compose.wave-o1bc.yml up -d api frontend
+          timeout 240 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:8856/api/v1/health/ready >/dev/null; do sleep 2; done'
+          timeout 300 bash -c 'until curl --max-time 10 -sf http://127.0.0.1:5516 >/dev/null; do sleep 2; done'
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Validate independent ADMIN and USER Cost lifecycle in Chromium
+        working-directory: frontend
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5516
+          E2E_API_URL: http://127.0.0.1:8856
+          E2E_O1BC_FIXTURE: ../outputs/.qa/wave-o1bc-20261022/browser-fixture.json
+        run: npx playwright test cost-foundation.spec.ts --project=chromium --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cost-foundation-validation
+          path: |
+            outputs/.qa/wave-o1bc-20261022/cost-junit.xml
+            outputs/.qa/wave-o1bc-20261022/chromium/
+            frontend/test-results/
+          if-no-files-found: warn
+      - name: Stop only disposable services and retain volumes
+        if: always()
+        run: docker compose -f docker-compose.wave-o1bc.yml down --remove-orphans

@@ -27,6 +27,7 @@ def fixture():
     assert engine.dialect.name == "postgresql" and (
         engine.url.database == "o1bb"
         or (engine.url.database == "o1bb1" and os.getenv("PYPMIS_O1BB1_FIXTURE") == "disposable-only")
+        or (engine.url.database == "o1bc" and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
     )
     with TestClient(app) as client, SessionLocal() as db:
         f = create_schedule_fixture(db, client)

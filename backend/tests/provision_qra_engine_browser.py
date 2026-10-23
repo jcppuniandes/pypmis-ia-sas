@@ -45,6 +45,7 @@ def main() -> None:
                 "app.modules.scope_foundation",
                 "app.modules.schedule_foundation",
                 "app.modules.awp",
+                "app.modules.cost_foundation",
             )
         )
     }

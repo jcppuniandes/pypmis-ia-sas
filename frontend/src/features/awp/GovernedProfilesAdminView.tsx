@@ -6,9 +6,14 @@ import { governedProfilesApi } from "./api";
 import { Field } from "./Fields";
 import "./awp.css";
 
-export default function GovernedProfilesAdminView({ token, kind }: { token: string; kind: "awp" | "4d" }) {
-  const title = kind === "awp" ? "AWP Profiles" : "4D State Profiles";
-  const root = kind === "awp" ? "/api/v1/awp/admin/profiles" : "/api/v1/schedule/4d/admin/profiles";
+export default function GovernedProfilesAdminView({ token, kind }: { token: string; kind: "awp" | "4d" | "cost" }) {
+  const title = kind === "awp" ? "AWP Profiles" : kind === "cost" ? "Cost Profiles" : "4D State Profiles";
+  const root =
+    kind === "awp"
+      ? "/api/v1/awp/admin/profiles"
+      : kind === "cost"
+        ? "/api/v1/cost/admin/profiles"
+        : "/api/v1/schedule/4d/admin/profiles";
   const [profiles, setProfiles] = useState<ScheduleProfile[]>([]);
   const [defaults, setDefaults] = useState<Record<string, unknown>>({});
   const [allowed, setAllowed] = useState<string[]>([]);
@@ -95,12 +100,14 @@ export default function GovernedProfilesAdminView({ token, kind }: { token: stri
     <section className="awpWorkspace" aria-label={`${title} ADMIN`} aria-busy={busy}>
       <CompactModuleHeader
         title={title}
-        eyebrow="ADMIN MODE · AWP / READINESS / 4D"
+        eyebrow={kind === "cost" ? "ADMIN MODE · COST CONFIGURATION" : "ADMIN MODE · AWP / READINESS / 4D"}
         tone="admin"
         description={
-          kind === "awp"
-            ? "CWA, tipos de paquete y dependencia, constraints, requisitos de readiness y release independiente."
-            : "Reglas semánticas de Scope Nature, presentación y completitud de mappings. Las fechas proceden de Schedule."
+          kind === "cost"
+            ? "CBS, Cost Codes, APU, tarifas, monedas/FX, Budget, Baseline, reservas, inclusión de compromisos y SoD. El perfil no aprueba datos vivos de Project."
+            : kind === "awp"
+              ? "CWA, tipos de paquete y dependencia, constraints, requisitos de readiness y release independiente."
+              : "Reglas semánticas de Scope Nature, presentación y completitud de mappings. Las fechas proceden de Schedule."
         }
         metrics={[{ label: "Profiles", value: profiles.length }]}
       />
