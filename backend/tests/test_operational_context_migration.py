@@ -43,6 +43,7 @@ def test_postgresql_additive_successor_roundtrip(monkeypatch):
                 "app.modules.schedule_foundation",
                 "app.modules.awp",
                 "app.modules.cost_foundation",
+                "app.modules.progress_foundation",
             )
         )
     }

@@ -1,0 +1,3594 @@
+{
+  "scope": "ISOLATED_LOCAL_OBSERVATION_NOT_PRODUCTION_SLA",
+  "project_workspace_id": 146215954,
+  "performance": [
+    [
+      "Progress overview",
+      3,
+      858.797,
+      1044.369,
+      1324.784
+    ],
+    [
+      "Quantity Progress",
+      3,
+      247.886,
+      248.933,
+      326.953
+    ],
+    [
+      "Physical Progress",
+      3,
+      228.701,
+      249.871,
+      344.989
+    ],
+    [
+      "Physical aggregation",
+      3,
+      230.706,
+      251.551,
+      335.195
+    ],
+    [
+      "Period review",
+      3,
+      508.79,
+      556.413,
+      742.18
+    ],
+    [
+      "Weighted aggregation",
+      3,
+      160.943,
+      211.787,
+      239.155
+    ],
+    [
+      "Baseline bundle validation",
+      3,
+      154.44,
+      170.368,
+      173.211
+    ],
+    [
+      "EVM computable read",
+      3,
+      200.319,
+      255.084,
+      455.556
+    ],
+    [
+      "4D Progress overlay",
+      3,
+      410.637,
+      466.648,
+      637.649
+    ]
+  ],
+  "data_volume": {
+    "scope_items": 4,
+    "plan_items": 4,
+    "packages": 4,
+    "schedule_versions": 2,
+    "scope_baselines": 1,
+    "schedule_baselines": 2,
+    "cost_baselines": 1,
+    "periods": 1,
+    "control_accounts": 1,
+    "rules": 2,
+    "measurements": 5
+  },
+  "api": [
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/overview",
+      "overview_api_v1_progress_projects__workspace_id__overview_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/measurements",
+      "measurements_api_v1_progress_projects__workspace_id__measurements_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/measurements",
+      "create_measurement_api_v1_progress_projects__workspace_id__measurements_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/measurements/{identity}",
+      "measurement_api_v1_progress_projects__workspace_id__measurements__identity__get",
+      "Progress"
+    ],
+    [
+      "PUT",
+      "/api/v1/progress/projects/{workspace_id}/measurements/{identity}",
+      "update_measurement_api_v1_progress_projects__workspace_id__measurements__identity__put",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/measurements/{identity}/successor",
+      "successor_measurement_api_v1_progress_projects__workspace_id__measurements__identity__successor_post",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/measurements/{identity}/transition",
+      "transition_measurement_api_v1_progress_projects__workspace_id__measurements__identity__transition_post",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/measurements/{identity}/certify",
+      "certify_measurement_api_v1_progress_projects__workspace_id__measurements__identity__certify_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/rules",
+      "rules_api_v1_progress_projects__workspace_id__rules_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/rules",
+      "create_rule_api_v1_progress_projects__workspace_id__rules_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/rules/{identity}",
+      "rule_api_v1_progress_projects__workspace_id__rules__identity__get",
+      "Progress"
+    ],
+    [
+      "PUT",
+      "/api/v1/progress/projects/{workspace_id}/rules/{identity}",
+      "update_rule_api_v1_progress_projects__workspace_id__rules__identity__put",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/rules/{identity}/successor",
+      "successor_rule_api_v1_progress_projects__workspace_id__rules__identity__successor_post",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/rules/{identity}/publish",
+      "publish_rule_api_v1_progress_projects__workspace_id__rules__identity__publish_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/quantity-progress",
+      "quantity_progress_api_v1_progress_projects__workspace_id__quantity_progress_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/physical-progress",
+      "physical_progress_api_v1_progress_projects__workspace_id__physical_progress_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/schedule-progress",
+      "schedule_progress_api_v1_progress_projects__workspace_id__schedule_progress_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/cost-progress",
+      "cost_progress_api_v1_progress_projects__workspace_id__cost_progress_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/aggregation",
+      "aggregation_api_v1_progress_projects__workspace_id__aggregation_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/history",
+      "history_api_v1_progress_projects__workspace_id__history_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/admin/profiles",
+      "profiles_api_v1_progress_admin_profiles_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/admin/profiles",
+      "create_profile_api_v1_progress_admin_profiles_post",
+      "Progress"
+    ],
+    [
+      "PUT",
+      "/api/v1/progress/admin/profiles/{identity}",
+      "update_profile_api_v1_progress_admin_profiles__identity__put",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/admin/profiles/{identity}/publish",
+      "publish_profile_api_v1_progress_admin_profiles__identity__publish_post",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/admin/profiles/{identity}/successor",
+      "successor_profile_api_v1_progress_admin_profiles__identity__successor_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles",
+      "bundles_api_v1_progress_projects__workspace_id__baseline_bundles_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles",
+      "create_bundle_api_v1_progress_projects__workspace_id__baseline_bundles_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles/{identity}",
+      "bundle_api_v1_progress_projects__workspace_id__baseline_bundles__identity__get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles/{identity}/validate",
+      "validate_bundle_api_v1_progress_projects__workspace_id__baseline_bundles__identity__validate_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles/{identity}/transition",
+      "transition_bundle_api_v1_progress_projects__workspace_id__baseline_bundles__identity__transition_post",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/baseline-bundles/{identity}/successor",
+      "successor_bundle_api_v1_progress_projects__workspace_id__baseline_bundles__identity__successor_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/periods/{identity}/review",
+      "period_review_api_v1_progress_projects__workspace_id__periods__identity__review_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/periods/{identity}/transition",
+      "transition_period_api_v1_progress_projects__workspace_id__periods__identity__transition_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/evm",
+      "evm_api_v1_progress_projects__workspace_id__evm_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/evm/snapshots",
+      "evm_snapshots_api_v1_progress_projects__workspace_id__evm_snapshots_get",
+      "Progress"
+    ],
+    [
+      "POST",
+      "/api/v1/progress/projects/{workspace_id}/evm/snapshots",
+      "capture_evm_api_v1_progress_projects__workspace_id__evm_snapshots_post",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/curves",
+      "curves_api_v1_progress_projects__workspace_id__curves_get",
+      "Progress"
+    ],
+    [
+      "GET",
+      "/api/v1/progress/projects/{workspace_id}/four-d-overlay",
+      "four_d_overlay_api_v1_progress_projects__workspace_id__four_d_overlay_get",
+      "Progress"
+    ]
+  ],
+  "evm_snapshots": [
+    {
+      "bundle_id": 1,
+      "period_id": 2,
+      "as_of": "2026-10-22",
+      "revision": 1,
+      "status": "COMPUTABLE",
+      "currency": "USD",
+      "pv": "68.57142856",
+      "ev": "60.00000000",
+      "ac": "25.00000000",
+      "cpi": "2.40000000",
+      "spi": "0.87500000",
+      "snapshot_json": {
+        "status": "COMPUTABLE",
+        "reason_codes": [],
+        "pv": "68.57142856",
+        "ev": "60.00000000",
+        "ac": "25.00000000",
+        "cpi": "2.40000000",
+        "spi": "0.87500000",
+        "source_values": {
+          "pv": "68.57142856",
+          "ev": "60.00000000",
+          "ac": "25.00000000"
+        },
+        "currency": "USD",
+        "bundle_id": 1,
+        "period_id": 2,
+        "as_of": "2026-10-22",
+        "earned_lines": [
+          {
+            "budget_line_id": 1,
+            "measurement_id": 2,
+            "progress_type": "PHYSICAL",
+            "progress_value": "50.00000000",
+            "budgeted_value": "120.00000000",
+            "earned_value": "60.00000000",
+            "currency": "USD",
+            "source_hashes": {
+              "measurement": "27a6204e3c260dbb77535d0b78567e8f8e94544b144c801fef80e430af89c391",
+              "source": "e1b505f6318d52faa805f9880bbff47f4e598cd4abae692e4fbac9383ce1c52a",
+              "cost_baseline": "a92ae4667cae0d7e8e9fc27026274c6ef18af2c1414ca79dd8b9d459a633e0b3"
+            }
+          }
+        ],
+        "basis": {
+          "project_workspace_id": 146215954,
+          "bundle_hash": "1582c3189bd32d9abf7a91c230fd972b80d076fd6594834f27b36550df605fc1",
+          "source_hashes": {
+            "scope_baseline": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5",
+            "schedule_baseline": "20cde692f1065479032916b49726e822588e47417319527e84998b5feefdebf1",
+            "cost_baseline": "a92ae4667cae0d7e8e9fc27026274c6ef18af2c1414ca79dd8b9d459a633e0b3",
+            "progress_profile": "bb46afa153b79382cdf974fcf70fd6bd29981b7ad792c09a32512ea47d42bcf9"
+          },
+          "period": {
+            "id": 2,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "revision": 1,
+            "period_start": "2026-10-19",
+            "period_end": "2026-10-25",
+            "cutoff_at": "2026-10-25 22:00:00+00:00",
+            "timezone": "America/Bogota",
+            "schedule_data_date": "2026-10-22",
+            "configuration_id": 7,
+            "source_configuration_hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e",
+            "reopen_parent_id": null
+          },
+          "schedule_data_date": "2026-10-22T08:00:00",
+          "actual_recognition_dates": [
+            "2026-10-22"
+          ],
+          "actual_period_ids": [
+            2
+          ],
+          "phasing_period_ids": [
+            2
+          ],
+          "progress_measurement_dates": [
+            "2026-10-21"
+          ],
+          "actual_source_hash": "ea47764ca0ed4231deffa06accc0fef340e6e7052a4c80630611d2c5b6f1f66f",
+          "earned_source_priority": [
+            "PHYSICAL",
+            "QUANTITY",
+            "MILESTONE"
+          ]
+        },
+        "authority": {
+          "pv": "APPROVED_COST_BASELINE_PHASING",
+          "ev": "APPROVED_PHYSICAL_QUANTITY_MILESTONE_ONLY",
+          "ac": "COST_RECOGNIZED_ACTUAL_NOT_PAYMENTS",
+          "forecast_performed": false
+        }
+      },
+      "content_hash": "b8cca7ea1d9d08876cab5cdd96252af3526e41c450511b7a81b5fe4489722ada",
+      "reason": "Controlled real Progress browser release validation",
+      "id": 1,
+      "tenant_id": 3,
+      "project_workspace_id": 146215954,
+      "version": 1,
+      "created_by": 19,
+      "created_at": "2026-11-06 01:17:04.193930"
+    }
+  ],
+  "baseline_bundles": [
+    {
+      "code": "P-UAT-BUNDLE-27624733",
+      "name": "Approved integrated project control references",
+      "revision": 1,
+      "supersedes_id": null,
+      "status": "APPROVED",
+      "scope_baseline_id": 2,
+      "schedule_baseline_id": 3,
+      "cost_baseline_id": 1,
+      "progress_profile_id": 22,
+      "configuration_hash": "bb46afa153b79382cdf974fcf70fd6bd29981b7ad792c09a32512ea47d42bcf9",
+      "effective_date": "2026-10-19",
+      "currency": "USD",
+      "source_snapshot_json": {
+        "scope_baseline": {
+          "id": 2,
+          "revision": 1,
+          "hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+        },
+        "schedule_baseline": {
+          "id": 3,
+          "revision": 2,
+          "hash": "20cde692f1065479032916b49726e822588e47417319527e84998b5feefdebf1",
+          "schedule_version_id": 4
+        },
+        "cost_baseline": {
+          "id": 1,
+          "revision": 1,
+          "hash": "a92ae4667cae0d7e8e9fc27026274c6ef18af2c1414ca79dd8b9d459a633e0b3"
+        },
+        "progress_profile": {
+          "id": 22,
+          "revision": 1,
+          "hash": "bb46afa153b79382cdf974fcf70fd6bd29981b7ad792c09a32512ea47d42bcf9",
+          "content": {
+            "scope": {
+              "type": "workspace",
+              "workspace_id": 146215954
+            },
+            "inherit_to_descendants": true,
+            "effective_from": null,
+            "effective_to": null,
+            "allowed_progress_types": [
+              "QUANTITY",
+              "PHYSICAL",
+              "SCHEDULE",
+              "COST",
+              "EARNED",
+              "WEIGHTED",
+              "MILESTONE"
+            ],
+            "allowed_methods": [
+              "QUANTITY_BASED",
+              "WEIGHTED_COMPONENTS",
+              "MILESTONE_BASED",
+              "STEP_METHOD",
+              "RULE_OF_CREDIT",
+              "MANUAL_EXPERT_ASSESSMENT"
+            ],
+            "default_method_by_scope_type": {
+              "DELIVERABLE": "MILESTONE_BASED",
+              "WORK": "QUANTITY_BASED",
+              "SERVICE": "MANUAL_EXPERT_ASSESSMENT"
+            },
+            "methods_by_scope_nature": {
+              "INSTALL": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS",
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ],
+              "REMOVE": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS",
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ],
+              "TEMPORARY": [
+                "QUANTITY_BASED",
+                "RULE_OF_CREDIT",
+                "STEP_METHOD",
+                "MILESTONE_BASED",
+                "WEIGHTED_COMPONENTS"
+              ],
+              "MAINTENANCE": [
+                "STEP_METHOD",
+                "MILESTONE_BASED",
+                "RULE_OF_CREDIT",
+                "WEIGHTED_COMPONENTS",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ]
+            },
+            "package_methods": {
+              "EWP": [
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT"
+              ],
+              "PWP": [
+                "MILESTONE_BASED",
+                "STEP_METHOD"
+              ],
+              "CWP": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS"
+              ],
+              "IWP": [
+                "QUANTITY_BASED",
+                "RULE_OF_CREDIT",
+                "STEP_METHOD"
+              ],
+              "TWP": [
+                "MILESTONE_BASED",
+                "STEP_METHOD"
+              ],
+              "LOGISTICS": [
+                "MILESTONE_BASED",
+                "STEP_METHOD"
+              ],
+              "TEMPORARY_WORKS": [
+                "QUANTITY_BASED",
+                "RULE_OF_CREDIT",
+                "STEP_METHOD",
+                "MILESTONE_BASED"
+              ],
+              "SUPPORT": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS",
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ]
+            },
+            "denominator_rules": {
+              "scope": "APPROVED_SCOPE_SNAPSHOT",
+              "plan": "PUBLISHED_PLAN_ALLOCATION",
+              "package": "APPROVED_EXPLICIT_ALLOCATION",
+              "approved_basis": "PUBLISHED_RULE"
+            },
+            "weighting_rules": {
+              "allowed_bases": [
+                "QUANTITY",
+                "BUDGET",
+                "LABOR_HOURS",
+                "ENGINEERING_HOURS",
+                "CONTRACT_VALUE",
+                "MANUAL_APPROVED_WEIGHT"
+              ],
+              "manual_weight_requires_approval": true,
+              "no_mixed_basis": true
+            },
+            "rule_of_credit_templates": {
+              "INSTALLATION": [
+                {
+                  "code": "SET",
+                  "name": "Set in position",
+                  "weight": "30"
+                },
+                {
+                  "code": "ALIGNED",
+                  "name": "Aligned",
+                  "weight": "20"
+                },
+                {
+                  "code": "CONNECTED",
+                  "name": "Connected",
+                  "weight": "30"
+                },
+                {
+                  "code": "TESTED",
+                  "name": "Tested",
+                  "weight": "20"
+                }
+              ]
+            },
+            "milestone_templates": {
+              "ZERO_HUNDRED": [
+                "100"
+              ],
+              "FIFTY_FIFTY": [
+                "50",
+                "50"
+              ],
+              "TEN_TWENTY_THIRTY_FORTY": [
+                "10",
+                "20",
+                "30",
+                "40"
+              ]
+            },
+            "evidence_requirements": {
+              "all_measurements": true,
+              "negative_correction": true
+            },
+            "approval_workflow": [
+              "DRAFT",
+              "SUBMITTED",
+              "UNDER_REVIEW",
+              "APPROVED",
+              "REJECTED",
+              "SUPERSEDED"
+            ],
+            "tolerance": "0.000001",
+            "rework_policy": {
+              "enabled": true,
+              "require_evidence": true
+            },
+            "negative_progress_policy": {
+              "allow_corrections": true,
+              "cumulative_min": "0",
+              "require_reason": true
+            },
+            "period_policy": {
+              "capture": [
+                "OPEN"
+              ],
+              "approval": [
+                "OPEN",
+                "REVIEW"
+              ],
+              "review_requires_frozen_set": true,
+              "closed_immutable": true
+            },
+            "baseline_policy": {
+              "control_account_coverage_percent": "0",
+              "require_current_scope": true,
+              "require_approved_sources": true,
+              "block_stale": true,
+              "effective_date_rule": "EXPLICIT_BUSINESS_EFFECTIVE_DATE"
+            },
+            "evm_policy": {
+              "allowed_earned_sources": [
+                "PHYSICAL",
+                "QUANTITY",
+                "MILESTONE"
+              ],
+              "earned_source_priority": [
+                "PHYSICAL",
+                "QUANTITY",
+                "MILESTONE"
+              ],
+              "require_approved_bundle": true,
+              "allow_overrun": false,
+              "allow_currency_conversion": false
+            },
+            "separation_of_duties": {
+              "author_cannot_publish": true,
+              "preparer_cannot_approve": true,
+              "recorder_cannot_certify": true
+            }
+          }
+        },
+        "effective_date": "2026-10-19",
+        "currency": "USD",
+        "schedule_mappings": [
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5001",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              5
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                5
+              ],
+              "plan_items": [
+                {
+                  "id": 5,
+                  "version": 2,
+                  "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad"
+                }
+              ],
+              "scope_natures": {
+                "5": "INSTALL"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 31,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:14.449199",
+            "resolved_scope_item_ids": [
+              5
+            ]
+          },
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5002",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              6
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                6
+              ],
+              "plan_items": [
+                {
+                  "id": 6,
+                  "version": 2,
+                  "content_hash": "71263c1b5b7b75ca1073fbbedc73946949f37f1e566955da0fc3cd4527fd97f2"
+                }
+              ],
+              "scope_natures": {
+                "6": "REMOVE"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 32,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:14.814956",
+            "resolved_scope_item_ids": [
+              6
+            ]
+          },
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5003",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              7
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                7
+              ],
+              "plan_items": [
+                {
+                  "id": 7,
+                  "version": 2,
+                  "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                }
+              ],
+              "scope_natures": {
+                "7": "TEMPORARY"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 33,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:15.392473",
+            "resolved_scope_item_ids": [
+              7
+            ]
+          },
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5004",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              7
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                7
+              ],
+              "plan_items": [
+                {
+                  "id": 7,
+                  "version": 2,
+                  "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                }
+              ],
+              "scope_natures": {
+                "7": "TEMPORARY"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 34,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:15.813743",
+            "resolved_scope_item_ids": [
+              7
+            ]
+          },
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5005",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              7
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                7
+              ],
+              "plan_items": [
+                {
+                  "id": 7,
+                  "version": 2,
+                  "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                }
+              ],
+              "scope_natures": {
+                "7": "TEMPORARY"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 35,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:16.248799",
+            "resolved_scope_item_ids": [
+              7
+            ]
+          },
+          {
+            "schedule_version_id": 4,
+            "target_kind": "ACTIVITY",
+            "target_external_id": "5006",
+            "revision": 2,
+            "status": "VALID",
+            "plan_item_ids": [
+              8
+            ],
+            "scope_item_ids": [],
+            "lineage_json": {
+              "scope_baseline_id": 2,
+              "resolved_scope_item_ids": [
+                8
+              ],
+              "plan_items": [
+                {
+                  "id": 8,
+                  "version": 2,
+                  "content_hash": "9564841c1742e99d5067eff455c574714d609d48bd93cce6248c040eb03fbe4e"
+                }
+              ],
+              "scope_natures": {
+                "8": "MAINTENANCE"
+              },
+              "derived_models": [
+                {
+                  "id": 2,
+                  "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                }
+              ],
+              "future_4d": "NOT_ACTIVE"
+            },
+            "reason": "Isolated governed O1B-A release validation",
+            "id": 36,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:16.688955",
+            "resolved_scope_item_ids": [
+              8
+            ]
+          }
+        ],
+        "cost_mappings": [
+          {
+            "source_kind": "SCOPE",
+            "source_id": 5,
+            "schedule_version_id": null,
+            "source_external_id": "",
+            "cbs_id": 1,
+            "cost_code_id": 1,
+            "control_account_id": 1,
+            "allocation_basis": "QUANTITY",
+            "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+            "quantity": "1.20000000",
+            "unit": "m3",
+            "percentage": null,
+            "amount": null,
+            "currency": null,
+            "effective_revision": "2",
+            "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+            "source_snapshot": {
+              "scope_item_key": "4ebe436f42a64db49dafaa28c74b7ead",
+              "scope_code": "B1-INSTALL",
+              "name": "B1 INSTALL real IFC",
+              "description": "",
+              "parent_scope_item_id": null,
+              "predecessor_id": null,
+              "revision": 1,
+              "scope_type": "DELIVERABLE",
+              "scope_nature": "INSTALL",
+              "discipline": "",
+              "area": "North",
+              "zone": "A",
+              "system": "Structural",
+              "location": "",
+              "quantity": "1.20000000",
+              "source_quantity": "1.20000000",
+              "approved_quantity": null,
+              "current_quantity": "1.20000000",
+              "unit": "m3",
+              "measurement_method": "EXPLICIT_NO_CONVERSION",
+              "source_type": "IFC",
+              "source_reference": "IFC_OBJECTS:8",
+              "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+              "lineage_json": {
+                "source_type": "IFC",
+                "source_reference": "IFC_OBJECTS:8",
+                "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+                "source_quantity": "1.2000000000000002",
+                "unit": "m3",
+                "conversion_applied": false,
+                "model_objects": [
+                  {
+                    "object_id": 8,
+                    "model_version_id": 2,
+                    "guid": "000000000000000000001a",
+                    "express_id": 18,
+                    "source_hash": "c90c1f21265c5443269b9761864cc27436a78d81e70fc96507fcd317ac8106d6",
+                    "source_quantities": [
+                      {
+                        "name": "NetVolume",
+                        "set_name": "Qto_WallBaseQuantities",
+                        "value": 1.2000000000000002,
+                        "unit": "m3",
+                        "unit_basis": {
+                          "code": "m3",
+                          "known": true,
+                          "basis": "PROJECT_UNIT",
+                          "ifc_unit_id": 4,
+                          "ifc_unit_type": "IfcSIUnit",
+                          "name": "CUBIC_METRE",
+                          "prefix": "",
+                          "conversion_applied": false,
+                          "conversion_basis": null
+                        },
+                        "source": "IFCELEMENTQUANTITY",
+                        "express_id": 47
+                      }
+                    ]
+                  }
+                ],
+                "measurement_basis": {
+                  "quantity_name": "NetVolume",
+                  "unit": "m3"
+                }
+              },
+              "status": "DRAFT",
+              "baseline_reference": null,
+              "effective_from": "2026-11-05 13:36:06.888555",
+              "effective_to": null,
+              "updated_by": 17,
+              "updated_at": "2026-11-05 13:36:06.888708",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:06.888724",
+              "model_object_ids": [
+                8
+              ],
+              "excel_import_id": null,
+              "excel_row_number": null,
+              "approved_change_id": null,
+              "source_quantity_name": "NetVolume",
+              "cost_source_lineage": {
+                "scope_baseline_id": 2,
+                "scope_baseline_hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+              }
+            },
+            "status": "ACTIVE",
+            "supersedes_id": null,
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 1,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 22,
+            "created_at": "2026-11-05 13:36:27.037582"
+          },
+          {
+            "source_kind": "PLAN",
+            "source_id": 5,
+            "schedule_version_id": null,
+            "source_external_id": "",
+            "cbs_id": 1,
+            "cost_code_id": 1,
+            "control_account_id": 1,
+            "allocation_basis": "QUANTITY",
+            "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+            "quantity": "1.20000000",
+            "unit": "m3",
+            "percentage": null,
+            "amount": null,
+            "currency": null,
+            "effective_revision": "2",
+            "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+            "source_snapshot": {
+              "code": "PLAN-INSTALL",
+              "name": "Published INSTALL Plan",
+              "parent_plan_item_id": null,
+              "strategy_id": null,
+              "status": "PUBLISHED",
+              "operation": "CREATE",
+              "reason": "Isolated governed O1B-A release validation",
+              "supersedes_ids": [],
+              "future_mappings": {
+                "WBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "ACTIVITY": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "AWP": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "PROGRESS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CONTRACT_PACKAGE": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                }
+              },
+              "rule_json": {},
+              "published_by": 18,
+              "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 2,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:09.031824"
+            },
+            "status": "ACTIVE",
+            "supersedes_id": null,
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 2,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 22,
+            "created_at": "2026-11-05 13:36:27.379875"
+          },
+          {
+            "source_kind": "PACKAGE",
+            "source_id": 2,
+            "schedule_version_id": null,
+            "source_external_id": "",
+            "cbs_id": 1,
+            "cost_code_id": 1,
+            "control_account_id": 1,
+            "allocation_basis": "QUANTITY",
+            "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+            "quantity": "1.20000000",
+            "unit": "m3",
+            "percentage": null,
+            "amount": null,
+            "currency": null,
+            "effective_revision": "2",
+            "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+            "source_snapshot": {
+              "package_code": "PROGRESS-IWP",
+              "package_type": "IWP",
+              "name": "Existing installation package",
+              "description": "",
+              "cwa_id": null,
+              "status": "DRAFT",
+              "owner_user_id": null,
+              "responsible_role": "Workface Planner",
+              "readiness_state": "NOT_ASSESSED",
+              "release_state": "NOT_RELEASED",
+              "released_by": null,
+              "released_at": null,
+              "revision": 4,
+              "updated_by": 17,
+              "updated_at": "2026-11-05 13:36:22.556739",
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 4,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:19.634227"
+            },
+            "status": "ACTIVE",
+            "supersedes_id": null,
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 3,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 22,
+            "created_at": "2026-11-05 13:36:27.751973"
+          },
+          {
+            "source_kind": "ACTIVITY",
+            "source_id": null,
+            "schedule_version_id": 4,
+            "source_external_id": "5001",
+            "cbs_id": 1,
+            "cost_code_id": 1,
+            "control_account_id": 1,
+            "allocation_basis": "QUANTITY",
+            "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+            "quantity": "1.20000000",
+            "unit": "m3",
+            "percentage": null,
+            "amount": null,
+            "currency": null,
+            "effective_revision": "2",
+            "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+            "source_snapshot": {
+              "schedule_version_id": 4,
+              "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+              "source": {
+                "external_id": "5001",
+                "code": "INSTALL",
+                "name": "B1 INSTALL",
+                "activity_type": "Task Dependent",
+                "status": "NOT_STARTED",
+                "wbs_external_id": "101",
+                "calendar_external_id": "10",
+                "original_duration": 20.0,
+                "remaining_duration": 20.0,
+                "duration_unit": "HOUR",
+                "total_float": -2.0,
+                "free_float": 0.0,
+                "float_unit": "HOUR",
+                "critical": true,
+                "percent_complete_type": "Physical",
+                "percent_complete": 0.0,
+                "cpm_source": "P6_IMPORTED",
+                "progress_authority": false,
+                "source_fields": {
+                  "ProjectObjectId": "1",
+                  "ObjectId": "5001",
+                  "Id": "INSTALL",
+                  "Name": "B1 INSTALL",
+                  "Type": "Task Dependent",
+                  "Status": "NOT_STARTED",
+                  "WBSObjectId": "101",
+                  "CalendarObjectId": "10",
+                  "PlannedDuration": "20.0",
+                  "RemainingDuration": "20.0",
+                  "TotalFloat": "-2",
+                  "FreeFloat": "0",
+                  "IsCritical": "true",
+                  "PercentCompleteType": "Physical",
+                  "PhysicalPercentComplete": "0",
+                  "PlannedStartDate": "2026-10-23T07:00:00",
+                  "PlannedFinishDate": "2026-10-24T17:00:00"
+                },
+                "actual_start": null,
+                "actual_finish": null,
+                "planned_start": "2026-10-23T07:00:00",
+                "planned_finish": "2026-10-24T17:00:00",
+                "start": null,
+                "finish": null,
+                "early_start": null,
+                "early_finish": null,
+                "late_start": null,
+                "late_finish": null
+              }
+            },
+            "status": "ACTIVE",
+            "supersedes_id": null,
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 4,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 22,
+            "created_at": "2026-11-05 13:36:28.239282"
+          }
+        ],
+        "package_mappings": [
+          {
+            "work_package_id": 2,
+            "target_kind": "SCOPE",
+            "target_id": 5,
+            "schedule_version_id": null,
+            "activity_external_id": null,
+            "phase": "EXECUTE",
+            "status": "ACTIVE",
+            "revision": 1,
+            "lineage_json": {
+              "resolved_scope_item_ids": [
+                5
+              ],
+              "target_version": 2
+            },
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 1,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:22.220610"
+          },
+          {
+            "work_package_id": 2,
+            "target_kind": "PLAN",
+            "target_id": 5,
+            "schedule_version_id": null,
+            "activity_external_id": null,
+            "phase": "EXECUTE",
+            "status": "ACTIVE",
+            "revision": 1,
+            "lineage_json": {
+              "resolved_scope_item_ids": [
+                5
+              ],
+              "target_version": 2
+            },
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 2,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:22.418291"
+          },
+          {
+            "work_package_id": 2,
+            "target_kind": "ACTIVITY",
+            "target_id": null,
+            "schedule_version_id": 4,
+            "activity_external_id": "5001",
+            "phase": "EXECUTE",
+            "status": "ACTIVE",
+            "revision": 1,
+            "lineage_json": {
+              "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+              "activity_external_id": "5001"
+            },
+            "reason": "Isolated governed O1B-D Progress validation",
+            "id": 3,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:22.557125"
+          }
+        ],
+        "plans": [
+          {
+            "code": "PLAN-INSTALL",
+            "name": "Published INSTALL Plan",
+            "parent_plan_item_id": null,
+            "strategy_id": null,
+            "status": "PUBLISHED",
+            "operation": "CREATE",
+            "reason": "Isolated governed O1B-A release validation",
+            "supersedes_ids": [],
+            "future_mappings": {
+              "WBS": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              },
+              "ACTIVITY": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              },
+              "CBS": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              },
+              "AWP": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              },
+              "PROGRESS": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              },
+              "CONTRACT_PACKAGE": {
+                "status": "NOT_ACTIVE",
+                "references": []
+              }
+            },
+            "rule_json": {},
+            "published_by": 18,
+            "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+            "id": 5,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 2,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:09.031824"
+          }
+        ],
+        "plan_allocations": [
+          {
+            "plan_item_id": 5,
+            "scope_item_id": 5,
+            "quantity": "1.20000000",
+            "unit": "m3",
+            "id": 5,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 17,
+            "created_at": "2026-11-05 13:36:09.052497"
+          }
+        ],
+        "packages": [
+          {
+            "id": 2,
+            "package_code": "PROGRESS-IWP",
+            "package_type": "IWP"
+          }
+        ],
+        "control_accounts": [
+          {
+            "code": "CA-2e44a9cd",
+            "name": "Integrated responsibility",
+            "owner_user_id": 19,
+            "responsible_role": "Project Controls",
+            "status": "ACTIVE",
+            "revision": 1,
+            "updated_by": 22,
+            "updated_at": "2026-11-05 13:36:26.737176",
+            "id": 1,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "version": 1,
+            "created_by": 22,
+            "created_at": "2026-11-05 13:36:26.737195"
+          }
+        ],
+        "period_policy": {
+          "capture": [
+            "OPEN"
+          ],
+          "approval": [
+            "OPEN",
+            "REVIEW"
+          ],
+          "review_requires_frozen_set": true,
+          "closed_immutable": true
+        },
+        "operational_period_policy": {
+          "configuration_id": 7,
+          "revision": 1,
+          "hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e"
+        },
+        "phasing_periods": [
+          {
+            "id": 2,
+            "tenant_id": 3,
+            "project_workspace_id": 146215954,
+            "revision": 1,
+            "period_start": "2026-10-19",
+            "period_end": "2026-10-25",
+            "cutoff_at": "2026-10-25 22:00:00+00:00",
+            "timezone": "America/Bogota",
+            "schedule_data_date": "2026-10-22",
+            "configuration_id": 7,
+            "source_configuration_hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e",
+            "reopen_parent_id": null
+          }
+        ],
+        "control_account_coverage": {
+          "required_percent": "0E-8",
+          "budget_amount": "120.00000000",
+          "covered_amount": "120.00000000"
+        }
+      },
+      "content_hash": "1582c3189bd32d9abf7a91c230fd972b80d076fd6594834f27b36550df605fc1",
+      "reviewed_by": 22,
+      "approved_by": 19,
+      "approved_at": "2026-11-06 01:16:59.140242",
+      "updated_by": 22,
+      "reason": "Controlled real Progress browser release validation",
+      "id": 1,
+      "tenant_id": 3,
+      "project_workspace_id": 146215954,
+      "version": 3,
+      "created_by": 22,
+      "created_at": "2026-11-06 01:16:51.166420",
+      "validation": {
+        "bundle_id": 1,
+        "status": "BLOCK",
+        "effective_state": "REQUIRES_REVIEW",
+        "reason_codes": [
+          "BUNDLE_SOURCE_DRIFT"
+        ],
+        "frozen_hash": "1582c3189bd32d9abf7a91c230fd972b80d076fd6594834f27b36550df605fc1",
+        "current_hash": "47cfda9f3a6b64712e585aeac4b23ca3303f735e887755f18539ddab91a3528d",
+        "frozen_sources": {
+          "scope_baseline": {
+            "id": 2,
+            "revision": 1,
+            "hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+          },
+          "schedule_baseline": {
+            "id": 3,
+            "revision": 2,
+            "hash": "20cde692f1065479032916b49726e822588e47417319527e84998b5feefdebf1",
+            "schedule_version_id": 4
+          },
+          "cost_baseline": {
+            "id": 1,
+            "revision": 1,
+            "hash": "a92ae4667cae0d7e8e9fc27026274c6ef18af2c1414ca79dd8b9d459a633e0b3"
+          },
+          "progress_profile": {
+            "id": 22,
+            "revision": 1,
+            "hash": "bb46afa153b79382cdf974fcf70fd6bd29981b7ad792c09a32512ea47d42bcf9",
+            "content": {
+              "scope": {
+                "type": "workspace",
+                "workspace_id": 146215954
+              },
+              "inherit_to_descendants": true,
+              "effective_from": null,
+              "effective_to": null,
+              "allowed_progress_types": [
+                "QUANTITY",
+                "PHYSICAL",
+                "SCHEDULE",
+                "COST",
+                "EARNED",
+                "WEIGHTED",
+                "MILESTONE"
+              ],
+              "allowed_methods": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS",
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ],
+              "default_method_by_scope_type": {
+                "DELIVERABLE": "MILESTONE_BASED",
+                "WORK": "QUANTITY_BASED",
+                "SERVICE": "MANUAL_EXPERT_ASSESSMENT"
+              },
+              "methods_by_scope_nature": {
+                "INSTALL": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ],
+                "REMOVE": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ],
+                "TEMPORARY": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD",
+                  "MILESTONE_BASED",
+                  "WEIGHTED_COMPONENTS"
+                ],
+                "MAINTENANCE": [
+                  "STEP_METHOD",
+                  "MILESTONE_BASED",
+                  "RULE_OF_CREDIT",
+                  "WEIGHTED_COMPONENTS",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ]
+              },
+              "package_methods": {
+                "EWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT"
+                ],
+                "PWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "CWP": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS"
+                ],
+                "IWP": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD"
+                ],
+                "TWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "LOGISTICS": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "TEMPORARY_WORKS": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD",
+                  "MILESTONE_BASED"
+                ],
+                "SUPPORT": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ]
+              },
+              "denominator_rules": {
+                "scope": "APPROVED_SCOPE_SNAPSHOT",
+                "plan": "PUBLISHED_PLAN_ALLOCATION",
+                "package": "APPROVED_EXPLICIT_ALLOCATION",
+                "approved_basis": "PUBLISHED_RULE"
+              },
+              "weighting_rules": {
+                "allowed_bases": [
+                  "QUANTITY",
+                  "BUDGET",
+                  "LABOR_HOURS",
+                  "ENGINEERING_HOURS",
+                  "CONTRACT_VALUE",
+                  "MANUAL_APPROVED_WEIGHT"
+                ],
+                "manual_weight_requires_approval": true,
+                "no_mixed_basis": true
+              },
+              "rule_of_credit_templates": {
+                "INSTALLATION": [
+                  {
+                    "code": "SET",
+                    "name": "Set in position",
+                    "weight": "30"
+                  },
+                  {
+                    "code": "ALIGNED",
+                    "name": "Aligned",
+                    "weight": "20"
+                  },
+                  {
+                    "code": "CONNECTED",
+                    "name": "Connected",
+                    "weight": "30"
+                  },
+                  {
+                    "code": "TESTED",
+                    "name": "Tested",
+                    "weight": "20"
+                  }
+                ]
+              },
+              "milestone_templates": {
+                "ZERO_HUNDRED": [
+                  "100"
+                ],
+                "FIFTY_FIFTY": [
+                  "50",
+                  "50"
+                ],
+                "TEN_TWENTY_THIRTY_FORTY": [
+                  "10",
+                  "20",
+                  "30",
+                  "40"
+                ]
+              },
+              "evidence_requirements": {
+                "all_measurements": true,
+                "negative_correction": true
+              },
+              "approval_workflow": [
+                "DRAFT",
+                "SUBMITTED",
+                "UNDER_REVIEW",
+                "APPROVED",
+                "REJECTED",
+                "SUPERSEDED"
+              ],
+              "tolerance": "0.000001",
+              "rework_policy": {
+                "enabled": true,
+                "require_evidence": true
+              },
+              "negative_progress_policy": {
+                "allow_corrections": true,
+                "cumulative_min": "0",
+                "require_reason": true
+              },
+              "period_policy": {
+                "capture": [
+                  "OPEN"
+                ],
+                "approval": [
+                  "OPEN",
+                  "REVIEW"
+                ],
+                "review_requires_frozen_set": true,
+                "closed_immutable": true
+              },
+              "baseline_policy": {
+                "control_account_coverage_percent": "0",
+                "require_current_scope": true,
+                "require_approved_sources": true,
+                "block_stale": true,
+                "effective_date_rule": "EXPLICIT_BUSINESS_EFFECTIVE_DATE"
+              },
+              "evm_policy": {
+                "allowed_earned_sources": [
+                  "PHYSICAL",
+                  "QUANTITY",
+                  "MILESTONE"
+                ],
+                "earned_source_priority": [
+                  "PHYSICAL",
+                  "QUANTITY",
+                  "MILESTONE"
+                ],
+                "require_approved_bundle": true,
+                "allow_overrun": false,
+                "allow_currency_conversion": false
+              },
+              "separation_of_duties": {
+                "author_cannot_publish": true,
+                "preparer_cannot_approve": true,
+                "recorder_cannot_certify": true
+              }
+            }
+          },
+          "effective_date": "2026-10-19",
+          "currency": "USD",
+          "schedule_mappings": [
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5001",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                5
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "plan_items": [
+                  {
+                    "id": 5,
+                    "version": 2,
+                    "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad"
+                  }
+                ],
+                "scope_natures": {
+                  "5": "INSTALL"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 31,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:14.449199",
+              "resolved_scope_item_ids": [
+                5
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5002",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                6
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  6
+                ],
+                "plan_items": [
+                  {
+                    "id": 6,
+                    "version": 2,
+                    "content_hash": "71263c1b5b7b75ca1073fbbedc73946949f37f1e566955da0fc3cd4527fd97f2"
+                  }
+                ],
+                "scope_natures": {
+                  "6": "REMOVE"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 32,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:14.814956",
+              "resolved_scope_item_ids": [
+                6
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5003",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 33,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:15.392473",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5004",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 34,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:15.813743",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5005",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 35,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:16.248799",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5006",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                8
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  8
+                ],
+                "plan_items": [
+                  {
+                    "id": 8,
+                    "version": 2,
+                    "content_hash": "9564841c1742e99d5067eff455c574714d609d48bd93cce6248c040eb03fbe4e"
+                  }
+                ],
+                "scope_natures": {
+                  "8": "MAINTENANCE"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 36,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:16.688955",
+              "resolved_scope_item_ids": [
+                8
+              ]
+            }
+          ],
+          "cost_mappings": [
+            {
+              "source_kind": "SCOPE",
+              "source_id": 5,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "scope_item_key": "4ebe436f42a64db49dafaa28c74b7ead",
+                "scope_code": "B1-INSTALL",
+                "name": "B1 INSTALL real IFC",
+                "description": "",
+                "parent_scope_item_id": null,
+                "predecessor_id": null,
+                "revision": 1,
+                "scope_type": "DELIVERABLE",
+                "scope_nature": "INSTALL",
+                "discipline": "",
+                "area": "North",
+                "zone": "A",
+                "system": "Structural",
+                "location": "",
+                "quantity": "1.20000000",
+                "source_quantity": "1.20000000",
+                "approved_quantity": null,
+                "current_quantity": "1.20000000",
+                "unit": "m3",
+                "measurement_method": "EXPLICIT_NO_CONVERSION",
+                "source_type": "IFC",
+                "source_reference": "IFC_OBJECTS:8",
+                "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+                "lineage_json": {
+                  "source_type": "IFC",
+                  "source_reference": "IFC_OBJECTS:8",
+                  "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+                  "source_quantity": "1.2000000000000002",
+                  "unit": "m3",
+                  "conversion_applied": false,
+                  "model_objects": [
+                    {
+                      "object_id": 8,
+                      "model_version_id": 2,
+                      "guid": "000000000000000000001a",
+                      "express_id": 18,
+                      "source_hash": "c90c1f21265c5443269b9761864cc27436a78d81e70fc96507fcd317ac8106d6",
+                      "source_quantities": [
+                        {
+                          "name": "NetVolume",
+                          "set_name": "Qto_WallBaseQuantities",
+                          "value": 1.2000000000000002,
+                          "unit": "m3",
+                          "unit_basis": {
+                            "code": "m3",
+                            "known": true,
+                            "basis": "PROJECT_UNIT",
+                            "ifc_unit_id": 4,
+                            "ifc_unit_type": "IfcSIUnit",
+                            "name": "CUBIC_METRE",
+                            "prefix": "",
+                            "conversion_applied": false,
+                            "conversion_basis": null
+                          },
+                          "source": "IFCELEMENTQUANTITY",
+                          "express_id": 47
+                        }
+                      ]
+                    }
+                  ],
+                  "measurement_basis": {
+                    "quantity_name": "NetVolume",
+                    "unit": "m3"
+                  }
+                },
+                "status": "DRAFT",
+                "baseline_reference": null,
+                "effective_from": "2026-11-05 13:36:06.888555",
+                "effective_to": null,
+                "updated_by": 17,
+                "updated_at": "2026-11-05 13:36:06.888708",
+                "id": 5,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 1,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:06.888724",
+                "model_object_ids": [
+                  8
+                ],
+                "excel_import_id": null,
+                "excel_row_number": null,
+                "approved_change_id": null,
+                "source_quantity_name": "NetVolume",
+                "cost_source_lineage": {
+                  "scope_baseline_id": 2,
+                  "scope_baseline_hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+                }
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.037582"
+            },
+            {
+              "source_kind": "PLAN",
+              "source_id": 5,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "code": "PLAN-INSTALL",
+                "name": "Published INSTALL Plan",
+                "parent_plan_item_id": null,
+                "strategy_id": null,
+                "status": "PUBLISHED",
+                "operation": "CREATE",
+                "reason": "Isolated governed O1B-A release validation",
+                "supersedes_ids": [],
+                "future_mappings": {
+                  "WBS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "ACTIVITY": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "CBS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "AWP": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "PROGRESS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "CONTRACT_PACKAGE": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  }
+                },
+                "rule_json": {},
+                "published_by": 18,
+                "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+                "id": 5,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 2,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:09.031824"
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.379875"
+            },
+            {
+              "source_kind": "PACKAGE",
+              "source_id": 2,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "package_code": "PROGRESS-IWP",
+                "package_type": "IWP",
+                "name": "Existing installation package",
+                "description": "",
+                "cwa_id": null,
+                "status": "DRAFT",
+                "owner_user_id": null,
+                "responsible_role": "Workface Planner",
+                "readiness_state": "NOT_ASSESSED",
+                "release_state": "NOT_RELEASED",
+                "released_by": null,
+                "released_at": null,
+                "revision": 4,
+                "updated_by": 17,
+                "updated_at": "2026-11-05 13:36:22.556739",
+                "id": 2,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 4,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:19.634227"
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 3,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.751973"
+            },
+            {
+              "source_kind": "ACTIVITY",
+              "source_id": null,
+              "schedule_version_id": 4,
+              "source_external_id": "5001",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "schedule_version_id": 4,
+                "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+                "source": {
+                  "external_id": "5001",
+                  "code": "INSTALL",
+                  "name": "B1 INSTALL",
+                  "activity_type": "Task Dependent",
+                  "status": "NOT_STARTED",
+                  "wbs_external_id": "101",
+                  "calendar_external_id": "10",
+                  "original_duration": 20.0,
+                  "remaining_duration": 20.0,
+                  "duration_unit": "HOUR",
+                  "total_float": -2.0,
+                  "free_float": 0.0,
+                  "float_unit": "HOUR",
+                  "critical": true,
+                  "percent_complete_type": "Physical",
+                  "percent_complete": 0.0,
+                  "cpm_source": "P6_IMPORTED",
+                  "progress_authority": false,
+                  "source_fields": {
+                    "ProjectObjectId": "1",
+                    "ObjectId": "5001",
+                    "Id": "INSTALL",
+                    "Name": "B1 INSTALL",
+                    "Type": "Task Dependent",
+                    "Status": "NOT_STARTED",
+                    "WBSObjectId": "101",
+                    "CalendarObjectId": "10",
+                    "PlannedDuration": "20.0",
+                    "RemainingDuration": "20.0",
+                    "TotalFloat": "-2",
+                    "FreeFloat": "0",
+                    "IsCritical": "true",
+                    "PercentCompleteType": "Physical",
+                    "PhysicalPercentComplete": "0",
+                    "PlannedStartDate": "2026-10-23T07:00:00",
+                    "PlannedFinishDate": "2026-10-24T17:00:00"
+                  },
+                  "actual_start": null,
+                  "actual_finish": null,
+                  "planned_start": "2026-10-23T07:00:00",
+                  "planned_finish": "2026-10-24T17:00:00",
+                  "start": null,
+                  "finish": null,
+                  "early_start": null,
+                  "early_finish": null,
+                  "late_start": null,
+                  "late_finish": null
+                }
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 4,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:28.239282"
+            }
+          ],
+          "package_mappings": [
+            {
+              "work_package_id": 2,
+              "target_kind": "SCOPE",
+              "target_id": 5,
+              "schedule_version_id": null,
+              "activity_external_id": null,
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "target_version": 2
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.220610"
+            },
+            {
+              "work_package_id": 2,
+              "target_kind": "PLAN",
+              "target_id": 5,
+              "schedule_version_id": null,
+              "activity_external_id": null,
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "target_version": 2
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.418291"
+            },
+            {
+              "work_package_id": 2,
+              "target_kind": "ACTIVITY",
+              "target_id": null,
+              "schedule_version_id": 4,
+              "activity_external_id": "5001",
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+                "activity_external_id": "5001"
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 3,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.557125"
+            }
+          ],
+          "plans": [
+            {
+              "code": "PLAN-INSTALL",
+              "name": "Published INSTALL Plan",
+              "parent_plan_item_id": null,
+              "strategy_id": null,
+              "status": "PUBLISHED",
+              "operation": "CREATE",
+              "reason": "Isolated governed O1B-A release validation",
+              "supersedes_ids": [],
+              "future_mappings": {
+                "WBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "ACTIVITY": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "AWP": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "PROGRESS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CONTRACT_PACKAGE": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                }
+              },
+              "rule_json": {},
+              "published_by": 18,
+              "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 2,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:09.031824"
+            }
+          ],
+          "plan_allocations": [
+            {
+              "plan_item_id": 5,
+              "scope_item_id": 5,
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:09.052497"
+            }
+          ],
+          "packages": [
+            {
+              "id": 2,
+              "package_code": "PROGRESS-IWP",
+              "package_type": "IWP"
+            }
+          ],
+          "control_accounts": [
+            {
+              "code": "CA-2e44a9cd",
+              "name": "Integrated responsibility",
+              "owner_user_id": 19,
+              "responsible_role": "Project Controls",
+              "status": "ACTIVE",
+              "revision": 1,
+              "updated_by": 22,
+              "updated_at": "2026-11-05 13:36:26.737176",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:26.737195"
+            }
+          ],
+          "period_policy": {
+            "capture": [
+              "OPEN"
+            ],
+            "approval": [
+              "OPEN",
+              "REVIEW"
+            ],
+            "review_requires_frozen_set": true,
+            "closed_immutable": true
+          },
+          "operational_period_policy": {
+            "configuration_id": 7,
+            "revision": 1,
+            "hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e"
+          },
+          "phasing_periods": [
+            {
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "revision": 1,
+              "period_start": "2026-10-19",
+              "period_end": "2026-10-25",
+              "cutoff_at": "2026-10-25 22:00:00+00:00",
+              "timezone": "America/Bogota",
+              "schedule_data_date": "2026-10-22",
+              "configuration_id": 7,
+              "source_configuration_hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e",
+              "reopen_parent_id": null
+            }
+          ],
+          "control_account_coverage": {
+            "required_percent": "0E-8",
+            "budget_amount": "120.00000000",
+            "covered_amount": "120.00000000"
+          }
+        },
+        "current_sources": {
+          "scope_baseline": {
+            "id": 2,
+            "revision": 1,
+            "hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+          },
+          "schedule_baseline": {
+            "id": 3,
+            "revision": 2,
+            "hash": "20cde692f1065479032916b49726e822588e47417319527e84998b5feefdebf1",
+            "schedule_version_id": 4
+          },
+          "cost_baseline": {
+            "id": 1,
+            "revision": 1,
+            "hash": "a92ae4667cae0d7e8e9fc27026274c6ef18af2c1414ca79dd8b9d459a633e0b3"
+          },
+          "progress_profile": {
+            "id": 23,
+            "revision": 2,
+            "hash": "402137e56094395f919a290e1368ac74d22257b8251e4c7f17f88125a8a847c2",
+            "content": {
+              "scope": {
+                "type": "workspace",
+                "workspace_id": 146215954
+              },
+              "inherit_to_descendants": true,
+              "effective_from": null,
+              "effective_to": null,
+              "allowed_progress_types": [
+                "QUANTITY",
+                "PHYSICAL",
+                "SCHEDULE",
+                "COST",
+                "EARNED",
+                "WEIGHTED",
+                "MILESTONE"
+              ],
+              "allowed_methods": [
+                "QUANTITY_BASED",
+                "WEIGHTED_COMPONENTS",
+                "MILESTONE_BASED",
+                "STEP_METHOD",
+                "RULE_OF_CREDIT",
+                "MANUAL_EXPERT_ASSESSMENT"
+              ],
+              "default_method_by_scope_type": {
+                "DELIVERABLE": "MILESTONE_BASED",
+                "WORK": "QUANTITY_BASED",
+                "SERVICE": "MANUAL_EXPERT_ASSESSMENT"
+              },
+              "methods_by_scope_nature": {
+                "INSTALL": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ],
+                "REMOVE": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ],
+                "TEMPORARY": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD",
+                  "MILESTONE_BASED",
+                  "WEIGHTED_COMPONENTS"
+                ],
+                "MAINTENANCE": [
+                  "STEP_METHOD",
+                  "MILESTONE_BASED",
+                  "RULE_OF_CREDIT",
+                  "WEIGHTED_COMPONENTS",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ]
+              },
+              "package_methods": {
+                "EWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT"
+                ],
+                "PWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "CWP": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS"
+                ],
+                "IWP": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD"
+                ],
+                "TWP": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "LOGISTICS": [
+                  "MILESTONE_BASED",
+                  "STEP_METHOD"
+                ],
+                "TEMPORARY_WORKS": [
+                  "QUANTITY_BASED",
+                  "RULE_OF_CREDIT",
+                  "STEP_METHOD",
+                  "MILESTONE_BASED"
+                ],
+                "SUPPORT": [
+                  "QUANTITY_BASED",
+                  "WEIGHTED_COMPONENTS",
+                  "MILESTONE_BASED",
+                  "STEP_METHOD",
+                  "RULE_OF_CREDIT",
+                  "MANUAL_EXPERT_ASSESSMENT"
+                ]
+              },
+              "denominator_rules": {
+                "scope": "APPROVED_SCOPE_SNAPSHOT",
+                "plan": "PUBLISHED_PLAN_ALLOCATION",
+                "package": "APPROVED_EXPLICIT_ALLOCATION",
+                "approved_basis": "PUBLISHED_RULE"
+              },
+              "weighting_rules": {
+                "allowed_bases": [
+                  "QUANTITY",
+                  "BUDGET",
+                  "LABOR_HOURS",
+                  "ENGINEERING_HOURS",
+                  "CONTRACT_VALUE",
+                  "MANUAL_APPROVED_WEIGHT"
+                ],
+                "manual_weight_requires_approval": true,
+                "no_mixed_basis": true
+              },
+              "rule_of_credit_templates": {
+                "INSTALLATION": [
+                  {
+                    "code": "SET",
+                    "name": "Set in position",
+                    "weight": "30"
+                  },
+                  {
+                    "code": "ALIGNED",
+                    "name": "Aligned",
+                    "weight": "20"
+                  },
+                  {
+                    "code": "CONNECTED",
+                    "name": "Connected",
+                    "weight": "30"
+                  },
+                  {
+                    "code": "TESTED",
+                    "name": "Tested",
+                    "weight": "20"
+                  }
+                ]
+              },
+              "milestone_templates": {
+                "ZERO_HUNDRED": [
+                  "100"
+                ],
+                "FIFTY_FIFTY": [
+                  "50",
+                  "50"
+                ],
+                "TEN_TWENTY_THIRTY_FORTY": [
+                  "10",
+                  "20",
+                  "30",
+                  "40"
+                ]
+              },
+              "evidence_requirements": {
+                "all_measurements": true,
+                "negative_correction": true
+              },
+              "approval_workflow": [
+                "DRAFT",
+                "SUBMITTED",
+                "UNDER_REVIEW",
+                "APPROVED",
+                "REJECTED",
+                "SUPERSEDED"
+              ],
+              "tolerance": "0.000002",
+              "rework_policy": {
+                "enabled": true,
+                "require_evidence": true
+              },
+              "negative_progress_policy": {
+                "allow_corrections": true,
+                "cumulative_min": "0",
+                "require_reason": true
+              },
+              "period_policy": {
+                "capture": [
+                  "OPEN"
+                ],
+                "approval": [
+                  "OPEN",
+                  "REVIEW"
+                ],
+                "review_requires_frozen_set": true,
+                "closed_immutable": true
+              },
+              "baseline_policy": {
+                "control_account_coverage_percent": "0",
+                "require_current_scope": true,
+                "require_approved_sources": true,
+                "block_stale": true,
+                "effective_date_rule": "EXPLICIT_BUSINESS_EFFECTIVE_DATE"
+              },
+              "evm_policy": {
+                "allowed_earned_sources": [
+                  "PHYSICAL",
+                  "QUANTITY",
+                  "MILESTONE"
+                ],
+                "earned_source_priority": [
+                  "PHYSICAL",
+                  "QUANTITY",
+                  "MILESTONE"
+                ],
+                "require_approved_bundle": true,
+                "allow_overrun": false,
+                "allow_currency_conversion": false
+              },
+              "separation_of_duties": {
+                "author_cannot_publish": true,
+                "preparer_cannot_approve": true,
+                "recorder_cannot_certify": true
+              }
+            }
+          },
+          "effective_date": "2026-10-19",
+          "currency": "USD",
+          "schedule_mappings": [
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5001",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                5
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "plan_items": [
+                  {
+                    "id": 5,
+                    "version": 2,
+                    "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad"
+                  }
+                ],
+                "scope_natures": {
+                  "5": "INSTALL"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 31,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:14.449199",
+              "resolved_scope_item_ids": [
+                5
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5002",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                6
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  6
+                ],
+                "plan_items": [
+                  {
+                    "id": 6,
+                    "version": 2,
+                    "content_hash": "71263c1b5b7b75ca1073fbbedc73946949f37f1e566955da0fc3cd4527fd97f2"
+                  }
+                ],
+                "scope_natures": {
+                  "6": "REMOVE"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 32,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:14.814956",
+              "resolved_scope_item_ids": [
+                6
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5003",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 33,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:15.392473",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5004",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 34,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:15.813743",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5005",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                7
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  7
+                ],
+                "plan_items": [
+                  {
+                    "id": 7,
+                    "version": 2,
+                    "content_hash": "f33679fd87c4cb272d4a1c868a7730f4f484880def822654ec87466083632761"
+                  }
+                ],
+                "scope_natures": {
+                  "7": "TEMPORARY"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 35,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:16.248799",
+              "resolved_scope_item_ids": [
+                7
+              ]
+            },
+            {
+              "schedule_version_id": 4,
+              "target_kind": "ACTIVITY",
+              "target_external_id": "5006",
+              "revision": 2,
+              "status": "VALID",
+              "plan_item_ids": [
+                8
+              ],
+              "scope_item_ids": [],
+              "lineage_json": {
+                "scope_baseline_id": 2,
+                "resolved_scope_item_ids": [
+                  8
+                ],
+                "plan_items": [
+                  {
+                    "id": 8,
+                    "version": 2,
+                    "content_hash": "9564841c1742e99d5067eff455c574714d609d48bd93cce6248c040eb03fbe4e"
+                  }
+                ],
+                "scope_natures": {
+                  "8": "MAINTENANCE"
+                },
+                "derived_models": [
+                  {
+                    "id": 2,
+                    "content_hash": "c12bc39bb499dae2d1087ab2a8bf51c8d72ac717739c27f53baed87a5245a9e8"
+                  }
+                ],
+                "future_4d": "NOT_ACTIVE"
+              },
+              "reason": "Isolated governed O1B-A release validation",
+              "id": 36,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:16.688955",
+              "resolved_scope_item_ids": [
+                8
+              ]
+            }
+          ],
+          "cost_mappings": [
+            {
+              "source_kind": "SCOPE",
+              "source_id": 5,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "scope_item_key": "4ebe436f42a64db49dafaa28c74b7ead",
+                "scope_code": "B1-INSTALL",
+                "name": "B1 INSTALL real IFC",
+                "description": "",
+                "parent_scope_item_id": null,
+                "predecessor_id": null,
+                "revision": 1,
+                "scope_type": "DELIVERABLE",
+                "scope_nature": "INSTALL",
+                "discipline": "",
+                "area": "North",
+                "zone": "A",
+                "system": "Structural",
+                "location": "",
+                "quantity": "1.20000000",
+                "source_quantity": "1.20000000",
+                "approved_quantity": null,
+                "current_quantity": "1.20000000",
+                "unit": "m3",
+                "measurement_method": "EXPLICIT_NO_CONVERSION",
+                "source_type": "IFC",
+                "source_reference": "IFC_OBJECTS:8",
+                "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+                "lineage_json": {
+                  "source_type": "IFC",
+                  "source_reference": "IFC_OBJECTS:8",
+                  "source_revision": "4de6b51d2d2df0b86123b32407624a283c00b5238d7d7e2e888aadbf2021fb62",
+                  "source_quantity": "1.2000000000000002",
+                  "unit": "m3",
+                  "conversion_applied": false,
+                  "model_objects": [
+                    {
+                      "object_id": 8,
+                      "model_version_id": 2,
+                      "guid": "000000000000000000001a",
+                      "express_id": 18,
+                      "source_hash": "c90c1f21265c5443269b9761864cc27436a78d81e70fc96507fcd317ac8106d6",
+                      "source_quantities": [
+                        {
+                          "name": "NetVolume",
+                          "set_name": "Qto_WallBaseQuantities",
+                          "value": 1.2000000000000002,
+                          "unit": "m3",
+                          "unit_basis": {
+                            "code": "m3",
+                            "known": true,
+                            "basis": "PROJECT_UNIT",
+                            "ifc_unit_id": 4,
+                            "ifc_unit_type": "IfcSIUnit",
+                            "name": "CUBIC_METRE",
+                            "prefix": "",
+                            "conversion_applied": false,
+                            "conversion_basis": null
+                          },
+                          "source": "IFCELEMENTQUANTITY",
+                          "express_id": 47
+                        }
+                      ]
+                    }
+                  ],
+                  "measurement_basis": {
+                    "quantity_name": "NetVolume",
+                    "unit": "m3"
+                  }
+                },
+                "status": "DRAFT",
+                "baseline_reference": null,
+                "effective_from": "2026-11-05 13:36:06.888555",
+                "effective_to": null,
+                "updated_by": 17,
+                "updated_at": "2026-11-05 13:36:06.888708",
+                "id": 5,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 1,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:06.888724",
+                "model_object_ids": [
+                  8
+                ],
+                "excel_import_id": null,
+                "excel_row_number": null,
+                "approved_change_id": null,
+                "source_quantity_name": "NetVolume",
+                "cost_source_lineage": {
+                  "scope_baseline_id": 2,
+                  "scope_baseline_hash": "69384e00a554e4b73aa21ad9b512edaf21a1feb00a1c166a1131505013b3fea5"
+                }
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.037582"
+            },
+            {
+              "source_kind": "PLAN",
+              "source_id": 5,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "code": "PLAN-INSTALL",
+                "name": "Published INSTALL Plan",
+                "parent_plan_item_id": null,
+                "strategy_id": null,
+                "status": "PUBLISHED",
+                "operation": "CREATE",
+                "reason": "Isolated governed O1B-A release validation",
+                "supersedes_ids": [],
+                "future_mappings": {
+                  "WBS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "ACTIVITY": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "CBS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "AWP": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "PROGRESS": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  },
+                  "CONTRACT_PACKAGE": {
+                    "status": "NOT_ACTIVE",
+                    "references": []
+                  }
+                },
+                "rule_json": {},
+                "published_by": 18,
+                "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+                "id": 5,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 2,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:09.031824"
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.379875"
+            },
+            {
+              "source_kind": "PACKAGE",
+              "source_id": 2,
+              "schedule_version_id": null,
+              "source_external_id": "",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "package_code": "PROGRESS-IWP",
+                "package_type": "IWP",
+                "name": "Existing installation package",
+                "description": "",
+                "cwa_id": null,
+                "status": "DRAFT",
+                "owner_user_id": null,
+                "responsible_role": "Workface Planner",
+                "readiness_state": "NOT_ASSESSED",
+                "release_state": "NOT_RELEASED",
+                "released_by": null,
+                "released_at": null,
+                "revision": 4,
+                "updated_by": 17,
+                "updated_at": "2026-11-05 13:36:22.556739",
+                "id": 2,
+                "tenant_id": 3,
+                "project_workspace_id": 146215954,
+                "version": 4,
+                "created_by": 17,
+                "created_at": "2026-11-05 13:36:19.634227"
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 3,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:27.751973"
+            },
+            {
+              "source_kind": "ACTIVITY",
+              "source_id": null,
+              "schedule_version_id": 4,
+              "source_external_id": "5001",
+              "cbs_id": 1,
+              "cost_code_id": 1,
+              "control_account_id": 1,
+              "allocation_basis": "QUANTITY",
+              "quantity_basis": "APPROVED_SCOPE_OR_ALLOCATED_PLAN",
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "percentage": null,
+              "amount": null,
+              "currency": null,
+              "effective_revision": "2",
+              "source_reference": "GOVERNED_UPSTREAM_PROGRESS_BASIS",
+              "source_snapshot": {
+                "schedule_version_id": 4,
+                "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+                "source": {
+                  "external_id": "5001",
+                  "code": "INSTALL",
+                  "name": "B1 INSTALL",
+                  "activity_type": "Task Dependent",
+                  "status": "NOT_STARTED",
+                  "wbs_external_id": "101",
+                  "calendar_external_id": "10",
+                  "original_duration": 20.0,
+                  "remaining_duration": 20.0,
+                  "duration_unit": "HOUR",
+                  "total_float": -2.0,
+                  "free_float": 0.0,
+                  "float_unit": "HOUR",
+                  "critical": true,
+                  "percent_complete_type": "Physical",
+                  "percent_complete": 0.0,
+                  "cpm_source": "P6_IMPORTED",
+                  "progress_authority": false,
+                  "source_fields": {
+                    "ProjectObjectId": "1",
+                    "ObjectId": "5001",
+                    "Id": "INSTALL",
+                    "Name": "B1 INSTALL",
+                    "Type": "Task Dependent",
+                    "Status": "NOT_STARTED",
+                    "WBSObjectId": "101",
+                    "CalendarObjectId": "10",
+                    "PlannedDuration": "20.0",
+                    "RemainingDuration": "20.0",
+                    "TotalFloat": "-2",
+                    "FreeFloat": "0",
+                    "IsCritical": "true",
+                    "PercentCompleteType": "Physical",
+                    "PhysicalPercentComplete": "0",
+                    "PlannedStartDate": "2026-10-23T07:00:00",
+                    "PlannedFinishDate": "2026-10-24T17:00:00"
+                  },
+                  "actual_start": null,
+                  "actual_finish": null,
+                  "planned_start": "2026-10-23T07:00:00",
+                  "planned_finish": "2026-10-24T17:00:00",
+                  "start": null,
+                  "finish": null,
+                  "early_start": null,
+                  "early_finish": null,
+                  "late_start": null,
+                  "late_finish": null
+                }
+              },
+              "status": "ACTIVE",
+              "supersedes_id": null,
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 4,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:28.239282"
+            }
+          ],
+          "package_mappings": [
+            {
+              "work_package_id": 2,
+              "target_kind": "SCOPE",
+              "target_id": 5,
+              "schedule_version_id": null,
+              "activity_external_id": null,
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "target_version": 2
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.220610"
+            },
+            {
+              "work_package_id": 2,
+              "target_kind": "PLAN",
+              "target_id": 5,
+              "schedule_version_id": null,
+              "activity_external_id": null,
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "resolved_scope_item_ids": [
+                  5
+                ],
+                "target_version": 2
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.418291"
+            },
+            {
+              "work_package_id": 2,
+              "target_kind": "ACTIVITY",
+              "target_id": null,
+              "schedule_version_id": 4,
+              "activity_external_id": "5001",
+              "phase": "EXECUTE",
+              "status": "ACTIVE",
+              "revision": 1,
+              "lineage_json": {
+                "schedule_hash": "8c5ce2c33f4efb1fe91db26aa328fd5b67362bb76ffe5bd6ed9d23e15a7f730d",
+                "activity_external_id": "5001"
+              },
+              "reason": "Isolated governed O1B-D Progress validation",
+              "id": 3,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:22.557125"
+            }
+          ],
+          "plans": [
+            {
+              "code": "PLAN-INSTALL",
+              "name": "Published INSTALL Plan",
+              "parent_plan_item_id": null,
+              "strategy_id": null,
+              "status": "PUBLISHED",
+              "operation": "CREATE",
+              "reason": "Isolated governed O1B-A release validation",
+              "supersedes_ids": [],
+              "future_mappings": {
+                "WBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "ACTIVITY": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CBS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "AWP": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "PROGRESS": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                },
+                "CONTRACT_PACKAGE": {
+                  "status": "NOT_ACTIVE",
+                  "references": []
+                }
+              },
+              "rule_json": {},
+              "published_by": 18,
+              "content_hash": "1f28510f1dd0cbd050549bed72ed18ae7d2c4c19791c0f2ad5aef1ac8ccea5ad",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 2,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:09.031824"
+            }
+          ],
+          "plan_allocations": [
+            {
+              "plan_item_id": 5,
+              "scope_item_id": 5,
+              "quantity": "1.20000000",
+              "unit": "m3",
+              "id": 5,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 17,
+              "created_at": "2026-11-05 13:36:09.052497"
+            }
+          ],
+          "packages": [
+            {
+              "id": 2,
+              "package_code": "PROGRESS-IWP",
+              "package_type": "IWP"
+            }
+          ],
+          "control_accounts": [
+            {
+              "code": "CA-2e44a9cd",
+              "name": "Integrated responsibility",
+              "owner_user_id": 19,
+              "responsible_role": "Project Controls",
+              "status": "ACTIVE",
+              "revision": 1,
+              "updated_by": 22,
+              "updated_at": "2026-11-05 13:36:26.737176",
+              "id": 1,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "version": 1,
+              "created_by": 22,
+              "created_at": "2026-11-05 13:36:26.737195"
+            }
+          ],
+          "period_policy": {
+            "capture": [
+              "OPEN"
+            ],
+            "approval": [
+              "OPEN",
+              "REVIEW"
+            ],
+            "review_requires_frozen_set": true,
+            "closed_immutable": true
+          },
+          "operational_period_policy": {
+            "configuration_id": 7,
+            "revision": 1,
+            "hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e"
+          },
+          "phasing_periods": [
+            {
+              "id": 2,
+              "tenant_id": 3,
+              "project_workspace_id": 146215954,
+              "revision": 1,
+              "period_start": "2026-10-19",
+              "period_end": "2026-10-25",
+              "cutoff_at": "2026-10-25 22:00:00+00:00",
+              "timezone": "America/Bogota",
+              "schedule_data_date": "2026-10-22",
+              "configuration_id": 7,
+              "source_configuration_hash": "944a17bfdbde402c97bd18bfe341bcdfef9dbac5e2164c417570413e8111dc8e",
+              "reopen_parent_id": null
+            }
+          ],
+          "control_account_coverage": {
+            "required_percent": "0E-8",
+            "budget_amount": "120.00000000",
+            "covered_amount": "120.00000000"
+          }
+        },
+        "approved_bundle_mutated": false
+      }
+    }
+  ],
+  "measurement_progress_values": [
+    {
+      "id": 1,
+      "progress_type": "QUANTITY",
+      "method": "QUANTITY_BASED",
+      "status": "APPROVED",
+      "denominator": "1.20000000",
+      "progress_value": "50.00000000",
+      "period_progress": "50.00000000",
+      "period_quantity": "0.60000000",
+      "content_hash": "ce6e8d7f7122f65b02977b4c48dc976fa4c41161fe1f1f17daf02366d7389017"
+    },
+    {
+      "id": 2,
+      "progress_type": "PHYSICAL",
+      "method": "QUANTITY_BASED",
+      "status": "APPROVED",
+      "denominator": "1.20000000",
+      "progress_value": "50.00000000",
+      "period_progress": "50.00000000",
+      "period_quantity": "0.60000000",
+      "content_hash": "27a6204e3c260dbb77535d0b78567e8f8e94544b144c801fef80e430af89c391"
+    },
+    {
+      "id": 3,
+      "progress_type": "PHYSICAL",
+      "method": "RULE_OF_CREDIT",
+      "status": "APPROVED",
+      "denominator": "100.00000000",
+      "progress_value": "30.00000000",
+      "period_progress": "30.00000000",
+      "period_quantity": "30.00000000",
+      "content_hash": "e91286d9dc76bcc64882936df1db57300bad20e4201ac02a684a98c5857a365e"
+    },
+    {
+      "id": 4,
+      "progress_type": "MILESTONE",
+      "method": "MILESTONE_BASED",
+      "status": "APPROVED",
+      "denominator": "100.00000000",
+      "progress_value": "100.00000000",
+      "period_progress": "100.00000000",
+      "period_quantity": "100.00000000",
+      "content_hash": "4263f75e74b0c568b88bd116e619d3a7757dbe360f5c02d02d28dd10d1799176"
+    },
+    {
+      "id": 5,
+      "progress_type": "WEIGHTED",
+      "method": "WEIGHTED_COMPONENTS",
+      "status": "APPROVED",
+      "denominator": "100.00000000",
+      "progress_value": "35.00000000",
+      "period_progress": "35.00000000",
+      "period_quantity": "35.00000000",
+      "content_hash": "07382e8e277452c4d93eccd88cb986102bca2a494069dbdc3041c92aae1b40eb"
+    }
+  ],
+  "observation_after_explicit_profile_successor": true,
+  "timings_measured_before_profile_drift_by_real_chromium": true
+}

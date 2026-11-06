@@ -287,6 +287,8 @@ from app.modules.portfolio_planning import router as portfolio_planning_router
 from app.modules.portfolio_resource import router as portfolio_resource_router
 from app.modules.portfolio_review import router as portfolio_review_router
 from app.modules.post_fid_governance import router as post_fid_governance_router
+from app.modules.progress_foundation import integration_router as progress_integration_router
+from app.modules.progress_foundation import router as progress_foundation_router
 from app.modules.project_creation import router as project_creation_router
 from app.modules.project_definition import router as project_definition_router
 from app.modules.project_proposal import router as project_proposal_router
@@ -342,6 +344,8 @@ router.include_router(awp_router.router, prefix="/awp", tags=["awp"])
 router.include_router(cost_foundation_router.router, prefix="/cost", tags=["cost-foundation"])
 router.include_router(cost_financial_router.router, prefix="/cost", tags=["cost-financials"])
 router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-legacy-candidates"])
+router.include_router(progress_foundation_router.router, prefix="/progress", tags=["progress-foundation"])
+router.include_router(progress_integration_router.router, prefix="/progress", tags=["progress-integration"])
 router.include_router(awp_router.readiness_router, prefix="/readiness", tags=["execution-readiness"])
 router.include_router(schedule_four_d_router.router, prefix="/schedule", tags=["schedule-4d"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
@@ -840,7 +844,7 @@ def create_progress_record(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(record)
     return record
 
@@ -908,7 +912,7 @@ def create_cost_record(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(record)
     return record
 
@@ -2864,7 +2868,7 @@ def create_payment_certificate(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(certificate)
     return certificate
 
@@ -2926,7 +2930,7 @@ def update_payment_certificate(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(certificate)
     return certificate
 
@@ -3000,7 +3004,7 @@ def create_warehouse_receipt(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(receipt)
     return receipt
 
@@ -3070,7 +3074,7 @@ def update_warehouse_receipt(
         current_user.full_name,
     )
     db.commit()
-    ControlCoreService(db).run_project_cycle(tenant_id, project_id)
+    ControlCoreService(db).run_legacy_projection_if_unadopted(tenant_id, project_id)
     db.refresh(receipt)
     return receipt
 

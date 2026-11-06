@@ -846,6 +846,9 @@ class OperationalContextService:
                 and row.closed_by == self.actor_id
             ):
                 self._error(403, "OPERATIONAL_PERIOD_SEPARATION_OF_DUTIES")
+            from app.modules.progress_foundation.integration import guard_operational_period_transition
+
+            guard_operational_period_transition(self.db, self.tenant_id, self.actor_id, row, target, payload.reason)
             row.status, row.version = target, row.version + 1
             stamp = {"review": "review_started", "close": "closed", "publish": "published"}[action]
             setattr(row, f"{stamp}_at", utc_now())

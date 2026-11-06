@@ -37,3 +37,6 @@ def require_bound_legacy_command(request: Request, db: Session = Depends(get_db)
     from app.modules.cost_foundation.legacy_boundary import guard_legacy_cost_write
 
     guard_legacy_cost_write(db, principal.tenant_id, legacy_id, getattr(endpoint, "__name__", ""))
+    from app.modules.progress_foundation.legacy_boundary import guard_legacy_progress_write
+
+    guard_legacy_progress_write(db, principal.tenant_id, legacy_id, getattr(endpoint, "__name__", ""))

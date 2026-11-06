@@ -27,13 +27,12 @@ def request(f, method, path, *, payload=None, actor="cost_controller", version=N
     return f.client.request(method, path if path.startswith("/api") else root + path, headers=headers, json=payload)
 
 
-def create_cost_fixture(db, client):
-    assert (
-        db.bind.dialect.name == "postgresql"
-        and db.bind.url.database in {"o1bc", "o1bc_browser"}
-        and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only"
+def create_cost_fixture(db, client, *, operational_policy=None):
+    assert db.bind.dialect.name == "postgresql" and (
+        (db.bind.url.database in {"o1bc", "o1bc_browser"} and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
+        or (db.bind.url.database in {"o1bd", "o1bd_browser"} and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
     )
-    f = create_schedule_fixture(db, client)
+    f = create_schedule_fixture(db, client, operational_policy=operational_policy)
     f.db = db
     for tenant, actor in ((f.tenant_id, f.users["admin"].id), (f.foreign_tenant.id, f.users["foreign"].id)):
         ensure_cost_permissions(db, tenant, actor)

@@ -35,7 +35,12 @@ def test_o1ba_postgresql_single_successor_roundtrip(monkeypatch):
         mapper.local_table.name
         for mapper in Base.registry.mappers
         if mapper.class_.__module__.startswith(
-            ("app.modules.schedule_foundation", "app.modules.awp", "app.modules.cost_foundation")
+            (
+                "app.modules.schedule_foundation",
+                "app.modules.awp",
+                "app.modules.cost_foundation",
+                "app.modules.progress_foundation",
+            )
         )
     }
     config = Config("alembic.ini")

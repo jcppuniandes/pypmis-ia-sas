@@ -1,5 +1,7 @@
 """Isolated real Scope lifecycles consumed read-only by Schedule validation."""
 
+from copy import deepcopy
+
 from tests.scope_release_fixture import create_scope_fixture
 from tests.test_scope_foundation_release import REASON, item, profile, request, revision, success
 
@@ -8,13 +10,17 @@ from app.modules.schedule_foundation.permissions import ensure_schedule_permissi
 from app.modules.scope_foundation.service import DEFAULT_PROFILE as SCOPE_PROFILE
 
 
-def create_schedule_fixture(db, client):
+def create_schedule_fixture(db, client, *, operational_policy=None):
     fixture = create_scope_fixture(db)
     ensure_schedule_permissions(db, fixture.tenant_id, fixture.users["admin"].id)
     ensure_schedule_permissions(db, fixture.foreign_tenant.id, fixture.users["foreign"].id)
     db.commit()
     fixture.client = client
-    fixture.operational_profile = profile(fixture, "/api/v1/operational", OPERATIONAL_PROFILE)
+    fixture.operational_profile = profile(
+        fixture,
+        "/api/v1/operational",
+        deepcopy(OPERATIONAL_PROFILE if operational_policy is None else operational_policy),
+    )
     fixture.scope_profile = profile(fixture, "/api/v1/scope", SCOPE_PROFILE)
     fixture.scope_items = [
         item(fixture, "SCH-SCOPE-A", quantity=10, unit="m3"),

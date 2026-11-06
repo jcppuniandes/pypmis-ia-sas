@@ -1,3 +1,6 @@
+import logging
+
+from fastapi import HTTPException
 from sqlalchemy import delete, func, inspect, select
 from sqlalchemy.orm import Session
 
@@ -24,7 +27,40 @@ class ControlCoreService:
         self.evm = EVMEngine()
         self.warning = EarlyWarningService()
 
+    def run_legacy_projection_if_unadopted(self, tenant_id: int, project_id: int) -> KPI | None:
+        """Automatic hooks must not turn a committed source write into a 409.
+
+        Existing cost, payment and warehouse records retain their authority.
+        After explicit Progress adoption they must not recalculate legacy EV.
+        Manual cycle commands still use the guarded run_project_cycle method.
+        """
+        from app.modules.progress_foundation.legacy_boundary import canonical_progress_project
+
+        workspace_id = canonical_progress_project(self.db, tenant_id, project_id)
+        if workspace_id is not None:
+            logging.getLogger(__name__).info(
+                "legacy_control_projection.skipped_canonical_progress",
+                extra={"tenant_id": tenant_id, "project_id": project_id, "project_workspace_id": workspace_id},
+            )
+            return None
+        try:
+            return self.run_project_cycle(tenant_id, project_id)
+        except HTTPException as exc:
+            # Adoption can commit between the optimistic check and the guard.
+            # This exact guard raises before any legacy KPI/EV mutation.
+            if (
+                exc.status_code == 409
+                and isinstance(exc.detail, dict)
+                and exc.detail.get("code") == "CANONICAL_PROGRESS_AUTHORITY_REQUIRED"
+            ):
+                logging.getLogger(__name__).info("legacy_control_projection.skipped_concurrent_progress_adoption")
+                return None
+            raise
+
     def run_project_cycle(self, tenant_id: int, project_id: int) -> KPI:
+        from app.modules.progress_foundation.legacy_boundary import guard_legacy_progress_write
+
+        guard_legacy_progress_write(self.db, tenant_id, project_id, "run_control_cycle")
         period_label = self._current_period_label(tenant_id, project_id)
         self.db.execute(delete(Alert).where(Alert.tenant_id == tenant_id, Alert.project_id == project_id))
         self.db.execute(

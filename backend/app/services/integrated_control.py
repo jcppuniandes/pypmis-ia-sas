@@ -288,6 +288,9 @@ class IntegratedControlService:
         return ForecastFundingReport(project_id=project_id, rows=rows)
 
     def approve_baseline(self, tenant_id: int, project_id: int) -> BaselineApprovalOut:
+        from app.modules.progress_foundation.legacy_boundary import guard_legacy_progress_write
+
+        guard_legacy_progress_write(self.db, tenant_id, project_id, "approve_integrated_baseline")
         project = self.db.scalar(select(Project).where(Project.tenant_id == tenant_id, Project.id == project_id))
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")

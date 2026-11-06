@@ -29,6 +29,8 @@ from app.modules.physical_workspace_initialization import (
 from app.modules.portfolio_planning import models as portfolio_planning_models  # noqa: F401
 from app.modules.portfolio_review import models as portfolio_review_models  # noqa: F401
 from app.modules.post_fid_governance import models as post_fid_governance_models  # noqa: F401
+from app.modules.progress_foundation import integration_models as progress_integration_models  # noqa: F401
+from app.modules.progress_foundation import models as progress_foundation_models  # noqa: F401
 from app.modules.project_creation import models as project_creation_models  # noqa: F401
 from app.modules.project_definition import models as project_definition_models  # noqa: F401
 from app.modules.project_proposal import models as project_proposal_models  # noqa: F401

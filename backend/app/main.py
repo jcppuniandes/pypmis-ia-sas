@@ -14,6 +14,7 @@ from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
 from app.modules.cost_foundation.migration_schema import local_bootstrap_tables
 from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
+from app.modules.progress_foundation.migration_schema import local_bootstrap_tables as progress_bootstrap_tables
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,9 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 def _create_schema_for_local_runtime() -> None:
-    # Cost requires the constraints/triggers from 0073, never ORM-only tables.
-    tables = local_bootstrap_tables(Base.metadata)
+    # Cost/Progress require their additive Alembic constraints and triggers.
+    progress_tables = set(progress_bootstrap_tables(Base.metadata))
+    tables = [table for table in local_bootstrap_tables(Base.metadata) if table in progress_tables]
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
             connection.exec_driver_sql("SELECT pg_advisory_xact_lock(202606030021)")

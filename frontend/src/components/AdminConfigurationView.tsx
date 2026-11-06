@@ -107,9 +107,9 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
 };
 
 export default function AdminConfigurationView(props: Props) {
-  const [section, setSection] = useState<"processes" | "operational" | "scope" | "schedule" | "awp" | "4d" | "cost">(
-    "processes"
-  );
+  const [section, setSection] = useState<
+    "processes" | "operational" | "scope" | "schedule" | "awp" | "4d" | "cost" | "progress"
+  >("processes");
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
     <>
@@ -135,8 +135,11 @@ export default function AdminConfigurationView(props: Props) {
         <button aria-pressed={section === "cost"} onClick={() => setSection("cost")} type="button">
           Cost Profiles
         </button>
+        <button aria-pressed={section === "progress"} onClick={() => setSection("progress")} type="button">
+          Progress Profiles
+        </button>
       </nav>
-      {section === "awp" || section === "4d" || section === "cost" ? (
+      {section === "awp" || section === "4d" || section === "cost" || section === "progress" ? (
         <GovernedProfilesAdminView key={section} token={props.token} kind={section} />
       ) : section === "schedule" ? (
         <ScheduleProfilesAdminView token={props.token} />

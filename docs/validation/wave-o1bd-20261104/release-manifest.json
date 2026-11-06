@@ -1,0 +1,107 @@
+{
+  "closed_at_utc": "2026-11-06T01:48:05.348127+00:00",
+  "git_head": "cbd4c738769c5a1ce8846901f93a81271070ecec",
+  "release_state": "WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O1C_FORECAST_PERFORMANCE_AND_REPORTING",
+  "next_increment": "WAVE O1C \u2014 FORECAST, PERFORMANCE & REPORTING",
+  "suite_summary": [
+    [
+      "Progress pol\u00edticas PostgreSQL migraci\u00f3n y l\u00edmites",
+      218,
+      "PASS"
+    ],
+    [
+      "Regresi\u00f3n Scope Schedule AWP 4D y Cost",
+      538,
+      "PASS"
+    ],
+    [
+      "Componentes frontend y navegaci\u00f3n",
+      36,
+      "PASS"
+    ],
+    [
+      "Comprobaciones Chromium reales",
+      18,
+      "PASS"
+    ]
+  ],
+  "postgres_count": 95,
+  "policy_bootstrap_count": 123,
+  "criteria_count": 62,
+  "open_s1": 0,
+  "open_s2": 0,
+  "known_non_blocking_s3": 1,
+  "normal_database_migrated": false,
+  "business_signatures_recorded": false,
+  "commit_created": false,
+  "push_performed": false,
+  "github_workflow_executed": false,
+  "source_manifest_sha256": "7c3e51a884f2472afa2db17da2b7413199faeeff6db968a74a36a2e2564d3616",
+  "evidence_hashes": {
+    "outputs/.qa/wave-o1bd-20261104/progress-final-junit.xml": "3593db91f208ffc643d5bf402a08a4a7062530465b4c32cf57c3bfddb56d04cd",
+    "outputs/.qa/wave-o1bd-20261104/regression-junit.xml": "5e20b65776ec1ddc47f261e278952b399397117953ebf2a6bf3d2bc5cbe05c54",
+    "outputs/.qa/wave-o1bd-20261104/frontend-components.json": "b1f20e6269a701389eb5707d1bd2eed3b2c33c1fea1d969b08702f5621c5ca76",
+    "outputs/.qa/wave-o1bd-20261104/frontend-validation.json": "fa20c651356933e72e12945206622604da770ac1ce0ef1ca85abc5e55bd99e20",
+    "outputs/.qa/wave-o1bd-20261104/frontend-business-uat-source-proof.json": "fa2756eeb073e790376db2fd50983ae6f0661271c44e44ca5e9eee881ef97b9e",
+    "outputs/.qa/wave-o1bd-20261104/chromium/browser-uat.json": "99b8907403d520923182adb8a77d536b21403c8cd9727e6772ac40510501d8a8",
+    "outputs/.qa/wave-o1bd-20261104/chromium/layout-final.json": "c8aef238eb1a5159eae7a02d31039cb910df1f1f909b632659492f5c0d909aa9",
+    "outputs/.qa/wave-o1bd-20261104/chromium/visual-check.json": "2ba6b4ffdbbe34e5c3373097a03cad7013a2fbd00360c71f8c4ac58267042d10",
+    "outputs/.qa/wave-o1bd-20261104/native-artifact-verification.json": "4300b6ef1f3cff4d956227d6b9667d9ee37e5dd60abd296793d3ac50fa331f24",
+    "outputs/.qa/wave-o1bd-20261104/a11y.json": "d723bf506edefc45adc9815fdf75d446bb94b4ab2349e130e6869028053e2289",
+    "outputs/.qa/wave-o1bd-20261104/visual-review.json": "55ba8d47926009b314a976b9b47a8a7b6b5c67014d8ad4d7ab32896c4125a73f",
+    "outputs/.qa/wave-o1bd-20261104/word-pages-v2/render-provenance.json": "37eb8f10af93de754e9da04066d0dfd28885e20014c59abe930eb5540f8cbcde",
+    "docs/validation/wave-o1bd-20261104/api-observations.json": "85bbc5ac670def4aee43bd52560bdee8429f9d34b12fc8b6427c479b1fe18267",
+    "docs/validation/wave-o1bd-20261104/preservation-before.json": "c5405ac23c1b8e657f1648a70ef527a7d7b9a9a2eeb7245f5117c21fbf4400c0",
+    "docs/validation/wave-o1bd-20261104/preservation-after.json": "211e18f89890794b9884bd0f6dcc74b2eb9b4dbb95b5da62861866fe0c771f8a"
+  },
+  "artifacts": [
+    {
+      "path": "outputs/wave-o1bd-20261104/P&Pmis_Wave_O1B_D_Progress_and_Baseline_Integration_Technical_Report.docx",
+      "bytes": 88639,
+      "sha256": "ea1934490194120ed7d6ae6045145e12b4e219dfb5d41816cf6b4e33f670e0a0"
+    },
+    {
+      "path": "outputs/wave-o1bd-20261104/P&Pmis_Wave_O1B_D_Progress_and_Baseline_Integration_Traceability.xlsx",
+      "bytes": 69669,
+      "sha256": "b1a3c4667eb8406bc2e9a878360b05e5197e7fee7e1328de7f191223d9875cd1"
+    }
+  ],
+  "visual_review": {
+    "result": "PASS",
+    "word_latest_render": "word-pages-v2",
+    "word_pages": 8,
+    "all_word_pages_reviewed": true,
+    "word_reviewed_by": "Codex root at full page image size",
+    "word_findings": [],
+    "workbook_sheets": 19,
+    "workbook_preview_ranges": 49,
+    "all_workbook_sheets_reviewed": true,
+    "all_workbook_preview_ranges_reviewed": true,
+    "workbook_reviewed_by": "progress_closeout_audit individual inspection of every rendered range",
+    "workbook_findings": [],
+    "workbook_ranges_per_sheet": [
+      4,
+      1,
+      3,
+      4,
+      2,
+      2,
+      2,
+      3,
+      2,
+      2,
+      2,
+      3,
+      1,
+      2,
+      2,
+      4,
+      3,
+      2,
+      5
+    ],
+    "notes": "All requested sections and sheets remain legible. No clipped text, overlaps, missing glyphs, broken tables or truncated numbers observed. Native structural and accessibility checks are recorded separately.",
+    "native_compared_cells": 3222
+  }
+}

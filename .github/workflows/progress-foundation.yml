@@ -1,0 +1,57 @@
+name: Progress foundation PostgreSQL
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'backend/app/modules/progress_foundation/**'
+      - 'backend/tests/*progress*'
+      - 'backend/alembic/versions/20261104_0074_progress_foundation.py'
+      - 'docker-compose.wave-o1bd.yml'
+      - '.github/workflows/progress-foundation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: progress-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare disposable databases
+        run: |
+          mkdir -p outputs/.qa/wave-o1bd-20261104
+          chmod 777 outputs/.qa/wave-o1bd-20261104
+          docker compose -f docker-compose.wave-o1bd.yml up -d --wait db migration-db browser-db redis
+          docker compose -f docker-compose.wave-o1bd.yml build api
+          docker compose -f docker-compose.wave-o1bd.yml run --rm --no-deps \
+            -e DATABASE_URL=postgresql+psycopg://o1bd:disposable-o1bd@db:5432/o1bd \
+            api python -m tests.provision_o1bd_schema
+          docker compose -f docker-compose.wave-o1bd.yml run --rm --no-deps \
+            -e DATABASE_URL=postgresql+psycopg://o1bd:disposable-o1bd@migration-db:5432/o1bd_migration \
+            api python -m tests.provision_o1bd_schema
+      - name: Validate Progress and integrated control boundaries
+        run: |
+          set -o pipefail
+          docker compose -f docker-compose.wave-o1bd.yml run --rm --no-deps api \
+            python -m pytest -o addopts= --no-cov -q -p no:cacheprovider --basetemp=/tmp/o1bd-ci \
+            tests/test_progress_foundation_policy.py tests/test_progress_foundation_release.py \
+            tests/test_progress_integration_policy.py tests/test_progress_integration_release.py \
+            tests/test_progress_foundation_migration.py tests/test_progress_startup.py \
+            tests/test_progress_legacy_boundary.py --junitxml=/artifacts/ci-junit.xml \
+            2>&1 | tee outputs/.qa/wave-o1bd-20261104/ci-postgres.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: progress-postgres-validation
+          path: |
+            outputs/.qa/wave-o1bd-20261104/ci-junit.xml
+            outputs/.qa/wave-o1bd-20261104/ci-postgres.log
+      - name: Stop disposable validation services
+        if: always()
+        run: docker compose -f docker-compose.wave-o1bd.yml down
