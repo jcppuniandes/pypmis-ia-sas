@@ -1,0 +1,20 @@
+.forecastFoundation .forecastEditorActions {
+  padding: 10px;
+  background: #edf4f6;
+  border: 1px solid #cbdde5;
+  border-radius: 6px;
+}
+.forecastFoundation fieldset {
+  min-width: 0;
+  border: 1px solid #cbdde5;
+  border-radius: 5px;
+  padding: 12px;
+}
+.forecastFoundation .forecastCurve {
+  width: 100%;
+  max-width: 850px;
+  height: auto;
+}
+.forecastFoundation .forecastMetricTable {
+  min-width: 540px;
+}

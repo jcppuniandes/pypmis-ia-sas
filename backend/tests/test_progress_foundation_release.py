@@ -16,15 +16,17 @@ from app.database.session import SessionLocal, engine
 from app.main import app
 
 pytestmark = pytest.mark.skipif(
-    os.getenv("PYPMIS_O1BD_FIXTURE") != "disposable-only",
+    os.getenv("PYPMIS_O1BD_FIXTURE") != "disposable-only" and os.getenv("PYPMIS_O1C_FIXTURE") != "disposable-only",
     reason="Dedicated O1B-D disposable PostgreSQL scenario required",
 )
 
 
 @pytest.fixture(scope="module")
 def fixture():
-    assert engine.dialect.name == "postgresql" and engine.url.database == "o1bd"
-    assert os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only"
+    assert engine.dialect.name == "postgresql" and (
+        (engine.url.database == "o1bd" and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
+        or (engine.url.database == "o1c" and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
+    )
     with TestClient(app) as client, SessionLocal() as db:
         value = create_progress_fixture(db, client)
         value.db = db

@@ -11,24 +11,28 @@ export default function GovernedProfilesAdminView({
   kind,
 }: {
   token: string;
-  kind: "awp" | "4d" | "cost" | "progress";
+  kind: "awp" | "4d" | "cost" | "progress" | "forecast";
 }) {
   const title =
-    kind === "awp"
-      ? "AWP Profiles"
-      : kind === "cost"
-        ? "Cost Profiles"
-        : kind === "progress"
-          ? "Progress Profiles"
-          : "4D State Profiles";
-  const root =
-    kind === "progress"
-      ? "/api/v1/progress/admin/profiles"
+    kind === "forecast"
+      ? "Forecast Profiles"
       : kind === "awp"
-        ? "/api/v1/awp/admin/profiles"
+        ? "AWP Profiles"
         : kind === "cost"
-          ? "/api/v1/cost/admin/profiles"
-          : "/api/v1/schedule/4d/admin/profiles";
+          ? "Cost Profiles"
+          : kind === "progress"
+            ? "Progress Profiles"
+            : "4D State Profiles";
+  const root =
+    kind === "forecast"
+      ? "/api/v1/forecast/admin/profiles"
+      : kind === "progress"
+        ? "/api/v1/progress/admin/profiles"
+        : kind === "awp"
+          ? "/api/v1/awp/admin/profiles"
+          : kind === "cost"
+            ? "/api/v1/cost/admin/profiles"
+            : "/api/v1/schedule/4d/admin/profiles";
   const [profiles, setProfiles] = useState<ScheduleProfile[]>([]);
   const [defaults, setDefaults] = useState<Record<string, unknown>>({});
   const [allowed, setAllowed] = useState<string[]>([]);
@@ -95,8 +99,10 @@ export default function GovernedProfilesAdminView({
   function save(event: FormEvent) {
     event.preventDefault();
     try {
-      if (kind === "progress" && reason.trim().length < 8)
-        throw new Error("Indique un motivo de al menos ocho caracteres para configurar Progress.");
+      if ((kind === "progress" || kind === "forecast") && reason.trim().length < 8)
+        throw new Error(
+          `Indique un motivo de al menos ocho caracteres para configurar ${kind === "forecast" ? "Forecast" : "Progress"}.`
+        );
       const parsed: unknown = JSON.parse(content);
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
         throw new Error("El perfil debe ser un objeto JSON.");
@@ -106,7 +112,7 @@ export default function GovernedProfilesAdminView({
           ...(selected ? {} : { code }),
           name,
           content_json: parsed,
-          ...(kind === "progress" ? { reason: reason.trim() } : {}),
+          ...(kind === "progress" || kind === "forecast" ? { reason: reason.trim() } : {}),
         },
         selected?.version,
         selected ? "PUT" : "POST"
@@ -123,21 +129,25 @@ export default function GovernedProfilesAdminView({
       <CompactModuleHeader
         title={title}
         eyebrow={
-          kind === "progress"
-            ? "ADMIN MODE · PROGRESS CONFIGURATION"
-            : kind === "cost"
-              ? "ADMIN MODE · COST CONFIGURATION"
-              : "ADMIN MODE · AWP / READINESS / 4D"
+          kind === "forecast"
+            ? "ADMIN MODE · FORECAST PERFORMANCE REPORTING"
+            : kind === "progress"
+              ? "ADMIN MODE · PROGRESS CONFIGURATION"
+              : kind === "cost"
+                ? "ADMIN MODE · COST CONFIGURATION"
+                : "ADMIN MODE · AWP / READINESS / 4D"
         }
         tone="admin"
         description={
-          kind === "progress"
-            ? "Tipos de avance, métodos por Nature y paquete, reglas de crédito, hitos, pesos, evidencia, rework, períodos, baselines integradas, EVM y SoD. Publicar el perfil no aprueba mediciones del Project."
-            : kind === "cost"
-              ? "CBS, Cost Codes, APU, tarifas, monedas/FX, Budget, Baseline, reservas, inclusión de compromisos y SoD. El perfil no aprueba datos vivos de Project."
-              : kind === "awp"
-                ? "CWA, tipos de paquete y dependencia, constraints, requisitos de readiness y release independiente."
-                : "Reglas semánticas de Scope Nature, presentación y completitud de mappings. Las fechas proceden de Schedule."
+          kind === "forecast"
+            ? "Métodos ETC y EAC, hipótesis y confianza cualitativa, recursos, thresholds de dashboards y Look-Ahead, series y plantillas de reporte. Publicar el perfil no aprueba un Forecast vivo."
+            : kind === "progress"
+              ? "Tipos de avance, métodos por Nature y paquete, reglas de crédito, hitos, pesos, evidencia, rework, períodos, baselines integradas, EVM y SoD. Publicar el perfil no aprueba mediciones del Project."
+              : kind === "cost"
+                ? "CBS, Cost Codes, APU, tarifas, monedas/FX, Budget, Baseline, reservas, inclusión de compromisos y SoD. El perfil no aprueba datos vivos de Project."
+                : kind === "awp"
+                  ? "CWA, tipos de paquete y dependencia, constraints, requisitos de readiness y release independiente."
+                  : "Reglas semánticas de Scope Nature, presentación y completitud de mappings. Las fechas proceden de Schedule."
         }
         metrics={[{ label: "Profiles", value: profiles.length }]}
       />
@@ -217,7 +227,7 @@ export default function GovernedProfilesAdminView({
                 onChange={(e) => setContent(e.target.value)}
               />
             </label>
-            {kind === "progress" && !selected ? (
+            {(kind === "progress" || kind === "forecast") && !selected ? (
               <Field label={`Motivo ${title}`}>
                 <input
                   aria-label={`Motivo ${title}`}
@@ -229,7 +239,10 @@ export default function GovernedProfilesAdminView({
               </Field>
             ) : null}
             {editable ? (
-              <button type="submit" disabled={busy || (kind === "progress" && reason.trim().length < 8)}>
+              <button
+                type="submit"
+                disabled={busy || ((kind === "progress" || kind === "forecast") && reason.trim().length < 8)}
+              >
                 {selected ? `Guardar ${title} borrador` : `Crear ${title} DRAFT`}
               </button>
             ) : null}

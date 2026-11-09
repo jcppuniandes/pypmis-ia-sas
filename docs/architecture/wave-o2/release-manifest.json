@@ -1,0 +1,164 @@
+{
+  "release_state": "WAVE_O2_MASTER_ARCHITECTURE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O2A_ENGINEERING_FOUNDATION",
+  "closed_utc": "2026-11-09T20:25:09.012011+00:00",
+  "scope": "ARCHITECTURE_ONLY",
+  "criteria_count": 57,
+  "offline_design_vectors": 9,
+  "o1_baselines_reused": 7,
+  "project14_preserved": {
+    "result": "PASS",
+    "mode": "READ_ONLY_ARCHITECTURE",
+    "before_utc": "2026-11-09T18:30:36.636048+00:00",
+    "after_utc": "2026-11-09T18:34:51.615718+00:00",
+    "head": "19baf109db9705351273814ebb49358323c3c139",
+    "canonical_project14_sha256": "6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114",
+    "legacy_project14_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "legacy_reference_tables": 70,
+    "application_files_unchanged": 1147,
+    "o1c_manifest_files_matched": 81,
+    "o1_baselines": [
+      {
+        "directory": "wave-o1a-20261019",
+        "state": "WAVE_O1A_OPERATIONAL_FOUNDATION_RELEASE_VALIDATED",
+        "sha256": "fc91b97d65cf1b4a97c5dd61afbdc8656756026b9e46c1d214b4b62066bb7208"
+      },
+      {
+        "directory": "wave-o1ba-20261020",
+        "state": "WAVE_O1B_A_SCOPE_FOUNDATION_RELEASE_VALIDATED",
+        "sha256": "a2ae2a216267ae5114ee74a849ca712a8a80b70a7468a71e09ce7b7a932bef78"
+      },
+      {
+        "directory": "wave-o1bb-20261020",
+        "state": "WAVE_O1B_B_SCHEDULE_FOUNDATION_RELEASE_VALIDATED",
+        "sha256": "8b8df0be66808b46058e31e5c145d093b4b0b8db9b851a47b688f3648545d608"
+      },
+      {
+        "directory": "wave-o1bb1-20261021",
+        "state": "WAVE_O1B_B1_AWP_READINESS_4D_RELEASE_VALIDATED",
+        "sha256": "ef90b2c59105f99b3b7cfb3762dc9f1e468ed1be70cda64bc2eeb79e8feaa0a9"
+      },
+      {
+        "directory": "wave-o1bc-20261022",
+        "state": "WAVE_O1B_C_COST_FOUNDATION_RELEASE_VALIDATED",
+        "sha256": "150ef8f75369c64e1595d0cc1388ab70515fee0f58b07da6c1abcbb802ea78be"
+      },
+      {
+        "directory": "wave-o1bd-20261104",
+        "state": "WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION_RELEASE_VALIDATED",
+        "sha256": "414ef158275cbd9baf941973a5dbdef3cec3385533746ff286c2c3427309a549"
+      },
+      {
+        "directory": "wave-o1c-20261106",
+        "state": "WAVE_O1C_FORECAST_PERFORMANCE_REPORTING_RELEASE_VALIDATED",
+        "sha256": "de716d760b2bc2eb98459be92ced7a248af50b860fa2482fe7ca7f1461499147"
+      }
+    ]
+  },
+  "open_architecture_s1": 0,
+  "open_architecture_s2": 0,
+  "runtime_modules_changed": false,
+  "migration_applied": false,
+  "transactional_o2_uat_performed": false,
+  "business_approval_recorded": false,
+  "commit_or_push_performed": false,
+  "o2a_started": false,
+  "next_increment": "WAVE O2A — ENGINEERING FOUNDATION",
+  "artifact_native_checks": {
+    "sheets": 19,
+    "native_filtered_tables": 19,
+    "compared_cells": 1788,
+    "native_numeric_cells": 0,
+    "native_boolean_cells": 0,
+    "native_text_cells": 1788,
+    "blank_cells": 0,
+    "workbook_internal_relationships_checked": 42,
+    "word_headings": 39,
+    "word_relationships": 15,
+    "word_a11y_findings": 0
+  },
+  "visual_checks": {
+    "word_pages_manually_reviewed": {
+      "page-1.png": "d5da81ce468b1ec5b828dea421ee0e29c4dc0956fe89b83d6d2c6d89535ebd4b",
+      "page-2.png": "4e01e21c96c8edf721c4b1475e112c9519a8fd2d1b22c01909f45f47b0d8808b",
+      "page-3.png": "6ae50c33eda221cfee7fc9b8d632fa6914301b1d40b25c8a92260f64ac4f57f3",
+      "page-4.png": "ba7d71c5354469dcacc3c492e36b48d879dc4b16d62b6b8540a658a60a6fa141",
+      "page-5.png": "4b387df807ecb8d49289835ab8bc44e65e2b4ea8f9755c8d403d9f4a88901030",
+      "page-6.png": "02720881a8b81ba89056de5ed824adbab52d9cb2f72addaddcb133ca0297acfc"
+    },
+    "workbook_ranges_manually_reviewed": {
+      "01_Requirements-001.png": "9bba4f6749abb221f9a877888b4b8ae73e335a6e6d99e77a3aef7def360de0f3",
+      "01_Requirements-015.png": "bfd63e10a96301bb60fc20ef302841fea753d461e11cb64e9207674e8a73021e",
+      "01_Requirements-029.png": "8073bbd73970be4445386444603255f5f9f3d112a5e78fc2b966c24348a2558e",
+      "01_Requirements-043.png": "a16a614a3c40134ff53a9e817e8d2ecf284b64e5bf14c6954becd0074ae75b5b",
+      "01_Requirements-057.png": "973c754972b87aa6a7df52f57769096f62e82f6dbc7dfce896780198ffa5cc32",
+      "01_Requirements-071.png": "768323b45cd84088a0971242e128b8885f839709cd5cdc07c8eb29264d5e5385",
+      "02_Domain_Map-001.png": "82ea69575a705f941186b0cf0a78286b6ad05063c1251923ae072851e9c1298b",
+      "02_Domain_Map-015.png": "6d1d0ad7ded3f4927eb4db32699102f8d66b70344de5f090f3de63425061848c",
+      "02_Domain_Map-029.png": "f431cc07c49ce8927f8d387fdfbb9886e1edd78886b348b61dd99390ca8acdc5",
+      "02_Domain_Map-043.png": "6711966a25a618ae25eccab0677b41912a190c9ccdca179e686216860ee1c7a5",
+      "03_Engineering-001.png": "0e66f3218d22751ec031ede28f06d644edf1c47fec4714bf941dfe2e5dd0804f",
+      "04_Procurement-001.png": "efedfc7b01ab20582335be335251a5114e50f27260dd9f7534acc7e770a889bc",
+      "04_Procurement-015.png": "3a0f5680ae65b53afa72bc08a095a4b50264afeef9c68bdb624d70ddf64a18b2",
+      "05_Materials-001.png": "8d03ced7a5678c66bf304ea93274dd74de5385dfa95cc660cd8f09a22175c849",
+      "06_Logistics-001.png": "a95a828692b38f8609b59f549be8dfe63efdcd85bc6a1ae9501d7f511e37fd19",
+      "07_Contracts-001.png": "68bbec9d05b19907ad1681e2a7c541543cef89896ae8512e78b09e9221387b37",
+      "08_SOV_Cost_Sheet-001.png": "01f8172a16a904c82bd0e5970c79e443defdbcb917c9e7c1be591b143f465d27",
+      "08_SOV_Cost_Sheet-015.png": "1339eaf50e21dd53f125e84de42dfd5cebabf155188693729449517802b667a2",
+      "09_Commitments-001.png": "2ed56f68790ef89601993c667ff901b05635f97e1a49340b98ea4db30f938065",
+      "10_AWP_Integration-001.png": "7a652e62af0fb8eadbfed2be40b2e62429d5c3ce4d8669068997d07c324e175f",
+      "10_AWP_Integration-015.png": "f7c22610a16f1a6071b5b256c46a4d2e86cc7471d4fdf90594246fcbd4479b22",
+      "11_Readiness-001.png": "f4c96d3e32375d63fa74a5b71ec43002db7fa4be852bfc99ba615be804d3938c",
+      "12_Schedule_Cost-001.png": "d8a9d34d2d07e723525cdfb0595d28be3313292340195556e231982038304fac",
+      "13_Admin_User-001.png": "63af394ddc6ad7df1aefb277ebca46e55238a529bb0f7aceebaf286038bfb993",
+      "14_Security-001.png": "927483aff2204c605b4714c4539fc1e1d916f558bc7956d6f7f63ba7013478b2",
+      "15_Duplication_Risks-001.png": "fd7dc7d331e815e1ca3cb99dfb87f94ae2394766cc644847042135236b2e4da4",
+      "15_Duplication_Risks-015.png": "8a0c27017de181d04afec0a8723d7c13a575834bce40a7d845a6cd056077d48b",
+      "16_API-001.png": "8c9ed994f6c2a8500af69e1f2e7ec5128d59e65ecf8bac4e4b8cee51475700c5",
+      "17_Roadmap-001.png": "1c863f4ae0ebd983ffdaa951b9a4907e4f4185cfe71ecda6371788660a1e9c05",
+      "17_Roadmap-015.png": "616f5d4cdb9247f6da1fb5435ee5c9407e3937cb797c74089838fa1c97d874a4",
+      "18_Decisions-001.png": "1d26e8569a8531e09ad8a7bcbe6b793ac7b460c97c5b7f097561e56c695fcff3",
+      "18_Decisions-015.png": "66ef5871d6c720053666c59999170f6f3435f0683257f18dd30e6c3dd998281b",
+      "18_Decisions-029.png": "774a6066a90afdd27002d47785840736114463761ff841f86177204142bfa537",
+      "19_Release_Criteria-001.png": "7f53385c5557a907ac1107c3ce325341d106a5ca8f6c3192a992132bacd8395c",
+      "19_Release_Criteria-015.png": "082a138306da3202dc995c834bc0dd9a7f16f493eafc5eec4d83ad2ca4289ada",
+      "19_Release_Criteria-029.png": "5d6f7b1bda8253bab62052adad9abf9445d329119be6ddfb67d2d07f5201f7b9",
+      "19_Release_Criteria-043.png": "1a44f8fd034b341bcf416c5f4ca5058ddd8f4e5c74955e73f0fafaf701ee844e",
+      "19_Release_Criteria-057.png": "92cabd8efb62fb984223658ac6f876c90cdc1b8ff05645cbb22899c0e7f86950"
+    }
+  },
+  "architecture_source_sha256": {
+    "domain-map.md": "0f985f8d3297ea60e625f694447e89ccf7cdfa3f7bd933fcccc89f23fccd2bde",
+    "decisions.md": "a2a706bdf9656b7678721692f25da45e305a3b27e5c7d3c2cd93e4bf72b49a18",
+    "commercial-sov-cost-sheet.md": "407e4b80494e68147d26ba8a01a2cd7e021680ea1fd18d7c22febd634d74741a",
+    "engineering-procurement-awp.md": "6720a06b45142da3a207612b986d95b8a3ae2274b6f5209d187f0019f9ab6c49",
+    "implementation-roadmap.md": "6c928f4715480340cf457fe8af15258d5efe586a0797f27988098f617a2a226b",
+    "preservation.json": "2d7bb7b040b352b5e221e1d026abe6ba335af9222b614eb938b5cfcca9e66a22",
+    "design-checks.json": "a90e1113ed9a75d11f3f3dd11b8e3c29695fa9d71d2683eb00cd7b1f4355f896"
+  },
+  "prompt_sha256": "46003a643a66c1f920d41d0977fb05d97a365b5cbe1194599fc73f3f32e1d395",
+  "builder_source_sha256": {
+    "build_traceability.mjs": "e1aa0a56f4b5f789d26c134571b1483169ea85b403720517a1461d5c6b9716ac",
+    "capture_preservation.py": "32f123c21f74efa5888dade226abb54be9b19f0db0b78f4c94d40ca417ac9552",
+    "collect_evidence.py": "e3b632ff57d67b5b22737fad5e71395f9a019f551353566c0e97d18225f23e78",
+    "export_word_qa.ps1": "2e36d097287eb1ab82a4b03af631ad746c81fd67bdd1c729ad2881909808f175",
+    "finalize_release.py": "83a0b6234e6fa447eb30c2b89a29f8255bb000413ccc06bae68e4bf5ff199eba",
+    "generate_report.py": "de696516fc575e5c605a67a6ce31fb3614ba88662cf6baf8ab43b90074b400e8",
+    "prove_architecture.py": "aab8b4265caf32553956b88a1a89cbe3ed85b2f6baf59c322bc5b119fb6095cb",
+    "render_report.py": "25002cc5ffd88a406a24c4cd53fa0c1dc0a61bad6cc49e1c29ebe920a29421ab",
+    "report_content.py": "50a5ae15234d49339b3a76f939b745f543f7f2d23caac7c954dc04091703f829",
+    "TEMPLATE_CONTRACT.md": "a018f944b7970ebf6a6c1db5b4382262706da4f4c8051e738328c5cba3919e77"
+  },
+  "artifacts": [
+    {
+      "path": "outputs/wave-o2-20261109/P&Pmis_Wave_O2_Master_Architecture_Technical_Report.docx",
+      "sha256": "027050a5c7930f5584c9355def93dec8baf4a6fdc40ac23de3d967cfe3e925bc",
+      "bytes": 86099
+    },
+    {
+      "path": "outputs/wave-o2-20261109/P&Pmis_Wave_O2_Master_Architecture_Traceability.xlsx",
+      "sha256": "9018a0a7d8204953830b9340b233dbdb69e5d634958d7c8ff9d03590eca1a5b4",
+      "bytes": 66065
+    }
+  ]
+}

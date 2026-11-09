@@ -164,6 +164,7 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("awp", "AWP Execution", permission_key="awp.read"),
         NavigationDefinition("cost", "Cost Manager", permission_key="cost.read"),
         NavigationDefinition("progress", "Progress Manager", permission_key="progress.read"),
+        NavigationDefinition("forecast", "Forecast & Performance", permission_key="forecast.read"),
         NavigationDefinition("documents", "Documents"),
         NavigationDefinition("reports", "Reports"),
     ),
@@ -251,6 +252,13 @@ class WorkspaceNavigatorService:
             state = item.default_state
             permission_key = item.permission_key
             reason = ""
+            if item.code == "forecast" and (
+                settings.get("forecast") is False
+                or settings.get("forecast-performance") is False
+                or (metadata.get("enabled_modules") and not {"forecast", "forecast-performance"} & enabled)
+            ):
+                state = "DISABLED"
+                reason = "Forecast & Performance is explicitly disabled for this Workspace"
             if item.code == "progress" and (
                 settings.get("progress") is False
                 or settings.get("progress-manager") is False

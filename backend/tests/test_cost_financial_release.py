@@ -23,6 +23,7 @@ def fixture():
     assert engine.dialect.name == "postgresql" and (
         (engine.url.database == "o1bc" and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
         or (engine.url.database == "o1bd" and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
+        or (engine.url.database == "o1c" and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
     )
     with TestClient(app) as client, SessionLocal() as db:
         value = create_cost_fixture(db, client)

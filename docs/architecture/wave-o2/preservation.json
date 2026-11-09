@@ -1,0 +1,49 @@
+{
+  "result": "PASS",
+  "mode": "READ_ONLY_ARCHITECTURE",
+  "before_utc": "2026-11-09T18:30:36.636048+00:00",
+  "after_utc": "2026-11-09T18:34:51.615718+00:00",
+  "head": "19baf109db9705351273814ebb49358323c3c139",
+  "canonical_project14_sha256": "6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114",
+  "legacy_project14_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+  "legacy_reference_tables": 70,
+  "application_files_unchanged": 1147,
+  "o1c_manifest_files_matched": 81,
+  "o1_baselines": [
+    {
+      "directory": "wave-o1a-20261019",
+      "state": "WAVE_O1A_OPERATIONAL_FOUNDATION_RELEASE_VALIDATED",
+      "sha256": "fc91b97d65cf1b4a97c5dd61afbdc8656756026b9e46c1d214b4b62066bb7208"
+    },
+    {
+      "directory": "wave-o1ba-20261020",
+      "state": "WAVE_O1B_A_SCOPE_FOUNDATION_RELEASE_VALIDATED",
+      "sha256": "a2ae2a216267ae5114ee74a849ca712a8a80b70a7468a71e09ce7b7a932bef78"
+    },
+    {
+      "directory": "wave-o1bb-20261020",
+      "state": "WAVE_O1B_B_SCHEDULE_FOUNDATION_RELEASE_VALIDATED",
+      "sha256": "8b8df0be66808b46058e31e5c145d093b4b0b8db9b851a47b688f3648545d608"
+    },
+    {
+      "directory": "wave-o1bb1-20261021",
+      "state": "WAVE_O1B_B1_AWP_READINESS_4D_RELEASE_VALIDATED",
+      "sha256": "ef90b2c59105f99b3b7cfb3762dc9f1e468ed1be70cda64bc2eeb79e8feaa0a9"
+    },
+    {
+      "directory": "wave-o1bc-20261022",
+      "state": "WAVE_O1B_C_COST_FOUNDATION_RELEASE_VALIDATED",
+      "sha256": "150ef8f75369c64e1595d0cc1388ab70515fee0f58b07da6c1abcbb802ea78be"
+    },
+    {
+      "directory": "wave-o1bd-20261104",
+      "state": "WAVE_O1B_D_PROGRESS_AND_BASELINE_INTEGRATION_RELEASE_VALIDATED",
+      "sha256": "414ef158275cbd9baf941973a5dbdef3cec3385533746ff286c2c3427309a549"
+    },
+    {
+      "directory": "wave-o1c-20261106",
+      "state": "WAVE_O1C_FORECAST_PERFORMANCE_REPORTING_RELEASE_VALIDATED",
+      "sha256": "de716d760b2bc2eb98459be92ced7a248af50b860fa2482fe7ca7f1461499147"
+    }
+  ]
+}

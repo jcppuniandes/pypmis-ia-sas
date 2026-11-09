@@ -1,0 +1,55 @@
+name: Forecast performance reporting PostgreSQL
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'backend/app/modules/forecast_foundation/**'
+      - 'backend/tests/*forecast*'
+      - 'backend/alembic/versions/20261106_0075_forecast_foundation.py'
+      - 'docker-compose.wave-o1c.yml'
+      - '.github/workflows/forecast-foundation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: forecast-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare disposable databases
+        run: |
+          mkdir -p outputs/.qa/wave-o1c-20261106
+          chmod 777 outputs/.qa/wave-o1c-20261106
+          docker compose -f docker-compose.wave-o1c.yml up -d --wait db migration-db browser-db redis
+          docker compose -f docker-compose.wave-o1c.yml build api
+          docker compose -f docker-compose.wave-o1c.yml run --rm --no-deps --user root api chown appuser:appuser /var/cache/o1c-python
+          docker compose -f docker-compose.wave-o1c.yml run --rm --no-deps \
+            -e DATABASE_URL=postgresql+psycopg://o1c:disposable-o1c@db:5432/o1c \
+            api python -m tests.provision_o1c_schema
+          docker compose -f docker-compose.wave-o1c.yml run --rm --no-deps \
+            -e DATABASE_URL=postgresql+psycopg://o1c:disposable-o1c@migration-db:5432/o1c_migration \
+            api python -m tests.provision_o1c_schema --baseline-only
+      - name: Validate Forecast with upstream regression
+        run: |
+          set -o pipefail
+          docker compose -f docker-compose.wave-o1c.yml run --rm --no-deps api \
+            python -m tests.run_o1c_validation all \
+            2>&1 | tee outputs/.qa/wave-o1c-20261106/ci-postgres.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: forecast-postgres-validation
+          path: |
+            outputs/.qa/wave-o1c-20261106/*junit.xml
+            outputs/.qa/wave-o1c-20261106/*source-proof.json
+            outputs/.qa/wave-o1c-20261106/ci-postgres.log
+      - name: Stop disposable validation services
+        if: always()
+        run: docker compose -f docker-compose.wave-o1c.yml down

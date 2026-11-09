@@ -21,7 +21,7 @@ from app.modules.schedule_foundation.models import ScheduleVersion
 from app.modules.scope_foundation.models import ScopeModelVersion
 
 pytestmark = pytest.mark.skipif(
-    os.getenv("PYPMIS_O1BD_FIXTURE") != "disposable-only",
+    os.getenv("PYPMIS_O1BD_FIXTURE") != "disposable-only" and os.getenv("PYPMIS_O1C_FIXTURE") != "disposable-only",
     reason="Dedicated O1B-D disposable PostgreSQL scenario required",
 )
 

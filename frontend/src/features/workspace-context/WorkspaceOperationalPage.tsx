@@ -14,6 +14,7 @@ import ScheduleManagerWorkspace from "../schedule-foundation/ScheduleManagerWork
 import AwpWorkspace from "../awp/AwpWorkspace";
 import CostManagerWorkspace from "../cost-foundation/CostManagerWorkspace";
 import ProgressManagerWorkspace from "../progress-foundation/ProgressManagerWorkspace";
+import ForecastPerformanceWorkspace from "../forecast-foundation/ForecastPerformanceWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -159,7 +160,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
         </aside>
 
         <section className="workspaceOperationalContent">
-          {!["operational-setup", "scope-manager", "schedule-manager", "awp", "cost", "progress"].includes(
+          {!["operational-setup", "scope-manager", "schedule-manager", "awp", "cost", "progress", "forecast"].includes(
             current?.code ?? ""
           ) ? (
             <CompactModuleHeader
@@ -184,7 +185,14 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "progress" && context.identity.workspace_type === "PROJECT" ? (
+          {current?.code === "forecast" && context.identity.workspace_type === "PROJECT" ? (
+            <ForecastPerformanceWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "progress" && context.identity.workspace_type === "PROJECT" ? (
             <ProgressManagerWorkspace
               key={workspaceId}
               token={token}

@@ -12,9 +12,10 @@ from app.core.config import get_settings
 from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
-from app.modules.cost_foundation.migration_schema import local_bootstrap_tables
+from app.modules.cost_foundation.migration_schema import COST_MIGRATION_TABLE_NAMES
+from app.modules.forecast_foundation.migration_schema import FORECAST_MIGRATION_TABLE_NAMES
 from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
-from app.modules.progress_foundation.migration_schema import local_bootstrap_tables as progress_bootstrap_tables
+from app.modules.progress_foundation.migration_schema import PROGRESS_MIGRATION_TABLE_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +53,9 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 def _create_schema_for_local_runtime() -> None:
-    # Cost/Progress require their additive Alembic constraints and triggers.
-    progress_tables = set(progress_bootstrap_tables(Base.metadata))
-    tables = [table for table in local_bootstrap_tables(Base.metadata) if table in progress_tables]
+    # Cost/Progress/Forecast require their additive Alembic constraints and triggers.
+    migration_only = COST_MIGRATION_TABLE_NAMES | PROGRESS_MIGRATION_TABLE_NAMES | FORECAST_MIGRATION_TABLE_NAMES
+    tables = [table for table in Base.metadata.sorted_tables if table.name not in migration_only]
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
             connection.exec_driver_sql("SELECT pg_advisory_xact_lock(202606030021)")

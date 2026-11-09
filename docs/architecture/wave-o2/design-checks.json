@@ -1,0 +1,60 @@
+{
+  "result": "PASS",
+  "scope": "OFFLINE_DESIGN_ONLY",
+  "cases": [
+    [
+      "V-01",
+      "Modos de inclusión y techo informativo",
+      "PASS DISEÑO",
+      "110 USD sobre 100 de contrato y 10 aditivos; marco no vinculante deja 20 USD de orden independiente"
+    ],
+    [
+      "V-02",
+      "Cobertura contractual",
+      "PASS DISEÑO",
+      "Exceso, padre ausente y moneda incompatible se rechazan"
+    ],
+    [
+      "V-03",
+      "Identidad y aislamiento",
+      "PASS DISEÑO",
+      "Duplicado económico y fuente de otro Project se rechazan"
+    ],
+    [
+      "V-04",
+      "Sucesor SOV y corte histórico",
+      "PASS DISEÑO",
+      "100 original; +15 aprobado; 115 vigente; el borrador y el conocimiento posterior no reescriben la historia"
+    ],
+    [
+      "V-05",
+      "Moneda sin FX elegible",
+      "PASS DISEÑO",
+      "100 USD y 7 EUR se conservan separados; no existe total multimoneda"
+    ],
+    [
+      "V-06",
+      "UNIT_RATE y certificación separada",
+      "PASS DISEÑO",
+      "Original 200; vigente 240; certificado 100; saldo 140 USD y 7 unidades"
+    ],
+    [
+      "V-07",
+      "Roll-up y drill-down por asignación",
+      "PASS DISEÑO",
+      "El join contextual no suma dinero; CBS-A y SOV-1 resuelven al mismo origen; 10 quedan sin asignar"
+    ],
+    [
+      "V-08",
+      "Handoff de adjudicación",
+      "PASS DISEÑO",
+      "Solo autorización vigente más comando explícito y actor independiente permiten el borrador contractual"
+    ],
+    [
+      "V-09",
+      "Caso IWP de bomba",
+      "PASS DISEÑO",
+      "ORDERED y revisión IFC obsoleta bloquean READY; READY requiere además un comando para RELEASED"
+    ]
+  ]
+}

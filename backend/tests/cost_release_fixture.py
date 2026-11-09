@@ -31,6 +31,7 @@ def create_cost_fixture(db, client, *, operational_policy=None):
     assert db.bind.dialect.name == "postgresql" and (
         (db.bind.url.database in {"o1bc", "o1bc_browser"} and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
         or (db.bind.url.database in {"o1bd", "o1bd_browser"} and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
+        or (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
     )
     f = create_schedule_fixture(db, client, operational_policy=operational_policy)
     f.db = db

@@ -37,8 +37,10 @@ def request(f, method, path, *, payload=None, actor="cost_controller", version=N
 def create_progress_fixture(
     db, client, *, prepare_integrated=True, publish_profile=True, real_model=False, multi_period_phasing=False
 ):
-    assert db.bind.dialect.name == "postgresql" and db.bind.url.database in {"o1bd", "o1bd_browser"}
-    assert os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only"
+    assert db.bind.dialect.name == "postgresql" and (
+        (db.bind.url.database in {"o1bd", "o1bd_browser"} and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
+        or (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
+    )
     if real_model:
         from tests.awp_browser_fixture import create_awp_browser_fixture
 

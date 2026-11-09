@@ -269,6 +269,8 @@ from app.modules.cost_foundation import router as cost_foundation_router
 from app.modules.economic_financial_model import router as economic_financial_model_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
+from app.modules.forecast_foundation import reporting_router as forecast_reporting_router
+from app.modules.forecast_foundation import router as forecast_foundation_router
 from app.modules.funds_manager import router as funds_manager_router
 from app.modules.idea_demand import router as idea_demand_router
 from app.modules.investment_decision import router as investment_decision_router
@@ -346,6 +348,11 @@ router.include_router(cost_financial_router.router, prefix="/cost", tags=["cost-
 router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-legacy-candidates"])
 router.include_router(progress_foundation_router.router, prefix="/progress", tags=["progress-foundation"])
 router.include_router(progress_integration_router.router, prefix="/progress", tags=["progress-integration"])
+router.include_router(forecast_foundation_router.router, prefix="/forecast", tags=["forecast-foundation"])
+router.include_router(
+    forecast_reporting_router.performance_router, prefix="/performance", tags=["forecast-performance"]
+)
+router.include_router(forecast_reporting_router.reporting_router, prefix="/reporting", tags=["forecast-reporting"])
 router.include_router(awp_router.readiness_router, prefix="/readiness", tags=["execution-readiness"])
 router.include_router(schedule_four_d_router.router, prefix="/schedule", tags=["schedule-4d"])
 router.include_router(qra_foundation_router.router, prefix="/qra-foundation", tags=["qra-foundation"])
