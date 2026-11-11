@@ -1,0 +1,178 @@
+{
+  "completed_at_utc": "2026-11-11T01:55:01.875120+00:00",
+  "baseline_head": "3889d717c4f86b1f3453927d09adc990d592a958",
+  "release_marker": "WAVE_O2A_ENGINEERING_FOUNDATION_RELEASE_VALIDATED",
+  "final_output": "READY_FOR_WAVE_O2B_PROCUREMENT_MATERIALS_LOGISTICS_FOUNDATION",
+  "next_increment": "WAVE O2B — PROCUREMENT, MATERIALS & LOGISTICS FOUNDATION",
+  "scope": "Technical validation in isolated PostgreSQL/API/frontend; not production deployment or business acceptance",
+  "postgresql": {
+    "total": 368,
+    "passed": 368,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "chromium_checks": 10,
+  "chromium_project_workspace_id": 109949827,
+  "performance": [
+    {
+      "operation": "Deliverable Register",
+      "route": "/deliverables?limit=50",
+      "samples_ms": [
+        506,
+        489,
+        506
+      ],
+      "median_ms": 506
+    },
+    {
+      "operation": "Revision history",
+      "route": "/deliverables/22/revisions?limit=50",
+      "samples_ms": [
+        804,
+        457,
+        644
+      ],
+      "median_ms": 644
+    },
+    {
+      "operation": "Review queue (status projection)",
+      "route": "/status?as_of=2026-11-11",
+      "samples_ms": [
+        186,
+        212,
+        209
+      ],
+      "median_ms": 209
+    },
+    {
+      "operation": "IFC release queue (status projection)",
+      "route": "/status?as_of=2026-11-11",
+      "samples_ms": [
+        195,
+        198,
+        188
+      ],
+      "median_ms": 195
+    },
+    {
+      "operation": "EWP mapping",
+      "route": "/revisions/2/mappings",
+      "samples_ms": [
+        166,
+        127,
+        133
+      ],
+      "median_ms": 133
+    },
+    {
+      "operation": "Engineering Readiness",
+      "route": "/readiness?work_package_id=5&as_of=2026-11-11",
+      "samples_ms": [
+        185,
+        157,
+        215
+      ],
+      "median_ms": 185
+    },
+    {
+      "operation": "Engineering Look-Ahead",
+      "route": "/lookahead?as_of=2026-11-11&horizon_days=28",
+      "samples_ms": [
+        230,
+        205,
+        207
+      ],
+      "median_ms": 207
+    }
+  ],
+  "register_size": 21,
+  "project14_canonical_sha256": "6042e74503bdb761a443665d789e70cea71e5435d46023159cc17243edd1b114",
+  "defects": [
+    {
+      "id": "O2A-INPUT-001",
+      "severity": "S3",
+      "status": "CLOSED",
+      "description": "Un identificador no ASCII dentro de engineering:... podía provocar ValueError antes de consultar datos. Se añadió isascii antes del parseo numérico y cuatro pruebas de rechazo controlado 422. El guard no altera referencias canónicas válidas."
+    },
+    {
+      "id": "O2A-TEST-003",
+      "severity": "S3",
+      "status": "CLOSED",
+      "description": "Repetir la UAT en el mismo tenant produjo dos códigos de perfil publicados y el resolver rechazó la ambigüedad. La prueba final usa otro tenant sintético aditivo; el escenario anterior se conserva, sin desactivar validaciones ni borrar evidencia."
+    },
+    {
+      "id": "O2A-TEST-001",
+      "severity": "S3",
+      "status": "CLOSED",
+      "description": "Las comprobaciones AWP y métricas usaban claves DTO incorrectas. Corregidas y aprobadas en la suite final PostgreSQL."
+    },
+    {
+      "id": "O2A-TEST-002",
+      "severity": "S3",
+      "status": "CLOSED",
+      "description": "La prueba intentaba aceptar P6 con actividad eliminada aún vinculada. Ahora comprueba el rechazo autorizado y usa una sucesora válida para verificar REQUIRES_REVIEW sin remapear."
+    },
+    {
+      "id": "O2A-UI-001",
+      "severity": "S3",
+      "status": "CLOSED",
+      "description": "Añadida paginación por cursor al selector de entregables y corregidos tipos de la vista. La compilación y el recorrido congelado se verifican por sus controles separados."
+    },
+    {
+      "id": "O2A-UI-002",
+      "severity": "S3",
+      "status": "OPEN",
+      "description": "Las etiquetas de estado opcionales se conservan en el perfil ADMIN; USER muestra códigos canónicos. No modifica reglas, estados, permisos ni decisiones."
+    },
+    {
+      "id": "O2A-PERF-001",
+      "severity": "S3",
+      "status": "OPEN",
+      "description": "Las proyecciones de estado y Look-Ahead recorren el registro del proyecto. Las mediciones locales con datos sintéticos no certifican un SLA de producción ni escala de miles de entregables."
+    },
+    {
+      "id": "O2A-UI-003",
+      "severity": "S3",
+      "status": "OPEN",
+      "description": "Los selectores de destinos, documentos y grupos muestran la página acotada por defecto del API (100 destinos y 50 documentos o grupos). La paginación completa de esos selectores queda pendiente para registros mayores."
+    },
+    {
+      "id": "O2A-LEGACY-001",
+      "severity": "S4",
+      "status": "OPEN",
+      "description": "SQLAlchemy advierte un ciclo de claves foráneas legacy entre control_accounts y work_packages en el arranque. Las tres advertencias no hicieron fallar ninguna prueba; el esquema legacy no se alteró en O2A."
+    }
+  ],
+  "artifacts": {
+    "P&Pmis_Wave_O2A_Engineering_Foundation_Technical_Report.docx": "75884bf11112dfefd8bf692471d7d7e21666dd1f2beb2de26329e23a81308319",
+    "P&Pmis_Wave_O2A_Engineering_Foundation_Traceability.xlsx": "67f41e49c4c9d494993f78290dc5c6ec5cdab838662a41078b0cd8877b773e90"
+  },
+  "native_artifacts": {
+    "word_sections": 36,
+    "word_tables": 5,
+    "report_sha256": "75884bf11112dfefd8bf692471d7d7e21666dd1f2beb2de26329e23a81308319",
+    "workbook_sheets": 15,
+    "workbook_compared_cells": 836,
+    "workbook_sha256": "67f41e49c4c9d494993f78290dc5c6ec5cdab838662a41078b0cd8877b773e90",
+    "word_internal_relationships_checked": 15,
+    "excel_internal_relationships_checked": 34,
+    "template_reference_sha256": "e2a6b9811af92ac064235e7aef29d7c8df69c23723c0548d1551d4c48d183cd6",
+    "template_preserved_parts": 16
+  },
+  "word_pages": 7,
+  "workbook_sheets": 15,
+  "release_criteria": 41,
+  "git_commit_created": false,
+  "git_push_performed": false,
+  "normal_database_migrated": false,
+  "retained_evidence_sha256": {
+    "final-postgres-junit.xml": "a5fc425539604e1174d87ef0f1eaa2664e2737d48c1251652ced19909b8c2f89",
+    "postgres-source-proof.json": "c5c3d4a9952e5d9eb0da5dec79aab62746b03ae5ce92ab1f116a7ae85fb971ed",
+    "frontend-validation.json": "e74ac4bb38291f78c08ffb520a1a7c806ba57dbf665c6418177ed39b0f8f43cd",
+    "browser-uat.json": "c2aac19d5773ce4520a92895bae45b074fa70772e891245979474c47d5a74df1",
+    "browser-source-proof.json": "950527d2a5b6563e7b35f4fa737c5eb3c952c85e27b9b49af08502ccbc9bcb11",
+    "performance.json": "8229c740a71ac52697cb91835d788c8ebc0b6def6b0f6f9078fd4aca43ffce94",
+    "awp-current-readback.json": "7a168c2c0f469a39ca60612c665fe371ae6030da6c308c196ef1c1a5a8e71a2d"
+  }
+}

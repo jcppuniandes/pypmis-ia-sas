@@ -1,0 +1,156 @@
+{
+  "result": "PASS",
+  "stage": "immutability-and-read-timing",
+  "project_workspace_id": 109949827,
+  "as_of_utc": "2026-11-11",
+  "checks": [
+    {
+      "code": "ADMIN_PROFILE_DRAFT_CREATED_WITH_CONTROLLED_CATALOGS",
+      "result": "PASS"
+    },
+    {
+      "code": "ADMIN_SELF_PUBLICATION_DENIED_BY_SERVER",
+      "result": "PASS"
+    },
+    {
+      "code": "ADMIN_INDEPENDENT_PUBLISH_IMMUTABLE",
+      "result": "PASS"
+    },
+    {
+      "code": "REGISTER_AND_REVISION_REAL_UI",
+      "result": "PASS"
+    },
+    {
+      "code": "CDE_ATTACHMENT_PINNED_BY_REAL_HASH",
+      "result": "PASS"
+    },
+    {
+      "code": "SCOPE_PLAN_EWP_MAPPINGS_REAL_UI",
+      "result": "PASS"
+    },
+    {
+      "code": "TWO_ROUNDS_COMMENT_RESPONSE_CLOSE_AND_INDEPENDENT_CHECK_APPROVAL",
+      "result": "PASS"
+    },
+    {
+      "code": "IFC_EXPLICIT_SEPARATE_ACTOR_AND_RELEASE_HASH",
+      "result": "PASS"
+    },
+    {
+      "code": "GOVERNED_ENGINEERING_EVIDENCE_CONSUMED_BY_AWP_NO_PACKAGE_RELEASE",
+      "result": "PASS"
+    },
+    {
+      "code": "APPROVED_REVISION_IMMUTABLE_AND_READS_DO_NOT_MUTATE_HISTORY",
+      "result": "PASS"
+    }
+  ],
+  "observations": {
+    "profile_id": 29,
+    "deliverable_id": 22,
+    "revision_id": 2,
+    "document_hash": "c849e4f6dfe948840a5ba189ec736d6f0079eea44d601c50d9b233a3c0dc98e1",
+    "release_hash": "77db2ac12cab3b4f0e550bb4d5b48c29c53f25365f1b7bfff1188cf73fa25356",
+    "engineering_evidence_hash": "a92fc03d3860e13341b5726a750d2294257c024792e6c0e9bbd404821b67a507",
+    "awp_assessment_id": 2,
+    "awp_readiness_state": "READY",
+    "awp_release_state": "NOT_RELEASED",
+    "synthetic_additional_deliverables": 20,
+    "register_size": 21
+  },
+  "mutations": [
+    {
+      "step": "admin-create-profile",
+      "status": 201
+    },
+    {
+      "step": "admin-self-publish-denied",
+      "status": 403
+    },
+    {
+      "step": "admin-independent-publish",
+      "status": 200
+    },
+    {
+      "step": "user-create-deliverable",
+      "status": 201
+    },
+    {
+      "step": "user-create-revision",
+      "status": 201
+    },
+    {
+      "step": "user-link-real-cde",
+      "status": 200
+    },
+    {
+      "step": "user-map-authoritative-targets",
+      "status": 201
+    },
+    {
+      "step": "user-map-authoritative-targets",
+      "status": 201
+    },
+    {
+      "step": "user-map-authoritative-targets",
+      "status": 201
+    },
+    {
+      "step": "user-submit-technical-review",
+      "status": 200
+    },
+    {
+      "step": "reviewer-comment-and-return",
+      "status": 200
+    },
+    {
+      "step": "reviewer-comment-and-return",
+      "status": 201
+    },
+    {
+      "step": "reviewer-comment-and-return",
+      "status": 200
+    },
+    {
+      "step": "preparer-respond-and-revise",
+      "status": 200
+    },
+    {
+      "step": "preparer-respond-and-revise",
+      "status": 200
+    },
+    {
+      "step": "reviewer-close-comment",
+      "status": 200
+    },
+    {
+      "step": "round-two-and-independent-approval",
+      "status": 200
+    },
+    {
+      "step": "round-two-and-independent-approval",
+      "status": 200
+    },
+    {
+      "step": "round-two-and-independent-approval",
+      "status": 200
+    },
+    {
+      "step": "round-two-and-independent-approval",
+      "status": 200
+    },
+    {
+      "step": "round-two-and-independent-approval",
+      "status": 200
+    },
+    {
+      "step": "independent-explicit-ifc",
+      "status": 201
+    },
+    {
+      "step": "engineering-readiness-then-awp",
+      "status": 201
+    }
+  ],
+  "browser_errors": []
+}

@@ -16,6 +16,8 @@ from app.modules.cost_foundation import financial_models as cost_financial_model
 from app.modules.cost_foundation import models as cost_foundation_models  # noqa: F401
 from app.modules.economic_financial_model import models as economic_financial_model_models  # noqa: F401
 from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
+from app.modules.engineering_foundation import integration_models as engineering_integration_models  # noqa: F401
+from app.modules.engineering_foundation import models as engineering_models  # noqa: F401
 from app.modules.forecast_foundation import models as forecast_foundation_models  # noqa: F401
 from app.modules.forecast_foundation import reporting_models as forecast_reporting_models  # noqa: F401
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401

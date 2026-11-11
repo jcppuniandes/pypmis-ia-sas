@@ -15,6 +15,7 @@ import AwpWorkspace from "../awp/AwpWorkspace";
 import CostManagerWorkspace from "../cost-foundation/CostManagerWorkspace";
 import ProgressManagerWorkspace from "../progress-foundation/ProgressManagerWorkspace";
 import ForecastPerformanceWorkspace from "../forecast-foundation/ForecastPerformanceWorkspace";
+import EngineeringWorkspace from "../engineering-foundation/EngineeringWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -160,9 +161,16 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
         </aside>
 
         <section className="workspaceOperationalContent">
-          {!["operational-setup", "scope-manager", "schedule-manager", "awp", "cost", "progress", "forecast"].includes(
-            current?.code ?? ""
-          ) ? (
+          {![
+            "operational-setup",
+            "scope-manager",
+            "schedule-manager",
+            "awp",
+            "cost",
+            "progress",
+            "forecast",
+            "engineering",
+          ].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
                 current?.code === "home"
@@ -185,7 +193,14 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "forecast" && context.identity.workspace_type === "PROJECT" ? (
+          {current?.code === "engineering" && context.identity.workspace_type === "PROJECT" ? (
+            <EngineeringWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "forecast" && context.identity.workspace_type === "PROJECT" ? (
             <ForecastPerformanceWorkspace
               key={workspaceId}
               token={token}

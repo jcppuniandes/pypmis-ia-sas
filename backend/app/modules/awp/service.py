@@ -509,6 +509,8 @@ class AWPService(ScopeFoundationService):
                     self._error(403, "AWP_CONSTRAINT_CLEARANCE_SOD")
                 if payload.status == "WAIVED" and not payload.waiver_reference:
                     self._error(422, "AWP_CONSTRAINT_WAIVER_REFERENCE_REQUIRED")
+                if payload.status == "CLEARED" and payload.evidence_reference.startswith("engineering:"):
+                    self._verify_engineering_clearance(workspace, row, profile, payload.evidence_reference)
                 row.cleared_by, row.cleared_at = self.actor_id, utc_now()
             row.status = payload.status
             row.evidence_reference, row.waiver_reference = payload.evidence_reference, payload.waiver_reference
@@ -570,6 +572,8 @@ class AWPService(ScopeFoundationService):
 
     def _readiness_facts(self, workspace):
         """Request-local projection only. No database writes or cross-request cache."""
+        from app.modules.engineering_foundation.integration import awp_engineering_reader
+
         facts = {
             model: self._rows(model, workspace)
             for model in (
@@ -585,6 +589,7 @@ class AWPService(ScopeFoundationService):
         facts["package_mappings"] = self._effective_records(facts[PackageMapping], "work_package_id")
         facts["constraint_mappings"] = self._effective_records(facts[ConstraintMapping], "constraint_id")
         facts["mapping_output"] = {row.id: self._mapping_out(row, workspace) for row in facts["package_mappings"]}
+        facts["engineering_reader"] = awp_engineering_reader(self.db, self.tenant_id, workspace)
         return facts
 
     def _readiness_inputs(self, workspace, package, profile, facts=None):
@@ -646,20 +651,86 @@ class AWPService(ScopeFoundationService):
         }
         return mapping_out, constraints, dependencies, hashes
 
-    def _current_readiness(self, workspace, package, profile, facts=None):
-        facts = facts if facts is not None else self._readiness_facts(workspace)
-        assessments = [row for row in facts[ReadinessAssessment] if row.work_package_id == package.id]
-        last = assessments[-1] if assessments else None
-        mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile, facts)
-        evidence = last.evidence_state.get("references", {}) if last else {}
+    @staticmethod
+    def _engineering_readiness(package, facts, as_of=None):
+        reader = facts.get("engineering_reader")
+        return reader.evidence(package, as_of) if reader else None
+
+    def _verify_engineering_clearance(self, workspace, row, profile, reference):
+        from app.modules.engineering_foundation.integration import awp_evidence_reference
+
+        parts = reference.split(":")
+        if (
+            row.constraint_type != "ENGINEERING"
+            or len(parts) != 3
+            or not parts[1].isascii()
+            or not parts[1].isdigit()
+            or len(parts[1]) > 18
+            or int(parts[1]) <= 0
+        ):
+            self._error(422, "AWP_ENGINEERING_CLEARANCE_REFERENCE_INVALID")
+        package = self._get(WorkPackage, workspace, int(parts[1]))
+        facts = self._readiness_facts(workspace)
+        _, constraints, _, _ = self._readiness_inputs(workspace, package, profile, facts)
+        provider = self._engineering_readiness(package, facts)
+        if not (
+            any(constraint["id"] == row.id for constraint in constraints)
+            and provider
+            and provider["status"] == "ELIGIBLE"
+            and reference == awp_evidence_reference(provider)
+        ):
+            self._error(409, "AWP_ENGINEERING_CLEARANCE_EVIDENCE_INELIGIBLE")
+
+    @staticmethod
+    def _assess_with_engineering(package, policy, constraints, dependencies, evidence, mappings, provider):
+        from app.modules.engineering_foundation.integration import awp_evidence_reference
+
+        if provider:
+            # An explicit engineering mapping is a required dimension. A manual
+            # reference cannot make missing or stale governed evidence eligible.
+            policy = deepcopy(policy)
+            requirements = policy["readiness_requirements"][package.package_type]
+            if "ENGINEERING" not in requirements["required_dimensions"]:
+                requirements["required_dimensions"].append("ENGINEERING")
+            evidence = dict(evidence)
+            evidence.pop("ENGINEERING", None)
+            if provider["status"] == "ELIGIBLE":
+                evidence["ENGINEERING"] = awp_evidence_reference(provider)
+        elif evidence.get("ENGINEERING", "").startswith("engineering:"):
+            # The reserved reference namespace is never accepted as free text.
+            evidence = {dimension: value for dimension, value in evidence.items() if dimension != "ENGINEERING"}
         result = assess_policy(
             package.package_type,
-            profile.content_json,
+            policy,
             constraints,
             dependencies,
             evidence,
             any(row["target_kind"] in {"SCOPE", "PLAN"} and row["mapping_health"] == "VALID" for row in mappings),
             any(row["target_kind"] == "ACTIVITY" and row["mapping_health"] == "VALID" for row in mappings),
+        )
+        if provider:
+            result["evidence_state"]["engineering_provider"] = provider
+        return result
+
+    def _current_readiness(self, workspace, package, profile, facts=None):
+        facts = facts if facts is not None else self._readiness_facts(workspace)
+        assessments = [row for row in facts[ReadinessAssessment] if row.work_package_id == package.id]
+        provider = self._engineering_readiness(package, facts)
+        if provider:
+            assessments = [row for row in assessments if self._instant(row.as_of) <= utc_now()]
+        last = assessments[-1] if assessments else None
+        mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile, facts)
+        if provider:
+            hashes["engineering"] = provider["evidence_hash"]
+        evidence = last.evidence_state.get("references", {}) if last else {}
+        result = self._assess_with_engineering(
+            package,
+            profile.content_json,
+            constraints,
+            dependencies,
+            evidence,
+            mappings,
+            provider,
         )
         stale = last is None or last.source_hashes != hashes
         if last is None and result["readiness_state"] != "NOT_READY" or stale and result["readiness_state"] == "READY":
@@ -684,23 +755,29 @@ class AWPService(ScopeFoundationService):
             package = self._get(WorkPackage, workspace, identity, lock=True)
             self._version(package.version, expected)
             try:
-                date.fromisoformat(payload.as_of[:10])
-                self._instant(payload.as_of)
+                cutoff = date.fromisoformat(payload.as_of[:10])
+                instant = self._instant(payload.as_of)
             except ValueError as error:
                 raise HTTPException(422, detail={"code": "AWP_AS_OF_INVALID"}) from error
             if not set(payload.evidence_json) <= set(DIMENSIONS) or any(
                 not value.strip() or len(value) > 1000 for value in payload.evidence_json.values()
             ):
                 self._error(422, "AWP_READINESS_EVIDENCE_INVALID")
-            mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile)
-            result = assess_policy(
-                package.package_type,
+            facts = self._readiness_facts(workspace)
+            provider = self._engineering_readiness(package, facts, cutoff if len(payload.as_of) == 10 else instant)
+            if provider and instant > utc_now():
+                self._error(422, "AWP_ENGINEERING_AS_OF_IN_FUTURE")
+            mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile, facts)
+            if provider:
+                hashes["engineering"] = provider["evidence_hash"]
+            result = self._assess_with_engineering(
+                package,
                 profile.content_json,
                 constraints,
                 dependencies,
                 payload.evidence_json,
-                any(row["target_kind"] in {"SCOPE", "PLAN"} and row["mapping_health"] == "VALID" for row in mappings),
-                any(row["target_kind"] == "ACTIVITY" and row["mapping_health"] == "VALID" for row in mappings),
+                mappings,
+                provider,
             )
             row = ReadinessAssessment(
                 **self._base(workspace),

@@ -75,6 +75,7 @@ GOVERNED_CONFIGURATION_APIS = {
     "cost_profile": "/api/v1/cost/admin/profiles",
     "progress_profile": "/api/v1/progress/admin/profiles",
     "forecast_profile": "/api/v1/forecast/admin/profiles",
+    "engineering_profile": "/api/v1/engineering/admin/profiles",
     "risk_governance_policy": "/api/v1/risk-governance/admin/configurations",
     "basic_data_readiness_configuration": "/api/v1/basic-data/admin/configurations",
     "owner_capability_readiness_configuration": "/api/v1/owner-capability/admin/configurations",
@@ -617,6 +618,7 @@ def _configurations(db: Session, tenant_id: int) -> list[AdminConfiguration]:
                         "cost_profile",
                         "progress_profile",
                         "forecast_profile",
+                        "engineering_profile",
                     ]
                 ),
             )

@@ -40,6 +40,7 @@ def create_progress_fixture(
     assert db.bind.dialect.name == "postgresql" and (
         (db.bind.url.database in {"o1bd", "o1bd_browser"} and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
         or (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
+        or (db.bind.url.database == "o2a" and os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only")
     )
     if real_model:
         from tests.awp_browser_fixture import create_awp_browser_fixture

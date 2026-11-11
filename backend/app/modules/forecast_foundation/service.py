@@ -688,6 +688,23 @@ class ForecastFoundationService(ScopeFoundationService):
                 self._error(422, "FORECAST_ASSUMPTION_OWNER_OUTSIDE_TENANT")
             if assumption.effective_date > payload.as_of:
                 self._error(422, "FORECAST_ASSUMPTION_NOT_EFFECTIVE_AS_OF")
+            if assumption.source_reference.startswith("engineering-revision:"):
+                from app.modules.engineering_foundation.integration import resolve_forecast_issue_fact
+
+                if assumption.kind != "FORECAST_DATE" or assumption.unit != "date":
+                    self._error(422, "FORECAST_ENGINEERING_DATE_ASSUMPTION_REQUIRED")
+                try:
+                    fact = resolve_forecast_issue_fact(
+                        self.db,
+                        self.tenant_id,
+                        workspace,
+                        assumption.source_reference,
+                        payload.as_of,
+                    )
+                except ValueError as error:
+                    self._error(409, str(error))
+                if fact["forecast_issue_date"] != assumption.value:
+                    self._error(422, "FORECAST_ENGINEERING_DATE_MISMATCH")
         dimensions = {
             "scope_item_id": ScopeItem,
             "plan_item_id": PlanItem,
@@ -1125,6 +1142,7 @@ class ForecastFoundationService(ScopeFoundationService):
         )
         current_finish = _date(activity.get("finish") or activity.get("planned_finish")) if activity else None
         baseline_finish = _date(baseline.get("finish") or baseline.get("planned_finish")) if baseline else None
+        engineering_source = None
         if component["inputs"].get("date_assumption_code"):
             if not profile.content_json["allow_manual_finish"] or component["method"] != "MANUAL_GOVERNED":
                 raise ValueError("FORECAST_MANUAL_FINISH_DISABLED_OR_METHOD_INVALID")
@@ -1133,6 +1151,20 @@ class ForecastFoundationService(ScopeFoundationService):
             )
             projected = _date(assumption["value"])
             source = "GOVERNED_MANUAL_FINISH_ASSUMPTION"
+            if assumption.get("source_reference", "").startswith("engineering-revision:"):
+                from app.modules.engineering_foundation.integration import resolve_forecast_issue_fact
+
+                engineering_source = resolve_forecast_issue_fact(
+                    self.db,
+                    self.tenant_id,
+                    row.project_workspace_id,
+                    assumption["source_reference"],
+                    row.as_of,
+                    component | {"schedule_version_id": row.schedule_version_id},
+                )
+                if engineering_source["forecast_issue_date"] != assumption["value"]:
+                    raise ValueError("FORECAST_ENGINEERING_DATE_MISMATCH")
+                source = "GOVERNED_ENGINEERING_ISSUE_ASSUMPTION"
         elif activity is not None and component["method"] == "ACTIVITY_REMAINING_DURATION":
             projected, source = current_finish, "ACCEPTED_P6_FINISH_NO_LOCAL_CPM"
         else:
@@ -1145,7 +1177,7 @@ class ForecastFoundationService(ScopeFoundationService):
             and str(activity.get("status", "")).upper() not in {"COMPLETED", "COMPLETE"}
         ):
             raise ValueError("FORECAST_UNCOMPLETED_FINISH_BEFORE_ASOF")
-        return {
+        result = {
             "status": "COMPUTABLE",
             "reason_codes": [],
             "baseline_finish": str(baseline_finish) if baseline_finish else None,
@@ -1162,6 +1194,9 @@ class ForecastFoundationService(ScopeFoundationService):
             "milestone_type": component["inputs"].get("milestone_type", "KEY_PROJECT"),
             "cpm_calculated": False,
         }
+        if engineering_source:
+            result["engineering_source"] = engineering_source
+        return result
 
     def _resource_item(self, row, component, assumptions, snapshot, profile):
         if component["method"] != "PRODUCTIVITY_BASED":
@@ -1267,6 +1302,15 @@ class ForecastFoundationService(ScopeFoundationService):
                     "forecast_finish": None,
                 }
             families[component["component_kind"]].append({**component, **calculation})
+        engineering_facts = {
+            f"{kind}:{component['code']}": component["engineering_source"]
+            for kind in ("TIME", "MILESTONE")
+            for component in families[kind]
+            if component.get("engineering_source")
+        }
+        if engineering_facts:
+            snapshot["engineering_issue_facts"] = engineering_facts
+            snapshot["hashes"]["engineering_issue_facts"] = _hash(engineering_facts)
         cost_errors = list(source_errors)
         cost_items = families["COST"]
         if not cost_items:

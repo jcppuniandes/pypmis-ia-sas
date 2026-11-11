@@ -269,6 +269,7 @@ from app.modules.cost_foundation import router as cost_foundation_router
 from app.modules.economic_financial_model import router as economic_financial_model_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
+from app.modules.engineering_foundation import router as engineering_foundation_router
 from app.modules.forecast_foundation import reporting_router as forecast_reporting_router
 from app.modules.forecast_foundation import router as forecast_foundation_router
 from app.modules.funds_manager import router as funds_manager_router
@@ -349,6 +350,7 @@ router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-le
 router.include_router(progress_foundation_router.router, prefix="/progress", tags=["progress-foundation"])
 router.include_router(progress_integration_router.router, prefix="/progress", tags=["progress-integration"])
 router.include_router(forecast_foundation_router.router, prefix="/forecast", tags=["forecast-foundation"])
+router.include_router(engineering_foundation_router.router, prefix="/engineering", tags=["engineering-foundation"])
 router.include_router(
     forecast_reporting_router.performance_router, prefix="/performance", tags=["forecast-performance"]
 )

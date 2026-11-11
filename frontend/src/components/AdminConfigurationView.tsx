@@ -5,6 +5,7 @@ import OperationalProfilesAdminView from "../features/operational-context/Operat
 import ScopeProfilesAdminView from "../features/scope-foundation/ScopeProfilesAdminView";
 import ScheduleProfilesAdminView from "../features/schedule-foundation/ScheduleProfilesAdminView";
 import GovernedProfilesAdminView from "../features/awp/GovernedProfilesAdminView";
+import EngineeringProfilesAdminView from "../features/engineering-foundation/EngineeringProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -108,7 +109,7 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
 
 export default function AdminConfigurationView(props: Props) {
   const [section, setSection] = useState<
-    "processes" | "operational" | "scope" | "schedule" | "awp" | "4d" | "cost" | "progress" | "forecast"
+    "processes" | "operational" | "scope" | "schedule" | "awp" | "4d" | "cost" | "progress" | "forecast" | "engineering"
   >("processes");
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
@@ -141,12 +142,17 @@ export default function AdminConfigurationView(props: Props) {
         <button aria-pressed={section === "forecast"} onClick={() => setSection("forecast")} type="button">
           Forecast Profiles
         </button>
+        <button aria-pressed={section === "engineering"} onClick={() => setSection("engineering")} type="button">
+          Engineering Profiles
+        </button>
       </nav>
-      {section === "awp" ||
-      section === "4d" ||
-      section === "cost" ||
-      section === "progress" ||
-      section === "forecast" ? (
+      {section === "engineering" ? (
+        <EngineeringProfilesAdminView token={props.token} />
+      ) : section === "awp" ||
+        section === "4d" ||
+        section === "cost" ||
+        section === "progress" ||
+        section === "forecast" ? (
         <GovernedProfilesAdminView key={section} token={props.token} kind={section} />
       ) : section === "schedule" ? (
         <ScheduleProfilesAdminView token={props.token} />

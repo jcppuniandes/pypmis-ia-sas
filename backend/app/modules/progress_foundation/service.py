@@ -747,6 +747,34 @@ class ProgressFoundationService(ScopeFoundationService):
             }
         source["scope_items"] = [frozen[identity] for identity in source["scope_item_ids"] if identity in frozen]
         source["denominator_unit"] = source_unit
+        references = [ref for ref in payload.evidence_refs if ref.reference.startswith("engineering-release:")]
+        if references:
+            from app.modules.engineering_foundation.integration import resolve_progress_release_fact
+
+            if payload.progress_type not in {"MILESTONE", "WEIGHTED"}:
+                self._error(422, "PROGRESS_ENGINEERING_RELEASE_NOT_PHYSICAL_QUANTITY_EVIDENCE")
+            if len({ref.reference for ref in references}) != len(references):
+                self._error(422, "PROGRESS_ENGINEERING_EVIDENCE_DUPLICATE")
+            facts = []
+            for ref in references:
+                if ref.kind != "DOCUMENT":
+                    self._error(422, "PROGRESS_ENGINEERING_EVIDENCE_KIND_INVALID")
+                try:
+                    fact = resolve_progress_release_fact(
+                        self.db,
+                        self.tenant_id,
+                        workspace,
+                        ref.reference,
+                        payload.as_of,
+                        payload.measurement_date,
+                        payload.model_dump(),
+                    )
+                except ValueError as error:
+                    self._error(409, str(error))
+                if ref.content_hash and ref.content_hash != fact["release_hash"]:
+                    self._error(409, "PROGRESS_ENGINEERING_EVIDENCE_HASH_MISMATCH")
+                facts.append(fact)
+            source["engineering_release_evidence"] = facts
         return source, denominator, rule, package
 
     def effective_approved(self, workspace, *, period_id=None, as_of=None, progress_type=None):

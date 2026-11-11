@@ -1,0 +1,77 @@
+{
+  "result": "MEASURED",
+  "scope": "Local isolated synthetic measurement; not an SLA",
+  "register_size": 21,
+  "operations": [
+    {
+      "operation": "Deliverable Register",
+      "route": "/deliverables?limit=50",
+      "samples_ms": [
+        506,
+        489,
+        506
+      ],
+      "median_ms": 506
+    },
+    {
+      "operation": "Revision history",
+      "route": "/deliverables/22/revisions?limit=50",
+      "samples_ms": [
+        804,
+        457,
+        644
+      ],
+      "median_ms": 644
+    },
+    {
+      "operation": "Review queue (status projection)",
+      "route": "/status?as_of=2026-11-11",
+      "samples_ms": [
+        186,
+        212,
+        209
+      ],
+      "median_ms": 209
+    },
+    {
+      "operation": "IFC release queue (status projection)",
+      "route": "/status?as_of=2026-11-11",
+      "samples_ms": [
+        195,
+        198,
+        188
+      ],
+      "median_ms": 195
+    },
+    {
+      "operation": "EWP mapping",
+      "route": "/revisions/2/mappings",
+      "samples_ms": [
+        166,
+        127,
+        133
+      ],
+      "median_ms": 133
+    },
+    {
+      "operation": "Engineering Readiness",
+      "route": "/readiness?work_package_id=5&as_of=2026-11-11",
+      "samples_ms": [
+        185,
+        157,
+        215
+      ],
+      "median_ms": 185
+    },
+    {
+      "operation": "Engineering Look-Ahead",
+      "route": "/lookahead?as_of=2026-11-11&horizon_days=28",
+      "samples_ms": [
+        230,
+        205,
+        207
+      ],
+      "median_ms": 207
+    }
+  ]
+}

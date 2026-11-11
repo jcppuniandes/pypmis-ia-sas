@@ -1,0 +1,127 @@
+{
+  "captured_at": "2026-11-11T01:53:13.760Z",
+  "http_status": 200,
+  "tenant_id": 3,
+  "project_workspace_id": 109949827,
+  "work_package_id": 5,
+  "current_readiness": {
+    "readiness_state": "READY",
+    "blocking_constraints": [],
+    "open_nonblocking_constraints": [],
+    "dependency_state": {
+      "blocking_ids": [],
+      "items": []
+    },
+    "evidence_state": {
+      "missing_dimensions": [],
+      "missing_mappings": [],
+      "references": {
+        "ENGINEERING": "engineering:5:a92fc03d3860e13341b5726a750d2294257c024792e6c0e9bbd404821b67a507"
+      },
+      "engineering_provider": {
+        "provider_key": "ENGINEERING_READINESS_PROVIDER",
+        "work_package_id": 5,
+        "status": "ELIGIBLE",
+        "coverage": {
+          "required": 1,
+          "covered": 1
+        },
+        "reason_codes": [],
+        "sources": [
+          {
+            "deliverable_id": 22,
+            "mapping_ids": [
+              6
+            ],
+            "mapping_hashes": [
+              "b92e7eb12db8cab317f3386f2dd3056ac2b95dcaef30fe2d127cffad2e4e88f4"
+            ],
+            "required_revision_ids": [
+              2
+            ],
+            "revision_id": 2,
+            "release_id": 2,
+            "release_hash": "77db2ac12cab3b4f0e550bb4d5b48c29c53f25365f1b7bfff1188cf73fa25356",
+            "effective_date": "2026-11-11",
+            "valid_until": null,
+            "status": "ELIGIBLE",
+            "reason_code": null
+          }
+        ],
+        "as_of": "2026-11-11",
+        "evidence_hash": "a92fc03d3860e13341b5726a750d2294257c024792e6c0e9bbd404821b67a507"
+      }
+    },
+    "dimensions": {
+      "ENGINEERING": {
+        "state": "READY",
+        "required": true,
+        "evidence_reference": "engineering:5:a92fc03d3860e13341b5726a750d2294257c024792e6c0e9bbd404821b67a507",
+        "blocking_ids": []
+      },
+      "MATERIAL": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "LOGISTICS": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "ACCESS": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "PERMIT": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "QUALITY": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "HSE": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "RESOURCE": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      },
+      "PREDECESSOR": {
+        "state": "NOT_REQUIRED",
+        "required": false,
+        "evidence_reference": "",
+        "blocking_ids": []
+      }
+    },
+    "work_package_id": 5,
+    "assessment_id": 2,
+    "as_of": "2026-11-11",
+    "source_hashes": {
+      "package": "0e2d4392ada639a3cd7b94794c65c86f64bfab030db0ac2ccfd1231154f9a20e",
+      "mappings": "1373006dea67f3ade822093df32b392a9746f07ec4eb907b10556517cd30ea3a",
+      "constraints": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "dependencies": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "policy": "70068cf43e806958294683501ab42174b4b8bb889ff290ad16ff24bb250a4524",
+      "engineering": "a92fc03d3860e13341b5726a750d2294257c024792e6c0e9bbd404821b67a507"
+    },
+    "stale": false,
+    "policy_revision": 1,
+    "assessed_by": 44
+  },
+  "package_release_state": "NOT_RELEASED"
+}

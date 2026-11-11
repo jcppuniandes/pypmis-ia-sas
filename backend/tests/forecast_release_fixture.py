@@ -58,8 +58,10 @@ def request(f, method, path, *, payload=None, actor="cost_controller", version=N
 
 
 def create_forecast_fixture(db, client, *, real_model=False, publish_forecast_policy=True):
-    assert db.bind.dialect.name == "postgresql" and db.bind.url.database in {"o1c", "o1c_browser"}
-    assert os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only"
+    assert db.bind.dialect.name == "postgresql" and (
+        (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
+        or (db.bind.url.database == "o2a" and os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only")
+    )
     f = create_progress_fixture(db, client, real_model=real_model)
     f.db = db
     for tenant, actor in ((f.tenant_id, f.users["admin"].id), (f.foreign_tenant.id, f.users["foreign"].id)):

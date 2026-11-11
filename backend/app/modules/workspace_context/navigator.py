@@ -165,6 +165,7 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("cost", "Cost Manager", permission_key="cost.read"),
         NavigationDefinition("progress", "Progress Manager", permission_key="progress.read"),
         NavigationDefinition("forecast", "Forecast & Performance", permission_key="forecast.read"),
+        NavigationDefinition("engineering", "Engineering Manager", permission_key="engineering.read"),
         NavigationDefinition("documents", "Documents"),
         NavigationDefinition("reports", "Reports"),
     ),
@@ -252,6 +253,13 @@ class WorkspaceNavigatorService:
             state = item.default_state
             permission_key = item.permission_key
             reason = ""
+            if item.code == "engineering" and (
+                settings.get("engineering") is False
+                or settings.get("engineering-manager") is False
+                or not {"engineering", "engineering-manager"} & enabled
+            ):
+                state = "DISABLED"
+                reason = "Engineering Manager is not enabled for this Workspace"
             if item.code == "forecast" and (
                 settings.get("forecast") is False
                 or settings.get("forecast-performance") is False

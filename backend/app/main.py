@@ -13,6 +13,7 @@ from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
 from app.modules.cost_foundation.migration_schema import COST_MIGRATION_TABLE_NAMES
+from app.modules.engineering_foundation.migration_schema import ENGINEERING_MIGRATION_TABLE_NAMES
 from app.modules.forecast_foundation.migration_schema import FORECAST_MIGRATION_TABLE_NAMES
 from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
 from app.modules.progress_foundation.migration_schema import PROGRESS_MIGRATION_TABLE_NAMES
@@ -53,8 +54,13 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 
 def _create_schema_for_local_runtime() -> None:
-    # Cost/Progress/Forecast require their additive Alembic constraints and triggers.
-    migration_only = COST_MIGRATION_TABLE_NAMES | PROGRESS_MIGRATION_TABLE_NAMES | FORECAST_MIGRATION_TABLE_NAMES
+    # These tables require their additive Alembic constraints and triggers.
+    migration_only = (
+        COST_MIGRATION_TABLE_NAMES
+        | PROGRESS_MIGRATION_TABLE_NAMES
+        | FORECAST_MIGRATION_TABLE_NAMES
+        | ENGINEERING_MIGRATION_TABLE_NAMES
+    )
     tables = [table for table in Base.metadata.sorted_tables if table.name not in migration_only]
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
