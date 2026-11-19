@@ -8,6 +8,7 @@ import GovernedProfilesAdminView from "../features/awp/GovernedProfilesAdminView
 import EngineeringProfilesAdminView from "../features/engineering-foundation/EngineeringProfilesAdminView";
 import ProcurementProfilesAdminView from "../features/procurement-foundation/ProcurementProfilesAdminView";
 import ContractProfilesAdminView from "../features/contracts-foundation/ContractProfilesAdminView";
+import FieldProfilesAdminView from "../features/field-operations/FieldProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -123,6 +124,7 @@ export default function AdminConfigurationView(props: Props) {
     | "engineering"
     | "procurement"
     | "contracts"
+    | "field-operations"
   >("processes");
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
@@ -164,8 +166,17 @@ export default function AdminConfigurationView(props: Props) {
         <button aria-pressed={section === "contracts"} onClick={() => setSection("contracts")} type="button">
           Contract Profiles
         </button>
+        <button
+          aria-pressed={section === "field-operations"}
+          onClick={() => setSection("field-operations")}
+          type="button"
+        >
+          Field Operations Profiles
+        </button>
       </nav>
-      {section === "contracts" ? (
+      {section === "field-operations" ? (
+        <FieldProfilesAdminView token={props.token} />
+      ) : section === "contracts" ? (
         <ContractProfilesAdminView token={props.token} />
       ) : section === "procurement" ? (
         <ProcurementProfilesAdminView token={props.token} />

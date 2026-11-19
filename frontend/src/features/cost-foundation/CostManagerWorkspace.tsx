@@ -9,6 +9,7 @@ import BudgetsPanel from "./BudgetsPanel";
 import BaselinesPanel from "./BaselinesPanel";
 import PhasingPanel from "./PhasingPanel";
 import CommercialAdoptionPanel from "./CommercialAdoptionPanel";
+import FieldConsumerPanel from "../field-operations/FieldConsumerPanel";
 import { ActualsPanel, CommitmentsPanel, CurrencyPanel, OverviewPanel } from "./FinancialPanels";
 import { Records } from "./Fields";
 import type { CostCommand, CostOverview } from "./types";
@@ -24,6 +25,7 @@ const tabs = [
   "Cost Phasing",
   "Commitments",
   "Commercial Adoption",
+  "Field Evidence",
   "Actuals",
   "Accruals",
   "Cost Overview",
@@ -156,6 +158,9 @@ export default function CostManagerWorkspace({
               <RegistryPanel key={tab} {...props} kind={tab} />
               <CostMappingsPanel {...props} />
             </>
+          ) : null}
+          {tab === "Field Evidence" ? (
+            <FieldConsumerPanel token={token} workspaceId={workspaceId} readOnly={readOnly} initialDomain="cost" />
           ) : null}
           {tab === "APU / Rates" ? (
             <>

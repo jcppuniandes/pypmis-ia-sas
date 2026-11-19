@@ -1,0 +1,74 @@
+.fieldOperations,
+.fieldOperations > *,
+.fieldOperations .progressPanel {
+  min-width: 0;
+}
+.fieldOperations .progressTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.fieldOperations .progressTabs button {
+  min-height: 42px;
+}
+.fieldActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.fieldBoundary {
+  border-inline-start: 3px solid #247872;
+  background: #f2f8f7;
+  padding: 10px 12px;
+  color: #254940;
+}
+.fieldReference {
+  min-width: 0;
+  border: 1px solid #d6e2e9;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+}
+.fieldDetail {
+  border-top: 1px solid #d6e2e9;
+  margin-top: 12px;
+  padding-top: 12px;
+  min-width: 0;
+}
+.fieldControl {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+.fieldWide,
+.fieldControl > .progressError {
+  grid-column: 1 / -1;
+}
+.fieldOperations input,
+.fieldOperations select,
+.fieldOperations button {
+  min-height: 40px;
+}
+.fieldOperations textarea {
+  min-height: 84px;
+}
+.fieldOperations pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 30rem;
+  overflow: auto;
+}
+@media (max-width: 680px) {
+  .fieldOperations .progressForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fieldControl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fieldOperations .progressTabs {
+    max-height: 11rem;
+    overflow: auto;
+  }
+}

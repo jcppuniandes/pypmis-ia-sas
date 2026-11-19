@@ -18,6 +18,7 @@ import ForecastPerformanceWorkspace from "../forecast-foundation/ForecastPerform
 import EngineeringWorkspace from "../engineering-foundation/EngineeringWorkspace";
 import ProcurementWorkspace from "../procurement-foundation/ProcurementWorkspace";
 import ContractsManagerWorkspace from "../contracts-foundation/ContractsManagerWorkspace";
+import FieldOperationsWorkspace from "../field-operations/FieldOperationsWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -174,6 +175,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             "engineering",
             "procurement",
             "contracts",
+            "field-operations",
           ].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
@@ -197,9 +199,18 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "contracts" &&
+          {current?.code === "field-operations" &&
           (current.state === "READY" || current.read_only) &&
           context.identity.workspace_type === "PROJECT" ? (
+            <FieldOperationsWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "contracts" &&
+            (current.state === "READY" || current.read_only) &&
+            context.identity.workspace_type === "PROJECT" ? (
             <ContractsManagerWorkspace
               key={workspaceId}
               token={token}
@@ -243,7 +254,12 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
               readOnly={Boolean(current.read_only)}
             />
           ) : current?.code === "awp" && context.identity.workspace_type === "PROJECT" ? (
-            <AwpWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
+            <AwpWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
           ) : current?.code === "schedule-manager" && context.identity.workspace_type === "PROJECT" ? (
             <ScheduleManagerWorkspace key={workspaceId} token={token} workspaceId={workspaceId} />
           ) : current?.code === "scope-manager" && context.identity.workspace_type === "PROJECT" ? (

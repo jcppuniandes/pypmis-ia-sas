@@ -78,6 +78,7 @@ GOVERNED_CONFIGURATION_APIS = {
     "engineering_profile": "/api/v1/engineering/admin/profiles",
     "procurement_profile": "/api/v1/procurement/admin/profiles",
     "contracts_profile": "/api/v1/contracts/admin/profiles",
+    "field_operations_profile": "/api/v1/field-operations/admin/profiles",
     "risk_governance_policy": "/api/v1/risk-governance/admin/configurations",
     "basic_data_readiness_configuration": "/api/v1/basic-data/admin/configurations",
     "owner_capability_readiness_configuration": "/api/v1/owner-capability/admin/configurations",
@@ -623,6 +624,7 @@ def _configurations(db: Session, tenant_id: int) -> list[AdminConfiguration]:
                         "engineering_profile",
                         "procurement_profile",
                         "contracts_profile",
+                        "field_operations_profile",
                     ]
                 ),
             )

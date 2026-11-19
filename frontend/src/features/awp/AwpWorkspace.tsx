@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
+import FieldConsumerPanel from "../field-operations/FieldConsumerPanel";
 import { operationalError, useOperationalCommandKeys } from "../operational-context/commands";
 import CwaPanel from "./CwaPanel";
 import PackagesPanel from "./PackagesPanel";
@@ -17,8 +18,17 @@ const tabs = [
   "Package Dependencies",
   "Execution Constraints",
   "Readiness",
+  "Field Evidence",
 ] as const;
-export default function AwpWorkspace({ token, workspaceId }: { token: string; workspaceId: number }) {
+export default function AwpWorkspace({
+  token,
+  workspaceId,
+  readOnly = false,
+}: {
+  token: string;
+  workspaceId: number;
+  readOnly?: boolean;
+}) {
   const [data, setData] = useState<AwpOverview | null>(null);
   const [tab, setTab] = useState<(typeof tabs)[number]>("Construction Work Areas");
   const [busy, setBusy] = useState(false);
@@ -115,7 +125,9 @@ export default function AwpWorkspace({ token, workspaceId }: { token: string; wo
               </button>
             ))}
           </nav>
-          {tab === "Construction Work Areas" ? (
+          {tab === "Field Evidence" ? (
+            <FieldConsumerPanel token={token} workspaceId={workspaceId} readOnly={readOnly} initialDomain="awp" />
+          ) : tab === "Construction Work Areas" ? (
             <CwaPanel {...props} />
           ) : tab === "Work Packages" ? (
             <PackagesPanel {...props} />

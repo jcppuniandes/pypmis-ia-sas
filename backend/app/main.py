@@ -17,6 +17,7 @@ from app.modules.contracts_foundation.cost_consumer_models import TABLE as CONTR
 from app.modules.contracts_foundation.models import CORE_MODELS as CONTRACTS_CORE_MODELS
 from app.modules.cost_foundation.migration_schema import COST_MIGRATION_TABLE_NAMES
 from app.modules.engineering_foundation.migration_schema import ENGINEERING_MIGRATION_TABLE_NAMES
+from app.modules.field_operations.migration_schema import FIELD_MIGRATION_TABLE_NAMES
 from app.modules.forecast_foundation.migration_schema import FORECAST_MIGRATION_TABLE_NAMES
 from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
 from app.modules.procurement_consumers.models import TABLE as PROCUREMENT_ADOPTION_TABLE
@@ -69,6 +70,7 @@ def _create_schema_for_local_runtime() -> None:
         | {PROCUREMENT_ADOPTION_TABLE}
         | {model.__tablename__ for model in (*CONTRACTS_CORE_MODELS, *CONTRACTS_COMMERCIAL_MODELS)}
         | {CONTRACTS_ADOPTION_TABLE}
+        | FIELD_MIGRATION_TABLE_NAMES
     )
     tables = [table for table in Base.metadata.sorted_tables if table.name not in migration_only]
     if engine.dialect.name == "postgresql":

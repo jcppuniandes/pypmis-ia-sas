@@ -22,6 +22,9 @@ from app.modules.engineering_foundation import integration_models as engineering
 from app.modules.engineering_foundation import models as engineering_models  # noqa: F401
 from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
 from app.modules.forecast_foundation import models as forecast_foundation_models  # noqa: F401
+from app.modules.field_operations import consumer_models as field_consumer_models  # noqa: F401
+from app.modules.field_operations import execution_models as field_execution_models  # noqa: F401
+from app.modules.field_operations import models as field_models  # noqa: F401
 from app.modules.forecast_foundation import reporting_models as forecast_reporting_models  # noqa: F401
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401
 from app.modules.idea_demand import models as idea_demand_models  # noqa: F401

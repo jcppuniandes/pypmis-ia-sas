@@ -273,6 +273,10 @@ from app.modules.economic_financial_model import router as economic_financial_mo
 from app.modules.engineering_foundation import router as engineering_foundation_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
+from app.modules.field_operations import execution_router as field_execution_router
+from app.modules.field_operations import router as field_operations_router
+from app.modules.field_operations.consumer_router import OWNERS as FIELD_CONSUMERS
+from app.modules.field_operations.consumer_router import consumer_router as field_consumer_router
 from app.modules.forecast_foundation import reporting_router as forecast_reporting_router
 from app.modules.forecast_foundation import router as forecast_foundation_router
 from app.modules.funds_manager import router as funds_manager_router
@@ -358,6 +362,12 @@ router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-le
 router.include_router(contracts_cost_consumer_router.router, prefix="/cost", tags=["contracts-cost-adoption"])
 router.include_router(contracts_router.router, prefix="/contracts", tags=["contracts-foundation"])
 router.include_router(contracts_commercial_router.router, prefix="/contracts", tags=["contracts-commercial"])
+router.include_router(field_operations_router.router, prefix="/field-operations", tags=["field-operations"])
+router.include_router(field_execution_router.router, prefix="/field-operations", tags=["field-execution"])
+for field_consumer in FIELD_CONSUMERS:
+    router.include_router(
+        field_consumer_router(field_consumer), prefix=f"/{field_consumer.lower()}", tags=["field-evidence-adoption"]
+    )
 router.include_router(progress_foundation_router.router, prefix="/progress", tags=["progress-foundation"])
 router.include_router(progress_integration_router.router, prefix="/progress", tags=["progress-integration"])
 router.include_router(forecast_foundation_router.router, prefix="/forecast", tags=["forecast-foundation"])

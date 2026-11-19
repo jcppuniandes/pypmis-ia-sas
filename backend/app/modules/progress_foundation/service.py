@@ -807,6 +807,22 @@ class ProgressFoundationService(ScopeFoundationService):
             payload = MeasurementIn.model_validate(row.input_json)
             sources, denominator, rule, _ = self._source_basis(row.project_workspace_id, payload, current_profile)
             original = deepcopy(row.source_snapshot)
+            field_source = original.pop("field_operations", None)
+            if field_source:
+                from app.modules.field_operations.consumer_sources import read_field_source
+
+                for pin in field_source if isinstance(field_source, list) else [field_source]:
+                    current = read_field_source(
+                        self.db,
+                        self.tenant_id,
+                        row.project_workspace_id,
+                        pin["source_entity_type"],
+                        pin["source_entity_id"],
+                        expected_version=pin["source_version"],
+                        expected_hash=pin["source_hash"],
+                    )
+                    if current != pin:
+                        return "REQUIRES_REVIEW"
             # Calculation inputs are frozen separately from read-only upstream identities.
             for key in (
                 "previous_measurement",
