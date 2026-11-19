@@ -5,6 +5,7 @@ from copy import deepcopy
 from decimal import Decimal
 from uuid import uuid4
 
+from tests.o2b_close_isolation import is_close_consumer_database
 from tests.progress_release_fixture import create_progress_fixture
 from tests.progress_release_fixture import request as progress_request
 from tests.test_progress_foundation_release import approve, measurement_body
@@ -61,6 +62,7 @@ def create_forecast_fixture(db, client, *, real_model=False, publish_forecast_po
     assert db.bind.dialect.name == "postgresql" and (
         (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
         or (db.bind.url.database == "o2a" and os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only")
+        or is_close_consumer_database(db)
     )
     f = create_progress_fixture(db, client, real_model=real_model)
     f.db = db

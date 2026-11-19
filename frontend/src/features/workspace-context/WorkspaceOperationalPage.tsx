@@ -16,6 +16,8 @@ import CostManagerWorkspace from "../cost-foundation/CostManagerWorkspace";
 import ProgressManagerWorkspace from "../progress-foundation/ProgressManagerWorkspace";
 import ForecastPerformanceWorkspace from "../forecast-foundation/ForecastPerformanceWorkspace";
 import EngineeringWorkspace from "../engineering-foundation/EngineeringWorkspace";
+import ProcurementWorkspace from "../procurement-foundation/ProcurementWorkspace";
+import ContractsManagerWorkspace from "../contracts-foundation/ContractsManagerWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -170,6 +172,8 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             "progress",
             "forecast",
             "engineering",
+            "procurement",
+            "contracts",
           ].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
@@ -193,7 +197,23 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "engineering" && context.identity.workspace_type === "PROJECT" ? (
+          {current?.code === "contracts" &&
+          (current.state === "READY" || current.read_only) &&
+          context.identity.workspace_type === "PROJECT" ? (
+            <ContractsManagerWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "procurement" && context.identity.workspace_type === "PROJECT" ? (
+            <ProcurementWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "engineering" && context.identity.workspace_type === "PROJECT" ? (
             <EngineeringWorkspace
               key={workspaceId}
               token={token}
@@ -219,6 +239,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
               key={workspaceId}
               token={token}
               workspaceId={workspaceId}
+              initialCommercialId={new URLSearchParams(location.search).get("commercial_commitment_id") ?? ""}
               readOnly={Boolean(current.read_only)}
             />
           ) : current?.code === "awp" && context.identity.workspace_type === "PROJECT" ? (

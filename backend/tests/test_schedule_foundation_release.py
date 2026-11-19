@@ -10,6 +10,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import event, text
 from sqlalchemy.exc import DBAPIError
+from tests.o2b_close_isolation import is_close_consumer_database
 from tests.schedule_release_fixture import create_schedule_fixture
 from tests.test_scope_foundation_release import profile, success
 
@@ -26,6 +27,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def fixture():
     assert engine.dialect.name == "postgresql" and (
         engine.url.database == "o1bb"
+        or is_close_consumer_database(SessionLocal())
         or (engine.url.database == "o1bb1" and os.getenv("PYPMIS_O1BB1_FIXTURE") == "disposable-only")
         or (engine.url.database == "o1bc" and os.getenv("PYPMIS_O1BC_FIXTURE") == "disposable-only")
         or (engine.url.database == "o1bd" and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")

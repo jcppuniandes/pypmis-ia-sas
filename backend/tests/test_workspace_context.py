@@ -9,7 +9,6 @@ from sqlalchemy import select
 from app.core.security import hash_password
 from app.database.session import SessionLocal
 from app.domain.models import (
-    AdminConfiguration,
     AuthCredential,
     EnterpriseWorkspace,
     PermissionCatalog,
@@ -22,9 +21,18 @@ from app.domain.models import (
     WorkspaceModuleSetting,
 )
 from app.main import app
-from app.modules.enterprise_structure.permissions import ensure_enterprise_permissions
+from app.modules.cost_foundation.permissions import ensure_cost_permissions
+from app.modules.enterprise_structure.permissions import WORKSPACE_OPERATION_PERMISSIONS, ensure_enterprise_permissions
 from app.modules.enterprise_structure.service import EnterpriseStructureService
+from app.modules.schedule_foundation.permissions import ensure_schedule_permissions
+from app.modules.scope_foundation.permissions import ensure_scope_permissions
 from app.modules.workspace_context.models import RecentWorkspace
+
+PROJECT_MODULES = {
+    "scope-manager": ("Scope Manager", "scope_foundation.read"),
+    "schedule-manager": ("Schedule Manager", "schedule_foundation.read"),
+    "cost": ("Cost Manager", "cost.read"),
+}
 
 
 def _login(client: TestClient, email: str, tenant_slug: str = "demo-energy") -> dict[str, str]:
@@ -46,6 +54,35 @@ def gate06d():
             assert admin is not None
             ensure_enterprise_permissions(db, admin.tenant_id, admin.id)
             EnterpriseStructureService(db, admin.tenant_id, admin.id).ensure_seed()
+            # Provision the actual O1 module duties. The previous synthetic
+            # workspace.cost.read grant no longer controls the Cost Manager route.
+            ensure_scope_permissions(db, admin.tenant_id, admin.id)
+            ensure_schedule_permissions(db, admin.tenant_id, admin.id)
+            ensure_cost_permissions(db, admin.tenant_id, admin.id)
+            restricted_role = SecurityRole(
+                tenant_id=admin.tenant_id,
+                code=f"gate06d_scope_{uuid4().hex[:8]}",
+                name="Gate 06D Scope Only",
+                description="Scoped navigation with Scope read and no Cost or Schedule read.",
+                is_system=False,
+                status="active",
+            )
+            db.add(restricted_role)
+            db.flush()
+            scope_only_keys = WORKSPACE_OPERATION_PERMISSIONS | {"scope_foundation.read"}
+            scope_only_permissions = db.scalars(
+                select(PermissionCatalog).where(PermissionCatalog.key.in_(scope_only_keys))
+            ).all()
+            assert {permission.key for permission in scope_only_permissions} == scope_only_keys
+            for permission in scope_only_permissions:
+                db.add(
+                    SecurityRolePermission(
+                        tenant_id=admin.tenant_id,
+                        role_id=restricted_role.id,
+                        permission_id=permission.id,
+                        granted_by_user_id=admin.id,
+                    )
+                )
             roles = {
                 item.code: item
                 for item in db.scalars(select(SecurityRole).where(SecurityRole.tenant_id == admin.tenant_id)).all()
@@ -57,73 +94,10 @@ def gate06d():
                 )
             )
             assert root is not None
-            module_definitions = {
-                item.code: item
-                for item in db.scalars(
-                    select(AdminConfiguration).where(
-                        AdminConfiguration.tenant_id == admin.tenant_id,
-                        AdminConfiguration.kind == "module_definition",
-                        AdminConfiguration.status == "published",
-                    )
-                ).all()
-            }
-            for code in ("scope-manager", "schedule-manager", "cost-manager"):
-                if code in module_definitions:
-                    continue
-                definition = AdminConfiguration(
-                    tenant_id=admin.tenant_id,
-                    kind="module_definition",
-                    code=code,
-                    name=code.replace("-", " ").title(),
-                    description="Synthetic Gate 06D Module Definition",
-                    status="published",
-                    revision=1,
-                    version=1,
-                    content_json={"dependencies": [], "mode": "hybrid"},
-                    content_hash=uuid4().hex * 2,
-                    created_by_user_id=admin.id,
-                )
-                db.add(definition)
-                db.flush()
-                module_definitions[code] = definition
-            cost_permission = db.scalar(select(PermissionCatalog).where(PermissionCatalog.key == "workspace.cost.read"))
-            if cost_permission is None:
-                cost_permission = PermissionCatalog(
-                    key="workspace.cost.read",
-                    resource="workspace_cost",
-                    action="read",
-                    description="Synthetic module-level permission for Gate 06D",
-                    risk_level="standard",
-                    status="active",
-                )
-                db.add(cost_permission)
-                db.flush()
-            cost_definition = module_definitions["cost-manager"]
-            cost_definition.content_json = {**cost_definition.content_json, "permission_key": cost_permission.key}
-            if not db.scalar(
-                select(SecurityRolePermission.id).where(
-                    SecurityRolePermission.tenant_id == admin.tenant_id,
-                    SecurityRolePermission.role_id == roles["organization_admin"].id,
-                    SecurityRolePermission.permission_id == cost_permission.id,
-                )
-            ):
-                db.add(
-                    SecurityRolePermission(
-                        tenant_id=admin.tenant_id,
-                        role_id=roles["organization_admin"].id,
-                        permission_id=cost_permission.id,
-                        granted_by_user_id=admin.id,
-                    )
-                )
             users: dict[str, UserAccount] = {}
             emails: dict[str, str] = {}
             headers: dict[str, dict[str, str]] = {"admin": admin_headers}
-            for name in {
-                "full": "organization_admin",
-                "project": "project_manager",
-                "facility": "physical_workspace_responsible",
-                "no_access": "viewer",
-            }:
+            for name in ("full", "project", "scope_only", "facility", "no_access"):
                 email = f"gate06d-{name}-{uuid4().hex[:6]}@demo.local"
                 user = UserAccount(
                     tenant_id=admin.tenant_id,
@@ -195,20 +169,20 @@ def gate06d():
                 workspaces[key] = workspace
                 created_workspace_ids.append(workspace.id)
                 for module_key in enabled:
-                    if module_key in module_definitions:
-                        db.add(
-                            WorkspaceModuleSetting(
-                                tenant_id=admin.tenant_id,
-                                workspace_id=workspace.id,
-                                module_key=module_key,
-                                enabled=True,
-                                updated_by_user_id=admin.id,
-                            )
+                    db.add(
+                        WorkspaceModuleSetting(
+                            tenant_id=admin.tenant_id,
+                            workspace_id=workspace.id,
+                            module_key=module_key,
+                            enabled=True,
+                            updated_by_user_id=admin.id,
                         )
+                    )
 
             for user_name, role_code, workspace_keys in [
                 ("full", "organization_admin", []),
                 ("project", "project_manager", ["project_active"]),
+                ("scope_only", restricted_role.code, ["project_active"]),
                 ("facility", "physical_workspace_responsible", ["facility_active"]),
                 ("no_access", "viewer", []),
             ]:
@@ -304,9 +278,10 @@ def test_project_property_facility_and_warehouse_contexts(gate06d):
             "Project Definition / FEL",
             "Project Funding",
             "Investment Gate Preparation evidence linkage",
-            "Scope",
-            "Schedule",
-            "Cost",
+            "Operational Setup",
+            "Scope Manager",
+            "Schedule Manager",
+            "Cost Manager",
             "Documents",
             "Reports",
         },
@@ -322,6 +297,12 @@ def test_project_property_facility_and_warehouse_contexts(gate06d):
         assert payload["identity"]["workspace_type"] == key.split("_")[0].upper()
         assert payload["breadcrumb"][-1]["workspace_id"] == ids[key]
         assert response.headers["etag"]
+        if key == "project_active":
+            modules = {item["code"]: item for item in payload["navigator"]}
+            for code, (label, permission) in PROJECT_MODULES.items():
+                assert modules[code]["label"] == label
+                assert modules[code]["permission_key"] == permission
+                assert modules[code]["route"] == f"/workspaces/{ids[key]}/{code}"
 
 
 def test_open_home_recent_last_route_and_security_events(gate06d):
@@ -336,22 +317,34 @@ def test_open_home_recent_last_route_and_security_events(gate06d):
     home = client.get(f"/api/v1/workspaces/{workspace_id}/home", headers=headers["project"])
     assert home.status_code == 200
     assert home.json()["recent_documents"] == []
+    route_endpoint = f"/api/v1/workspaces/{workspace_id}/last-route"
+    scope_route = f"/workspaces/{workspace_id}/scope-manager"
     last_route = client.put(
-        f"/api/v1/workspaces/{workspace_id}/last-route",
+        route_endpoint,
         headers=headers["project"],
-        json={"route": f"/workspaces/{workspace_id}/scope"},
+        json={"route": scope_route},
     )
     assert last_route.status_code == 200
+    assert last_route.json()["last_route"] == scope_route
+    for retired in ("scope", "schedule"):
+        stale_route = client.put(
+            route_endpoint,
+            headers=headers["project"],
+            json={"route": f"/workspaces/{workspace_id}/{retired}"},
+        )
+        assert stale_route.status_code == 409
+        assert stale_route.json()["detail"] == "WORKSPACE_ROUTE_NOT_OPERATIONAL"
     recent = client.get("/api/v1/workspaces/recent", headers=headers["project"])
     assert recent.status_code == 200
-    assert recent.json()[0]["last_route"].endswith("/scope")
+    assert recent.json()[0]["last_route"] == scope_route
     with SessionLocal() as db:
-        assert db.scalar(
+        persisted = db.scalar(
             select(RecentWorkspace).where(
                 RecentWorkspace.tenant_id == tenant_id,
                 RecentWorkspace.workspace_id == workspace_id,
             )
         )
+        assert persisted is not None and persisted.last_route == scope_route
         event_types = set(
             db.scalars(select(SecurityEvent.event_type).where(SecurityEvent.target_id == workspace_id)).all()
         )
@@ -380,13 +373,49 @@ def test_workspace_access_filtering_switching_and_no_leakage(gate06d):
 
 
 def test_module_permission_filtering_and_disabled_module_denial(gate06d):
-    client, headers, ids, _tenant_id = gate06d
+    client, headers, ids, tenant_id = gate06d
     project_id = ids["project_active"]
-    project_context = client.get(f"/api/v1/workspaces/{project_id}/context", headers=headers["project"])
+    project_context = client.get(f"/api/v1/workspaces/{project_id}/context", headers=headers["scope_only"])
     assert project_context.status_code == 200
-    assert "Cost" not in {item["label"] for item in project_context.json()["navigator"]}
-    assert client.get(f"/api/v1/workspaces/{project_id}/modules/cost", headers=headers["project"]).status_code == 403
-    assert client.get(f"/api/v1/workspaces/{project_id}/modules/scope", headers=headers["project"]).status_code == 200
+    visible = {item["code"] for item in project_context.json()["navigator"]}
+    assert visible & PROJECT_MODULES.keys() == {"scope-manager"}
+    modules = f"/api/v1/workspaces/{project_id}/modules"
+    for code in ("cost", "schedule-manager"):
+        denied = client.get(f"{modules}/{code}", headers=headers["scope_only"])
+        assert denied.status_code == 403
+        assert denied.json()["detail"] == "MODULE_DISABLED_OR_PERMISSION_DENIED"
+    allowed = client.get(f"{modules}/scope-manager", headers=headers["scope_only"])
+    assert allowed.status_code == 200
+    assert allowed.json()["data_scope"] == {"tenant_id": tenant_id, "workspace_id": project_id}
+    for code in PROJECT_MODULES:
+        module = client.get(f"{modules}/{code}", headers=headers["full"])
+        assert module.status_code == 200
+        assert module.json()["module"]["code"] == code
+    for code in ("scope", "schedule"):
+        assert client.get(f"{modules}/{code}", headers=headers["full"]).status_code == 403
+
+    # Workspace settings are independent of the actor's native permission.
+    archived_id = ids["project_archived"]
+    archived_cost = f"/api/v1/workspaces/{archived_id}/modules/cost"
+    assert client.get(archived_cost, headers=headers["full"]).status_code == 200
+    with SessionLocal() as db:
+        setting = db.scalar(
+            select(WorkspaceModuleSetting).where(
+                WorkspaceModuleSetting.tenant_id == tenant_id,
+                WorkspaceModuleSetting.workspace_id == archived_id,
+                WorkspaceModuleSetting.module_key == "cost-manager",
+            )
+        )
+        assert setting is not None
+        setting.enabled = False
+        db.commit()
+        try:
+            disabled = client.get(archived_cost, headers=headers["full"])
+            assert disabled.status_code == 403
+            assert disabled.json()["detail"] == "MODULE_DISABLED_OR_PERMISSION_DENIED"
+        finally:
+            setting.enabled = True
+            db.commit()
 
 
 def test_pending_archived_planned_disabled_and_direct_url_guards(gate06d):
@@ -407,7 +436,7 @@ def test_pending_archived_planned_disabled_and_direct_url_guards(gate06d):
     tampered = client.put(
         f"/api/v1/workspaces/{facility_id}/last-route",
         headers=headers["full"],
-        json={"route": f"/workspaces/{ids['project_active']}/scope"},
+        json={"route": f"/workspaces/{ids['project_active']}/scope-manager"},
     )
     assert tampered.status_code == 422
 

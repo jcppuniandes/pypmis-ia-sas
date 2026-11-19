@@ -1,0 +1,70 @@
+.contractsFoundation,
+.contractsFoundation > *,
+.contractsFoundation .progressPanel {
+  min-width: 0;
+}
+
+.contractsFoundation .progressTabs,
+.contractActions,
+.contractPinBadge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.contractBoundary {
+  border-inline-start: 3px solid #0d817d;
+  padding: 8px 12px;
+  background: #eff8f7;
+  color: #184341;
+}
+
+.contractDetail {
+  min-width: 0;
+  border-top: 1px solid #d7e2eb;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.contractFieldset,
+.contractPin {
+  min-width: 0;
+  margin: 8px 0;
+  border: 1px solid #d7e2eb;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.contractPin,
+.contractSourceInline {
+  grid-column: 1 / -1;
+}
+
+.contractSourceInline {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 6px;
+}
+
+.contractSourceInline p,
+.contractPin .progressError,
+.contractFieldset .progressError {
+  grid-column: 1 / -1;
+}
+
+.contractPinBadge {
+  align-items: center;
+  margin-block: 8px;
+}
+
+.contractDetail pre {
+  overflow: auto;
+  max-height: 32rem;
+}
+
+@media (max-width: 560px) {
+  .contractSourceInline {
+    grid-template-columns: 1fr;
+  }
+}

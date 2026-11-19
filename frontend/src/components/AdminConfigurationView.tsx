@@ -6,6 +6,8 @@ import ScopeProfilesAdminView from "../features/scope-foundation/ScopeProfilesAd
 import ScheduleProfilesAdminView from "../features/schedule-foundation/ScheduleProfilesAdminView";
 import GovernedProfilesAdminView from "../features/awp/GovernedProfilesAdminView";
 import EngineeringProfilesAdminView from "../features/engineering-foundation/EngineeringProfilesAdminView";
+import ProcurementProfilesAdminView from "../features/procurement-foundation/ProcurementProfilesAdminView";
+import ContractProfilesAdminView from "../features/contracts-foundation/ContractProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -109,7 +111,18 @@ const contentExamples: Record<AdminConfigurationKind, Record<string, unknown>> =
 
 export default function AdminConfigurationView(props: Props) {
   const [section, setSection] = useState<
-    "processes" | "operational" | "scope" | "schedule" | "awp" | "4d" | "cost" | "progress" | "forecast" | "engineering"
+    | "processes"
+    | "operational"
+    | "scope"
+    | "schedule"
+    | "awp"
+    | "4d"
+    | "cost"
+    | "progress"
+    | "forecast"
+    | "engineering"
+    | "procurement"
+    | "contracts"
   >("processes");
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
@@ -145,8 +158,18 @@ export default function AdminConfigurationView(props: Props) {
         <button aria-pressed={section === "engineering"} onClick={() => setSection("engineering")} type="button">
           Engineering Profiles
         </button>
+        <button aria-pressed={section === "procurement"} onClick={() => setSection("procurement")} type="button">
+          Procurement Profiles
+        </button>
+        <button aria-pressed={section === "contracts"} onClick={() => setSection("contracts")} type="button">
+          Contract Profiles
+        </button>
       </nav>
-      {section === "engineering" ? (
+      {section === "contracts" ? (
+        <ContractProfilesAdminView token={props.token} />
+      ) : section === "procurement" ? (
+        <ProcurementProfilesAdminView token={props.token} />
+      ) : section === "engineering" ? (
         <EngineeringProfilesAdminView token={props.token} />
       ) : section === "awp" ||
         section === "4d" ||

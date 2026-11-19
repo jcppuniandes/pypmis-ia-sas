@@ -8,6 +8,7 @@ from uuid import uuid4
 from sqlalchemy import select
 from tests.awp_browser_fixture import create_awp_browser_fixture
 from tests.forecast_release_fixture import create_forecast_fixture
+from tests.o2b_close_isolation import is_close_consumer_database
 from tests.operational_context_fixture import fixture_headers
 from tests.test_scope_foundation_release import profile, success
 
@@ -132,8 +133,15 @@ def publish_engineering_profile(f, **changes):
 
 
 def create_engineering_fixture(db, client, *, integrated=False, publish=True, credentials=False):
-    assert os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only"
-    assert db.bind.dialect.name == "postgresql" and db.bind.url.database in {"o2a", "o2a_browser"}
+    assert db.bind.dialect.name == "postgresql"
+    assert (
+        os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only"
+        and db.bind.url.database in {"o2a", "o2a_browser"}
+        or os.getenv("PYPMIS_O2B_FIXTURE") == "disposable-only"
+        and db.bind.url.database in {"o2b", "o2b_browser"}
+        and not integrated
+        or is_close_consumer_database(db)
+    )
     f = create_forecast_fixture(db, client, real_model=True) if integrated else create_awp_browser_fixture(db, client)
     f.db = db
     workspace = f.workspaces["direct"]

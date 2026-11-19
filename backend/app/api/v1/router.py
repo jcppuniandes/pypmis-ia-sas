@@ -263,13 +263,16 @@ from app.modules.business_analysis import router as business_analysis_router
 from app.modules.business_case import router as business_case_router
 from app.modules.capital_planning import router as capital_planning_router
 from app.modules.commercial_strategy import router as commercial_strategy_router
+from app.modules.contracts_foundation import commercial_router as contracts_commercial_router
+from app.modules.contracts_foundation import cost_consumer_router as contracts_cost_consumer_router
+from app.modules.contracts_foundation import router as contracts_router
 from app.modules.cost_foundation import financial_router as cost_financial_router
 from app.modules.cost_foundation import legacy_sources as cost_legacy_sources
 from app.modules.cost_foundation import router as cost_foundation_router
 from app.modules.economic_financial_model import router as economic_financial_model_router
+from app.modules.engineering_foundation import router as engineering_foundation_router
 from app.modules.enterprise_structure import router_admin as enterprise_structure_admin_router
 from app.modules.enterprise_structure import router_user as enterprise_structure_user_router
-from app.modules.engineering_foundation import router as engineering_foundation_router
 from app.modules.forecast_foundation import reporting_router as forecast_reporting_router
 from app.modules.forecast_foundation import router as forecast_foundation_router
 from app.modules.funds_manager import router as funds_manager_router
@@ -290,6 +293,11 @@ from app.modules.portfolio_planning import router as portfolio_planning_router
 from app.modules.portfolio_resource import router as portfolio_resource_router
 from app.modules.portfolio_review import router as portfolio_review_router
 from app.modules.post_fid_governance import router as post_fid_governance_router
+from app.modules.procurement_consumers.router import OWNERS as PROCUREMENT_CONSUMERS
+from app.modules.procurement_consumers.router import consumer_router as procurement_consumer_router
+from app.modules.procurement_foundation import integration_router as procurement_integration_router
+from app.modules.procurement_foundation import materials_router as procurement_materials_router
+from app.modules.procurement_foundation import router as procurement_foundation_router
 from app.modules.progress_foundation import integration_router as progress_integration_router
 from app.modules.progress_foundation import router as progress_foundation_router
 from app.modules.project_creation import router as project_creation_router
@@ -347,10 +355,22 @@ router.include_router(awp_router.router, prefix="/awp", tags=["awp"])
 router.include_router(cost_foundation_router.router, prefix="/cost", tags=["cost-foundation"])
 router.include_router(cost_financial_router.router, prefix="/cost", tags=["cost-financials"])
 router.include_router(cost_legacy_sources.router, prefix="/cost", tags=["cost-legacy-candidates"])
+router.include_router(contracts_cost_consumer_router.router, prefix="/cost", tags=["contracts-cost-adoption"])
+router.include_router(contracts_router.router, prefix="/contracts", tags=["contracts-foundation"])
+router.include_router(contracts_commercial_router.router, prefix="/contracts", tags=["contracts-commercial"])
 router.include_router(progress_foundation_router.router, prefix="/progress", tags=["progress-foundation"])
 router.include_router(progress_integration_router.router, prefix="/progress", tags=["progress-integration"])
 router.include_router(forecast_foundation_router.router, prefix="/forecast", tags=["forecast-foundation"])
 router.include_router(engineering_foundation_router.router, prefix="/engineering", tags=["engineering-foundation"])
+router.include_router(procurement_foundation_router.router, prefix="/procurement", tags=["procurement-foundation"])
+router.include_router(procurement_materials_router.router, prefix="/procurement", tags=["procurement-foundation"])
+router.include_router(procurement_integration_router.router, prefix="/procurement", tags=["procurement-foundation"])
+for consumer_domain in PROCUREMENT_CONSUMERS:
+    router.include_router(
+        procurement_consumer_router(consumer_domain),
+        prefix=f"/{consumer_domain.lower()}",
+        tags=["procurement-adoption"],
+    )
 router.include_router(
     forecast_reporting_router.performance_router, prefix="/performance", tags=["forecast-performance"]
 )

@@ -166,6 +166,8 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("progress", "Progress Manager", permission_key="progress.read"),
         NavigationDefinition("forecast", "Forecast & Performance", permission_key="forecast.read"),
         NavigationDefinition("engineering", "Engineering Manager", permission_key="engineering.read"),
+        NavigationDefinition("procurement", "Procurement Manager", permission_key="procurement.read"),
+        NavigationDefinition("contracts", "Contracts Manager", permission_key="contracts.read"),
         NavigationDefinition("documents", "Documents"),
         NavigationDefinition("reports", "Reports"),
     ),
@@ -253,6 +255,18 @@ class WorkspaceNavigatorService:
             state = item.default_state
             permission_key = item.permission_key
             reason = ""
+            if item.code == "procurement" and (
+                settings.get("procurement") is False
+                or settings.get("procurement-manager") is False
+                or not {"procurement", "procurement-manager"} & enabled
+            ):
+                continue
+            if item.code == "contracts" and (
+                settings.get("contracts") is False
+                or settings.get("contracts-manager") is False
+                or not {"contracts", "contracts-manager"} & enabled
+            ):
+                continue
             if item.code == "engineering" and (
                 settings.get("engineering") is False
                 or settings.get("engineering-manager") is False

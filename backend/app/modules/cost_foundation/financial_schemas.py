@@ -51,7 +51,7 @@ class ActualDecisionIn(FinancialInput):
 
 class CommitmentIn(FinancialInput):
     source_system: str = Field(min_length=1, max_length=120)
-    source_type: Literal["CONTRACT", "PO", "SUBCONTRACT", "CONTRACT_CHANGE_ORDER"]
+    source_type: Literal["CONTRACT", "PO", "SUBCONTRACT", "CONTRACT_CHANGE_ORDER", "COMMERCIAL_COMMITMENT"]
     source_reference: str = Field(min_length=1, max_length=260)
     source_revision: str = Field(min_length=1, max_length=120)
     source_hash: str = Field(pattern=r"^[a-f0-9]{64}$")

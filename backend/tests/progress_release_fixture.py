@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from tests.cost_release_fixture import account, approved_budget, budget, cbs, cost_code, create_cost_fixture, line
 from tests.cost_release_fixture import request as cost_request
+from tests.o2b_close_isolation import is_close_consumer_database
 from tests.test_schedule_foundation_release import baseline as schedule_baseline
 from tests.test_scope_foundation_release import profile, success
 
@@ -41,6 +42,7 @@ def create_progress_fixture(
         (db.bind.url.database in {"o1bd", "o1bd_browser"} and os.getenv("PYPMIS_O1BD_FIXTURE") == "disposable-only")
         or (db.bind.url.database in {"o1c", "o1c_browser"} and os.getenv("PYPMIS_O1C_FIXTURE") == "disposable-only")
         or (db.bind.url.database == "o2a" and os.getenv("PYPMIS_O2A_FIXTURE") == "disposable-only")
+        or is_close_consumer_database(db)
     )
     if real_model:
         from tests.awp_browser_fixture import create_awp_browser_fixture

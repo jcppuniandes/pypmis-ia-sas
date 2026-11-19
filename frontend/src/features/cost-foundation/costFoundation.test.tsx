@@ -138,13 +138,14 @@ afterEach(() => {
 });
 
 describe("Cost Foundation workspace and authority boundaries", () => {
-  it("provides eleven submodules without funding/payment controls", async () => {
+  it("includes explicit commercial adoption without funding/payment controls", async () => {
     vi.spyOn(costApi, "overview").mockResolvedValue(overview);
     render(<CostManagerWorkspace token="test" workspaceId={77} />);
     expect(await screen.findByRole("navigation", { name: "Cost Manager submodules" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Cost Manager submodules" }).querySelectorAll("button")).toHaveLength(
-      11
+      12
     );
+    expect(screen.getByRole("button", { name: "Commercial Adoption" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add Funding" })).not.toBeInTheDocument();
     expect(screen.getByText(/Cost no redefine cantidad/)).toBeInTheDocument();
   });

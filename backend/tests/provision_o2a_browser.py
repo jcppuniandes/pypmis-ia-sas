@@ -17,6 +17,8 @@ def main():
     qa = Path(__file__).resolve().parents[2] / "outputs/.qa/wave-o2a-20261109"
     if Path("/artifacts").is_dir():
         qa = Path("/artifacts")
+    if directory := os.getenv("PYPMIS_O2A_ARTIFACT_DIR"):
+        qa = Path(directory).resolve()
     target = qa / "browser-fixture.json"
     assert not target.exists(), "Do not replace an existing browser fixture"
     qa.mkdir(parents=True, exist_ok=True)

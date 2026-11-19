@@ -12,10 +12,15 @@ from app.core.config import get_settings
 from app.core.observability import configure_logging, request_context_middleware
 from app.database.seed import seed_demo
 from app.database.session import Base, SessionLocal, engine
+from app.modules.contracts_foundation.commercial_models import MODELS as CONTRACTS_COMMERCIAL_MODELS
+from app.modules.contracts_foundation.cost_consumer_models import TABLE as CONTRACTS_ADOPTION_TABLE
+from app.modules.contracts_foundation.models import CORE_MODELS as CONTRACTS_CORE_MODELS
 from app.modules.cost_foundation.migration_schema import COST_MIGRATION_TABLE_NAMES
 from app.modules.engineering_foundation.migration_schema import ENGINEERING_MIGRATION_TABLE_NAMES
 from app.modules.forecast_foundation.migration_schema import FORECAST_MIGRATION_TABLE_NAMES
 from app.modules.operational_context.legacy_boundary import require_bound_legacy_command
+from app.modules.procurement_consumers.models import TABLE as PROCUREMENT_ADOPTION_TABLE
+from app.modules.procurement_foundation.migration_schema import PROCUREMENT_MIGRATION_TABLE_NAMES
 from app.modules.progress_foundation.migration_schema import PROGRESS_MIGRATION_TABLE_NAMES
 
 logger = logging.getLogger(__name__)
@@ -60,6 +65,10 @@ def _create_schema_for_local_runtime() -> None:
         | PROGRESS_MIGRATION_TABLE_NAMES
         | FORECAST_MIGRATION_TABLE_NAMES
         | ENGINEERING_MIGRATION_TABLE_NAMES
+        | PROCUREMENT_MIGRATION_TABLE_NAMES
+        | {PROCUREMENT_ADOPTION_TABLE}
+        | {model.__tablename__ for model in (*CONTRACTS_CORE_MODELS, *CONTRACTS_COMMERCIAL_MODELS)}
+        | {CONTRACTS_ADOPTION_TABLE}
     )
     tables = [table for table in Base.metadata.sorted_tables if table.name not in migration_only]
     if engine.dialect.name == "postgresql":

@@ -38,7 +38,8 @@ def test_engineering_migration_single_head_and_postgresql_roundtrip(monkeypatch)
     config = Config("alembic.ini")
     scripts = ScriptDirectory.from_config(config)
     new, parent = "20261109_0076", "20261106_0075"
-    assert scripts.get_heads() == [new]
+    (head,) = scripts.get_heads()
+    assert new in {revision.revision for revision in scripts.iterate_revisions(head, parent)}
     assert scripts.get_revision(new).down_revision == parent
     tables = set(inspect(engine).get_table_names())
     protected = {

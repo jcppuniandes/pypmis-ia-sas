@@ -1,0 +1,72 @@
+name: pypmis-wave-o2b
+
+# Disposable validation; no habitual volumes, ports, or seed.
+x-postgres: &postgres
+  image: postgres:16-alpine
+  healthcheck: {test: [CMD-SHELL, 'pg_isready -U o2b'], interval: 2s, timeout: 3s, retries: 30}
+services:
+  db:
+    <<: *postgres
+    environment: {POSTGRES_DB: o2b, POSTGRES_USER: o2b, POSTGRES_PASSWORD: disposable-o2b}
+    volumes: [o2b_postgres:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:5555:5432']
+  migration-db:
+    <<: *postgres
+    environment: {POSTGRES_DB: o2b_migration, POSTGRES_USER: o2b, POSTGRES_PASSWORD: disposable-o2b}
+    volumes: [o2b_migration_postgres:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:5556:5432']
+  browser-db:
+    <<: *postgres
+    environment: {POSTGRES_DB: o2b_browser, POSTGRES_USER: o2b, POSTGRES_PASSWORD: disposable-o2b}
+    volumes: [o2b_browser_postgres:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:5557:5432']
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --save, '', --appendonly, 'no']
+  api:
+    image: pypmis-ia-sas-api:latest
+    build: {context: ./backend}
+    environment:
+      DATABASE_URL: postgresql+psycopg://o2b:disposable-o2b@browser-db:5432/o2b_browser
+      PYPMIS_O2B_FIXTURE: disposable-only
+      PYTHONPYCACHEPREFIX: /var/cache/o2b-python
+      AUTO_CREATE_SCHEMA: 'false'
+      SEED_DEMO_DATA: 'false'
+      AUTH_SECRET_KEY: isolated-o2b-validation-only
+      RATE_LIMIT_ENABLED: 'false'
+      CORS_ORIGINS: http://127.0.0.1:5520,http://localhost:5520
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      REDIS_URL: redis://redis:6379/0
+      DOCUMENT_STORAGE_PATH: /var/lib/o2b-documents
+    volumes:
+      - ./backend:/app:ro
+      - ./outputs/.qa/wave-o2b:/artifacts
+      - o2b_documents:/var/lib/o2b-documents
+      - o2b_python_cache:/var/cache/o2b-python
+    ports: ['127.0.0.1:8860:8000']
+    command: [python, -m, uvicorn, app.main:app, --host, 0.0.0.0, --port, '8000']
+    depends_on:
+      browser-db: {condition: service_healthy}
+      redis: {condition: service_started}
+  frontend:
+    image: pypmis-ia-sas-frontend:latest
+    build: {context: ./frontend}
+    environment:
+      VITE_API_URL: http://127.0.0.1:8860
+      VITE_DEV_PROXY_TARGET: http://api:8000
+      VITE_FRONTEND_VALIDATION_MODE: 'false'
+    volumes: ['./frontend:/app:ro', /app/node_modules]
+    ports: ['127.0.0.1:5520:5173']
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        node node_modules/vite/bin/vite.js build --outDir /tmp/o2b-dist
+        npm run preview -- --host 0.0.0.0 --port 5173 --strictPort --outDir /tmp/o2b-dist
+    depends_on: [api]
+volumes:
+  o2b_postgres:
+  o2b_migration_postgres:
+  o2b_browser_postgres:
+  o2b_documents:
+  o2b_python_cache:

@@ -37,9 +37,14 @@ else:
         Path(os.getenv("PYPMIS_TEST_DB_PATH", runtime_dir / f"pypmis_pytest-{os.getpid()}.sqlite")), runtime_dir
     )
     os.environ["DATABASE_URL"] = f"sqlite:///{test_db_path.as_posix()}"
-os.environ["SEED_DEMO_DATA"] = "true"
-os.environ["AUTO_CREATE_SCHEMA"] = "true"
-os.environ["DOCUMENT_STORAGE_PATH"] = str(document_storage_dir)
+o2c_explicit_fixture = os.getenv("PYPMIS_O2C_FIXTURE") == "disposable-only" and postgres_test_url in {
+    "postgresql+psycopg://o2c:o2c@127.0.0.1:5561/o2c",
+    "postgresql+psycopg://o2c:o2c@127.0.0.1:5562/o2c",
+}
+os.environ["SEED_DEMO_DATA"] = "false" if o2c_explicit_fixture else "true"
+os.environ["AUTO_CREATE_SCHEMA"] = "false" if o2c_explicit_fixture else "true"
+if not o2c_explicit_fixture or not os.getenv("DOCUMENT_STORAGE_PATH"):
+    os.environ["DOCUMENT_STORAGE_PATH"] = str(document_storage_dir)
 os.environ.setdefault("RATE_LIMIT_ENABLED", "false")
 get_settings.cache_clear()
 

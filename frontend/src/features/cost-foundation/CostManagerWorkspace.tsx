@@ -8,6 +8,7 @@ import ApuRatesPanel from "./ApuRatesPanel";
 import BudgetsPanel from "./BudgetsPanel";
 import BaselinesPanel from "./BaselinesPanel";
 import PhasingPanel from "./PhasingPanel";
+import CommercialAdoptionPanel from "./CommercialAdoptionPanel";
 import { ActualsPanel, CommitmentsPanel, CurrencyPanel, OverviewPanel } from "./FinancialPanels";
 import { Records } from "./Fields";
 import type { CostCommand, CostOverview } from "./types";
@@ -22,6 +23,7 @@ const tabs = [
   "Cost Baseline",
   "Cost Phasing",
   "Commitments",
+  "Commercial Adoption",
   "Actuals",
   "Accruals",
   "Cost Overview",
@@ -30,12 +32,14 @@ export default function CostManagerWorkspace({
   token,
   workspaceId,
   readOnly = false,
+  initialCommercialId = "",
 }: {
   token: string;
   workspaceId: number;
   readOnly?: boolean;
+  initialCommercialId?: string;
 }) {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("CBS");
+  const [tab, setTab] = useState<(typeof tabs)[number]>(() => (initialCommercialId ? "Commercial Adoption" : "CBS"));
   const [data, setData] = useState<CostOverview | null>(null);
   const [busy, setBusy] = useState(false);
   const [reason, setReason] = useState("");
@@ -163,6 +167,14 @@ export default function CostManagerWorkspace({
           {tab === "Cost Baseline" ? <BaselinesPanel {...props} /> : null}
           {tab === "Cost Phasing" ? <PhasingPanel {...props} /> : null}
           {tab === "Commitments" ? <CommitmentsPanel {...props} /> : null}
+          {tab === "Commercial Adoption" ? (
+            <CommercialAdoptionPanel
+              token={token}
+              workspaceId={workspaceId}
+              initialId={initialCommercialId}
+              props={props}
+            />
+          ) : null}
           {tab === "Actuals" ? <ActualsPanel {...props} /> : null}
           {tab === "Accruals" ? (
             <section className="costPanel">

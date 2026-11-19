@@ -84,3 +84,9 @@ outputs/.qa/wave-o1bb1-20261021/
 outputs/.qa/wave-o1bc-20261022/
 outputs/.qa/wave-o1bd-20261104/
 outputs/.qa/wave-o1c-20261106/
+outputs/.qa/wave-o2b/
+outputs/.qa/wave-o2b-close/
+# Closeout's disposable credentials, documents, and unredacted Chromium traces.
+outputs/.qa/wave-o2b-close-20261111/
+outputs/.qa/wave-o2b-close2-*/
+outputs/.qa/wave-o2c-*/

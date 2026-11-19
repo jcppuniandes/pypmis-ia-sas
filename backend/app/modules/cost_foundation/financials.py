@@ -497,7 +497,9 @@ class CostFinancialService(CostFoundationService):
         return snapshot
 
     def _validate_obligation_source(self, workspace, row):
-        if row.source_system == "LEGACY":
+        if row.source_system.upper() == "CONTRACTS" or row.source_type == "COMMERCIAL_COMMITMENT":
+            self._validate_contracts_adoption(workspace, row)
+        elif row.source_system == "LEGACY":
             model = PurchaseOrder if row.source_type == "PO" else Contract
             if row.source_type == "CONTRACT_CHANGE_ORDER" or not row.source_record_id:
                 self._error(422, "COST_LEGACY_LEGAL_SOURCE_UNSUPPORTED")
@@ -547,6 +549,54 @@ class CostFinancialService(CostFoundationService):
                     self._error(409, "COST_PO_ECONOMIC_PARENT_SOURCE_MISMATCH")
         elif row.source_approval_status.upper() not in EXTERNAL_APPROVED_STATES or row.source_record_id is not None:
             self._error(422, "COST_VERIFIED_EXTERNAL_APPROVAL_REFERENCE_REQUIRED")
+
+    def _validate_contracts_adoption(self, workspace, row):
+        # Cost reconciles only an explicit, current Cost decision; Contracts never proposes or verifies this row.
+        from app.modules.contracts_foundation.cost_consumer_models import CostCommercialAdoption
+        from app.modules.contracts_foundation.service import read_commercial_commitment
+
+        if (
+            row.source_system != "CONTRACTS"
+            or row.source_type != "COMMERCIAL_COMMITMENT"
+            or not row.source_record_id
+            or row.source_approval_status != "APPROVED"
+            or row.inclusion_mode != "REFERENCE_ONLY"
+        ):
+            self._error(422, "COST_COMMERCIAL_ADOPTION_REQUIRED")
+        source = read_commercial_commitment(
+            self.db,
+            self.tenant_id,
+            workspace,
+            row.source_record_id,
+            expected_hash=row.source_hash,
+        )
+        decision = self.db.scalar(
+            select(CostCommercialAdoption)
+            .where(
+                CostCommercialAdoption.tenant_id == self.tenant_id,
+                CostCommercialAdoption.project_workspace_id == workspace,
+                CostCommercialAdoption.source_entity_id == row.source_record_id,
+            )
+            .order_by(CostCommercialAdoption.version.desc())
+            .limit(1)
+        )
+        reference = f"{source['contract_id']}:{source['commitment_code']}"
+        if (
+            decision is None
+            or decision.consumer_status != "ADOPTED"
+            or decision.source_hash != source["source_hash"]
+            or decision.source_version != source["source_version"]
+            or row.source_revision != str(source["revision"])
+            or row.source_reference != reference
+            or row.economic_origin != f"CONTRACTS:{reference}"
+            or row.parent_economic_origin is not None
+            or row.amount != Decimal(source["committed_amount"])
+            or row.currency != source["currency"]
+            or row.effective_date != decision.effective_at
+            or (row.cbs_id, row.cost_code_id, row.control_account_id)
+            != (decision.cbs_id, decision.cost_code_id, decision.control_account_id)
+        ):
+            self._error(409, "COST_COMMERCIAL_ADOPTION_NOT_CURRENT_OR_INCONSISTENT")
 
     def propose_commitment(self, workspace, payload, key):
         self._ready(workspace, "commitment.reconcile")

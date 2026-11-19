@@ -573,6 +573,7 @@ class AWPService(ScopeFoundationService):
     def _readiness_facts(self, workspace):
         """Request-local projection only. No database writes or cross-request cache."""
         from app.modules.engineering_foundation.integration import awp_engineering_reader
+        from app.modules.procurement_foundation.awp_provider import material_reader
 
         facts = {
             model: self._rows(model, workspace)
@@ -590,6 +591,7 @@ class AWPService(ScopeFoundationService):
         facts["constraint_mappings"] = self._effective_records(facts[ConstraintMapping], "constraint_id")
         facts["mapping_output"] = {row.id: self._mapping_out(row, workspace) for row in facts["package_mappings"]}
         facts["engineering_reader"] = awp_engineering_reader(self.db, self.tenant_id, workspace)
+        facts["material_reader"] = material_reader(self.db, self.tenant_id, workspace)
         return facts
 
     def _readiness_inputs(self, workspace, package, profile, facts=None):
@@ -656,6 +658,11 @@ class AWPService(ScopeFoundationService):
         reader = facts.get("engineering_reader")
         return reader.evidence(package, as_of) if reader else None
 
+    @staticmethod
+    def _material_readiness(package, facts, as_of=None):
+        reader = facts.get("material_reader")
+        return reader(package, as_of) if reader else None
+
     def _verify_engineering_clearance(self, workspace, row, profile, reference):
         from app.modules.engineering_foundation.integration import awp_evidence_reference
 
@@ -682,7 +689,9 @@ class AWPService(ScopeFoundationService):
             self._error(409, "AWP_ENGINEERING_CLEARANCE_EVIDENCE_INELIGIBLE")
 
     @staticmethod
-    def _assess_with_engineering(package, policy, constraints, dependencies, evidence, mappings, provider):
+    def _assess_with_engineering(
+        package, policy, constraints, dependencies, evidence, mappings, provider, material=None
+    ):
         from app.modules.engineering_foundation.integration import awp_evidence_reference
 
         if provider:
@@ -699,6 +708,17 @@ class AWPService(ScopeFoundationService):
         elif evidence.get("ENGINEERING", "").startswith("engineering:"):
             # The reserved reference namespace is never accepted as free text.
             evidence = {dimension: value for dimension, value in evidence.items() if dimension != "ENGINEERING"}
+        if material:
+            if not provider:
+                policy = deepcopy(policy)
+            required = policy["readiness_requirements"][package.package_type]["required_dimensions"]
+            if "MATERIAL" not in required:
+                required.append("MATERIAL")
+            evidence = {dimension: value for dimension, value in evidence.items() if dimension != "MATERIAL"}
+            if material["status"] == "READY":
+                evidence["MATERIAL"] = f"material:{package.id}:{material['evidence_hash']}"
+        elif evidence.get("MATERIAL", "").startswith("material:"):
+            evidence = {dimension: value for dimension, value in evidence.items() if dimension != "MATERIAL"}
         result = assess_policy(
             package.package_type,
             policy,
@@ -710,18 +730,23 @@ class AWPService(ScopeFoundationService):
         )
         if provider:
             result["evidence_state"]["engineering_provider"] = provider
+        if material:
+            result["evidence_state"]["material_provider"] = material
         return result
 
     def _current_readiness(self, workspace, package, profile, facts=None):
         facts = facts if facts is not None else self._readiness_facts(workspace)
         assessments = [row for row in facts[ReadinessAssessment] if row.work_package_id == package.id]
         provider = self._engineering_readiness(package, facts)
-        if provider:
+        material = self._material_readiness(package, facts)
+        if provider or material:
             assessments = [row for row in assessments if self._instant(row.as_of) <= utc_now()]
         last = assessments[-1] if assessments else None
         mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile, facts)
         if provider:
             hashes["engineering"] = provider["evidence_hash"]
+        if material:
+            hashes["material"] = material["evidence_hash"]
         evidence = last.evidence_state.get("references", {}) if last else {}
         result = self._assess_with_engineering(
             package,
@@ -731,6 +756,7 @@ class AWPService(ScopeFoundationService):
             evidence,
             mappings,
             provider,
+            material,
         )
         stale = last is None or last.source_hashes != hashes
         if last is None and result["readiness_state"] != "NOT_READY" or stale and result["readiness_state"] == "READY":
@@ -765,11 +791,14 @@ class AWPService(ScopeFoundationService):
                 self._error(422, "AWP_READINESS_EVIDENCE_INVALID")
             facts = self._readiness_facts(workspace)
             provider = self._engineering_readiness(package, facts, cutoff if len(payload.as_of) == 10 else instant)
-            if provider and instant > utc_now():
+            material = self._material_readiness(package, facts, cutoff if len(payload.as_of) == 10 else instant)
+            if (provider or material) and instant > utc_now():
                 self._error(422, "AWP_ENGINEERING_AS_OF_IN_FUTURE")
             mappings, constraints, dependencies, hashes = self._readiness_inputs(workspace, package, profile, facts)
             if provider:
                 hashes["engineering"] = provider["evidence_hash"]
+            if material:
+                hashes["material"] = material["evidence_hash"]
             result = self._assess_with_engineering(
                 package,
                 profile.content_json,
@@ -778,6 +807,7 @@ class AWPService(ScopeFoundationService):
                 payload.evidence_json,
                 mappings,
                 provider,
+                material,
             )
             row = ReadinessAssessment(
                 **self._base(workspace),

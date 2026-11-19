@@ -12,12 +12,15 @@ from app.modules.business_analysis import models as business_analysis_models  # 
 from app.modules.business_case import models as business_case_models  # noqa: F401
 from app.modules.capital_planning import models as capital_planning_models  # noqa: F401
 from app.modules.commercial_strategy import models as commercial_strategy_models  # noqa: F401
+from app.modules.contracts_foundation import commercial_models as contracts_commercial_models  # noqa: F401
+from app.modules.contracts_foundation import cost_consumer_models as contracts_adoption_models  # noqa: F401
+from app.modules.contracts_foundation import models as contracts_models  # noqa: F401
 from app.modules.cost_foundation import financial_models as cost_financial_models  # noqa: F401
 from app.modules.cost_foundation import models as cost_foundation_models  # noqa: F401
 from app.modules.economic_financial_model import models as economic_financial_model_models  # noqa: F401
-from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
 from app.modules.engineering_foundation import integration_models as engineering_integration_models  # noqa: F401
 from app.modules.engineering_foundation import models as engineering_models  # noqa: F401
+from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
 from app.modules.forecast_foundation import models as forecast_foundation_models  # noqa: F401
 from app.modules.forecast_foundation import reporting_models as forecast_reporting_models  # noqa: F401
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401
@@ -33,6 +36,10 @@ from app.modules.physical_workspace_initialization import (
 from app.modules.portfolio_planning import models as portfolio_planning_models  # noqa: F401
 from app.modules.portfolio_review import models as portfolio_review_models  # noqa: F401
 from app.modules.post_fid_governance import models as post_fid_governance_models  # noqa: F401
+from app.modules.procurement_consumers import models as procurement_adoption_models  # noqa: F401
+from app.modules.procurement_foundation import integration_models as procurement_integration_models  # noqa: F401
+from app.modules.procurement_foundation import materials_models as procurement_material_models  # noqa: F401
+from app.modules.procurement_foundation import sourcing_models as procurement_sourcing_models  # noqa: F401
 from app.modules.progress_foundation import integration_models as progress_integration_models  # noqa: F401
 from app.modules.progress_foundation import models as progress_foundation_models  # noqa: F401
 from app.modules.project_creation import models as project_creation_models  # noqa: F401
