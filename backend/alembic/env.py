@@ -21,10 +21,10 @@ from app.modules.economic_financial_model import models as economic_financial_mo
 from app.modules.engineering_foundation import integration_models as engineering_integration_models  # noqa: F401
 from app.modules.engineering_foundation import models as engineering_models  # noqa: F401
 from app.modules.enterprise_structure import models as enterprise_structure_models  # noqa: F401
-from app.modules.forecast_foundation import models as forecast_foundation_models  # noqa: F401
 from app.modules.field_operations import consumer_models as field_consumer_models  # noqa: F401
 from app.modules.field_operations import execution_models as field_execution_models  # noqa: F401
 from app.modules.field_operations import models as field_models  # noqa: F401
+from app.modules.forecast_foundation import models as forecast_foundation_models  # noqa: F401
 from app.modules.forecast_foundation import reporting_models as forecast_reporting_models  # noqa: F401
 from app.modules.funds_manager import models as funds_manager_models  # noqa: F401
 from app.modules.idea_demand import models as idea_demand_models  # noqa: F401
@@ -50,6 +50,9 @@ from app.modules.project_definition import models as project_definition_models  
 from app.modules.project_proposal import models as project_proposal_models  # noqa: F401
 from app.modules.project_workspace_initialization import models as project_workspace_initialization_models  # noqa: F401
 from app.modules.qra_foundation import models as qra_foundation_models  # noqa: F401
+from app.modules.quality import consumer_models as quality_consumer_models  # noqa: F401
+from app.modules.quality import execution_models as quality_execution_models  # noqa: F401
+from app.modules.quality import models as quality_models  # noqa: F401
 from app.modules.risk_readiness import models as risk_readiness_models  # noqa: F401
 from app.modules.schedule_foundation import models as schedule_foundation_models  # noqa: F401
 from app.modules.scope_foundation import models as scope_foundation_models  # noqa: F401

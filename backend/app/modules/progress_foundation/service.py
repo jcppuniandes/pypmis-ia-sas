@@ -793,7 +793,7 @@ class ProgressFoundationService(ScopeFoundationService):
             rows = [row for row in rows if row.progress_type == progress_type]
         return rows
 
-    def _source_state(self, row):
+    def _source_state(self, row, *, check_quality=True):
         """Derived freshness never edits the immutable approved measurement."""
         try:
             project = self._project(row.project_workspace_id)
@@ -860,6 +860,10 @@ class ProgressFoundationService(ScopeFoundationService):
                 ]
                 if any(rule.id != row.rule_id and rule.revision > sources["rule"]["revision"] for rule in rules):
                     return "REQUIRES_REVIEW"
+            if check_quality:
+                from app.modules.quality.consumer_sources import progress_quality_gate
+
+                progress_quality_gate(self, row.project_workspace_id, row)
             return "CURRENT"
         except (HTTPException, KeyError, TypeError, ValueError):
             return "REQUIRES_REVIEW"
@@ -1421,6 +1425,13 @@ class ProgressFoundationService(ScopeFoundationService):
             if payload.status == "UNDER_REVIEW":
                 row.reviewed_by = self.actor_id
             if payload.status == "APPROVED":
+                from app.modules.quality.consumer_sources import progress_quality_gate
+
+                quality_profile = self._progress_profile(self._project(workspace))
+                required = quality_profile.content_json.get("quality_policy", {}).get(
+                    "require_acceptance_for_approval", False
+                )
+                progress_quality_gate(self, workspace, row, required=required)
                 if row.method != "MANUAL_EXPERT_ASSESSMENT" and row.certified_by is None:
                     self._error(409, "PROGRESS_INDEPENDENT_CERTIFICATION_REQUIRED")
                 ancestors, pointer = set(), row.supersedes_id

@@ -23,6 +23,7 @@ from app.modules.operational_context.legacy_boundary import require_bound_legacy
 from app.modules.procurement_consumers.models import TABLE as PROCUREMENT_ADOPTION_TABLE
 from app.modules.procurement_foundation.migration_schema import PROCUREMENT_MIGRATION_TABLE_NAMES
 from app.modules.progress_foundation.migration_schema import PROGRESS_MIGRATION_TABLE_NAMES
+from app.modules.quality.migration_schema import QUALITY_MIGRATION_TABLE_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ def _create_schema_for_local_runtime() -> None:
         | {model.__tablename__ for model in (*CONTRACTS_CORE_MODELS, *CONTRACTS_COMMERCIAL_MODELS)}
         | {CONTRACTS_ADOPTION_TABLE}
         | FIELD_MIGRATION_TABLE_NAMES
+        | QUALITY_MIGRATION_TABLE_NAMES
     )
     tables = [table for table in Base.metadata.sorted_tables if table.name not in migration_only]
     if engine.dialect.name == "postgresql":

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
+import QualityConsumerPanel from "../quality/QualityConsumerPanel";
 import { Evidence, Facts, Input, ReasonCodes, Records, Select } from "../progress-foundation/Fields";
 import "../progress-foundation/progressFoundation.css";
 import {
@@ -470,7 +471,7 @@ export default function ContractsManagerWorkspace({
   workspaceId: number;
   readOnly?: boolean;
 }) {
-  const [tab, setTab] = useState<Tab>("Contract Packages");
+  const [tab, setTab] = useState<Tab | "Quality Evidence">("Contract Packages");
   const base = projectRoot(workspaceId);
   const commands = useCommands(token, base, readOnly);
   const configuration = useRead(token, base, "/configuration", commands.revision);
@@ -527,13 +528,20 @@ export default function ContractsManagerWorkspace({
             Finance conserva facturas y pagos.
           </p>
           <nav className="progressTabs" aria-label="Contracts Manager submodules">
-            {tabs.map((label) => (
+            {([...tabs, "Quality Evidence"] as const).map((label) => (
               <button key={label} type="button" aria-pressed={tab === label} onClick={() => setTab(label)}>
                 {label}
               </button>
             ))}
           </nav>
-          {tab === "Contract Readiness" || tab === "Commercial Look-Ahead" || tab === "History" ? (
+          {tab === "Quality Evidence" ? (
+            <QualityConsumerPanel
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={readOnly}
+              initialDomain="contracts"
+            />
+          ) : tab === "Contract Readiness" || tab === "Commercial Look-Ahead" || tab === "History" ? (
             <LookupPanel key={tab} kind={tab} scope={scope} />
           ) : tab === "Mappings" ? (
             <MappingPanel scope={scope} />

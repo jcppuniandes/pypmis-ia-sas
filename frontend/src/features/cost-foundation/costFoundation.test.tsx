@@ -142,9 +142,27 @@ describe("Cost Foundation workspace and authority boundaries", () => {
     vi.spyOn(costApi, "overview").mockResolvedValue(overview);
     render(<CostManagerWorkspace token="test" workspaceId={77} />);
     expect(await screen.findByRole("navigation", { name: "Cost Manager submodules" })).toBeInTheDocument();
-    expect(screen.getByRole("navigation", { name: "Cost Manager submodules" }).querySelectorAll("button")).toHaveLength(
-      12
-    );
+    expect(
+      Array.from(
+        screen.getByRole("navigation", { name: "Cost Manager submodules" }).querySelectorAll("button"),
+        (button) => button.textContent
+      )
+    ).toEqual([
+      "CBS",
+      "Cost Codes",
+      "Control Accounts",
+      "APU / Rates",
+      "Budget",
+      "Cost Baseline",
+      "Cost Phasing",
+      "Commitments",
+      "Commercial Adoption",
+      "Field Evidence",
+      "Quality Evidence",
+      "Actuals",
+      "Accruals",
+      "Cost Overview",
+    ]);
     expect(screen.getByRole("button", { name: "Commercial Adoption" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add Funding" })).not.toBeInTheDocument();
     expect(screen.getByText(/Cost no redefine cantidad/)).toBeInTheDocument();

@@ -19,6 +19,7 @@ import EngineeringWorkspace from "../engineering-foundation/EngineeringWorkspace
 import ProcurementWorkspace from "../procurement-foundation/ProcurementWorkspace";
 import ContractsManagerWorkspace from "../contracts-foundation/ContractsManagerWorkspace";
 import FieldOperationsWorkspace from "../field-operations/FieldOperationsWorkspace";
+import QualityManagerWorkspace from "../quality/QualityManagerWorkspace";
 import PortfolioEvaluationWorkspace from "../portfolio-evaluation/PortfolioEvaluationWorkspace";
 import { orderStrategicWorkspaceNavigator } from "../enterprise-strategy/navigation/strategicNavigationBlueprint";
 import { workspaceContextApi } from "./api";
@@ -176,6 +177,7 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             "procurement",
             "contracts",
             "field-operations",
+            "quality",
           ].includes(current?.code ?? "") ? (
             <CompactModuleHeader
               description={
@@ -199,9 +201,18 @@ function WorkspaceOperationalContent({ token, workspaceId }: { token: string; wo
             />
           ) : null}
 
-          {current?.code === "field-operations" &&
+          {current?.code === "quality" &&
           (current.state === "READY" || current.read_only) &&
           context.identity.workspace_type === "PROJECT" ? (
+            <QualityManagerWorkspace
+              key={workspaceId}
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={Boolean(current.read_only)}
+            />
+          ) : current?.code === "field-operations" &&
+            (current.state === "READY" || current.read_only) &&
+            context.identity.workspace_type === "PROJECT" ? (
             <FieldOperationsWorkspace
               key={workspaceId}
               token={token}

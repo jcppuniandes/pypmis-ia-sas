@@ -198,6 +198,11 @@ def test_any_prior_awp_adoption_prevents_a_duplicate_even_after_a_later_rejectio
 
 def test_native_progress_freshness_checks_every_retained_field_source(monkeypatch):
     from app.modules.field_operations import consumer_sources
+    from app.modules.quality import consumer_sources as quality_sources
+
+    # This focused unit double exercises Field freshness; Quality's real gate is
+    # exercised by the isolated PostgreSQL consumer lifecycle suite.
+    monkeypatch.setattr(quality_sources, "progress_quality_gate", lambda *_args, **_kwargs: [])
 
     pins = [source(9), source(10)]
     owner = NativeOwner(QueueDatabase(scalar_values=[None]))

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import CompactModuleHeader from "../enterprise-structure/components/CompactModuleHeader";
 import FieldConsumerPanel from "../field-operations/FieldConsumerPanel";
+import QualityConsumerPanel from "../quality/QualityConsumerPanel";
 import { operationalError, useOperationalCommandKeys } from "../operational-context/commands";
 import { progressApi } from "./api";
 import { Facts, Input, Select } from "./Fields";
@@ -20,7 +21,9 @@ export default function ProgressManagerWorkspace({
   workspaceId: number;
   readOnly?: boolean;
 }) {
-  const [tab, setTab] = useState<(typeof progressTabs)[number] | "Field Evidence">("Progress Overview");
+  const [tab, setTab] = useState<(typeof progressTabs)[number] | "Field Evidence" | "Quality Evidence">(
+    "Progress Overview"
+  );
   const [data, setData] = useState<ProgressOverview | null>(null);
   const [periodId, setPeriodId] = useState("");
   const [asOf, setAsOf] = useState("");
@@ -149,7 +152,7 @@ export default function ProgressManagerWorkspace({
             />
           ) : null}
           <nav className="progressTabs" aria-label="Progress Manager submodules">
-            {([...progressTabs, "Field Evidence"] as const).map((title) => (
+            {([...progressTabs, "Field Evidence", "Quality Evidence"] as const).map((title) => (
               <button key={title} type="button" aria-pressed={tab === title} onClick={() => setTab(title)}>
                 {title}
               </button>
@@ -178,7 +181,15 @@ export default function ProgressManagerWorkspace({
             <BaselineIntegrationPanel {...props} bundleId={bundleId} setBundleId={setBundleId} />
           ) : null}
           {tab === "Progress History" ? <HistoryPanel {...props} /> : null}
-          {tab === "Field Evidence" ? (
+          {tab === "Quality Evidence" ? (
+            <QualityConsumerPanel
+              token={token}
+              workspaceId={workspaceId}
+              readOnly={readOnly}
+              initialDomain="progress"
+              onCommitted={load}
+            />
+          ) : tab === "Field Evidence" ? (
             <FieldConsumerPanel token={token} workspaceId={workspaceId} readOnly={readOnly} initialDomain="progress" />
           ) : null}
         </>

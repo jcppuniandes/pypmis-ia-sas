@@ -1,0 +1,77 @@
+.qualityManager,
+.qualityManager > *,
+.qualityManager .progressPanel {
+  min-width: 0;
+}
+.qualityManager .progressTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.qualityManager .progressTabs button,
+.qualityManager input,
+.qualityManager select,
+.qualityManager button {
+  min-height: 42px;
+}
+.qualityBoundary {
+  padding: 10px 12px;
+  border-inline-start: 3px solid #247872;
+  background: #f2f8f7;
+  color: #254940;
+}
+.qualitySource,
+.qualityChecklist {
+  border: 1px solid #d6e2e9;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 12px 0;
+  min-width: 0;
+}
+.qualitySource {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+.qualitySource > details,
+.qualitySource > p {
+  grid-column: 1/-1;
+}
+.qualityCheckItem {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #d6e2e9;
+}
+.qualityCheckItem > h4,
+.qualityCheckItem > p {
+  grid-column: 1/-1;
+  margin: 4px 0;
+}
+.qualityManager pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 30rem;
+  overflow: auto;
+}
+.qualityDetail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #d6e2e9;
+}
+@media (max-width: 680px) {
+  .qualityManager .progressForm,
+  .qualitySource,
+  .qualityCheckItem {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .qualityManager .progressTabs {
+    max-height: 12rem;
+    overflow: auto;
+  }
+  .qualityManager textarea {
+    min-height: 90px;
+  }
+}

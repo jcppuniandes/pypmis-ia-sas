@@ -9,6 +9,7 @@ import EngineeringProfilesAdminView from "../features/engineering-foundation/Eng
 import ProcurementProfilesAdminView from "../features/procurement-foundation/ProcurementProfilesAdminView";
 import ContractProfilesAdminView from "../features/contracts-foundation/ContractProfilesAdminView";
 import FieldProfilesAdminView from "../features/field-operations/FieldProfilesAdminView";
+import QualityProfilesAdminView from "../features/quality/QualityProfilesAdminView";
 import type {
   AdminConfigurationKind,
   AdminConfigurationOverview,
@@ -125,6 +126,7 @@ export default function AdminConfigurationView(props: Props) {
     | "procurement"
     | "contracts"
     | "field-operations"
+    | "quality"
   >("processes");
   if (props.view !== "process-definitions") return <AdminConfigurationContent {...props} />;
   return (
@@ -173,8 +175,13 @@ export default function AdminConfigurationView(props: Props) {
         >
           Field Operations Profiles
         </button>
+        <button type="button" aria-pressed={section === "quality"} onClick={() => setSection("quality")}>
+          Quality Management Profiles
+        </button>
       </nav>
-      {section === "field-operations" ? (
+      {section === "quality" ? (
+        <QualityProfilesAdminView token={props.token} />
+      ) : section === "field-operations" ? (
         <FieldProfilesAdminView token={props.token} />
       ) : section === "contracts" ? (
         <ContractProfilesAdminView token={props.token} />

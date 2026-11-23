@@ -735,6 +735,8 @@ class AWPService(ScopeFoundationService):
         return result
 
     def _current_readiness(self, workspace, package, profile, facts=None):
+        from app.modules.quality.consumer_sources import apply_awp_quality, awp_quality_evidence
+
         facts = facts if facts is not None else self._readiness_facts(workspace)
         assessments = [row for row in facts[ReadinessAssessment] if row.work_package_id == package.id]
         provider = self._engineering_readiness(package, facts)
@@ -747,6 +749,9 @@ class AWPService(ScopeFoundationService):
             hashes["engineering"] = provider["evidence_hash"]
         if material:
             hashes["material"] = material["evidence_hash"]
+        quality = awp_quality_evidence(self, workspace, package)
+        if quality:
+            hashes["quality"] = quality["evidence_hash"]
         evidence = last.evidence_state.get("references", {}) if last else {}
         result = self._assess_with_engineering(
             package,
@@ -758,6 +763,7 @@ class AWPService(ScopeFoundationService):
             provider,
             material,
         )
+        result = apply_awp_quality(result, quality)
         stale = last is None or last.source_hashes != hashes
         if last is None and result["readiness_state"] != "NOT_READY" or stale and result["readiness_state"] == "READY":
             result["readiness_state"] = "NOT_ASSESSED"
@@ -774,6 +780,8 @@ class AWPService(ScopeFoundationService):
         }
 
     def assess(self, workspace, identity, payload, expected, key):
+        from app.modules.quality.consumer_sources import apply_awp_quality, awp_quality_evidence
+
         self._ready(workspace, "readiness.assess")
 
         def apply():
@@ -799,6 +807,9 @@ class AWPService(ScopeFoundationService):
                 hashes["engineering"] = provider["evidence_hash"]
             if material:
                 hashes["material"] = material["evidence_hash"]
+            quality = awp_quality_evidence(self, workspace, package, instant)
+            if quality:
+                hashes["quality"] = quality["evidence_hash"]
             result = self._assess_with_engineering(
                 package,
                 profile.content_json,
@@ -809,6 +820,7 @@ class AWPService(ScopeFoundationService):
                 provider,
                 material,
             )
+            result = apply_awp_quality(result, quality)
             row = ReadinessAssessment(
                 **self._base(workspace),
                 work_package_id=identity,

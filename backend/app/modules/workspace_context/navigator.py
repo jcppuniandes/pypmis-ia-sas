@@ -169,6 +169,7 @@ DEFAULT_PROFILES: dict[str, tuple[NavigationDefinition, ...]] = {
         NavigationDefinition("procurement", "Procurement Manager", permission_key="procurement.read"),
         NavigationDefinition("contracts", "Contracts Manager", permission_key="contracts.read"),
         NavigationDefinition("field-operations", "Field Operations Manager", permission_key="field_operations.read"),
+        NavigationDefinition("quality", "Quality Manager", permission_key="quality.read"),
         NavigationDefinition("documents", "Documents"),
         NavigationDefinition("reports", "Reports"),
     ),
@@ -272,6 +273,13 @@ class WorkspaceNavigatorService:
                 settings.get("field-operations") is False
                 or settings.get("field-operations-manager") is False
                 or not {"field-operations", "field-operations-manager", "field_operations"} & enabled
+            ):
+                continue
+            if item.code == "quality" and (
+                settings.get("quality") is False
+                or settings.get("quality-manager") is False
+                or settings.get("quality-management") is False
+                or not {"quality", "quality-manager", "quality-management"} & enabled
             ):
                 continue
             if item.code == "engineering" and (

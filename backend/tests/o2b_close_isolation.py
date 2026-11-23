@@ -33,4 +33,8 @@ def is_close_consumer_database(db):
                 ("127.0.0.1", 5565, "o3a", "o3a"),
             }
         )
+        or (
+            os.getenv("PYPMIS_O3B_FIXTURE") == "disposable-only"
+            and identity in {("127.0.0.1", 5567, "o3b", "o3b"), ("127.0.0.1", 5568, "o3b", "o3b")}
+        )
     )

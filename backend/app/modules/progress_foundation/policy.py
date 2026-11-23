@@ -173,8 +173,17 @@ def credit_progress(steps, completed, *, ordered=True):
 
 
 def validate_profile(content):
-    if set(content) != set(DEFAULT_PROFILE):
+    # Existing published profiles keep their original content and hash. Quality
+    # approval is an optional native Progress policy, never a Quality-side switch.
+    if set(content) not in (set(DEFAULT_PROFILE), set(DEFAULT_PROFILE) | {"quality_policy"}):
         raise ValueError("PROGRESS_PROFILE_KEYS_INVALID")
+    quality = content.get("quality_policy", {"require_acceptance_for_approval": False})
+    if (
+        not isinstance(quality, dict)
+        or set(quality) != {"require_acceptance_for_approval"}
+        or type(quality["require_acceptance_for_approval"]) is not bool
+    ):
+        raise ValueError("PROGRESS_QUALITY_POLICY_INVALID")
     for key, choices in (("allowed_progress_types", TYPES), ("allowed_methods", METHODS)):
         selected = content[key]
         if (

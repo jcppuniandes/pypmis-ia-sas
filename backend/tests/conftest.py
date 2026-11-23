@@ -38,19 +38,30 @@ else:
     )
     os.environ["DATABASE_URL"] = f"sqlite:///{test_db_path.as_posix()}"
 o2c_explicit_fixture = (
-    os.getenv("PYPMIS_O2C_FIXTURE") == "disposable-only"
-    and postgres_test_url
-    in {
-        "postgresql+psycopg://o2c:o2c@127.0.0.1:5561/o2c",
-        "postgresql+psycopg://o2c:o2c@127.0.0.1:5562/o2c",
-    }
-) or (
-    os.getenv("PYPMIS_O3A_FIXTURE") == "disposable-only"
-    and postgres_test_url
-    in {
-        "postgresql+psycopg://o3a:o3a@127.0.0.1:5564/o3a",
-        "postgresql+psycopg://o3a:o3a@127.0.0.1:5565/o3a",
-    }
+    (
+        os.getenv("PYPMIS_O2C_FIXTURE") == "disposable-only"
+        and postgres_test_url
+        in {
+            "postgresql+psycopg://o2c:o2c@127.0.0.1:5561/o2c",
+            "postgresql+psycopg://o2c:o2c@127.0.0.1:5562/o2c",
+        }
+    )
+    or (
+        os.getenv("PYPMIS_O3A_FIXTURE") == "disposable-only"
+        and postgres_test_url
+        in {
+            "postgresql+psycopg://o3a:o3a@127.0.0.1:5564/o3a",
+            "postgresql+psycopg://o3a:o3a@127.0.0.1:5565/o3a",
+        }
+    )
+    or (
+        os.getenv("PYPMIS_O3B_FIXTURE") == "disposable-only"
+        and postgres_test_url
+        in {
+            "postgresql+psycopg://o3b:o3b@127.0.0.1:5567/o3b",
+            "postgresql+psycopg://o3b:o3b@127.0.0.1:5568/o3b",
+        }
+    )
 )
 os.environ["SEED_DEMO_DATA"] = "false" if o2c_explicit_fixture else "true"
 os.environ["AUTO_CREATE_SCHEMA"] = "false" if o2c_explicit_fixture else "true"

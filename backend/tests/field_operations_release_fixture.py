@@ -95,11 +95,15 @@ def release_iwp(f):
 
 
 def setup(db, client, *, credentials=False, publish=True, material_required=False):
-    assert os.getenv("PYPMIS_O3A_FIXTURE") == "disposable-only" and is_close_consumer_database(db)
-    assert (db.bind.url.port, db.bind.url.database, db.bind.url.username) in {
-        (5564, "o3a", "o3a"),
-        (5565, "o3a", "o3a"),
-    }
+    assert is_close_consumer_database(db)
+    identity = (db.bind.url.port, db.bind.url.database, db.bind.url.username)
+    assert (
+        os.getenv("PYPMIS_O3A_FIXTURE") == "disposable-only"
+        and identity in {(5564, "o3a", "o3a"), (5565, "o3a", "o3a")}
+    ) or (
+        os.getenv("PYPMIS_O3B_FIXTURE") == "disposable-only"
+        and identity in {(5567, "o3b", "o3b"), (5568, "o3b", "o3b")}
+    )
     f = create_governed_fixture(db, client, credentials=credentials)
     f.db = db
     workspace = f.workspaces["direct"]

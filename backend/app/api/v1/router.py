@@ -310,6 +310,11 @@ from app.modules.project_proposal import router as project_proposal_router
 from app.modules.project_workspace_initialization import router as project_workspace_initialization_router
 from app.modules.qra_engine import router as qra_engine_router
 from app.modules.qra_foundation import router as qra_foundation_router
+from app.modules.quality import execution_router as quality_execution_router
+from app.modules.quality import router as quality_router
+from app.modules.quality import support_router as quality_support_router
+from app.modules.quality.consumer_router import OWNERS as QUALITY_CONSUMERS
+from app.modules.quality.consumer_router import consumer_router as quality_consumer_router
 from app.modules.risk_governance import router as risk_governance_router
 from app.modules.risk_readiness import router as risk_readiness_router
 from app.modules.schedule_foundation import router as schedule_foundation_router
@@ -364,6 +369,15 @@ router.include_router(contracts_router.router, prefix="/contracts", tags=["contr
 router.include_router(contracts_commercial_router.router, prefix="/contracts", tags=["contracts-commercial"])
 router.include_router(field_operations_router.router, prefix="/field-operations", tags=["field-operations"])
 router.include_router(field_execution_router.router, prefix="/field-operations", tags=["field-execution"])
+router.include_router(quality_router.router, prefix="/quality", tags=["quality-management"])
+router.include_router(quality_execution_router.router, prefix="/quality", tags=["quality-execution"])
+router.include_router(quality_support_router.router, prefix="/quality", tags=["quality-traceability"])
+for quality_consumer in QUALITY_CONSUMERS:
+    router.include_router(
+        quality_consumer_router(quality_consumer),
+        prefix=f"/{QUALITY_CONSUMERS[quality_consumer][1]}",
+        tags=["quality-evidence-adoption"],
+    )
 for field_consumer in FIELD_CONSUMERS:
     router.include_router(
         field_consumer_router(field_consumer), prefix=f"/{field_consumer.lower()}", tags=["field-evidence-adoption"]
